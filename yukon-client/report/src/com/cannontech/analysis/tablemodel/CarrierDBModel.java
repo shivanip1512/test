@@ -27,19 +27,21 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 public class CarrierDBModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 6;
+	protected final int NUMBER_COLUMNS = 7;
 	
 	/** Enum values for column representation */
 	public final static int PAO_NAME_COLUMN = 0;
 	public final static int PAO_TYPE_COLUMN = 1;
-	public final static int ADDRESS_COLUMN = 2;
-	public final static int ROUTE_NAME_COLUMN = 3;
-	public final static int COLL_GROUP_NAME_COLUMN = 4;
-	public final static int TEST_COLL_GROUP_NAME_COLUMN = 5;
+	public final static int METER_NUMBER_COLUMN = 2;
+	public final static int ADDRESS_COLUMN = 3;
+	public final static int ROUTE_NAME_COLUMN = 4;
+	public final static int COLL_GROUP_NAME_COLUMN = 5;
+	public final static int TEST_COLL_GROUP_NAME_COLUMN = 6;
 	
 	/** String values for column representation */
 	public final static String PAO_NAME_STRING = "MCT Name";
 	public final static String PAO_TYPE_STRING = "Type";
+	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
@@ -69,9 +71,10 @@ public class CarrierDBModel extends ReportModelBase
 			String address = rset.getString(3);			
 			String routeName = rset.getString(4);
 			String collGroup = rset.getString(5);
-			String testCollGroup = rset.getString(6);		
+			String testCollGroup = rset.getString(6);
+			String meterNumber = rset.getString(7);
 					
-			Carrier carrier = new Carrier(paoName, paoType, address, routeName, collGroup, testCollGroup);
+			Carrier carrier = new Carrier(paoName, paoType, meterNumber, address, routeName, collGroup, testCollGroup);
 			getData().add(carrier);
 		}
 		catch(java.sql.SQLException e)
@@ -86,7 +89,7 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAONAME MCT, PAO1.TYPE, DCS.ADDRESS, PAO2.PAONAME ROUTE, COLLECTIONGROUP, TESTCOLLECTIONGROUP " + 
+		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAONAME MCT, PAO1.TYPE, DCS.ADDRESS, PAO2.PAONAME ROUTE, COLLECTIONGROUP, TESTCOLLECTIONGROUP, METERNUMBER " + 
 			" FROM YUKONPAOBJECT PAO1, YUKONPAOBJECT PAO2, DEVICEROUTES DR, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG "+
 			" WHERE PAO1.PAOBJECTID = DMG.DEVICEID "+
 			" AND PAO1.PAOBJECTID = DR.DEVICEID " + 
@@ -208,7 +211,10 @@ public class CarrierDBModel extends ReportModelBase
 		
 				case PAO_TYPE_COLUMN:
 					return carrier.getPaoType();
-	
+
+				case METER_NUMBER_COLUMN:
+					return carrier.getMeterNumber();
+				    
 				case ADDRESS_COLUMN:
 					return carrier.getAddress();
 	
@@ -235,6 +241,7 @@ public class CarrierDBModel extends ReportModelBase
 			columnNames = new String[]{
 				PAO_NAME_STRING,
 				PAO_TYPE_STRING,
+				METER_NUMBER_STRING,
 				ADDRESS_STRING,
 				ROUTE_NAME_STRING,
 				COLL_GROUP_NAME_STRING,
@@ -257,6 +264,7 @@ public class CarrierDBModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
+				String.class,
 				String.class
 			};
 		}
@@ -274,7 +282,8 @@ public class CarrierDBModel extends ReportModelBase
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(200, 1, 75, null),
 				new ColumnProperties(275, 1, 75, null),
-				new ColumnProperties(350, 1, 200, null),
+				new ColumnProperties(350, 1, 75, null),
+				new ColumnProperties(425, 1, 125, null),
 				new ColumnProperties(550, 1, 80, null),
 				new ColumnProperties(630, 1, 80, null)
 			};

@@ -220,9 +220,12 @@ public class PointDataSummaryModel extends ReportModelBase
 			String address = rset.getString(3);			
 			String routeName = rset.getString(4);
 			String collGroup = rset.getString(5);
-			String testCollGroup = rset.getString(6);		
+			String testCollGroup = rset.getString(6);
+			String meterNumber = null;
+			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to only meters.
+				meterNumber = rset.getString(7);
 					
-			Carrier carrier = new Carrier(paoName, paoType, address, routeName, collGroup, testCollGroup);
+			Carrier carrier = new Carrier(paoName, paoType, meterNumber, address, routeName, collGroup, testCollGroup);
 			getData().add(carrier);
 		}
 		catch(java.sql.SQLException e)
@@ -237,10 +240,17 @@ public class PointDataSummaryModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT CHANGEID, RPH.POINTID, TIMESTAMP, QUALITY, VALUE, PAO.PAONAME " + 
-			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG " +
-			" WHERE P.POINTID = RPH.POINTID " +
-			" AND PAO.PAOBJECTID = DMG.DEVICEID " +
+		StringBuffer sql = new StringBuffer	("SELECT CHANGEID, RPH.POINTID, TIMESTAMP, QUALITY, VALUE, PAO.PAONAME ");
+		
+		if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to meters.
+			sql.append(", METERNUMBER ");
+		
+		sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO");
+		
+		if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to meters.
+			sql.append(", DEVICEMETERGROUP DMG ");
+			
+			sql.append(" WHERE P.POINTID = RPH.POINTID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID ");	//Use PAO for ordering
 			//TODO add collectiongroup, ect selection criteria 
 			//Use paoIDs in query if they exist
@@ -271,6 +281,7 @@ public class PointDataSummaryModel extends ReportModelBase
 			//Use paoIDs in query if they exist
 			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
+				sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
 				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
 				for (int i = 1; i < getBillingGroups().length; i++)
 					sql.append("', '" + getBillingGroups()[i]);

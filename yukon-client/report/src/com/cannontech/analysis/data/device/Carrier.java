@@ -16,6 +16,7 @@ public class Carrier
 {	
 	private String paoName = null;
 	private String paoType = null;
+	private String meterNumber = null;
 	private String address = null;			
 	private String routeName = null;
 	private String collGroup = null;
@@ -32,15 +33,17 @@ public class Carrier
 	/**
 	 * @param paoName_
 	 * @param paoType_
+	 * @param meterNumber_
 	 * @param address_
 	 * @param routeName_
 	 * @param collGroup_
 	 * @param testCollGroup_
 	 */
-	public Carrier(String paoName_, String paoType_, String address_, String routeName_, String collGroup_, String testCollGroup_)
+	public Carrier(String paoName_, String paoType_, String meterNumber_, String address_, String routeName_, String collGroup_, String testCollGroup_)
 	{
 		paoName = paoName_;
 		paoType = paoType_;
+		meterNumber = meterNumber_;
 		address = address_;
 		routeName = routeName_;
 		collGroup = collGroup_;
@@ -94,4 +97,11 @@ public class Carrier
 		return testCollGroup;
 	}
 
+    /**
+     * @return Returns the meterNumber.
+     */
+    public String getMeterNumber()
+    {
+        return meterNumber;
+    }
 }

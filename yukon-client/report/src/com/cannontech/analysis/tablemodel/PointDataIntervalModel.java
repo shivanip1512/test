@@ -168,20 +168,25 @@ public class PointDataIntervalModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT RPH.CHANGEID, RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME " + 
-			" FROM RAWPOINTHISTORY RPH, POINT P, DEVICEMETERGROUP DMG, YUKONPAOBJECT PAO " +
-			" WHERE P.POINTID = RPH.POINTID " +
+			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
+			
+			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
+				sql.append(", DEVICEMETERGROUP DMG ");
+		
+			sql.append(" WHERE P.POINTID = RPH.POINTID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
-			" AND PAO.PAOBJECTID = DMG.DEVICEID " +
 			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
- 
-			//Use paoIDs in query if they exist
+
+			//Use billing groups in query if they exist
 			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
+				sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");			    
 				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
 				for (int i = 1; i < getBillingGroups().length; i++)
 					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
 			}
+			//Use paoIDs in query if they exist			
 			if( getPaoIDs() != null && getPaoIDs().length > 0)
 			{
 				sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
