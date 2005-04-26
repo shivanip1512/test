@@ -5,6 +5,8 @@
 alter table MacSchedule add template NUMBER;
 update MacSchedule set template = 0 where commandfile is not null;
 
+delete from yukonlistentry where entryid >= 1241 and entryid <= 1247;
+
 insert into YukonListEntry values (1241,1049,1,'1 Day',24);
 insert into YukonListEntry values (1242,1049,2,'2 Days',48);
 insert into YukonListEntry values (1243,1049,3,'3 Days',72);

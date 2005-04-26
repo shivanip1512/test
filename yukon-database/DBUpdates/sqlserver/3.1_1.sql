@@ -7,6 +7,8 @@ go
 update macschedule set template = 0 where commandfile is not null;
 go
 
+delete from yukonlistentry where entryid >= 1241 and entryid <= 1247;
+go
 
 insert into YukonListEntry values (1241,1049,1,'1 Day',24);
 insert into YukonListEntry values (1242,1049,2,'2 Days',48);
