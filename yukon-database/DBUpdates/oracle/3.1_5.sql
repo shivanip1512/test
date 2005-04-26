@@ -2,9 +2,9 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-alter table lmprogramdirect add triggeroffset smallint;
-update lmprogramdirect set triggeroffset=0;
-alter table lmprogramdirect modify triggeroffset not null;
+alter table lmprogramdirect add triggeroffset float;
+update lmprogramdirect set triggeroffset=0.0;
+alter table lmprogramdirect modify triggeroffset float not null;
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

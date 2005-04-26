@@ -2,11 +2,11 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-alter table lmprogramdirect add triggeroffset smallint;
+alter table lmprogramdirect add triggeroffset float;
 go
-update lmprogramdirect set triggeroffset=0;
+update lmprogramdirect set triggeroffset=0.0;
 go
-alter table lmprogramdirect alter column triggeroffset not null;
+alter table lmprogramdirect alter column triggeroffset float not null;
 go
 
 /******************************************************************************/
