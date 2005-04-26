@@ -188,6 +188,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	else if( currentInputPanel == getLmProgramTypePanel() )
 	{
 		getLmProgramBasePanel().setIsAWizardOp(true);
+		if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM )
+			getLmProgramBasePanel().setTriggerThresholdVisible(true);
+		else
+			getLmProgramBasePanel().setTriggerThresholdVisible(false);
 		return getLmProgramBasePanel();
 	}
 	else if( currentInputPanel == getLmProgramBasePanel() )

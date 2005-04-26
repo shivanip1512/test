@@ -12,10 +12,11 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
+	private Double triggerOffset = new Double(0.0);
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER"
+		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -34,7 +35,7 @@ public LMProgramDirect() {
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getDeviceID(), getNotifyOffset(), getHeading(),
-						   getMessageHeader(), getMessageFooter() };
+						   getMessageHeader(), getMessageFooter(), getTriggerOffset() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -68,6 +69,10 @@ public String getMessageHeader() {
 
 public String getMessageFooter() {
 	return messageFooter;
+}
+
+public Double getTriggerOffset() {
+	return triggerOffset;
 }
 
 public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList(Integer programDeviceID, java.sql.Connection conn) throws java.sql.SQLException
@@ -147,6 +152,7 @@ public void retrieve() throws java.sql.SQLException
 		setHeading( (String) results[1] );
 		setMessageHeader( (String) results[2] );
 		setMessageFooter( (String) results[3] );
+		setTriggerOffset( (Double) results[4] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -177,13 +183,17 @@ public void setMessageFooter(String newFooter) {
 	messageFooter = newFooter;
 }
 
+public void setTriggerOffset(Double newTriggerOffset) {
+	triggerOffset = newTriggerOffset;
+}
+
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getNotifyOffset(), getHeading(), getMessageHeader(),
-							getMessageFooter() };
+							getMessageFooter(), getTriggerOffset() };
 
 	Object constraintValues[] = { getDeviceID() };
 

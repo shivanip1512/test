@@ -318,10 +318,13 @@ public void setValue(Object val)
 	//Allow super to do whatever it needs to
 	super.setValue( val );
 	
-	//check for special Timed Operational State case
-	controlWindowPanel.setTimedOperationalStateCondition(basePanel.isTimedOperationalState());
-	controlWindowPanel.getWindowChangePasser().setSelected(basePanel.isTimedOperationalState());
-	basePanel.getActionPasser().addActionListener(ivjEventHandler);
+	//check for special Timed Operational State case but only if it is a direct program
+	if(controlWindowPanel != null)
+	{
+		controlWindowPanel.setTimedOperationalStateCondition(basePanel.isTimedOperationalState());
+		controlWindowPanel.getWindowChangePasser().setSelected(basePanel.isTimedOperationalState());
+		basePanel.getActionPasser().addActionListener(ivjEventHandler);
+	}
 }
 /**
  * This method was created in VisualAge.
