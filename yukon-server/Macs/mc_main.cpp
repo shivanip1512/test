@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/04/26 22:31:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "MC_EXCLUSION_EVENT"); 
+    hExclusion = CreateEvent(NULL, TRUE, FALSE, "MC_EXCLUSION_EVENT");
 
     if( hExclusion == (HANDLE)NULL )
     {
@@ -71,7 +71,7 @@ int main(int argc, char* argv[] )
     // or in a console
     BOOL bConsole = SetConsoleTitle("MACS");
 
-    if (bConsole) 
+    if (bConsole)
     {
         if ( argc > 1 )
         {
@@ -86,7 +86,18 @@ int main(int argc, char* argv[] )
                            NULL,
                            NULL );
                 return 0;
-            } 
+            }
+            else if (strcmp(argv[1], "-auto") == 0)
+            {
+                cout << RWTime()  << " - Installing as a service..." << endl;
+                CServiceConfig si(szName, szDisplay);
+                si.Install(SERVICE_WIN32_OWN_PROCESS,
+                           SERVICE_AUTO_START,
+                           NULL,
+                           NULL,
+                           NULL );
+                return 0;
+            }
             else
             if ( strcmp(argv[1], "-remove" ) == 0 )
             {
@@ -94,16 +105,16 @@ int main(int argc, char* argv[] )
                 CServiceConfig si(szName, szDisplay);
                 si.Remove();
                 return 0;
-            }             
+            }
         }
-                           
+
         CtiMCService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );
 
         if ( argc > 2 )
             argv[1] = argv[2];
 
         service.RunInConsole(argc - 1, argv );
-    } 
+    }
     else
     {
         CtiMCService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );

@@ -60,6 +60,17 @@ int main(int argc, char* argv[] )
                        NULL,
                        NULL );
         }
+        else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
+        {
+            RWMutexLock::LockGuard guard(coutMux);
+            cout << RWTime()  << " - Installing as a service..." << endl;
+            CServiceConfig si(szServiceName, szDisplayName);
+            si.Install(SERVICE_WIN32_OWN_PROCESS,
+                       SERVICE_AUTO_START,
+                       NULL,
+                       NULL,
+                       NULL );
+        }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
             RWMutexLock::LockGuard guard(coutMux);

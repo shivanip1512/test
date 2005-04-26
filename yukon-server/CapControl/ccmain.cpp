@@ -71,6 +71,16 @@ int main(int argc, char* argv[] )
                        NULL,    // Use LocalSystem Account
                        NULL);
         }
+        else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
+        {
+            cout << RWTime()  << " - Installing as an autostart service..." << endl;
+            CServiceConfig si(szServiceName, szDisplayName);
+            si.Install(SERVICE_WIN32_OWN_PROCESS,
+                       SERVICE_AUTO_START,
+                       NULL,
+                       NULL,    // Use LocalSystem Account
+                       NULL);
+        }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
             cout << RWTime()  << " - Removing service..." << endl;

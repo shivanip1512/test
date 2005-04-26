@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/04/26 22:31:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ using namespace std;
 #include "logger.h"
 #include "guard.h"
 
-int install();
+int install(DWORD dwStart = SERVICE_DEMAND_START);
 int remove();
 
 // A global variable to indicate the service status..
@@ -81,6 +81,10 @@ int main(int argc, char* argv[] )
       {
           return install();
       }
+      else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
+      {
+          return install(SERVICE_AUTO_START);
+      }
       else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
       {
           return remove();
@@ -111,7 +115,7 @@ int main(int argc, char* argv[] )
    return 0;
 }
 
-int install()
+int install(DWORD dwStart)
 {
     char depend[1000];
 
@@ -170,7 +174,7 @@ int install()
 
     // test using the LocalSystem account
     si.Install(SERVICE_WIN32_OWN_PROCESS,
-                       SERVICE_DEMAND_START,
+                       dwStart,
                        tmp,
                        NULL,
                        NULL);

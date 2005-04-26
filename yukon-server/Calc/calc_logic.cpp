@@ -15,7 +15,7 @@
 
 #include "calclogicsvc.h"
 
-int install( void );
+int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );
 
 LPTSTR szServiceName = "CALCLOGIC";
@@ -51,7 +51,11 @@ int main( int argc, char *argv[] )
         //  Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0 )
         {
-            return install();
+            return install(SERVICE_DEMAND_START);
+        }
+        else if( argc > 1 && strcmp(argv[1], "-auto") == 0 )
+        {
+            return install(SERVICE_AUTO_START);
         }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
@@ -83,7 +87,7 @@ int main( int argc, char *argv[] )
     return 0;
 }
 
-int install( void )
+int install( DWORD dwStart )
 {
     cout << RWTime( ) << " - Installing as a service..." << endl;
 
@@ -142,7 +146,7 @@ int install( void )
     CServiceConfig si(szServiceName, szDisplayName);
 
     si.Install( SERVICE_WIN32_OWN_PROCESS,
-                SERVICE_DEMAND_START,
+                dwStart,
                 NULL, // Should use depends in future
                 NULL, // Use LocalSystem Account
                 NULL);

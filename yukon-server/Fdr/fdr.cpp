@@ -4,8 +4,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/04/26 22:33:11 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -49,7 +49,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "id_ctibase.h"
 
 
-int install( void );
+int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );
 
 LPTSTR szServiceName = "FDR";
@@ -93,6 +93,10 @@ int main( int argc, char *argv[] )
         if( argc > 1 && strcmp(argv[1], "-install") == 0 )
         {
             return install();
+        }
+        else if( argc > 1 && strcmp(argv[1], "-auto") == 0 )
+        {
+            return install(SERVICE_AUTO_START);
         }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
@@ -149,7 +153,7 @@ int main( int argc, char *argv[] )
     return 0;
 }
 
-int install( void )
+int install( DWORD dwStart )
 {
     CtiConfigParameters configParameters;
     RWCString           depends;
@@ -166,7 +170,7 @@ int install( void )
     CServiceConfig si(szServiceName, szDisplayName);
 
     si.Install( SERVICE_WIN32_OWN_PROCESS,
-                SERVICE_DEMAND_START,
+                dwStart,
                 depends,
                 NULL,   // Use LocalSystem Account
                 NULL);
