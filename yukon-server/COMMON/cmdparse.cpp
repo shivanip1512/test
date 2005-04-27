@@ -4257,6 +4257,19 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     _cmd["sa_f1bit"] = 0;
 
 
+    // Needed for serial commands.
+    if(CmdStr.contains(" utility"))
+    {
+        if(!(temp = CmdStr.match(" utility +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
+                _cmd["sa_utility"] = CtiParseValue( iValue );
+            }
+        }
+    }
+
     if(CmdStr.contains(" priority"))
     {
         if(!(temp = CmdStr.match(" priority +[0-3]")).isNull())
@@ -4268,9 +4281,11 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
             }
         }
     }
-    if(CmdStr.contains(" repeats"))
+
+    //  042005 CGP:  NOT TO BE USED FOR SA205.  Used for LED FLASHing on SA305
+    if(CmdStr.contains(" ledrepeats"))
     {
-        if(!(temp = CmdStr.match(" repeats +[0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" ledrepeats +[0-9]+")).isNull())
         {
             if(!(valStr = temp.match("[0-9]+")).isNull())
             {
