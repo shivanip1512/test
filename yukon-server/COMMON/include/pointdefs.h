@@ -197,10 +197,13 @@
 
 
 
-// Points 180 to 200 will be reserved for odds and ends information                                   
-// Sentinel to report battery life 
+
+// Points 180 to 200 will be reserved for odds and ends information
+// Sentinel to report battery life
 #define OFFSET_BATTERY_LIFE                        180
 #define OFFSET_DAYS_ON_BATTERY                     181
+#define OFFSET_POWER_FACTOR                        182
+#define OFFSET_METER_TIME_STATUS                   183
 
 /*
  * Qualities are singular (non-bit-masked) and based upon point values in conjunction with the tags
@@ -227,7 +230,8 @@ typedef enum
    QuestionableQuality,
    OverflowQuality,
    PowerfailQuality,
-   UnreasonableQuality
+   UnreasonableQuality,
+   ConstantQuality
 
 } PointQuality_t;
 
