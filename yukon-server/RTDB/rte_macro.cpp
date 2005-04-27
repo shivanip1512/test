@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/04/27 14:04:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             if(NewOMess)
                             {
+                                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
