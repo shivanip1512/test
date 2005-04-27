@@ -9,7 +9,6 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
-#include "yukon.h"
 #include "critical_section.h"
 
 CtiCriticalSection::CtiCriticalSection()
@@ -44,6 +43,18 @@ bool CtiCriticalSection::acquire()
     return true;
 #endif
 }
+
+/*-----------------------------------------------------------------------------
+    acquire
+
+    Blocks until the mux is acquired.
+    20050426 CGP.  I need this for debug.  It is not timed.
+-----------------------------------------------------------------------------*/
+bool CtiCriticalSection::acquire(unsigned long ignored_arg_millis)
+{
+    return acquire();
+}
+
 
 /*-----------------------------------------------------------------------------
     release

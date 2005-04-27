@@ -27,6 +27,7 @@ public:
     virtual ~CtiCriticalSection();
 
     bool acquire();
+    bool acquire(unsigned long ignored_millis);     // 20050426 CGP.  I need this for debug.  It is not timed
     void release();
 
 #ifdef _DEBUG
