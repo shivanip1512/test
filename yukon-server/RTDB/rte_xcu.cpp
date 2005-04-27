@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/04/27 14:04:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -867,7 +867,7 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
             CtiProtocolSA3rdParty prot;
 
             prot.setTransmitterAddress(_transmitterDevice->getAddress());
-            prot.parseCommand(parse, *OutMessage);
+            prot.parseCommand(parse);
 
             if(prot.messageReady())
             {
@@ -973,7 +973,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             CtiProtocolSA3rdParty prot;
 
             prot.setTransmitterAddress(_transmitterDevice->getAddress());
-            prot.parseCommand(parse, *OutMessage);
+            prot.parseCommand(parse);
 
             if(prot.messageReady())
             {
