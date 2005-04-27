@@ -9,11 +9,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/04/27 13:45:01 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.11  2005/04/27 13:45:01  cplender
+* Code change to record the most recent control command to be sent out so that a restore can use the same stime/ctime.
+* Removed unused OutMessage argument from several methods.
+*
 * Revision 1.10  2005/03/10 19:22:50  mfisher
 * changed CtiProtocolBase to Cti::Protocol::Interface
 *
@@ -88,8 +92,8 @@ protected:
     CHAR _errorBuf[MAX_SAERR_MSG_SIZE];
     int _errorLen;
 
-    INT assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage);
-    INT assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    INT assembleControl(CtiCommandParser &parse);
+    INT assemblePutConfig(CtiCommandParser &parse);
 
     INT loadControl();                 // This is a shed!
     INT addressAssign(INT &len, USHORT slot);
@@ -121,7 +125,7 @@ public:
     virtual ~CtiProtocolSA3rdParty();
 
     CtiProtocolSA3rdParty& operator=(const CtiProtocolSA3rdParty& aRef);
-    int parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage);
+    int parseCommand(CtiCommandParser &parse);
 
     bool messageReady() const;
 
@@ -151,6 +155,8 @@ public:
     RWCString asString() const;
     RWCString strategyAsString() const;
     RWCString functionAsString() const;
+    int getStrategySTime() const;
+    int getStrategyCTime() const;
 
     static INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
     static INT TMSlen (UCHAR *abuf, INT *len);

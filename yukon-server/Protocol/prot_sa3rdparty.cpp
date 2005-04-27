@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/03/14 01:17:00 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/04/27 13:45:01 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.23  2005/04/27 13:45:01  cplender
+* Code change to record the most recent control command to be sent out so that a restore can use the same stime/ctime.
+* Removed unused OutMessage argument from several methods.
+*
 * Revision 1.22  2005/03/14 01:17:00  cplender
 * Grab resore and terminate in the protocol.
 *
@@ -130,7 +134,7 @@ CtiProtocolSA3rdParty& CtiProtocolSA3rdParty::operator=(const CtiProtocolSA3rdPa
 
 
 
-INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
@@ -176,7 +180,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         {
             _sa._function = parse.getiValue("sa_function");
 
-            if( !solveStrategy(parse) && NORMAL == (status = assembleControl( parse, OutMessage )) )
+            if( !solveStrategy(parse) && NORMAL == (status = assembleControl( parse )) )
             {
                 loadControl();
                 _messageReady = true;
@@ -185,7 +189,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
         }
     case PutConfigRequest:
         {
-            if( NORMAL == (status = assemblePutConfig( parse, OutMessage )) )
+            if( NORMAL == (status = assemblePutConfig( parse )) )
             {
                 if(  parse.isKeyValid("sa_assign") && parse.isKeyValid("serial") )
                 {
@@ -340,7 +344,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse, CtiOutMessage &
     return status;
 }
 
-INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 {
     INT  i;
     INT  status = NORMAL;
@@ -372,7 +376,8 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     {
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", 0);
-        parse.setValue("control_interval", 0);
+        parse.setValue("control_interval", 450);
+
         if(_sa._groupType != SA205 && _sa._groupType != SA105)
         {
             status = NoMethod;
@@ -382,10 +387,35 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
             }
         }
 
+        // Graceful sends the last control interval information
+        if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+        {
+            _sTime = parse.getiValue("sa205_last_stime", 0);
+            _cTime = parse.getiValue("sa205_last_ctime", 0);
+        }
+        else
+        {
+            _sTime = 0;
+            _cTime = 0;
+        }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        parse.setValue("control_reduction", 0);
+        parse.setValue("control_interval", 450);
+
+        if(parse.getCommandStr().contains(" abrupt", RWCString::ignoreCase))
+        {
+            _sTime = 3;     // Force it to a di 7.5/7.5 control.
+            _cTime = 5;
+        }
+        else
+        {
+            // Repeat the initial control intformation.  This is a terminate graceful by default.
+            _sTime = parse.getiValue("sa205_last_stime", 3);
+            _cTime = parse.getiValue("sa205_last_ctime", 5);
+        }
     }
     else
     {
@@ -397,7 +427,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse, CtiOutMessag
     return status;
 }
 
-INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &OutMessage)
+INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 {
     INT status = NORMAL;
 
@@ -617,17 +647,27 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
 {
     INT status = NORMAL;
+    bool dlc_control = parse.getCommandStr().contains(" dlc");      // if set, we want DLC (not DI) control!
 
     // We only try to predict it if it has not already been fully identified for us.
     if(parse.isKeyValid("sa_restore") ||
        parse.getCommandStr().contains(" restore", RWCString::ignoreCase) ||
        parse.getCommandStr().contains(" terminate", RWCString::ignoreCase) )
     {
-        _sa._repeats = parse.getiValue("sa_reps", 0);
+        _sa._repeats = 0;
         _sa._swTimeout = 450;
         _sa._cycleTime = 450;
-        _sTime = 0;
-        _cTime = 0;
+
+        if(dlc_control)
+        {
+            _sTime = 0;
+            _cTime = 0;
+        }
+        else
+        {
+            _sTime = 3;
+            _cTime = 5;
+        }
     }
     else
     {
@@ -635,8 +675,6 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         int cycle_percent = parse.getiValue("cycle",0);
         int cycle_period = parse.getiValue("cycle_period", 30);
         int cycle_count = parse.getiValue("cycle_count", 8) - 1;
-
-        bool dlc_control = parse.getCommandStr().contains(" dlc");      // if set, we want DLC (not DI) control!
 
         if(shed_seconds)
         {
@@ -1886,3 +1924,12 @@ INT CtiProtocolSA3rdParty::procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205
     return ::procTMSmsg(abuf, len, scode, x205cmd);
 }
 
+int CtiProtocolSA3rdParty::getStrategySTime() const
+{
+    return _sTime;
+}
+
+int CtiProtocolSA3rdParty::getStrategyCTime() const
+{
+    return _cTime;
+}
