@@ -107,7 +107,7 @@ function enableDates(value)
                 <td> 
                   <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="53">
                     <tr> 
-                      <td width="63%"><img src="../WebConfig/yukon/YourLogo.gif"></td>
+                      <td width="63%"><!--<img src="../WebConfig/yukon/YourLogo.gif">--></td>
                       <td width="37%"> 
                         <div align="right"><img src="../WebConfig/yukon/ReportHeader.gif"></div>
                       </td>
