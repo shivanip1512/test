@@ -8,6 +8,9 @@ public class EnergyCompanyOperatorLoginList extends com.cannontech.database.db.D
 {
 	public static final String tableName = "EnergyCompanyOperatorLoginList";
 
+	private Integer energyCompanyID = null;
+	private Integer operatorLoginID = null;
+
 	private static final String energyCompanySql =
 	"SELECT EnergyCompanyID FROM " + tableName + " WHERE OperatorLoginID=?";
 
@@ -19,13 +22,37 @@ public class EnergyCompanyOperatorLoginList extends com.cannontech.database.db.D
 public EnergyCompanyOperatorLoginList() {
 	super();
 }
+
+public EnergyCompanyOperatorLoginList(Integer ecID, Integer oplID) {
+	super();
+	
+	energyCompanyID = ecID;
+	operatorLoginID = oplID;
+	
+}
 /**
  * This method was created by a SmartGuide.
  * @exception java.sql.SQLException The exception description.
  */
 public void add() throws java.sql.SQLException 
 {
-	throw new RuntimeException("Not implemented");
+	Object[] addValues = 
+	{ 
+		getEnergyCompanyID(),
+		getOperatorLoginID()
+	};
+
+	add( tableName, addValues );
+}
+
+public Integer getEnergyCompanyID()
+{
+	return energyCompanyID;
+}
+
+public Integer getOperatorLoginID()
+{
+	return operatorLoginID;
 }
 /**
  * This method was created by a SmartGuide.
@@ -215,8 +242,20 @@ public void retrieve() throws java.sql.SQLException
  * This method was created by a SmartGuide.
  * @exception java.sql.SQLException The exception description.
  */
-public void update() throws java.sql.SQLException 
+public void update() throws java.sql.SQLException  
 {
-	throw new RuntimeException("Not implemented");
+	Object[] setValues = { getEnergyCompanyID() };
+	String[] setColumns = { "EnergyCompanyID" };
+		
+	String[] constraintColumns = { "OperatorLoginID" };
+	Object[] constraintValues = { getOperatorLoginID() };
+		
+	update(tableName, setColumns, setValues, constraintColumns, constraintValues);
 }
+
+public void setOperatorLoginID(Integer newID)
+{
+	operatorLoginID = newID;
+}
+
 }
