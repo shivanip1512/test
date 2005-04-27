@@ -125,9 +125,10 @@ function enableDates(value)
                               &nbsp;&nbsp; <a href="#" class="menuLink">Report</a></td>
                             <td width="49%"> 
                               <div align="right"><span class="menu">Module:</span> 
-                                <select name="select">
-                                  <option>Reporting</option>
-                                </select>
+                                <select name="select" onChange="javascript:window.location=(this[this.selectedIndex].value);">
+                                  <option value="<%=request.getContextPath()%>/analysis/Reporting.jsp" >Reporting</option>
+                                  <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
+                                  <option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
                                 &nbsp;&nbsp;&nbsp; <a href="#" class="menuLink">Help</a> 
                                 &nbsp;&nbsp; <a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log 
                                 Out</a> &nbsp;&nbsp;</div>
@@ -204,7 +205,7 @@ function enableDates(value)
       </table>
     </td>
   </tr>
- 
+  <tr>
      
     <td> 
       <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
