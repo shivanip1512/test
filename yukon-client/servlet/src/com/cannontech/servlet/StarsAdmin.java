@@ -117,7 +117,14 @@ public class StarsAdmin extends HttpServlet {
 		StarsYukonUser user = (StarsYukonUser)
 				session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
-		referer = ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
+		//we can never be too careful when checking for nulls in web apps
+        CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+        if(nav != null)
+        	referer = nav.getPreviousPage();
+        else
+        	referer = req.getHeader("referer");
+        if(referer == null) referer = req.getContextPath() + SOAPClient.LOGIN_URL;	
+		
 		redirect = req.getParameter( ServletUtils.ATT_REDIRECT );
 		if (redirect == null) redirect = referer;
     	

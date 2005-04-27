@@ -44,6 +44,11 @@
 	</filter-mapping>
 
 	<filter-mapping>
+		<filter-name>referrerPageFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
 		<filter-name>jsFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
