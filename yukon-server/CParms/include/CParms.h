@@ -21,6 +21,91 @@ IM_EX_CPARM extern RWCString DefaultMasterConfigFileName;
 IM_EX_CPARM extern RWCString ConfKeyRefreshRate;
 IM_EX_CPARM extern CtiConfigParameters gConfigParms;
 
+template<class T>
+class CtiParmLockGuard
+{
+public:
+    CtiParmLockGuard(T& resource) :  _res(resource)
+    {
+        _res.acquire();
+        _acquired = true;
+    }
+
+    ~CtiParmLockGuard()
+    {
+        if(_acquired)
+            _res.release();
+    }
+
+    bool isAcquired() const { return _acquired;}
+
+private:
+
+    bool _acquired;
+    T& _res;
+};
+
+class CtiParmCriticalSection
+{
+public:
+    CtiParmCriticalSection()
+    {
+    #ifdef _WINDOWS
+        InitializeCriticalSection(&_critical_section);
+    #ifdef _DEBUG
+        _threadID = 0;
+    #endif
+    #endif
+    }
+
+    virtual ~CtiParmCriticalSection()
+    {
+    #ifdef _WINDOWS
+        DeleteCriticalSection(&_critical_section);
+    #endif
+    }
+
+
+    bool acquire()
+    {
+    #ifdef _WINDOWS
+        EnterCriticalSection(&_critical_section);
+    #ifdef _DEBUG
+        _threadID = (int) _critical_section.OwningThread;
+    #endif
+        return true;
+    #endif
+    }
+
+    void release()
+    {
+    #ifdef _WINDOWS
+        LeaveCriticalSection(&_critical_section);
+
+    #ifdef _DEBUG
+        _threadID = 0;
+    #endif
+    #endif
+    }
+
+#ifdef _DEBUG
+    DWORD lastAcquiredByTID() const
+    {
+        return _threadID;
+    }
+#endif
+
+private:
+
+#ifdef _WINDOWS
+    CRITICAL_SECTION _critical_section;
+#ifdef _DEBUG
+    DWORD  _threadID;
+#endif
+#endif
+};
+
+
 class IM_EX_CPARM CtiConfigParameters
 {
 private:
@@ -29,20 +114,23 @@ private:
    RWTime            LastRefresh;
    RWCString         FileName;
    RWCString         BaseDir;
+   #ifdef USE_RECURSIVE_MUX
    RWRecursiveLock<RWMutexLock> mutex;
+   #else
+   CtiParmCriticalSection  crit_sctn;
+   #endif
    RWHashDictionary  mHash;
 
 public:
 
    CtiConfigParameters(RWCString strName = DefaultMasterConfigFileName);
-
    virtual ~CtiConfigParameters();
 
    CtiConfigParameters& setConfigFile(RWCString strName = DefaultMasterConfigFileName);
 
    RWCString getYukonBaseDir() const;
 
-   BOOL              isOpt(RWCString key);
+   BOOL isOpt(RWCString key);
    bool isOpt(RWCString key, RWCString isEqualThisValue);
 
    /*
@@ -59,8 +147,6 @@ public:
    int               getValueAsInt(RWCString key, int defaultval = 0);
    double            getValueAsDouble(RWCString key, double defaultval = 0.0);
    ULONG             getValueAsULong(RWCString key, ULONG defaultval = 0L, int base = 10);
-
-
 };
 
 
