@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/04/27 13:44:25 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,19 +25,24 @@
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "numstr.h"
+#include "prot_sa3rdparty.h"
 #include "utility.h"
 
 //===================================================================================================================
 //===================================================================================================================
 
-CtiDeviceGroupSA205::CtiDeviceGroupSA205()
+CtiDeviceGroupSA205::CtiDeviceGroupSA205() :
+_lastSTime(0),
+_lastCTime(0)
 {
 }
 
 //===================================================================================================================
 //===================================================================================================================
 
-CtiDeviceGroupSA205::CtiDeviceGroupSA205(const CtiDeviceGroupSA205& aRef)
+CtiDeviceGroupSA205::CtiDeviceGroupSA205(const CtiDeviceGroupSA205& aRef) :
+_lastSTime(0),
+_lastCTime(0)
 {
     *this = aRef;
 }
@@ -148,6 +153,10 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     CtiRouteSPtr Route;
 
+    // These are stored and forwarded in case there is a restore or terminate operation required.
+    parse.setValue("sa205_last_stime", _lastSTime);
+    parse.setValue("sa205_last_ctime", _lastCTime);
+
     parse.setValue("type", ProtocolSA205Type);
     parse.parse();
 
@@ -157,12 +166,32 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
     parse.setValue("sa_function", func);
 
-    if( !control && func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase) )
+    // Recover the "new" s/ctime.
+    CtiProtocolSA3rdParty prot;
+    prot.parseCommand(parse);
+    _lastSTime = prot.getStrategySTime();
+    _lastCTime = prot.getStrategyCTime();
+
+    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_RESTORE)
     {
-        // restores on Function 3 must be handled with a 7.5m shed!
-        parse.setValue("sa_restore", TRUE);
-        parse.setValue("control_interval", 450);
-        parse.setValue("control_reduction", 100 );
+        if(func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase))
+        {
+            // restores on Function 1 (Relay 3) must be handled with a 7.5m shed!
+            parse.setValue("sa_restore", TRUE);
+            parse.setValue("control_interval", 450);
+            parse.setValue("control_reduction", 100 );
+        }
+
+        parse.setValue("cycle_count", 0);
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_TERMINATE)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        parse.setValue("cycle_count", 0);
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
     {
@@ -185,6 +214,15 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * repeat);
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** No method / Bad syntax for " << parse.getCommandStr() << endl;;
+        }
+
+        return nRet;
     }
 
     if( (Route = getRoute( getRouteID() )) )    // This is "this's" route
