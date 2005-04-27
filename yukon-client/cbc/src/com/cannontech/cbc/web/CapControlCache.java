@@ -8,6 +8,7 @@ package com.cannontech.cbc.web;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -73,7 +74,7 @@ public CapControlCache()
 	refreshTimer.setRepeats(true);
 	refreshTimer.start();
 	
-	System.out.println("  ---Creating new CBC cache");
+//	System.out.println("  ---Creating new CBC cache");
 }
 
 /**
@@ -154,12 +155,15 @@ public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
 }
 
 /**
- * @return SubBus[]
- * @param String
+ * Returns all SubBuses for a given Area
+ * 
  */
 public synchronized SubBus[] getSubsByArea(String area)
 {
 	NativeIntVector subIDs = (NativeIntVector)subIDToAreaMap.get( area );
+	if( subIDs == null )
+		subIDs = new NativeIntVector();
+
 	SubBus[] retVal = new SubBus[ subIDs.size() ];
 	
 	for( int i = 0; i < subIDs.size(); i++ )
@@ -168,6 +172,43 @@ public synchronized SubBus[] getSubsByArea(String area)
 	return retVal;
 }
 
+/**
+ * Returns all CapBanks for a given Area
+ * 
+ */
+public synchronized CapBankDevice[] getCapBanksByArea(String area)
+{
+	SubBus[] subs = getSubsByArea( area );
+
+	Vector allBanks = new Vector(64);
+	for( int i = 0; i < subs.length; i++ )
+	{
+		CapBankDevice[] capBanks = getCapBanksBySub( subs[i].getCcId() );		
+		allBanks.addAll( Arrays.asList(capBanks) );
+	}
+
+	Collections.sort( allBanks, CBCUtils.CCNAME_COMPARATOR );
+	return (CapBankDevice[])allBanks.toArray( new CapBankDevice[allBanks.size()]);
+}
+
+/**
+ * Returns all Feeders for a given Area
+ * 
+ */
+public synchronized Feeder[] getFeedersByArea(String area)
+{
+	SubBus[] subs = getSubsByArea( area );
+
+	Vector allFeeders = new Vector(64);
+	for( int i = 0; i < subs.length; i++ )
+	{
+		Feeder[] feeders = getFeedersBySub( subs[i].getCcId() );		
+		allFeeders.addAll( Arrays.asList(feeders) );
+	}
+
+	Collections.sort( allFeeders, CBCUtils.CCNAME_COMPARATOR );
+	return (Feeder[])allFeeders.toArray( new Feeder[allFeeders.size()]);
+}
 /**
  * Find the orphaned CapBanks in the system. This requires a database hit since
  * the CapControl server does not know about these. Store the results locally of
@@ -283,8 +324,6 @@ private synchronized void handleAreaList(CBCSubAreaNames areaNames_)
  */
 private void handleDeletedSubs( CBCSubstationBuses msg )
 {
-	Vector deleteSubs = new Vector( msg.getNumberOfBuses() );
-	
 	for( int i = 0; i < msg.getNumberOfBuses(); i++ )
 	{
 		subBusMap.remove( msg.getSubBusAt(i).getCcId() );

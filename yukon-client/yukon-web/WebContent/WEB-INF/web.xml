@@ -67,21 +67,6 @@
 	</filter-mapping>
 
 
-
-	<listener>
-		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-	</listener>	
-	<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>JS Resource Servlet</servlet-name>
-		<servlet-class>com.ibm.faces.webapp.JSResourceServlet</servlet-class>
-		<load-on-startup>-1</load-on-startup>
-	</servlet>
-	
-	
 	<servlet>
 		<servlet-name>LoginController</servlet-name>
 		<display-name>LoginController</display-name>
@@ -228,10 +213,10 @@
 	<!-- STARS specific configs -->
 	<!-- CapControl specific configs -->
 	<servlet>
-		<servlet-name>CBCConnServlet</servlet-name>
-		<display-name>CBCConnServlet</display-name>
-		<description>Maintains a connection with the CapControl server.</description>
-		<servlet-class>com.cannontech.servlet.CBCConnServlet</servlet-class>
+		<servlet-name>CBCServlet</servlet-name>
+		<display-name>CBCServlet</display-name>
+		<description>Allows for interaction with the CapControl server.</description>
+		<servlet-class>com.cannontech.servlet.CBCServlet</servlet-class>
 		<load-on-startup>5</load-on-startup>
 	</servlet>
 	<!-- End CapControl specific configs -->
@@ -318,14 +303,6 @@
 	</servlet-mapping>
 	
 	
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>/f/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>JS Resource Servlet</servlet-name>
-		<url-pattern>/.ibmjsfres/*</url-pattern>
-	</servlet-mapping>
 	<session-config>
 		<session-timeout>60</session-timeout>
 	</session-config>

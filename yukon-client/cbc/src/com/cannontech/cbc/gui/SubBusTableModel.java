@@ -125,20 +125,6 @@ private synchronized void updateAreaList(CBCSubAreaNames areaNames_)
           getAreaNames().add( areaNames_.getAreaName(i) );
 }
 
-
-/**
- * Used to clear all filters and forces the model to recreate them.
- * Creation date: (2/24/03 11:40:31 AM)
- */
-private void clearFilter()
-{
-   //always keep our main list in order by the SubBusArea
-   java.util.Collections.sort( 
-         getAllSubBuses(), 
-         CBCUtils.SUB_AREA_COMPARATOR );
-}
-
-
 /**
  * Insert the method's description here.
  * Creation date: (5/23/00 2:18:04 PM)
@@ -290,7 +276,7 @@ public int getRowCount()
 public Object getValueAt(int row, int col) 
 {
 	SubBus sub = getRowAt(row);
-    return SubBus.CBC_DISPLAY.getSubBusValueAt( sub, col );
+    return CBCUtils.CBC_DISPLAY.getSubBusValueAt( sub, col );
 }
 
 

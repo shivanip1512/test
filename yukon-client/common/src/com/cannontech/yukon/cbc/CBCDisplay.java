@@ -1,16 +1,22 @@
 package com.cannontech.yukon.cbc;
 
+import java.awt.Color;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author rneuharth
@@ -31,6 +37,7 @@ public class CBCDisplay
 	public static final int CB_STATUS_COLUMN = 3;
 	public static final int CB_TIME_STAMP_COLUMN = 4;
 	public static final int CB_OP_COUNT_COLUMN = 5;
+	public static final int CB_PARENT_COLUMN = 6;
 	    
 	//Column numbers for the Feeder display	
 	public static final int FDR_NAME_COLUMN = 0;
@@ -53,6 +60,18 @@ public class CBCDisplay
 	public static final int SUB_TIME_STAMP_COLUMN = 7;
 	public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
 	
+
+	//The color schemes - based on the schedule status
+	private static final Color[] _DEFAULT_COLORS =
+	{
+		//Enabled subbus (Green like color) #a4e61c
+		new Color( 0xa4, 0xe6, 0x1c ),
+		//Disabled subbus
+		Color.RED,
+		//Pending subbus (Yellow like color)
+		new Color( 0xff, 0xd4, 0x6f )
+	};
+
 
     public CBCDisplay()
     {
@@ -136,6 +155,15 @@ public class CBCDisplay
                             capBank.getLastStatusChangeTime().getTime(), dateTimeFormat );    
             }
 
+			case CB_PARENT_COLUMN:
+			{
+				LiteYukonPAObject paoParent = PAOFuncs.getLiteYukonPAO( capBank.getParentID() );				
+				if( paoParent != null )
+					return paoParent;
+				else
+					return DASH_LINE;
+			}
+
             default:
                 return null;
         }               
@@ -172,7 +200,7 @@ public class CBCDisplay
                 }
                 else if( subBus.getRecentlyControlledFlag().booleanValue() )
                 {
-                    state = getSubBusPendingState( subBus );
+                    state = _getSubBusPendingState( subBus );
                     
                     if( state == null )
                     {
@@ -195,7 +223,7 @@ public class CBCDisplay
             case SUB_TARGET_COLUMN:
             {
                 // decide which set Point we are to use
-                if( subBus.isPowerFactorControlled() )
+                if( CBCUtils.isPowerFactorControlled(subBus.getControlUnits()) )
                 {
                     return getPowerFactorText(subBus.getPeakSetPoint().doubleValue(), false);
                 }
@@ -307,7 +335,7 @@ public class CBCDisplay
      * Discovers if the given SubBus is in any Pending state
      *
      */
-    private String getSubBusPendingState( SubBus subBus ) 
+    private String _getSubBusPendingState( SubBus subBus ) 
     {
         for( int i = 0; i < subBus.getCcFeeders().size(); i++ )
         {
@@ -336,7 +364,7 @@ public class CBCDisplay
      * Discovers if the given Feeder is in any Pending state
      *
      */
-    private String getFeederPendingState( Feeder feeder )
+    private String _getFeederPendingState( Feeder feeder )
     {
         int size = feeder.getCcCapBanks().size();
         for( int j = 0; j < size; j++ )
@@ -358,18 +386,13 @@ public class CBCDisplay
      * getValueAt method for Feeders
      * 
      */
-    public synchronized Object getFeederValueAt( Feeder feeder, int col, SubBus parentSub ) 
+    public synchronized Object getFeederValueAt( Feeder feeder, int col ) 
     {
-        if( feeder == null || parentSub == null )
+        if( feeder == null )
             return "";
 
         switch( col )
         {
-//            case FeederTableModel.AREA_NAME_COLUMN:
-//            {
-//                return feeder.getCcArea();
-//            }
-
             case FDR_NAME_COLUMN:
             {
                 return feeder.getCcName();
@@ -385,7 +408,7 @@ public class CBCDisplay
                 }
                 else if( feeder.getRecentlyControlledFlag().booleanValue() )
                 {
-                    state = getFeederPendingState( feeder );
+                    state = _getFeederPendingState( feeder );
                     
                     if( state == null )
                     {
@@ -406,31 +429,28 @@ public class CBCDisplay
             case FDR_TARGET_COLUMN:
             {
                 // decide which set Point we are to use
-                if( parentSub.isPowerFactorControlled() )
+                if( CBCUtils.isPowerFactorControlled(feeder.getSubControlUnits()) )
                 {
                     return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
                 }
                 else if( feeder.getLowerBandWidth().doubleValue() == 0
-                             && feeder.getUpperBandWidth().doubleValue() == 0 )
+							&& feeder.getUpperBandWidth().doubleValue() == 0 )
                 {
                     return STR_NA;
                 }
-                if( parentSub.getPeakTimeFlag().booleanValue() )
-                {
+
+                if( feeder.getSubPeakTimeFlag().booleanValue() )
                     return
-                     CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-                     " to " + 
-                     CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
-                     " Pk";
-                }
+						CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
+						" to " + 
+						CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
+						" Pk";
                 else
-                {
                     return
                         CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
                         " to " + 
                         CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
                         " OffPk";
-                }
             }
 
             case FDR_POWER_FACTOR_COLUMN:
@@ -450,19 +470,18 @@ public class CBCDisplay
                 String retVal = DASH_LINE; //default just in case
                 
                 if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-                   retVal = DASH_LINE;
+					retVal = DASH_LINE;
                 else
-                        retVal = com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentVarLoadPointValue().doubleValue(), parentSub.getDecimalPlaces().intValue() );
+					retVal = CommonUtils.formatDecimalPlaces( 
+						        feeder.getCurrentVarLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() );
 
-                    retVal += " / ";
-
+                retVal += " / ";
                 if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-                        retVal += DASH_LINE;
+					retVal += DASH_LINE;
                 else
-                        retVal += com.cannontech.clientutils.CommonUtils.formatDecimalPlaces( 
-                                feeder.getEstimatedVarLoadPointValue().doubleValue(), parentSub.getDecimalPlaces().intValue() );
-             
+					retVal += CommonUtils.formatDecimalPlaces( 
+								feeder.getEstimatedVarLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() );
+
                 return retVal;
             }
 
@@ -471,12 +490,12 @@ public class CBCDisplay
                 if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
                     return DASH_LINE;
                   else {
-                    if( parentSub.getDecimalPlaces().intValue() == 0 )
+                    if( feeder.getSubDecimalPlaces() == 0 )
                         return new Integer( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), parentSub.getDecimalPlaces().intValue() ) );           
+                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() ) );           
                     else
                         return new Double( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), parentSub.getDecimalPlaces().intValue() ) );
+                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() ) );
                   }
             }
 
@@ -502,7 +521,7 @@ public class CBCDisplay
      * @param compute
      * @return
      */
-    private String getPowerFactorText( double value, boolean compute )
+    public static String getPowerFactorText( double value, boolean compute )
     {   
        int decPlaces = 1;
        try
@@ -522,4 +541,86 @@ public class CBCDisplay
           return CommonUtils.formatDecimalPlaces(
                 value * (compute ? 100 : 1), decPlaces ) + "%"; //get percent   
     }
+
+	public static synchronized String getHTMLFgColor( SubBus subBus ) 
+	{
+		Color retColor = getSubFgColor( subBus, Color.BLACK );				
+		return "#" + ServletUtil.getHTMLColor(retColor);
+	}
+
+	public static synchronized String getHTMLFgColor( Feeder feeder ) 
+	{
+		Color retColor = getFeederFgColor( feeder, Color.BLACK );				
+		return "#" + ServletUtil.getHTMLColor(retColor);
+	}
+
+	public static synchronized String getHTMLFgColor( CapBankDevice capBank ) 
+	{
+		Color retColor = getCapBankFGColor( capBank, Color.BLACK );				
+		return "#" + ServletUtil.getHTMLColor(retColor);
+	}
+
+	public static synchronized Color getSubFgColor( SubBus subBus, Color defColor ) 
+	{
+		Color retColor = defColor;
+				
+		if( subBus != null )
+		{
+			if( subBus.getCcDisableFlag().booleanValue() )
+			{
+				retColor = _DEFAULT_COLORS[1]; //disabled color
+			}
+			else if( subBus.getRecentlyControlledFlag().booleanValue() )
+			{
+				retColor = _DEFAULT_COLORS[2]; //pending color
+			}
+			else
+			{
+				retColor = _DEFAULT_COLORS[0];
+			}
+		}
+		
+		return retColor;
+	}
+
+	public static synchronized Color getCapBankFGColor( CapBankDevice capBank, Color defColor ) 
+	{
+		Color retColor = defColor;
+		int status = capBank.getControlStatus().intValue();
+
+		synchronized( CBCDisplay.getCBCStateNames() )
+		{
+			if( status >= 0 && status < CBCDisplay.getCBCStateNames().length )
+				retColor = Colors.getColor( CBCDisplay.getCBCStateNames()[status].getFgColor() );
+		}
+
+		return retColor;
+	}
+
+
+
+	public static synchronized Color getFeederFgColor( Feeder feeder, Color defColor ) 
+	{
+		Color retColor = defColor;
+				
+		if( feeder != null )
+		{
+			if( feeder.getCcDisableFlag().booleanValue() )
+			{
+				retColor = _DEFAULT_COLORS[1]; //disabled color
+			}
+			else if( feeder.getRecentlyControlledFlag().booleanValue() )
+			{
+				retColor = _DEFAULT_COLORS[2]; //pending color
+			}
+			else
+			{
+				retColor = _DEFAULT_COLORS[0];
+			}
+		}
+		
+		return retColor;
+	}
+
+
 }

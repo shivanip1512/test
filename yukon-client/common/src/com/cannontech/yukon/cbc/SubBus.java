@@ -1,7 +1,5 @@
 package com.cannontech.yukon.cbc;
 
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -82,12 +80,6 @@ public SubBus( Integer paoId_, String paoCategory_, String paoClass_,
 	super( paoId_, paoCategory_, paoClass_, paoName_, 
 				paoType_, paoDescription_, paoDisableFlag_ );
 
-}
-
-public boolean isPowerFactorControlled()
-{
-   return( CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(getControlUnits())
-            || CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(getControlUnits()) );
 }
 
 public Integer getCurrentVarPtQuality()
@@ -816,54 +808,6 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setWaiveControlFlag(Boolean boolean1)
 	{
 		waiveControlFlag = boolean1;
-	}
-
-	public String getRenderName()
-	{
-		return 
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_NAME_COLUMN).toString();
-	}
-	
-	public Object getRenderWatts()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_WATTS_COLUMN);		
-	}
-	
-	public Object getRenderTimeStamp()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_TIME_STAMP_COLUMN);		
-	}
-
-	public String getRenderPF()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString();		
-	}
-
-	public String getRenderState()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString();		
-	}
-	
-	public String getRenderDailyOps()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString();		
-	}
-	
-	public String getRenderTarget()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_TARGET_COLUMN).toString();		
-	}
-
-	public String getRenderVarLoad()
-	{
-		return
-			CBC_DISPLAY.getSubBusValueAt(this, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString();		
 	}
 
 	/**

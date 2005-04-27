@@ -1,212 +1,206 @@
-<!-- JavaScript needed for jump menu--->
-<%@ include file="js/cbc_funcs.js" %>
-<%@ include file="cbc_header.jsp" %>
+<%@include file="cbc_inc.jspf"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<jsp:useBean id="capControlCache"
+	class="com.cannontech.cbc.web.CapControlCache"
+	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+
+<%
+	SubBus[] areaSubs =
+		capControlCache.getSubsByArea( cbcSession.getLastArea() );
+
+%>
+
+<HTML>
+<HEAD>
+<%@ page 
+language="java"
+contentType="text/html; charset=ISO-8859-1"
+pageEncoding="ISO-8859-1"
+%>
+<SCRIPT type="text/javascript">
+<!--
+	// -------------------------------------------
+	// Page scoped javascript variables
+	// -------------------------------------------
+	var intSubID = -1;
+//-->
+</SCRIPT>
+<link rel="stylesheet" href="base.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+
+<META name="GENERATOR" content="IBM WebSphere Studio">
+<TITLE>Substations</TITLE>
+</HEAD>
 
 
-
-<html>
-<head>
-<title>CapControl - Substations</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="refresh" content= <%= cbcAnnex.getRefreshRate() %> >
-<link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-</head>
-
-<body bgcolor="#666699" leftmargin="0" topmargin="0" text="#CCCCCC" link="#000000" vlink="#000000" alink="#000000">
-<table width="760" border="0" cellspacing="0" cellpadding="0">
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center">
-        <tr> 
-          <td width="102" height="102" background="images/LoadImage.gif">&nbsp;</td>
-		  <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-          <td valign="bottom" height="102"> 
-            <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="images/Header.gif">&nbsp;</td>
-              </tr>
-              <tr bgcolor="#666699"> 
-                <td width="353" height = "28" class="Header3">&nbsp;&nbsp;<font color="#99FFFF" size="2" face="Arial, Helvetica, sans-serif"><em>&nbsp;
-                	Capacitor Control 
-            		<% if( !cbcAnnex.isConnected() ) {%><font color="#FFFF00"> (Not connected) </font><%}%>
-            		<% if( cbcAnnex.getRefreshRate().equals(CapControlWebAnnex.REF_SECONDS_PEND) ) {%><font color="#FFFF00"> 
-            			(Auto-refresh in <%= CapControlWebAnnex.REF_SECONDS_PEND %> seconds) </font><%
-            			cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_DEF);
-            			}%>
-            		</em></font></td>
-                <td width="235" valign="middle">&nbsp;</td>
-                
-                  
-                <td width="58" valign="middle"> 
-                  <div align="center"><span><a href="../operator/Operations.jsp" class="Link3"><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">Home</font></a></span></div>
-                  </td>
-                  
-                <td width="57" valign="middle"> 
-                  <div align="left"><span ><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">
-                  	<font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">
-                  	 Log Off</font></a><font color="99FFFF" size="2" face="Arial, Helvetica, sans-serif">&nbsp;</font></span></div>
-                  </td>
-                  
-              </tr>
-            </table>
-          </td>
-		  <td width="1" height="102" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-          </tr>
-      </table>
+    <%@include file="cbc_header.jspf"%>
     </td>
   </tr>
-  <tr>
-    <td>
-      <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
+
+    <td> 
+      <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
         <tr>
-          <td width="759" bgcolor="#000000" valign="top"></td>
-		  <td width="1" bgcolor="#000000" height="2"></td>
+          <td valign="bottom" colspan="2">
+            <div class="rAlign">
+				<cti:breadCrumb>
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
+					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
+				</cti:breadCrumb>
+
+				<form name="findForm" action="results.jsp" method="post">
+					<p class="main">Find: <input type="text" name="searchCriteria">
+					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
+				</form>
+            </div>
+          </td>
+
         </tr>
-        <tr>
-		  <td width="5" bgcolor="#FFFFFF" height="5"></td>
-        </tr>
+      </table>
+
+      <table width="95%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
-          <td width="759" valign="top" bgcolor="#FFFFFF"> 
-            <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
-              <tr>
-                <td><form name="AreaForm" method="POST" >                      
-                    <div align="left"><span class="MainText">Substation Area:</span> 
-                      <select name="area" onchange="this.form.submit()" >
-                          <%
-	                  	for( int i = 0; i < subBusMdl.getAreaNames().size(); i++ )
-	                  	{
-	                  		String area = subBusMdl.getAreaNames().get(i).toString();
-	                  		
-	                  		String s = ( area.equalsIgnoreCase(cbcSession.getLastArea()) 
-	                  						? " selected" : "" ) ;
-	                  		%>
-                          <option value="<%= area %>" <%= s %>><%= area %></option>
-                          <% } %>
-                        </select>
-                      </div>
-                    </form>
-				</td>
+          <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
+          <td class="trimBGColor cellImgShort">Substation Buses In Area:  <%=cbcSession.getLastArea()%></td>
+          <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
+        </tr>
+        <tr>
+          <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
+          <td>
+          
+          <div class="scrollLarge">
+            <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr class="columnheader lAlign">				
+				<td>
+				<input type="checkbox" name="chkAllBx" onclick="checkAll(this, 'chkBxSubs');"/>
+				Sub Name</td>
+                <td>State</td>
+                <td>Target</td>
+                <td>VAR Load Est.</td>
+                <td>Date/Time</td>
+                <td>PFactor / Est.</td>
+                <td>Watts</td>
+                <td>Daily / Max Ops</td>
               </tr>
+
+			<form name="subForm" action="feeders.jsp" method="post">
+			<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
+<%
+for( int i = 0; i < areaSubs.length; i++ )
+{
+	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+	SubBus subBus = areaSubs[i];
+%>
+	        <tr class="<%=css%>">
+				<td>
+				<input type="checkbox" name="chkBxSubs" />
+				<a href="#" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
+				</a></td>
+				
+				<td>
+<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	<a href="javascript:void(0);" onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')" onmouseout="menuDisappear(event, 'subPopupMenu')">
+</cti:isPropertyTrue>
+<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>" >
+	 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+</font>
+<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	</a>
+</cti:isPropertyTrue>
+				</td>
+
+
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN) %></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN) %></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN) %></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN) %></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN) %></td>
+			</tr>
+<% } %>
+			</form>
+
             </table>
-            <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
-              <tr>
-                <td width="740" valign="top" class="MainText"> 
-                  <table width="740" border="1" align="center" cellpadding="0" cellspacing="0">
-                    <tr> 
-                      <td>
-                        <table width="740" border="0" cellspacing="0" cellpadding="0">
-                          <tr class="HeaderCell"> 
-                              <td width="409"><span class="HeaderCell">&nbsp;&nbsp;
-                                Substation Buses for the Area : 
-                                <font color="##666699"> <%= cbcSession.getLastArea() %> </font></span></td>
-
-                              <td width="191"> 
-                                <div align="right"> </div>
-                              </td>
-                            </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                  <table width="744" border="1" align="center" cellpadding="2" cellspacing="0">
-                      <tr valign="top" class="HeaderCell"> 
-                        <td width="110"><%= subBusMdl.getColumnName(SubBusTableModel.SUB_NAME_COLUMN) %></td>
-                        <td width="68"> <%= subBusMdl.getColumnName(SubBusTableModel.CURRENT_STATE_COLUMN) %></td>
-                        <td width="70"> <%= subBusMdl.getColumnName(SubBusTableModel.TARGET_COLUMN) %></td>
-                        <td width="70"> <%= subBusMdl.getColumnName(SubBusTableModel.VAR_LOAD_COLUMN) %></td>
-                        <td width="68"> <%= subBusMdl.getColumnName(SubBusTableModel.TIME_STAMP_COLUMN) %></td>
-                        <td width="70"> <%= subBusMdl.getColumnName(SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="50"> <%= subBusMdl.getColumnName(SubBusTableModel.WATTS_COLUMN) %></td>
-                        <td width="66"> <%= subBusMdl.getColumnName(SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
-                        
-                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
-                        <td width="72">Graphs</td>
-                        </cti:isPropertyFalse>
-
-                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
-                        <td width="72">Reports</td>
-                        </cti:isPropertyFalse>
-
-                      </tr>       
-                      
-	                  <% 
-	                  	for( int i = 0; i < subBusMdl.getRowCount(); i++ )
-	                  	{
-	                  	   int subbusID = subBusMdl.getRowAt(i).getCcId().intValue();
-	                  %>
-                      
-                      <tr valign="top"> 
-                        <td width="110" class="TableCell"><a href= "feeders.jsp?paoID=<%= subbusID %>" >
-                          <div name = "subPopup" align = "left" cursor:default;" >
-                             <%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %> 
-                          </div></a>
-                        </td>
-
-                        <td width="68" class="TableCell">
-	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-                        	<a href= "capcontrols.jsp?paoID=<%= subbusID %>&controlType=<%= CapControlWebAnnex.CMD_SUB %>" >
-	                        </cti:isPropertyTrue>
-                        	
-	                    		<font color="<%= CapControlWebAnnex.convertColor(subBusMdl.getCellForegroundColor( i, SubBusTableModel.CURRENT_STATE_COLUMN ) ) %>">
-	                    		<%= subBusMdl.getValueAt(i, SubBusTableModel.CURRENT_STATE_COLUMN) %> 
-	                    		</font>
-	                        <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-	                    	</a>
-	                        </cti:isPropertyTrue>
-                        </td>
-
-                        <td width="70" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.TARGET_COLUMN) %></td>
-                        <td width="70" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.VAR_LOAD_COLUMN) %></td>
-                        <td width="68" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.TIME_STAMP_COLUMN) %></td>
-                        <td width="70" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.POWER_FACTOR_COLUMN) %></td>
-                        <td width="50" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.WATTS_COLUMN) %></td>
-                        <td width="66" class="TableCell"><%= subBusMdl.getValueAt(i, SubBusTableModel.DAILY_OPERATIONS_COLUMN) %></td>
-                        
-
-                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
-                        <td width="72" class="TableCell">
-							<select name="selectGraph" onchange="showGraphWin(this.options[this.selectedIndex].value);">
-							  <option value="subs.jsp">Feeder kVar</option>
-							  <option value="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph&pointid=<%=subBusMdl.getRowAt(i).getCurrentVarLoadPointID().intValue()%>&period=<%=ServletUtil.PREVTHIRTYDAYS%>">Sub kVAR</option>
-
-	                          <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
-								  <option value="oneline/<%= subBusMdl.getValueAt(i, SubBusTableModel.SUB_NAME_COLUMN) %>.html">One Line</option>
-		                      </cti:isPropertyFalse>
-							  
-							</select>
-                        </td>
-                        </cti:isPropertyFalse>
-                        
-                        
-                        <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
-                        <td width="72" class="TableCell"> 
-                          <select name="select3">
-                            <option>Peaks</option>
-                            <option>Ops.</option>
-                          </select>
-                        </td>
-                        </cti:isPropertyFalse>
-                        
-                      </tr>
-						<%
-						}
-					%>                      
-                      
-                      
-                    </table>
-                  <br>
-				</tr>
-</table>
+        </div>
 
           </td>
-        <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
-    </tr>
+          <td class="cellImgFill rAlign" background="images\Side_right.gif"></td>
+        </tr>
+        <tr>
+          <td class="cellImgShort"><img src="images\Bottom_left.gif"></td>
+          <td class="cellImgShort" background="images\Bottom.gif"></td>
+          <td class="cellImgShort"><img src="images\Bottom_right.gif"></td>
+        </tr>
       </table>
+      
     </td>
-	</tr>
-</table>
-
-
+  </table>
 
 </body>
-</html>
+</HTML>
+
+<!-------------- Form for submitting substation commands ---------------->
+<form name="frmSubCmd" action="/servlet/CBCServlet" method="post">
+<input type="hidden" name="redirectURL" value="<%=request.getRequestURL()%>">
+<input type="hidden" name="controlType" value="SUB_CNTRL">
+<input type="hidden" name="paoID">
+<input type="hidden" name="cmdID">
+
+<div id="subPopupMenu" class = "popupMenu"> 
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr> 
+      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
+      <td class="trimBGColor popupHeader">SubBus Control</td>
+      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
+    </tr>
+    <tr>
+      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
+      <td>
+        <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.CONFIRM_CLOSE%>)">Confirm Sub</a>
+		  </td></tr>
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.ENABLE_SUBBUS%>)">Enable Sub</a>
+		  </td></tr>
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>)">Disable Sub</a>
+		  </td></tr>
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>)">Reset Op Counts</a>
+		  </td></tr>
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.WAIVE_SUB%>)">Waive Sub</a>
+		  </td></tr>
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.UNWAIVE_SUB%>)">Unwaive Sub</a>
+		  </td></tr>
+        </table>
+      </td>
+      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
+    </tr>
+    <tr>
+      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
+      <td class="popupCell" background="images\Bottom.gif"></td>
+      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
+    </tr>
+  </table>
+</div>
+</form>

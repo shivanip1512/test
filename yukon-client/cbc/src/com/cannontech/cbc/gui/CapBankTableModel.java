@@ -13,6 +13,7 @@ import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
 import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -34,9 +35,7 @@ public class CapBankTableModel extends javax.swing.table.AbstractTableModel impl
 	
 	private RowBlinker currentBlinkingAlarms = null;
 	private boolean muted = false;	
-	private boolean showingAlarms = true;	
-	private String fontName = "dialog";
-	private int fontSize = 12;
+	private boolean showingAlarms = true;
 
 	public static final Color MOVED_BANK_BG_COLOR = new Color( 30, 50, 110);
 
@@ -314,7 +313,7 @@ public Object getValueAt(int row, int col)
 	if( row < getRowCount() && row >= 0 )
 	{
 		CapBankDevice capBank = getRowAt(row);        
-        return CapBankDevice.CBC_DISPLAY.getCapBankValueAt( capBank, col );
+        return CBCUtils.CBC_DISPLAY.getCapBankValueAt( capBank, col );
 	}
 	else
 		return null;

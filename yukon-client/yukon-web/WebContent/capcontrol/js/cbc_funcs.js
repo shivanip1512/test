@@ -1,62 +1,205 @@
 
-<SCRIPT> <!--trend/view menu items-->
-//view types
-var currentMenu;
-var selectedItem;
-
-function showGraphWin( theURL )
+// -------------------------------------------
+//post events with a form rather than using the URL line.
+// Accepts a form name and any number of [ParamName,ParamValue] pairs.
+// Example: postMany('frmA', 'paoID', intSubID, 'cmdID', 9)"
+// -------------------------------------------
+function postMany( frmName )
 {
-	//alert( theURL );
+	if( !validateData(frmName) )
+		return false;
 
-	var width = 640;
-	var height = 580;
-	var winl = (screen.width - width) / 2; 
-	var wint = (screen.height - height) / 2; 
-			  	
-	var w = window.parent.open(theURL, "CapControl_Graphs",
-				"width="+width+",height="+height+",top="+wint+",left="+winl+",resizable=yes,status,scrollbars");
+	var f = document.getElementById(frmName);
 
-} //end showControlWin
+	if( arguments.length > 1 )
+	{
+		//each ParamName must have a corresponding ParamValue
+		if( ((arguments.length-1) % 2) != 0 )
+			alert('Incorrect number of parameters for postMany() function');
+		else
+		{
+			for( i = 1; i < arguments.length; i+=2 )
+			{			
+				if( !validateData(arguments[i]) )
+					return false;
+	
+				var ev = eval("f."+arguments[i]);
+				ev.value = arguments[i+1];
+			}
+		}
+	}
 
+	f.submit();
+}
+
+// -------------------------------------------
+//post events with a form rather than using the URL line
+// -------------------------------------------
+function postIt( paramName, paramVal, frmName )
+{
+	if( !validateData(frmName) )
+		return false;
+
+	if( !validateData(paramName) )
+		return false;
+
+	var f = document.getElementById(frmName);
+	var ev = eval("f."+paramName);
+	ev.value = paramVal;
+
+	f.submit();
+}
+
+// -------------------------------------------
+//validates input data for post events
+// -------------------------------------------
+function validateData( elemName )
+{
+	if( !document.getElementById(elemName) )
+	{
+		alert('Unable to find element for given operation, try again');
+		return false;
+	}
+
+	return true;
+}
+
+// -------------------------------------------
+// Any javascript that is needed to init a page
+// -------------------------------------------
 function init()
 {
 	
 }
 
-
-function changeView(viewType)
+// -------------------------------------------
+//checks all checkboxes that have the given itemName
+// -------------------------------------------
+function checkAll(chkAll, itemName)
 {
-	//document.MForm.view.value = viewType;
-	submitMForm();
+	if(!document.getElementsByName(itemName) )
+		return;
+		
+	var fields = document.getElementsByName(itemName);
+	for( i = 0; i < fields.length; i++ )
+		fields[i].checked = chkAll.checked;
 }
 
-function submitMForm()
-{
-	document.MForm.submit();
-}
-
+// -------------------------------------------
+//toggles the CSS class for a selected item to selected/deselected
+// -------------------------------------------
 function changeOptionStyle(t)
 {
-	t.className = "optmenu2";
-
-	if (selectedItem && t != selectedItem)
+	t.className = "optSelect";
+	t.onmouseout = function (e)
 	{
-		selectedItem.className = "optmenu1";
-	}
-	selectedItem = t;
+	  t.className = "optDeselect";
+	  return false;
+	};	
 }
 
-function menuAppear(event, divId)
+// -------------------------------------------
+//Returns true if the given elmInner element is inside
+// of the given elmOuter element.
+// -------------------------------------------
+function elementContains(elmOuter, elmInner)
 {
-	if (currentMenu)
+  while (elmInner && elmInner != elmOuter)
+  {
+    elmInner = elmInner.parentNode;
+  }
+  if (elmInner == elmOuter)
+  {
+    return true;
+  }
+  return false;
+}
+
+// -------------------------------------------
+//hides a given DIV tag on a page
+// -------------------------------------------
+function menuDisappear(e, divid)
+{
+	var currentMenu = document.getElementById(divid);
+	
+
+	var relatedTarget = null;
+	if( e )
 	{
-		currentMenu.style.visibility = 'hidden';
-		if (selectedItem)
+		relatedTarget = e.relatedTarget;
+	    // work around Gecko Linux only bug where related target is null
+	    // when clicking on menu links or when right clicking and moving
+	    // into a context menu.
+	    
+	    if (navigator.product == 'Gecko' && navigator.platform.indexOf('Linux') != -1 && !relatedTarget)
+	    {
+	      relatedTarget = e.originalTarget;
+	    }
+
+		if (window.event && !relatedTarget)
 		{
-			selectedItem.className = "optmenu1";
+		    relatedTarget = window.event.toElement;
 		}
 	}
-	currentMenu = document.getElementById(divId);
+
+	if (elementContains(currentMenu, relatedTarget))
+	{
+		return false;
+	}
+
+	currentMenu.style.visibility = 'hidden';
+	return false;
+}
+
+// -------------------------------------------
+//shows a given DIV tag on a page
+// -------------------------------------------
+function menuAppear(event, divId)
+{
+	var currentMenu = document.getElementById(divId);
+	
+	currentMenu.onmouseout = function (e)
+	{
+	  var relatedTarget = null;
+	  if( e )
+	  {
+	    relatedTarget = e.relatedTarget;
+	    // work around Gecko Linux only bug where related target is null
+	    // when clicking on menu links or when right clicking and moving
+	    // into a context menu.
+	    
+	    if (navigator.product == 'Gecko' && navigator.platform.indexOf('Linux') != -1 && !relatedTarget)
+	    {
+	      relatedTarget = e.originalTarget;
+	    }
+	  }
+	  else if (window.event)
+	  {
+	    relatedTarget = window.event.toElement;
+	  }
+
+	  if (elementContains(this, relatedTarget))
+	  {
+	    return false;
+	  }
+
+	  this.style.visibility = 'hidden';
+	  return false;
+	};
+	
+	currentMenu.onclick = function (e)
+	{
+		if (window.event)
+		{
+			window.event.cancelBubble = true;
+	    	window.event.returnValue = false;
+		}
+	
+		this.style.visibility = 'hidden';
+		return false;
+	};
+
+
 	var source;
 	if (window.event)
 	{
@@ -66,47 +209,46 @@ function menuAppear(event, divId)
 	{
 		source = event.target;
 	}
-	
+
 	var element = document.getElementById(divId);
-	coordx = parseInt(source.offsetLeft);
-	coordy = parseInt(source.offsetTop) + parseInt(source.offsetHeight) + 2;
+	coordx = parseInt(source.offsetLeft, 10) - 5 + parseInt(source.offsetWidth, 10);
+	coordy = parseInt(source.offsetTop, 10);// + parseInt(source.offsetHeight, 10) + 0;
 	
 	while (source.offsetParent)
 	{
 		source = source.offsetParent;
-		coordx = coordx + parseInt(source.offsetLeft);
-		coordy = coordy + parseInt(source.offsetTop);
+		coordx = coordx + parseInt(source.offsetLeft, 10);
+		coordy = coordy + parseInt(source.offsetTop, 10);
 	}
 	
 	element.style.left = coordx + 'px';
 	element.style.top = coordy + 'px';
 	element.style.visibility = 'visible';
-	if (window.event)
-	{
- 		document.attachEvent("onclick", hideMenu);
-		window.event.cancelBubble = true;
-    	window.event.returnValue = false;
-	}
-	else
-	{
-		document.addEventListener("click", hideMenu, true);
-		event.preventDefault();
-    }
-	
-	function hideMenu(event)
-	{
-		var element = document.getElementById(divId);
-		element.style.visibility = 'hidden';
-		if (window.event)
-		{
-			document.detachEvent("onclick", hideMenu);
-		}
-		else
-		{
-			document.removeEventListener("click",hideMenu, true);
-			event.preventDefault();
-		}
-	}
 }
 
-</SCRIPT> <!--end javascript for trend/view menus-->
+// -------------------------------------------
+//given a menu with multiple DIVs, this function will set only 1 DIV
+// to be visible at a time
+// -------------------------------------------
+function menuShow(menuDiv, visIndx)
+{
+	var currentMenus = document.getElementsByName(menuDiv);
+
+	for (i = 0; i < currentMenus.length; i++)
+		currentMenus[i].style.display = 'none';
+
+	currentMenus[visIndx].style.display = 'inline';
+}
+
+// -------------------------------------------
+//Allows a check box to control the visiblily of
+// a set of elements
+// -------------------------------------------
+function showSubElems( elemId, chkBox )
+{
+	var currentMenus = document.getElementsByName(elemId);
+
+	for (i = 0; i < currentMenus.length; i++)
+		currentMenus[i].style.display = 
+			(chkBox.checked ? 'inline' : 'none');
+}

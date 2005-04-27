@@ -1,0 +1,26 @@
+<%@taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+
+<%@page import="java.util.List" %>
+<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+<%@page import="com.cannontech.roles.application.WebClientRole" %>
+<%@page import="com.cannontech.yukon.cbc.*" %>
+<%@page import="com.cannontech.util.*" %>
+<%@page import="com.cannontech.cbc.web.*" %>
+<%@page import="com.cannontech.pagecode.*" %>
+
+<cti:checklogin/>
+<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
+	<jsp:forward page="/operator/Operations.jsp"/>
+</cti:isPropertyFalse>
+
+<script type="text/JavaScript" src="js/cbc_funcs.js"></script>
+<script type="text/JavaScript" src="js/minmax.js"></script>
+
+<jsp:useBean id="cbcSession"
+	class="com.cannontech.cbc.web.CBCSessionInfo"
+	type="com.cannontech.cbc.web.CBCSessionInfo" scope="session">
+</jsp:useBean>
+<%
+	if(cbcSession != null)
+		cbcSession.updateState( request );
+%>

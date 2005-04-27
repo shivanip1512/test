@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/19/2001 11:25:45 AM)
@@ -10,7 +12,6 @@ public abstract class StreamableCapObject
 	//non-serialized objects
 	public static final transient String STR_NA = "  NA";
 	public static final transient String DASH_LINE = "  ----";
-	public static final transient CBCDisplay CBC_DISPLAY = new CBCDisplay();
 
 	
 	private Integer ccId = null;
@@ -20,6 +21,9 @@ public abstract class StreamableCapObject
 	private String ccType = null;
 	private String ccArea = null;
 	private Boolean ccDisableFlag = null;
+	
+	private int parentID = CtiUtilities.NONE_ZERO_ID;
+
 
 /**
  * StreamableCapObject constructor comment.
@@ -193,4 +197,20 @@ public String toString()
 	else
 		return super.toString();
 }
+	/**
+	 * @return
+	 */
+	public int getParentID()
+	{
+		return parentID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setParentID(int i)
+	{
+		parentID = i;
+	}
+
 }

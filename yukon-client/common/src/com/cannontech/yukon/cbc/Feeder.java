@@ -37,6 +37,10 @@ public class Feeder extends StreamableCapObject
 	private Double estimatedPFValue = null;   
 	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
+
+	private String subControlUnits = "P-Factor kW/kVAr";
+	private int subDecimalPlaces = 0;
+	private Boolean subPeakTimeFlag = Boolean.TRUE;
    
 
 	//should only contain objects of type CapBankDevice
@@ -525,56 +529,29 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	{
 		waiveControlFlag = boolean1;
 	}
-	
-	
-	
-	
-	public String getRenderName()
+
+	/**
+	 * @return
+	 */
+	public String getSubControlUnits()
 	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_NAME_COLUMN, null).toString();
-	}
-	
-	public Object getRenderWatts()
-	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_WATTS_COLUMN, null);
-	}
-	
-	public Object getRenderTimeStamp()
-	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_TIME_STAMP_COLUMN, null);
+		return subControlUnits;
 	}
 
-	public String getRenderPF()
+	/**
+	 * @return
+	 */
+	public int getSubDecimalPlaces()
 	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_POWER_FACTOR_COLUMN, null).toString();
+		return subDecimalPlaces;
 	}
 
-	public String getRenderState()
+	/**
+	 * @return
+	 */
+	public Boolean getSubPeakTimeFlag()
 	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_CURRENT_STATE_COLUMN, null).toString();
-	}
-	
-	public String getRenderDailyOps()
-	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN, null).toString();
-	}
-	
-	public String getRenderTarget()
-	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_TARGET_COLUMN, null).toString();
-	}
-
-	public String getRenderVarLoad()
-	{
-		return
-			CBC_DISPLAY.getFeederValueAt(this, CBCDisplay.FDR_VAR_LOAD_COLUMN, null).toString();
+		return subPeakTimeFlag;
 	}
 
 }

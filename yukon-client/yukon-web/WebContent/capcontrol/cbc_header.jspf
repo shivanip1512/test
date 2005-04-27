@@ -1,0 +1,93 @@
+<!-- START Static Page Header Include -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="96">
+<tr> 
+  <td width="63%" valign="top"> 
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr> 
+          <td> 
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="53">
+              <tr> 
+                <td width="63%"><img src="images/YourLogo.gif"></td>
+                <td width="37%"> 
+                  <div class="rAlign"><img src="images/HeaderGraphic.gif"></div>
+                </td>
+              </tr>
+            </table>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" height="43">
+              <tr> 
+                <td height="1" class="trimBGColor"></td>
+              </tr>
+              <tr> 
+                <td class="primeBGColor"> 
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr> 
+                      <td width="51%" height="23">
+	                      <div id="sMenu">
+	                      	<a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 0); return false;">Create</a> 
+	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 1); return false;">Modify</a>
+	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 2); return false;">Reporting</a>
+	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 3); return false;">View</a></td>
+	                      </div>
+                      <td width="49%"> 
+                        <div class="rAlign"><span class="menu">Module:</span> 
+                          <select name="select">
+                            <option>Account</option>
+                            <option>Metering</option>
+                            <option>Load Response</option>
+                            <option>Hardware</option>
+                            <option>Work Orders</option>
+                            <option>Administration</option>
+                          </select>
+                          <a href="x" class="menuLink">Help</a> 
+                          <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
+						</div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr> 
+                <td height="1" class="trimBGColor"></td>
+              </tr>
+              <tr> 
+                <td class="secondBGColor" height="20">
+				  <div id="subMenu" class = "subMenuPopup">
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Substation</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Feeder</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New CapBank</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New CBC</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Point</a> 
+				  </div>
+
+				  <div id="subMenu" class = "subMenuPopup">
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Edit</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Delete</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
+				  </div>
+
+				  <div id="subMenu" class = "subMenuPopup">
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day kVAR</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day Watts</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day PF</a> 
+				  </div>
+
+				  <div id="subMenu" class = "subMenuPopup">
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned Feeders</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CapBanks</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CBCs</a> 
+					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
+				  </div>
+
+                </td>
+              </tr>
+              <tr> 
+                <td height="1" class="trimBGColor"></td>
+              </tr>
+            </table>
+          </td>
+      </table>
+  </td>
+</tr>
+</table>
+<!-- END Static Page Header Include -->

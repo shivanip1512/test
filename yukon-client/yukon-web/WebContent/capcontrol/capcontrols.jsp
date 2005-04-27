@@ -1,6 +1,6 @@
 
 <%@ include file="js/cbc_funcs.js" %>
-<%@ include file="cbc_header.jsp" %>
+<%@ include file="cbc_header.jspf" %>
 
 <%
 	//-------- PARAMS ----------- 
@@ -181,7 +181,7 @@
 
                       </tr>
                       <tr valign="top"> 
-                        <td width="100" class="TableCell"><a href= "feeders.jsp?paoID=<%= paoID.intValue() %>" class="Link1">
+                        <td width="100" class="TableCell"><a href= "jsf/feeders.jsp?paoID=<%= paoID.intValue() %>" class="Link1">
                           <div name = "subPopup" align = "left" cursor:default;" >
                              <%= cbcAnnex.getCBCDisplay().getSubBusValueAt(subBus, SubBusTableModel.SUB_NAME_COLUMN) %> 
                           </div></a>

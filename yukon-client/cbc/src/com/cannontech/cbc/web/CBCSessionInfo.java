@@ -1,10 +1,8 @@
-/*
- * Created on May 12, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.cbc.web;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.cannontech.util.ParamUtil;
 
 /**
  * @author rneuharth
@@ -14,14 +12,26 @@ package com.cannontech.cbc.web;
  */
 public class CBCSessionInfo
 {
-	private String lastArea = null; //SubBusTableModel.ALL_FILTER;
-	private int _subID = 0;
-	
+	private String lastArea = "";
+	private int lastSubID = 0;
+	private int lastFeederID = 0;
+
+	public static final String STR_CBC_AREA = "cbc_lastArea";
+	public static final String STR_SUBID = "cbc_lastSubID";
+	public static final String STR_FEEDERID = "cbc_lastFeederID";
+
+
 	public CBCSessionInfo()
 	{
 		super();
 	}
-
+	
+	public void updateState( HttpServletRequest req )
+	{
+		setLastArea( ParamUtil.getString(req, STR_CBC_AREA, getLastArea()) );
+		setLastSubID( ParamUtil.getInteger(req, STR_SUBID, getLastSubID()) );
+		setLastFeederID( ParamUtil.getInteger(req, STR_FEEDERID, getLastFeederID()) );
+	}
 
 	/**
 	 * @return
@@ -42,17 +52,33 @@ public class CBCSessionInfo
 	/**
 	 * @return
 	 */
-	public int getLastSubID()
+	public int getLastFeederID()
 	{
-		return _subID;
+		return lastFeederID;
 	}
 
 	/**
-	 * @param int
+	 * @return
 	 */
-	public void setLastSubID(int subID )
+	public int getLastSubID()
 	{
-        _subID = subID;
+		return lastSubID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setLastFeederID(int i)
+	{
+		lastFeederID = i;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setLastSubID(int i)
+	{
+		lastSubID = i;
 	}
 
 }

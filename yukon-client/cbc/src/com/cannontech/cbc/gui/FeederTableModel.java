@@ -6,14 +6,13 @@ package com.cannontech.cbc.gui;
 import java.awt.Color;
 
 import com.cannontech.cbc.tablemodelevents.CBCGenericTableModelEvent;
+import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
 public class FeederTableModel extends javax.swing.table.AbstractTableModel implements com.cannontech.tdc.alarms.gui.AlarmTableModel, javax.swing.event.TableModelListener, CapControlTableModel, com.cannontech.common.gui.util.SortableTableModel
 {
-	private String fontName = "dialog";
-	private int fontSize = 12;
 	private SubBus currentSubBus = null;
 	private int subBusRowSelected = -1;
 
@@ -154,14 +153,6 @@ public int getColumnCount() {
 public String getColumnName(int index) {
 	return COLUMN_NAMES[index];
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/23/00 11:42:06 AM)
- */
-private SubBus getCurrentSubBus()
-{
-	return currentSubBus;
-}
 
 /**
  * This method returns the value of a row in the form of a Feeder object.
@@ -226,7 +217,7 @@ public Object getValueAt(int row, int col)
 	if( row < getRowCount() )
 	{
         Feeder feeder = getRowAt(row);
-        return Feeder.CBC_DISPLAY.getFeederValueAt( feeder, col, getCurrentSubBus() );
+        return CBCUtils.CBC_DISPLAY.getFeederValueAt( feeder, col );
 	}
 	else
 		return null; /// MAYBE NOT A GOOD IDEA!!	

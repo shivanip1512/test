@@ -1,9 +1,3 @@
-/*
- * Created on May 19, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.cbc.web;
 
 import com.cannontech.database.data.point.PointQualities;
@@ -18,22 +12,24 @@ import com.cannontech.yukon.cbc.SubBus;
 /**
  * @author rneuharth
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Creates and executes a given CBC command
+ * 
  */
 public class CBCCommandExec
 {
-	private CapControlWebAnnex cbcCache = null;
+	private CapControlCache cbcCache = null;
+	private String userName = null;
 
 
 	/**
 	 * 
 	 */
-	public CBCCommandExec( CapControlWebAnnex cbcCache_ )
+	public CBCCommandExec( CapControlCache cbcCache_, String userName_ )
 	{
 		super();
 		
 		cbcCache = cbcCache_;
+		userName = userName_;
 	}
 
 	public boolean execute_SubCmd( int cmdID_, int paoID_ )
@@ -41,11 +37,11 @@ public class CBCCommandExec
 		if( cmdID_ == CBCCommand.CONFIRM_CLOSE 
 			 || cmdID_ == CBCCommand.CONFIRM_OPEN )
 		{
-			executeConfirmSub( paoID_ );
+			_executeConfirmSub( paoID_ );
 		} 
 		else 
 		{
-			executeCommand( 
+			_executeCommand( 
 				paoID_,
 				cmdID_ );			
 		}
@@ -55,7 +51,7 @@ public class CBCCommandExec
 
 	public boolean execute_FeederCmd( int cmdID_, int paoID_ )
 	{
-		executeCommand( 
+		_executeCommand( 
 			paoID_,
 			cmdID_ );			
 
@@ -63,20 +59,20 @@ public class CBCCommandExec
 	}
 
 
-	public boolean execute_CapBankCmd( int cmdID_, int paoID_, Integer manChange_ )
+	public boolean execute_CapBankCmd( int cmdID_, int paoID_, int manChange_ )
 	{
 		if( cmdID_ == CBCCommand.CONFIRM_CLOSE 
 			 || cmdID_ == CBCCommand.CONFIRM_OPEN )
 		{
-			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(paoID_) );
 			
 			if( CapBankDevice.isInAnyOpenState(bank) )
 			{
-				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
+				_executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
 			}
 			else if( CapBankDevice.isInAnyCloseState(bank) )
 			{
-				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
+				_executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
 			}
 		}
 		else if( cmdID_ == CBCCommand.CLOSE_CAPBANK 
@@ -84,15 +80,15 @@ public class CBCCommandExec
 				 || cmdID_ == CBCCommand.BANK_DISABLE_OVUV 
 				 || cmdID_ == CBCCommand.BANK_ENABLE_OVUV )
 		{
-			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(paoID_) );
 			
-			executeCommand( 
+			_executeCommand( 
 				bank.getControlDeviceID().intValue(),
 				cmdID_ );			
 		}
 		else if( cmdID_ == CBCCommand.CMD_MANUAL_ENTRY )
 		{
-			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankTableModel().getCapbank( paoID_ );
+			CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(paoID_) );
 			
 			// Send new point Here
 			PointData pt = new PointData();
@@ -103,26 +99,31 @@ public class CBCCommandExec
 			pt.setTime( new java.util.Date() );
 			pt.setTimeStamp( new java.util.Date() );
 			pt.setType( PointTypes.STATUS_POINT );
-			pt.setUserName( cbcCache.getYukonUser().getUsername() );
+			pt.setUserName( _getUserName() );
 
 			//the actual new value for the selected state 
-			pt.setValue( (double)manChange_.intValue() );
+			pt.setValue( (double)manChange_ );
 
 			cbcCache.getConnection().write( pt );
 		}
 		else
-			executeCommand( 
+			_executeCommand( 
 				paoID_,
 				cmdID_ );			
 
 		return true;
 	}
+	
+	private String _getUserName()
+	{
+		return userName;
+	}
 
-	private void executeConfirmSub( int paoID_ )
+	private void _executeConfirmSub( int paoID_ )
 	{
 		Multi multi = new Multi();
       
-		SubBus sub = cbcCache.getSubTableModel().getSubBus( paoID_ );
+		SubBus sub = cbcCache.getSubBus( new Integer(paoID_) );
       
 		for( int i = 0; i < sub.getCcFeeders().size(); i++ )
 		{
@@ -166,12 +167,12 @@ public class CBCCommandExec
 	 * Used to send a command to the CBC server.
 	 * @param int, int
 	 */
-	private void executeCommand(int paoID_, int cmdOperation_ )
+	private void _executeCommand(int paoID_, int cmdOperation_ )
 	{
 		CBCCommand cmd = new CBCCommand();
 		cmd.setDeviceID( paoID_ );
 		cmd.setCommand( cmdOperation_ );
-		cmd.setUserName( cbcCache.getYukonUser().getUsername() );
+		cmd.setUserName( _getUserName() );
 		
 		cbcCache.getConnection().sendCommand( cmd );
 	}

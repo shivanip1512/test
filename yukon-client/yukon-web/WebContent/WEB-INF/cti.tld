@@ -10,73 +10,38 @@
   <tlibversion>1.0</tlibversion>
   <jspversion>1.1</jspversion>
   <shortname>CTI Tags</shortname>
-  <!-- ===================== Control Flow Tags ====================== -->
 
- 
-  <tag>
-  	<name>switch</name>
-	<tagclass>com.cannontech.taglib.SwitchTag</tagclass>
-	<bodycontent>JSP</bodycontent>
-	<attribute>
-		<name>value</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-  </tag>
-  <tag>
-	<name>case</name>
-	<tagclass>com.cannontech.taglib.CaseTag</tagclass>
-	<bodycontent>JSP</bodycontent>
-	<attribute>
-		<name>value</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-  </tag>
-  <tag>
-	<name>default</name>
-	<tagclass>com.cannontech.taglib.DefaultTag</tagclass>
-	<bodycontent>JSP</bodycontent>
-  </tag>
-  
-  <tag>
-  	<name>select</name>
-	<tagclass>com.cannontech.taglib.SelectTag</tagclass>
-	<bodycontent>empty</bodycontent>
-	<attribute>
-		<name>name</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>selectValues</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>selectNames</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>selectedValue</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-  </tag>
-  
-  <tag>
-  	<name>errormsg</name>
-	<tagclass>com.cannontech.taglib.ErrorMsgTag</tagclass>
-	<bodycontent>JSP</bodycontent>
-	<attribute>
-		<name>colSpan</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-  </tag>
-  
   <!-- Start of user/role/roleproperty tags -->
+  <tag>
+  	<name>breadCrumb</name>
+  	<tagclass>com.cannontech.web.taglib.nav.BreadCrumb</tagclass>
+  	<attribute>
+  		<name>seperator</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  </tag>
+  <tag>
+  	<name>crLink</name>
+  	<tagclass>com.cannontech.web.taglib.nav.CrumbLink</tagclass>
+  	<attribute>
+  		<name>url</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  	<attribute>
+  		<name>title</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>
+  	<attribute>
+  		<name>cssClass</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>  	
+  </tag>
+
+
   <tag>
   	<name>checklogin</name>
 	<tagclass>com.cannontech.web.taglib.CheckLoginTag</tagclass>		
