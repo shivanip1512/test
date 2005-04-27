@@ -14,6 +14,7 @@ public class FileMenu extends javax.swing.JMenu
 {
 
 	public JMenuItem exitMenuItem;
+	public JMenuItem endSessionMenuItem;
 
 	/**
 	 * FileMenu constructor comment.
@@ -35,11 +36,19 @@ public class FileMenu extends javax.swing.JMenu
 		exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke( 
 														java.awt.event.KeyEvent.VK_X,
 														java.awt.Event.CTRL_MASK));
+														
+		endSessionMenuItem = new JMenuItem("End Session");
+		endSessionMenuItem.setFont( font );
+		endSessionMenuItem.setMnemonic('z');
+		endSessionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke( 
+														java.awt.event.KeyEvent.VK_Z,
+														java.awt.Event.CTRL_MASK));
 	
 		setText("File");
 		setFont( font );
 		setMnemonic('f');
 		add(exitMenuItem);
+		add(endSessionMenuItem);
 		
 
 
@@ -59,6 +68,11 @@ public class FileMenu extends javax.swing.JMenu
 					if( e.getKeyCode() == KeyEvent.VK_X && e.isControlDown() )
 					{
 						exitMenuItem.doClick();
+						return true;
+					}
+					if( e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown() )
+					{
+						endSessionMenuItem.doClick();
 						return true;
 					}
 

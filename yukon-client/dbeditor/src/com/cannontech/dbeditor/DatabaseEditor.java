@@ -322,6 +322,14 @@ public void actionPerformed(ActionEvent event)
 			exit();
 	}
 	else
+	if( item == fileMenu.endSessionMenuItem )
+	{
+		if( ClientSession.getInstance().establishSession() )
+			ClientSession.getInstance().closeSession();
+                        
+		exit();
+	}
+	else
 	if( item == editMenu.editMenuItem )
 	{
 		executeEditButton_ActionPerformed(event);
