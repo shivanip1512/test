@@ -9,6 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
 -----------------------------------------------------------------------------*/
+#include "yukon.h"
 #include "critical_section.h"
 
 CtiCriticalSection::CtiCriticalSection()
