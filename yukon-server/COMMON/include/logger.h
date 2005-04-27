@@ -54,6 +54,7 @@
 #include <string>
 using namespace std;
 
+#include "dlldefs.h"
 #include "thread.h"
 #include "mutex.h"
 
