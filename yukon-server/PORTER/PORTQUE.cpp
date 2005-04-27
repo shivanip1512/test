@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/04/27 14:02:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -204,7 +204,10 @@ VOID QueueThread (VOID *Arg)
             }
         }
 
-        DeviceManager.apply(applyBuildLGrpQ,NULL);
+        {
+            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager!
+            DeviceManager.apply(applyBuildLGrpQ,NULL);
+        }
     }
 }
 
@@ -1165,7 +1168,10 @@ VOID KickerThread (VOID *Arg)
 
         /* loop through and check if we need to do any RCOLQ's */
 
-        DeviceManager.apply( applyKick, NULL );
+        {
+            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager!
+            DeviceManager.apply( applyKick, NULL );
+        }
     }
 }
 
