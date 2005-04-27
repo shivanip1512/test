@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/03/16 20:11:51 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/04/27 13:41:13 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.15  2005/04/27 13:41:13  cplender
+* 305 cycles were not choosing 7.5 minute periods correctly.
+*
 * Revision 1.14  2005/03/16 20:11:51  cplender
 * Altered restore and terminate behavior for SA305.
 *
@@ -290,6 +293,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             else if(cycle_percent > 0)
             {
                 // It is a cycle command!
+                _percentageOff = (float)cycle_percent;
 
                 if(cycle_period <= 8 && _percentageOff == 100.0)            // We can do 7.5 / 7.5
                 {
@@ -312,7 +316,6 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
                     _period = 60.0;
                 }
 
-                _percentageOff = (float)cycle_percent;
                 _repetitions = cycle_count - 1;
             }
             else
