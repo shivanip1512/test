@@ -82,7 +82,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private javax.swing.JMenuBar ivjTDCFrameJMenuBar = null;
 	private TDCMainPanel ivjMainPanel = null;
 	private javax.swing.JMenuItem ivjJMenuItemFont = null;
-	private FontEditorFrame fontFrame = null;
 	private javax.swing.JMenu ivjJMenuOptions = null;
 	private javax.swing.JCheckBoxMenuItem ivjJCheckBoxMenuItemHGridLines = null;
 	private javax.swing.JCheckBoxMenuItem ivjJCheckBoxMenuItemVGridLines = null;
@@ -120,7 +119,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private javax.swing.JMenuItem ivjJMenuItemFindNext = null;
 	private javax.swing.JMenuItem ivjJMenuItemHelpTopics = null;
 	private javax.swing.JMenu ivjJMenuEdit = null;
-	private javax.swing.JSeparator ivjJSeparator4 = null;
 	private javax.swing.JSeparator ivjJSeparator5 = null;
 	private javax.swing.JSeparator ivjJSeparator6 = null;
 	private javax.swing.JMenu ivjJMenuBookmarks = null;
@@ -129,9 +127,9 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private javax.swing.JMenu ivjJMenuTools = null;
 	private javax.swing.JMenu ivjJMenuAlarms = null;
 
-   private SignalAlarmHandler alarmHandler = null;
-   
+	private SignalAlarmHandler alarmHandler = null;   
 	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
+	private javax.swing.JMenuItem jMenuItemEndSession = null;
 
     public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
 
@@ -243,6 +241,14 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	
 	if( e.getSource() == getJMenuItemResetCntrlHrs() )
 		jMenuItemResetCntrlHrs_ActionPerformed( e );
+
+	if( e.getSource() == getJMenuItemEndSession() )
+	{
+		if( ClientSession.getInstance().establishSession() )
+			ClientSession.getInstance().closeSession();
+
+		jMenuItemExit_ActionPerformed(e);
+	}		
 
 
 	// user code end
@@ -1741,6 +1747,7 @@ private javax.swing.JMenu getJMenuFile() {
 			ivjJMenuFile.add(getJMenuItemPrint());
 			ivjJMenuFile.add(getJSeparator5());
 			ivjJMenuFile.add(getJMenuItemSpawnTDC());
+			ivjJMenuFile.add(getJMenuItemEndSession());
 			ivjJMenuFile.add(getJSeparator1());
 			ivjJMenuFile.add(getJMenuItemExit());
 			// user code begin {1}
@@ -2574,24 +2581,32 @@ private javax.swing.JSeparator getJSeparator2() {
 
 
 /**
- * Return the JSeparator4 property value.
- * @return javax.swing.JSeparator
+ * Return the EndSession property value.
+ * 
+ * @return javax.swing.JMenuItem
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JSeparator getJSeparator4() {
-	if (ivjJSeparator4 == null) {
-		try {
-			ivjJSeparator4 = new javax.swing.JSeparator();
-			ivjJSeparator4.setName("JSeparator4");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+private javax.swing.JMenuItem getJMenuItemEndSession()
+{
+	if( jMenuItemEndSession == null )
+	{
+		try
+		{
+			jMenuItemEndSession = new javax.swing.JMenuItem();
+			jMenuItemEndSession.setName("JMenuItemEndSession");
+			jMenuItemEndSession.setMnemonic('o');
+			jMenuItemEndSession.setText("End Session");
+			jMenuItemEndSession.setBackground(java.awt.SystemColor.control);
+			jMenuItemEndSession.setForeground(java.awt.SystemColor.controlText);
+			jMenuItemEndSession.setFont(new java.awt.Font("dialog", 0, 12));
+			jMenuItemEndSession.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_O, java.awt.Event.CTRL_MASK));
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
 			handleException(ivjExc);
 		}
 	}
-	return ivjJSeparator4;
+
+	return jMenuItemEndSession;
 }
 
 
@@ -2904,6 +2919,7 @@ private void initConnections() throws java.lang.Exception {
 	getJMenuItemSearch().addActionListener(this);
 	getJMenuItemFindNext().addActionListener(this);
 	getJMenuItemHelpTopics().addActionListener(this);
+	getJMenuItemEndSession().addActionListener(this);
 }
 
 /**
