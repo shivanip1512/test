@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.TableColumn;
@@ -49,6 +50,7 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.Command;
@@ -113,7 +115,6 @@ public class TDCMainPanel extends javax.swing.JPanel implements com.cannontech.t
 	private javax.swing.JScrollPane ivjScrollPaneDisplayTable = null;
 	protected transient com.cannontech.tdc.TDCMainPanelListener fieldTDCMainPanelListenerEventMulticaster = null;
 	private javax.swing.JMenu ivjJMenuPopUpAckAlarm = null;
-	private javax.swing.JMenuItem ivjJMenuItemPopUpClear = null;
 	private javax.swing.JMenuItem ivjJMenuItemPopUpManualEntry = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemDisableDev = null;
 	private javax.swing.JRadioButtonMenuItem ivjJRadioButtonMenuItemDisablePt = null;
@@ -3642,9 +3643,9 @@ private void setDisplayTitle(String title, Date date )
 			 || getCurrentDisplay().getTdcFilter().getConditions().get(ITDCFilter.COND_HISTORY) )
 		{
 	      title += " (" + 
-	      		CommonUtils.formatMonthString( calendar.get( calendar.MONTH ) ) + " " +
-	            calendar.get( calendar.DAY_OF_MONTH ) + ", " +
-	            calendar.get( calendar.YEAR ) + ")";
+	      		CommonUtils.formatMonthString( calendar.get( GregorianCalendar.MONTH ) ) + " " +
+	            calendar.get( GregorianCalendar.DAY_OF_MONTH ) + ", " +
+	            calendar.get( GregorianCalendar.YEAR ) + ")";
 		}
 	}
 
@@ -3709,12 +3710,12 @@ private void setStartUpDisplay( ParametersFile pf, TDCMainFrame parentFrame )
 {
 	if( getJComboCurrentDisplay().getItemCount() > 0 )
 	{
-		if( parentFrame.startingDisplayName != null )
+		if( TDCMainFrame.startingDisplayName != null )
 		{
-			if( parentFrame.startingViewType != null )
-				parentFrame.setSelectedViewType( parentFrame.startingViewType );
+			if( TDCMainFrame.startingViewType != null )
+				parentFrame.setSelectedViewType( TDCMainFrame.startingViewType );
 
-			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( parentFrame.startingDisplayName ) );
+			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( TDCMainFrame.startingDisplayName ) );
 			TDCMainFrame.messageLog.addMessage("Starting display name on start up found", MessageBoxFrame.INFORMATION_MSG );
 		}
 		else
@@ -3901,15 +3902,24 @@ private void showDebugInfo( )
  * called by a ManualEntry, ManualControl or a Dbl click on the JTable
  */
 private void showRowEditor( Object source ) 
-{
-	
+{	
 	RowEditorDialog d = new RowEditorDialog( 
 		CtiUtilities.getParentFrame(this) ); 
-	
+
+	ManualEntryJPanel panel = null;	
 	int selectedRow = getDisplayTable().getSelectedRow();
 	
-	ManualEntryJPanel panel = createManualEditorPanel( selectedRow, source );
-		
+	if( getTableDataModel().getPointValue( selectedRow ).getPointQuality()
+		== PointQualities.CONSTANT_QUALITY )
+	{
+		JOptionPane.showMessageDialog( this, 
+			"Manual changes of points with a quality of CONSTANT is not allowed",
+			"Manual Entry Denied", JOptionPane.WARNING_MESSAGE );
+	}
+	else
+		panel = createManualEditorPanel( selectedRow, source );
+
+
 	if( panel != null )
 	{
 		// should be put in its own method
@@ -4162,10 +4172,10 @@ public Date getPreviousDate()
 	{
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTime( new Date() );
-		cal.set( cal.HOUR_OF_DAY, 0 );
-		cal.set( cal.MINUTE, 0 );
-		cal.set( cal.SECOND, 0 );
-		cal.set( cal.MILLISECOND, 0 );
+		cal.set( GregorianCalendar.HOUR_OF_DAY, 0 );
+		cal.set( GregorianCalendar.MINUTE, 0 );
+		cal.set( GregorianCalendar.SECOND, 0 );
+		cal.set( GregorianCalendar.MILLISECOND, 0 );
 
 		previousDate = cal.getTime();
 	}
