@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2005/03/17 19:16:58 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2005/04/27 14:03:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2384,7 +2384,7 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
+                dout << RWTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << applyFun << endl;
             }
             gaurd.tryAcquire(30000);
 
@@ -2393,9 +2393,9 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CtiPortManager::apply " << endl;
+                    dout << "  CtiDeviceManager::apply " << endl;
                 }
-                return;
+                break;
             }
         }
         #endif
@@ -2442,13 +2442,23 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, pt
 
     try
     {
+        int trycount = 0;
         LockGuard gaurd(getMux(), 30000);
 
         while(!gaurd.isAcquired())
         {
+            if(trycount++ > 6)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  CtiDeviceManager::find " << endl;
+                }
+                break;
+            }
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << findFun << endl;
             }
             gaurd.tryAcquire(30000);
         }
