@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/04/22 19:00:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/04/28 20:03:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 #include <windows.h>
 #include "device.h"
 #include "devicetypes.h"
+#include "tbl_ptdispatch.h"
 #include "dev_mct470.h"
 #include "logger.h"
 #include "mgr_point.h"
@@ -266,39 +267,11 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
                 _lp_info[i].archived_reading = 86400;
                 _lp_info[i].current_request  = 86400;
 
+                CtiTablePointDispatch pd(pPoint->getPointID());
+
+                if(pd.Restore().errorCode() == RWDBStatus::ok)
                 {
-                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                    RWDBConnection conn = getConnection();
-
-                    RWCString sql       = "select max(timestamp) as maxtimestamp from rawpointhistory where pointid=" + CtiNumStr(pPoint->getPointID());
-                    RWDBResult results  = conn.executeSql( sql );
-                    RWDBTable  resTable = results.table();
-
-                    if(!results.isValid())
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
-                        dout << sql << endl << endl;
-                    }
-
-                    RWDBReader rdr = resTable.reader();
-
-                    if(rdr() && rdr.isValid())
-                    {
-                        RWTime tmp;
-
-                        rdr >> tmp;
-
-                        if( tmp.seconds() != 0 )  //  make sure it's not zero - causes problems with time zones
-                        {
-                            _lp_info[i].archived_reading = tmp.seconds();
-                        }
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    _lp_info[i].archived_reading = pd.getTimeStamp().rwtime().seconds();
                 }
             }
 

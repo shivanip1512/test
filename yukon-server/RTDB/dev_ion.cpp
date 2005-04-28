@@ -16,6 +16,7 @@
 
 #include "porter.h"
 
+#include "tbl_ptdispatch.h"
 #include "dev_ion.h"
 
 #include "pt_base.h"
@@ -353,32 +354,13 @@ void CtiDeviceION::initEventLogPosition( void )
         CtiPointAnalog *tmpPoint;
         unsigned long   lastRecordPosition;
 
-        tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(2600, AnalogPointType);
-
-        if( tmpPoint != NULL )
+        if( tmpPoint = (CtiPointAnalog *)getDevicePointOffsetTypeEqual(CtiProtocolION::EventLogPointOffset, AnalogPointType) )
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            CtiTablePointDispatch pd(tmpPoint->getPointID());
 
-            RWCString sql       = RWCString("select value from rawpointhistory ") +
-                                  "where pointid=" + CtiNumStr(tmpPoint->getPointID()) + " " +
-                                        "and timestamp = (select max(timestamp) from rawpointhistory where pointid=" + CtiNumStr(tmpPoint->getPointID()) + ")";
-            RWDBResult results  = conn.executeSql( sql );
-            RWDBTable  resTable = results.table();
-
-            if(!results.isValid())
+            if(pd.Restore().errorCode() == RWDBStatus::ok)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** ERROR **** RWDB Error #" << results.status().errorCode() << " in query:" << endl;
-                dout << sql << endl << endl;
-            }
-
-            RWDBReader rdr = resTable.reader();
-
-            if(rdr() && rdr.isValid())
-            {
-                rdr >> lastRecordPosition;
-                _ion.setEventLogLastPosition(lastRecordPosition);
+                _ion.setEventLogLastPosition(pd.getValue());
             }
             else
             {
