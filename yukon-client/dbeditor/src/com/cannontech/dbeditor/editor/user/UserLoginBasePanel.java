@@ -267,6 +267,7 @@ private javax.swing.JCheckBox getJCheckBoxEnableEC() {
 			ivjJCheckBoxEnableEC.setMaximumSize(new java.awt.Dimension(174, 22));
 			ivjJCheckBoxEnableEC.setMinimumSize(new java.awt.Dimension(174, 22));
 			// user code begin {1}
+			ivjJCheckBoxEnableEC.setToolTipText("Only for use with STARS.  Verify that STARS and its operator groups have been properly configured.");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -312,6 +313,7 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 			ivjJComboBoxEnergyCompany.setMinimumSize(new java.awt.Dimension(215, 23));
 			// user code begin {1}
 			ivjJComboBoxEnergyCompany.setEnabled(false);
+			ivjJComboBoxEnergyCompany.setToolTipText("Only for use with STARS.  Verify that STARS and its operator groups have been properly configured.");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
