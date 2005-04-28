@@ -992,6 +992,8 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy) );
 		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy) );
+		else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)
+			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel((com.cannontech.database.data.device.lm.LMGroup)toCopy) );
 		else if(toCopy instanceof LMScenario)
 			showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy) );
 		else if( toCopy instanceof com.cannontech.database.data.point.PointBase )

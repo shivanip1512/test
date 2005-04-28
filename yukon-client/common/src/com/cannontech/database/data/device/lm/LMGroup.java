@@ -96,6 +96,12 @@ public void setDbConnection(java.sql.Connection conn)
  * This method was created in VisualAge.
  * @param deviceID java.lang.Integer
  */
+public void setPAObjectID(Integer paoID)
+{
+	super.setPAObjectID(paoID);
+	setDeviceID(paoID);
+}
+
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 	getLmGroup().setDeviceID(deviceID);
