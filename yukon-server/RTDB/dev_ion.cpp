@@ -367,7 +367,7 @@ void CtiDeviceION::initEventLogPosition( void )
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader/No RawPointHistory for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "**** Checkpoint: Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }

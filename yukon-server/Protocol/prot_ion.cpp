@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/04/28 20:10:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2191,7 +2191,7 @@ bool CtiProtocolION::inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream 
 
 
 //  this function will only be called from client-side, after
-//    the device checks its event log point in rawpointhistory.
+//    the device checks its event log point in dynamicpointdispatch.
 void CtiProtocolION::setEventLogLastPosition( unsigned long lastPosition )
 {
     _client_eventLogLastPosition = lastPosition;
@@ -2199,7 +2199,7 @@ void CtiProtocolION::setEventLogLastPosition( unsigned long lastPosition )
 
 
 //  this function is only called from client-side to check if
-//    we need to query rawpointhistory for the last event log retrieved
+//    we need to query dynamicpointdispatch for the last event log retrieved
 unsigned long CtiProtocolION::getEventLogLastPosition( void )
 {
     return _client_eventLogLastPosition;
