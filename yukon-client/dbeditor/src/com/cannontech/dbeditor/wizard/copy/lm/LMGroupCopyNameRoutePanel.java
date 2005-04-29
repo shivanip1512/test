@@ -11,6 +11,10 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.lite.LiteComparators;
 import java.util.Collections;
 
+/*
+ * @author jdayton
+ * GUI NOTE: Websphere GUI builder over a previous Visual Age code shell
+ */
 public class LMGroupCopyNameRoutePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {
 	private javax.swing.JLabel ivjJLabelName = null;
