@@ -16,6 +16,7 @@ public class LMProgramControlWindowPanel extends com.cannontech.common.gui.util.
 	private javax.swing.JCheckBox ivjJCheckBoxUse2 = null;
 	
 	private javax.swing.JToggleButton ivjwindowChangePasser = null;
+	private boolean hasStandardControlTimes = false;
 /**
  * Constructor
  */
@@ -678,6 +679,7 @@ public void setValue(Object o)
 					stopTime = stopTime - 86400;
 				getTimeComboStart1().setTimeInSeconds( startTime );
 				getTimeComboStop1().setTimeInSeconds( stopTime );
+				hasStandardControlTimes = true;
 			}
 			
 			if( window.getWindowNumber().intValue() == 2 )
@@ -690,6 +692,7 @@ public void setValue(Object o)
 					stopTime = stopTime - 86400;
 				getTimeComboStart2().setTimeInSeconds( startTime );
 				getTimeComboStop2().setTimeInSeconds( stopTime );
+				hasStandardControlTimes = true;
 			}
 		}	
 	}
@@ -716,6 +719,7 @@ public void setTimedOperationalStateCondition(boolean timedOrNot)
 		getJCheckBoxUse1().setSelected(timedOrNot);
 		getTimeComboStart1().setEnabled( timedOrNot );
 		getTimeComboStop1().setEnabled( timedOrNot );
+		hasStandardControlTimes = false;
 		
 	}
 	else
@@ -734,10 +738,10 @@ public void setTimedOperationalStateCondition(boolean timedOrNot)
 		ivjLocalBorder2.setTitle("Optional Available For Control Window #2");
 		getJPanelOptionalWindow2().setBorder(ivjLocalBorder2);
 		
-		if(getJCheckBoxUse1().isSelected())
+		if(getJCheckBoxUse1().isSelected() && !hasStandardControlTimes)
 			getJCheckBoxUse1().doClick();
 		
-		if(getJCheckBoxUse2().isSelected())
+		if(getJCheckBoxUse2().isSelected() && !hasStandardControlTimes)
 			getJCheckBoxUse2().doClick();
 	}
 	
