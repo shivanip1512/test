@@ -1,7 +1,7 @@
 package com.cannontech.dbeditor.editor.capsubbus;
 
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
 /**
  * This type was created in VisualAge.
@@ -620,7 +620,7 @@ private void initialize() {
 	try
 	{	
 		amfmInterface = ClientSession.getInstance().getRolePropertyValue(
-			TDCRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
+			CBCSettingsRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
 	}
 	catch( java.util.MissingResourceException e )
 	{}

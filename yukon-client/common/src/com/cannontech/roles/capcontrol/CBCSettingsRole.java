@@ -24,4 +24,8 @@ public interface CBCSettingsRole
 	public static final int HIDE_GRAPHS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 3;
 	public static final int HIDE_ONELINE = CapControlRoleDefs.CBC_PROPERTYID_BASE - 4;
 
+	public static final int CAP_CONTROL_INTERFACE = CapControlRoleDefs.CBC_PROPERTYID_BASE - 5;
+	public static final int CBC_CREATION_NAME = CapControlRoleDefs.CBC_PROPERTYID_BASE - 6;
+	public static final int PFACTOR_DECIMAL_PLACES = CapControlRoleDefs.CBC_PROPERTYID_BASE - 7;
+	public static final int CBC_ALLOW_OVUV = CapControlRoleDefs.CBC_PROPERTYID_BASE - 8;
 }

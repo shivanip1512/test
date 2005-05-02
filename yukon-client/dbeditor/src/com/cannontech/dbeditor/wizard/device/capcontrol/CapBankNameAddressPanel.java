@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
 /**
  * This type was created in VisualAge.
@@ -503,7 +503,7 @@ private void initialize() {
 	try
 	{	
 		amfmInterface = ClientSession.getInstance().getRolePropertyValue(
-			TDCRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
+			CBCSettingsRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
 	}
 	catch( java.util.MissingResourceException e )
 	{}

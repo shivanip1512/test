@@ -7,11 +7,10 @@ import java.awt.Dimension;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.roles.application.TDCRole;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
  
 public class CapBankInfoPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private Integer originalMapLocID = null;
-	private java.util.List points = null;
 	private javax.swing.JComboBox ivjJComboBoxControllerType = null;
 	private javax.swing.JLabel ivjJLabelControllerType = null;
 	private javax.swing.JLabel ivjJLabelSwitchManufacture = null;
@@ -472,7 +471,7 @@ private void initialize() {
 	try
 	{	
 		amfmInterface = ClientSession.getInstance().getRolePropertyValue(
-			TDCRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
+			CBCSettingsRole.CAP_CONTROL_INTERFACE, "NotFound").trim().equalsIgnoreCase( "AMFM" );
 	}
 	catch( java.util.MissingResourceException e )
 	{}
