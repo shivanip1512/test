@@ -29,6 +29,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.StarsConfig;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDisableService;
@@ -41,6 +42,8 @@ import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommand;
 import com.cannontech.stars.xml.serialize.StarsYukonSwitchCommandResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import java.util.Vector;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * <p>Title: </p>
@@ -453,15 +456,33 @@ public class YukonSwitchCommandAction implements ActionBase {
 		}
 	}
 	
+	//builds up the command from the information stored in the LMConfiguration object/tables
 	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, boolean useHardwareAddressing, Integer groupID)
 		throws WebClientException
 	{
 		ArrayList commands = new ArrayList();
+		String[] coldLoads = new String[4];
+		String[] tamperDetects = new String[2];
 		
 		if (useHardwareAddressing) {
 			if (liteHw.getLMConfiguration() == null)
 				throw new WebClientException("There is no configuration saved for serial #" + liteHw.getManufacturerSerialNumber() + ".");
 			
+			
+			String freezer = liteHw.getLMConfiguration().getColdLoadPickup();
+			if(freezer.compareTo(CtiUtilities.STRING_NONE) != 0
+				&& freezer.length() > 0)
+			{
+				coldLoads = StarsUtils.splitString(freezer, ",");
+			}
+			
+			String foolDetect = liteHw.getLMConfiguration().getTamperDetect();
+			if(foolDetect.compareTo(CtiUtilities.STRING_NONE) != 0
+				&& foolDetect.length() > 0)
+			{
+				tamperDetects = StarsUtils.splitString(foolDetect, ",");
+			}
+						
 			if (liteHw.getLMConfiguration().getExpressCom() != null) {
 				String program = null;
 				String splinter = null;
@@ -521,8 +542,32 @@ public class YukonSwitchCommandAction implements ActionBase {
 						",5=" + liteHw.getLMConfiguration().getSA205().getSlot5() +
 						",6=" + liteHw.getLMConfiguration().getSA205().getSlot6();
 				commands.add( cmd );
+				
+				//cold load pickup needs to be in a separate command for each individual value
+				for(int j = 0; j < coldLoads.length; j++)
+				{
+					if(coldLoads[j].length() > 0)
+					{
+						String clCmd = "putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() +
+							" coldload f" + (j+1) + "=" + coldLoads[j];
+						commands.add(clCmd);
+					}
+				}
+				
+				//tamper detect also needs to be in a separate command for each value
+				for(int j = 0; j < tamperDetects.length; j++)
+				{
+					if(tamperDetects[j].length() > 0)
+					{
+						String tdCmd = "putconfig sa205 serial " + liteHw.getManufacturerSerialNumber() +
+							" tamper f" + (j+1) + "=" + tamperDetects[j];
+						commands.add(tdCmd);
+					}
+				}
 			}
-			else if (liteHw.getLMConfiguration().getSA305() != null) {
+			
+			else if (liteHw.getLMConfiguration().getSA305() != null) 
+			{
 				String cmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
 						" utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " assign" +
 						" g=" + liteHw.getLMConfiguration().getSA305().getGroup() +
@@ -531,6 +576,30 @@ public class YukonSwitchCommandAction implements ActionBase {
 						" f=" + liteHw.getLMConfiguration().getSA305().getRateFamily() +
 						" m=" + liteHw.getLMConfiguration().getSA305().getRateMember();
 				commands.add( cmd );
+				
+				//cold load pickup needs to be in a separate command for each individual value
+				for(int j = 0; j < coldLoads.length; j++)
+				{
+					if(coldLoads[j].length() > 0)
+					{
+						String clCmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+							" utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " coldload f" +
+							(j+1) + "=" + coldLoads[j];
+						commands.add(clCmd);
+					}
+				}
+				
+				//tamper detect also needs to be in a separate command for each value
+				for(int j = 0; j < tamperDetects.length; j++)
+				{
+					if(tamperDetects[j].length() > 0)
+					{
+						String tdCmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() +
+							" utility " + liteHw.getLMConfiguration().getSA305().getUtility() + " tamper f" +
+							(j+1) + "=" + tamperDetects[j];
+						commands.add(tdCmd);
+					}
+				}
 			}
 			else {
 				throw new WebClientException("Unsupported configuration type for serial #" + liteHw.getManufacturerSerialNumber() + ".");
