@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/05/03 18:20:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -333,19 +333,43 @@ bool CtiMCServer::init()
 
 bool CtiMCServer::deinit()
 {
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " Stopping MACS file interface" << endl;
+    }
+    
     /* stop the file interface */
     _file_interface.stop();
 
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " Stopping MACS client listener" << endl;
+    }
+        
     /* stop accepting connections */
     _client_listener.interrupt( CtiThread::SHUTDOWN );
     _client_listener.join();
 
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " Stopping MACS tcl interpreter pool" << endl;
+    }
+    
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
     interp->evaluate("pilshutdown", true);
     _interp_pool.releaseInterpreter(interp);
 
     _interp_pool.stopAndDestroyAllInterpreters();
 
+    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << RWTime() << " Stopping MACS database update thread" << endl;
+    }
+    
     _db_update_thread.interrupt( CtiThread::SHUTDOWN );
     _db_update_thread.join();
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2003/02/25 17:37:55 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/05/03 18:20:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,7 @@
 #define MC_DEBUG_INTERP   0x00000008
 #define MC_DEBUG_CONN     0x00000010
 #define MC_DEBUG_FILEINT  0x00000020
+#define MC_DEBUG_SHUTDOWN 0x00000040
 
 #define FTP_INTERFACE_DIR "FTP_INTERFACE_DIR"
 #define FTP_INTERFACE_EXT "FTP_INTERFACE_EXT"
