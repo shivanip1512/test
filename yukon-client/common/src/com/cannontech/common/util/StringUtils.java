@@ -66,4 +66,21 @@ public static String removeChars(char deletedChar, String str )
 
 	return b.toString();
 }
+
+/**
+ * Takes an array of strings and try to convert and put each element
+ * into an array of ints
+ * 
+ */
+public static int[] toIntArray(String[] str)
+{
+	if( str == null )
+		return new int[0];
+
+	int[] intArr = new int[str.length];
+	for( int i = 0; i < str.length; i++ )
+		intArr[i] = Integer.parseInt(str[i]);
+
+	return intArr;		
+}
 }
