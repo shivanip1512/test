@@ -483,7 +483,7 @@ private javax.swing.JTextField getJTextFieldGearName() {
 			// user code begin {1}
 			ivjJTextFieldGearName.setDocument(
 					new TextFieldDocument(
-						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
 						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
