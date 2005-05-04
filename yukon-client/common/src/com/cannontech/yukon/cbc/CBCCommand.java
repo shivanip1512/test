@@ -34,7 +34,8 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 
 
 	//server does not use these commands
-	public static final int CMD_MANUAL_ENTRY	= 20;
+	public static final int CMD_MANUAL_ENTRY = 30;
+	public static final int CMD_BANK_TEMP_MOVE	= 31;
 
 
 	public static final String[] COMMAND_STRINGS =
@@ -59,11 +60,13 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"UNWAIVE FEEDER",
 		"ENABLE OV/UV",
 		"DISABLE OV/UV",
-		"",
+		"","","","","","",
+		"","","","","",
 
 
 		//below are not used by the server
-		"Manual Entry" //20
+		"Manual Entry", //30
+		"Bank Temp Move", //31
 	};
 	
 
