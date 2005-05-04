@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2005/02/18 14:38:03 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2005/05/04 20:28:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -480,14 +480,14 @@ void CtiVanGogh::VGMainThread()
             }
 
 
-                if(!(++sanity % SANITY_RATE))
-                {
-                    reportOnThreads();
+            if(!(++sanity % SANITY_RATE))
+            {
+                reportOnThreads();
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " VG Main Thread Active " << endl;
-                    }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " VG Main Thread Active " << endl;
+                }
 
                 CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::None, 300 );
                 ThreadMonitor.tickle( data );
@@ -1185,7 +1185,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            bGCtrlC = TRUE;
+            Cmd->dump();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Shutdown requests by command messages are ignored by dispatch." << endl;
+            }
+            // bGCtrlC = TRUE;
             break;
         }
     default:
@@ -2124,6 +2129,24 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Con
 {
     BOOL bStatus = FALSE;
 
+    #if 1
+    if(Msg.getTags() & TAG_POINT_DO_NOT_ROUTE)
+    {
+        bStatus = FALSE;
+    }
+    else // if( !(Msg.getTags() & TAG_POINT_LOAD_PROFILE_DATA) )  // Load profile does not go through the system.
+    {
+        if( Conn.isRegForChangeType(Msg.getType()))
+        {
+            bStatus = TRUE;
+        }
+        else
+        {
+            bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());
+        }
+    }
+    #else
+
     if( !(Msg.getTags() & TAG_POINT_LOAD_PROFILE_DATA) )  // Load profile does not go through the system.
     {
         if( Conn.isRegForChangeType(Msg.getType()))
@@ -2139,7 +2162,7 @@ BOOL CtiVanGogh::isPointDataForConnection(const CtiVanGoghConnectionManager &Con
     {
         bStatus = isConnectionAttachedToMsgPoint(Conn, Msg.getId());   // Is this a point he cares about..
     }
-
+    #endif
     return bStatus;
 }
 
@@ -2305,7 +2328,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 QueryPerformanceCounter(&t7Time);
 
-#if 0
+                #if 0
                 if(PERF_TO_MS(t7Time, startTime, perfFrequency) > 500)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2318,7 +2341,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                     dout << " t6Time " << PERF_TO_MS(t6Time, startTime, perfFrequency) << endl;
                     dout << " t7Time " << PERF_TO_MS(t7Time, startTime, perfFrequency) << endl;
                 }
-#endif
+                #endif
             }
         }
     }
