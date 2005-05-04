@@ -41,6 +41,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
+        else if( operationType == "%" )     _operationType = modulo;
         else if( operationType == ">" )     _operationType = greater;
         else if( operationType == ">=" )    _operationType = geq;
         else if( operationType == "<" )     _operationType = less;
@@ -71,6 +72,7 @@ CtiCalcComponent::CtiCalcComponent( const RWCString &componentType, long compone
         else if( operationType == "-" )     _operationType = subtraction;
         else if( operationType == "*" )     _operationType = multiplication;
         else if( operationType == "/" )     _operationType = division;
+        else if( operationType == "%" )     _operationType = modulo;
         else if( !operationType.compareTo("push", RWCString::ignoreCase) )  _operationType = push;
         else
         {
@@ -156,12 +158,13 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const RWTime &calcsLastUp
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
 
-        if( componentPointPtr->getPointQuality() == NonUpdatedQuality )
+        if( componentPointPtr->getPointQuality() == NonUpdatedQuality ||
+            componentPointPtr->getPointQuality() == ConstantQuality  )
         {
             if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " - Point quality is non updated, Point ID: " << componentPointPtr->getPointNum() << endl;
+                dout << RWTime() << " - Point quality is constant or non-updated, Point ID: " << componentPointPtr->getPointNum() << endl;
             }
             return TRUE;
         }
@@ -207,7 +210,8 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         if(componentPointPtr != NULL)
         {
             _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
-            _calcpoint->push( componentPointPtr->getPointValue() );
+            if( _calcpoint->push( componentPointPtr->getPointValue() ) )
+                input = componentPointPtr->getPointValue();
 
             component_quality = componentPointPtr->getPointQuality();
             component_time = componentPointPtr->getPointTime();
@@ -227,6 +231,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
         case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
         case division:       input = _doFunction(RWCString("division"), calcValid);  break;
+        case modulo:         input = _doFunction(RWCString("modulo divide"), calcValid);  break;
         case push:
             {
                 // Handled above with the push based on _componentPointId.
@@ -239,7 +244,8 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         // Push the constant and then perform the action against the stack.
         if( _calcpoint != NULL )
         {
-            _calcpoint->push( _constantValue );
+            if( _calcpoint->push( _constantValue ) )
+                input = _constantValue;
         }
         else
         {
@@ -253,6 +259,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         case subtraction:    input = _doFunction(RWCString("subtraction"), calcValid);  break;
         case multiplication: input = _doFunction(RWCString("multiplication"), calcValid);  break;
         case division:       input = _doFunction(RWCString("division"), calcValid);  break;
+        case modulo:         input = _doFunction(RWCString("modulo divide"), calcValid);  break;
         case greater:        input = _doFunction(RWCString(">"), calcValid);  break;
         case geq:            input = _doFunction(RWCString(">="), calcValid);  break;
         case less:           input = _doFunction(RWCString("<"), calcValid);  break;
@@ -317,6 +324,18 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             if(operand2 != 0.0)
             {
                 retVal = operand1 / operand2;
+            }
+            else
+                validCalc = false;
+        }
+        else if( !functionName.compareTo("modulo divide",RWCString::ignoreCase) )
+        {
+            double operand2 = _calcpoint->pop( );
+            double operand1 = _calcpoint->pop( );
+
+            if(operand2 != 0.0)
+            {
+                retVal = (double)((int)operand1 % (int)operand2);
             }
             else
                 validCalc = false;

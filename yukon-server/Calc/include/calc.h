@@ -29,6 +29,7 @@ private:
     static const CHAR * UpdateType_OneChange;
     static const CHAR * UpdateType_Historical;
     static const CHAR * UpdateType_PeriodicPlusUpdate;
+    static const CHAR * UpdateType_Constant;
 
     RWTime calcTimeFromComponentTime( const RWTime &minTime, const RWTime &maxTime );
     bool calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime );
@@ -65,7 +66,7 @@ public:
     double calculate( int &calc_quality, RWTime &calc_time, bool &calcValid );
     double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );
-    void push( double );
+    bool push( double );
     double pop( void );
 };
 

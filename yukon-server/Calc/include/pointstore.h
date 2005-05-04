@@ -34,7 +34,8 @@ enum PointUpdateType
     allUpdate,
     anyUpdate,
     historical,
-    periodicPlusUpdate
+    periodicPlusUpdate,
+    constant
 };
 
 using namespace std;

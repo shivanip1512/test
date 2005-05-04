@@ -23,6 +23,7 @@ const CHAR * CtiCalc::UpdateType_AllChange  = "On All Change";
 const CHAR * CtiCalc::UpdateType_OneChange  = "On First Change";
 const CHAR * CtiCalc::UpdateType_Historical = "Historical";
 const CHAR * CtiCalc::UpdateType_PeriodicPlusUpdate = "On Timer+Change";
+const CHAR * CtiCalc::UpdateType_Constant   = "Constant";
 
 CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval )
 {
@@ -56,6 +57,11 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
         _updateInterval = updateInterval;
         setNextInterval (updateInterval);
         _updateType = periodicPlusUpdate;
+    }
+    else if( !updateType.compareTo(UpdateType_Constant, RWCString::ignoreCase) )
+    {
+        _updateInterval = 0;
+        _updateType = constant;
     }
     else
     {
@@ -169,9 +175,10 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid
     return retVal;
 }
 
-void CtiCalc::push( double val )
+bool CtiCalc::push( double val )
 {
     _stack.push( val );
+    return( _stack.entries() == 2 );    // Was this the first push (after the push(retVal = 0) stack primer)?
 }
 
 
@@ -233,6 +240,9 @@ BOOL CtiCalc::ready( void )
             case allUpdate:
                 for( ; iter( ); )
                     isReady &= ((CtiCalcComponent *)(iter.key( )))->isUpdated( );
+                break;
+            case constant:
+                isReady = TRUE;
                 break;
             case anyUpdate:
                 for( ; iter( ); )
@@ -349,10 +359,7 @@ RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &
 
     if(getUpdateType() != periodic)
     {
-        if( minTime == maxTime)  // If all components are the same.
-        {
-            rtime = minTime;
-        }
+        rtime = maxTime;
     }
 
     return rtime;
@@ -360,7 +367,8 @@ RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &
 
 bool CtiCalc::calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime )
 {
-    if(componentQuality != NonUpdatedQuality)
+    if( componentQuality != NonUpdatedQuality &&        // Timestamps are ignored on non-updated or constant quality points.
+        componentQuality != ConstantQuality )
     {
         if(minTime > componentTime)
             minTime = componentTime;
@@ -380,6 +388,12 @@ int CtiCalc::calcQualityFromComponentQuality( int qualityFlag, const RWTime &min
     {
         component_quality = ManualQuality;
         qualityFlag &= ~(1 << ManualQuality);
+    }
+
+    if(qualityFlag & (1 << ConstantQuality) )
+    {
+        component_quality = ConstantQuality;
+        qualityFlag &= ~(1 << ConstantQuality);
     }
 
     if(qualityFlag & (1 << NonUpdatedQuality) )

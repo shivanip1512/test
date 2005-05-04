@@ -31,9 +31,6 @@ protected:
     bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
     void dropDispatchConnection( );
-
-    //
-    // ecs 1/5/2005
     void loadConfigParameters( );
     static void mainComplain( void *la );
     static void outComplain( void *la );
@@ -45,7 +42,7 @@ private:
     RWThreadFunction _outputFunc;
 
     RWTime _dispatchPingedFailed;
-    bool _lastWasPingNoDataSince;
+    bool _dispatchConnectionBad;
     bool _ok, _restart;
     RWCString _dispatchMachine;
     INT _dispatchPort;

@@ -31,7 +31,8 @@ private:
         greater,
         geq,
         less,
-        leq
+        leq,
+        modulo
     }                    _operationType;
     double               _constantValue;
     RWCString            _functionName;
