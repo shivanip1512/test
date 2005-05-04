@@ -7,6 +7,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
 	private String gearType = null;
@@ -480,6 +481,10 @@ private javax.swing.JTextField getJTextFieldGearName() {
 			ivjJTextFieldGearName.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJTextFieldGearName.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
+			ivjJTextFieldGearName.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

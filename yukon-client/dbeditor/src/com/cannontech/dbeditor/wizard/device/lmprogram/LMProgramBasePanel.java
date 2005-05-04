@@ -654,7 +654,8 @@ public Object getValue(Object o)
 	if(program.getPAOType().compareTo(DeviceTypes.STRING_LM_DIRECT_PROGRAM[0]) == 0)
 	{
 		LMProgramDirect prog = (LMProgramDirect)o;
-		prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
+		if(getJTextFieldTriggerOffset().getText().length() > 0)
+			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
 	}
 
 	return o;
