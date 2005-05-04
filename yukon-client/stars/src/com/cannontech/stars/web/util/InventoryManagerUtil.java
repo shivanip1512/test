@@ -348,9 +348,14 @@ public class InventoryManagerUtil {
 			sa305.setGroup( ServletUtils.parseNumber(req.getParameter("SA305_Group"), 0, 63, 0, "Group") );
 			sa305.setDivision( ServletUtils.parseNumber(req.getParameter("SA305_Division"), 0, 63, 0, "Division") );
 			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, 0, "Substation") );
-			sa305.setRateFamily( ServletUtils.parseNumber(req.getParameter("SA305_RateFamily"), 0, 7, "Rate Family") );
-			sa305.setRateMember( ServletUtils.parseNumber(req.getParameter("SA305_RateMember"), 0, 15, "Rate Member") );
-			sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy") );
+			
+			int rateFam = new Integer(req.getParameter("SA305_RateRate")).intValue() / 16;
+			int rateMem = new Integer(req.getParameter("SA305_RateRate")).intValue() % 16;;
+			sa305.setRateFamily( ServletUtils.parseNumber(new Integer(rateFam).toString(), 0, 7, "Rate Family") );
+			sa305.setRateMember( ServletUtils.parseNumber(new Integer(rateMem).toString(), 0, 15, "Rate Member") );
+			//Rate Hierarchy should not be on the config page; it is part of the control command only
+			sa305.setRateHierarchy(0);
+			//sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy") );
 			
 			starsCfg.setSA305( sa305 );
 		}

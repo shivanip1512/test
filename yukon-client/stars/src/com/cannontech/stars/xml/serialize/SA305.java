@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: SA305.java,v 1.13 2005/01/20 00:37:06 yao Exp $
+ * $Id: SA305.java,v 1.14 2005/05/04 19:30:23 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -23,7 +23,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.13 $ $Date: 2005/01/20 00:37:06 $
+ * @version $Revision: 1.14 $ $Date: 2005/05/04 19:30:23 $
 **/
 public class SA305 implements java.io.Serializable {
 
@@ -145,6 +145,11 @@ public class SA305 implements java.io.Serializable {
         return this._rateMember;
     } //-- int getRateMember() 
 
+
+	public int getRateRate()
+	{
+		return 16*this._rateFamily + this._rateMember;
+	} //-- int getRateMember() 
     /**
      * Returns the value of field 'substation'.
      * 

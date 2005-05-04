@@ -114,27 +114,26 @@ Required variables:
           </td>
         </tr>
         <tr> 
-          <td align="right" class="TitleHeader" width="55%">Rate 
-            Address </td>
-          <td width="45%">&nbsp;</td>
+          <td align="right" class="TitleHeader" width="55%"> 
+             </td>
+          <td width="45%"></td>
         </tr>
         <tr> 
-          <td align="right" class="MainText" width="55%">Family:</td>
+          <td align="right" class="MainText" width="55%">Rate:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateFamily" value="<%= sa305.getRateFamily() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
+            <input type="text" name="SA305_RateRate" value="<%= ServletUtils.hideUnsetNumber(sa305.getRateRate(), 0) %>" size="6" maxlength="15" onchange="setContentChanged(true)">
           </td>
         </tr>
         <tr> 
           <td align="right" class="MainText" width="55%">Member:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateMember" value="<%= sa305.getRateMember() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
+            <input type="text" name="SA305_RateMember" value="<%= ServletUtils.hideUnsetNumber(sa305.getRateRate() % 16, 0)%>" size="6" maxlength="15" onchange="setContentChanged(true)" readonly>
           </td>
         </tr>
         <tr> 
-          <td align="right" class="MainText" width="55%"> 
-            Hierarchy:</td>
+          <td align="right" class="MainText" width="55%">Family:</td>
           <td width="45%"> 
-            <input type="text" name="SA305_RateHierarchy" value="<%= sa305.getRateHierarchy() %>" size="6" maxlength="15" onchange="setContentChanged(true)">
+            <input type="text" name="SA305_RateFamily" value="<%= ServletUtils.hideUnsetNumber(sa305.getRateRate() / 16, 0)%>" size="6" maxlength="15" onchange="setContentChanged(true)" readonly>
           </td>
         </tr>
       </table>
