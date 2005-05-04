@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.139 $
-* DATE         :  $Date: 2005/03/17 17:50:11 $
+* REVISION     :  $Revision: 1.140 $
+* DATE         :  $Date: 2005/05/04 20:49:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -329,7 +329,8 @@ VOID PortThread(void *pid)
 
         if(Port->getConnectedDevice() != OutMessage->DeviceID)
         {
-            DeviceManager.removeInfiniteExclusion(Device);
+            if(Device && Device->hasExclusions())
+                DeviceManager.removeInfiniteExclusion(Device);
         }
 
         /*
@@ -3744,7 +3745,6 @@ INT ProcessPortPooling(CtiPortSPtr Port)
                 }
             }
 
-
             Port->setPoolAssignedGUID(0);
         }
     }
@@ -3798,7 +3798,7 @@ INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
         ProcessPortPooling(Port);
 
         // We need to see if the next Q entry is for this Device... If it is, we should not release our exclusion
-        if( Device && !Device->hasQueuedWork() )
+        if( Device && Device->hasExclusions() && !Device->hasQueuedWork() )
         {
             DeviceManager.removeInfiniteExclusion(Device);
         }
