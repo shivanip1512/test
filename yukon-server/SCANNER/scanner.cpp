@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/04/11 20:05:22 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/05/04 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1441,10 +1441,11 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     {
                     case (CtiCommandMsg::Shutdown):
                         {
-                            SetEvent(hScannerSyncs[S_QUIT_EVENT]);
+                            //SetEvent(hScannerSyncs[S_QUIT_EVENT]);
                             {
+                                Cmd->dump();
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Dispatch just told scanner to shutdown" << endl;
+                                dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
                             }
                             break;
                         }

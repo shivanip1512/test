@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:24:03 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/05/04 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,7 +216,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " MainThread: SHUTDOWN received from queue" << endl;
+                    dout << RWTime() << " MainThread: SHUTDOWN received from queue.  Ignored." << endl;
                 }
 
                 /*
@@ -224,14 +224,16 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                  *  Then we release VGMain to do the same for all remaining connections.
                  */
                 // This will block on return until the Out and In threads have stopped executing
-                clientShutdown(pConn);
+
+                // clientShutdown(pConn);
 
                 /*
                  *  Shutdown / delete the VGMain Listener socket which releases ConnectionHandler
                  *  Send a Client Shutdown message to each ConnecionManager's InThread to init
                  *  A general closeout from VGMain.
                  */
-                shutdown();
+
+                // shutdown();
                 break;
             }
         case (CtiCommandMsg::LoopClient):

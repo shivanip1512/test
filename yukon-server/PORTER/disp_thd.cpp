@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/04/27 13:41:25 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/05/04 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,10 +167,17 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         {
                         case (CtiCommandMsg::Shutdown):
                             {
-                                SetEvent(hPorterEvents[P_QUIT_EVENT]);
-                                PorterQuit = TRUE;
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Porter received a shutdown message from somewhere" << endl;
+                                //SetEvent(hPorterEvents[P_QUIT_EVENT]);
+                                //PorterQuit = TRUE;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                Cmd->dump();
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
+                                }
                                 break;
                             }
                         case (CtiCommandMsg::AreYouThere):

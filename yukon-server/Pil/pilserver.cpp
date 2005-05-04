@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2005/03/14 01:19:24 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2005/05/04 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,7 +167,7 @@ void CtiPILServer::mainThread()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Could not open socket " << NetAddr << " for listning" << endl;
+                dout << "Could not open socket " << NetAddr << " for listning" << endl;
             }
 
             exit(-1);
@@ -1244,9 +1244,12 @@ void CtiPILServer::vgConnThread()
                     {
                     case (CtiCommandMsg::Shutdown):
                         {
-                            bServerClosing = TRUE;
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " PIL received a shutdown message from somewhere" << endl;
+                            // bServerClosing = TRUE;
+                            {
+                                Cmd->dump();
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Shutdown requests by command messages are ignored." << endl;
+                            }
                             break;
                         }
                     case (CtiCommandMsg::AreYouThere):
@@ -1381,22 +1384,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 CtiDeviceBase &device = *(sptr.get());
 
-                        groupsubmitcnt++;
+                groupsubmitcnt++;
 
-                        // We have a name match
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
-                        }
+                // We have a name match
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Adding device " << device.getID() << " / " << device.getName() << " for group execution" << endl;
+                }
 
-                        // Create a message for this one!
-                        pReq->setDeviceId(device.getID());
+                // Create a message for this one!
+                pReq->setDeviceId(device.getID());
 
-                        CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                        pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
+                pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                        execList.insert( pNew );
-                    }
+                execList.insert( pNew );
+            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1425,21 +1428,21 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 CtiDeviceBase &device = *(sptr.get());
 
-                        groupsubmitcnt++;
+                groupsubmitcnt++;
 
-                        // We have a name match
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Adding device " << device.getName() << " for ALT group execution" << endl;
-                        }
+                // We have a name match
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Adding device " << device.getName() << " for ALT group execution" << endl;
+                }
 
-                        // Create a message for this one!
-                        pReq->setDeviceId(device.getID());
-                        CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                        pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                // Create a message for this one!
+                pReq->setDeviceId(device.getID());
+                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
+                pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                        execList.insert( pNew );
-                    }
+                execList.insert( pNew );
+            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
