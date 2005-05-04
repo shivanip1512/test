@@ -69,17 +69,26 @@ public static String removeChars(char deletedChar, String str )
 
 /**
  * Takes an array of strings and try to convert and put each element
- * into an array of ints
+ * into an array of ints. If anything goes wrong, a zero length int
+ * array is returned.
  * 
  */
 public static int[] toIntArray(String[] str)
 {
-	if( str == null )
-		return new int[0];
-
-	int[] intArr = new int[str.length];
-	for( int i = 0; i < str.length; i++ )
-		intArr[i] = Integer.parseInt(str[i]);
+	int[] intArr = new int[0];
+	if( str != null )
+	{
+		try
+		{		
+			intArr = new int[str.length];
+			for( int i = 0; i < str.length; i++ )
+				intArr[i] = Integer.parseInt(str[i]);
+		}
+		catch( NumberFormatException nfe )
+		{
+			intArr = new int[0];
+		}
+	}
 
 	return intArr;		
 }
