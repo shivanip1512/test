@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/04/27 13:45:01 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/05/04 20:49:33 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.24  2005/05/04 20:49:33  cplender
+* Adjusted coldload and tamper detect code for the SA stuff.
+*
 * Revision 1.23  2005/04/27 13:45:01  cplender
 * Code change to record the most recent control command to be sent out so that a restore can use the same stime/ctime.
 * Removed unused OutMessage argument from several methods.
@@ -230,7 +233,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                     // temporary service out command!
                     RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
                     INT totalLen = 0;
-                    // More than one config might be generated into the buffer.
+
                     _errorBuf[0] = '\0';
                     _errorLen = MAX_SAERR_MSG_SIZE;
 
@@ -268,6 +271,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                         if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
                         {
                             clpCount = (int)( (float)clsec / 14.0616 );
+                            if(clpCount >= 255) clpCount = 255;
                             // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
                             {
                                 CtiLockGuard<CtiLogger> slog_guard(slog);
@@ -508,9 +512,13 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
     }
     else if(parse.isKeyValid("sa_coldload"))
     {
+        // Handled in parseCommand()
+        // coldLoadPickup205
     }
     else if(parse.isKeyValid("sa_tamper"))
     {
+        // Handled in parseCommand()
+        // tamperDetect205
     }
 
     return status;

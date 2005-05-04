@@ -85,10 +85,10 @@ void  CtiCommandParser::parse()
 
     _actionItems.clear();   // 20050125 CGP.  Getting duplicate actionItems when I reparse in the groups.  This should be benign.
 
-    if(!CmdStr.match("^pil ").isNull() || !CmdStr.match("^command ").isNull())
+    if(!CmdStr.match("^ *pil ").isNull() || !CmdStr.match("^ *command ").isNull())
     {
-        CmdStr = CmdStr.replace("^pil ", "");
-        CmdStr = CmdStr.replace("^command ", "");
+        CmdStr = CmdStr.replace("^ *pil ", "");
+        CmdStr = CmdStr.replace("^ *command ", "");
     }
 
     RWCTokenizer    tok(CmdStr);
@@ -4568,43 +4568,43 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
             {
                 _cmd["sa_coldload"] = TRUE;
                 // Assume seconds is the input here!
-                if(!(temp = CmdStr.match(" coldload +f1[ =]+[0-9]+")).isNull())
+                if(!(temp = CmdStr.match(" +f1[ =]+[0-9]+")).isNull())
                 {
-                    temp.replace("coldload +f1[ =]+", "");
+                    temp.replace(" +f1[ =]+", "");
                     if(!(valStr = temp.match("[0-9]+")).isNull())
                     {
                         iValue = atoi(valStr.data());
                         _cmd["sa_clpf1"] = CtiParseValue(iValue);
                     }
                 }
-                else if(!(temp = CmdStr.match(" coldload +f2[ =]+[0-9]+")).isNull())
+                if(!(temp = CmdStr.match(" +f2[ =]+[0-9]+")).isNull())
                 {
-                    temp.replace("coldload +f2[ =]+", "");
+                    temp.replace(" +f2[ =]+", "");
                     if(!(valStr = temp.match("[0-9]+")).isNull())
                     {
                         iValue = atoi(valStr.data());
                         _cmd["sa_clpf2"] = CtiParseValue(iValue);
                     }
                 }
-                else if(!(temp = CmdStr.match(" coldload +f3[ =]+[0-9]+")).isNull())
+                if(!(temp = CmdStr.match(" +f3[ =]+[0-9]+")).isNull())
                 {
-                    temp.replace("coldload +f3[ =]+", "");
+                    temp.replace(" +f3[ =]+", "");
                     if(!(valStr = temp.match("[0-9]+")).isNull())
                     {
                         iValue = atoi(valStr.data());
                         _cmd["sa_clpf3"] = CtiParseValue(iValue);
                     }
                 }
-                else if(!(temp = CmdStr.match(" coldload +f4[ =]+[0-9]+")).isNull())
+                if(!(temp = CmdStr.match(" +f4[ =]+[0-9]+")).isNull())
                 {
-                    temp.replace("coldload +f4[ =]+", "");
+                    temp.replace(" +f4[ =]+", "");
                     if(!(valStr = temp.match("[0-9]+")).isNull())
                     {
                         iValue = atoi(valStr.data());
                         _cmd["sa_clpf4"] = CtiParseValue(iValue);
                     }
                 }
-                else if(!(temp = CmdStr.match(" coldload +all[ =]+[0-9]+")).isNull())
+                if(!(temp = CmdStr.match(" +all[ =]+[0-9]+")).isNull())
                 {
                     if(!(valStr = temp.match("[0-9]+")).isNull())
                     {
@@ -4649,11 +4649,11 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
                     _cmd["sa_horm1"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" use relaymap 0")).isNull())
+            else if(!(temp = CmdStr.match(" use relay *map 0")).isNull())
             {
                 _cmd["sa_userelaymap0"] = TRUE;
             }
-            else if(!(temp = CmdStr.match(" use relaymap 1")).isNull())
+            else if(!(temp = CmdStr.match(" use relay *map 1")).isNull())
             {
                 _cmd["sa_userelaymap1"] = TRUE;
             }

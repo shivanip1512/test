@@ -8,10 +8,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/17 05:15:34 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/05/04 20:49:33 $
 * HISTORY      :
 * $Log: prot_sa305.h,v $
+* Revision 1.10  2005/05/04 20:49:33  cplender
+* Adjusted coldload and tamper detect code for the SA stuff.
+*
 * Revision 1.9  2005/03/17 05:15:34  mfisher
 * 305 currently doesn't share any similarities with Protocol::Interface, so it's going to be orphaned for a while
 *
@@ -133,6 +136,7 @@ private:
 
     void addBits(unsigned int src, int num=32);
     void setBit(unsigned int offset, BYTE bit);
+    void setBits(unsigned int offset, unsigned int src, int num=32);
     UINT getBits(unsigned int &offset, int len) const;
 
     void resetMessage();

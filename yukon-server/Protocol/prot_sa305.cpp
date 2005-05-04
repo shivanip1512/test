@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/27 13:41:13 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/04 20:49:33 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.16  2005/05/04 20:49:33  cplender
+* Adjusted coldload and tamper detect code for the SA stuff.
+*
 * Revision 1.15  2005/04/27 13:41:13  cplender
 * 305 cycles were not choosing 7.5 minute periods correctly.
 *
@@ -597,6 +600,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     }
     // Now process the message components.
     resetMessage();
+    // addressMessage may be called again to begin a second back to back message.
     addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
 
     // Assist in the asString() call in the future.
@@ -822,42 +826,50 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
     else
     {
         // This is a 13bit config!
+        bool newmessageneeded = false;
         int val;
 
-        if( 0 <= (val = parse.getiValue("sa_clpf1",-1)) )
-        {
-            val = (int)((float)val / 14.0616);
-            if(val >= 255) val = 255;
-            addBits(0, 5);
-            addBits(val, 8);
-        }
-        else if( 0 <= (val = parse.getiValue("sa_clpf2",-1)) )
-        {
-            val = (int)(((float)val + 7.0307) / 14.0616);
-            if(val >= 255) val = 255;
-            addBits(1, 5);
-            addBits(val, 8);
-        }
-        else if( 0 <= (val = parse.getiValue("sa_clpf3",-1)) )
-        {
-            val = (int)((float)val / 14.0616);
-            if(val >= 255) val = 255;
-            addBits(2, 5);
-            addBits(val, 8);
-        }
-        else if( 0 <= (val = parse.getiValue("sa_clpf4",-1)) )
-        {
-            val = (int)((float)val / 14.0616);
-            if(val >= 255) val = 255;
-            addBits(3, 5);
-            addBits(val, 8);
-        }
-        else if( 0 <= (val = parse.getiValue("sa_clpall",-1)) )
+        if( parse.isKeyValid("sa_coldload") && (0 <= (val = parse.getiValue("sa_clpall",-1))) )
         {
             val = (int)((float)val / 14.0616);
             if(val >= 255) val = 255;
             addBits(4, 5);
             addBits(val, 8);
+        }
+        else if(parse.isKeyValid("sa_coldload"))
+        {
+            RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+            RWCString clpstr;
+
+            int i, clsec, clpCount;
+            for(i = 1; i <= 4; i++)
+            {
+                clpstr = RWCString("sa_clpf") + CtiNumStr(i); // coldload_r1,,... coldload_r4
+
+                if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
+                {
+                    clpCount = (int)( (float)clsec / 14.0616 );
+                    // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
+                    {
+                        CtiLockGuard<CtiLogger> slog_guard(slog);
+                        slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        slog << " Setting coldLoadPickup. Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
+                    }
+
+                    if( clsec >= 0 )
+                    {
+                        if(newmessageneeded)
+                        {
+                            addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
+                        }
+
+                        if(clpCount >= 255) clpCount = 255;
+                        addBits(i-1, 5);
+                        addBits(clpCount, 8);
+                        newmessageneeded = true;
+                    }
+                }
+            }
         }
         else if( 0 <= (val = parse.getiValue("sa_lorm0",-1)) )
         {
@@ -913,6 +925,37 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         {
             addBits(val, 5);
             addBits(parse.getiValue("sa_dataval",0), 8);
+        }
+        else if(parse.isKeyValid("sa_tamper"))
+        {
+            // There has been an assignment request!
+            RWCString tdstr;
+            RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
+
+            int i, tdCount;
+            for(i = 1; i <= 4; i++)
+            {
+                tdstr = RWCString("tamperdetect_f") + CtiNumStr(i);
+
+                if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> slog_guard(slog);
+                        slog << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        slog << " Setting tamperDetectCount. Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
+                    }
+
+                    if(newmessageneeded)
+                    {
+                        addressMessage(parse.getiValue("sa_f1bit", CtiProtocolSA305::CommandTypeOperationFlag), parse.getiValue("sa_f0bit", CtiProtocolSA305::CommandDescription_DIMode) );
+                    }
+
+                    if(tdCount >= 255) tdCount = 255;
+                    i == 1 ? addBits(14, 5) : addBits(15, 5);
+                    addBits(tdCount, 8);
+                    newmessageneeded = true;
+                }
+            }
         }
     }
     return status;
@@ -985,6 +1028,20 @@ void CtiProtocolSA305::setBit(unsigned int offset, BYTE bit)
     {
         _messageBits[offset] = (bit ? 1 : 0);
     }
+}
+
+void CtiProtocolSA305::setBits(unsigned int offset, unsigned int src, int num)
+{
+    BYTE bit;
+    int i;
+
+    for(i = 0; i < num; i++)
+    {
+        bit = (src & (0x80000000 >> (32 - num + i)) ? 1 : 0);
+        if(_messageBits.size() >= offset+i) _messageBits[offset+i] = (bit ? 1 : 0);
+    }
+
+    _bitStr += " ";
 }
 
 UINT CtiProtocolSA305::getBits(unsigned int &offset, int len) const
