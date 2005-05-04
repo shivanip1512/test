@@ -241,6 +241,10 @@ public class YukonSwitchCommandAction implements ActionBase {
 		java.util.Date now = new java.util.Date();
 		
 		String cmd = null;
+		String map1Cmdlorm = null;
+		String map1Cmdhorm = null;
+		boolean is305 = false;
+		
 		int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
 		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 			cmd = "putconfig vcom service out serial " + liteHw.getManufacturerSerialNumber();
@@ -259,8 +263,23 @@ public class YukonSwitchCommandAction implements ActionBase {
 				",6=" + InventoryUtils.SA205_UNUSED_ADDR;
 		}
 		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
-			// TODO: reconfig a SA305 switch to disable it
+			/* To disable a SA305 switch, we need to zero out relay map 1 and tell the
+			switch to use map 1 instead of map 0*/
+			is305 = true;
+			
+			//sets map 1 to zero values
+			map1Cmdlorm = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" lorm1=0";
+			map1Cmdhorm = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" horm1=0";
+			//tell the switch to use relay map1 instead of relay map0
+			cmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" use relay map 1";
 		}
+		
 		if (cmd == null) return;
 		
 		int rtID = 0;
@@ -270,6 +289,12 @@ public class YukonSwitchCommandAction implements ActionBase {
 			rtID = liteHw.getRouteID();
 		if (rtID == 0)
 			rtID = energyCompany.getDefaultRouteID();
+		
+		if(is305)
+		{
+			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID );
+			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID );
+		}
 		
 		ServerUtils.sendSerialCommand( cmd, rtID );
 		
@@ -304,6 +329,10 @@ public class YukonSwitchCommandAction implements ActionBase {
 			throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
 		
 		String cmd = null;
+		String map1Cmdlorm = null;
+		String map1Cmdhorm = null;
+		boolean is305 = false;
+		
 		int hwConfigType = InventoryUtils.getHardwareConfigType( liteHw.getLmHardwareTypeID() );
 		if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_VERSACOM) {
 			cmd = "putconfig vcom service in serial " + liteHw.getManufacturerSerialNumber();
@@ -316,8 +345,26 @@ public class YukonSwitchCommandAction implements ActionBase {
 			cmd = getConfigCommands(liteHw, energyCompany, true, null)[0];
 		}
 		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305) {
-			// TODO: reconfig a SA305 switch to enable it
+			/* To enable a SA305 switch, we need to tell the
+			switch to use map 1 instead of map 0 and then reset 
+			values in relay map 1 to their defaults just to be neat and tidy*/
+			is305 = true;
+			
+			//tell the switch to use relay map0 instead of relay map1
+			cmd = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" use relay map 0";
+			
+			//puts relay 1 back to its default values	
+			map1Cmdlorm = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" lorm1=40";
+			map1Cmdhorm = "putconfig sa305 serial " + liteHw.getManufacturerSerialNumber() + " utility " +
+				liteHw.getLMConfiguration().getSA305().getUtility() + 
+				" horm1=65";
+
 		}
+		
 		if (cmd == null) return;
 		
 		int rtID = 0;
@@ -329,6 +376,11 @@ public class YukonSwitchCommandAction implements ActionBase {
 			rtID = energyCompany.getDefaultRouteID();
 		
 		ServerUtils.sendSerialCommand( cmd, rtID );
+		if(is305)
+		{
+			ServerUtils.sendSerialCommand( map1Cmdlorm, rtID );
+			ServerUtils.sendSerialCommand( map1Cmdhorm, rtID );
+		}
 		
 		// Add "Activation Completed" to hardware events
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
