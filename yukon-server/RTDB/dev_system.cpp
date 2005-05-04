@@ -6,12 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/04/27 13:43:27 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/05/04 20:50:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
+#include "cparms.h"
 
 
 
@@ -110,7 +111,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 case ProtocolSA305Type:
                     {
                         OutMessage->EventCode |= NORESULT;
-                        OutMessage->Retry = 2;                      // Default to two tries per route!
+                        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
                         break;
                     }
                 case ProtocolFisherPierceType:
@@ -203,7 +204,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 case ProtocolSA305Type:
                     {
                         OutMessage->EventCode |= NORESULT;
-                        OutMessage->Retry = 2;                      // Default to two tries per route!
+                        OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
                         break;
                     }
                 case ProtocolFisherPierceType:
