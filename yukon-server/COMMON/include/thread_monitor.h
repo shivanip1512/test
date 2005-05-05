@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/02/18 14:32:41 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/05/05 17:34:03 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -35,7 +35,8 @@ public:
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();
 
-   void tickle( const CtiThreadRegData *in );
+//   void tickle( const CtiThreadRegData *in );
+   void tickle( CtiThreadRegData *in );
    void dump( void );
 
 protected:
@@ -58,8 +59,8 @@ private:
 
 };
 
-//  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22
-//  include thread_monitor.h if you want to use the thread monitor in your code
+//  included here instead of dllbase.h because ptimes are fat as of 2004-oct-22;
+//    include thread_monitor.h if you want to use the thread monitor in your code
 IM_EX_CTIBASE extern CtiThreadMonitor  ThreadMonitor;
 
 #endif // #ifndef __THREAD_MONITOR_H__
