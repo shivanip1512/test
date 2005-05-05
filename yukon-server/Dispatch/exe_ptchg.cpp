@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/05/05 17:08:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,43 +37,15 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
    {
       switch(getMessage()->isA())
       {
-      case MSG_POINTREGISTRATION:
-         {
-            try
-            {
-               nRet = VG->registration((CtiVanGoghConnectionManager*)(getMessage()->getConnectionHandle()),
-                                       *(CtiPointRegistrationMsg*)getMessage());
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            break;
-         }
-      case MSG_DBCHANGE:
-         {
-            try
-            {
-               nRet = VG->postDBChange(*(CtiDBChangeMsg*)getMessage());
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-            break;
-         }
       case MSG_MULTI:
       case MSG_SIGNAL:
       case MSG_POINTDATA:
       case MSG_PCRETURN:
       case MSG_TAG:
+      case MSG_LMCONTROLHISTORY:
+      case MSG_COMMERRORHISTORY:
+      case MSG_POINTREGISTRATION:
+      case MSG_DBCHANGE:
          {
             try
             {
@@ -88,26 +60,6 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
             }
             break;
          }
-      case MSG_LMCONTROLHISTORY:
-         {
-            try
-            {
-               nRet = VG->processControlMessage((CtiLMControlHistoryMsg*)getMessage());
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-            break;
-         }
-      case MSG_COMMERRORHISTORY:
-          {
-              nRet = VG->processCommErrorMessage((CtiCommErrorHistoryMsg*)getMessage());
-              break;
-          }
       default:
          {
             {
