@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/05/04 20:28:01 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/05/05 17:08:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,8 +187,10 @@ int  CtiServer::clientRegistration(CtiConnectionManager *CM)
     {
         if(mConnectionTable.remove(Mgr))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << NowTime.now() << " " << Mgr->getClientName() << " / " << Mgr->getClientAppId() << " / " << Mgr->getPeer() << " just _lost_ the client arbitration." << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << NowTime.now() << " " << Mgr->getClientName() << " / " << Mgr->getClientAppId() << " / " << Mgr->getPeer() << " just _lost_ the client arbitration." << endl;
+            }
 
             // This connection manager is abandoned now...
             delete Mgr;
