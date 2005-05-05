@@ -164,19 +164,18 @@ public:
 
     size_t   entries(void) const       // QueryQue.
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
+        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
         return _sortedCol.entries();
     }
 
     size_t   size(void)        // how big may it be?
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
+        TryLockGuard lock(monitor());   // TRY to acquire monitor mutex. Not critical.  May be used as a getter, so we cannot be rigid here.
         return _sortedCol.entries();
     }
 
     BOOL  isFull(void)
     {
-        LockGuard lock(monitor());   // acquire monitor mutex
         return(FALSE);
     }
 

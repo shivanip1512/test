@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/05 17:08:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -427,3 +427,11 @@ char CtiLogger::fill() const
 {
     return _current_stream->fill();
 }
+
+#ifdef _DEBUG
+DWORD CtiLogger::lastAcquiredByTID() const
+{
+    return _log_mux.lastAcquiredByTID();
+}
+#endif
+

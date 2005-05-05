@@ -102,6 +102,10 @@ public:
     char fill(char cfill);
     char fill() const;
 
+#ifdef _DEBUG
+    DWORD lastAcquiredByTID() const;
+#endif
+
 protected:
     void run();
 

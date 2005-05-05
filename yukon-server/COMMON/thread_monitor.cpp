@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/18 14:32:41 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/05 17:08:43 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ void CtiThreadMonitor::processExpired( void )
       {
          if( !i->second.getReported() )
          {
-            messageOut( "tsis", "Thread W/ID", i->first, "Is UNREPORTED" );
+            messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is UNREPORTED" );
 
             int reaction_type = i->second.getBehaviour();
 
@@ -275,26 +275,27 @@ void CtiThreadMonitor::dump( void )
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
 // we're trying hard to keep from anyone sending us illegal data, so we check for an id of zero before we
 // accept the pointer as that is a CtiThreadRegData default
+//
+// USERS NOTE: tickle will take care of your pointer, so don't delete it on your end!
+//
 //===========================================================================================================
 
-void CtiThreadMonitor::tickle( const CtiThreadRegData *in )
+void CtiThreadMonitor::tickle( CtiThreadRegData *in )
 {
-   //we need to copy the data locally to put on the queue or we'll destroy
-   //data that is not ours when we delete the queue
    try
    {
       if( in )
       {
-         CtiThreadRegData *data = new CtiThreadRegData( *in );
+//         CtiThreadRegData *data = new CtiThreadRegData( *in );
 
-         if( data->getId() )
+         if( in->getId() )
          {
-            data->setTickledTime( second_clock::local_time() );
+            in->setTickledTime( second_clock::local_time() );
 
-            _queue.putQueue( data );
+            _queue.putQueue( in );
 
             if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-               messageOut( "tsis", "Thread", data->getId(), "Inserted" );
+               messageOut( "tsis", "Thread", in->getId(), "Inserted" );
 
             //our thread may have shut down, so we don't want the queue to keep growing
             //as we won't be processing it anymore

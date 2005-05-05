@@ -34,9 +34,6 @@ using namespace std;
 
 #include "dlldefs.h"
 
-
-extern IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
-
 template<class T>
 class IM_EX_CTIBASE CtiLockGuard
 {
@@ -46,7 +43,7 @@ public:
         #ifdef _DEBUG
         while(!(_acquired = _res.acquire(900000)))
         {
-            cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << endl;
+            cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << endl;
         }
         #else
         _res.acquire();
@@ -103,4 +100,3 @@ private:
 };
 
 #endif
-
