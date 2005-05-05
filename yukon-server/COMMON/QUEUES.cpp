@@ -13,6 +13,7 @@ using namespace std;
 #include "dllbase.h"
 
 static void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT Previous);
+extern void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
 static void DefibBlockSem(HCTIQUEUE QueueHandle)
 {
