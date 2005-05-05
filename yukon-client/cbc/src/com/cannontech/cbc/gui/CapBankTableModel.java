@@ -253,7 +253,7 @@ public int getFeederRowSelected() {
  * This method returns the value of a row in the form of a CapBankDevice object.
  * @param rowIndex int
  */
-public synchronized CapBankDevice getRowAt(int rowIndex) 
+public CapBankDevice getRowAt(int rowIndex) 
 {
 	if( rowIndex < 0 || rowIndex > (getRowCount() - 1) )
 		return null;
@@ -264,7 +264,7 @@ public synchronized CapBankDevice getRowAt(int rowIndex)
  * This method returns the capbank with the specified PAO ID
  * @param paoID_ int
  */
-public synchronized CapBankDevice getCapbank( int capID_ ) 
+public CapBankDevice getCapbank( int capID_ ) 
 {
 	for( int i = 0; i < getRowCount(); i++ )
 	{
