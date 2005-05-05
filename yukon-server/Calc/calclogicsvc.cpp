@@ -273,71 +273,91 @@ void CtiCalcLogicService::Run( )
                 continue;
             }
 
+            RWThreadFunction calcThreadFunc;
+            CtiCalculateThread *tempCalcThread;
 
-            if(calcThread)
+            try
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Pausing the calcThreads for reload" << endl;
-                }
-                calcThread->interruptThreads(CtiCalculateThread::DBReload);       // Make certain these threads are paused if they can be.
-            }
-
-            CtiCalculateThread *tempCalcThread = new CtiCalculateThread;
-            if( !readCalcPoints( tempCalcThread ) )
-            {
-                if(calcThread) calcThread->resumeThreads();
-                {//only say we can't load any calc points every 5 minutes
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " No Calc Points Loaded.  Reusing old lists if possible." << endl;
-                }
-
-                // try it again
                 if(calcThread)
                 {
-                    tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
-                    tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
-                    tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
-                }
-                else
-                {
-                    delete tempCalcThread;
-                    tempCalcThread = 0;
-                    delete calcThread;
-                    calcThread = 0;
-
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec." << endl;
+                        dout << RWTime() << " Pausing the calcThreads for reload" << endl;
                     }
-                    Sleep(15000);
-                    continue;
+                    calcThread->interruptThreads(CtiCalculateThread::DBReload);       // Make certain these threads are paused if they can be.
                 }
-            }
 
-            {
-                if(calcThread)
+                tempCalcThread = new CtiCalculateThread;
+                if( !readCalcPoints( tempCalcThread ) )
                 {
-                    delete calcThread;
-                    calcThread = 0;
+                    if(calcThread) calcThread->resumeThreads();
+                    {//only say we can't load any calc points every 5 minutes
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " No Calc Points Loaded.  Reusing old lists if possible." << endl;
+                    }
+
+                    // try it again
+                    if(calcThread)
+                    {
+                        tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
+                        tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
+                        tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
+                    }
+                    else
+                    {
+                        delete tempCalcThread;
+                        tempCalcThread = 0;
+                        delete calcThread;
+                        calcThread = 0;
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec." << endl;
+                        }
+                        Sleep(15000);
+                        continue;
+                    }
                 }
-                calcThread = tempCalcThread;
 
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
+                {
+                    if(calcThread)
+                    {
+                        delete calcThread;
+                        calcThread = 0;
+                    }
+                    calcThread = tempCalcThread;
+
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
+                }
+
+                _registerForPoints();
+                calcThread->sendConstants();
+
+                //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
+                //    commonly-accessed resources will be the calcThread's pointStore object and message
+                //    queue (and during debug, the outstreams).  The calcThread object will be fed point
+                //    data changes by the input thread.  The output thread will take the messages from the
+                //    calcThread message queue and post them to Dispatch.
+                calcThreadFunc = rwMakeThreadFunction( *calcThread, &CtiCalculateThread::calcLoop );
+
+                calcThreadFunc.start( );
             }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
 
-            _registerForPoints();
-            calcThread->sendConstants();
+                delete tempCalcThread;
+                tempCalcThread = 0;
+                delete calcThread;
+                calcThread = 0;
 
-            //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
-            //    commonly-accessed resources will be the calcThread's pointStore object and message
-            //    queue (and during debug, the outstreams).  The calcThread object will be fed point
-            //    data changes by the input thread.  The output thread will take the messages from the
-            //    calcThread message queue and post them to Dispatch.
-            RWThreadFunction calcThreadFunc = rwMakeThreadFunction( *calcThread, &CtiCalculateThread::calcLoop );
-
-            calcThreadFunc.start( );
+                Sleep(5000);
+                continue;
+            }
 
             CtiPointDataMsg     *msgPtData = NULL;
 
