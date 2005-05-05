@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2005/05/04 20:28:58 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2005/05/05 17:07:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -486,7 +486,7 @@ void CtiVanGogh::VGMainThread()
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " VG Main Thread Active " << endl;
+                    dout << RWTime() << " VG Main Thread Active. TID:  " << rwThreadId() << endl;
                 }
 
                 CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "VG Main Thread", CtiThreadRegData::None, 300 );
@@ -707,7 +707,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
 int CtiVanGogh::registration(CtiVanGoghConnectionManager *CM, const CtiPointRegistrationMsg &aReg)
 {
     int nRet = NoError;
-
     RWTime     NowTime;
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
@@ -1210,9 +1209,25 @@ void CtiVanGogh::clientShutdown(CtiConnectionManager *&CM)
     try
     {
         // Make sure no queue entries point at this connection!
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ") Marking mainQueue entries to _not_ respond to this connection as a client." << endl;
+        }
         MainQueue_.apply(ApplyBlankDeletedConnection, (void*)CM);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ") Removing point registrations for this connection." << endl;
+        }
         PointMgr.RemoveConnectionManager(CM);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ") Calling server_b clientShutdown()." << endl;
+        }
         Inherited::clientShutdown(CM);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** INFO **** " << __FILE__ << " (" << __LINE__ << ") Dispatch clientShutdown() complete." << endl;
+        }
     }
     catch(...)
     {
@@ -1357,7 +1372,7 @@ void CtiVanGogh::VGArchiverThread()
                     reportOnThreads();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " RTDB Archiver Thread Active " << endl;
+                        dout << RWTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
                     }
                 }
 
@@ -1405,7 +1420,7 @@ void CtiVanGogh::VGTimedOperationThread()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch Timed Operation Thread Active " << endl;
+                    dout << RWTime() << " Dispatch Timed Operation Thread Active. TID:  " << rwThreadId() << endl;
                 }
                 reportOnThreads();
             }
@@ -5049,7 +5064,7 @@ void CtiVanGogh::VGRPHWriterThread()
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Dispatch RawPointHistory Writer Thread Active " << endl;
+                    dout << RWTime() << " Dispatch RawPointHistory Writer Thread Active. TID:  " << rwThreadId() << endl;
                 }
                 reportOnThreads();
             }
@@ -5104,7 +5119,7 @@ void CtiVanGogh::VGDBWriterThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Dispatch DB Writer Thread Active " << endl;
+                        dout << RWTime() << " Dispatch DB Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
                     reportOnThreads();
                 }
@@ -6438,7 +6453,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Dispatch DB Signal Writer Thread Active " << endl;
+                        dout << RWTime() << " Dispatch DB Signal Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
                     reportOnThreads();
                 }
@@ -6500,7 +6515,7 @@ void CtiVanGogh::VGDBSignalEmailThread()
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Dispatch DB Signal Email Thread Active " << endl;
+                        dout << RWTime() << " Dispatch DB Signal Email Thread Active. TID:  " << rwThreadId() << endl;
                     }
                     reportOnThreads();
                 }
