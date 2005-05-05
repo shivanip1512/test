@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/05/05 17:07:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
     CtiMCSchedule *sched = NULL;
     try
     {
-        CtiLockGuard< RWRecursiveLock<class RWMutexLock> > guard(mgr.getMux() );
+        RWRecursiveLock<class RWMutexLock>::LockGuard guard(mgr.getMux() );
 
         ostrm << " " << mgr.getMap().entries() << " schedules are loaded." << endl;
 
@@ -35,7 +35,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
             sched = itr.value();
 
             {
-                CtiLockGuard< RWRecursiveLock<class RWMutexLock> > sched_guard(sched->getMux());
+                RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
                 ostrm << RWTime() << endl << *sched << endl;
             }
         }
@@ -137,7 +137,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
         sched = itr.value();
 
         {
-            CtiLockGuard< RWRecursiveLock<class RWMutexLock> > sched_guard(sched->getMux());
+            RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
 
             // Is this schedule already persisted in the database?
             if( !sched->getUpdatedFlag() )
@@ -150,7 +150,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
                     dout << RWTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
                 }
 
-                sched->Insert();                
+                sched->Insert();
             }
             else  // The schedule is in the database but the version in memory
                   // isn't consistent with the database
@@ -200,11 +200,11 @@ bool CtiMCScheduleManager::updateAllSchedules()
 CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
-    
+
     // Don't allow a new schedule with the same name as any existing schedule
     if( getID(sched.getScheduleName()) != -1)
     {
-	return NULL;
+    return NULL;
     }
 
     // We have to assign it a schedule id
@@ -212,7 +212,7 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
 
     CtiMCSchedule* sched_to_add = (CtiMCSchedule*) sched.replicateMessage();
     sched_to_add->setScheduleID( id );
-	
+
     if( !Map.insert( new CtiHashKey(id), sched_to_add ) )
     {
         // Failed!
@@ -233,13 +233,13 @@ bool CtiMCScheduleManager::updateSchedule(const CtiMCSchedule& sched)
         RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
 
         //Don't allow a schedule to have the same name as any existing schedule
-	long temp_id = getID(sched.getScheduleName());
+    long temp_id = getID(sched.getScheduleName());
 
-	if( temp_id != -1 && temp_id != id)
-	{
-	    return false;
-	}
-	
+    if( temp_id != -1 && temp_id != id)
+    {
+        return false;
+    }
+
         CtiMCSchedule* sched_to_update = findSchedule( id );
 
         if( sched_to_update != NULL )

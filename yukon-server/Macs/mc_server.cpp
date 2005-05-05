@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/05/03 18:20:01 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/05/05 17:07:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -288,7 +288,7 @@ bool CtiMCServer::init()
 
     if( status )
     {
-        CtiLockGuard< RWRecursiveLock<class RWMutexLock> > map_guard(_schedule_manager.getMux() );
+        RWRecursiveLock<class RWMutexLock>::LockGuard map_guard(_schedule_manager.getMux() );
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " Loaded " << _schedule_manager.getMap().entries() << " schedules from the database." << endl;
     }
@@ -338,7 +338,7 @@ bool CtiMCServer::deinit()
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " Stopping MACS file interface" << endl;
     }
-    
+
     /* stop the file interface */
     _file_interface.stop();
 
@@ -347,7 +347,7 @@ bool CtiMCServer::deinit()
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " Stopping MACS client listener" << endl;
     }
-        
+
     /* stop accepting connections */
     _client_listener.interrupt( CtiThread::SHUTDOWN );
     _client_listener.join();
@@ -357,7 +357,7 @@ bool CtiMCServer::deinit()
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " Stopping MACS tcl interpreter pool" << endl;
     }
-    
+
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
     interp->evaluate("pilshutdown", true);
     _interp_pool.releaseInterpreter(interp);
@@ -369,7 +369,7 @@ bool CtiMCServer::deinit()
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " Stopping MACS database update thread" << endl;
     }
-    
+
     _db_update_thread.interrupt( CtiThread::SHUTDOWN );
     _db_update_thread.join();
 
@@ -998,7 +998,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
         dout << RWTime() << " timestamp:    " << event.timestamp << endl << endl;
     }
 
-    CtiLockGuard< RWRecursiveLock<class RWMutexLock> > guard(_schedule_manager.getMux() );
+    RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
     CtiMCSchedule* sched = _schedule_manager.findSchedule( event.sched_id );
 
     if( sched == NULL )
