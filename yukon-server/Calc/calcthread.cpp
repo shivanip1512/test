@@ -480,6 +480,10 @@ void CtiCalculateThread::startThreads(  )
 void CtiCalculateThread::joinThreads(  )
 {
     resumeThreads();
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
     _periodicThreadFunc.join( 30000 );
     _onUpdateThreadFunc.join( 30000 );
     return;
@@ -489,7 +493,7 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
 {
     _interruptReason = reason;
 
-    if( RW_THR_TIMEOUT == _periodicThreadFunc.requestInterrupt( 30000 ) )
+    if( RW_THR_TIMEOUT == _periodicThreadFunc.requestInterrupt( 5000 ) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -498,7 +502,7 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
         }
     }
 
-    if( RW_THR_TIMEOUT == _onUpdateThreadFunc.requestInterrupt( 30000 ) )
+    if( RW_THR_TIMEOUT == _onUpdateThreadFunc.requestInterrupt( 5000 ) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -523,22 +527,24 @@ void CtiCalculateThread::appendCalcPoint( long pointID )
     tmpElementPtr = CtiPointStore::getInstance()->insertPointElement( pointID, 0, undefined );
 }
 
-void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int updateinterval )
+bool CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int updateinterval )
 {
+    bool inserted = false;
+
     CtiCalc *newPoint;
     newPoint = new CtiCalc( pointid, updatetype, updateinterval );
     switch( newPoint->getUpdateType( ) )
     {
     case periodic:
-        _periodicPoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _periodicPoints.insert( new CtiHashKey(pointid), newPoint );
         break;
     case allUpdate:
     case anyUpdate:
     case periodicPlusUpdate:
-        _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _onUpdatePoints.insert( new CtiHashKey(pointid), newPoint );
         break;
     case constant:
-        _constantPoints.insert( new CtiHashKey(pointid), newPoint );
+        inserted = _constantPoints.insert( new CtiHashKey(pointid), newPoint );
         break;
     case historical:
         break;
@@ -548,8 +554,12 @@ void CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
             dout << __FILE__ << " (" << __LINE__ << ") Attempt to insert unknown CtiCalc point type \"" << updatetype
             << "\", value \"" << newPoint->getUpdateType() << "\";  aborting point insert" << endl;
         }
+
+        delete newPoint;
+
         break;
     }
+    return inserted;
 }
 
 

@@ -51,6 +51,8 @@ CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval 
     else if( !updateType.compareTo(UpdateType_Historical, RWCString::ignoreCase))
     {
         _valid = FALSE;
+        _updateInterval = 0;
+        _updateType = historical;
     }
     else if( !updateType.compareTo(UpdateType_PeriodicPlusUpdate, RWCString::ignoreCase) )
     {

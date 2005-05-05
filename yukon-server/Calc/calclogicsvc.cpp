@@ -880,24 +880,27 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *calcThread )
             rdr["UPDATETYPE"] >> updatetype;
             rdr["PERIODICRATE"] >> updateinterval;
             pointIdList[CalcCount] = pointid;
-            ++CalcCount;
-
-            if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
-            }
 
             // put the collection in the correct collection based on type
-            calcThread->appendPoint( pointid, updatetype, updateinterval );
+            if( calcThread->appendPoint( pointid, updatetype, updateinterval ) )
+            {
+                ++CalcCount;
 
-            if(CalcCount > 2000)
+                if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
+                }
+            }
+
+            if(CalcCount >= 2000)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** WARNING:  Too Many Calc Points **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                 }
+                break;
             }
         }
 
