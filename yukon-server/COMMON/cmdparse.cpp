@@ -257,7 +257,7 @@ void  CtiCommandParser::parse()
     {
         _cmd["noqueue"] = CtiParseValue("true");
     }
-    if(!(token = CmdStr.match(" priority +[0-9]+")).isNull())
+    if(!(token = CmdStr.match(" protocol_priority +[0-9]+")).isNull())
     {
         if(!(strnum = token.match("[0-9]+")).isNull())
         {
@@ -4270,9 +4270,9 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
         }
     }
 
-    if(CmdStr.contains(" priority"))
+    if(CmdStr.contains(" protocol_priority"))
     {
-        if(!(temp = CmdStr.match(" priority +[0-3]")).isNull())
+        if(!(temp = CmdStr.match(" protocol_priority +[0-3]")).isNull())
         {
             if(!(valStr = temp.match("[0-3]")).isNull())
             {
@@ -4394,11 +4394,11 @@ void CtiCommandParser::doParsePutConfigSA(const RWCString &CmdStr)
         }
     }
 
-    if(CmdStr.contains(" priority"))
+    if(CmdStr.contains(" protocol_priority"))
     {
-        if(!(temp = CmdStr.match(" priority +[0-9]+")).isNull())
+        if(!(temp = CmdStr.match(" protocol_priority +[0-3]+")).isNull())
         {
-            if(!(valStr = temp.match("[0-9]+")).isNull())
+            if(!(valStr = temp.match("[0-3]+")).isNull())
             {
                 iValue = atoi(valStr.data());
                 _cmd["sa_priority"] = CtiParseValue( iValue );
