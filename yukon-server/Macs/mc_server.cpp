@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/05/05 17:07:40 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/05/06 19:34:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -791,7 +791,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                {
                    CtiLockGuard<CtiLogger> guard(dout);
-                   dout << RWTime() << " Received Delete Schedule message" << endl;
+                   dout << RWTime() << " Received Retrieve Script message" << endl;
                }
 
                CtiMCRetrieveScript* retrieve_msg = (CtiMCRetrieveScript*) msg;
