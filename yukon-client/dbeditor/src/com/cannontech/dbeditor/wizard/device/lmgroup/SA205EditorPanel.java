@@ -211,6 +211,7 @@ private javax.swing.JComboBox getRelayCombosJComboBox() {
 			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_123 );
 			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_1234 );
 			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_LOAD_TEST );
+			ivjRelayCombosJComboBox.addItem( IlmDefines.SA_MEMORY_ERASE );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

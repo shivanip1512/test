@@ -116,4 +116,5 @@ public interface IlmDefines
 	public static final String SA_LOAD_123 = "Load 1,2,3";
 	public static final String SA_LOAD_1234 = "Load 1,2,3,4";
 	public static final String SA_LOAD_TEST = "Test";
+	public static final String SA_MEMORY_ERASE = "Memory Erase";
 }
