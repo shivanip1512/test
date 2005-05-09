@@ -8,7 +8,6 @@ package com.cannontech.common.gui.util;
 public class TextFieldDocument extends javax.swing.text.PlainDocument 
 {
 	private int maxCharCount = 0;
-	private String currentValue = null;
 	public static int MAX_DEVICE_NAME_LENGTH = 60;
 	public static int MAX_IED_PASSWORD_LENGTH = 20;
 	public static int MAX_INITIALIZATION_STRING_LENGTH = 50;
@@ -23,7 +22,7 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_PREFIX_NUMBER_LENGTH = 10;
 	public static int MAX_ROUTE_NAME_LENGTH = 40;
 	public static int MAX_STATE_GROUP_NAME_LENGTH = 20;
-	public static int MAX_STATE_NAME_LENGTH = 20;
+	public static int MAX_STATE_NAME_LENGTH = 32;
 	public static int MAX_SUFFIX_NUMBER_LENGTH = 10;
 	public static int MAX_CAP_BANK_ADDRESS_LENGTH = 40;
 	public static int MAX_CAP_SUBBUS_NAME_LENGTH = 30;

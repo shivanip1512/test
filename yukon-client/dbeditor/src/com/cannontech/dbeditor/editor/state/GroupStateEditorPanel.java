@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.editor.state;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.klg.jclass.util.value.JCValueEvent;
 
 public class GroupStateEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, DataInputPanelListener 
@@ -2733,9 +2734,18 @@ public void setValue(Object val)
    if( groupName != null )
       getStateGroupNameTextField().setText(groupName);
 
+	//if we are a system reserved group, do not allow the number of states
+	// to be modified
+	if( gs.getStateGroup().getStateGroupID().intValue() <= StateGroupUtils.SYSTEM_STATEGROUPID )
+	{
+		getStateNumberSpinner().setEnabled( false );
+		getStateNumberSpinner().setToolTipText( "The number of states can NOT be changed for SYSTEM RESERVED state groups");
+		getStateNumberLabel().setToolTipText( "The number of states can NOT be changed for SYSTEM RESERVED state groups");
+	}
+	
    getStateNumberSpinner().setValue( new Integer(statesVector.size()) );
 
-   for( int i = 0; i < statesVector.size(); i++ )
+   for( int i = 0; i < statesVector.size() && i < STATE_COUNT; i++ )
    {
       rawStateLabels[i].setEnabled(true);
       stateNameTextFields[i].setEnabled(true);

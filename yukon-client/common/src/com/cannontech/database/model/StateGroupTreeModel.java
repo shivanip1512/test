@@ -55,13 +55,12 @@ public void update() {
 		{
 			LiteStateGroup grp = (LiteStateGroup)stateGroups[i];
 			
-			//only show the editable states
-			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
-			{
-				DBTreeNode stateGroupNode = new DBTreeNode( grp );	
-				rootNode.add( stateGroupNode );
-			}
+			DBTreeNode stateGroupNode = new DBTreeNode( grp );				
 			
+			stateGroupNode.setIsSystemReserved( 
+				grp.getStateGroupID() <= StateGroupUtils.SYSTEM_STATEGROUPID );
+
+			rootNode.add( stateGroupNode );
 		}
 	}
 
