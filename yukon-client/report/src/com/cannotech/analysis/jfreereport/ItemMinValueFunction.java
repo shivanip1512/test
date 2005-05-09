@@ -13,7 +13,6 @@ import org.jfree.report.Group;
 import org.jfree.report.event.ReportEvent;
 import org.jfree.report.function.AbstractFunction;
 import org.jfree.report.function.Expression;
-import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.util.Log;
 
 /**
@@ -24,15 +23,11 @@ import org.jfree.util.Log;
  */
 public class ItemMinValueFunction extends AbstractFunction implements Serializable
 { 
-  /** Literal text for the 'group' property. */ 
-  public static final String GROUP_PROPERTY = "group"; 
-
-  /** Literal text for the 'field' property. */ 
-  public static final String FIELD_PROPERTY = "field"; 
-
-  public static final String DATA_FIELD_PROPERTY = "dataField"; 
+  private String group; 
+  private String field; 
+  private String dataField; 
   /** The minimum value. */ 
-  private BigDecimal min; 
+  private transient Comparable min; 
   private Object dataFieldValue; 
 
   /** 
@@ -60,12 +55,12 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
 
   public String getDataField () 
   { 
-	return getProperty(DATA_FIELD_PROPERTY); 
+	return dataField; 
   } 
 
   public void setDataField (final String dataField) 
   { 
-	setProperty(DATA_FIELD_PROPERTY, dataField); 
+	this.dataField = dataField; 
   } 
 
   /** 
@@ -111,7 +106,7 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
    */ 
   public String getGroup() 
   { 
-	return getProperty(GROUP_PROPERTY); 
+	return group; 
   } 
 
   /** 
@@ -124,7 +119,7 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
    */ 
   public void setGroup(final String name) 
   { 
-	setProperty(GROUP_PROPERTY, name); 
+	this.group = name; 
   } 
 
   /** 
@@ -136,7 +131,7 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
    */ 
   public String getField() 
   { 
-	return getProperty(FIELD_PROPERTY); 
+	return field; 
   } 
 
   /** 
@@ -152,7 +147,7 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
 	{ 
 	  throw new NullPointerException(); 
 	} 
-	setProperty(FIELD_PROPERTY, field); 
+	this.field = field; 
   } 
 
   /** 
@@ -195,31 +190,6 @@ public class ItemMinValueFunction extends AbstractFunction implements Serializab
   { 
 	return dataFieldValue; 
   } 
-
-  /** 
-   * Initializes the function and tests that all required properties are set. If the required 
-   * field property is not set, a FunctionInitializeException is thrown. 
-   * 
-   * @throws FunctionInitializeException when no field is set. 
-   */ 
-  public void initialize() 
-	  throws FunctionInitializeException 
-  { 
-	final String fieldProp = getProperty(FIELD_PROPERTY); 
-	if (fieldProp == null) 
-	{ 
-	  throw new FunctionInitializeException("No Such Property : field"); 
-	} 
-	final String dataField = getProperty(DATA_FIELD_PROPERTY); 
-	if (dataField == null) 
-	{ 
-	  throw new FunctionInitializeException("No Such Property : dataField"); 
-	} 
-	setField(fieldProp); 
-	setGroup(getProperty(GROUP_PROPERTY)); 
-  } 
-
-
   /** 
    * Return a completly separated copy of this function. The copy does no 
    * longer share any changeable objects with the original function. 
