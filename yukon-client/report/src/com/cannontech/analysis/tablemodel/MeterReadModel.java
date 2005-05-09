@@ -25,15 +25,17 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 public class MeterReadModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 6;
+	protected final int NUMBER_COLUMNS = 8;
 	
 	/** Enum values for column representation */
-	public final static int COLL_GROUP_NAME_COLUMN = 0;
+	public final static int SORT_BY_GROUP_NAME_COLUMN = 0;
 	public final static int DEVICE_NAME_COLUMN = 1;
 	public final static int METER_NUMBER_COLUMN = 2;
 	public final static int PHYSICAL_ADDRESS_COLUMN = 3;
 	public final static int POINT_NAME_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
+	public final static int GROUP_NAME_1_COLUMN = 6;
+	public final static int GROUP_NAME_2_COLUMN = 7;
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
@@ -42,15 +44,25 @@ public class MeterReadModel extends ReportModelBase
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-
-	/** A string for the title of the data */
-	private static String title = "Meter Data By Collection Group";	
+	public final static String ALT_GROUP_NAME_STRING = "Alternate Group";
+	public final static String BILLING_GROUP_NAME_STRING = "Billing Group";
 	/** Class fields */
 	public final static int MISSED_METER_READ_TYPE = 2;
 	public  final static int SUCCESS_METER_READ_TYPE = 1;
 	private int meterReadType = MISSED_METER_READ_TYPE;
 	
+	public static final int ORDER_BY_DEVICE_NAME = 0;
+	public static final int ORDER_BY_ROUTE_NAME = 1;
+	public static final int ORDER_BY_METER_NUMBER = 2;
+	private int orderBy = ORDER_BY_DEVICE_NAME;	//default
+	private static final int[] ALL_ORDER_BYS = new int[]
+	{
+		ORDER_BY_DEVICE_NAME, ORDER_BY_ROUTE_NAME, ORDER_BY_METER_NUMBER
+	};
+
+	//servlet attributes/parameter strings
 	private static String ATT_METER_READ_TYPE = "meterReadType";
+	private static final String ATT_ORDER_BY = "orderBy";
 	/**
 	 * 
 	 */
@@ -91,12 +103,14 @@ public class MeterReadModel extends ReportModelBase
 		try
 		{
 			String collGrp = rset.getString(1);
-			String meterNum = rset.getString(2);
-			String paoName = rset.getString(3);
-			String pointName = rset.getString(4);					
-			String routeName = rset.getString(5);
-			String address = String.valueOf(rset.getInt(6));
-			MeterData missedMeter = new MeterData(collGrp, paoName, meterNum, address, pointName, routeName);
+			String testGrp = rset.getString(2);
+			String billGrp = rset.getString(3);
+			String meterNum = rset.getString(4);
+			String paoName = rset.getString(5);
+			String pointName = rset.getString(6);					
+			String routeName = rset.getString(7);
+			String address = String.valueOf(rset.getInt(8));
+			MeterData missedMeter = new MeterData(collGrp, testGrp, billGrp, paoName, meterNum, address, pointName, routeName);
 
 			getData().add(missedMeter);
 		}
@@ -112,7 +126,7 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DMG.COLLECTIONGROUP, DMG.METERNUMBER, PAO.PAONAME, P.POINTNAME, " + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DMG.COLLECTIONGROUP, DMG.TESTCOLLECTIONGROUP, DMG.BILLINGGROUP, DMG.METERNUMBER, PAO.PAONAME, P.POINTNAME, " + 
 			" PAO2.PAONAME ROUTENAME, ADDRESS " +
 			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, YUKONPAOBJECT PAO2, DEVICEROUTES DR, POINTUNIT PU, UNITMEASURE UM, DEVICECARRIERSETTINGS DCS " +
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
@@ -135,9 +149,22 @@ public class MeterReadModel extends ReportModelBase
 
 	 
 		sql.append(" AND P.POINTID " + getInclusiveSQLString() +
-				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )" +
-				" ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME");
-
+				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
+		
+		if (getBillingGroupType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+			sql.append(" ORDER BY DMG.TESTCOLLECTIONGROUP");
+		else if ( getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
+	    	sql.append(" ORDER BY DMG.BILLINGGROUP");
+		else	//CollectionGroup
+		    sql.append(" ORDER BY DMG.COLLECTIONGROUP");
+		
+		if (getOrderBy() == ORDER_BY_DEVICE_NAME)
+			sql.append(", PAO.PAONAME, P.POINTNAME " );
+		else if (getOrderBy() == ORDER_BY_ROUTE_NAME)
+			sql.append(", PAO2.PAONAME " );		
+		else if (getOrderBy() == ORDER_BY_METER_NUMBER)
+		    sql.append(", DMG.METERNUMBER ");
+		
 		return sql;
 	}
 	
@@ -234,9 +261,15 @@ public class MeterReadModel extends ReportModelBase
 			MeterData meter = ((MeterData)o);
 			switch( columnIndex)
 			{
-				case COLL_GROUP_NAME_COLUMN:
-					return meter.getCollGroup();
-		
+				case SORT_BY_GROUP_NAME_COLUMN:
+				{
+				    if( getBillingGroupType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+				        return meter.getTestCollGroup();
+				    else if( getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
+				        return meter.getBillingGroup();
+				    else //if( getBillingGroupType() == DeviceMeterGroup.COLLECTION_GROUP)
+				        return meter.getCollGroup();
+				}
 				case DEVICE_NAME_COLUMN:
 					return meter.getDeviceName();
 					
@@ -251,6 +284,21 @@ public class MeterReadModel extends ReportModelBase
 	
 				case ROUTE_NAME_COLUMN:
 					return meter.getRouteName();
+					
+				case GROUP_NAME_1_COLUMN:
+				{
+				    if( getBillingGroupType() == DeviceMeterGroup.COLLECTION_GROUP)
+				        return meter.getTestCollGroup();
+				    else 
+				        return meter.getCollGroup();
+				}				    
+				case GROUP_NAME_2_COLUMN:
+				{
+				    if( getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
+				        return meter.getTestCollGroup();
+				    else 
+				        return meter.getBillingGroup();
+				}				    
 			}
 		}
 		return null;
@@ -263,14 +311,45 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-			columnNames = new String[]{
-				COLL_GROUP_NAME_STRING,
-				DEVICE_NAME_STRING,
-				METER_NUMBER_STRING,
-				PHYSICAL_ADDRESS_STRING,
-				POINT_NAME_STRING,
-				ROUTE_NAME_STRING
-			};
+		    if(getBillingGroupType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+		    {
+				columnNames = new String[]{
+					ALT_GROUP_NAME_STRING,
+					DEVICE_NAME_STRING,
+					METER_NUMBER_STRING,
+					PHYSICAL_ADDRESS_STRING,
+					POINT_NAME_STRING,
+					ROUTE_NAME_STRING,
+					COLL_GROUP_NAME_STRING,
+					BILLING_GROUP_NAME_STRING
+				};
+		    }
+		    else if(getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
+		    {
+				columnNames = new String[]{
+					BILLING_GROUP_NAME_STRING,
+					DEVICE_NAME_STRING,
+					METER_NUMBER_STRING,
+					PHYSICAL_ADDRESS_STRING,
+					POINT_NAME_STRING,
+					ROUTE_NAME_STRING,
+					COLL_GROUP_NAME_STRING,
+					ALT_GROUP_NAME_STRING
+				};
+		    }
+		    else //if(getBillingGroupType() == DeviceMeterGroup.COLLECTION_GROUP)
+		    {
+				columnNames = new String[]{
+					COLL_GROUP_NAME_STRING,
+					DEVICE_NAME_STRING,
+					METER_NUMBER_STRING,
+					PHYSICAL_ADDRESS_STRING,
+					POINT_NAME_STRING,
+					ROUTE_NAME_STRING,
+					ALT_GROUP_NAME_STRING,
+					BILLING_GROUP_NAME_STRING
+				};
+		    }
 		}
 		return columnNames;
 	}
@@ -283,6 +362,8 @@ public class MeterReadModel extends ReportModelBase
 		if( columnTypes == null)
 		{
 			columnTypes = new Class[]{
+				String.class,
+				String.class,
 				String.class,
 				String.class,
 				String.class,
@@ -304,11 +385,13 @@ public class MeterReadModel extends ReportModelBase
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 100, null),
-				new ColumnProperties(300, 1, 100, null),
-				new ColumnProperties(400, 1, 125, null),
-				new ColumnProperties(525, 1, 185, null)
+				new ColumnProperties(0, 1, 180, null),
+				new ColumnProperties(180, 1, 65, null),
+				new ColumnProperties(245, 1, 60, null),
+				new ColumnProperties(305, 1, 90, null),
+				new ColumnProperties(395, 1, 165, null),
+				new ColumnProperties(560, 1, 77, null),
+				new ColumnProperties(637, 1, 75, null)
 			};
 		}
 		return columnProperties;
@@ -319,16 +402,54 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-	   switch (getMeterReadType())
-	   {
-		   case SUCCESS_METER_READ_TYPE:
-			   return "Succesful " + title;
-		   case MISSED_METER_READ_TYPE:
-				return "Missed " + title;		   
-		   default :
-				return title;
-	   }
+	    String title = "";
+	    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+			title += "Succesful ";
+		else if( getMeterReadType() ==  MISSED_METER_READ_TYPE)
+    	    title += "Missed ";
+	    	    
+		title += "Meter Data";
+		if( getBillingGroupType() == DeviceMeterGroup.COLLECTION_GROUP)
+		    title += " By Collection Group";
+		else if( getBillingGroupType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+		    title += " By Alternate Group";
+		else if( getBillingGroupType() == DeviceMeterGroup.BILLING_GROUP)
+		    title += " By Billing Group";
+		return title;
 	}
+	
+	/**
+	 * @return
+	 */
+	public int getOrderBy()
+	{
+		return orderBy;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setOrderBy(int i)
+	{
+		orderBy = i;
+	}
+	public String getOrderByString(int orderBy)
+	{
+		switch (orderBy)
+		{
+			case ORDER_BY_DEVICE_NAME:
+				return "Order By Device Name";
+			case ORDER_BY_METER_NUMBER:
+				return "Order By Meter Number";
+			case ORDER_BY_ROUTE_NAME:
+			    return "Order By Route Name";
+		}
+		return "UNKNOWN";
+	}
+	public static int[] getAllOrderBys()
+	{
+		return ALL_ORDER_BYS;
+	}	
 	/**
 	 * @return
 	 */
@@ -366,6 +487,24 @@ public class MeterReadModel extends ReportModelBase
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
+
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllOrderBys().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
+		
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
@@ -381,6 +520,13 @@ public class MeterReadModel extends ReportModelBase
 				setMeterReadType(Integer.valueOf(param).intValue());
 			else
 				setMeterReadType(MISSED_METER_READ_TYPE);
+			
+			param = req.getParameter(ATT_ORDER_BY);
+			if( param != null)
+				setOrderBy(Integer.valueOf(param).intValue());
+			else
+				setOrderBy(ORDER_BY_DEVICE_NAME);
+							
 		}
 	}
 	
@@ -390,6 +536,17 @@ public class MeterReadModel extends ReportModelBase
 	public boolean useBillingGroup()
 	{
 		return true;
+	}
+
+	/**
+	 * Override ReportModelBase in order to reset the column headings.
+	 * @param i
+	 */
+	public void setBillingGroupType(int billGroupType)
+	{
+		if( getBillingGroupType() != billGroupType)
+			columnNames = null;
+	    super.setBillingGroupType(billGroupType);
 	}
 
 }
