@@ -820,7 +820,7 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 	if( trendSeries[serieIndex]== null)
 		return;
 
-	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE " + 
+	StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, TIMESTAMP, VALUE, MILLIS " + 
 	" FROM RAWPOINTHISTORY WHERE POINTID = " + trendSeries[serieIndex].getPointId().intValue() +
 	" AND (TIMESTAMP > ? AND TIMESTAMP <= ? ) ORDER BY POINTID, TIMESTAMP");
 	 
@@ -1174,25 +1174,29 @@ public void setStopDate(java.util.Date newStopDate)
 }
 public Dataset getDataset(int index)
 {
-	if( dataset[index] != null)
+	if( dataset != null)
 	{
-		if( dataset[index] instanceof TimeSeriesCollection)
+		if( dataset[index] != null)
 		{
-			if(( (TimeSeriesCollection)dataset[index]).getSeries().isEmpty())
-				return null; 
+			if( dataset[index] instanceof TimeSeriesCollection)
+			{
+				if(( (TimeSeriesCollection)dataset[index]).getSeries().isEmpty())
+					return null; 
+			}
+			else if( dataset[index] instanceof XYSeriesCollection)
+			{
+				if(( (XYSeriesCollection)dataset[index]).getSeries().isEmpty())
+					return null;
+			} 
+			else if( dataset[index] instanceof DefaultCategoryDataset)
+			{
+				if(( (DefaultCategoryDataset)dataset[index]).getRowKeys().isEmpty())
+					return null;
+			}
 		}
-		else if( dataset[index] instanceof XYSeriesCollection)
-		{
-			if(( (XYSeriesCollection)dataset[index]).getSeries().isEmpty())
-				return null;
-		} 
-		else if( dataset[index] instanceof DefaultCategoryDataset)
-		{
-			if(( (DefaultCategoryDataset)dataset[index]).getRowKeys().isEmpty())
-				return null;
-		}
+		return dataset[index];
 	}
-	return dataset[index];
+	return null;
 }
 /**
  * Insert the method's description here.
