@@ -4,6 +4,7 @@
 package com.cannontech.analysis.data.device;
 
 
+
 /**
  * @author bjonasson
  *
@@ -12,12 +13,11 @@ package com.cannontech.analysis.data.device;
  */
 public class Disconnect
 {	
-	private String collGroup = null;
-	private String deviceName = null;
-	private String pointName = null;
+    private MeterData meterData = null;
+    private String type = null;
 	private java.util.Date timeStamp = null;
-	private String valueString = null;
-
+	private Double value = null;
+	
 	/**
 	 * 
 	 */
@@ -27,43 +27,17 @@ public class Disconnect
 	}
 
 	/**
-	 * @param collGroup_
-	 * @param deviceName_
-	 * @param pointName_
-	 * @param pointID_
+	 * @param meterdata_
+	 * @param type_
 	 * @param timestamp_
 	 * @param value_
 	 */
-	public Disconnect(String collGroup_, String deviceName_, String pointName_, java.util.Date timeStamp_, String value_)
+	public Disconnect(MeterData meterData_, String type_, java.util.Date timeStamp_, Double value_)
 	{
-		collGroup = collGroup_;
-		deviceName = deviceName_;
-		pointName = pointName_;
+	    meterData = meterData_;
+		type = type_;
 		timeStamp = timeStamp_;
-		valueString = value_;			
-	}
-	/**
-	 * @return
-	 */
-	public String getCollGroup()
-	{
-		return collGroup;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getDeviceName()
-	{
-		return deviceName;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getPointName()
-	{
-		return pointName;
+		value = value_;			
 	}
 
 	/**
@@ -77,9 +51,23 @@ public class Disconnect
 	/**
 	 * @return
 	 */
-	public String getValueString()
+	public Double getValue()
 	{
-		return valueString;
+		return value;
 	}
-
+	
+	/**
+	 * @return Returns the meterData.
+	 */
+	public MeterData getMeterData()
+	{
+	    return meterData;
+	}
+    /**
+     * @return Returns the type.
+     */
+    public String getType()
+    {
+        return type;
+    }
 }
