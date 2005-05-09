@@ -7,6 +7,7 @@ alter table dynamiclmgroup add dailyops smallint;
 update dynamiclmgroup set dailyops = 0;
 alter table dynamiclmgroup modify dailyops smallint not null;
 
+alter table state modify text varcahar2(32) not null;
 
 insert into stategroup values( -6, '410 Disconnect', 'Status');
 insert into state values( -6, 0, 'Confirmed Disconnected', 1, 6, 0);

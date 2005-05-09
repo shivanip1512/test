@@ -12,6 +12,8 @@ alter table dynamiclmgroup alter column dailyops smallint not null;
 go
 
 
+alter table state alter column text varchar(32) not null;
+go
 insert into stategroup values( -6, '410 Disconnect', 'Status');
 insert into state values( -6, 0, 'Confirmed Disconnected', 1, 6, 0);
 insert into state values( -6, 1, 'Connected', 0, 6, 0);
