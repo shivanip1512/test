@@ -30,19 +30,19 @@ public class BillingServlet extends HttpServlet
 public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp)
 	throws javax.servlet.ServletException, java.io.IOException
 	{
-		java.util.Enumeration enum1 = req.getParameterNames();
-		  while (enum1.hasMoreElements()) {
-			String ele = enum1.nextElement().toString();
-			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
-		}	
-
 		javax.servlet.http.HttpSession session = req.getSession(false);
 		if (session == null)
 		{
 			resp.sendRedirect(req.getContextPath() + "/login.jsp");
 			return;
 		}
-	
+
+		java.util.Enumeration enum1 = req.getParameterNames();
+		  while (enum1.hasMoreElements()) {
+			String ele = enum1.nextElement().toString();
+			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
+		}	
+			
 		resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
 		resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
 		resp.setDateHeader("Expires", 0); //prevents caching at the proxy server
