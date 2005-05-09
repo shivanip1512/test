@@ -7,7 +7,6 @@
 package com.cannontech.analysis;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
@@ -23,7 +22,6 @@ import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.NumberFieldElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.style.BandStyleSheet;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
@@ -52,7 +50,7 @@ public class ReportFactory
 	public static final FloatDimension REPORT_STYLE_DIMENSION = new FloatDimension(0, 48);
 
 	public static final FontDefinition GROUP_HEADER_BAND_FONT = new FontDefinition(DEFAULT_FONT, 10, true, false, false, false); 
-	public static final FloatDimension GROUP_HEADER_STYLE_DIMENSION = new FloatDimension(0, 30);
+	public static final FloatDimension GROUP_HEADER_STYLE_DIMENSION = new FloatDimension(0, 18);
 	
 	public static final FontDefinition ITEM_BAND_FONT = new FontDefinition(DEFAULT_FONT, 10, false, false, false, false);
 	public static final FloatDimension ITEM_BAND_STYLE_DIMENSION = new FloatDimension(0, 10);
@@ -60,10 +58,11 @@ public class ReportFactory
 	public static GroupHeader createGroupHeaderDefault()
 	{
 		GroupHeader header = new GroupHeader();
+		
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
-		header.getBandDefaults().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
-		header.getStyle().setStyleProperty(BandStyleSheet.REPEAT_HEADER, Boolean.TRUE);
-		header.setDynamicContent(true);
+		header.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
+		header.setRepeat(true);
+//		header.setDynamicContent(true);	//CAUSED ME GREAT PAIN
 		
 		return header;
 	}
@@ -72,8 +71,8 @@ public class ReportFactory
 	{
 		GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
-		footer.getBandDefaults().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
-		footer.setDynamicContent(true);
+		footer.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
+//		footer.setDynamicContent(true);
 		return footer;
 	}
 	
@@ -81,7 +80,7 @@ public class ReportFactory
 	{
 		ReportFooter footer = new ReportFooter();
 		footer.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, REPORT_STYLE_DIMENSION);
-		footer.getBandDefaults().setFontDefinitionProperty(REPORT_FOOTER_BAND_FONT);
+		footer.getStyle().setFontDefinitionProperty(REPORT_FOOTER_BAND_FONT);
 		return footer;
 	}
 
@@ -89,20 +88,20 @@ public class ReportFactory
 	{
 		ReportHeader header = new ReportHeader();
 		header.getStyle().setStyleProperty( ElementStyleSheet.MINIMUMSIZE, REPORT_STYLE_DIMENSION);
-		header.getBandDefaults().setFontDefinitionProperty(REPORT_HEADER_BAND_FONT);
+		header.getStyle().setFontDefinitionProperty(REPORT_HEADER_BAND_FONT);
 		return header;
 	}
 	
 	public static ShapeElement createBasicLine(String name, float strokeWidth, float posY)
 	{
-		return StaticShapeElementFactory.createLineShapeElement(name, null, new BasicStroke(strokeWidth), new Line2D.Float(0, posY, 0, posY));
+		return StaticShapeElementFactory.createHorizontalLine(name, null, new BasicStroke(strokeWidth), posY);
 	}
 	
 	public static ItemBand createItemBandDefault()
 	{
 		ItemBand items = new ItemBand();
 		items.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ITEM_BAND_STYLE_DIMENSION);
-		items.getBandDefaults().setFontDefinitionProperty(ITEM_BAND_FONT);
+		items.getStyle().setFontDefinitionProperty(ITEM_BAND_FONT);
 		items.setDynamicContent(true);
 		return items;
 	}
