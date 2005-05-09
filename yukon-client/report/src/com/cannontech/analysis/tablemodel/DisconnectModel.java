@@ -8,11 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.Disconnect;
+import com.cannontech.analysis.data.device.MeterData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Feb 18, 2004
@@ -33,21 +33,31 @@ public class DisconnectModel extends ReportModelBase
 	protected final int NUMBER_COLUMNS = 5;
 
 	/** Enum values for column representation */
-	public final static int COLL_GROUP_NAME_COLUMN = 0;
-	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int POINT_NAME_COLUMN = 2;
-	public final static int TIMESTAMP_COLUMN = 3;
-	public final static int DISCONNECT_STATUS_COLUMN = 4;
+	public final static int DEVICE_NAME_COLUMN = 0;
+	public final static int POINT_NAME_COLUMN = 1;
+	public final static int TIMESTAMP_COLUMN = 2;
+	public final static int METER_NUMBER_COLUMN = 3;
+	public final static int ADDRESS_COLUMN = 4;
+	public final static int TYPE_COLUMN = 5;
+	public final static int STATUS_COLUMN = 6;
+	public final static int COLL_GROUP_NAME_COLUMN = 7;
+//	public final static int ALT_GROUP_NAME_COLUMN = 8;
+//	public final static int BILL_GROUP_NAME_COLUMN = 9;
 
 	/** String values for column representation */
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String TIMESTAMP_STRING = "Timestamp";
-	public final static String DISCONNECT_STATUS_STRING = "Disconnect Status";
+	public final static String METER_NUMBER_STRING = "Meter Number";
+	public final static String ADDRESS_STRING = "Address";
+	public final static String TYPE_STRING = "Type";
+	public final static String STATUS_STRING = "Status";
+	public final static String COLL_GROUP_NAME_STRING = "Collection Group";	
+//	public final static String ALT_GROUP_NAME_STRING = "Alternate Group";
+//	public final static String BILL_GROUP_NAME_STRING = "Billing Group";
 
 	/** A string for the title of the data */ //DEFAULT
-	private static String title = "Disconnect Status By Collection Group";
+	private static String title = "Disconnect Status";
 	
 	/** Rawpointhistory.value critera, null results in current disconnect state? */
 	/** valid types are:  Disconnected | Connected | Intermediate | Invalid */
@@ -161,24 +171,18 @@ public class DisconnectModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT DISTINCT DMG.COLLECTIONGROUP, PAO.PAOName, P.POINTNAME, " + 
-		
-			" RPH1.TIMESTAMP, RPH1.VALUE " +
-		
-				" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH1" +
+		StringBuffer sql = new StringBuffer("SELECT DISTINCT DMG.COLLECTIONGROUP, DMG.TESTCOLLECTIONGROUP, DMG.BILLINGGROUP, PAO.PAOName DeviceName, PAO2.PaoName RouteName, " +
+				" P.POINTNAME, DMG.METERNUMBER, DCS.ADDRESS, PAO.TYPE, RPH1.TIMESTAMP, RPH1.VALUE " +
+				" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH1, " +
+				" DEVICECARRIERSETTINGS DCS, YUKONPAOBJECT PAO2, DEVICEROUTES DR " +
 				" WHERE PAO.PAOBJECTID = DMG.DEVICEID " +
+				" AND PAO.PAOBJECTID = DCS.DEVICEID " +
 				" AND PAO.PAOBJECTID = P.PAOBJECTID " +
+				" AND PAO.PAOBJECTID = DR.DEVICEID " + 
+				" AND PAO2.PAOBJECTID = DR.ROUTEID " +
 				" AND P.POINTID = RPH1.POINTID " +
 				" AND P.POINTOFFSET = 1 " +
 				" AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
-
-		if( getBillingGroups() != null && getBillingGroups().length > 0)
-		{
-			sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
-			for (int i = 1; i < getBillingGroups().length; i++)
-				sql.append("', '" + getBillingGroups()[i]);
-			sql.append("') ");
-		}
 
 		if( isShowHistory())
 		{
@@ -214,13 +218,19 @@ public class DisconnectModel extends ReportModelBase
 		try
 		{
 			String collGrp = rset.getString(1);
-			String paoName = rset.getString(2);
-			String pointName = rset.getString(3);					
-			Timestamp timestamp = rset.getTimestamp(4);
-			double value = rset.getDouble(5);
+			String altGrp = rset.getString(2);
+			String billGrp = rset.getString(3);
+			String paoName = rset.getString(4);
+			String routeName = rset.getString(5);
+			String pointName = rset.getString(6);
+			String meterNum = rset.getString(7);
+			String address = rset.getString(8);
+			String type = rset.getString(9);
+			Timestamp timestamp = rset.getTimestamp(10);
+			double value = rset.getDouble(11);
 			
-			String valueString = getRPHValueString(value);
-			Disconnect disconnect = new Disconnect(collGrp, paoName, pointName, new Date(timestamp.getTime()), valueString);
+			MeterData md = new MeterData(collGrp, altGrp, billGrp, paoName, meterNum, address, pointName, routeName);
+			Disconnect disconnect = new Disconnect(md, type, new Date(timestamp.getTime()), new Double(value));
 			getData().add(disconnect);
 		}
 		catch(java.sql.SQLException e)
@@ -266,23 +276,42 @@ public class DisconnectModel extends ReportModelBase
 	{
 		if ( o instanceof Disconnect)
 		{
-			Disconnect meter = ((Disconnect)o); 
+			Disconnect disc = ((Disconnect)o); 
 			switch( columnIndex)
 			{
-				case COLL_GROUP_NAME_COLUMN:
-					return meter.getCollGroup();
-		
 				case DEVICE_NAME_COLUMN:
-					return meter.getDeviceName();
+					return disc.getMeterData().getDeviceName();
 	
 				case POINT_NAME_COLUMN:
-					return meter.getPointName();
+					return disc.getMeterData().getPointName();
 						
 				case TIMESTAMP_COLUMN:
-					return meter.getTimeStamp();
-					
-				case DISCONNECT_STATUS_COLUMN:
-					return meter.getValueString();
+					return disc.getTimeStamp();
+
+				case METER_NUMBER_COLUMN:
+				    return disc.getMeterData().getMeterNumber();
+				    
+				case ADDRESS_COLUMN:
+				    return disc.getMeterData().getAddress();
+				    
+				case TYPE_COLUMN:
+				    return disc.getType();
+				
+				case STATUS_COLUMN:
+				{
+				    if( disc.getValue() != null)
+				        return getRPHValueString(disc.getValue().doubleValue());
+				    else
+				        return "UNKNOWN";
+				}
+				case COLL_GROUP_NAME_COLUMN:
+					return disc.getMeterData().getCollGroup();
+
+//				case ALT_GROUP_NAME_COLUMN:
+//					return disc.getMeterData().getCollGroup();
+//
+//				case BILL_GROUP_NAME_COLUMN:
+//					return disc.getMeterData().getCollGroup();
 			}
 		}
 		return null;
@@ -297,11 +326,17 @@ public class DisconnectModel extends ReportModelBase
 		if( columnNames == null)
 		{
 			columnNames = new String[]{
-				COLL_GROUP_NAME_STRING,
-				DEVICE_NAME_STRING,
-				POINT_NAME_STRING,
-				TIMESTAMP_STRING,
-				DISCONNECT_STATUS_STRING
+			    DEVICE_NAME_STRING,
+			    POINT_NAME_STRING,
+			    TIMESTAMP_STRING,
+			    METER_NUMBER_STRING,
+			    ADDRESS_STRING,
+			    TYPE_STRING,
+			    STATUS_STRING,
+			    COLL_GROUP_NAME_STRING
+//			    ,
+//			    ALT_GROUP_NAME_STRING,
+//			    BILL_GROUP_NAME_STRING
 			};
 		}
 		return columnNames;
@@ -318,9 +353,14 @@ public class DisconnectModel extends ReportModelBase
 			columnTypes = new Class[]{
 				String.class,
 				String.class,
-				String.class,
 				java.util.Date.class,
-				String.class
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class,
+				String.class				
 			};
 		}
 		return columnTypes;
@@ -334,13 +374,17 @@ public class DisconnectModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
+		    int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 100, null),  //Collection Group
-				new ColumnProperties(10, 1, 200, null),	//MCT
-				new ColumnProperties(20, 1, 150, null),	//Point
-				new ColumnProperties(175, 1, 100, "MM/dd/yyyy HH:MM:SS"),   //Timestamp
-				new ColumnProperties(280, 1, 100, null)   // Rawpointhistory.value
+				new ColumnProperties(offset, 1, offset+=150, null),	//Device Name
+				new ColumnProperties(offset, 1, offset+=120, null),	//Point Name
+				new ColumnProperties(offset, 1, offset+=80, "MM/dd/yyyy HH:mm:ss"),   //Timestamp
+				new ColumnProperties(offset, 1, offset+=50, null), //meternumber
+				new ColumnProperties(offset, 1, offset+=50, null), //address
+				new ColumnProperties(offset, 1, offset+=50, null), //type
+				new ColumnProperties(offset, 1, offset+=50, null), //status
+				new ColumnProperties(offset, 1, offset+=50, null) //collGroup
 			};
 		}
 		return columnProperties;
@@ -489,12 +533,5 @@ public class DisconnectModel extends ReportModelBase
 			setShowHistory(param != null);	//opposite boolean value, since wording for option is "backwards"
 			
 		}
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
-	 */
-	public boolean useBillingGroup()
-	{
-		return true;
 	}
 }
