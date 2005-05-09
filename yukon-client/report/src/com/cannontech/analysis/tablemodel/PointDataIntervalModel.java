@@ -88,19 +88,10 @@ public class PointDataIntervalModel extends ReportModelBase
 	{
 		ORDER_BY_TIMESTAMP, ORDER_BY_VALUE
 	};
-	public  static final int ASCENDING = 0;
-	public static final int DESCENDING = 1;
-	private int sortOrder = ASCENDING;
-	private static final int[] ALL_SORT_ORDERS = new int[]
-	{
-		ASCENDING, DESCENDING
-	};
 
 	//servlet attributes/parameter strings
 	private static final String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
-	private static final String ATT_SORT_ORDER = "sortOrder";
-
 	/**
 	 * Default Constructor
 	 */
@@ -414,27 +405,11 @@ public class PointDataIntervalModel extends ReportModelBase
 	}
 
 	/**
-	 * @return
-	 */
-	public int getSortOrder()
-	{
-		return sortOrder;
-	}
-
-	/**
 	 * @param i
 	 */
 	public void setOrderBy(int i)
 	{
 		orderBy = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setSortOrder(int i)
-	{
-		sortOrder = i;
 	}
 
 	/**
@@ -492,22 +467,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	{
 		return ALL_ORDER_BYS;
 	}
-	public String getSortOrderString(int sortOrder)
-	{
-		switch (sortOrder)
-		{
-			case ASCENDING:
-				return "Ascending";
-			case DESCENDING:
-				return "Descending";
-		}
-		return "UNKNOWN";
-	}	
-	public static int[] getAllSortOrders()
-	{
-		return ALL_SORT_ORDERS;
-	}
-	
+
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
@@ -557,7 +517,7 @@ public class PointDataIntervalModel extends ReportModelBase
 			html += "        </tr>" + LINE_SEPARATOR;
 		}
 		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		
 		html += "</table>" + LINE_SEPARATOR;

@@ -1,7 +1,9 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -76,10 +78,19 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	protected static final String ATT_EC_ID = "ecID";	//ONLY TAKES ONE ID, BUT MORE CAN BE SET USING THE STRING[] setter
 	protected static final String ATT_BILLING_GROUP_VALUES = "billGroupValues";
 	protected static final String ATT_PAOBJECT_IDS = "paoIDs";
+	protected static final String ATT_SORT_ORDER = "sortOrder";	
 	
 	protected static final String ATT_BILLING_GROUP_TYPE = "billGroupType";
 	protected static final String ATT_PAOBJECT_MODEL_TYPE = "paoModelType";
-	 
+	
+	public  static final int ASCENDING = 0;
+	public static final int DESCENDING = 1;
+	protected int sortOrder = ASCENDING;
+	protected static final int[] ALL_SORT_ORDERS = new int[]
+	{
+		ASCENDING, DESCENDING
+	};
+	
 	/**
 	 * Default Constructor
 	 */
@@ -273,7 +284,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	public void setECIDs(Integer ecID)
 	{
-		setECIDs(new int[]{ecID.intValue()});
+		if( ecID != null)
+			setECIDs(new int[]{ecID.intValue()});
 	}
 	/**
 	 * @return
@@ -651,4 +663,51 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return litePaos;
 	}
 
+	public int getSortOrder()
+	{
+		return sortOrder;
+	}
+
+	public void setSortOrder(int i)
+	{
+		sortOrder = i;
+	}
+	public String getSortOrderString(int sortOrder)
+	{
+		switch (sortOrder)
+		{
+			case ASCENDING:
+				return "Ascending";
+			case DESCENDING:
+				return "Descending";
+		}
+		return "UNKNOWN";
+	}	
+	public static int[] getAllSortOrders()
+	{
+		return ALL_SORT_ORDERS;
+	}
+	
+	/**
+	 * Returns a calendar with the time zeroed out.  Useful for grouping by date.
+	 * @param cal
+	 * @return
+	 */
+	public static GregorianCalendar getBeginingOfDay(GregorianCalendar cal)
+	{
+		GregorianCalendar tempCal = new GregorianCalendar();
+		tempCal.setTimeInMillis(cal.getTimeInMillis());
+		tempCal.set(Calendar.HOUR_OF_DAY, 0);
+		tempCal.set(Calendar.MINUTE, 0);
+		tempCal.set(Calendar.SECOND, 0);
+		tempCal.set(Calendar.MILLISECOND, 0);
+		if ( cal.get(Calendar.HOUR_OF_DAY) == 0 &&
+			cal.get(Calendar.MINUTE) == 0 &&
+			cal.get(Calendar.SECOND) == 0 &&
+			cal.get(Calendar.MILLISECOND) == 0)	//This is actually the previous day's LAST possible reading, return yesterday's date!
+			tempCal.add(Calendar.DATE, -1);
+
+		return tempCal;
+	}
+	
 }
