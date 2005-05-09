@@ -22,9 +22,6 @@ package com.cannontech.servlet;
  * @author: Stacey Nebben
  */
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -34,9 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
-import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
-import org.jfree.report.modules.output.pageable.base.ReportStateList;
-import org.jfree.report.modules.output.pageable.graphics.G2OutputTarget;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
@@ -62,17 +56,17 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 	 */
 	public synchronized void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, java.io.IOException
 	{
-		String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
+	    HttpSession session = req.getSession(false);
+		if (session == null)
+		{
+			resp.sendRedirect(req.getContextPath() + "/login.jsp");
+			return;
+		}
+	    String destURL = req.getParameter( ServletUtil.ATT_REDIRECT );	//successsful action URL
 		String errorURL = req.getParameter( ServletUtil.ATT_REFERRER );	//failed action URL
 
 		try
 		{	 	
-			HttpSession session = req.getSession(false);
-			if (session == null)
-			{
-				resp.sendRedirect(req.getContextPath() + "/login.jsp");
-				return;
-			}
 			//a string value for unique reports held in session.
 			//ECID + type + startDate.toString() + stopDate.toString()
 			String reportKey = "";
@@ -210,7 +204,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				JFreeReport report = null;//(JFreeReport)session.getAttribute(reportKey + "Report");
 				if( noCache || report == null )
 				{			
-					//Initialize the report data and populate the TableModel (collectData).
 					/** Set Model specific parameters */
 					if( reportBean.getType() == ReportTypes.EC_WORK_ORDER_DATA) {
 						((WorkOrderModel)reportBean.getModel()).setOrderID( orderID );
@@ -242,50 +235,52 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 					ReportFuncs.outputYukonReport( report, ext, out );
 					out.flush();
 				}
-				else {
-					java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
-					
-					//create buffered image
-					BufferedImage image = ReportFuncs.createImage(pageFormat);
-					final Graphics2D g2 = image.createGraphics();
-					g2.setPaint(Color.white);
-					g2.fillRect(0,0, (int) pageFormat.getWidth(), (int) pageFormat.getHeight());
-					
-					resp.setHeader("Content-Type", "image/png");
-	
-					final G2OutputTarget target = new G2OutputTarget(g2, pageFormat);
-					final PageableReportProcessor processor = new PageableReportProcessor(report);
-					processor.setOutputTarget(target);
-	
-					Object statelist = session.getAttribute(reportKey + "StateList");
-					if( noCache || statelist == null)
-					{			
-						statelist = processor.repaginate();
-						if( !noCache )
-							session.setAttribute(reportKey + "StateList", statelist);
-					}
-					else
-					{
-						if( action.equalsIgnoreCase("PagedReport"))
-						{
-							int page = 0;  //The page number of the report to generate
-							param = req.getParameter("page");
-							if( param != null)
-								page = Integer.valueOf(param).intValue();
-	
-							target.open();
-							processor.processPage(((ReportStateList)statelist).get(page), target);
-							ReportFuncs.encodePNG(out, image);
-							target.close();
-						}
-					}
-					out.flush();
-				}
+//				else {
+////					java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
+//				    PageDefinition pageDefinition = report.getPageDefinition();
+//					
+//					//create buffered image
+//					BufferedImage image = ReportFuncs.createImage(pageDefinition);
+//					final Graphics2D g2 = image.createGraphics();
+//					g2.setPaint(Color.white);
+//					g2.fillRect(0,0, (int) pageDefinition.getWidth(), (int) pageDefinition.getHeight());
+//					
+//					resp.setHeader("Content-Type", "image/png");
+//	
+//					final G2OutputTarget target = new G2OutputTarget(g2);
+//					final PageableReportProcessor processor = new PageableReportProcessor(report);
+//					processor.setOutputTarget(target);
+//	
+//					Object statelist = session.getAttribute(reportKey + "StateList");
+//					if( noCache || statelist == null)
+//					{			
+//						statelist = processor.repaginate();
+//						processor.
+//						if( !noCache )
+//							session.setAttribute(reportKey + "StateList", statelist);
+//					}
+//					else
+//					{
+//						if( action.equalsIgnoreCase("PagedReport"))
+//						{
+//							int page = 0;  //The page number of the report to generate
+//							param = req.getParameter("page");
+//							if( param != null)
+//								page = Integer.valueOf(param).intValue();
+//	
+//							target.open();
+//							processor.processPage(((ReportStateList)statelist).get(page), target);
+//							ReportFuncs.encodePNG(out, image);
+//							target.close();
+//						}
+//					}
+//					out.flush();
+//				}
 			}
 		}
 		catch( Throwable t )
 		{
-			CTILogger.error("An exception was throw in GraphGenerator:  ");
+			CTILogger.error("An exception was throw in ReportGenerator:  ");
 			t.printStackTrace();
 		}
 		finally
