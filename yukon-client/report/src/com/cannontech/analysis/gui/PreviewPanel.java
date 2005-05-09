@@ -6,7 +6,7 @@
  * Project Info:  http://www.jfree.org/jfreereport/index.html
  * Project Lead:  Thomas Morgner;
  *
- * (C) Copyright 2000-2003, by Object Refinery Limited and Contributors.
+ * (C) Copyright 2000-2003, by Simba Management Limited and Contributors.
  *
  * This library is free software; you can redistribute it and/or modify it under the terms
  * of the GNU Lesser General Public License as published by the Free Software Foundation;
@@ -23,12 +23,12 @@
  * -----------------
  * PreviewFrame.java
  * -----------------
- * (C)opyright 2000-2003, by Object Refinery Limited and Contributors.
+ * (C)opyright 2000-2003, by Simba Management Limited and Contributors.
  *
- * Original Author:  David Gilbert (for Object Refinery Limited);
+ * Original Author:  David Gilbert (for Simba Management Limited);
  * Contributor(s):   Thomas Morgner;
  *
- * $Id: PreviewPanel.java,v 1.2 2004/09/09 18:09:25 snebben Exp $
+ * $Id: PreviewPanel.java,v 1.3 2005/05/09 16:26:08 stacey Exp $
  *
  * Changes (from 8-Feb-2002)
  * -------------------------
@@ -58,24 +58,24 @@ package com.cannontech.analysis.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.util.ResourceBundle;
-
 import javax.swing.Action;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import org.jfree.report.JFreeReport;
-import org.jfree.report.ReportProcessingException;
 import org.jfree.report.modules.gui.base.CloseAction;
+import org.jfree.report.modules.gui.base.PreviewBaseModule;
 import org.jfree.report.modules.gui.base.PreviewProxy;
 import org.jfree.report.modules.gui.base.PreviewProxyBase;
 
+import org.jfree.report.JFreeReport;
+import org.jfree.report.ReportProcessingException;
+import org.jfree.util.ResourceBundleSupport;
+
 /**
- * A standard print preview frame for any JFreeReport.  Allows the user to page back and forward
- * through the report, zoom in and out, and send the output to the printer.
- * <P>
+ * A standard print preview frame for any JFreeReport.  Allows the user to page back and
+ * forward through the report, zoom in and out, and send the output to the printer. <P>
  * You can also save the report in PDF format (thanks to the iText library).
- * <p>
+ * <p/>
  * When including this PreviewFrame in your own programs, you should override the provided
  * createXXXAction methods to include your customized actions.
  *
@@ -92,38 +92,42 @@ public class PreviewPanel extends JPanel implements PreviewProxy
     /**
      * Creates a 'close' action.
      */
-    public DefaultCloseAction()
+    public DefaultCloseAction ()
     {
       super(getResources());
     }
 
     /**
-     * Closes the preview frame if the default close operation is set to dispose
-     * so this frame is reusable.
+     * Closes the preview frame if the default close operation is set to dispose so this
+     * frame is reusable.
      *
      * @param e The action event.
      */
-    public void actionPerformed(final ActionEvent e)
+    public void actionPerformed (final ActionEvent e)
     {
         setVisible(false);
     }
   }
 
-  /** A preview proxy. */
+  /**
+   * A preview proxy.
+   */
   private PreviewProxyBase base;
 
-  /** Localised resources. */
-  private ResourceBundle resources;
+  /**
+   * Localised resources.
+   */
+  private ResourceBundleSupport resources;
 
-	private String title = "NONE";
   /**
    * Constructs a PreviewFrame that displays the specified report.
    *
-   * @param report  the report to be displayed.
-   *
-   * @throws org.jfree.report.ReportProcessingException if there is a problem processing the report.
+   * @param report the report to be displayed.
+   * @throws org.jfree.report.ReportProcessingException
+   *          if there is a problem processing the report.
    */
-  public PreviewPanel(final JFreeReport report) throws ReportProcessingException
+  public PreviewPanel (final JFreeReport report)
+          throws ReportProcessingException
   {
     init(report);
   }
@@ -131,26 +135,33 @@ public class PreviewPanel extends JPanel implements PreviewProxy
   /**
    * Initialise.
    *
-   * @param report  the report.
-   *
-   * @throws org.jfree.report.ReportProcessingException if there is a problem processing the report.
+   * @param report the report.
+   * @throws org.jfree.report.ReportProcessingException
+   *          if there is a problem processing the report.
    */
-  private void init(final JFreeReport report) throws ReportProcessingException
+  private void init (final JFreeReport report)
+          throws ReportProcessingException
   {
-    base = new PreviewProxyBase(this);
+    base = createPreviewProxyBase();
     base.setReport(report);
     
 	setLayout(new BorderLayout());	
 //	setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4)); 
-	add(base);
+	add(base);    
   }
+
+  protected PreviewProxyBase createPreviewProxyBase ()
+  {
+    return new PreviewProxyBase(this);
+  }
+
 
   /**
    * Returns the default close action.
    *
    * @return The action.
    */
-  public Action createDefaultCloseAction()
+  public Action createDefaultCloseAction ()
   {
     return new DefaultCloseAction();
   }
@@ -158,18 +169,18 @@ public class PreviewPanel extends JPanel implements PreviewProxy
   /**
    * Disposes the frame.
    */
-  public void dispose()
+  public void dispose ()
   {
     base.dispose();
   }
 
   /**
-   * Shuts down the preview component. Once the component is closed, it
-   * cannot be reactivated anymore.
+   * Shuts down the preview component. Once the component is closed, it cannot be
+   * reactivated anymore.
    */
-  public void close()
+  public void close ()
   {
-  	base.close();
+    base.close();
   }
 
   /**
@@ -178,11 +189,11 @@ public class PreviewPanel extends JPanel implements PreviewProxy
    *
    * @return this frames ResourceBundle.
    */
-  public ResourceBundle getResources()
+  public ResourceBundleSupport getResources ()
   {
     if (resources == null)
     {
-      resources = ResourceBundle.getBundle(PreviewProxyBase.BASE_RESOURCE_CLASS);
+      resources = new ResourceBundleSupport(PreviewBaseModule.RESOURCES_BASE_NAME);
     }
     return resources;
   }
@@ -192,7 +203,7 @@ public class PreviewPanel extends JPanel implements PreviewProxy
    *
    * @return The proxy.
    */
-  public PreviewProxyBase getBase()
+  public PreviewProxyBase getBase ()
   {
     return base;
   }
@@ -202,16 +213,17 @@ public class PreviewPanel extends JPanel implements PreviewProxy
  */
 public void pack()
 {
-	// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
+    
 }
-
 
 /* (non-Javadoc)
  * @see org.jfree.report.modules.gui.base.PreviewProxy#setJMenuBar(javax.swing.JMenuBar)
  */
 public void setJMenuBar(JMenuBar bar)
 {
-	// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
+    
 }
 
 /* (non-Javadoc)
@@ -219,6 +231,8 @@ public void setJMenuBar(JMenuBar bar)
  */
 public void setTitle(String title)
 {
-	// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
+    
 }
+
 }
