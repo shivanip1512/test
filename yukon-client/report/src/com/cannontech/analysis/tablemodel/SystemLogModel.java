@@ -35,17 +35,17 @@ public class SystemLogModel extends ReportModelBase
 	/** Enum values for column representation */
 	public final static int DATE_COLUMN = 0;
 	public final static int TIME_COLUMN = 1;
-	public final static int POINT_ID_COLUMN = 2;
-	public final static int POINT_NAME_COLUMN = 3;
-	public final static int PRIORITY_COLUMN = 4;
-	public final static int USERNAME_COLUMN = 5;
-	public final static int ACTION_COLUMN = 6;
-	public final static int DESCRIPTION_COLUMN = 7;	
-
+	public final static int POINT_NAME_COLUMN = 2;
+	public final static int PRIORITY_COLUMN = 3;
+	public final static int USERNAME_COLUMN = 4;
+	public final static int ACTION_COLUMN = 5;
+	public final static int DESCRIPTION_COLUMN = 6;	
+//	public final static int POINT_ID_COLUMN = 7;
+	
 	/** String values for column representation */
 	public final static String DATE_STRING = "Date";
 	public final static String TIME_STRING = "Time";
-	public final static String POINT_ID_STRING = "PointID";
+//	public final static String POINT_ID_STRING = "PointID";
 	public final static String POINT_NAME_STRING = "Point";
 	public final static String PRIORITY_STRING = "Priority";
 	public final static String ACTION_STRING = "Action";
@@ -56,17 +56,6 @@ public class SystemLogModel extends ReportModelBase
 	private static String title = "SYSTEM LOG";
 	
 	/** Class fields */
-	/** Flag indicating data to be ordered ASC or DESC in tableModel*/
-//	private boolean orderDescending = false;
-	
-	public  static final int ASCENDING = 0;
-	public static final int DESCENDING = 1;
-	private int sortOrder = ASCENDING;
-	private static final int[] ALL_SORT_ORDERS = new int[]
-	{
-		ASCENDING, DESCENDING
-	};
-	
 	/**
 	 * Type int from com.cannontech.database.db.point.SystemLog.type
 	 * Allows for reporting by type, null value results in all types.
@@ -78,8 +67,7 @@ public class SystemLogModel extends ReportModelBase
 	//	servlet attributes/parameter strings
 	protected static final String ATT_LOG_TYPE = "logType";
 	protected static final String ATT_All_LOG_TYPE = "logTypeAll";
-	protected static final String ATT_SORT_ORDER = "sortOrder";
-		
+	
 	/**
 	 * PointId int from com.cannontech.database.db.point.SystemLog.pointID
 	 * Allows for reporting by a pointid, null value results in all points.
@@ -339,8 +327,8 @@ public class SystemLogModel extends ReportModelBase
 				}
 				case TIME_COLUMN:
 					return sl.getDateTime();
-				case POINT_ID_COLUMN:
-					return sl.getPointID();
+//				case POINT_ID_COLUMN:
+//					return sl.getPointID();
 				case POINT_NAME_COLUMN:
 					return PointFuncs.getPointName(sl.getPointID().intValue());
 				case PRIORITY_COLUMN:
@@ -365,7 +353,6 @@ public class SystemLogModel extends ReportModelBase
 			columnNames = new String[]{
 				DATE_STRING,
 				TIME_STRING,
-				POINT_ID_STRING,
 				POINT_NAME_STRING,
 				PRIORITY_STRING,
 				USERNAME_STRING,
@@ -385,7 +372,6 @@ public class SystemLogModel extends ReportModelBase
 			columnTypes = new Class[]{
 				java.util.Date.class,
 				java.util.Date.class,
-				Integer.class,
 				String.class,
 				Integer.class,
 				String.class,
@@ -407,7 +393,6 @@ public class SystemLogModel extends ReportModelBase
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 100, "MMMMM dd, yyyy"),
 				new ColumnProperties(0, 1, 50, "HH:mm:ss"),
-				new ColumnProperties(50, 1, 100, "#"),
 				new ColumnProperties(50, 1, 100, null),
 				new ColumnProperties(150, 1, 40, "#"),
 				new ColumnProperties(190, 1, 90, null),
@@ -424,37 +409,6 @@ public class SystemLogModel extends ReportModelBase
 	{
 		return title;
 	}
-	/**
-	 * @return
-	 */
-	public int getSortOrder()
-	{
-		return sortOrder;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setSortOrder(int i)
-	{
-		sortOrder = i;
-	}
-	public String getSortOrderString(int sortOrder)
-	{
-		switch (sortOrder)
-		{
-			case ASCENDING:
-				return "Ascending";
-			case DESCENDING:
-				return "Descending";
-		}
-		return "UNKNOWN";
-	}	
-	public static int[] getAllSortOrders()
-	{
-		return ALL_SORT_ORDERS;
-	}	
-
 	public String getHTMLOptionsTable()
 	{
 		String html = "";
