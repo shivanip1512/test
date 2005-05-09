@@ -74,8 +74,8 @@ public class RouteMacroModel extends ReportModelBase
 		try
 		{
 			String macroRouteName = rset.getString(1);
-			String routeName = rset.getString(2);
-			String transmitterName = rset.getString(3);			
+			String transmitterName = rset.getString(2);
+			String routeName = rset.getString(3);
 			String ccuBus = rset.getString(4);
 			String ampUse = rset.getString(5);
 			String fixedBits = rset.getString(6);
