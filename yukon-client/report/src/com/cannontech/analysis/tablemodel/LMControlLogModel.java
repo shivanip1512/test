@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,20 +28,19 @@ public class LMControlLogModel extends SystemLogModel
 	/** A string for the title of the data */
 	private static String title = "LOAD MANAGEMENT CONTROL LOG";
 
-	/** Enum values for column representation */
 	// MUST OVERRIDE THE COLUMM INT REFERENCES FOR GETATTRIBUTES TO WORK
 	protected final static int DATE_COLUMN = 0;
-	protected final static int TIME_COLUMN = 1;
-	protected final static int DESCRIPTION_COLUMN = 2;
-	protected final static int ACTION_COLUMN = 3;
+	protected final static int DATE_TIME_COLUMN = 1;
+	protected final static int ACTION_COLUMN = 2;
+	protected final static int DESCRIPTION_COLUMN = 3;	
 
 	/** String values for column representation */
 	// THESE ARE OVERRIDES OF THE EXTENDED CLASS SYSTEMLOGDATA
 	protected final static String DATE_STRING = "Date";
-	protected final static String TIME_STRING = "Time";
-	protected final static String DESCRIPTION_STRING = "Control Name";
+	protected final static String DATE_TIME_STRING = "Date/Time";
 	protected final static String ACTION_STRING = "Action";
-		
+	protected final static String DESCRIPTION_STRING = "Description";
+	
 	/**
 	 * Constructor class
 	 * @param startTime_ SYSTEMLOG.dateTime
@@ -91,8 +91,12 @@ public class LMControlLogModel extends SystemLogModel
 			switch( columnIndex)
 			{
 				case DATE_COLUMN:
-					return sl.getDateTime();
-				case TIME_COLUMN:
+				{
+					GregorianCalendar tempCal = new GregorianCalendar();
+					tempCal.setTimeInMillis(sl.getDateTime().getTime());
+					return getBeginingOfDay(tempCal).getTime();
+				}
+				case DATE_TIME_COLUMN:
 					return sl.getDateTime();
 				case ACTION_COLUMN:
 					return sl.getAction();					
@@ -111,9 +115,9 @@ public class LMControlLogModel extends SystemLogModel
 		{
 			columnNames = new String[]{
 				DATE_STRING,
-				TIME_STRING,
-				DESCRIPTION_STRING,
-				ACTION_STRING
+				DATE_TIME_STRING,
+				ACTION_STRING,
+				DESCRIPTION_STRING
 			};
 		}
 		return columnNames;
@@ -143,10 +147,10 @@ public class LMControlLogModel extends SystemLogModel
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 150, "MMMMM dd, yyyy"),
-				new ColumnProperties(0, 1, 65, "HH:mm:ss"),
-				new ColumnProperties(65, 1, 200, null),
-				new ColumnProperties(265, 1, 300, null)
+				new ColumnProperties(0, 1, 100, "dd MMMMM yyyy"),
+				new ColumnProperties(0, 1, 130, "dd MMM yyyy  HH:mm:ss"),
+				new ColumnProperties(130, 1, 220, null),
+				new ColumnProperties(350, 1, 300, null)
 			};
 		}
 		return columnProperties;
@@ -167,7 +171,7 @@ public class LMControlLogModel extends SystemLogModel
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Sort By Timestamp</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		for (int i = 0; i < getAllSortOrders().length; i++)
 		{
