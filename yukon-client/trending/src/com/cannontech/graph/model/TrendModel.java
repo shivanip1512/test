@@ -362,6 +362,10 @@ private Axis getDomainAxis()
 		
 		((HorizontalSkipLabelsCategoryAxis)catAxis).setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
 		catAxis.setTickMarksVisible(true);
+		//Only allow 3 lines for the category labels
+		catAxis.setMaximumCategoryLabelLines(3);
+		//Allow as much room as possible for the category labels
+		catAxis.setMaximumCategoryLabelWidthRatio(Float.MAX_VALUE);
 		return catAxis;
 	}
 	else //if( getViewType() == GraphRenderers.LINE || getViewType() == GraphRenderers.STEP || getViewType() == GraphRenderers.LINE_SHAPES)
