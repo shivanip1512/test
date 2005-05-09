@@ -2,16 +2,15 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
-import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -67,7 +66,7 @@ public class SystemLogReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
@@ -130,12 +129,9 @@ public class SystemLogReport extends YukonReportBase
 		//Add all columns (excluding Date) to the table model.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{		
-			if (i != SystemLogModel.POINT_ID_COLUMN)	//skip this column
-			{
-				factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-				factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
-				header.addElement(factory.createElement());
-			}
+			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 18));
+			header.addElement(factory.createElement());
 		}
 		dateGroup.setHeader(header);
 
@@ -171,35 +167,20 @@ public class SystemLogReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		
 		TextFieldElementFactory factory;
 		//Start at 1, we don't want to include the Date column, Date is our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
 		{
-			if (i != SystemLogModel.POINT_ID_COLUMN)	//skip this column
-			{
-				factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-				items.addElement(factory.createElement());
-			}
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			items.addElement(factory.createElement());
 		}
 
 		return items;
-	}
-	
-	/**
-	 * @return
-	 */
-	public PageFormat getPageFormat()
-	{
-		super.getPageFormat();
-		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
-		return pageFormat;
 	}
 }
