@@ -1,17 +1,16 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Point2D;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.jfree.report.Boot;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -56,7 +55,7 @@ public class DisconnectReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		DisconnectModel model = new DisconnectModel(false);
@@ -68,10 +67,8 @@ public class DisconnectReport extends YukonReportBase
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 		model.setStartDate(cal.getTime());
-//		model.setCollectionGroups(new String[] {"Cycle 1"});
-
-		model.setShowConnected(true);
-		model.setShowDisconnected(true);
+//		model.setShowConnected(true);
+//		model.setShowDisconnected(true);
 
 		YukonReportBase disconnectReport = new DisconnectReport(model);
 		disconnectReport.getModel().collectData();		
@@ -97,63 +94,31 @@ public class DisconnectReport extends YukonReportBase
 	}		
 
 	/**
-	 * Create a Group for CollectionGroup  
+	 * Create a Group for Column Headings only.  
 	 * @return Group
 	 */
-	private Group createCollGrpGroup()
+	private Group createColumnHeadingGroup()
 	{
-	  final Group collGrpGroup = new Group();
-	  collGrpGroup.setName("Collection Group");
-	  collGrpGroup.addField("Collection Group");
-
-	  GroupHeader header = ReportFactory.createGroupHeaderDefault();
-
-	  LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), DisconnectModel.COLL_GROUP_NAME_COLUMN);
-	  factory.setText(factory.getText() + ":");
-	  header.addElement(factory.createElement());
-
-	  TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), DisconnectModel.COLL_GROUP_NAME_COLUMN);
-	  tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the default posX
-	  header.addElement(tfactory.createElement());
-
-	  header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.5f), new java.awt.geom.Line2D.Float(0, 22, 0, 22)));
-	  collGrpGroup.setHeader(header);
-
-	  GroupFooter footer = ReportFactory.createGroupFooterDefault();
-	  return collGrpGroup;
-	}
-	/**
-	 * Create a Group for Device, (by collectionGroup).  
-	 * @return Group
-	 */
-	 
-	private Group createDeviceGroup()
-	{
-		final Group deviceGroup = new Group();
-		deviceGroup.setName(DisconnectModel.DEVICE_NAME_STRING + " Group");
-		deviceGroup.addField(DisconnectModel.COLL_GROUP_NAME_STRING);
-		deviceGroup.addField(DisconnectModel.DEVICE_NAME_STRING);
-		
+		final Group collHdgGroup = new Group();
+		collHdgGroup.setName("Column Heading");
+	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), DisconnectModel.DEVICE_NAME_COLUMN);
-		factory.setText(DisconnectModel.DEVICE_NAME_STRING + ":");	//override the default text
-		header.addElement(factory.createElement());
-
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), DisconnectModel.DEVICE_NAME_COLUMN);
-		tfactory.setAbsolutePosition(new java.awt.geom.Point2D.Float(110, 1));
-		header.addElement(tfactory.createElement());
-
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 20, 0, 20)));
-		deviceGroup.setHeader(header);
-		
-		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(1.0f), new java.awt.geom.Line2D.Float(0, 4, 0, 4)));
+		LabelElementFactory factory;
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
+		{
+			factory = ReportFactory.createGroupLabelElementDefault(model, i);
+			header.addElement(factory.createElement());
+		}
 	
-		deviceGroup.setFooter(footer);
-		return deviceGroup;
-	}
+		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
+		collHdgGroup.setHeader(header);
+	
+		GroupFooter footer = ReportFactory.createGroupFooterDefault();
+		collHdgGroup.setFooter(footer);
 
+		return collHdgGroup;
+	}
 
 	/**
 	 * Create a GroupList and all Group(s) to it.
@@ -162,8 +127,7 @@ public class DisconnectReport extends YukonReportBase
 	protected GroupList createGroups()
 	{
 	  final GroupList list = new GroupList();
-	  list.add(createCollGrpGroup());
-	  list.add(createDeviceGroup());
+	  list.add(createColumnHeadingGroup());
 	  return list;
 	}
 
@@ -181,15 +145,13 @@ public class DisconnectReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 				new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-				 new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		
-		for (int i = 2; i < getModel().getColumnNames().length; i++)
+		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
 			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			items.addElement(factory.createElement());
