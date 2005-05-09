@@ -8,7 +8,7 @@ alter table dynamiclmgroup add dailyops smallint;
 go
 update dynamiclmgroup set dailyops = 0;
 go
-alter table dynamiclmgroup modify dailyops smallint not null;
+alter table dynamiclmgroup alter column dailyops smallint not null;
 go
 
 /******************************************************************************/
