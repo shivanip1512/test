@@ -43,4 +43,4 @@ insert into FDRInterfaceOption values(22, 'Data Type', 2, 'Combo', 'Data_RealExt
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'Ryan', '1-MAY-2005', 'Manual version insert done', 4);
