@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -405,27 +404,6 @@ public class PointDataSummaryModel extends ReportModelBase
 			allRPHPeaks.put(pointID, allRPH.subList(allRPH.size()-5, allRPH.size()));
 		}
 	}
-	/**
-	 * @param cal
-	 * @return
-	 */
-	private GregorianCalendar getBeginingOfDay(GregorianCalendar cal)
-	{
-		GregorianCalendar tempCal = new GregorianCalendar();
-		tempCal.setTimeInMillis(cal.getTimeInMillis());
-		tempCal.set(Calendar.HOUR_OF_DAY, 0);
-		tempCal.set(Calendar.MINUTE, 0);
-		tempCal.set(Calendar.SECOND, 0);
-		tempCal.set(Calendar.MILLISECOND, 0);
-		if ( cal.get(Calendar.HOUR_OF_DAY) == 0 &&
-			cal.get(Calendar.MINUTE) == 0 &&
-			cal.get(Calendar.SECOND) == 0 &&
-			cal.get(Calendar.MILLISECOND) == 0)	//This is actually the previous day's LAST possible reading, return yesterday's date!
-			tempCal.add(Calendar.DATE, -1);
-
-		return tempCal;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
