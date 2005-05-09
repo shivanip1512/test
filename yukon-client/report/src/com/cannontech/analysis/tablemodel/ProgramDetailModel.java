@@ -217,29 +217,6 @@ public class ProgramDetailModel extends ReportModelBase
 		}
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setECIDs(Integer ecID)
-	{
-		setECIDs(new int[]{ecID.intValue()});
-	}
-	/**
-	 * @return
-	 */
-	public int[] getECIDs()
-	{
-		return ecIDs;
-	}
-
-	/**
-	 * @param is
-	 */
-	public void setECIDs(int[] is)
-	{
-		ecIDs = is;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
