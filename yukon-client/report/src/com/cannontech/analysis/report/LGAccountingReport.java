@@ -1,17 +1,17 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -45,6 +45,7 @@ public class LGAccountingReport extends YukonReportBase
 	public LGAccountingReport(LoadGroupModel model_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -56,7 +57,7 @@ public class LGAccountingReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -108,13 +109,13 @@ public class LGAccountingReport extends YukonReportBase
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
 		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.PAO_NAME_COLUMN);
-		factory.setText("Control History for Group:");	//override default
+		factory.setText("Accounting Summary:");	//override default
 		header.addElement(factory.createElement());
 
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.PAO_NAME_COLUMN);
 		tfactory.setAbsolutePosition(new Point2D.Float(140, 1));	//override
 		header.addElement(tfactory.createElement());
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new Line2D.Float(0, 20, 0, 20)));
+		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
 
 		for (int i = 1; i <= LoadGroupModel.MONTHLY_CONTROL_COLUMN; i++)
 		{
@@ -172,12 +173,10 @@ public class LGAccountingReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}	
 
 		TextFieldElementFactory factory;
