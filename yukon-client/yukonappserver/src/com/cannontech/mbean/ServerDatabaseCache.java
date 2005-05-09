@@ -1188,7 +1188,7 @@ public synchronized java.util.List getAllUnusedCCDevices()
  */
 public synchronized java.util.List getAllYukonPAObjects()
 {
-	if( allYukonPAObjects != null )
+	if( allYukonPAObjects != null && allPAOsMap != null)
 		return allYukonPAObjects;
 	else
 	{
@@ -3013,7 +3013,7 @@ private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
-	if( allYukonPAObjects == null )
+	if( allYukonPAObjects == null || allPAOsMap == null)
 		return lBase;
 		
 		
