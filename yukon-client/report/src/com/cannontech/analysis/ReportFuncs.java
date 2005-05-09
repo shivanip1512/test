@@ -10,10 +10,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.print.PageFormat;
 import java.io.OutputStream;
 
 import org.jfree.report.JFreeReport;
+import org.jfree.report.PageDefinition;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
@@ -112,17 +112,17 @@ public class ReportFuncs
 	public static void outputYukonReport(JFreeReport report, String ext, OutputStream out)
 		throws Exception
 	{
-		java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
-		
+		PageDefinition pageDefinition = report.getPageDefinition();
 		//create buffered image
-		BufferedImage image = createImage(pageFormat);
+		BufferedImage image = createImage(pageDefinition);
 		final Graphics2D g2 = image.createGraphics();
 		g2.setPaint(Color.white);
-		g2.fillRect(0,0, (int) pageFormat.getWidth(), (int) pageFormat.getHeight());
+		g2.fillRect(0,0, (int) pageDefinition.getWidth(), (int) pageDefinition.getHeight());
 		
 		if (ext.equalsIgnoreCase("pdf"))
 		{
-			final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
+//			final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
+		    final PDFOutputTarget target = new PDFOutputTarget(out);
 			
 			target.setProperty(PDFOutputTarget.TITLE, "Title");
 			target.setProperty(PDFOutputTarget.AUTHOR, "Author");
@@ -178,10 +178,10 @@ public class ReportFuncs
 	  * @param pf the page format that defines the image bounds.
 	  * @return the generated image.
 	  */
-	public static BufferedImage createImage(final PageFormat pf)
+	public static BufferedImage createImage(final PageDefinition pd)
 	{
-		final double width = pf.getWidth();
-		final double height = pf.getHeight();
+		final double width = pd.getWidth();
+		final double height = pd.getHeight();
 		//write the report to the temp file
 		final BufferedImage bi = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_BYTE_INDEXED);
 		return bi;
