@@ -10,6 +10,8 @@ package com.cannontech.analysis.data.device;
 public class MeterData
 {	
 	private String collGroup = null;
+	private String testCollGroup = null;
+	private String billingGroup = null;
 	private String deviceName = null;
 	private String meterNumber = null;
 	private String address = null;
@@ -33,9 +35,11 @@ public class MeterData
 	 * @param pointID_
 	 * @param routeName_
 	 */
-	public MeterData(String collGroup_, String deviceName_, String meterNumber_, String address_, String pointName_, String routeName_)
+	public MeterData(String collGroup_, String testGroup_, String billGroup_, String deviceName_, String meterNumber_, String address_, String pointName_, String routeName_)
 	{
 		collGroup = collGroup_;
+		testCollGroup = testGroup_;
+		billingGroup = billGroup_;
 		deviceName = deviceName_;
 		meterNumber = meterNumber_;
 		address = address_;
@@ -88,5 +92,19 @@ public class MeterData
     public String getMeterNumber()
     {
         return meterNumber;
+    }
+    /**
+     * @return Returns the billingGroup.
+     */
+    public String getBillingGroup()
+    {
+        return billingGroup;
+    }
+    /**
+     * @return Returns the testCollGroup.
+     */
+    public String getTestCollGroup()
+    {
+        return testCollGroup;
     }
 }
