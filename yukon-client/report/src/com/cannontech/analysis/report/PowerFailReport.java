@@ -2,9 +2,9 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -12,6 +12,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -39,6 +40,7 @@ public class PowerFailReport extends YukonReportBase
 	public PowerFailReport(PowerFailModel model_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -60,7 +62,7 @@ public class PowerFailReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Get a default start date of 90 days previous.
@@ -171,14 +173,14 @@ public class PowerFailReport extends YukonReportBase
 		
 		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName("hideDevice");
-		hideItem.setProperty("field", PowerFailModel.DEVICE_NAME_STRING);
-		hideItem.setProperty("element", PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(PowerFailModel.DEVICE_NAME_STRING);
+		hideItem.setElement(PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
 		hideItem.setName("hidePoint");
-		hideItem.setProperty("field", PowerFailModel.POINT_NAME_STRING);
-		hideItem.setProperty("element", PowerFailModel.POINT_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(PowerFailModel.POINT_NAME_STRING);
+		hideItem.setElement(PowerFailModel.POINT_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		return expressions;
@@ -211,12 +213,10 @@ public class PowerFailReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 				new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-				 new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-				new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 
 		for (int i = PowerFailModel.DEVICE_NAME_COLUMN; i <= PowerFailModel.POWER_FAIL_COUNT_COLUMN; i++)
@@ -228,5 +228,5 @@ public class PowerFailReport extends YukonReportBase
 		}
 	
 		return items;
-	}
+	}		
 }

@@ -3,13 +3,12 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Line2D;
-import java.awt.print.PageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -17,6 +16,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -68,7 +68,7 @@ public class ECActivityDetailReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define default start and stop parameters for a default year to date report.
@@ -81,13 +81,13 @@ public class ECActivityDetailReport extends YukonReportBase
 		Date stop = cal.getTime();
 
 		cal.set(java.util.Calendar.DATE, 1);
-		cal.set(java.util.Calendar.MONTH, 0);
+		cal.set(java.util.Calendar.MONTH, Calendar.MAY);
 		Date start = cal.getTime();	//default start date is begining of year
 
 		ActivityDetailModel model = new ActivityDetailModel(start, stop);
 
 		model.setActionGroupTypes(ActivityLogActions.LOGIN_ACTIONS);
-		boolean detail = false; 
+		boolean detail = true; 
 		for (int i = 0; i < args.length; i++)
 		{
 			String arg = (String)args[i].toLowerCase();
@@ -152,26 +152,26 @@ public class ECActivityDetailReport extends YukonReportBase
 
 			ItemHideFunction hideItem = new ItemHideFunction();
 			hideItem.setName(ActivityDetailModel.DATE_TIME_STRING + ReportFactory.NAME_HIDDEN);
-			hideItem.setProperty("field", ActivityDetailModel.DATE_TIME_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.DATE_TIME_STRING + ReportFactory.NAME_ELEMENT);
+			hideItem.setField(ActivityDetailModel.DATE_TIME_STRING);
+			hideItem.setElement(ActivityDetailModel.DATE_TIME_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 	
 			hideItem = new ItemHideFunction();
 			hideItem.setName(ActivityDetailModel.CONTACT_STRING+ ReportFactory.NAME_HIDDEN);
-			hideItem.setProperty("field", ActivityDetailModel.CONTACT_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
+			hideItem.setField(ActivityDetailModel.CONTACT_STRING);
+			hideItem.setElement(ActivityDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 	
 			hideItem = new ItemHideFunction();
 			hideItem.setName(ActivityDetailModel.USERNAME_STRING + ReportFactory.NAME_HIDDEN);
-			hideItem.setProperty("field", ActivityDetailModel.USERNAME_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
+			hideItem.setField(ActivityDetailModel.USERNAME_STRING);
+			hideItem.setElement(ActivityDetailModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 			
 			hideItem = new ItemHideFunction();
 			hideItem.setName(ActivityDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_HIDDEN);
-			hideItem.setProperty("field", ActivityDetailModel.ACCOUNT_NUMBER_STRING);
-			hideItem.setProperty("element", ActivityDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
+			hideItem.setField(ActivityDetailModel.ACCOUNT_NUMBER_STRING);
+			hideItem.setElement(ActivityDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
 			expressions.add(hideItem);
 
 			expressions.add(getActionString());
@@ -239,7 +239,7 @@ public class ECActivityDetailReport extends YukonReportBase
 		
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.ENERGY_COMPANY_COLUMN);
 		header.addElement(tfactory.createElement());
-		header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f), new java.awt.geom.Line2D.Float(0, 20, 100, 20)));
+		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 20f), 20));
 		ecGroup.setHeader(header);
 		
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -264,8 +264,8 @@ public class ECActivityDetailReport extends YukonReportBase
 		if( ((ActivityDetailModel)getModel()).isShowDetail())
 		{
 			GroupHeader header = ReportFactory.createGroupHeaderDefault();
-			header.addElement(StaticShapeElementFactory.createLineShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28)));
-			header.addElement(StaticShapeElementFactory.createLineShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28)));
+			header.addElement(StaticShapeElementFactory.createShapeElement("line1", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(0, 28, 60, 28), true, false));
+			header.addElement(StaticShapeElementFactory.createShapeElement("line2", null, new BasicStroke(0.5f), new java.awt.geom.Line2D.Float(75, 28, 800, 28), true, false));
 			
 			TextFieldElementFactory tFactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ActivityDetailModel.DATE_COLUMN);
 			header.addElement(tFactory.createElement());
@@ -284,8 +284,8 @@ public class ECActivityDetailReport extends YukonReportBase
 				
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		//TODO - Change so monospaced isn't used..hopefully when JFR implements subreporting! ( maybe in 0.8.6?)
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Monospaced", 9, true, false, false, false));
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("line3", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new Line2D.Float(0, 0, 800, 0)));
+		footer.getStyle().setFontDefinitionProperty(new FontDefinition("Monospaced", 9, true, false, false, false));
+		footer.addElement(StaticShapeElementFactory.createShapeElement("line3", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new Line2D.Float(0, 0, 800, 0), true, false));
 		
 		//TODO Find a way to dynamically get the needed height for the summary...taking a stab in the dark right now that 4 rows is enough...which it won't be.
 		//Can't use ReportFactory as that is only good when using a tablemodel 
@@ -332,12 +332,10 @@ public class ECActivityDetailReport extends YukonReportBase
 				items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 					("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 						new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-				items.addElement(StaticShapeElementFactory.createLineShapeElement
-					("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-						new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-				items.addElement(StaticShapeElementFactory.createLineShapeElement
-					("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-						new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+				items.addElement(StaticShapeElementFactory.createHorizontalLine
+					("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+				items.addElement(StaticShapeElementFactory.createHorizontalLine
+					("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 			}
 			TextFieldElementFactory factory = null;
 			//Start at 1, we don't want to include the Date column, Date is our group by column.
@@ -349,18 +347,8 @@ public class ECActivityDetailReport extends YukonReportBase
 		}//end if showDetail
 		else
 		{
-//			items.setVisible(false);
+			items.setVisible(false);
 		}
 		return items;
-	}
-	
-	/**
-	 * @return
-	 */
-	public PageFormat getPageFormat()
-	{
-		super.getPageFormat();
-		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
-		return pageFormat;
 	}
 }

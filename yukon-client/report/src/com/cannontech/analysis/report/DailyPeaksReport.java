@@ -2,10 +2,8 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
-import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -13,6 +11,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -58,7 +57,7 @@ public class DailyPeaksReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -180,12 +179,10 @@ public class DailyPeaksReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 			
 		TextFieldElementFactory factory;
@@ -197,16 +194,4 @@ public class DailyPeaksReport extends YukonReportBase
 
 		return items;
 	}
-	
-	/**
-	 * @return
-	 */
-	public PageFormat getPageFormat()
-	{
-		super.getPageFormat();
-		super.pageFormat.setOrientation(PageFormat.LANDSCAPE);
-		return pageFormat;
-	}
-
-
 }

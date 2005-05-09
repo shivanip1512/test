@@ -2,11 +2,11 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -14,6 +14,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.ReportFooter;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
@@ -53,6 +54,7 @@ public class ECActivityLogReport extends YukonReportBase
 	public ECActivityLogReport(ActivityModel model_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -64,7 +66,7 @@ public class ECActivityLogReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define default start and stop parameters for a default year to date report.
@@ -139,20 +141,20 @@ public class ECActivityLogReport extends YukonReportBase
 
 		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName(ActivityModel.CONTACT_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ActivityModel.CONTACT_STRING);
-		hideItem.setProperty("element", ActivityModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ActivityModel.CONTACT_STRING);
+		hideItem.setElement(ActivityModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
 		hideItem.setName(ActivityModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ActivityModel.ACCOUNT_NUMBER_STRING);
-		hideItem.setProperty("element", ActivityModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ActivityModel.ACCOUNT_NUMBER_STRING);
+		hideItem.setElement(ActivityModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
 		hideItem.setName(ActivityModel.USERNAME_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ActivityModel.USERNAME_STRING);
-		hideItem.setProperty("element", ActivityModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ActivityModel.USERNAME_STRING);
+		hideItem.setElement(ActivityModel.USERNAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 		
 		return expressions;
@@ -185,7 +187,7 @@ public class ECActivityLogReport extends YukonReportBase
 		ecGroup.setHeader(header);
 
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		ecGroup.setFooter(footer);
+//		ecGroup.setFooter(footer);
 		
 		return ecGroup;
 	}
@@ -239,12 +241,10 @@ public class ECActivityLogReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		//Start at 1, we don't want to include the Date column, Date is our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)

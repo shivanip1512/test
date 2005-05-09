@@ -3,16 +3,17 @@ package com.cannontech.analysis.report;
 import java.awt.BasicStroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.print.PageFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -60,6 +61,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	public PointDataSummaryReport(PointDataSummaryModel model_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -71,7 +73,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 	
 		//Define start and stop parameters for a default 90 day report.
@@ -176,7 +178,7 @@ public class PointDataSummaryReport extends YukonReportBase
 	
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("totalKwhLine", null, new BasicStroke(0.3f), new Line2D.Float(450, 1, 550, 1)));
+		footer.addElement(StaticShapeElementFactory.createShapeElement("totalKwhLine", null, new BasicStroke(0.3f), new Line2D.Float(450, 1, 550, 1), true, false));
 
 		tfactory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataSummaryModel.POINT_TOTAL_KWH_COLUMN);
 		tfactory.setFieldname(PointDataSummaryModel.POINT_TOTAL_KWH_STRING + ReportFactory.NAME_ELEMENT);
@@ -221,7 +223,7 @@ public class PointDataSummaryReport extends YukonReportBase
 //		startDateGroup.setHeader(header);
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 10));
-		footer.getBandDefaults().setFontDefinitionProperty(new FontDefinition(ReportFactory.DEFAULT_FONT, 10, false, false, false, false));
+		footer.getStyle().setFontDefinitionProperty(new FontDefinition(ReportFactory.DEFAULT_FONT, 10, false, false, false, false));
 
 		TextFieldElementFactory tfactory = ReportFactory.createTextFieldElementDefault(getModel(), PointDataSummaryModel.START_DATE_COLUMN);
 		footer.addElement(tfactory.createElement());
@@ -292,46 +294,46 @@ public class PointDataSummaryReport extends YukonReportBase
 		
 		ItemMaxFunction maxItem = new ItemMaxFunction();
 		maxItem.setName(PointDataSummaryModel.DAILY_HIGH_STRING + ReportFactory.NAME_ELEMENT);
-		maxItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		maxItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		maxItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		maxItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(maxItem);
 		
 		ItemMaxValueFunction maxValueItem = new ItemMaxValueFunction();
 		maxValueItem.setName(PointDataSummaryModel.DAILY_HIGH_TIME_STRING + ReportFactory.NAME_ELEMENT);
 		maxValueItem.setDataField(PointDataSummaryModel.TIME_STRING);
-		maxValueItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		maxValueItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		maxValueItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		maxValueItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(maxValueItem);
 
 		ItemMinFunction minItem = new ItemMinFunction();
 		minItem.setName(PointDataSummaryModel.DAILY_LOW_STRING + ReportFactory.NAME_ELEMENT);
-		minItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		minItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		minItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		minItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(minItem);
 		
 		ItemMinValueFunction minValueItem = new ItemMinValueFunction();
 		minValueItem.setName(PointDataSummaryModel.DAILY_LOW_TIME_STRING + ReportFactory.NAME_ELEMENT);
 		minValueItem.setDataField(PointDataSummaryModel.TIME_STRING);
-		minValueItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		minValueItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		minValueItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		minValueItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(minValueItem);
 
 		ItemAvgFunction avgItem = new ItemAvgFunction();
 		avgItem.setName(PointDataSummaryModel.DAILY_AVERAGE_STRING + ReportFactory.NAME_ELEMENT);
-		avgItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		avgItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		avgItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		avgItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(avgItem);
 		
 		ItemSumFunction sumItem = new ItemSumFunction();
 		sumItem.setName(PointDataSummaryModel.TOTAL_KWH_STRING + ReportFactory.NAME_ELEMENT);
-		sumItem.setProperty("group", PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
-		sumItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		sumItem.setGroup(PointDataSummaryModel.START_DATE_STRING + ReportFactory.NAME_GROUP);
+		sumItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(sumItem);
 				
 		TotalGroupSumFunction groupSumItem = new TotalGroupSumFunction();
 		groupSumItem.setName(PointDataSummaryModel.POINT_TOTAL_KWH_STRING + ReportFactory.NAME_ELEMENT);
-		groupSumItem.setProperty("group", PointDataSummaryModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
-		groupSumItem.setProperty("field", PointDataSummaryModel.VALUE_STRING);
+		groupSumItem.setGroup(PointDataSummaryModel.POINT_NAME_STRING + ReportFactory.NAME_GROUP);
+		groupSumItem.setField(PointDataSummaryModel.VALUE_STRING);
 		expressions.add(groupSumItem);
 
 		return expressions;

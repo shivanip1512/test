@@ -2,11 +2,10 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.print.PageFormat;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -14,6 +13,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -49,6 +49,7 @@ public class RouteMacroReport extends YukonReportBase
 	public RouteMacroReport(RouteMacroModel model_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -60,7 +61,7 @@ public class RouteMacroReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 		
 		RouteMacroModel model = new RouteMacroModel();
@@ -144,12 +145,10 @@ public class RouteMacroReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", Color.decode("#DFDFDF"), new BasicStroke(0),
 					new Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		
 		for (int i = 1; i < getModel().getColumnNames().length; i++)

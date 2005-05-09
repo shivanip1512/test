@@ -4,13 +4,13 @@ import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -82,7 +82,7 @@ public class ProgramDetailReport extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define default start and stop parameters for a default year to date report.
@@ -150,26 +150,26 @@ public class ProgramDetailReport extends YukonReportBase
 		super.getExpressions();
 		ItemHideFunction hideItem = new ItemHideFunction();
 		hideItem.setName(ProgramDetailModel.CONTACT_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ProgramDetailModel.CONTACT_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ProgramDetailModel.CONTACT_STRING);
+		hideItem.setElement(ProgramDetailModel.CONTACT_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
 		hideItem.setName(ProgramDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ProgramDetailModel.ACCOUNT_NUMBER_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ProgramDetailModel.ACCOUNT_NUMBER_STRING);
+		hideItem.setElement(ProgramDetailModel.ACCOUNT_NUMBER_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		hideItem = new ItemHideFunction();
 		hideItem.setName(ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_HIDDEN);
-		hideItem.setProperty("field", ProgramDetailModel.PROGRAM_NAME_STRING);
-		hideItem.setProperty("element", ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_ELEMENT);
+		hideItem.setField(ProgramDetailModel.PROGRAM_NAME_STRING);
+		hideItem.setElement(ProgramDetailModel.PROGRAM_NAME_STRING + ReportFactory.NAME_ELEMENT);
 		expressions.add(hideItem);
 
 		//We negate the showNotEnrolled flag because if true, then we DO NOT want to hide the item.
 		ElementVisibilityEvalFunction action = new ElementVisibilityEvalFunction(ProgramDetailModel.STATUS_COLUMN, "Not Enrolled", !isShowNotEnrolled());
 		action.setName("Hide Not Enrolled String");
-		action.setProperty("element", ProgramDetailModel.STATUS_STRING +" Element");
+		action.setElement(ProgramDetailModel.STATUS_STRING +" Element");
 		expressions.add(action);
 
 //		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
@@ -257,12 +257,10 @@ public class ProgramDetailReport extends YukonReportBase
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
 					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 0, 0, 0)));
-			items.addElement(StaticShapeElementFactory.createLineShapeElement
-				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),
-					new java.awt.geom.Line2D.Float(0, 10, 0, 10)));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+			items.addElement(StaticShapeElementFactory.createHorizontalLine
+				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
 		//Start at 1, we don't want to include the EnergyCompany column, it's our group by column.
 		for (int i = 1; i < getModel().getColumnNames().length; i++)
@@ -288,5 +286,4 @@ public class ProgramDetailReport extends YukonReportBase
 	{
 		showNotEnrolled = b;
 	}
-
 }

@@ -5,9 +5,9 @@ import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.print.PageFormat;
 import java.util.Date;
 
-import org.jfree.report.Boot;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -15,6 +15,7 @@ import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
+import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.PageHeader;
 import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
@@ -53,6 +54,7 @@ public class WorkOrder extends YukonReportBase
 	public WorkOrder(WorkOrderModel woModel_)
 	{
 		super();
+		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(woModel_);
 	}
 
@@ -76,7 +78,7 @@ public class WorkOrder extends YukonReportBase
 	public static void main(final String[] args) throws Exception
 	{
 		// initialize JFreeReport
-		Boot.start();
+		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
 		//Define start and stop parameters for a default 90 day report.
@@ -169,7 +171,7 @@ public class WorkOrder extends YukonReportBase
 		
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
-		header.getBandDefaults().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
+		header.getStyle().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
 		int colHeight = 14;	//USE 14 because we know that's what will fit?  SN...ick, ick
 		int yLine = colHeight * 6;
@@ -209,7 +211,7 @@ public class WorkOrder extends YukonReportBase
 		
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, ReportFactory.ITEM_BAND_STYLE_DIMENSION);
-		footer.getBandDefaults().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
+		footer.getStyle().setFontDefinitionProperty(ReportFactory.ITEM_BAND_FONT);
 
 		for (int i = WorkOrderModel.FOOTER_START_INDEX; i <= WorkOrderModel.FOOTER_END_INDEX; i++)
 		{
@@ -228,12 +230,13 @@ public class WorkOrder extends YukonReportBase
 		//Signature label
 		factory = ReportFactory.createLabelElementDefault("Signature", 0, posY + colHeight, 50);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2)));
+		footer.addElement(StaticShapeElementFactory.createShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2), true, false));
+//		footer.addElement(StaticShapeElementFactory.createLineShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2)));
 		
 		//Date label
 		factory = ReportFactory.createLabelElementDefault("Date", 330, posY + colHeight, 30);
 		footer.addElement(factory.createElement());
-		footer.addElement(StaticShapeElementFactory.createLineShapeElement("dateLine", null, new BasicStroke(0.5f), new Line2D.Float(360, posY + colHeight *2, 500, posY+ colHeight*2)));
+		footer.addElement(StaticShapeElementFactory.createShapeElement("dateLine", null, new BasicStroke(0.5f), new Line2D.Float(360, posY + colHeight *2, 500, posY+ colHeight*2), true, false));
 
 		footer.setPagebreakAfterPrint(true);
 		acctGroup.setFooter(footer);
@@ -249,7 +252,7 @@ public class WorkOrder extends YukonReportBase
 		super.createPageHeader();
 		final PageHeader header = new PageHeader();
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 18));
-		header.getBandDefaults().setFontDefinitionProperty(new FontDefinition("Serif", 14));
+		header.getStyle().setFontDefinitionProperty(new FontDefinition("Serif", 14));
 		header.setDisplayOnFirstPage(!isShowReportHeader());
 		header.setDisplayOnLastPage(false);
 
