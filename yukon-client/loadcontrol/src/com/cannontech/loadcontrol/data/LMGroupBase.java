@@ -32,8 +32,20 @@ public abstract class LMGroupBase implements ILMData
 	private Boolean disableFlag = null;
 	private Double kwCapacity = null;
 	private Integer groupOrder = null;
+	private Integer dailyOps = null;
 
-
+	/**
+	 * @return Returns the dailyOps.
+	 */
+	public Integer getDailyOps() {
+		return dailyOps;
+	}
+	/**
+	 * @param dailyOps The dailyOps to set.
+	 */
+	public void setDailyOps(Integer dailyOps) {
+		this.dailyOps = dailyOps;
+	}
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (7/31/2001 2:34:50 PM)

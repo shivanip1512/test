@@ -16,7 +16,6 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private Integer lastGroupControlled = null;
 	private GregorianCalendar directStartTime = null;
 	private GregorianCalendar directStopTime = null;
-	private Integer dailyOps = null;
 	private GregorianCalendar notifyTime = null;
 	private GregorianCalendar startedRampingOut = null;
 	
@@ -231,22 +230,8 @@ public void setLastGroupControlled(Integer newLastGroupControlled) {
 	/**
 	 * @return
 	 */
-	public Integer getDailyOps() {
-		return dailyOps;
-	}
-
-	/**
-	 * @return
-	 */
 	public java.util.GregorianCalendar getNotifyTime() {
 		return notifyTime;
-	}
-
-	/**
-	 * @param integer
-	 */
-	public void setDailyOps(Integer integer) {
-		dailyOps = integer;
 	}
 
 	/**

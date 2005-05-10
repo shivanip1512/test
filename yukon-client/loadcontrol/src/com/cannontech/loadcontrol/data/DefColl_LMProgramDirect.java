@@ -67,8 +67,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	GregorianCalendar directStopTime = new java.util.GregorianCalendar();
 	directStopTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );	
 	
-	Integer dailyOps = new Integer( (int) vstr.extractUnsignedInt() );
-	
 	GregorianCalendar notifyTime = new java.util.GregorianCalendar();
 	notifyTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
 	
@@ -103,7 +101,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirect.setLastGroupControlled(lastGroupControlled);
 	lmProgramDirect.setDirectStartTime( directStartTime );
 	lmProgramDirect.setDirectStopTime( directStopTime );
-	lmProgramDirect.setDailyOps( dailyOps );
 	lmProgramDirect.setNotifyTime( notifyTime );
 	lmProgramDirect.setStartedRampingOut( startedRampingOutTime );
 	
