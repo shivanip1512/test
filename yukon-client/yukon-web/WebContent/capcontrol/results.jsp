@@ -23,7 +23,7 @@ pageEncoding="ISO-8859-1"
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<META name="GENERATOR" content="IBM WebSphere Studio">
+<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Search Results</TITLE>
 </HEAD>
 
@@ -45,9 +45,9 @@ pageEncoding="ISO-8859-1"
 					<cti:crLink url="results.jsp" title="Results" cssClass="crumbs" />
 				</cti:breadCrumb>	          
 
-				<form name="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
-					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
+				<form id="findForm" action="results.jsp" method="post">
+					<p class="main">Find: <input type="text" id="searchCriteria">
+					<INPUT type="image" id="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
             </div>
           </td>
@@ -73,8 +73,8 @@ pageEncoding="ISO-8859-1"
                 <td>Parent</td>
               </tr>
 
-			<form name="resForm" action="feeders.jsp" method="post">
-			<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
+			<form id="resForm" action="feeders.jsp" method="post">
+			<input type="hidden" id="<%=CBCSessionInfo.STR_SUBID%>" />
 <%
 for( int i = 0; i < items.size(); i++ )
 {

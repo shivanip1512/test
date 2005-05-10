@@ -1,4 +1,9 @@
 <!-- START Static Page Header Include -->
+<%@taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
+
+<!-- necessary DIV element for the OverLIB popup library -->
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="96">
 <tr> 
   <td width="63%" valign="top"> 
@@ -7,9 +12,9 @@
           <td> 
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="53">
               <tr> 
-                <td width="63%"><img src="images/YourLogo.gif"></td>
-                <td width="37%"> 
-                  <div class="rAlign"><img src="images/HeaderGraphic.gif"></div>
+                <td width="63%"><img src="images/YourLogo.gif" /></td>
+                <td width="37%"><div class="rAlign">
+                  <img src="images/HeaderGraphic.gif" /></div>
                 </td>
               </tr>
             </table>
@@ -23,14 +28,15 @@
                     <tr> 
                       <td width="51%" height="23">
 	                      <div id="sMenu">
-	                      	<a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 0); return false;">Create</a> 
-	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 1); return false;">Modify</a>
-	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 2); return false;">Reporting</a>
-	                        <a href="#" class="menuLink" onclick="itemid=-1;menuShow('subMenu', 3); return false;">View</a></td>
+	                      	<a href="#" class="menuLink" onclick="menuShow('subMenu', 0); return false;">Create</a> 
+	                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 1); return false;">Modify</a>
+	                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">Reporting</a>
+	                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 3); return false;">View</a>
 	                      </div>
+	                  </td>
                       <td width="49%"> 
                         <div class="rAlign"><span class="menu">Module:</span> 
-                          <select name="select">
+                          <select id="select">
                             <option>Account</option>
                             <option>Metering</option>
                             <option>Load Response</option>
@@ -50,44 +56,44 @@
                 <td height="1" class="trimBGColor"></td>
               </tr>
               <tr> 
-                <td class="secondBGColor" height="20">
-				  <div id="subMenu" class = "subMenuPopup">
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Substation</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Feeder</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New CapBank</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New CBC</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">New Point</a> 
+                <td id="subMenu" class="secondBGColor" height="20">
+				  <div class="subMenuPopup">
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Substation</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Feeder</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New CapBank</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New CBC</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Point</a> 
 				  </div>
-
-				  <div id="subMenu" class = "subMenuPopup">
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Edit</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Delete</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
+				  <div class="subMenuPopup">
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Edit</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Delete</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
 				  </div>
-
-				  <div id="subMenu" class = "subMenuPopup">
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day kVAR</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day Watts</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">30 Day PF</a> 
+				  <div class="subMenuPopup">
+					<a href="#" class="submenuLink" onclick="showPopUpForChkBoxes()">30 Day kVAR/Watt</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">30 Day Watts</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">30 Day PF</a> 
 				  </div>
+				  <div class="subMenuPopup">
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Orphaned Feeders</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CapBanks</a> 
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CBCs</a> 
 
-				  <div id="subMenu" class = "subMenuPopup">
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned Feeders</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CapBanks</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">Orphaned CBCs</a> 
-					<a href="x" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
+					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
+					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
+					</cti:isPropertyFalse>
 				  </div>
+				</td>
+			</tr>
+			</table>
 
-                </td>
-              </tr>
-              <tr> 
-                <td height="1" class="trimBGColor"></td>
-              </tr>
-            </table>
-          </td>
-      </table>
-  </td>
+	</td>
+	</tr>
+	</table>
+
+</td>
 </tr>
 </table>
+
 <!-- END Static Page Header Include -->

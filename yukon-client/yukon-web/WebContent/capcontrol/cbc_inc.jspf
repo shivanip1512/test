@@ -7,7 +7,16 @@
 <%@page import="com.cannontech.util.*" %>
 <%@page import="com.cannontech.cbc.web.*" %>
 <%@page import="com.cannontech.pagecode.*" %>
+<%@page import="com.cannontech.servlet.CBCServlet" %>
+<%@page import="com.cannontech.database.data.lite.LiteState" %>
+<%@page import="com.cannontech.database.cache.functions.AuthFuncs" %>
+<%@page import="com.cannontech.common.util.CtiUtilities" %>
 
+<!--------------------------
+-
+- Login and scope variables init
+-
+---------------------------->
 <cti:checklogin/>
 <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
 	<jsp:forward page="/operator/Operations.jsp"/>
@@ -15,6 +24,8 @@
 
 <script type="text/JavaScript" src="js/cbc_funcs.js"></script>
 <script type="text/JavaScript" src="js/minmax.js"></script>
+<script type="text/JavaScript" src="js/xmlhttp.js"></script>
+<script type="text/JavaScript" src="js/overlib_mini.js"></script>
 
 <jsp:useBean id="cbcSession"
 	class="com.cannontech.cbc.web.CBCSessionInfo"
@@ -23,4 +34,20 @@
 <%
 	if(cbcSession != null)
 		cbcSession.updateState( request );
+
 %>
+
+
+<!--------------------------
+-
+- Init Javascript here
+-
+---------------------------->
+<script type="text/javascript">
+	var clientRefresh = 
+		parseInt(
+		<%=AuthFuncs.getRolePropertyValue( 
+			ServletUtil.getYukonUser(session),
+			CBCSettingsRole.CBC_REFRESH_RATE, "60")%>, 10) * 1000;
+	
+</script>

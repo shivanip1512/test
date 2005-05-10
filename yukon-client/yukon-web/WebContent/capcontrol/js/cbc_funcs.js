@@ -1,4 +1,6 @@
 
+var manMsgID = 0;
+
 // -------------------------------------------
 //post events with a form rather than using the URL line.
 // Accepts a form name and any number of [ParamName,ParamValue] pairs.
@@ -23,8 +25,10 @@ function postMany( frmName )
 				if( !validateData(arguments[i]) )
 					return false;
 	
-				var ev = eval("f."+arguments[i]);
+				var ev = eval('f.'+arguments[i]);
 				ev.value = arguments[i+1];
+//alert('f.'+arguments[i]+' = ' + arguments[i+1]);
+
 			}
 		}
 	}
@@ -44,7 +48,7 @@ function postIt( paramName, paramVal, frmName )
 		return false;
 
 	var f = document.getElementById(frmName);
-	var ev = eval("f."+paramName);
+	var ev = eval('f.'+paramName);
 	ev.value = paramVal;
 
 	f.submit();
@@ -55,12 +59,11 @@ function postIt( paramName, paramVal, frmName )
 // -------------------------------------------
 function validateData( elemName )
 {
-	if( !document.getElementById(elemName) )
+	if( !document.getElementsByName(elemName) )
 	{
-		alert('Unable to find element for given operation, try again');
+		alert('Unable to find element for given operation ('+elemName+'), try again');
 		return false;
 	}
-
 	return true;
 }
 
@@ -90,12 +93,14 @@ function checkAll(chkAll, itemName)
 // -------------------------------------------
 function changeOptionStyle(t)
 {
-	t.className = "optSelect";
+	t.className = 'optSelect';
+
 	t.onmouseout = function (e)
 	{
-	  t.className = "optDeselect";
+	  t.className = 'optDeselect';
 	  return false;
 	};	
+
 }
 
 // -------------------------------------------
@@ -154,7 +159,7 @@ function menuDisappear(e, divid)
 // -------------------------------------------
 //shows a given DIV tag on a page
 // -------------------------------------------
-function menuAppear(event, divId)
+function menuAppear(event, divId, stayVisibleOnClick)
 {
 	var currentMenu = document.getElementById(divId);
 	
@@ -186,19 +191,23 @@ function menuAppear(event, divId)
 	  this.style.visibility = 'hidden';
 	  return false;
 	};
-	
-	currentMenu.onclick = function (e)
-	{
-		if (window.event)
-		{
-			window.event.cancelBubble = true;
-	    	window.event.returnValue = false;
-		}
-	
-		this.style.visibility = 'hidden';
-		return false;
-	};
 
+	//if the popup needs to stay visible after a click, then do not
+	// add the below function
+	if( stayVisibleOnClick != null )
+	{
+		currentMenu.onclick = function (e)
+		{
+			if (window.event)
+			{
+				window.event.cancelBubble = true;
+		    	window.event.returnValue = false;
+			}
+		
+			this.style.visibility = 'hidden';
+			return false;
+		};
+	}
 
 	var source;
 	if (window.event)
@@ -213,7 +222,7 @@ function menuAppear(event, divId)
 	var element = document.getElementById(divId);
 	coordx = parseInt(source.offsetLeft, 10) - 5 + parseInt(source.offsetWidth, 10);
 	coordy = parseInt(source.offsetTop, 10);// + parseInt(source.offsetHeight, 10) + 0;
-	
+
 	while (source.offsetParent)
 	{
 		source = source.offsetParent;
@@ -221,34 +230,234 @@ function menuAppear(event, divId)
 		coordy = coordy + parseInt(source.offsetTop, 10);
 	}
 	
+	
 	element.style.left = coordx + 'px';
 	element.style.top = coordy + 'px';
 	element.style.visibility = 'visible';
 }
 
 // -------------------------------------------
-//given a menu with multiple DIVs, this function will set only 1 DIV
+//Given a menu with multiple DIVs, this function will set only 1 DIV
 // to be visible at a time
 // -------------------------------------------
 function menuShow(menuDiv, visIndx)
 {
-	var currentMenus = document.getElementsByName(menuDiv);
+	var subDiv = document.getElementById(menuDiv);
+	var currentMenus = subDiv.getElementsByTagName('div');
 
-	for (i = 0; i < currentMenus.length; i++)
+	for( i = 0; i < currentMenus.length; i++ )
+	{
 		currentMenus[i].style.display = 'none';
+	}
 
 	currentMenus[visIndx].style.display = 'inline';
 }
 
 // -------------------------------------------
 //Allows a check box to control the visiblily of
-// a set of elements
+// a set of row <tr> elements
 // -------------------------------------------
-function showSubElems( elemId, chkBox )
+function showRowElems( elemName, chkBox )
 {
-	var currentMenus = document.getElementsByName(elemId);
+	var elem = document.getElementById(elemName);
+	var rows = elem.getElementsByTagName('tr');
+	//var currentMenus = elem.childNodes;
+
+	for( i = 0; i < rows.length; i++ )
+	{
+		rows[i].style.display = 
+			(chkBox.checked ? 'inline' : 'none');
+	}
+}
+
+// -------------------------------------------
+//Allows a boolean to control the visiblily of
+// a set of elements. If no boolean is given,
+// the state is toggled 
+// -------------------------------------------
+function showSubMenu( elemName, visible )
+{
+	var currentMenus = document.getElementsByName(elemName);
+	var toggle = visible != null;
 
 	for (i = 0; i < currentMenus.length; i++)
-		currentMenus[i].style.display = 
-			(chkBox.checked ? 'inline' : 'none');
+	{
+		if( visible == null )
+		{
+			if( currentMenus[i].style.display == 'none' )
+				currentMenus[i].style.display = 'inline';
+			else
+				currentMenus[i].style.display = 'none';
+		}
+		else
+			currentMenus[i].style.display = 
+				(visible ? 'inline' : 'none');
+	}
+}
+
+// -------------------------------------------
+//CallBack method for the XMLhttp request/refresh.
+// Uses a proxy JSP to get around security concerns
+// in XMLhttp
+// -------------------------------------------
+function callBack( response )
+{
+	if( response != null )
+	{ 
+		// Response mode
+		updateHTML(response);
+	}
+	else
+	{	
+		// Input mode
+		var elems = document.getElementsByName('cti_dyn');
+		var url = createURLreq( elems, 'cbcproxy.jsp?method=callBack', 'id' );
+		loadXMLDoc(url);
+	}
+}
+
+// -------------------------------------------
+//Creates a URL string that from teh elements given.
+// The attrib name/value pari is appended to the
+// URL. Ensures that each element is only requested onces
+// in the URL line. 
+// -------------------------------------------
+function createURLreq( elems, initialURL, attrib )
+{
+	var lastID = '';
+	var sepChar = '?';
+	if( initialURL.indexOf('?') >= 0 ) sepChar = '&';
+
+	for (var i = 0; i < elems.length; i++, sepChar='&')
+	{
+		lastID = sepChar + attrib + '=' + elems[i].getAttribute(attrib);
+
+		//only add the IDs that we do not have yet
+		if( lastID != initialURL.substring(initialURL.lastIndexOf('&'), initialURL.length) )
+			initialURL += lastID;
+	}
+
+	return initialURL;
+}
+
+// -------------------------------------------
+//Update the HTML on the screen with the results
+// returned from the XMLhttp call
+// -------------------------------------------
+function updateHTML( result )
+{
+	if( result != null )
+	{
+		var elems = document.getElementsByName('cti_dyn');
+		for (var i = 0; i < result.length; i++)
+		{
+			var xmlID = getElementTextNS(result[i], 0, 'id');
+
+			for( var j = 0; j < elems.length; j++ )
+			{
+				if( elems[j].getAttribute('id') == xmlID )
+				{
+					var elemType = elems[j].getAttribute('type');
+					switch( elemType )
+					{
+						//special case since 2 elements are involved with 1 TAG
+						case 'state':
+							var xmlColor = getElementTextNS(result[i], 0, 'param0');
+							elems[j].innerHTML = 
+								'<font color="' + xmlColor + '" >' +
+								getElementTextNS(result[i], 0, elemType) +
+								'</font>';
+							
+							break;
+						
+						//most of this time this will suffice
+						default:
+							elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
+							break;
+					}
+				}
+			}
+		}
+
+		setTimeout('callBack()', clientRefresh );
+	}
+
+}
+
+// -------------------------------------------
+//Callback function for the xml HTTP request to
+// return the entire result object
+//
+// -------------------------------------------
+function processMenuReq() 
+{
+    var req = getReq(manMsgID).req;
+
+//alert('a: ' + req.status);
+
+    // only if req shows "complete" and HTTP code is "OK"
+    if( req != null && req.readyState == 4 && req.status == 200)
+    {
+		// ...processing statements go here...
+ 		response = req.responseText;
+
+ 		
+		overlib(
+			response, FULLHTML, STICKY, CLOSECLICK, MOUSEOFF);
+			//,WIDTH, 200, HEIGHT, 200, WRAP);
+
+		//always do this
+		freeReq( manMsgID );
+    }
+
+}
+
+// -------------------------------------------
+//Shows a popup of the given message string.
+// Uses the overlib library for display purposes.
+// -------------------------------------------
+function statusMsg(elem, msgStr)
+{
+	elem.onmouseout = function (e)
+	{
+		nd();
+	};	
+
+	overlib( msgStr, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+}
+
+// -------------------------------------------
+//Shows a sticky popup for the checked boxe elements
+// that are valid values AND that are checked
+// -------------------------------------------
+function showPopUpForChkBoxes()
+{
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	//var elemBanks = document.getElementsByName('cti_chkbxBanks');
+
+	var validElems = new Array();
+	doValidChecks( elemSubs, validElems );
+	doValidChecks( elemFdrs, validElems );
+	//doValidChecks( elemBanks, validElems );
+
+
+	var url = createURLreq( validElems, 'charts.jsp', 'value' );
+	manMsgID = loadXMLDoc(url, 'processMenuReq');
+}
+
+function doValidChecks( elems, validElems )
+{
+	var cnt = validElems.length;
+	for( var i = 0; i < elems.length; i++ )
+	{
+		//validate the elements
+		//if( elems[i].getAttribute('value') != '0' && elems[i].checked )
+		if( elems[i].checked )
+		{
+			validElems[cnt++] = elems[i];
+		}
+
+	}
+
 }

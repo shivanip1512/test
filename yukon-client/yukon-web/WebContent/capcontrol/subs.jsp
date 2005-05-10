@@ -8,7 +8,6 @@
 <%
 	SubBus[] areaSubs =
 		capControlCache.getSubsByArea( cbcSession.getLastArea() );
-
 %>
 
 <HTML>
@@ -19,22 +18,20 @@ contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
 <SCRIPT type="text/javascript">
-<!--
-	// -------------------------------------------
-	// Page scoped javascript variables
-	// -------------------------------------------
-	var intSubID = -1;
-//-->
+// -------------------------------------------
+// Page scoped javascript variables
+// -------------------------------------------
+var intSubID = -1;
 </SCRIPT>
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<META name="GENERATOR" content="IBM WebSphere Studio">
+<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Substations</TITLE>
 </HEAD>
 
 
-<body>
+<body onload="callBack();">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -52,7 +49,7 @@ pageEncoding="ISO-8859-1"
 					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
 				</cti:breadCrumb>
 
-				<form name="findForm" action="results.jsp" method="post">
+				<form id="findForm" action="results.jsp" method="post">
 					<p class="main">Find: <input type="text" name="searchCriteria">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
@@ -76,18 +73,18 @@ pageEncoding="ISO-8859-1"
             <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnheader lAlign">				
 				<td>
-				<input type="checkbox" name="chkAllBx" onclick="checkAll(this, 'chkBxSubs');"/>
+				<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'chkBxSubs');"/>
 				Sub Name</td>
                 <td>State</td>
                 <td>Target</td>
-                <td>VAR Load Est.</td>
+                <td>VAR Load / Est.</td>
                 <td>Date/Time</td>
                 <td>PFactor / Est.</td>
                 <td>Watts</td>
                 <td>Daily / Max Ops</td>
               </tr>
 
-			<form name="subForm" action="feeders.jsp" method="post">
+		<form id="subForm" action="feeders.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
 <%
 for( int i = 0; i < areaSubs.length; i++ )
@@ -97,30 +94,43 @@ for( int i = 0; i < areaSubs.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-				<input type="checkbox" name="chkBxSubs" />
+				<input type="checkbox" id="chkBxSubs" />
 				<a href="#" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</a></td>
 				
 				<td>
 <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-	<a href="javascript:void(0);" onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')" onmouseout="menuDisappear(event, 'subPopupMenu')">
+	<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);" onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')" onmouseout="menuDisappear(event, 'subPopupMenu')">
 </cti:isPropertyTrue>
-<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>" >
-	 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+	<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
+</cti:isPropertyFalse>
+
+<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
+<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
 </font>
-<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-	</a>
-</cti:isPropertyTrue>
+</a>
 				</td>
 
-
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></td>
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN) %></td>
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN) %></td>
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN) %></td>
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN) %></td>
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN) %></td>
+				<td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
+				</td>
+				<td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
+				</td>
+				<td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
+				</td>
+				<td><a type="param4" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
+				</td>
+				<td><a type="param5" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN)%></a>
+				</td>
+				<td><a type="param6" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN)%></a>
+				</td>
 			</tr>
 <% } %>
 			</form>
@@ -142,12 +152,11 @@ for( int i = 0; i < areaSubs.length; i++ )
   </table>
 
 </body>
-</HTML>
 
 <!-------------- Form for submitting substation commands ---------------->
-<form name="frmSubCmd" action="/servlet/CBCServlet" method="post">
+<form id="frmSubCmd" action="/servlet/CBCServlet" method="post">
 <input type="hidden" name="redirectURL" value="<%=request.getRequestURL()%>">
-<input type="hidden" name="controlType" value="SUB_CNTRL">
+<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_SUB%>">
 <input type="hidden" name="paoID">
 <input type="hidden" name="cmdID">
 
@@ -204,3 +213,5 @@ for( int i = 0; i < areaSubs.length; i++ )
   </table>
 </div>
 </form>
+
+</HTML>

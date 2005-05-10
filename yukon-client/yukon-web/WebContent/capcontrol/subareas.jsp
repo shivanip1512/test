@@ -12,18 +12,18 @@ language="java"
 contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
-<SCRIPT type="text/javascript">
+<script type="text/javascript">
 <!--
 	// -------------------------------------------
 	// Page scoped javascript variables
 	// -------------------------------------------
 	var intSubID = -1;
 //-->
-</SCRIPT>
+</script>
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<META name="GENERATOR" content="IBM WebSphere Studio">
+<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Substation Bus Areas</TITLE>
 </HEAD>
 
@@ -45,9 +45,9 @@ pageEncoding="ISO-8859-1"
 					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
 				</cti:breadCrumb>
 
-				<form name="findForm" action="results.jsp" method="post">
+				<form id="findForm" action="results.jsp" method="post">
 					<p class="main">Find: <input type="text" name="searchCriteria">
-					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
+					<INPUT type="image" id="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
             </div>
           </td>
@@ -75,7 +75,7 @@ pageEncoding="ISO-8859-1"
                 <td>PFactor/Est.</td>
               </tr>
 
-			<form name="areaForm" action="subs.jsp" method="post">
+		<form id="areaForm" action="subs.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
 <%
 		for( int i = 0; i < capControlCache.getAreaNames().size(); i++ )
@@ -98,34 +98,34 @@ pageEncoding="ISO-8859-1"
 %>
 	        <tr class="<%=css%>">
 				<td>				
-				<input type="checkbox" name="chkBxAreas" onclick="showSubElems( '<%=areaStr%>', this );"/>
+				<input type="checkbox" id="chkBxAreas" onclick="showRowElems( 'allAreas<%=i%>', this );"/>
 				<a href="#" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
 				<%=areaStr%></a>
 				</td>
-				<td><%=areaBuses.length%> Substations</td>
+				<td><%=areaBuses.length%> Substation(s)</td>
 				<td><%=totalVars%></td>
 				<td><%=availVars%></td>
 				<td><%=currPF%> / <%=estPF%></td>
 			</tr>
 
+
+			<a id="allAreas<%=i%>">
 <%
 		for( int j = 0; j < areaBuses.length; j++ )
 		{
 			SubBus subBus = areaBuses[j];
 			Feeder[] subFeeders = capControlCache.getFeedersBySub(subBus.getCcId());
-			CapBankDevice[] subCapBanks = capControlCache.getCapBanksBySub(subBus.getCcId());	
+			CapBankDevice[] subCapBanks = capControlCache.getCapBanksBySub(subBus.getCcId());
 %>
-	        <tr id="<%=areaStr%>" class="<%=css%>" style="display: none;">
-				<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></td>
-				<td><%=subFeeders.length%> Feeders, <%=subCapBanks.length%> Banks</td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
+		        <tr class="<%=css%>" style="display: none;">
+					<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></td>
+					<td><%=subFeeders.length%> Feeder(s), <%=subCapBanks.length%> Bank(s)</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
 <% 		} %>
-
-
-
+			</a>
 
 
 <% } %>
