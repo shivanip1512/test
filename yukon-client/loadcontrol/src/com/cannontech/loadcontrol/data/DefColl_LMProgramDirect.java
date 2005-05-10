@@ -72,6 +72,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
 	startedRampingOutTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
+	
+	Integer triggerOffset = new Integer( (int) vstr.extractUnsignedInt() );
+	Integer triggerRestoreOffset = new Integer( (int) vstr.extractUnsignedInt() );
 
 	Vector directGearVector = (Vector) vstr.restoreObject( polystr );
 	
@@ -103,6 +106,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramDirect.setDirectStopTime( directStopTime );
 	lmProgramDirect.setNotifyTime( notifyTime );
 	lmProgramDirect.setStartedRampingOut( startedRampingOutTime );
+	lmProgramDirect.setTriggerOffset( triggerOffset );
+	lmProgramDirect.setTriggerRestoreOffset( triggerRestoreOffset );
 	
 	lmProgramDirect.setDirectGearVector(directGearVector);
 	lmProgramDirect.setLoadControlGroupVector( groupVector );

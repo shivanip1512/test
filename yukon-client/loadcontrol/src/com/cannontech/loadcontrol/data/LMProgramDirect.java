@@ -18,7 +18,33 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private GregorianCalendar directStopTime = null;
 	private GregorianCalendar notifyTime = null;
 	private GregorianCalendar startedRampingOut = null;
+	private Integer triggerOffset = null;
+	private Integer triggerRestoreOffset = null;	
 	
+	/**
+	 * @return Returns the triggerOffset.
+	 */
+	public Integer getTriggerOffset() {
+		return triggerOffset;
+	}
+	/**
+	 * @param triggerOffset The triggerOffset to set.
+	 */
+	public void setTriggerOffset(Integer triggerOffset) {
+		this.triggerOffset = triggerOffset;
+	}
+	/**
+	 * @return Returns the triggerRestoreOffset.
+	 */
+	public Integer getTriggerRestoreOffset() {
+		return triggerRestoreOffset;
+	}
+	/**
+	 * @param triggerRestoreOffset The triggerRestoreOffset to set.
+	 */
+	public void setTriggerRestoreOffset(Integer triggerRestoreOffset) {
+		this.triggerRestoreOffset = triggerRestoreOffset;
+	}
 	private Vector directGearVector = null;
 	private Vector activeMasterProgramsVector = null;
 	private Vector activeSubordinateProgramsVector = null;
