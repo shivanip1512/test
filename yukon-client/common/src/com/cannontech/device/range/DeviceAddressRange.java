@@ -72,9 +72,10 @@ public class DeviceAddressRange
 	   		return RANGE_MCT470;	
 		}
       
-      	if( deviceType_ == DeviceTypesFuncs.MCT410IL)
+      	if( deviceType_ == DeviceTypesFuncs.MCT410IL
+      		|| deviceType_ == DeviceTypesFuncs.MCT410CL )
       	{
-        	return RANGE_MCT410;	
+        	return RANGE_MCT410;
       	}
       	else if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(deviceType_) )
       	{

@@ -133,6 +133,7 @@ public final static boolean isLoopable(int intType)
 		intType == RTUILEX ||
 		intType == RTUWELCO	||
 		intType == MCT410IL ||
+		intType == MCT410CL ||
 		intType == MCT470) //||
 //		isRTU(intType) ) //FUTURE
 		return true;
@@ -181,6 +182,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT310IDL:
 		case MCT310IL:
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:      
@@ -390,6 +392,7 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 		case MCT318L:
 		case DCT_501:
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
 			return true;
 	
@@ -428,6 +431,7 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 	switch(deviceType)
 	{  
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
 			return true;
 		default:
@@ -458,6 +462,7 @@ public final static boolean isMCTOnly(int deviceType)
 		case MCT310IDL:
 		case MCT310IL:
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
 		case MCT310CT:
     	case MCT310IM:
@@ -494,6 +499,7 @@ public final static boolean isMCT(int deviceType)
 		case MCT310IDL:
 		case MCT310IL:
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:
@@ -550,8 +556,9 @@ public static boolean isMCTiORMCT2XX( int type )
 		case MCT310IDL:
 		case MCT310IL :
 		case MCT410IL :
-      case MCT310CT:
-      case MCT310IM:      
+		case MCT410CL :
+      	case MCT310CT:
+      	case MCT310IM:      
 			return true;
 		default :
 			return false;
@@ -577,6 +584,7 @@ public static boolean is410( int type )
 	switch (type)
 	{
 		case MCT410IL:
+		case MCT410CL:
 			return true;
 		default :
 			return false;
@@ -784,6 +792,7 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 		case MCT310IDL:
 		case MCT310IL:
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:
 		case MCT310CT:
 		case MCT310IM:

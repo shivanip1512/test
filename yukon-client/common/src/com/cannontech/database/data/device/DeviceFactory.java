@@ -141,6 +141,7 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new MCT310();
 			break;
 		case PAOGroups.MCT410IL:
+		case PAOGroups.MCT410CL:
 			returnDevice = new MCT410IL();
 			break;
 		case PAOGroups.MCT470:

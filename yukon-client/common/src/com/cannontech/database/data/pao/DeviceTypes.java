@@ -97,12 +97,12 @@ public interface DeviceTypes extends TypeBase
 	
 	public final static int SENTINEL				= DEVICE_OFFSET + 78;
 	public final static int ALPHA_A3					= DEVICE_OFFSET + 79;
-	
 	public final static int MCT470					= DEVICE_OFFSET + 80;
+	public final static int MCT410CL	 			= DEVICE_OFFSET + 81;
 	
 
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 80;
+	public final static int DEVICE_TYPES_COUNT = 81;
 	
 
 	//all the possible text representation of each device type.
@@ -134,6 +134,8 @@ public interface DeviceTypes extends TypeBase
    	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
+	public static final String[] STRING_MCT_410CL = {"MCT-410CL"};
+	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
