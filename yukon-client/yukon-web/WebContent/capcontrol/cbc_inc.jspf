@@ -6,9 +6,9 @@
 <%@page import="com.cannontech.yukon.cbc.*" %>
 <%@page import="com.cannontech.util.*" %>
 <%@page import="com.cannontech.cbc.web.*" %>
-<%@page import="com.cannontech.pagecode.*" %>
 <%@page import="com.cannontech.servlet.CBCServlet" %>
-<%@page import="com.cannontech.database.data.lite.LiteState" %>
+<%@page import="com.cannontech.database.data.lite.*" %>
+<%@page import="com.cannontech.web.lite.*" %>
 <%@page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
 
