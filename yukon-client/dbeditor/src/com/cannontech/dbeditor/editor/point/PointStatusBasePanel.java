@@ -434,14 +434,9 @@ public void setValue(Object val)
 		{
 			LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
 
-			//only show the editable states
-			if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
-			{			
-				getStateTableComboBox().addItem( grp );
-				if( grp.getStateGroupID() == stateGroupID )
-					getStateTableComboBox().setSelectedItem( grp );
-			}
-			
+			getStateTableComboBox().addItem( grp );
+			if( grp.getStateGroupID() == stateGroupID )
+				getStateTableComboBox().setSelectedItem( grp );
 		}
 	}
 		

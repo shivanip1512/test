@@ -274,8 +274,7 @@ public void setValue(Object val) {
 	{
 		LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
 
-		if( grp.getStateGroupID() > StateGroupUtils.SYSTEM_STATEGROUPID )
-			getStateTableComboBox().addItem( grp );
+		getStateTableComboBox().addItem( grp );
 	}
 
 	setInitialComboBoxes();

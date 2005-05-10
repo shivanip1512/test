@@ -168,10 +168,10 @@ public class PointUtil {
 						multiplier) );
 			}
 
-			if (val instanceof MCT310ID
-				 || val instanceof MCT310IDL ) 
+			if( val instanceof MCT310ID
+				|| val instanceof MCT310IDL
+				|| val instanceof MCT410IL ) 
 			{
-				 	
 				//an automatic status point is created for certain devices
 				//set default for point tables
 				PointBase newPoint2 = PointFactory.createNewPoint(
@@ -181,7 +181,11 @@ public class PointUtil {
 						((DeviceBase) val).getDevice().getDeviceID(),
 						new Integer(PointTypes.PT_OFFSET_TOTAL_KWH));
 
-				newPoint2.getPoint().setStateGroupID(
+				if( val instanceof MCT410IL )
+					newPoint2.getPoint().setStateGroupID(
+						new Integer(StateGroupUtils.STATEGROUP_MCT410DISC) );
+				else
+					newPoint2.getPoint().setStateGroupID(
 						new Integer(StateGroupUtils.STATEGROUP_THREE_STATE_STATUS) );
 
 				((StatusPoint) newPoint2).setPointStatus(

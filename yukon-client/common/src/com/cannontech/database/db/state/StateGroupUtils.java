@@ -19,6 +19,7 @@ public final class StateGroupUtils
 
    public static final int SYSTEM_STATEGROUPID = 0;
    
+   public static final int STATEGROUP_MCT410DISC = -6;
    public static final int STATEGROUP_ALARM = -5;
    public static final int STATEGROUP_CALCULATED = -3;
    public static final int STATEGROUP_ACCUMULATOR = -2;
