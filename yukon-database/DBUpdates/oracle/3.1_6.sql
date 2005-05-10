@@ -94,6 +94,15 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
 
+update p set p.stategroupid = -6 from point p, yukonpaobject y
+where p.paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
+and p.pointoffset = 1 and p.pointtype = 'Status';
+
+
+
+
+
+
 
 
 
