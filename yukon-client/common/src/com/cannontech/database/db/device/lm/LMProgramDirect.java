@@ -13,10 +13,12 @@ public class LMProgramDirect extends com.cannontech.database.db.DBPersistent
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
 	private Double triggerOffset = new Double(0.0);
+	private Double restoreOffset = new Double(0.0);
+	
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET"
+		"NOTIFYOFFSET", "HEADING", "MESSAGEHEADER", "MESSAGEFOOTER", "TRIGGEROFFSET", "RESTOREOFFSET"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -35,7 +37,7 @@ public LMProgramDirect() {
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getDeviceID(), getNotifyOffset(), getHeading(),
-						   getMessageHeader(), getMessageFooter(), getTriggerOffset() };
+						   getMessageHeader(), getMessageFooter(), getTriggerOffset(), getRestoreOffset() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -73,6 +75,13 @@ public String getMessageFooter() {
 
 public Double getTriggerOffset() {
 	return triggerOffset;
+}
+
+/**
+ * @return Returns the restoreOffset.
+ */
+public Double getRestoreOffset() {
+	return restoreOffset;
 }
 
 public static final LMDirectNotificationGroupList[] getAllNotificationGroupsList(Integer programDeviceID, java.sql.Connection conn) throws java.sql.SQLException
@@ -153,6 +162,7 @@ public void retrieve() throws java.sql.SQLException
 		setMessageHeader( (String) results[2] );
 		setMessageFooter( (String) results[3] );
 		setTriggerOffset( (Double) results[4] );
+		setRestoreOffset( (Double) results[5] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -187,13 +197,17 @@ public void setTriggerOffset(Double newTriggerOffset) {
 	triggerOffset = newTriggerOffset;
 }
 
+public void setRestoreOffset(Double restoreOffset) {
+	this.restoreOffset = restoreOffset;
+}
+
 /**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getNotifyOffset(), getHeading(), getMessageHeader(),
-							getMessageFooter(), getTriggerOffset() };
+							getMessageFooter(), getTriggerOffset(), getRestoreOffset() };
 
 	Object constraintValues[] = { getDeviceID() };
 
