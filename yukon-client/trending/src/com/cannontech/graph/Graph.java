@@ -740,9 +740,17 @@ public void update()
 				if( i > 0)
 					chartTitle += ", ";
 				chartTitle += lp.getPointName();
-			}
+			}			
 			chartTitle += " Trend";
 			newModel = new TrendModel(getStartDate(), getStopDate(), chartTitle, lps);
+
+			for( int i = 0; i < pointIDs.length; i++ )
+			{
+				//make every other point the opposite Y-axis
+				newModel.getTrendSeries()[i].setAxis(
+					(i % 2 == 0 ? new Character('L') : new Character('R')) );
+			}
+
 		}
 		setTrendModel( newModel );
 		updateTrend = false;		
