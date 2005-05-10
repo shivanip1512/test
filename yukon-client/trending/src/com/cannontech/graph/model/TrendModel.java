@@ -1,5 +1,6 @@
 package com.cannontech.graph.model;
 
+import java.awt.Color;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -189,7 +190,14 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 		TrendSerie tempSerie = new TrendSerie();
 		tempSerie.setPointId(new Integer(((LitePoint)litePoints[i]).getPointID()));
 		tempSerie.setLabel(((LitePoint)litePoints[i]).getPointName());
-		tempSerie.setColor(Colors.getColor(i));	//some distinct color (valid 1-10 only)
+		
+		// some distinct color (valid 1-10 only)
+		// ignore WHITE since we are on a default WHITE background
+		if( !Colors.getColor(i).equals(Color.WHITE) )
+			tempSerie.setColor(Colors.getColor(i));
+		else
+			tempSerie.setColor(Colors.getColor(Colors.BLACK_ID));
+
 
 		trendSeries[i] = tempSerie;
 	}		
