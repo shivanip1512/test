@@ -403,7 +403,7 @@ public class TrendSerie
 	 * Valid options are 'L'[eft] 'R'[ight].
 	 * @param newAxis java.lang.Character
 	 */
-	protected void setAxis(Character newAxis)
+	public void setAxis(Character newAxis)
 	{
 		axis = newAxis;
 	}
