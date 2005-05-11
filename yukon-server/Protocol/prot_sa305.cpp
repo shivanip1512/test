@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/04 20:49:33 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/05/11 19:33:32 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.17  2005/05/11 19:33:32  cplender
+* Protocol should not send bytes if message did not parse correctly.
+*
 * Revision 1.16  2005/05/04 20:49:33  cplender
 * Adjusted coldload and tamper detect code for the SA stuff.
 *
@@ -610,12 +613,12 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     {
     case ControlRequest:
         {
-            assembleControl( parse, OutMessage );
+            status = assembleControl( parse, OutMessage );
             break;
         }
     case PutConfigRequest:
         {
-            assemblePutConfig( parse, OutMessage );
+            status = assemblePutConfig( parse, OutMessage );
             break;
         }
     default:
@@ -632,7 +635,7 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     }
 
     if(_transmitterType != TYPE_RTC) appendCRCToMessage();
-    _messageReady = true;
+    if(status == NORMAL) _messageReady = true;
     // dumpBits();
 
     return status;
@@ -736,6 +739,8 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
 
             timedLoadControl();
         }
+        else
+            status = NoMethod;
     }
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
@@ -761,6 +766,7 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     }
     else
     {
+        status = NoMethod;
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
     }
@@ -802,6 +808,10 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         {
             addBits(4, 4);
             addBits(0, 4);
+        }
+        else
+        {
+            status = NoMethod;
         }
 
         addBits(_priority, 2);
@@ -933,7 +943,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
             RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
 
             int i, tdCount;
-            for(i = 1; i <= 4; i++)
+            for(i = 1; i <= 2; i++)
             {
                 tdstr = RWCString("tamperdetect_f") + CtiNumStr(i);
 
@@ -956,6 +966,10 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
                     newmessageneeded = true;
                 }
             }
+        }
+        else
+        {
+            status = NoMethod;
         }
     }
     return status;
