@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.common.editor.PropertyPanelEvent;
@@ -38,6 +39,9 @@ public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInput
 	private javax.swing.JLabel ivjJLabelTriggerOffset = null;
 	private javax.swing.JTextField ivjJTextFieldTriggerOffset = null;
 
+	private javax.swing.JLabel jLabel = null;
+	private javax.swing.JTextField jTextFieldOffset = null;
+	private javax.swing.JPanel jPanel = null;
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMProgramBasePanel.this.getJComboBoxOperationalState()) 
@@ -51,6 +55,8 @@ class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.even
 			if (e.getSource() == LMProgramBasePanel.this.getJTextFieldName()) 
 				connEtoC2(e);
 			if (e.getSource() == LMProgramBasePanel.this.getJTextFieldTriggerOffset()) 
+				connEtoC4(e);
+			if (e.getSource() == LMProgramBasePanel.this.getJTextFieldOffset()) 
 				connEtoC4(e);
 		};
 	};
@@ -409,7 +415,7 @@ private javax.swing.JLabel getJLabelActualProgType() {
 			ivjJLabelActualProgType.setText("(unknown)");
 			// user code begin {1}
 
-			ivjJLabelActualProgType.setVisible( false );
+			ivjJLabelActualProgType.setVisible(true);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -501,7 +507,7 @@ private javax.swing.JLabel getJLabelProgramType() {
 			ivjJLabelProgramType.setText("Program Type:");
 			// user code begin {1}
 
-			ivjJLabelProgramType.setVisible( false );
+			ivjJLabelProgramType.setVisible(true);
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -528,6 +534,7 @@ private javax.swing.JLabel getJLabelTriggerOffset() {
 			ivjJLabelTriggerOffset.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTriggerOffset.setMinimumSize(new java.awt.Dimension(104, 20));
 			// user code begin {1}
+			ivjJLabelTriggerOffset.setToolTipText("Any postivie float value is valid");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -550,28 +557,48 @@ private javax.swing.JPanel getJPanelTriggerThreshold() {
 			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 12));
 			ivjLocalBorder.setTitle("Trigger Threshold Settings");
 			ivjJPanelTriggerThreshold = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints2 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints3 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints4 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints1 = new java.awt.GridBagConstraints();
+			consGridBagConstraints2.insets = new java.awt.Insets(10,11,0,2);
+			consGridBagConstraints2.ipadx = 3;
+			consGridBagConstraints2.gridy = 0;
+			consGridBagConstraints2.gridx = 0;
+			consGridBagConstraints3.insets = new java.awt.Insets(10,11,10,2);
+			consGridBagConstraints3.ipady = 1;
+			consGridBagConstraints3.ipadx = 11;
+			consGridBagConstraints3.gridy = 1;
+			consGridBagConstraints3.gridx = 0;
+			consGridBagConstraints4.insets = new java.awt.Insets(10,2,10,150);
+			consGridBagConstraints4.ipadx = -10;
+			consGridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints4.weightx = 1.0;
+			consGridBagConstraints4.gridy = 1;
+			consGridBagConstraints4.gridx = 1;
+			consGridBagConstraints4.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints3.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints2.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints1.insets = new java.awt.Insets(10,2,0,150);
+			consGridBagConstraints1.ipadx = -10;
+			consGridBagConstraints1.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints1.weightx = 1.0;
+			consGridBagConstraints1.gridy = 0;
+			consGridBagConstraints1.gridx = 1;
+			consGridBagConstraints1.anchor = java.awt.GridBagConstraints.NORTHWEST;
 			ivjJPanelTriggerThreshold.setName("JPanelTriggerThreshold");
-			ivjJPanelTriggerThreshold.setPreferredSize(new java.awt.Dimension(344, 68));
+			ivjJPanelTriggerThreshold.setPreferredSize(new java.awt.Dimension(344,120));
 			ivjJPanelTriggerThreshold.setBorder(ivjLocalBorder);
 			ivjJPanelTriggerThreshold.setLayout(new java.awt.GridBagLayout());
+			ivjJPanelTriggerThreshold.add(getJTextFieldTriggerOffset(), consGridBagConstraints1);
+			ivjJPanelTriggerThreshold.add(getJLabelTriggerOffset(), consGridBagConstraints2);
+			ivjJPanelTriggerThreshold.add(getJLabel(), consGridBagConstraints3);
+			ivjJPanelTriggerThreshold.add(getJTextFieldOffset(), consGridBagConstraints4);
 			ivjJPanelTriggerThreshold.setMinimumSize(new java.awt.Dimension(344, 68));
 
-			java.awt.GridBagConstraints constraintsJTextFieldTriggerOffset = new java.awt.GridBagConstraints();
-			constraintsJTextFieldTriggerOffset.gridx = 2; constraintsJTextFieldTriggerOffset.gridy = 1;
-			constraintsJTextFieldTriggerOffset.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldTriggerOffset.weightx = 1.0;
-			constraintsJTextFieldTriggerOffset.insets = new java.awt.Insets(35, 2, 45, 81);
-			getJPanelTriggerThreshold().add(getJTextFieldTriggerOffset(), constraintsJTextFieldTriggerOffset);
-
-			java.awt.GridBagConstraints constraintsJLabelTriggerOffset = new java.awt.GridBagConstraints();
-			constraintsJLabelTriggerOffset.gridx = 1; constraintsJLabelTriggerOffset.gridy = 1;
-			constraintsJLabelTriggerOffset.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelTriggerOffset.ipadx = 3;
-			constraintsJLabelTriggerOffset.insets = new java.awt.Insets(35, 80, 45, 2);
-			getJPanelTriggerThreshold().add(getJLabelTriggerOffset(), constraintsJLabelTriggerOffset);
-			// user code begin {1}
 			getJPanelTriggerThreshold().setVisible(false);
 			// user code end
+			ivjJPanelTriggerThreshold.setEnabled(true);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -656,6 +683,9 @@ public Object getValue(Object o)
 		LMProgramDirect prog = (LMProgramDirect)o;
 		if(getJTextFieldTriggerOffset().getText().length() > 0)
 			prog.getDirectProgram().setTriggerOffset(new Double(getJTextFieldTriggerOffset().getText()));
+
+		if(getJTextFieldOffset().getText().length() > 0)
+			prog.getDirectProgram().setRestoreOffset(new Double(getJTextFieldOffset().getText()));
 	}
 
 	return o;
@@ -682,6 +712,8 @@ private void initConnections() throws java.lang.Exception {
 	getJTextFieldName().addCaretListener(ivjEventHandler);
 	getJComboBoxConstraint().addActionListener(ivjEventHandler);
 	getJTextFieldTriggerOffset().addCaretListener(ivjEventHandler);
+	
+	getJTextFieldOffset().addCaretListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -692,91 +724,17 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("LMProgramBasePanel");
-		setLayout(new java.awt.GridBagLayout());
+		java.awt.BorderLayout layBorderLayout37 = new java.awt.BorderLayout();
+		layBorderLayout37.setHgap(0);
+		layBorderLayout37.setVgap(50);
+		this.setLayout(layBorderLayout37);
+		this.add(getActionPasser(), java.awt.BorderLayout.NORTH);
+		this.add(getJPanelTriggerThreshold(), java.awt.BorderLayout.SOUTH);
+		this.add(getJPanel(), java.awt.BorderLayout.NORTH);
 		setSize(364, 392);
 
-		java.awt.GridBagConstraints constraintsJLabelName = new java.awt.GridBagConstraints();
-		constraintsJLabelName.gridx = 2; constraintsJLabelName.gridy = 2;
-		constraintsJLabelName.ipadx = 11;
-		constraintsJLabelName.ipady = -3;
-		constraintsJLabelName.insets = new java.awt.Insets(35, 9, 14, 6);
-		add(getJLabelName(), constraintsJLabelName);
-
-		java.awt.GridBagConstraints constraintsJTextFieldName = new java.awt.GridBagConstraints();
-		constraintsJTextFieldName.gridx = 3; constraintsJTextFieldName.gridy = 2;
-		constraintsJTextFieldName.gridwidth = 3;
-		constraintsJTextFieldName.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJTextFieldName.weightx = 1.0;
-		constraintsJTextFieldName.ipadx = 279;
-		constraintsJTextFieldName.insets = new java.awt.Insets(35, 7, 10, 8);
-		add(getJTextFieldName(), constraintsJTextFieldName);
-
-		java.awt.GridBagConstraints constraintsJLabelOperationalState = new java.awt.GridBagConstraints();
-		constraintsJLabelOperationalState.gridx = 2; constraintsJLabelOperationalState.gridy = 4;
-		constraintsJLabelOperationalState.gridwidth = 2;
-		constraintsJLabelOperationalState.ipadx = 3;
-		constraintsJLabelOperationalState.ipady = -1;
-		constraintsJLabelOperationalState.insets = new java.awt.Insets(10, 9, 13, 0);
-		add(getJLabelOperationalState(), constraintsJLabelOperationalState);
-
-		java.awt.GridBagConstraints constraintsJComboBoxOperationalState = new java.awt.GridBagConstraints();
-		constraintsJComboBoxOperationalState.gridx = 4; constraintsJComboBoxOperationalState.gridy = 4;
-		constraintsJComboBoxOperationalState.gridwidth = 2;
-		constraintsJComboBoxOperationalState.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxOperationalState.weightx = 1.0;
-		constraintsJComboBoxOperationalState.ipadx = 101;
-		constraintsJComboBoxOperationalState.insets = new java.awt.Insets(10, 1, 8, 9);
-		add(getJComboBoxOperationalState(), constraintsJComboBoxOperationalState);
-
-		java.awt.GridBagConstraints constraintsJLabelProgramType = new java.awt.GridBagConstraints();
-		constraintsJLabelProgramType.gridx = 2; constraintsJLabelProgramType.gridy = 3;
-		constraintsJLabelProgramType.gridwidth = 2;
-		constraintsJLabelProgramType.ipadx = 5;
-		constraintsJLabelProgramType.ipady = 1;
-		constraintsJLabelProgramType.insets = new java.awt.Insets(10, 9, 10, 19);
-		add(getJLabelProgramType(), constraintsJLabelProgramType);
-
-		java.awt.GridBagConstraints constraintsJLabelActualProgType = new java.awt.GridBagConstraints();
-		constraintsJLabelActualProgType.gridx = 4; constraintsJLabelActualProgType.gridy = 3;
-		constraintsJLabelActualProgType.gridwidth = 2;
-		constraintsJLabelActualProgType.ipadx = 151;
-		constraintsJLabelActualProgType.ipady = 4;
-		constraintsJLabelActualProgType.insets = new java.awt.Insets(10, 1, 10, 11);
-		add(getJLabelActualProgType(), constraintsJLabelActualProgType);
-
-		java.awt.GridBagConstraints constraintsJLabelConstraint = new java.awt.GridBagConstraints();
-		constraintsJLabelConstraint.gridx = 2; constraintsJLabelConstraint.gridy = 5;
-		constraintsJLabelConstraint.gridwidth = 3;
-		constraintsJLabelConstraint.ipadx = 5;
-		constraintsJLabelConstraint.ipady = 6;
-		constraintsJLabelConstraint.insets = new java.awt.Insets(9, 9, 7, 3);
-		add(getJLabelConstraint(), constraintsJLabelConstraint);
-
-		java.awt.GridBagConstraints constraintsJComboBoxConstraint = new java.awt.GridBagConstraints();
-		constraintsJComboBoxConstraint.gridx = 5; constraintsJComboBoxConstraint.gridy = 5;
-		constraintsJComboBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxConstraint.weightx = 1.0;
-		constraintsJComboBoxConstraint.insets = new java.awt.Insets(9, 3, 9, 9);
-		add(getJComboBoxConstraint(), constraintsJComboBoxConstraint);
-
-		java.awt.GridBagConstraints constraintsActionPasser = new java.awt.GridBagConstraints();
-		constraintsActionPasser.gridx = 2; constraintsActionPasser.gridy = 2;
-		constraintsActionPasser.gridwidth = -1;
-constraintsActionPasser.gridheight = -1;
-		constraintsActionPasser.ipadx = -35;
-		constraintsActionPasser.ipady = -11;
-		add(getActionPasser(), constraintsActionPasser);
-
-		java.awt.GridBagConstraints constraintsJPanelTriggerThreshold = new java.awt.GridBagConstraints();
-		constraintsJPanelTriggerThreshold.gridx = 2; constraintsJPanelTriggerThreshold.gridy = 6;
-		constraintsJPanelTriggerThreshold.gridwidth = 4;
-		constraintsJPanelTriggerThreshold.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelTriggerThreshold.weightx = 1.0;
-		constraintsJPanelTriggerThreshold.weighty = 1.0;
-		constraintsJPanelTriggerThreshold.ipady = 32;
-		constraintsJPanelTriggerThreshold.insets = new java.awt.Insets(8, 9, 97, 11);
-		add(getJPanelTriggerThreshold(), constraintsJPanelTriggerThreshold);
-		initConnections();
+		this.setComponentOrientation(java.awt.ComponentOrientation.UNKNOWN);
+          		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -857,6 +815,7 @@ public void setValue(Object o)
 	{
 		getJPanelTriggerThreshold().setVisible(true);
 		getJTextFieldTriggerOffset().setText(((LMProgramDirect)program).getDirectProgram().getTriggerOffset().toString());
+		getJTextFieldOffset().setText(((LMProgramDirect)program).getDirectProgram().getRestoreOffset().toString());
 	}
 
 }
@@ -876,4 +835,119 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }
+	/**
+	 * This method initializes jLabel
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabel() {
+		if(jLabel == null) {
+			jLabel = new javax.swing.JLabel();
+			jLabel.setBounds(16, 57, 107, 20);
+			jLabel.setText("Restore Offset:");
+			jLabel.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 14));
+			jLabel.setName("JLabelRestoreOffset");
+			jLabel.setToolTipText("Any postivie or negative float value is valid");
+		}
+		return jLabel;
+	}
+	/**
+	 * This method initializes jTextField
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private javax.swing.JTextField getJTextFieldOffset() {
+		if(jTextFieldOffset == null) {
+			jTextFieldOffset = new javax.swing.JTextField();
+			jTextFieldOffset.setPreferredSize(new java.awt.Dimension(72,20));
+			jTextFieldOffset.setName("JTextFieldRestoreOffset");
+			
+			jTextFieldOffset.setDocument( 
+				new DoubleRangeDocument( -9999.9999, 99999.9999, 4 ) );
+			jTextFieldOffset.setActionCommand("");
+		}
+		return jTextFieldOffset;
+	}
+	/**
+	 * This method initializes jPanel
+	 * 
+	 * @return javax.swing.JPanel
+	 */
+	private javax.swing.JPanel getJPanel() {
+		if(jPanel == null) {
+			jPanel = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints27 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints31 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints32 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints33 = new java.awt.GridBagConstraints();
+			consGridBagConstraints26.insets = new java.awt.Insets(5,2,19,3);
+			consGridBagConstraints26.ipadx = 5;
+			consGridBagConstraints26.gridwidth = 3;
+			consGridBagConstraints26.gridy = 3;
+			consGridBagConstraints26.gridx = 0;
+			consGridBagConstraints27.insets = new java.awt.Insets(5,3,15,5);
+			consGridBagConstraints27.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints27.weightx = 1.0;
+			consGridBagConstraints27.gridy = 3;
+			consGridBagConstraints27.gridx = 3;
+			consGridBagConstraints32.insets = new java.awt.Insets(5,7,8,4);
+			consGridBagConstraints32.ipadx = 279;
+			consGridBagConstraints32.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints32.weightx = 1.0;
+			consGridBagConstraints32.gridwidth = 3;
+			consGridBagConstraints32.gridy = 0;
+			consGridBagConstraints32.gridx = 1;
+			consGridBagConstraints31.insets = new java.awt.Insets(5,1,9,7);
+			consGridBagConstraints31.ipadx = 151;
+			consGridBagConstraints31.gridwidth = 2;
+			consGridBagConstraints31.gridy = 1;
+			consGridBagConstraints31.gridx = 2;
+			consGridBagConstraints28.insets = new java.awt.Insets(5,1,6,5);
+			consGridBagConstraints28.ipadx = 196;
+			consGridBagConstraints28.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints28.weightx = 1.0;
+			consGridBagConstraints28.gridwidth = 2;
+			consGridBagConstraints28.gridy = 2;
+			consGridBagConstraints28.gridx = 2;
+			consGridBagConstraints28.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints30.insets = new java.awt.Insets(5,2,7,19);
+			consGridBagConstraints30.ipadx = 5;
+			consGridBagConstraints30.gridwidth = 2;
+			consGridBagConstraints30.gridy = 1;
+			consGridBagConstraints30.gridx = 0;
+			consGridBagConstraints30.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints31.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints26.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints33.insets = new java.awt.Insets(5,2,9,6);
+			consGridBagConstraints33.ipadx = 11;
+			consGridBagConstraints33.gridy = 0;
+			consGridBagConstraints33.gridx = 0;
+			consGridBagConstraints33.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints32.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints27.anchor = java.awt.GridBagConstraints.NORTH;
+			consGridBagConstraints29.insets = new java.awt.Insets(5,2,12,0);
+			consGridBagConstraints29.ipadx = 3;
+			consGridBagConstraints29.gridwidth = 2;
+			consGridBagConstraints29.gridy = 2;
+			consGridBagConstraints29.gridx = 0;
+			consGridBagConstraints29.anchor = java.awt.GridBagConstraints.NORTH;
+			jPanel.setLayout(new java.awt.GridBagLayout());
+			jPanel.add(getJLabelConstraint(), consGridBagConstraints26);
+			jPanel.add(getJComboBoxConstraint(), consGridBagConstraints27);
+			jPanel.add(getJComboBoxOperationalState(), consGridBagConstraints28);
+			jPanel.add(getJLabelOperationalState(), consGridBagConstraints29);
+			jPanel.add(getJLabelProgramType(), consGridBagConstraints30);
+			jPanel.add(getJLabelActualProgType(), consGridBagConstraints31);
+			jPanel.add(getJTextFieldName(), consGridBagConstraints32);
+			jPanel.add(getJLabelName(), consGridBagConstraints33);
+			jPanel.setVisible(true);
+			jPanel.setPreferredSize(new java.awt.Dimension(374,180));
+			jPanel.setName("InfoPanel");
+		}
+		return jPanel;
+	}
 }
