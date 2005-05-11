@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/04/11 16:15:47 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/05/11 14:58:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,52 +22,55 @@
 using namespace std;
 
 
-const string                                     CtiTableDynamicPaoInfo::_empty_string = "(empty)";
-const map<int, CtiTableDynamicPaoInfo::EntityID> CtiTableDynamicPaoInfo::_entity_map   = CtiTableDynamicPaoInfo::initEntityMap();
+const string CtiTableDynamicPaoInfo::_empty_string = "(empty)";
 
-map<int, CtiTableDynamicPaoInfo::EntityID> CtiTableDynamicPaoInfo::initEntityMap()
+const string CtiTableDynamicPaoInfo::_owner_dispatch       = "dispatch";
+const string CtiTableDynamicPaoInfo::_owner_porter         = "porter";
+const string CtiTableDynamicPaoInfo::_owner_scanner        = "scanner";
+const string CtiTableDynamicPaoInfo::_owner_capcontrol     = "capacitor control";
+const string CtiTableDynamicPaoInfo::_owner_loadmanagement = "load management";
+const string CtiTableDynamicPaoInfo::_owner_calc           = "calc and logic";
+
+const string CtiTableDynamicPaoInfo::_key_mct_sspec = "mct sspec";
+
+const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
+const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
+
+
+CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::init_owner_map()
 {
-    map<int, EntityID> e_m;
+    owner_map_t retval;
 
-    e_m.insert(make_pair(Entity_Dispatch,       Entity_Dispatch));
-    e_m.insert(make_pair(Entity_Porter,         Entity_Porter));
-    e_m.insert(make_pair(Entity_Scanner,        Entity_Scanner));
-    e_m.insert(make_pair(Entity_CapControl,     Entity_CapControl));
-    e_m.insert(make_pair(Entity_LoadManagement, Entity_LoadManagement));
-    e_m.insert(make_pair(Entity_Calc,           Entity_Calc));
+    retval.insert(make_pair(Owner_Dispatch, &_owner_dispatch));
 
-    return e_m;
+    return retval;
 }
 
 
-//  remove for 3.1 and head
-RWDBInserter& operator<<(RWDBInserter& ins, const string &s)
+CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
 {
-    return ins << RWCString(s.data());
+    key_map_t retval;
+
+    retval.insert(make_pair(Key_MCTSSpec, &_key_mct_sspec));
+
+    return retval;
 }
 
-RWDBReader& operator>>(RWDBReader& rdr, string& s)
-{
-    RWCString rw_str;
-    rdr >> rw_str;
-    s = (const char*) rw_str.data();
-    return rdr ;
-}
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :
     _pao_id(-1),
-    _entity_id(Entity_Invalid),
-    _string_parameter(""),
-    _long_parameter(0)
+    _owner_id(Owner_Invalid),
+    _key(Key_Invalid),
+    _value("")
 {
 }
 
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(const CtiTableDynamicPaoInfo& aRef) :
     _pao_id(-1),
-    _entity_id(Entity_Invalid),
-    _string_parameter(""),
-    _long_parameter(0)
+    _owner_id(Owner_Invalid),
+    _key(Key_Invalid),
+    _value("")
 {
     *this = aRef;
 }
@@ -85,9 +88,9 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::operator=(const CtiTableDynamicP
         Inherited::operator=(aRef);
 
         setPaoID(aRef.getPaoID());
-        setEntityID(aRef.getEntityID());
-        setStringParameter(aRef.getStringParameter());
-        setLongParameter(aRef.getLongParameter());
+        setOwner(aRef.getOwner());
+        setKey(aRef.getKey());
+        setValue(aRef.getStringValue());
     }
 
     return *this;
@@ -123,17 +126,20 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
     RWDBInserter inserter = table.inserter();
     RWDBStatus retval(RWDBStatus::ok);
 
-    if(getStringParameter().empty())
+    if(getStringValue().empty())
     {
-        setStringParameter(_empty_string);
+        setValue(_empty_string);
     }
 
     if(getPaoID())
     {
+        /*
+        //  this needs to become smart about turning its enums into strings.
         inserter << getPaoID()
-                 << getEntityID()
-                 << getStringParameter()
-                 << getLongParameter();
+                 << getOwner()
+                 << getKey()
+                 << getValue();
+        */
 
         if(DebugLevel & DEBUGLEVEL_LUDICROUS)
         {
@@ -176,19 +182,23 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
     RWDBUpdater updater = table.updater();
     RWDBStatus  dbstatus(RWDBStatus::ok);
 
-    updater.where( table["paoid"] == getPaoID() && table["entityid"] == getEntityID() );
+    //  this needs to become smart about turning its enums into strings.
+    /*updater.where( table["paoid"] == getPaoID() && table["ownerid"] == getOwnerID() );*/
 
-    if(getStringParameter().empty())
+    if(getStringValue().empty())
     {
-        setStringParameter(_empty_string);
+        setValue(_empty_string);
     }
 
     if(getPaoID())
     {
+    //  this needs to become smart about turning its enums into strings.
+        /*
         updater << table["paoid"].assign(getPaoID())
-                << table["entityid"].assign(getEntityID())
+                << table["ownerid"].assign(getOwnerID())
                 << table["string_parameter"].assign(getStringParameter().data())
                 << table["long_parameter"].assign(getLongParameter());
+        */
 
         RWDBResult myResult = updater.execute( conn );
 
@@ -256,7 +266,8 @@ RWDBStatus CtiTableDynamicPaoInfo::Delete()
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBDeleter deleter = table.deleter();
 
-    deleter.where( table["paoid"] == getPaoID() && table["entityid"] == getEntityID() );
+    //  this needs to become smart about turning its enums into strings
+    /*deleter.where( table["paoid"] == getPaoID() && table["ownerid"] == getOwnerID() );*/
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
@@ -272,36 +283,40 @@ void CtiTableDynamicPaoInfo::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 {
     keyTable = db.table(CtiTableDynamicPaoInfo::getTableName());
 
-    selector << keyTable["paoid"]
-             << keyTable["entityid"]
-             << keyTable["string_parameter"]
-             << keyTable["long_parameter"];
+    selector << keyTable["entryid"]
+             << keyTable["paoid"]
+             << keyTable["owner"]
+             << keyTable["key"]
+             << keyTable["value"];
 
     selector.from(keyTable);
 }
 void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString tmp_string;
-    long tmp_paoid, tmp_long;
-    int  tmp_entityid;
-    map<int, EntityID>::const_iterator itr;
-    EntityID e_id = Entity_Invalid;
+    RWCString tmp_owner, tmp_key, tmp_value;
+    long tmp_entryid, tmp_paoid;
 
-    rdr["paoid"]            >> tmp_paoid;
-    rdr["entityid"]         >> tmp_entityid;
-    rdr["string_parameter"] >> tmp_string;
-    rdr["long_parameter"]   >> tmp_long;
+    key_map_t::const_iterator k_itr;
+    owner_map_t::const_iterator o_itr;
 
-    itr = _entity_map.find(tmp_entityid);
-    if( itr != _entity_map.end() )
+    rdr["entryid"] >> tmp_entryid;
+    rdr["paoid"]   >> tmp_paoid;
+    rdr["owner"]   >> tmp_owner;
+    rdr["key"]     >> tmp_key;
+    rdr["value"]   >> tmp_value;
+
+/*
+    itr = _owner_map.find(tmp_ownerid);
+    if( itr != _owner_map.end() )
     {
         e_id = itr->second;
     }
+*/
 
     setPaoID(tmp_paoid);
-    setEntityID(e_id);
-    setStringParameter(tmp_string.data());
-    setLongParameter(tmp_long);
+    //setOwner(e_id);
+    //setKey(tmp_string.data());
+    //setValue(tmp_string.data());
 
     resetDirty(FALSE);
 }
@@ -311,17 +326,29 @@ long CtiTableDynamicPaoInfo::getPaoID() const
 {
     return _pao_id;
 }
-CtiTableDynamicPaoInfo::EntityID CtiTableDynamicPaoInfo::getEntityID() const
+CtiTableDynamicPaoInfo::Owners CtiTableDynamicPaoInfo::getOwner() const
 {
-    return _entity_id;
+    return _owner_id;
 }
-const string &CtiTableDynamicPaoInfo::getStringParameter() const
+CtiTableDynamicPaoInfo::Keys CtiTableDynamicPaoInfo::getKey() const
 {
-    return _string_parameter;
+    return _key;
 }
-long CtiTableDynamicPaoInfo::getLongParameter() const
+const string &CtiTableDynamicPaoInfo::getStringValue() const
 {
-    return _long_parameter;
+    return _value;
+}
+long CtiTableDynamicPaoInfo::getLongValue()
+{
+    _value_as_long = atol(_value.data());
+
+    return _value_as_long;
+}
+double CtiTableDynamicPaoInfo::getDoubleValue()
+{
+    _value_as_double = atof(_value.data());
+
+    return _value_as_double;
 }
 
 
@@ -331,21 +358,35 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setPaoID(long pao_id)
 
     return *this;
 }
-CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setEntityID(EntityID entity_id)
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setOwner(Owners owner_id)
 {
-    _entity_id = entity_id;
+    _owner_id = owner_id;
 
     return *this;
 }
-CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setStringParameter(const string &s)
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setKey(Keys k)
 {
-    _string_parameter = s;
+    _key = k;
 
     return *this;
 }
-CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setLongParameter(long l)
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(const string &s)
 {
-    _long_parameter = l;
+    _value = s;
+
+    return *this;
+}
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(double d)
+{
+    _value_as_long = d;
+    _value = CtiNumStr(d);
+
+    return *this;
+}
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(long l)
+{
+    _value_as_long = l;
+    _value = CtiNumStr(l);
 
     return *this;
 }
@@ -356,10 +397,11 @@ void CtiTableDynamicPaoInfo::dump()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << "getPaoID()           " << getPaoID()           << endl;
-        dout << "getEntityID()        " << getEntityID()        << endl;
-        dout << "getStringParameter() " << getStringParameter() << endl;
-        dout << "getLongParameter()   " << getLongParameter()   << endl;
+        dout << "getPaoID()       " << getPaoID() << endl;
+        dout << "getOwner()       " << getOwner() << endl;
+        dout << "getStringValue() " << getStringValue() << endl;
+        dout << "getDoubleValue() " << getDoubleValue() << endl;
+        dout << "getLongValue()   " << getLongValue() << endl;
     }
 }
 

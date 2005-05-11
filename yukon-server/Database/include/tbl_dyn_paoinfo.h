@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/04/11 16:15:47 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/05/11 14:58:12 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,27 +36,51 @@ class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiMemDBObject
 {
 public:
 
-    enum EntityID
+    enum Owners
     {
-        Entity_Invalid  =  -1,
-        Entity_Dispatch = 100,
-        Entity_Porter,
-        Entity_Scanner,
-        Entity_CapControl,
-        Entity_LoadManagement,
-        Entity_Calc
+        Owner_Invalid  =  -1,
+        Owner_Dispatch = 100,
+        Owner_Porter,
+        Owner_Scanner,
+        Owner_CapControl,
+        Owner_LoadManagement,
+        Owner_CalcLogic
+    };
+
+    enum Keys
+    {
+        Key_Invalid  =  -1,
+        Key_MCTSSpec = 100
+        //  make sure to add any new enum values to the string map
     };
 
 protected:
 
-    long     _pao_id;
-    EntityID _entity_id;
+    static const string _owner_dispatch;
+    static const string _owner_porter;
+    static const string _owner_scanner;
+    static const string _owner_capcontrol;
+    static const string _owner_loadmanagement;
+    static const string _owner_calc;
 
-    static const map< int, EntityID > _entity_map;
-    static map< int, EntityID > initEntityMap();
+    static const string _key_mct_sspec;
 
-    string   _string_parameter;
-    long     _long_parameter;
+    typedef map<Owners, const string *> owner_map_t;
+    typedef map<Keys,   const string *> key_map_t;
+
+    static const owner_map_t _owner_map;
+    static const key_map_t   _key_map;
+
+    static owner_map_t init_owner_map();
+    static key_map_t   init_key_map();
+
+    long   _pao_id;
+    Owners _owner_id;
+
+    Keys   _key;
+    string _value;
+    long   _value_as_long;
+    double _value_as_double;
 
     static const string _empty_string;
 
@@ -86,17 +110,20 @@ public:
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     void DecodeDatabaseReader(RWDBReader& rdr);
 
-    long     getPaoID()    const;
-    EntityID getEntityID() const;
-    const string &getStringParameter() const;
-    long          getLongParameter()   const;
+    long          getPaoID() const;
+    Owners        getOwner() const;
+    Keys          getKey()   const;
+    const string &getStringValue() const;
+    double        getDoubleValue();
+    long          getLongValue();
 
     CtiTableDynamicPaoInfo &setPaoID(long pao_id);
-    CtiTableDynamicPaoInfo &setEntityID(EntityID entity_id);
-    CtiTableDynamicPaoInfo &setStringParameter(const string &s);
-    CtiTableDynamicPaoInfo &setLongParameter(long l);
+    CtiTableDynamicPaoInfo &setOwner(Owners o);
+    CtiTableDynamicPaoInfo &setKey(Keys k);
+    CtiTableDynamicPaoInfo &setValue(const string &s);
+    CtiTableDynamicPaoInfo &setValue(double d);
+    CtiTableDynamicPaoInfo &setValue(long l);
 
     virtual void dump();
-
 };
 #endif // #ifndef __TBL_DYN_PAOINFO_H__
