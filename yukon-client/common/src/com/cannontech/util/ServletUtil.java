@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * The junk drawer for servlets.
@@ -59,24 +60,24 @@ public class ServletUtil {
 	public static final String PREVONEWEEK= "Prev 1 Week";
     public static final String PREVTHIRTYDAYS= "Prev 30 Days";
 
-	private static String[] validPeriods =
-	{
-		ONEDAY,
-		THREEDAYS,
-		FIVEDAYS,
-		ONEWEEK,
-		ONEMONTH,
-		FOURWEEKS,
-		FIVEWEEKS,
-		TODAY,
-		PREVTWODAYS,
-		PREVTHREEDAYS,
-		PREVFIVEDAYS,
-		PREVSEVENDAYS,
-		PREVONEWEEK,
-        PREVTHIRTYDAYS
-		
-	};
+//	private static String[] validPeriods =
+//	{
+//		ONEDAY,
+//		THREEDAYS,
+//		FIVEDAYS,
+//		ONEWEEK,
+//		ONEMONTH,
+//		FOURWEEKS,
+//		FIVEWEEKS,
+//		TODAY,
+//		PREVTWODAYS,
+//		PREVTHREEDAYS,
+//		PREVFIVEDAYS,
+//		PREVSEVENDAYS,
+//		PREVONEWEEK,
+//        PREVTHIRTYDAYS
+//		
+//	};
 /*
 	// The int representation of these values are the indexes used in the time Period drop down box.
 	//  The values in the drop down box MUST match up to these final ints.
@@ -158,7 +159,6 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
-	java.sql.ResultSetMetaData metaData = null;
 	Object[][] data = null;
 	
 	try
@@ -166,7 +166,6 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		metaData = resultSet.getMetaData();
 		java.util.Vector rows = new java.util.Vector();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
@@ -243,7 +242,6 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
-	java.sql.ResultSetMetaData metaData = null;
 	Object[][] data = null;
 	
 	try
@@ -251,7 +249,6 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		metaData = resultSet.getMetaData();
 		java.util.Vector rows = new java.util.Vector();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
@@ -369,7 +366,6 @@ public static Object[][] executeSQL(HttpSession session, String query )
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
-	java.sql.ResultSetMetaData metaData = null;
 	Object[][] data = null;
 	
 	try
@@ -377,7 +373,6 @@ public static Object[][] executeSQL(HttpSession session, String query )
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		metaData = resultSet.getMetaData();
 		java.util.Vector rows = new java.util.Vector();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
@@ -459,7 +454,6 @@ public static Object[][] executeSQL(HttpSession session, String query, Class[] t
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
-	java.sql.ResultSetMetaData metaData = null;
 	Object[][] data = null;
 	
 	try
@@ -467,7 +461,6 @@ public static Object[][] executeSQL(HttpSession session, String query, Class[] t
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		metaData = resultSet.getMetaData();
 		java.util.Vector rows = new java.util.Vector();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
@@ -1043,6 +1036,16 @@ public static Date roundToMinute(Date toRound) {
 			return "an " + word;
 		else
 			return "a " + word;
+	}
+
+	/**
+	 * Returns the current Yukon user object found in the session.
+	 *
+	 */
+	public static LiteYukonUser getYukonUser( HttpSession session )
+	{
+		return
+			(LiteYukonUser)session.getAttribute(ATT_YUKON_USER);
 	}
 
 }

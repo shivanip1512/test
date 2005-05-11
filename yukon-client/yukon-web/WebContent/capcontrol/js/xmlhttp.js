@@ -94,8 +94,8 @@ function getReq( reqID )
 {
 	if( xmlHttp_Pool[reqID] == null || xmlHttp_Pool[reqID].free )
 	{
-		alert('The XMLHttp object with an id = ' +
-			reqID + ' has not been initialized');
+		//alert('The XMLHttp object with an id = ' +
+		//	reqID + ' has not been initialized');
 	}
 	else
 		return xmlHttp_Pool[reqID];
@@ -108,12 +108,15 @@ function getReq( reqID )
 // -------------------------------------------
 function processReqChangeXML()
 {
-//alert(req[xmlHttp_msgId]);
-    var req = getReq(xmlHttp_msgId).req;
+    var xmlHTTPreq = getReq(xmlHttp_msgId);
 
     // only if req shows "complete"
-    if( req != null && req.readyState == 4 )
+    if( xmlHTTPreq != null
+    	&& getReq(xmlHttp_msgId).req != null
+    	&& getReq(xmlHttp_msgId).req.readyState == 4 )
     {    
+    	var req = getReq(xmlHttp_msgId).req;
+
         // only if "OK"
         if( req.status == 200) 
         {

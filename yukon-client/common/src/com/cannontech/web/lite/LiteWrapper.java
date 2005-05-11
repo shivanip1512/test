@@ -1,6 +1,7 @@
 package com.cannontech.web.lite;
 
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -21,6 +22,10 @@ public class LiteWrapper
 	public LiteWrapper( LiteBase lBase )
 	{
 		super();
+		
+		if( !(lBase instanceof LiteYukonPAObject) && !(lBase instanceof LitePoint) )
+			throw new IllegalArgumentException("LiteWrapper does not currently accept the given LiteBase object");
+
 		_setLiteBase( lBase );
 	}
 
@@ -65,6 +70,25 @@ public class LiteWrapper
 			return _getLiteBase().toString();
 		else
 			return "";
+	}
+
+	public String getDescription()
+	{
+		//default the type to invalid
+		String retVal = PAOGroups.STRING_INVALID;
+		
+		if( _getLiteBase() instanceof LiteYukonPAObject )
+		{
+			retVal = ((LiteYukonPAObject)_getLiteBase()).getPaoDescription();
+		}
+		else if( _getLiteBase() instanceof LitePoint )
+		{
+			retVal =
+				UnitMeasureFuncs.getLiteUnitMeasure(
+					((LitePoint)_getLiteBase()).getUofmID() ).toString();
+		}
+
+		return retVal.toLowerCase();
 	}
 
 	public int getItemID()

@@ -1,16 +1,37 @@
 <%@include file="cbc_inc.jspf"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<jsp:useBean id="capControlCache"
+	class="com.cannontech.cbc.web.CapControlCache"
+	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
 
 <%
+	String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, "searchCriteria", "");
-	LiteBaseResults lbr = new LiteBaseResults();
-	lbr.searchLiteObjects( srchCriteria );
+	LiteWrapper[] items = new LiteWrapper[0];
 
-	List items = lbr.getFoundItems();
-	int foundItems = lbr.getFoundItems().size();
+	if( "oFeeders".equals(type) )
+	{
+		items = capControlCache.getOrphanedFeeders();
+		srchCriteria = "Orphaned Feeders";
+	}
+	else if( "oBanks".equals(type) )
+	{
+		items = capControlCache.getOrphanedCapBanks();
+		srchCriteria = "Orphaned CapBanks";
+	}
+	else if( "oCBCs".equals(type) )
+	{
+		items = capControlCache.getOrphanedCBCs();
+		srchCriteria = "Orphaned CBCs";
+	}
+	else
+	{	
+		LiteBaseResults lbr = new LiteBaseResults();
+		lbr.searchLiteObjects( srchCriteria );
+		items = lbr.getFoundItems();
+	}
 	
-//	searchResults = lbr;
-//	getRequestScope().put( "criteriaValue", lbr.getCriteria() );
+
 %>
 
 <HTML>
@@ -23,7 +44,6 @@ pageEncoding="ISO-8859-1"
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Search Results</TITLE>
 </HEAD>
 
@@ -41,13 +61,13 @@ pageEncoding="ISO-8859-1"
           <td valign="bottom" colspan="2">
             <div class="rAlign">
 				<cti:breadCrumb>
-					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
 					<cti:crLink url="results.jsp" title="Results" cssClass="crumbs" />
 				</cti:breadCrumb>	          
 
 				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" id="searchCriteria">
-					<INPUT type="image" id="Go" src="images\GoButton.gif" alt="Find"></p>
+					<p class="main">Find: <input type="text" name="searchCriteria">
+					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
             </div>
           </td>
@@ -58,7 +78,7 @@ pageEncoding="ISO-8859-1"
       <table width="95%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
-          <td class="trimBGColor cellImgShort">Search Resuls For: '<%=srchCriteria%>'   (<%=foundItems%> found)</td>
+          <td class="trimBGColor cellImgShort">Search Resuls For: '<%=srchCriteria%>'   (<%=items.length%> found)</td>
           <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
         </tr>
         <tr>
@@ -70,16 +90,17 @@ pageEncoding="ISO-8859-1"
               <tr class="columnheader lAlign">				
 				<td>Name</td>
                 <td>Item Type</td>
+                <td>Description</td>
                 <td>Parent</td>
               </tr>
 
 			<form id="resForm" action="feeders.jsp" method="post">
 			<input type="hidden" id="<%=CBCSessionInfo.STR_SUBID%>" />
 <%
-for( int i = 0; i < items.size(); i++ )
+for( int i = 0; i < items.length; i++ )
 {
 	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
-	LiteWrapper item = (LiteWrapper)items.get(i);
+	LiteWrapper item = items[i];
 %>
 	        <tr class="<%=css%>">
 				<td>
@@ -87,6 +108,7 @@ for( int i = 0; i < items.size(); i++ )
 				<%=item.toString()%>
 				</a></td>
 				<td><%=item.getItemType()%></td>
+				<td><%=item.getDescription()%></td>
 				<td><%=item.getParent()%></td>
 			</tr>
 <% } %>

@@ -51,7 +51,6 @@ function toggleImg( imgID )
 	href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>"
 	type="text/css">
 
-<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Feeders</TITLE>
 </HEAD>
 
@@ -76,7 +75,7 @@ function toggleImg( imgID )
 			
 			<form id="findForm" action="results.jsp" method="post">
 				<p class="main">Find: <input type="text" name="searchCriteria">
-				<INPUT type="image" id="Go" src="images\GoButton.gif" alt="Find"></p>
+				<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 			</form>
 
 			</div>

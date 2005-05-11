@@ -15,8 +15,8 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.roles.application.TDCRole;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
+import com.cannontech.util.ColorUtil;
 
 /**
  * @author rneuharth
@@ -64,12 +64,12 @@ public class CBCDisplay
 	//The color schemes - based on the schedule status
 	private static final Color[] _DEFAULT_COLORS =
 	{
-		//Enabled subbus (Green like color) #a4e61c
-		new Color( 0xa4, 0xe6, 0x1c ),
+		//Enabled subbus (Green like color)
+		new Color(60, 130, 66),
 		//Disabled subbus
 		Color.RED,
 		//Pending subbus (Yellow like color)
-		new Color( 0xff, 0xd4, 0x6f )
+		new Color(240, 145, 0)
 	};
 
 
@@ -529,7 +529,7 @@ public class CBCDisplay
           decPlaces = 
              Integer.parseInt(
                     ClientSession.getInstance().getRolePropertyValue(
-                   TDCRole.PFACTOR_DECIMAL_PLACES, 
+					CBCSettingsRole.PFACTOR_DECIMAL_PLACES, 
                    "1") );
        }
        catch( Exception e)
@@ -544,20 +544,23 @@ public class CBCDisplay
 
 	public static synchronized String getHTMLFgColor( SubBus subBus ) 
 	{
-		Color retColor = getSubFgColor( subBus, Color.BLACK );				
-		return "#" + ServletUtil.getHTMLColor(retColor);
+		Color rc = getSubFgColor( subBus, Color.BLACK );				
+		return ColorUtil.getHex(
+			new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()} );
 	}
 
 	public static synchronized String getHTMLFgColor( Feeder feeder ) 
 	{
-		Color retColor = getFeederFgColor( feeder, Color.BLACK );				
-		return "#" + ServletUtil.getHTMLColor(retColor);
+		Color rc = getFeederFgColor( feeder, Color.BLACK );				
+		return ColorUtil.getHex(
+			new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()} );
 	}
 
 	public static synchronized String getHTMLFgColor( CapBankDevice capBank ) 
 	{
-		Color retColor = getCapBankFGColor( capBank, Color.BLACK );				
-		return "#" + ServletUtil.getHTMLColor(retColor);
+		Color rc = getCapBankFGColor( capBank, Color.BLACK );				
+		return ColorUtil.getHex(
+			new int[] {rc.getRed(), rc.getGreen(), rc.getBlue()} );
 	}
 
 	public static synchronized Color getSubFgColor( SubBus subBus, Color defColor ) 

@@ -50,7 +50,8 @@ a.submenuLink:hover {color: #006699;}
 .popupHeader { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; color: #FFFFFF;  cursor:default; font-weight: bold;}
 .popupCell { height: 9; }
 
-.alert { color: #FF0000; cursor: help; }
+.alert { color: #FF0000; }
 .warning { color: #F09100; cursor: help; }
+.info { color: #318a31; cursor: help; }
 
 .subMenuPopup { font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #eeeeee; display: none; }

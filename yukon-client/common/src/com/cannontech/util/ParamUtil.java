@@ -95,6 +95,24 @@ public class ParamUtil
 		return get(req, param, defaultValue);
 	}
 
+	public static String[] getStrings(ServletRequest req, String param)
+	{
+		String [] vals = req.getParameterValues(param);
+		if( vals != null )
+		{
+			for( int i = 0; i < vals.length; i++ )
+			{
+				String returnValue = GetterUtil.get(vals[i], "");
+				if (returnValue != null)
+					vals[i] = vals[i].trim();
+			}
+
+			return vals;
+		}
+		else
+			return new String[0];
+	}
+	
 	public static boolean get(ServletRequest req, String param, boolean defaultValue)
 	{
 		return GetterUtil.get(req.getParameter(param), defaultValue);

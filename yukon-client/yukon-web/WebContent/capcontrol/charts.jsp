@@ -6,6 +6,8 @@
 
 <%
 	int MAX_TRENDS = 3;
+
+	String type = ParamUtil.getString(request, "type", CBCWebUtils.TYPE_VARWATTS );
 	String[] chartParam = ParamUtil.getStrings(request, "value");
 	String[] titles = new String[ chartParam.length ];
 	if( chartParam == null ) chartParam = new String[0];
@@ -13,7 +15,7 @@
 	for( int i = 0; i < chartParam.length && i < MAX_TRENDS; i++ )
 	{
 		int id = Integer.parseInt( chartParam[i] );
-		chartParam[i] = CBCWebUtils.genGraphURL( id, capControlCache );
+		chartParam[i] = CBCWebUtils.genGraphURL( id, capControlCache, type );
 		
 		titles[i] = "Trend for: " + capControlCache.getCapControlPAO(new Integer(id));//.getCcName();
 	}
@@ -41,7 +43,8 @@
 			<td><br></td>
 		</tr>
         <tr class="tableCell">
-			<td class="alert cAlign">No Data Found</td>
+			<td class="alert cAlign">
+			No items selected, try again</td>
 		</tr>
 <%
 	}
@@ -65,7 +68,8 @@
 			<td><%=titles[i]%></td>
 		</tr>
         <tr class="tableCell">
-			<td class="alert cAlign">No Data Found</td>
+			<td class="alert cAlign">
+			No point data found</td>
 		</tr>
 <%
 			}

@@ -28,4 +28,5 @@ public interface CBCSettingsRole
 	public static final int CBC_CREATION_NAME = CapControlRoleDefs.CBC_PROPERTYID_BASE - 6;
 	public static final int PFACTOR_DECIMAL_PLACES = CapControlRoleDefs.CBC_PROPERTYID_BASE - 7;
 	public static final int CBC_ALLOW_OVUV = CapControlRoleDefs.CBC_PROPERTYID_BASE - 8;
+	public static final int CBC_REFRESH_RATE = CapControlRoleDefs.CBC_PROPERTYID_BASE - 9;
 }

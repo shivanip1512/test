@@ -6,6 +6,8 @@ package com.cannontech.servlet;
  *
  * @author: ryan
  */ 
+import java.io.Writer;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,8 +15,16 @@ import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.xml.DynamicUpdate;
+import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.yukon.cbc.CBCUtils;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 import javax.servlet.http.HttpServlet;
 
@@ -30,9 +40,9 @@ public class CBCServlet extends HttpServlet
 	public static final String REF_SECONDS_DEF = "60";
 	public static final String REF_SECONDS_PEND = "5";
 
-	public static final String CMD_SUB = "SUB_CNTRL";
-	public static final String CMD_FEEDER = "FEEDER_CNTRL";
-	public static final String CMD_CAPBANK = "CAPBANK_CNTRL";
+	public static final String TYPE_SUB = "SUB_TYPE";
+	public static final String TYPE_FEEDER = "FEEDER_TYPE";
+	public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
 
 
 /**
@@ -83,14 +93,9 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 
 /**
- * Creation date: (12/7/99 9:54:51 AM)
- * @param req javax.servlet.http.HttpServletRequest
- * @param resp javax.servlet.http.HttpServletResponse
  * 
  * Expected session params:
  * redirectURL - Where do take the user after the post to the servlet
- * 
- * cmdExecute - the string representation of the command selected
  * 
  * cmdID - id of the command to be executed
  * 
@@ -98,17 +103,18 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
  * 
  * paoID - item to be executed on
  * 
- * manualChange (optional)- the state selected (if applicable) of a manual change command
+ * opt (optional)- optional parameters for things like:
+ *		manual change command
+ * 		temp move command
+ * 		...etc
  */
 public void doPost(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
 	HttpSession session = req.getSession( false );
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
 
-	//handle any commands that we may need to send to the server from any page here
-	//String cmdExecute = ParamUtil.getString( req, "cmdExecute" );
+	//handle any commands that a client may want to send to the CBC server
 	String redirectURL = ParamUtil.getString( req, "redirectURL" );
-
 
 	if( user != null )
 	{
@@ -117,21 +123,22 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 			int cmdID = ParamUtil.getInteger( req, "cmdID" );
 			int paoID = ParamUtil.getInteger( req, "paoID" );
 			String controlType = ParamUtil.getString( req, "controlType" );
-			int manChange = ParamUtil.getInteger( req, "manualChange" );
-			
-			
+			int[] optParams =
+				StringUtils.toIntArray( ParamUtil.getStrings(req, "opt") );
+
+
 			CTILogger.debug(req.getServletPath() +
 				"	  cmdID = " + cmdID +
 				", controlType = " + controlType +
 				", paoID = " + paoID +
-				", manualChng = " + manChange  );
+				", opt = " + optParams  );
 			
 			//send the command with the id, type, paoid
 			_executeCommand(
 				cmdID,
 				controlType,
 				paoID,
-				manChange,
+				optParams,
 				user.getUsername() );
 			
 			//cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_PEND );
@@ -150,29 +157,181 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 }
 
 /**
+ * Returns a XML block.
  * 
+ */
+public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
+{
+	HttpSession session = req.getSession( false );
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	resp.setHeader("Content-Type", "text/xml");
+	
+	//force this request not to be cached
+	resp.setHeader("Pragma", "no-cache");
+	resp.setHeader("Expires", "0");
+	resp.setHeader("Cache-Control", "no-store");
+
+	String type = ParamUtil.getString( req, "type" );
+	String method = ParamUtil.getString( req, "method" );
+	String[] ids = ParamUtil.getStrings( req, "id" );
+
+	if( user != null )
+	{
+		try
+		{
+			ResultXML[] xmlMsgs = new ResultXML[ ids.length ];
+			boolean fnd = false;
+			
+			for( int i = 0; i < ids.length; i++, fnd = false )
+			{
+				//go get the XML data for the specific type of element
+				if(!fnd) fnd |= _handleSubGET(ids[i], xmlMsgs, i);
+				if(!fnd) fnd |= _handleFeederGET(ids[i], xmlMsgs, i);
+				if(!fnd) fnd |= _handleCapBankGET(ids[i], xmlMsgs, i);
+			}
+
+			Writer writer = resp.getWriter();
+			writer.write(
+				DynamicUpdate.createXML(method, xmlMsgs) );
+
+			writer.flush();
+			
+
+			CTILogger.debug(req.getServletPath() +
+				"	  type = " + type +
+				", method = " + method );
+			CTILogger.debug("URL = " + 
+				req.getRequestURL().toString() + "?" + req.getQueryString() );
+
+		}
+		catch( Exception e )
+		{
+			CTILogger.warn( "Unable to execute GET for the following reason:", e );
+		}
+	}
+	else
+		CTILogger.warn( "CBCServlet received a GET, but NO action was taken due to a missing YUKON_USER" );	
+}
+
+/**
+ * Sets the XML data for the given SubBus id. Return true if the given
+ * id is a SubBus id, else returns false.
+ *  
+ */
+private boolean _handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
+{
+	SubBus sub =
+		_getCapControlCache().getSubBus( new Integer(ids) );
+
+	if( sub == null )
+		return false;
+
+	String[] optParams =
+	{
+		/*param0*/CBCDisplay.getHTMLFgColor(sub),
+		/*param1*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_COLUMN).toString(),
+		/*param2*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString(),
+		/*param3*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TIME_STAMP_COLUMN).toString(),
+		/*param4*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
+		/*param5*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WATTS_COLUMN).toString(),
+		/*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString()
+	};
+
+	xmlMsgs[indx] = new ResultXML(
+		sub.getCcId().toString(),
+		CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),		
+		optParams );
+
+
+	return true;
+}
+
+/**
+ * Sets the XML data for the given Feeder id. Return true if the given
+ * id is a Feeder id, else returns false.
+ *  
+ */
+private boolean _handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
+{
+	Feeder fdr =
+		_getCapControlCache().getFeeder( new Integer(ids) );
+
+	if( fdr == null )
+		return false;
+
+	String[] optParams =
+	{
+		/*param0*/CBCDisplay.getHTMLFgColor(fdr),
+		/*param1*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_COLUMN).toString(),
+		/*param2*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_COLUMN).toString(),
+		/*param3*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TIME_STAMP_COLUMN).toString(),
+		/*param4*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_POWER_FACTOR_COLUMN).toString(),
+		/*param5*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WATTS_COLUMN).toString(),
+		/*param6*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString()
+	};
+
+	xmlMsgs[indx] = new ResultXML(
+		fdr.getCcId().toString(),
+		CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_CURRENT_STATE_COLUMN).toString(),
+		optParams );
+
+
+	return true;
+}
+
+/**
+ * Sets the XML data for the given CapBank id. Return true if the given
+ * id is a CapBank id, else returns false.
+ *  
+ */
+private boolean _handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
+{
+	CapBankDevice capBank =
+		_getCapControlCache().getCapBankDevice( new Integer(ids) );
+
+	if( capBank == null )
+		return false;
+
+	String[] optParams =
+	{
+		/*param0*/CBCDisplay.getHTMLFgColor(capBank),
+		/*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN).toString(),
+		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN).toString()
+	};
+
+	xmlMsgs[indx] = new ResultXML(
+		capBank.getCcId().toString(),
+		CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN).toString(),
+		optParams );
+
+	return true;
+}
+
+
+
+/**
  * Allows the execution of commands to the cbc server.
+ * 
  * @param cmdID_ int : the id of the command from CBCCommand to be executed
  * @param cmdType_ String : type of command to execute ( CMD_SUB,CMD_FEEDER,CMD_CAPBANK ) 
  * @param rowID_ int : the row from a types data model to execute 
  * @param manChange_ Integer : the state index field for a capbank, null if not present
  */
-private synchronized void _executeCommand( int cmdID_, String cmdType_, int paoID_,
-			int manChange_, String userName_ )
+private synchronized void _executeCommand( int _cmdID, String _cmdType, int _paoID,
+			int[] _optParams, String _userName )
 {
-	//We are FORCED pass in a CBCWebAnnex so we can find out the control point for
-	// things like capbanks. Sub confirm commands need additional data alsow. The 
-	// server should do this automitcally, but it does not. 
-	cbcExecutor = new CBCCommandExec( _getCapControlCache(), userName_ );
+	//Creates a new command executor and gives it a reference to
+	// the cache.
+	cbcExecutor = new CBCCommandExec( _getCapControlCache(), _userName );
 		
-	if( CBCServlet.CMD_SUB.equals(cmdType_) )
-		cbcExecutor.execute_SubCmd( cmdID_, paoID_ );
+	if( CBCServlet.TYPE_SUB.equals(_cmdType) )
+		cbcExecutor.execute_SubCmd( _cmdID, _paoID );
 	
-	if( CBCServlet.CMD_FEEDER.equals(cmdType_) )
-		cbcExecutor.execute_FeederCmd( cmdID_, paoID_ );
+	if( CBCServlet.TYPE_FEEDER.equals(_cmdType) )
+		cbcExecutor.execute_FeederCmd( _cmdID, _paoID );
 
-	if( CBCServlet.CMD_CAPBANK.equals(cmdType_) )
-		cbcExecutor.execute_CapBankCmd( cmdID_, paoID_, manChange_ );
+	if( CBCServlet.TYPE_CAPBANK.equals(_cmdType) )
+		cbcExecutor.execute_CapBankCmd( _cmdID, _paoID, _optParams );
 }
 
 }

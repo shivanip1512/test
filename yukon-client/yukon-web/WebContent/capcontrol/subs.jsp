@@ -73,7 +73,7 @@ var intSubID = -1;
             <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnheader lAlign">				
 				<td>
-				<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'chkBxSubs');"/>
+				<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
 				Sub Name</td>
                 <td>State</td>
                 <td>Target</td>
@@ -94,7 +94,7 @@ for( int i = 0; i < areaSubs.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-				<input type="checkbox" id="chkBxSubs" />
+				<input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
 				<a href="#" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</a></td>

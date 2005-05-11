@@ -23,13 +23,14 @@ import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.CapControlFeeder;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSubAreaNames;
@@ -260,24 +261,44 @@ public synchronized Feeder[] getFeedersByArea(String area)
 	Collections.sort( allFeeders, CBCUtils.CCNAME_COMPARATOR );
 	return (Feeder[])allFeeders.toArray( new Feeder[allFeeders.size()]);
 }
+
+/**
+ * Find all the orphaned CBC's in the system. This requires a database hit since
+ * the CapControl server does not know about these.
+ * 
+ */
+public synchronized LiteWrapper[] getOrphanedCBCs()
+{
+	//hits the DB
+	DeviceCBC[] unassignedCBCs = DeviceCBC.getUnassignedDeviceCBCs();
+	LiteWrapper[] retVal = new LiteWrapper[ unassignedCBCs.length ];
+	
+	for( int i = 0 ; i < unassignedCBCs.length; i++ )
+	{
+		DeviceCBC cbc = unassignedCBCs[i];		
+		retVal[i] = new LiteWrapper(
+				PAOFuncs.getLiteYukonPAO(cbc.getDeviceID().intValue()) );
+	}
+
+	return retVal;
+}
+
 /**
  * Find the orphaned CapBanks in the system. This requires a database hit since
- * the CapControl server does not know about these. Store the results locally of
- * this expensive lookup.
+ * the CapControl server does not know about these.
  * 
- * @return LiteYukonPAObject[]
- * @param
  */
-public synchronized LiteYukonPAObject[] getOrphanedCapBanks()
+public synchronized LiteWrapper[] getOrphanedCapBanks()
 {
 	//hits the DB
 	CapBank[] unassignedBanks = CapBank.getUnassignedCapBanksList();
-	LiteYukonPAObject[] retVal = new LiteYukonPAObject[ unassignedBanks.length ];
+	LiteWrapper[] retVal = new LiteWrapper[ unassignedBanks.length ];
 	
 	for( int i = 0 ; i < unassignedBanks.length; i++ )
 	{
 		CapBank capBank = unassignedBanks[i];		
-		retVal[i] = PAOFuncs.getLiteYukonPAO( capBank.getDeviceID().intValue() );
+		retVal[i] = new LiteWrapper(
+				PAOFuncs.getLiteYukonPAO(capBank.getDeviceID().intValue()) );
 	}
 
 	return retVal;
@@ -285,22 +306,20 @@ public synchronized LiteYukonPAObject[] getOrphanedCapBanks()
 
 /**
  * Find the orphaned Feeders in the system. This requires a database hit since
- * the CapControl server does not know about these. Store the results locally of
- * this expensive lookup.
+ * the CapControl server does not know about these.
  * 
- * @return LiteYukonPAObject[]
- * @param
  */
-public synchronized LiteYukonPAObject[] getOrphanedFeeders()
+public synchronized LiteWrapper[] getOrphanedFeeders()
 {
 	//hits the DB
 	CapControlFeeder[] unassignedFeeders = CapControlFeeder.getUnassignedFeeders();
-	LiteYukonPAObject[] retVal = new LiteYukonPAObject[ unassignedFeeders.length ];
+	LiteWrapper[] retVal = new LiteWrapper[ unassignedFeeders.length ];
 	
 	for( int i = 0 ; i < unassignedFeeders.length; i++ )
 	{
 		CapControlFeeder feeder = (CapControlFeeder)unassignedFeeders[i];		
-		retVal[i] = PAOFuncs.getLiteYukonPAO( feeder.getFeederID().intValue() );
+		retVal[i] = new LiteWrapper(
+				PAOFuncs.getLiteYukonPAO(feeder.getFeederID().intValue()) );
 	}
 
 	return retVal;

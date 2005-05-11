@@ -25,7 +25,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 public class LiteBaseResults
 {
 	//contains LiteWrapper objects
-	private Vector foundItems = null;
+	private LiteWrapper[] foundItems = new LiteWrapper[0];
 	private String criteria = null;
 	
 	/**
@@ -38,7 +38,8 @@ public class LiteBaseResults
 	
 	public void searchLiteObjects( String srchCriteria )
 	{
-		getFoundItems().clear();
+		Vector tempVect = new Vector(32);
+		foundItems = new LiteWrapper[0];
 		setCriteria( srchCriteria );
 
 		if( getCriteria() != null && getCriteria().length() > 0 )
@@ -66,7 +67,7 @@ public class LiteBaseResults
 						Matcher m = p.matcher( pao.getPaoName() );
 						try {
 							if( m.matches() )
-								getFoundItems().add( new LiteWrapper(pao) );
+								tempVect.add( new LiteWrapper(pao) );
 						} catch( PatternSyntaxException pse ) {
 							CTILogger.error( "Error with matching regular expression pattern", pse );
 						}
@@ -78,7 +79,7 @@ public class LiteBaseResults
 							Matcher ptM = p.matcher( devPoints[j].getPointName() );
 							try {
 								if( ptM.matches() )
-									getFoundItems().add( new LiteWrapper(devPoints[j]) );
+									tempVect.add( new LiteWrapper(devPoints[j]) );
 							} catch( PatternSyntaxException pse ) {
 								CTILogger.error( "Error with matching regular expression pattern", pse );
 							}
@@ -89,8 +90,11 @@ public class LiteBaseResults
 				
 			}
 			
-			//sort base on name
-			Collections.sort( getFoundItems(), LiteComparators.liteNameComparator );
+			//sort base on name			
+			Collections.sort( tempVect, LiteComparators.liteNameComparator );
+			
+			foundItems = new LiteWrapper[tempVect.size()];
+			foundItems = (LiteWrapper[])tempVect.toArray( foundItems );
 		}
 
 	}
@@ -98,11 +102,8 @@ public class LiteBaseResults
 	/**
 	 * @return
 	 */
-	public List getFoundItems()
+	public LiteWrapper[] getFoundItems()
 	{
-		if( foundItems == null )
-			foundItems = new Vector(32);
-
 		return foundItems;
 	}
 

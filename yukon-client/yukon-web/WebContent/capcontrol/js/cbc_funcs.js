@@ -391,19 +391,22 @@ function updateHTML( result )
 // -------------------------------------------
 function processMenuReq() 
 {
-    var req = getReq(manMsgID).req;
-
-//alert('a: ' + req.status);
+    var xmlHTTPreq = getReq(manMsgID);
 
     // only if req shows "complete" and HTTP code is "OK"
-    if( req != null && req.readyState == 4 && req.status == 200)
-    {
+    if( xmlHTTPreq != null
+    	&& getReq(manMsgID).req != null
+    	&& getReq(manMsgID).req.readyState == 4 
+    	&& getReq(manMsgID).req.status == 200 )
+    {    
+    	var req = getReq(manMsgID).req;
+
 		// ...processing statements go here...
  		response = req.responseText;
 
  		
 		overlib(
-			response, FULLHTML, STICKY, CLOSECLICK, MOUSEOFF);
+			response, FULLHTML, STICKY, MOUSEOFF);
 			//,WIDTH, 200, HEIGHT, 200, WRAP);
 
 		//always do this
@@ -430,8 +433,11 @@ function statusMsg(elem, msgStr)
 //Shows a sticky popup for the checked boxe elements
 // that are valid values AND that are checked
 // -------------------------------------------
-function showPopUpForChkBoxes()
+function showPopUpForChkBoxes( typeStr )
 {
+	if( typeStr == null )
+		return;
+
 	var elemSubs = document.getElementsByName('cti_chkbxSubs');
 	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
 	//var elemBanks = document.getElementsByName('cti_chkbxBanks');
@@ -442,7 +448,7 @@ function showPopUpForChkBoxes()
 	//doValidChecks( elemBanks, validElems );
 
 
-	var url = createURLreq( validElems, 'charts.jsp', 'value' );
+	var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
 	manMsgID = loadXMLDoc(url, 'processMenuReq');
 }
 
