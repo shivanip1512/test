@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.editor.capfeeder;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.db.capcontrol.CapBank;
 
 public class CCFeederCapBankListEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
 	private int rightListItemIndex = getCCCapBankListAddRemovePanel().rightListGetSelectedIndex();
@@ -296,8 +297,8 @@ public void initLeftListBanks()
 	
 	synchronized( cache )
 	{
-		java.util.Vector unassignedBanks = 
-							com.cannontech.database.db.capcontrol.CapBank.getUnassignedCapBanksList();
+		CapBank[] unassignedBanks = 
+				CapBank.getUnassignedCapBanksList();
 		
 		java.util.List paoOBjects = cache.getAllYukonPAObjects();
 		com.cannontech.database.data.lite.LiteYukonPAObject litePAO = null;
@@ -308,9 +309,9 @@ public void initLeftListBanks()
 			
 			if( litePAO.getType() == com.cannontech.database.data.pao.PAOGroups.CAPBANK )
 			{
-				for( int j = 0; j < unassignedBanks.size(); j++ )  // see if this capbank has no strategy
+				for( int j = 0; j < unassignedBanks.length; j++ )  // see if this capbank has no strategy
 				{				
-					com.cannontech.database.db.capcontrol.CapBank capBank = (com.cannontech.database.db.capcontrol.CapBank)unassignedBanks.get(j);
+					CapBank capBank = unassignedBanks[j];
 
 					if( capBank.getDeviceID().intValue() == litePAO.getYukonID() )
 					{

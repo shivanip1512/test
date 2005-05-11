@@ -143,7 +143,7 @@ public Integer getRecloseDelay() {
  * This method returns all the CapBanks that are not assgined
  *  to a Feeder.
  */
-public static java.util.Vector getUnassignedCapBanksList()
+public static CapBank[] getUnassignedCapBanksList()
 {
 	java.util.Vector returnVector = null;
 	java.sql.Connection conn = null;
@@ -198,7 +198,8 @@ public static java.util.Vector getUnassignedCapBanksList()
 	}
 
 
-	return returnVector;
+	CapBank[] banks = new CapBank[returnVector.size()];
+	return (CapBank[])returnVector.toArray( banks );
 }
 /**
  * retrieve method comment.

@@ -37,6 +37,7 @@ import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -95,6 +96,21 @@ public SubBus getSubBus( Integer subID )
 }
 
 /**
+ * Returs the base object type for a SubBus, Feeder or CapBankDevice
+ * 
+ */
+public StreamableCapObject getCapControlPAO( Integer paoID )
+{
+	StreamableCapObject retObj = null;
+
+	if( retObj == null ) retObj = getSubBus(paoID);
+	if( retObj == null ) retObj = getFeeder(paoID);
+	if( retObj == null ) retObj = getCapBankDevice(paoID);
+	
+	return retObj;
+}
+
+/**
  * 
  * @return Feeder
  */
@@ -140,12 +156,43 @@ public synchronized CapBankDevice[] getCapBanksByFeeder(Integer feederID)
 }
 
 /**
+ * Instant lookup to check if this paoID is used by a SubBus
+ * 
+ */
+public boolean isSubBus( int id )
+{
+	return getSubBus( new Integer(id) ) != null;
+}
+
+/**
+ * Instant lookup to check if this paoID is used by a Feeder
+ * 
+ */
+public boolean isFeeder( int id )
+{
+	return getFeeder( new Integer(id) ) != null;
+}
+
+/**
+ * Instant lookup to check if this paoID is used by a CapBankDevice
+ * 
+ */
+public boolean isCapBank( int id )
+{
+	return getCapBankDevice( new Integer(id) ) != null;
+}
+
+
+/**
  * @return CapBankDevice[]
  * @param subBusID long
  */
 public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
 {
 	int[] bankIDs = (int[])subToBankMap.get( subBusID );
+	if( bankIDs == null )
+		bankIDs = new int[0];
+
 	CapBankDevice[] retVal = new CapBankDevice[ bankIDs.length ];
 	
 	for( int i = 0; i < bankIDs.length; i++ )
@@ -179,6 +226,8 @@ public synchronized SubBus[] getSubsByArea(String area)
 public synchronized CapBankDevice[] getCapBanksByArea(String area)
 {
 	SubBus[] subs = getSubsByArea( area );
+	if( subs == null )
+		subs = new SubBus[0];
 
 	Vector allBanks = new Vector(64);
 	for( int i = 0; i < subs.length; i++ )
@@ -198,6 +247,8 @@ public synchronized CapBankDevice[] getCapBanksByArea(String area)
 public synchronized Feeder[] getFeedersByArea(String area)
 {
 	SubBus[] subs = getSubsByArea( area );
+	if( subs == null )
+		subs = new SubBus[0];
 
 	Vector allFeeders = new Vector(64);
 	for( int i = 0; i < subs.length; i++ )
@@ -220,12 +271,12 @@ public synchronized Feeder[] getFeedersByArea(String area)
 public synchronized LiteYukonPAObject[] getOrphanedCapBanks()
 {
 	//hits the DB
-	List unassignedBanks = CapBank.getUnassignedCapBanksList();
-	LiteYukonPAObject[] retVal = new LiteYukonPAObject[ unassignedBanks.size() ];
+	CapBank[] unassignedBanks = CapBank.getUnassignedCapBanksList();
+	LiteYukonPAObject[] retVal = new LiteYukonPAObject[ unassignedBanks.length ];
 	
-	for( int i = 0 ; i < unassignedBanks.size(); i++ )
+	for( int i = 0 ; i < unassignedBanks.length; i++ )
 	{
-		CapBank capBank = (CapBank)unassignedBanks.get(i);		
+		CapBank capBank = unassignedBanks[i];		
 		retVal[i] = PAOFuncs.getLiteYukonPAO( capBank.getDeviceID().intValue() );
 	}
 
