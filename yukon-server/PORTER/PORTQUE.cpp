@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/05/11 19:33:25 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/05/11 21:03:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -998,7 +998,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             else if(pInfo->FreeSlots == 32 && pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
             {
                 // 20050506 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
-                pInfo->ClearStatus(INLGRPQ)
+                pInfo->ClearStatus(INLGRPQ);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " FreeSlots is 32 and CCU reports 32 command slots available.  INLGRPQ must be cleared." << endl;
