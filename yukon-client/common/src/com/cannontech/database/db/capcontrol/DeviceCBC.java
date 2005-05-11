@@ -2,7 +2,6 @@ package com.cannontech.database.db.capcontrol;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
  * This type was created in VisualAge.
