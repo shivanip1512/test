@@ -52,7 +52,6 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
@@ -63,6 +62,7 @@ import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.db.point.PeakPointHistory;
+import com.cannontech.graph.GraphColors;
 import com.cannontech.jfreechart.chart.Dataset_MinMaxValues;
 import com.cannontech.jfreechart.chart.HorizontalSkipLabelsCategoryAxis;
 import com.cannontech.jfreechart.chart.StandardXYItemRenderer_MinMax;
@@ -183,6 +183,8 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 	setStopDate(newStopDate);
 	setChartName(newChartName);
 
+	GraphColors colors = new GraphColors();
+	
 	// Inititialize series properties	
 	trendSeries = new TrendSerie[litePoints.length];
 	for (int i = 0; i < litePoints.length; i++)
@@ -191,14 +193,8 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 		tempSerie.setPointId(new Integer(((LitePoint)litePoints[i]).getPointID()));
 		tempSerie.setLabel(((LitePoint)litePoints[i]).getPointName());
 		
-		// some distinct color (valid 1-10 only)
-		// ignore WHITE since we are on a default WHITE background
-		if( !Colors.getColor(i).equals(Color.WHITE) )
-			tempSerie.setColor(Colors.getColor(i));
-		else
-			tempSerie.setColor(Colors.getColor(Colors.BLACK_ID));
-
-
+		//Use valid graph Colors, reuses colors when all have been used
+		tempSerie.setColor(colors.getNextLineColor());
 		trendSeries[i] = tempSerie;
 	}		
 	hitDatabase_Basic(GDSTypes.BASIC_GRAPH_TYPE);
@@ -223,6 +219,7 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 	setStopDate(newStopDate);
 	setChartName(newChartName);
 
+	GraphColors colors = new GraphColors();
 	// Inititialize series properties	
 	trendSeries = new TrendSerie[ptID_.length];
 	for (int i = 0; i < ptID_.length; i++)
@@ -230,9 +227,9 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 		TrendSerie tempSerie = new TrendSerie();
 		tempSerie.setPointId( new Integer(ptID_[i]) );
 		tempSerie.setTypeMask( GDSTypes.BASIC_GRAPH_TYPE );
-
 		tempSerie.setLabel( ptNames_[i] );
-		tempSerie.setColor(Colors.getColor(i));	//some distinct color (valid 1-10 only)
+		//Use valid graph Colors, reuses colors when all have been used
+		tempSerie.setColor(colors.getNextLineColor());
 
 		trendSeries[i] = tempSerie;
 	}		
