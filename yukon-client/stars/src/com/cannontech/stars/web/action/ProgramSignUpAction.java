@@ -759,7 +759,7 @@ public class ProgramSignUpAction implements ActionBase {
 			for (int j = 0; j < invIDs.length; j++) {
 				int invID = Integer.parseInt( invIDs[j] );
 				int loadNo = Integer.parseInt( loadNos[j] );
-				if (invID > 0 && loadNo > 0) {
+				/*if (invID > 0 && loadNo > 0) {
 					for (int k = 0; k < programs.getSULMProgramCount(); k++) {
 						if (programs.getSULMProgram(k).getInventoryID() == invID
 							&& programs.getSULMProgram(k).getLoadNumber() == loadNo)
@@ -770,7 +770,7 @@ public class ProgramSignUpAction implements ActionBase {
 							throw new WebClientException( "Relay #" + loadNo + " has been selected for hardware \"" + label + "\" more than once" );
 						}
 					}
-				}
+				}*/
 				
 				SULMProgram program = new SULMProgram();
 				program.setProgramID( progID );
