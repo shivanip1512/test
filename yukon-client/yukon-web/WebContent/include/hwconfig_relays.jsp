@@ -61,7 +61,7 @@ Required variables:
           <td width="<%= hasProgramSplinter?65:130 %>"> 
             <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
-<% if (hasTamperDetect) { %>
+<% if (hasTamperDetect && i < 2) { %>
           <td width="65"> 
             <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
           </td>
