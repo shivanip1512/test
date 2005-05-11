@@ -100,10 +100,19 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
 go
 
-update p set p.stategroupid = -6 from point p, yukonpaobject y
-where p.paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
-and p.pointoffset = 1 and p.pointtype = 'Status';
+update point set stategroupid = -6
+where paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
+and pointoffset = 1 and pointtype = 'Status';
 go
+
+alter table lmprogramdirect add restoreoffset float;
+go
+update lmprogramdirect set restoreoffset = 0.0;
+go
+alter table lmprogramdirect alter column restoreoffset float not null;
+go
+
+
 
 
 

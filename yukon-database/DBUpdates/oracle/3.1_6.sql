@@ -7,7 +7,7 @@ alter table dynamiclmgroup add dailyops smallint;
 update dynamiclmgroup set dailyops = 0;
 alter table dynamiclmgroup modify dailyops smallint not null;
 
-alter table state modify text varcahar2(32) not null;
+alter table state modify text varchar2(32) not null;
 
 insert into stategroup values( -6, '410 Disconnect', 'Status');
 insert into state values( -6, 0, 'Confirmed Disconnected', 1, 6, 0);
@@ -94,9 +94,15 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
 
-update p set p.stategroupid = -6 from point p, yukonpaobject y
-where p.paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
-and p.pointoffset = 1 and p.pointtype = 'Status';
+update point set stategroupid = -6
+where paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
+and pointoffset = 1 and pointtype = 'Status';
+
+
+alter table lmprogramdirect add restoreoffset float;
+update lmprogramdirect set restoreoffset = 0.0;
+alter table lmprogramdirect modify restoreoffset float not null;
+
 
 
 
