@@ -1,5 +1,9 @@
 package com.cannontech.database.db.capcontrol;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * This type was created in VisualAge.
  */
@@ -24,20 +28,83 @@ public DeviceCBC(Integer deviceID) {
 	super();
 	initialize( deviceID, null, null );
 }
+
+/**
+ * This method returns all the DeviceCBCs that are not assgined
+ *  to a CapBank. NOTE: Each DeviceCBC that is returned only has the
+ *  DeviceID field populated
+ * 
+ */
+public static DeviceCBC[] getUnassignedDeviceCBCs()
+{
+	java.util.Vector returnVector = null;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+	String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
+					 "DeviceID not in (select ControlDeviceID from " + CapBank.TABLE_NAME +
+					 ") ORDER BY DeviceID";
+	try
+	{		
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();
+			returnVector = new java.util.Vector(16); //rset.getFetchSize()
+	
+			while( rset.next() )
+			{				
+				returnVector.addElement( 
+						new DeviceCBC( new Integer(rset.getInt("DeviceID")) ) );
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) 
+				pstmt.close();
+			if( conn != null ) 
+				conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+
+	DeviceCBC[] cbcs = new DeviceCBC[returnVector.size()];
+	return (DeviceCBC[])returnVector.toArray( cbcs );
+}
+
+
 /**
  * add method comment.
  */
-
-
-   public final static String usedCapBankController(Integer controllerID) throws java.sql.SQLException
-   {
-      com.cannontech.database.SqlStatement stmt =
-         new com.cannontech.database.SqlStatement(
-                  "SELECT PAOName FROM " + 
-                  com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
-                  com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + " c" +
-                  " WHERE y.PAObjectID = c.DeviceID" +
-                  " and c.ControlDeviceID =" + controllerID,
+public final static String usedCapBankController(Integer controllerID) throws java.sql.SQLException
+{
+  com.cannontech.database.SqlStatement stmt =
+     new com.cannontech.database.SqlStatement(
+              "SELECT PAOName FROM " + 
+      com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " +
+      com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + " c" +
+      " WHERE y.PAObjectID = c.DeviceID" +
+      " and c.ControlDeviceID =" + controllerID,
                   com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
    
       try
@@ -52,7 +119,7 @@ public DeviceCBC(Integer deviceID) {
       {
          return null;
       }
-   }
+}
 
 public void add() throws java.sql.SQLException {
 	Object[] addValues = { getDeviceID(), getSerialNumber(), getRouteID() };
