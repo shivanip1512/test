@@ -9,8 +9,8 @@
 * Author: Eric Schmit
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2005/03/14 21:44:16 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2005/05/12 18:33:12 $
 *
 *
 *    AUTHOR: David Sutton
@@ -21,6 +21,9 @@
 *
 *    History:
       $Log: dev_kv2.cpp,v $
+      Revision 1.13  2005/05/12 18:33:12  jrichter
+      changed so it doesn't send additional last lp value to scanner.  Matt advised to do this and says now all lp values are sent to clients.
+
       Revision 1.12  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -988,22 +991,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
 
                     qual = NormalQuality;
-                    // first time send to scanner...  ////////////////////
-                    lpValue = getKV2Protocol().getLPValue(getKV2Protocol().getTotalWantedLPBlockInts()-1);
-                    if (ptMultiplier != NULL)
-                    {
-                        lpValue = lpValue * ptMultiplier;
-                        if (ptOffset != NULL)
-                        {
-                            lpValue += ptOffset;
-                        }
-                    }
-                    pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
-                    pData->setTime( RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)) );
-                    msgPtr->insert(pData); 
-                    pData = NULL;
-                    //////////////////////////////////////////////////////
-
+                    
                     for (y = getKV2Protocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
                     {
                         if (getKV2Protocol().getLPTime(y) > lastLoadProfileTime.seconds())

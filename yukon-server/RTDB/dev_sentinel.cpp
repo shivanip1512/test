@@ -966,21 +966,6 @@ void CtiDeviceSentinel::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                     int ptOffset = pPoint->getDataOffset();
 
                     qual = NormalQuality;
-                    // first time send to scanner...  ////////////////////
-                    lpValue = getSentinelProtocol().getLPValue(getSentinelProtocol().getTotalWantedLPBlockInts()-1);
-                    if (ptMultiplier != NULL)
-                    {
-                        lpValue = lpValue * ptMultiplier;
-                        if (ptOffset != NULL)
-                        {
-                            lpValue += ptOffset;
-                        }
-                    }
-                    pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
-                    pData->setTime( RWTime(getSentinelProtocol().getLPTime(getSentinelProtocol().getTotalWantedLPBlockInts()-1)) );
-                    msgPtr->insert(pData); 
-                    pData = NULL;
-                    //////////////////////////////////////////////////////
 
                     for (y = getSentinelProtocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
                     {
