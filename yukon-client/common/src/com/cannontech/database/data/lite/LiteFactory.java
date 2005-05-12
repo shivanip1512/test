@@ -193,11 +193,11 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				break;
 			case LiteTypes.DEVICE_TYPE_COMMAND:
 				returnObject = new DeviceTypeCommand();
-				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
-				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getCommandID()));				
-				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDeviceType(((LiteDeviceTypeCommand)liteObject).getDeviceType());
-				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setDisplayOrder(new Integer(((LiteDeviceTypeCommand)liteObject).getDisplayOrder()));
-				((DeviceTypeCommand)returnObject).getDeviceTypeCommand().setVisibleFlag(new Character(((LiteDeviceTypeCommand)liteObject).getVisibleFlag()));
+				((DeviceTypeCommand)returnObject).setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
+				((DeviceTypeCommand)returnObject).setCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getCommandID()));				
+				((DeviceTypeCommand)returnObject).setDeviceType(((LiteDeviceTypeCommand)liteObject).getDeviceType());
+				((DeviceTypeCommand)returnObject).setDisplayOrder(new Integer(((LiteDeviceTypeCommand)liteObject).getDisplayOrder()));
+				((DeviceTypeCommand)returnObject).setVisibleFlag(new Character(((LiteDeviceTypeCommand)liteObject).getVisibleFlag()));
 				break;
 			case LiteTypes.COMMAND:
 				returnObject = new Command();
