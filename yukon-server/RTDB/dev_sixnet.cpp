@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1473,7 +1473,6 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
             {
                 // Down to the last few records
                 tag |= ( numLeft == 0 ) ? SXNT_TAG_FINAL_MESSAGE : 0x00000000;
-                tag |= ( numLeft <= remainder )  ? SXNT_TAG_LAST_REPORT : 0x00000000;
 
                 remainder = 0; // Clean them out.
             }
@@ -1911,20 +1910,9 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         pData->dump();
 
-                    pPIL->PointData().insert(pData->replicateMessage());
+                    pPIL->PointData().insert(pData);
 
-                    if (pSxnt->tag & SXNT_TAG_LAST_REPORT)
-                    {
-                        if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "   Last log on point." << endl;
-                        }
-                        // set to NOT load profile so that TDC can see it if he needs it!
-                        pData->setTags(0);
-                        pPIL->PointData().insert(pData);
-                    }
+                    pData = 0;
                 }
             }
             else

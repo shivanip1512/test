@@ -2180,27 +2180,8 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
         lpTimestamp += lpCfg.intervalLength * 60;
     }
 
+    setLastLPTime( RWTime(lpTimestamp) );
 
-    if( useScanFlags( ) )
-    {
-        //  add the last info to a normal point change message;
-        //    dispatch doesn't route load profile messages to clients
-        for( i = 0; i < lpCfg.numChannels; i++ )
-        {
-            peakTime = RWTime( lpTimestamp - (lpCfg.intervalLength * 60) );
-
-            if( pNumericPoint[i] != NULL )
-            {
-                verifyAndAddPointToReturnMsg( pNumericPoint[i]->getPointID( ),
-                                              (DOUBLE)tmpPulseData[i] * (DOUBLE)(60 / lpCfg.intervalLength) * pNumericPoint[i]->getMultiplier( ),
-                                              NormalQuality,
-                                              peakTime,
-                                              pPIL );
-            }
-        }
-
-        setLastLPTime( RWTime(lpTimestamp) );
-    }
 
     delete [] pNumericPoint;
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/23 12:54:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -339,7 +339,6 @@ typedef struct _LGS4ScanData_t
 typedef struct
 {
    ULONG                porterLPTime;
-   BOOL                 lastLPMessage;
    LGS4DateTime_t       meterDate;
    LGS4LProfileConfig_t configuration;
    BYTE                 loadProfileData[300];

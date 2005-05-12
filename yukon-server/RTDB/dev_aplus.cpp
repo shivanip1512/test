@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.11  2005/05/12 19:57:48  mfisher
+      removed duplicate pointdata sends for load profile
+
       Revision 1.10  2005/02/17 19:02:58  mfisher
       Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 
@@ -1492,7 +1495,6 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                             }
                             else
                             {
-                                ptr->lastLPMessage = TRUE;
                                 setPreviousState (StateScanValueSet7FirstScan);
                                 setCurrentState (StateScanReturnLoadProfile);
                             }
@@ -1673,7 +1675,6 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                                     memcpy (&_lpWorkBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
                                     setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
 
-                                    ptr->lastLPMessage = TRUE;
                                     setPreviousState (StateScanValueSet7FirstScan);
                                     setCurrentState (StateScanReturnLoadProfile);
                                 }
@@ -1699,7 +1700,6 @@ INT CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer, INT comm
                                     memcpy (&_lpWorkBuffer[0], &buffer[0], getTotalByteCount()-ptr->class14.dayRecordSize);
                                     setTotalByteCount(getTotalByteCount()-ptr->class14.dayRecordSize);
 
-                                    ptr->lastLPMessage = FALSE;
                                     setPreviousState (StateScanValueSet6FirstScan);
                                     setCurrentState (StateScanReturnLoadProfile);
                                     setAttemptsRemaining(3);
@@ -1950,15 +1950,15 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                                   RWTPtrSlist< OUTMESS > &outList)
 {
 
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
-    AlphaPPlusLoadProfile_t  *ptr = (AlphaPPlusLoadProfile_t *)DUPRep->Message;
+    DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+
+    AlphaPPlusLoadProfile_t *ptr = (AlphaPPlusLoadProfile_t *)DUPRep->Message;
 
     int     intervalsPerDay = (60 / ptr->class14.intervalLength * 24);
     USHORT  intervalPulses;
     DOUBLE  intervalData;
     USHORT  dataOffset;
     BOOL    isIntervalValid=FALSE;
-    BOOL  isNextInterval = FALSE;
 
     BOOL    eventFlag = FALSE;
 
@@ -1971,27 +1971,19 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                           ptr->class18.recordDateTime.Year + 2000)).seconds();
 
 
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg *pData         = NULL;
+    CtiPointNumeric *pNumericPoint = NULL;
 
-    CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            RWCString(InMessage->Return.CommandStr),
-                                            RWCString(),
-                                            InMessage->EventCode & 0x7fff,
-                                            InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
-                                            InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
-                                            InMessage->Return.UserID);
-    CtiReturnMsg   *pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                        RWCString(InMessage->Return.CommandStr),
-                                                        RWCString(),
-                                                        InMessage->EventCode & 0x7fff,
-                                                        InMessage->Return.RouteID,
-                                                        InMessage->Return.MacroOffset,
-                                                        InMessage->Return.Attempt,
-                                                        InMessage->Return.TrxID,
-                                                        InMessage->Return.UserID);
+    CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
+                                                    RWCString(InMessage->Return.CommandStr),
+                                                    RWCString(),
+                                                    InMessage->EventCode & 0x7fff,
+                                                    InMessage->Return.RouteID,
+                                                    InMessage->Return.MacroOffset,
+                                                    InMessage->Return.Attempt,
+                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.UserID);
+
     // alpha only supports 4 channels
     AlphaLPPointInfo_t   validLPPointInfo[4] = { {0,1.0,-1},
         {0,1.0,-1},
@@ -2072,53 +2064,6 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                 {
                                     isIntervalValid = TRUE;
                                 }
-
-                                /****************************
-                                *  on the last lp message, fill the point change
-                                *  list for display apps to see the last load profile
-                                *  interval
-                                *
-                                *  NOTE:  we only end up here if the interval was valid
-                                *       so unitialized data will not accidently be
-                                *       sent to the display apps
-                                *****************************
-                                */
-                                if (ptr->lastLPMessage)
-                                {
-                                    /********************
-                                    * after which, we allocate the memory for the second
-                                    * return list and fill it as we go
-                                    *********************
-                                    */
-
-                                    if (isNextInterval)
-                                    {
-                                        // delete the last set and start over
-                                        if (pLastLPIntervals != NULL)
-                                        {
-                                            delete pLastLPIntervals;
-                                            pLastLPIntervals = NULL;
-                                        }
-
-                                        pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                                            RWCString(InMessage->Return.CommandStr),
-                                                                            RWCString(),
-                                                                            InMessage->EventCode & 0x7fff,
-                                                                            InMessage->Return.RouteID,
-                                                                            InMessage->Return.MacroOffset,
-                                                                            InMessage->Return.Attempt,
-                                                                            InMessage->Return.TrxID,
-                                                                            InMessage->Return.UserID);
-                                        isNextInterval = FALSE;
-                                    }
-
-                                    // add point change message
-                                    verifyAndAddPointToReturnMsg (validLPPointInfo[currentChannel].pointId,
-                                                                  intervalData,
-                                                                  NormalQuality,
-                                                                  (dayRecordTime + ((currentInterval+1) * ptr->class14.intervalLength * 60)),
-                                                                  pLastLPIntervals);
-                                }
                             }
                     }
                 }
@@ -2132,8 +2077,6 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
 
                 isIntervalValid = FALSE;
             }
-            // tells me to remove the point changes if the data is valid
-            isNextInterval = TRUE;
         }
     }
 
@@ -2147,25 +2090,6 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
         delete pPIL;
     }
     pPIL = NULL;
-
-    /***************************
-    *  this list of point changes will be sent without the load profile flag set
-    *  allowing us to display the last interals in a report
-    *  currently dispatch does not route load profile data
-    ****************************
-    */
-    if (ptr->lastLPMessage)
-    {
-        if (pLastLPIntervals->PointData().entries() > 0)
-        {
-            retList.insert(pLastLPIntervals);
-        }
-        else
-        {
-            delete pLastLPIntervals;
-        }
-        pLastLPIntervals = NULL;
-    }
 
     return NORMAL;
 }

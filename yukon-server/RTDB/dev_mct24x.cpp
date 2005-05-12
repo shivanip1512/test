@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/04/22 19:00:28 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -644,18 +644,6 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
 
                         return_msg->insert(point_data);
                     }
-
-                    //  insert a point data message for TDC and the like
-                    //    note that timeStamp, Value, and pointQuality are set in the final iteration of the above for loop
-                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(value, ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
-
-                    point_data = CTIDBG_new CtiPointDataMsg(point->getPointID(),
-                                                            value,
-                                                            quality,
-                                                            DemandAccumulatorPointType,
-                                                            val_report);
-                    point_data->setTime(timestamp);
-                    return_msg->insert(point_data);
 
                     setLastLPTime(timestamp);
                 }

@@ -6,12 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.12  2005/05/12 19:57:48  mfisher
+      removed duplicate pointdata sends for load profile
+
       Revision 1.11  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -1928,13 +1931,14 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
 {
 
     int retCode = NORMAL;
-    DIALUPREPLY        *DUPRep       = &InMessage->Buffer.DUPSt.DUPRep;
-    AlphaA1LoadProfile_t  *ptr = (AlphaA1LoadProfile_t *)DUPRep->Message;
+    DIALUPREPLY *DUPRep = &InMessage->Buffer.DUPSt.DUPRep;
+
+    AlphaA1LoadProfile_t *ptr = (AlphaA1LoadProfile_t *)DUPRep->Message;
 
 
     BYTEUSHORT        flip;
-    CtiPointDataMsg   *pData    = NULL;
-    CtiPointNumeric   *pNumericPoint = NULL;
+    CtiPointDataMsg  *pData         = NULL;
+    CtiPointNumeric  *pNumericPoint = NULL;
     int               cnt,scratch;
     DOUBLE            intervalData;
 
@@ -1952,8 +1956,6 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.Attempt,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
-
-    CtiReturnMsg   *pLastLPIntervals = NULL;
 
     // alpha only supports 4 channels
     AlphaLPPointInfo_t   validLPPointInfo[4] = { {0,1.0,-1},
@@ -2038,23 +2040,6 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                 // walk until either we get to the last time or we get to the end of our vector
                 while (currentIntervalTS > lastLPTime && offset > -1)
                 {
-                    // delete the last set and start over
-                    if (pLastLPIntervals != NULL)
-                    {
-                        delete pLastLPIntervals;
-                        pLastLPIntervals = NULL;
-                    }
-
-                    pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                        RWCString(InMessage->Return.CommandStr),
-                                                        RWCString(),
-                                                        InMessage->EventCode & 0x7fff,
-                                                        InMessage->Return.RouteID,
-                                                        InMessage->Return.MacroOffset,
-                                                        InMessage->Return.Attempt,
-                                                        InMessage->Return.TrxID,
-                                                        InMessage->Return.UserID);
-
                     for (int currentChannel = ptr->class14.numberOfChannels-1; currentChannel > -1 ; currentChannel--)
                     {
                         // perform parity checking on reading
@@ -2089,12 +2074,6 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                                                           currentIntervalTS,
                                                           pPIL,
                                                           TAG_POINT_LOAD_PROFILE_DATA);
-
-                            verifyAndAddPointToReturnMsg (validLPPointInfo[currentChannel].pointId,
-                                                          intervalData,
-                                                          dataQuality,
-                                                          currentIntervalTS,
-                                                          pLastLPIntervals);
                         }
                         else
                         {
@@ -2129,25 +2108,6 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
         delete pPIL;
     }
     pPIL = NULL;
-
-    /***************************
-    *  this list of point changes will be sent without the load profile flag set
-    *  allowing us to display the last interals in a report
-    *  currently dispatch does not route load profile data
-    ****************************
-    */
-    if (pLastLPIntervals != NULL)
-    {
-        if (pLastLPIntervals->PointData().entries() > 0)
-        {
-            retList.insert(pLastLPIntervals);
-        }
-        else
-        {
-            delete pLastLPIntervals;
-        }
-        pLastLPIntervals = NULL;
-    }
 
     return retCode;
 }

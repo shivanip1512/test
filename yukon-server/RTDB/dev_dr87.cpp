@@ -1756,8 +1756,6 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
 
-    CtiReturnMsg   *pLastLPIntervals = NULL;
-
     // alpha only supports 4 channels
     DR87LPPointInfo_t   validLPPointInfo[4] = { {0,1.0,-1},
         {0,1.0,-1},
@@ -1821,23 +1819,6 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                 // walk until either we get to the last time or we get to the end of our vector
                 while (currentIntervalTS > lastLPTime && offset > -1)
                 {
-                    // delete the last set and start over
-                    if (pLastLPIntervals != NULL)
-                    {
-                        delete pLastLPIntervals;
-                        pLastLPIntervals = NULL;
-                    }
-
-                    pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                        RWCString(InMessage->Return.CommandStr),
-                                                        RWCString(),
-                                                        InMessage->EventCode & 0x7fff,
-                                                        InMessage->Return.RouteID,
-                                                        InMessage->Return.MacroOffset,
-                                                        InMessage->Return.Attempt,
-                                                        InMessage->Return.TrxID,
-                                                        InMessage->Return.UserID);
-
                     for (int currentChannel = ptr->config.numberOfChannels-1; currentChannel > -1 ; currentChannel--)
                     {
                         // perform parity checking on reading
@@ -1872,12 +1853,6 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                                                           currentIntervalTS,
                                                           pPIL,
                                                           TAG_POINT_LOAD_PROFILE_DATA);
-
-                            verifyAndAddPointToReturnMsg (validLPPointInfo[currentChannel].pointId,
-                                                          intervalData,
-                                                          dataQuality,
-                                                          currentIntervalTS,
-                                                          pLastLPIntervals);
                         }
                         else
                         {
@@ -1909,25 +1884,6 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
         delete pPIL;
     }
     pPIL = NULL;
-
-    /***************************
-    *  this list of point changes will be sent without the load profile flag set
-    *  allowing us to display the last interals in a report
-    *  currently dispatch does not route load profile data
-    ****************************
-    */
-    if (pLastLPIntervals != NULL)
-    {
-        if (pLastLPIntervals->PointData().entries() > 0)
-        {
-            retList.insert(pLastLPIntervals);
-        }
-        else
-        {
-            delete pLastLPIntervals;
-        }
-        pLastLPIntervals = NULL;
-    }
 
     return retCode;
 }

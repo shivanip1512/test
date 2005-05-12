@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/03/10 19:28:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,8 +164,7 @@ public:
 
    enum
    {
-      SXNT_TAG_FINAL_MESSAGE = 0x00000001,
-      SXNT_TAG_LAST_REPORT = 0x00000002
+      SXNT_TAG_FINAL_MESSAGE = 0x00000001
    };
 
    enum

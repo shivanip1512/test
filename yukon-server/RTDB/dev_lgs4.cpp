@@ -1222,14 +1222,11 @@ INT CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer, INT com
 
                                 if (localLPConfig->totalBytesReceived >= (localLPConfig->totalKBytesRequested *1000))
                                 {
-                                    // flag this as the last load profile message
-                                    localLP->lastLPMessage = TRUE;
                                     setPreviousState (StateScanValueSet6);
                                 }
                                 else
                                 {
 
-                                    localLP->lastLPMessage = FALSE;
                                     setPreviousState (StateScanValueSet7);
                                 }
                                 // always returning the load profile
@@ -2097,8 +2094,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
 
-    CtiReturnMsg   *pLastLPIntervals = NULL;
-
     // our array of valid points
     LGS4LPPointInfo_t validLPPointInfo[15] = { {0,1.0,-1},
         {0,1.0,-1},
@@ -2126,49 +2121,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
     {
         // reset this for each piece of data we look at
         validPointFound=FALSE;
-
-        /********************
-        * check if we are on the last message
-        *
-        * after which, we allocate the memory for the second
-        * return list and fill it as we go
-        *********************
-        */
-        if (localLP->lastLPMessage)
-        {
-            if (pLastLPIntervals == NULL)
-            {
-                pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(InMessage->Return.CommandStr),
-                                                    RWCString(),
-                                                    InMessage->EventCode & 0x7fff,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.MacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
-                                                    InMessage->Return.UserID);
-            }
-            else if (getCurrentLPChannel() == 0)
-            {
-
-                // delete the last set and start over
-                if (pLastLPIntervals != NULL)
-                {
-                    delete pLastLPIntervals;
-                    pLastLPIntervals = NULL;
-                }
-
-                pLastLPIntervals = CTIDBG_new CtiReturnMsg(getID(),
-                                                    RWCString(InMessage->Return.CommandStr),
-                                                    RWCString(),
-                                                    InMessage->EventCode & 0x7fff,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.MacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
-                                                    InMessage->Return.UserID);
-            }
-        }
 
         memcpy (&intervalPulses, &localLP->loadProfileData[dataWalker], 2);
 
@@ -2473,22 +2425,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                               intervalTime,
                                                               pPIL,
                                                               TAG_POINT_LOAD_PROFILE_DATA);
-                                /*****************************
-                                * if we are on the last set of intervals
-                                * save them in another message so
-                                * they can be displayed on tdc
-                                ******************************
-                                */
-                                if (localLP->lastLPMessage)
-                                {
-                                    verifyAndAddPointToReturnMsg (validLPPointInfo[getCurrentLPChannel()].pointId,
-                                                                  calculateIntervalData (intervalPulses,
-                                                                                         localLP,
-                                                                                         validLPPointInfo[getCurrentLPChannel()]),
-                                                                  PartialIntervalQuality,
-                                                                  intervalTime,
-                                                                  pLastLPIntervals);
-                                }
                                 /********************
                                 * must go through all the channels before I reset these guys
                                 *********************
@@ -2516,23 +2452,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                               intervalTime,
                                                               pPIL,
                                                               TAG_POINT_LOAD_PROFILE_DATA);
-
-                                /*****************************
-                                * if we are on the last set of intervals
-                                * save them in another message so
-                                * they can be displayed on tdc
-                                ******************************
-                                */
-                                if (localLP->lastLPMessage)
-                                {
-                                    verifyAndAddPointToReturnMsg (validLPPointInfo[getCurrentLPChannel()].pointId,
-                                                                  calculateIntervalData (intervalPulses,
-                                                                                         localLP,
-                                                                                         validLPPointInfo[getCurrentLPChannel()]),
-                                                                  PartialIntervalQuality,
-                                                                  intervalTime,
-                                                                  pLastLPIntervals);
-                                }
                             }
                         }
                         else
@@ -2566,23 +2485,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                                   intervalTime,
                                                                   pPIL,
                                                                   TAG_POINT_LOAD_PROFILE_DATA);
-
-                                    /*****************************
-                                    * if we are on the last set of intervals
-                                    * save them in another message so
-                                    * they can be displayed on tdc
-                                    ******************************
-                                    */
-                                    if (localLP->lastLPMessage)
-                                    {
-                                        verifyAndAddPointToReturnMsg (validLPPointInfo[getCurrentLPChannel()].pointId,
-                                                                      calculateIntervalData (intervalPulses,
-                                                                                             localLP,
-                                                                                             validLPPointInfo[getCurrentLPChannel()]),
-                                                                      NormalQuality,
-                                                                      intervalTime,
-                                                                      pLastLPIntervals);
-                                    }
                                 }
                             }
                             else
@@ -2600,23 +2502,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                                               intervalTime,
                                                               pPIL,
                                                               TAG_POINT_LOAD_PROFILE_DATA);
-
-                                /*****************************
-                                * if we are on the last set of intervals
-                                * save them in another message so
-                                * they can be displayed on tdc
-                                ******************************
-                                */
-                                if (localLP->lastLPMessage)
-                                {
-                                    verifyAndAddPointToReturnMsg (validLPPointInfo[getCurrentLPChannel()].pointId,
-                                                                  calculateIntervalData (intervalPulses,
-                                                                                         localLP,
-                                                                                         validLPPointInfo[getCurrentLPChannel()]),
-                                                                  NormalQuality,
-                                                                  intervalTime,
-                                                                  pLastLPIntervals);
-                                }
                             }
                         }
                     }
@@ -2718,25 +2603,6 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
         delete pPIL;
     }
     pPIL = NULL;
-
-    /***************************
-    *  this list of point changes will be sent without the load profile flag set
-    *  allowing us to display the last interals in a report
-    *  currently dispatch does not route load profile data
-    ****************************
-    */
-    if (localLP->lastLPMessage)
-    {
-        if (pLastLPIntervals->PointData().entries() > 0)
-        {
-            retList.insert(pLastLPIntervals);
-        }
-        else
-        {
-            delete pLastLPIntervals;
-        }
-        pLastLPIntervals = NULL;
-    }
 
     return NORMAL;
 }

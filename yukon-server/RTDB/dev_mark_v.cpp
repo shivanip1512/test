@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/03/10 20:48:40 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/05/12 19:57:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -946,7 +946,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    int                              numEnabledChannels = 0;
    int                              val = 0;
    int                              qual = 0;
-   bool                             firstLoop = true;
    bool                             foundSomething = false;
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
@@ -993,33 +992,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                   msgMulti->getData().insert( pData );
                   pData = NULL;
 
-                  if( firstLoop )
-                  {
-                     //stick this pData into something for scanner
-                     pData = CTIDBG_new CtiPointDataMsg();
-                     val = 0;
-                     qual = 0;
-
-                     pData->setId( pPoint->getID() );
-
-                     correctValue( lp->lpData[index], lp->lpFormat[1], val, qual );
-
-                     pData->setValue( val );
-                     pData->setQuality( qual );
-                     pData->setTime( mTime );
-
-                     if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " ----Dispatch will get lastLP time --> " << mTime << " for " << getName() << endl;
-                     }
-
-                     pData->setType( pPoint->getType() );
-
-                     msgMulti->getData().insert( pData );
-                     pData = NULL;
-                  }
-
                   index += 2;
                   pPoint = NULL;
                }
@@ -1029,11 +1001,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
          if( !foundSomething )
          {
             index += 8; //keep us from looking forever!
-         }
-
-         if( firstLoop )
-         {
-            firstLoop = false;
          }
 
          //decrement the time to the interval previous to the current one...

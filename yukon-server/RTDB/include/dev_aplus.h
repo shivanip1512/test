@@ -332,7 +332,6 @@ typedef struct _AlphaPPlusLoadProfile_t
     ULONG                       porterLPTime;
     ULONG                       daysRequested;
     ULONG                       dayRecordSize;
-    BOOL                        lastLPMessage;
     AlphaPPlusClass0Real_t      class0;
     AlphaPPlusClass2Real_t      class2;
     AlphaPPlusClass6Real_t      class6;
