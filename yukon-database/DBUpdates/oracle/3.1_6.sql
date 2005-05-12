@@ -94,6 +94,9 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
 
+update command set command = 'putconfig xcom service out temp offhours 24' where commandid = -68;
+update command set command = 'putconfig xcom service in' where commandid = -69;
+
 update point set stategroupid = -6
 where paobjectid in (select paobjectid from yukonpaobject where type = 'MCT-410IL')
 and pointoffset = 1 and pointtype = 'Status';
