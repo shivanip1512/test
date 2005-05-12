@@ -139,6 +139,8 @@ insert into YukonGroupRole values(-236,-1,-106,-10606,'(none)');
 insert into YukonGroupRole values(-237,-1,-106,-10607,'(none)');
 go
 
+update yukonroleproperty set defaultvalue = 'Administrator' where defaultvalue = 'Administor';
+go
 
 
 
