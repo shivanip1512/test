@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -47,6 +48,7 @@ public class DeviceTypeCommandSetupPanel extends javax.swing.JPanel implements c
 	private javax.swing.JScrollPane ivjDandDCommandTableScrollPane = null;
 	private javax.swing.JButton ivjAddCommandButton = null;
 	private javax.swing.JButton ivjRemoveCommandButton = null;
+	private javax.swing.JButton ivjEditCommandButton = null;
 	private javax.swing.JPanel ivjAddRemovePanel = null;
 	private javax.swing.JPanel ivjDeviceTypeCommandSetupPanel = null;
 	private javax.swing.JList ivjCategoryList = null;
@@ -99,10 +101,10 @@ public DeviceTypeCommandSetupPanel() {
 						{
 							//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
 							dbP = new DeviceTypeCommand();
-							dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-							dbP.getDeviceTypeCommand().setDeviceType((String)devTypes.get(i));
-							dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
-							dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+							dbP.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
+							dbP.setDeviceType((String)devTypes.get(i));
+							dbP.setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
+							dbP.setVisibleFlag(new Character('Y'));
 							dbP.setCommand(cmd);
 							writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 						}
@@ -113,10 +115,10 @@ public DeviceTypeCommandSetupPanel() {
 					{
 						//Add to DeviceTypeCommand table, entries for all deviceTypes! yikes...I know
 						DeviceTypeCommand dbP = new DeviceTypeCommand();
-						dbP.getDeviceTypeCommand().setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
-						dbP.getDeviceTypeCommand().setDeviceType(getDeviceType());
-						dbP.getDeviceTypeCommand().setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
-						dbP.getDeviceTypeCommand().setVisibleFlag(new Character('Y'));
+						dbP.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
+						dbP.setDeviceType(getDeviceType());
+						dbP.setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
+						dbP.setVisibleFlag(new Character('Y'));
 						dbP.setCommand(cmd);
 						writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 
@@ -140,12 +142,49 @@ public DeviceTypeCommandSetupPanel() {
 				int rowToRemove = getDandDCommandTable().getSelectedRow();
 
 				DeviceTypeCommand dbP = ((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).getRow(rowToRemove);
-				Command cmd = dbP.getCommand();
-				writeDBChange(cmd, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);			
+				if( dbP.getDeviceCommandID() == null)// a non-category entry, (category entries do not have a deviceCommandID
+				{	//remove the command (and associatively any deviceTypeCommands too
+				    Command cmd = dbP.getCommand();
+				    writeDBChange(cmd, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);
+				}
+				else
+				{	//remove just the deviceTypeCommand, Command will "linger" in the database for now TODO
+				    writeDBChange(dbP, Transaction.DELETE, DBChangeMsg.CHANGE_TYPE_DELETE);
+				}
 				((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).removeRow(rowToRemove);
 				getDandDCommandTable().getSelectionModel().clearSelection();
 			}
 		}
+		else if( event.getSource() == getEditCommandButton())
+		{
+			int rowToEdit = getDandDCommandTable().getSelectedRow();
+			DeviceTypeCommand dbP = ((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).getRow(rowToEdit);
+			Command cmd = dbP.getCommand();
+			try
+            {
+			    Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, cmd);			    
+                cmd = (Command)t.execute();
+            } catch (TransactionException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+		    
+			CommandSetupPanel selectCreatePanel = new CommandSetupPanel(cmd);
+			selectCreatePanel.setDialogTitle("Edit Command");
+			//should return a Command value
+			Object o = selectCreatePanel.showAdvancedOptions(this.dialog);
+			if (o != null)
+			{
+				/** Contains Command value */
+				if( o instanceof Command)
+				{
+				    cmd = (Command)o;				    
+					writeDBChange(cmd, Transaction.UPDATE, DBChangeMsg.CHANGE_TYPE_UPDATE );
+					((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).fireTableRowsUpdated(rowToEdit, rowToEdit);
+				}
+			}
+		}		
 		else if( event.getSource() == getOkButton())
 		{
 			saveChanges();
@@ -251,8 +290,13 @@ private javax.swing.JPanel getAddRemovePanel() {
 			constraintsAddCommandButton.insets = new java.awt.Insets(5, 5, 5, 5);
 			getAddRemovePanel().add(getAddCommandButton(), constraintsAddCommandButton);
 
+			java.awt.GridBagConstraints constraintsEditCommandButton = new java.awt.GridBagConstraints();
+			constraintsEditCommandButton.gridx = 0; constraintsEditCommandButton.gridy = 1;
+			constraintsEditCommandButton.insets = new java.awt.Insets(5, 5, 5, 5);
+			getAddRemovePanel().add(getEditCommandButton(), constraintsEditCommandButton);
+
 			java.awt.GridBagConstraints constraintsRemoveCommandButton = new java.awt.GridBagConstraints();
-			constraintsRemoveCommandButton.gridx = 0; constraintsRemoveCommandButton.gridy = 1;
+			constraintsRemoveCommandButton.gridx = 0; constraintsRemoveCommandButton.gridy = 2;
 			constraintsRemoveCommandButton.insets = new java.awt.Insets(5, 5, 5, 5);
 			getAddRemovePanel().add(getRemoveCommandButton(), constraintsRemoveCommandButton);
 			// user code begin {1}
@@ -347,14 +391,22 @@ private javax.swing.JList getCategoryList() {
 			ivjCategoryList.setBounds(0, 0, 137, 332);
 			ivjCategoryList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 			// user code begin {1}
+			//Add all the "Group" categories
 			DefaultListModel model = new DefaultListModel();
 			for (int i = 0; i < CommandCategory.getAllCategories().length; i++)
 				model.addElement(CommandCategory.getAllCategories()[i]);
-				
+			
+			//Add "String" type categories, ex. LCRSerial
+			model.addElement(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+			model.addElement(CommandCategory.STRING_CMD_SERIALNUMBER);
+			model.addElement(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+			
+			//Add the distinct device types
 			Vector distinctTypes = retrieveDistinctDeviceTypes();
 			for (int i = 0; i < distinctTypes.size(); i++)
 				model.addElement(distinctTypes.get(i));
 
+			//TODO sort the elements??
 			ivjCategoryList.setModel(model);
 			ivjCategoryList.addListSelectionListener(this);
 			// user code end
@@ -597,6 +649,29 @@ private javax.swing.JButton getRemoveCommandButton() {
 	}
 	return ivjRemoveCommandButton;
 }
+/**
+ * Return the RemoveCommandButton property value.
+ * @return javax.swing.JButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getEditCommandButton() {
+	if (ivjEditCommandButton == null) {
+		try {
+			ivjEditCommandButton = new javax.swing.JButton();
+			ivjEditCommandButton.setName("EditCommandButton");
+			ivjEditCommandButton.setText("Edit");
+			// user code begin {1}
+			ivjEditCommandButton.addActionListener(this);
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjEditCommandButton;
+}
+
 	/**
 	 * @see com.cannontech.common.gui.util.DataInputPanel#getValue(Object)
 	 */
@@ -891,9 +966,15 @@ public void setDeviceType(String string)
 				DeviceTypeCommand dtc = ((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).getRow(selectedRow);
 					
 				if(dtc.getCommandID().intValue() <= 0 )
+				{
 					getRemoveCommandButton().setEnabled(false);
+					getEditCommandButton().setEnabled(false);
+				}
 				else
+				{
 					getRemoveCommandButton().setEnabled(true);
+					getEditCommandButton().setEnabled(true);					
+				}
 			}
 		} 
 	}
