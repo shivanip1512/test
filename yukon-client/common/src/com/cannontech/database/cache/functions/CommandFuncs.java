@@ -46,6 +46,26 @@ public final class CommandFuncs {
 		return commands;
 	}
 	 
+	public static Vector getAllDevTypeCommands(int commandID)
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		//Contains LiteDeviceTypeCommand values
+		Vector commands = new Vector();
+		synchronized (cache)
+		{
+			java.util.List devTypeCmds = cache.getAllDeviceTypeCommands();
+			LiteDeviceTypeCommand liteDevTypeCmd = null;
+	
+			for (int i = 0; i < devTypeCmds.size(); i++)
+			{
+				liteDevTypeCmd = (LiteDeviceTypeCommand)devTypeCmds.get(i);
+				if (liteDevTypeCmd.getCommandID() == commandID )
+					commands.add( liteDevTypeCmd);
+			}
+		}
+		return commands;
+	}	
 	 
 	/**
 	 * Returns Vector of LiteCommands for Category = category
