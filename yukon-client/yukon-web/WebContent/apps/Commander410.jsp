@@ -31,7 +31,6 @@ while( YC_BEAN.getPointRegCounter() > 0 && totalTime < maxTime )
 	}
 }
 
-PointData pointData = null;
 %>
 <%
 String[] defaultKeys = {
