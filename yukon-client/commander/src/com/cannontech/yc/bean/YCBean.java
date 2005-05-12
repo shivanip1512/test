@@ -23,7 +23,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.CommandFuncs;
-import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -58,35 +57,41 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	
 	private com.cannontech.message.dispatch.ClientConnection connToDispatch;
 	
-	/** Contains Integer(pointID), Object(PointData) values */
-	private Map pointIDToRPHMap = null;
+	/** Contains Integer(pointID), Object(PointData -from pointRegistration) values */
+	private Map pointIDToRegPDMap = null;
 
 	/** Contains Integer(pointID), Object(PointData) values */
-	private Map pointIDToRecentReadMap = null;
+	private Map pointIDToRecentPDMap = null;
 	
 	/** Contains Integer(pointID), Object(Map of Timestamp to Double(value) values)*/
 	private Map energyPtToPrevTSMapToValueMap = new TreeMap();
 	
 	/** Contains String(name from returnMessage parse), Object(PointData, made up one though) values */
-	private Map returnNameToRecentReadMap = null;
+	private Map returnNameToRecentPDMap = null;
 
 	/** A collection of pointIDs registered with.*/
 	private Vector pointIDs = new Vector();
 
-	/** A Parameter for startDate that a "bean" understands" */
-	private String start = "";
+	/** A Parameter for LPDate that a "bean" understands" */
+	private String lpDateStr = "";
 	
-	/** A startDate for LP query */
-	private Date lpStartDate = null;
+	/** A Date for LP query */
+	private Date lpDate = null;
 	
 	/** A pointID for selecting Data (historical RPH mainly)*/
-	private int pointID = -1;
+	private int pointID = PointTypes.SYS_PID_SYSTEM;
 	
 	/** Contains Integer(deviceID) to Integer(discAddress, -1 if none) values */
 	private Map deviceIDToDiscAddressMap  = new HashMap();
 	
 	/** A string to hold error messages for the current command(s) sent */
 	private String errorMsg = "";
+	
+	/** A vector of RPH data, for the currently selected point 
+	 * This vector of data should only live as long as a point and timestamp 
+	 * selected do not change, so clear it out on pointID or timestamp changes*/
+	private Vector currentRPHVector = new Vector();
+	
 	/**
 	 * 
 	 */
@@ -184,7 +189,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			if( point.getPointDataTimeStamp().after(CtiUtilities.get1990GregCalendar().getTime()) )
 			{
 				Integer x = new Integer(point.getId());
-				getPointIDToRPHMap().put(x, point);
+				getPointIDToRegPDMap().put(x, point);
 				
 				if( isEnergyPoint(point.getId()))
 				{
@@ -193,7 +198,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					//This is the newest point, set it as the selected value
 					CTILogger.info("Updated the TS to Value Map for PointID: " + point.getId());
 				}
-				CTILogger.info("Put (pointIDToRPHMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+ point.getPointDataTimeStamp());
+				CTILogger.info("Put (pointIDToRegPDMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+ point.getPointDataTimeStamp());
 			}
 			pointRegCounter--;
 		}
@@ -219,8 +224,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					{
 						PointData point = (PointData) o;
 						Integer x = new Integer(point.getId());
-						getPointIDToRecentReadMap().put(x, point);
-						CTILogger.info("Put (pointIDToRecentReadMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+point.getPointDataTimeStamp());
+						getPointIDToRecentPDMap().put(x, point);
+						CTILogger.info("Put (pointIDToRecentPDMap): " +x + ":"+point.getId()+"-"+point.getValue()+"-"+point.getPointDataTimeStamp());
 					}
 				}
 			}
@@ -236,7 +241,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				//Loop through the resultStr in case it is a multi-line return with more than one point info.
 				do
 				{
-					multLineIndex = tempResult.indexOf('\n');					
+					multLineIndex = resultStr.indexOf('\n', beginIndex);					
 					if(multLineIndex > 0)
 					{
 						tempResult = resultStr.substring(beginIndex, multLineIndex);
@@ -247,14 +252,88 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					{
 						tempResult = resultStr.substring(beginIndex);
 					}
-					if( tempResult.indexOf('=') > 0)
+
+					// The order of these if statements is important since some of the checks will find the wrong data if not parsed for early enough. 
+					if( returnMsg.getCommandString().toLowerCase().indexOf("lp") > -1 &&
+					        returnMsg.getCommandString().toLowerCase().indexOf("peak") > -1 )	//we have a lp peak report command
+					{	
+					    //CAUTION!!!  This should be in the first line of the result message.
+					    if( tempResult.toLowerCase().indexOf("load profile report") >= 0)
+					    {
+						    tempResult = returnMsg.getResultString(); //reset the result string to the whold message result string.
+						    multLineIndex = -1;	//We want all the data, not just one line at a time, so after this we are done with our loop.
+					        
+					        //The String "ID" is the deviceID + "PeakChannel " + <channelNumber (parsed from commandString)> 
+							String id = String.valueOf(returnMsg.getDeviceID()) + "PeakChannel ";
+					        int channelStrIndex = returnMsg.getCommandString().toLowerCase().indexOf("channel");
+					        for (int i = channelStrIndex; i < returnMsg.getCommandString().length(); i++)
+					        {
+					            char currentChar = returnMsg.getCommandString().charAt(i);
+					            if (Character.isDigit(currentChar))	//hopefully we found our channel number!
+					            {
+					                id += currentChar;
+					                break;
+					            }
+					        }
+						    System.out.println("ID: " + id);
+						    PointData fakePtData = new PointData();
+							fakePtData.setStr(tempResult);
+							fakePtData.setTimeStamp(returnMsg.getTimeStamp());
+							fakePtData.setTime(returnMsg.getTimeStamp());
+							//The key is deviceID+STRING parsed from return message
+							getReturnNameToRecentPDMap().put(id, fakePtData);
+							CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());					    
+					    }
+					}
+					//Add check for command String and pointData vector not empty
+					else if( returnMsg.getCommandString().indexOf("lp") > 0 &&
+					        returnMsg.getCommandString().indexOf("channel") >  0)	//we have a lp data collection (and archive) command.
+					{
+					    tempResult = returnMsg.getResultString(); //reset the result string to the whold message result string.
+					    multLineIndex = -1;	//We want all the data, not just one line at a time, so after this we are done with our loop.
+					    
+				        //The String "ID" is the deviceID + "Channel " + <channelNumber (parsed from commandString)> 
+						String id = String.valueOf(returnMsg.getDeviceID()) + "DataChannel ";
+				        int channelStrIndex = returnMsg.getCommandString().toLowerCase().indexOf("channel");
+				        for (int i = channelStrIndex; i < returnMsg.getCommandString().length(); i++)
+				        {
+				            char currentChar = returnMsg.getCommandString().charAt(i);
+				            if (Character.isDigit(currentChar))	//hopefully we found our channel number!
+				            {
+				                id += currentChar;
+				                break;
+				            }
+				        }
+
+					    if ( returnMsg.getVector().size() > 0)		// LP Data collection (6 intervals) coming back on a Defined point
+					    {
+					        tempResult = "";	//clear out this string and build a custom one
+					        for (int i = 0; i < returnMsg.getVector().size(); i++)
+							{
+								Object o = returnMsg.getVector().elementAt(i);
+								if (o instanceof PointData)
+								{
+									PointData point = (PointData) o;
+									tempResult += point.getStr() + "\n";
+								}
+							}
+					        
+					    }
+					    PointData fakePtData = new PointData();
+						fakePtData.setStr(tempResult);
+						fakePtData.setTimeStamp(returnMsg.getTimeStamp());
+						fakePtData.setTime(returnMsg.getTimeStamp());
+						//The key is deviceID+STRING parsed from return message
+						getReturnNameToRecentPDMap().put(id, fakePtData);
+						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());					    
+					}
+					else if( tempResult.indexOf('=') > 0)
 					{
 						int equal = tempResult.indexOf('=');
 						int slash = tempResult.indexOf('/')+1;
 				
 						//The String "ID" is the deviceID + the value after the slash and before the equal sign
 						String id = String.valueOf(returnMsg.getDeviceID()) + tempResult.substring(slash, equal).trim();
-						System.out.println("VALUE:"+id+":");
 					
 						//The Double "value" is the value after the equal sign to the end or to the next space character
 						Double value = null;
@@ -284,7 +363,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setTime(timestamp);
 						fakePtData.setType(PointTypes.DEMAND_ACCUMULATOR_POINT);
 						//The key is deviceID+STRING parsed from return message
-						getReturnNameToRecentReadMap().put(id, fakePtData);
+						getReturnNameToRecentPDMap().put(id, fakePtData);
 						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 					}
 					else if ( tempResult.indexOf("Disconnect") > 0)	//Disconnect status stuff
@@ -302,11 +381,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setTime(returnMsg.getTimeStamp());
 						fakePtData.setType(PointTypes.STATUS_POINT);
 						//The key is deviceID+STRING parsed from return message
-						getReturnNameToRecentReadMap().put(id, fakePtData);
+						getReturnNameToRecentPDMap().put(id, fakePtData);
 						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 
 					}					
-					else if( tempResult.indexOf(':') > 0)	//outage stuff
+					else if(returnMsg.getCommandString().toLowerCase().indexOf("outage") > -1 && tempResult.indexOf(':') > 0)	//outage stuff
 					{					
 						int colon = tempResult.indexOf(':');
 						int slash = tempResult.indexOf('/')+1;
@@ -342,7 +421,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setTime(date);
 						fakePtData.setType(PointTypes.DEMAND_ACCUMULATOR_POINT);
 						//The key is deviceID+STRING parsed from return message
-						getReturnNameToRecentReadMap().put(id, fakePtData);
+						getReturnNameToRecentPDMap().put(id, fakePtData);
 						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
 					}
 				}
@@ -385,13 +464,13 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	/**
 	 * @return
 	 */
-	public Map getPointIDToRPHMap()
+	public Map getPointIDToRegPDMap()
 	{
-		if( pointIDToRPHMap == null)
+		if( pointIDToRegPDMap == null)
 		{
-			pointIDToRPHMap = new HashMap(5);
+			pointIDToRegPDMap = new HashMap(5);
 		}
-		return pointIDToRPHMap;
+		return pointIDToRegPDMap;
 	}
 	/**
 	 * A map of points found in the DB.
@@ -400,13 +479,13 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * PointData - the pointData from Return Message 
 	 * @return
 	 */
-	public Map getPointIDToRecentReadMap()
+	public Map getPointIDToRecentPDMap()
 	{
-		if( pointIDToRecentReadMap == null)
+		if( pointIDToRecentPDMap == null)
 		{
-			pointIDToRecentReadMap = new HashMap(5);
+			pointIDToRecentPDMap = new HashMap(5);
 		}
-		return pointIDToRecentReadMap;
+		return pointIDToRecentPDMap;
 	}
 
 	/* (non-Javadoc)
@@ -441,27 +520,27 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * PointData - a "fake" pointData created to store the data parsed from the Return Message.
 	 * @return
 	 */
-	public Map getReturnNameToRecentReadMap()
+	public Map getReturnNameToRecentPDMap()
 	{
-		if( returnNameToRecentReadMap == null)
+		if( returnNameToRecentPDMap == null)
 		{
-			returnNameToRecentReadMap = new HashMap(5);
+			returnNameToRecentPDMap = new HashMap(5);
 		}
-		return returnNameToRecentReadMap;
+		return returnNameToRecentPDMap;
 	}
 
 	/**
-	 * Return PointData value from pointIDToRPHMap.
+	 * Return PointData value from pointIDToPointdataMap.
 	 * The pointID (KEY) is determined by the deviceid, pointoffset, and pointtype parameters
 	 * @param deviceID
 	 * @param pointOffset
 	 * @param pointType
 	 * @return
 	 */
-	public PointData getRPHPointData(int deviceID, int pointOffset, int pointType)
+	public PointData getPointDataReg(int deviceID, int pointOffset, int pointType)
 	{
 		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType);
-		PointData pd = (PointData)getPointIDToRPHMap().get(new Integer( pointID_));
+		PointData pd = (PointData)getPointIDToRegPDMap().get(new Integer( pointID_));
 		return pd;		
 	}
 	
@@ -480,26 +559,34 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public PointData getRecentPointData(int deviceID, int pointOffset, int pointType)
 	{
+	    /*
+	     * For LP Channel data (DataCollection and PeakReport) we do NOT want what is stored in the recentReadMap,
+	     * since it is only storing the last read instead of the 6/12 intervals and the peak report, therefore we use 
+	     * a different pointType instead of the Demand Accumulator type to find the points in the map by Name.  This
+	     * helps with the fact that there are two types of data stored for one pointoffset/pointType key.  The below 
+	     * call for pointID_ will actually return an invalid value and then allow us into the if/else to find data by name.
+	     * SN 20050505
+	     */
 		int pointID_ = PointFuncs.getPointIDByDeviceID_Offset_PointType(deviceID, pointOffset, pointType); 
-		PointData pd = (PointData)getPointIDToRecentReadMap().get(new Integer( pointID_));
+		PointData pd = (PointData)getPointIDToRecentPDMap().get(new Integer( pointID_));
 		if(pd == null)
 		{
 			//Try getting it from somewhere else?
 			if( pointOffset == 20 && pointType == PointTypes.PULSE_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"powerfail count");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"powerfail count");
 				if( pd == null)
-				    pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Blink Counter");
+				    pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Blink Counter");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)power.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -507,17 +594,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}
 			else if( pointOffset == 1 && pointType == PointTypes.PULSE_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"kWh");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"kWh");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)kyz.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -525,17 +612,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}
 			else if( pointOffset == 1 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"kW");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"kW");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)demand.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -543,17 +630,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}
 			else if( pointOffset == 11 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Peak Demand");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Peak Demand");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)peak.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -561,17 +648,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}
 			else if( pointOffset == 4 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Voltage");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Voltage");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)volt.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -579,17 +666,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}
 			else if( pointOffset == 1 && pointType == PointTypes.STATUS_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Disconnect Status");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Disconnect Status");
 				if( pd == null)	//if we still haven't found it... PointUndefinedInDatabase
 				{				
 					String key = "";
-					Iterator iter = getReturnNameToRecentReadMap().keySet().iterator();
+					Iterator iter = getReturnNameToRecentPDMap().keySet().iterator();
 					while(iter.hasNext())
 					{
 						key = (String)iter.next();
 						if( key.matches(String.valueOf(getDeviceID())+"(?i)disc.*"))
 						{
-							pd = (PointData)getReturnNameToRecentReadMap().get(key);
+							pd = (PointData)getReturnNameToRecentPDMap().get(key);
 							break;
 						}
 					}
@@ -597,35 +684,51 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			}			
 			else if( pointOffset == 15 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{				
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Min Voltage");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Min Voltage");
 			}
 			else if( pointOffset == 14 && pointType == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Max Voltage");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Max Voltage");
 			}
 			else if( pointType == PointTypes.OUTAGE_1)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 1");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 1");
 			}
 			else if( pointType == PointTypes.OUTAGE_2)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 2");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 2");
 			}
 			else if( pointType == PointTypes.OUTAGE_3)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 3");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 3");
 			}
 			else if( pointType == PointTypes.OUTAGE_4)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 4");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 4");
 			}
 			else if( pointType == PointTypes.OUTAGE_5)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 5");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 5");
 			}
 			else if( pointType == PointTypes.OUTAGE_6)
 			{
-				pd = (PointData)getReturnNameToRecentReadMap().get(String.valueOf(deviceID)+"Outage 6");
+				pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"Outage 6");
+			}
+			else if( pointOffset == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && pointType == PointTypes.LP_PEAK_REPORT)
+			{
+			    pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"PeakChannel 1");
+			}
+			else if( pointOffset == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && pointType == PointTypes.LP_PEAK_REPORT)
+			{
+			    pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"PeakChannel 4");
+			}
+			else if( pointOffset == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && pointType == PointTypes.LP_ARCHIVED_DATA)
+			{
+			    pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"DataChannel 1");
+			}
+			else if( pointOffset == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && pointType == PointTypes.LP_ARCHIVED_DATA)
+			{
+			    pd = (PointData)getReturnNameToRecentPDMap().get(String.valueOf(deviceID)+"DataChannel 4");
 			}			
 		}
 		return pd;
@@ -751,49 +854,58 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	/**
 	 * @return
 	 */
-	public Date getLPStartDate()
+	public Date getLPDate()
 	{
-		if( lpStartDate == null)
+		if( lpDate == null)
 		{
-			lpStartDate = ServletUtil.getToday();
+			lpDate = ServletUtil.getToday();
 		}
-		return lpStartDate;
+		return lpDate;
 	}
 
 	/**
 	 * @param date
 	 */
-	public void setLPStartDate(Date date)
+	public void setLPDate(Date date)
 	{
-		lpStartDate = date;
+	    if( lpDate.compareTo(date) != 0)
+	        clearCurrentData();
+		lpDate = date;
 	}
 
 	/**
 	 * @return
 	 */
-	public String getStart()
+	public String getLPDateStr()
 	{
-		return start;
+		return lpDateStr;
 	}
 
 	/**
 	 * @param string
 	 */
-	public void setStart(String string)
+	public void setLPDateStr(String string)
 	{
-		start = string;
-		setLPStartDate(ServletUtil.parseDateStringLiberally(start));		
+		lpDateStr = string;
+		setLPDate(ServletUtil.parseDateStringLiberally(lpDateStr));		
 	}
 
 	/**
 	 * Returns a vector of LiteRawPointHistory values for pointID, using the bean's StateDate through StartDate +1  
 	 */
-	public Vector getRPHData(int pointID_)
+	public void loadRPHData()
 	{
-		Vector returnVector = null;
+	    clearCurrentData();	//clear out old data
+	    
+	    if (getPointID() == PointTypes.SYS_PID_SYSTEM)
+	        return;
+
+	    /** 
+		 * The query is setup to include the 00:00 time of the begining date, since PIL does not work in the hour ending format when retreiving intervals.  SN 20050504
+		 */
 		StringBuffer sql = new StringBuffer("SELECT DISTINCT POINTID, VALUE, TIMESTAMP FROM RAWPOINTHISTORY " +
-						" WHERE TIMESTAMP > ? AND TIMESTAMP <= ? " +
-						" AND POINTID = " + pointID_ + 
+						" WHERE TIMESTAMP >= ? AND TIMESTAMP <= ? " +
+						" AND POINTID = " + getPointID() + 
 						 
 						" ORDER BY POINTID, TIMESTAMP");
 		CTILogger.info(sql.toString());	
@@ -810,18 +922,16 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			if( conn == null )
 			{
 				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return null;
+				return;
 			}
 			else
 			{
-				returnVector = new Vector();
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getLPStartDate().getTime() ));
+				pstmt.setTimestamp(1, new java.sql.Timestamp( getLPDate().getTime() ));
 				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTime(getLPStartDate());
+				cal.setTime(getLPDate());
 				cal.add(Calendar.DATE, 1);
 				pstmt.setTimestamp(2, new java.sql.Timestamp( cal.getTimeInMillis()));
-				CTILogger.info("START DATE > " + getLPStartDate() + "  -  STOP DATE <= " + cal.getTime());
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
@@ -833,9 +943,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					LiteRawPointHistory lrph = new LiteRawPointHistory(ptID);
 					lrph.setValue(value);
 					lrph.setTimeStamp(tsCal.getTimeInMillis());
-					returnVector.add(lrph);
+					getCurrentRPHVector().add(lrph);
 				}
-				returnVector.trimToSize();
+				getCurrentRPHVector().trimToSize();
+				CTILogger.info("ResultSize: " + getCurrentRPHVector().size()+ " : START DATE > " + getLPDate() + "  -  STOP DATE <= " + cal.getTime());
 			}
 		}
 			
@@ -859,7 +970,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				e.printStackTrace();
 			}
 		}
-		return returnVector;
 	}
 	/**
 	 * @return
@@ -874,6 +984,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public void setPointID(int i)
 	{
+	    if( pointID != i)
+	        clearCurrentData();
 		pointID = i;
 	}
 
@@ -968,6 +1080,24 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	{
 		errorMsg = string;
 	}
-
+    /**
+     * @return Returns the currentRPHVector.
+     */
+    public Vector getCurrentRPHVector()
+    {
+        return currentRPHVector;
+    }
+    /**
+     * @param currentRPHVector The currentRPHVector to set.
+     */
+    public void setCurrentRPHVector(Vector currentRPHVector)
+    {
+        this.currentRPHVector = currentRPHVector;
+    }
+    
+    private void clearCurrentData()
+    {
+        getCurrentRPHVector().clear();
+    }
 }
 
