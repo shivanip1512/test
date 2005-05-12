@@ -804,7 +804,7 @@ public class YC extends Observable implements MessageListener
 
 		logCommand("[" + format.format(new java.util.Date(timer)) 
 			+ "] - {"+ currentUserMessageID + "} Command Sent to" + log + " -  \'" + request_.getCommandString() + "\'");
-		if( getPilConn().isValid() )
+		if( isPilConnValid() )
 		{
 			startStopWatch(getTimeOut());
             getPilConn().write( request_ );
@@ -1395,5 +1395,9 @@ public class YC extends Observable implements MessageListener
         if (updateToDB)
             return " update";
         return "";
+    }
+    public boolean isPilConnValid()
+    {
+        return getPilConn().isValid();
     }
 }
