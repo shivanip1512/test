@@ -11,6 +11,7 @@ import com.cannontech.database.db.command.Command;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CommandSetupPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
+    private Command commandValue = null;
 	private javax.swing.JDialog dialog = null;
 	private String dialogTitle = null;
 	private javax.swing.JButton ivjCancelButton = null;
@@ -410,11 +411,11 @@ private javax.swing.JTextField getLabelTextField() {
 	 */
 	public Object getValue(Object o)
 	{
-		Command cmd = new Command();
-		cmd.setCommand(getCommandTextField().getText().trim());
-		cmd.setLabel(getLabelTextField().getText().trim());
+	    //update the commandValue object with the changes in the text fields
+		commandValue.setCommand(getCommandTextField().getText().trim());
+		commandValue.setLabel(getLabelTextField().getText().trim());
 		
-		return cmd;
+		return commandValue;
 	}
 	/**
 	 * Called whenever the part throws an exception.
@@ -499,9 +500,9 @@ constraintsCommandSetupPanel.gridheight = 6;
 	{
 		if ( o == null || !(o instanceof Command))
 			return;
-		
-		getCommandTextField().setText(((Command)o).getCommand());
-		getLabelTextField().setText(((Command)o).getLabel());
+		commandValue = (Command)o;
+		getCommandTextField().setText(commandValue.getCommand());
+		getLabelTextField().setText(commandValue.getLabel());
 	}
 	/**
 	 * Show AdvancedOptionsPanel with a JDialog to control the closing time.
