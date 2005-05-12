@@ -6,6 +6,7 @@
 
 <%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
+<%@ page import="com.cannontech.roles.application.BillingRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
@@ -134,7 +135,7 @@ function confirmDelete() {
   </tr>
 </cti:checkRole>
 
-<cti:checkRole roleid="<%= CommercialMeteringRole.ROLEID %>">
+<cti:checkMultiRole roleid="<%= Integer.toString(CommercialMeteringRole.ROLEID) + ',' + Integer.toString(BillingRole.ROLEID) %>">
   <tr> 
     <td width="102" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
     <td width="555" bgcolor="#000000" height="1"><img src="../WebConfig/yukon/Icons/VerticalRule.gif"></td>
@@ -150,19 +151,23 @@ function confirmDelete() {
           <td >&nbsp;</td>
         </tr>
         <tr> 
-            <td width="25%" class = "MainText"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Billing.jsp" class = "Link1" style = "text-decoration:none;">Billing</a></div>
-            </td>
-            <td width="25%" class = "MainText"> 
-              <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Metering.jsp" class = "Link1" style = "text-decoration:none;">All Trends</a></div>
-            </td>
-            <td class = "MainText"> </td>
+		  <cti:checkRole roleid="<%= BillingRole.ROLEID %>">
+          <td width="25%" class = "MainText"> 
+            <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Billing.jsp" class = "Link1" style = "text-decoration:none;"><cti:getProperty propertyid="<%= BillingRole.HEADER_LABEL%>" defaultvalue="Billing"/></a></div>
+          </td>
+          </cti:checkRole>
+          <cti:checkRole roleid="<%= CommercialMeteringRole.ROLEID %>"> 
+          <td width="25%" class = "MainText"> 
+           <div align = "center" style = "border:solid 1px #666999;"><a href = "Metering/Metering.jsp" class = "Link1" style = "text-decoration:none;">All Trends</a></div>
+          </td>
+          </cti:checkRole>
+          <td class = "MainText"> </td>
         </tr>
       </table>
     </td>
     <td width="1" background="../WebConfig/yukon/Icons/VerticalRule.gif" height="102"></td>
   </tr>
-</cti:checkRole>
+</cti:checkMultiRole>
 
 <cti:checkMultiRole roleid="<%= Integer.toString(DirectLoadcontrolRole.ROLEID) + ',' + Integer.toString(DirectCurtailmentRole.ROLEID) + ',' + Integer.toString(EnergyBuybackRole.ROLEID) + ',' + Integer.toString(OddsForControlRole.ROLEID) %>">
   <tr> 
@@ -355,14 +360,18 @@ function confirmDelete() {
           <td width="25%">&nbsp;</td>
         </tr>
         <tr> 
-          <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+          <cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+          <td align = "center" class = "MainText" width="25%">
             <div align = "center" style = "border:solid 1px #666999;"><a href = "../analysis/Reports.jsp" class = "Link1" style = "text-decoration:none;"> 
-              Reports</a></div>
-            </cti:checkRole></td>
-          <td align = "center" class = "MainText" width="25%"><cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
+              Reporting</a></div>
+          </td>
+          </cti:checkRole>
+          <cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
+          <td align = "center" class = "MainText" width="25%">
             <div align = "center" style = "border:solid 1px #666999;"><a href = "../apps/SelectDevice.jsp" class = "Link1" style = "text-decoration:none;"> 
               Commander</a></div>
-            </cti:checkRole></td>
+          </td>
+          </cti:checkRole>
         </tr>
       </table>
     </td>
