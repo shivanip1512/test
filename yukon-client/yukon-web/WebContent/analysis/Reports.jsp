@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.model.ModelFactory"%>
+<%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
@@ -126,9 +127,12 @@ function enableDates(value)
                             <td width="49%"> 
                               <div align="right"><span class="menu">Module:</span> 
                                 <select name="select" onChange="javascript:window.location=(this[this.selectedIndex].value);">
-                                  <option value="<%=request.getContextPath()%>/analysis/Reporting.jsp" >Reporting</option>
+                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+                                  <cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
                                   <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
+                                  </cti:checkRole>
                                   <option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
+                                </select>
                                 &nbsp;&nbsp;&nbsp; <a href="#" class="menuLink">Help</a> 
                                 &nbsp;&nbsp; <a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log 
                                 Out</a> &nbsp;&nbsp;</div>
@@ -149,45 +153,44 @@ function enableDates(value)
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.ADMIN_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.ADMIN_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Administrative Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.ADMIN_REPORTS_GROUP)%></a>
+							  	<cti:getProperty propertyid="<%= ReportingRole.ADMIN_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.ADMIN_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.AMR_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.AMR_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.AMR_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='AMR Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.AMR_REPORTS_GROUP)%></a>
+							  	<cti:getProperty propertyid="<%= ReportingRole.AMR_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.AMR_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.CAP_CONTROL_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.CAP_CONTROL_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.CAP_CONTROL_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Capacitor Control Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.CAP_CONTROL_REPORTS_GROUP)%></a>
+								<cti:getProperty propertyid="<%= ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.CAP_CONTROL_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.STATISTICAL_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.STATISTICAL_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.STATISTICAL_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Communication Statistics Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.STATISTICAL_REPORTS_GROUP)%></a>
+								<cti:getProperty propertyid="<%= ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.STATISTICAL_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.DATABASE_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.DATABASE_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.DATABASE_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Database Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.DATABASE_REPORTS_GROUP)%></a>
+								<cti:getProperty propertyid="<%= ReportingRole.DATABASE_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.DATABASE_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.LOAD_MANAGEMENT_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.LOAD_MANAGEMENT_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='Load Management Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.LOAD_MANAGEMENT_REPORTS_GROUP)%></a>
+							  	<cti:getProperty propertyid="<%= ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.LAOD_MANAGEMENT_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
 					        <cti:checkProperty propertyid="<%=ReportingRole.STARS_REPORTS_GROUP%>">
 							&nbsp;&nbsp;<a href='<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=ReportTypes.STARS_REPORTS_GROUP%>' class='<%=(REPORT_BEAN.getGroupType() == ReportTypes.STARS_REPORTS_GROUP ? "submenu" :"submenuLink")%> onclick='return warnUnsavedChanges();'
 								onMouseOver="window.status='STARS Reports';return true;"
 							  	onMouseOut="window.status='';return true;">
-								<%=ReportTypes.getReportGroupName(ReportTypes.STARS_REPORTS_GROUP)%></a>
+							  	<cti:getProperty propertyid="<%= ReportingRole.STARS_REPORTS_GROUP_LABEL%>" defaultvalue="<%=ReportTypes.getReportGroupName(ReportTypes.STARS_REPORTS_GROUP)%>"/></a>
 					        </cti:checkProperty>
-
 							</td>
 						  </tr>
 						</table>
@@ -206,6 +209,7 @@ function enableDates(value)
     </td>
   </tr>
   <tr>
+ 
      
     <td> 
       <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
@@ -215,13 +219,14 @@ function enableDates(value)
             <a href="<%=request.getContextPath()%>/analysis/Reports.jsp?groupType=<%=REPORT_BEAN.getGroupType()%>" class="crumbs"><%=ReportTypes.getReportGroupName(REPORT_BEAN.getGroupType())%></a>
 		  </td>
 		  <%}%>
-          <td valign="middle"> 
+<!--          <td valign="middle"> 
             <div align="right">
               <p class="main">Find: 
                 <input type="text" name="textfield">
                 <img src="../WebConfig/yukon/Buttons/GoButtonGray.gif" width="23" height="20"> </p>
             </div>
           </td>
+-->
         </tr>
       </table>
       <br>
@@ -233,7 +238,7 @@ function enableDates(value)
       <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr> 
           <td width="6" height="19"><img src="../WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-          <td height="19" bgcolor="888888" class="tableHeader">&nbsp;</td>
+          <td height="19" bgcolor="888888" class="tableHeader">&nbsp;</td>          
           <td width="6" height="19"><img src="../WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
         </tr>
         <tr>
