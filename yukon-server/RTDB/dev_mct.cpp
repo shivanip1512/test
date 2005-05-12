@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2005/04/22 19:00:28 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2005/05/12 19:58:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,12 +106,12 @@ CtiDeviceMCT &CtiDeviceMCT::operator=(const CtiDeviceMCT &aRef)
 
 bool CtiDeviceMCT::getMCTDebugLevel(int mask)
 {
-    static time_t lastaccess;
+    static time_t lastaccess;  //  initialized to 0 the first time through, as per static rules
     static int mct_debuglevel;
 
     if( lastaccess + 300 < time(0) )
     {
-        gConfigParms.getValueAsInt("MCT_DEBUGLEVEL");
+        mct_debuglevel = gConfigParms.getValueAsInt("MCT_DEBUGLEVEL");
         lastaccess = time(0);
     }
 
@@ -3443,10 +3443,27 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
             {
                 switch( DSt->Message[0] & 0x03 )
                 {
-                    case CtiDeviceMCT410::MCT410_StatusConnected:               Value = CLOSED;         defaultStateName = "Connected";                 break;
-                    case CtiDeviceMCT410::MCT410_StatusConnectArmed:            Value = INDETERMINATE;  defaultStateName = "Connect armed";             break;
-                    case CtiDeviceMCT410::MCT410_StatusDisconnected:            Value = OPENED;         defaultStateName = "Disconnected";              break;
-                    case CtiDeviceMCT410::MCT410_StatusDisconnectedConfirmed:   Value = OPENED;         defaultStateName = "Confirmed disconnected";    break;
+                    case CtiDeviceMCT410::MCT410_RawStatus_Connected:
+                    {
+                        Value = CtiDeviceMCT410::MCT410_StateGroup_Connected;                   defaultStateName = "Connected";                 break;
+                    }
+                    case CtiDeviceMCT410::MCT410_RawStatus_ConnectArmed:
+                    {
+                        Value = CtiDeviceMCT410::MCT410_StateGroup_ConnectArmed;                defaultStateName = "Connect armed";             break;
+                    }
+                    case CtiDeviceMCT410::MCT410_RawStatus_DisconnectedUnconfirmed:
+                    {
+                        Value = CtiDeviceMCT410::MCT410_StateGroup_DisconnectedUnconfirmed;     defaultStateName = "Unconfirmed disconnected";  break;
+                    }
+                    case CtiDeviceMCT410::MCT410_RawStatus_DisconnectedConfirmed:
+                    {
+                        Value = CtiDeviceMCT410::MCT410_StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
+                    }
+                    default:
+                    {
+                        Value = -1;
+                        defaultStateName = "Invalid raw value from 410";
+                    }
                 }
 
                 break;
