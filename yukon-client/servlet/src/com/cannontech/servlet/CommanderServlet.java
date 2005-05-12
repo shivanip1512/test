@@ -37,7 +37,6 @@ import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -98,9 +97,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		else
 			localBean.setSerialNumber(PAOGroups.STRING_INVALID);
 		
-		String startDate = req.getParameter("startDate");	//only applicable for retrieving historical data (such as lp data)
-		if( startDate != null)
-			localBean.setStart(startDate);
+		String lpDate = req.getParameter("lpDate");	//only applicable for retrieving historical data (such as lp data)
+		if( lpDate != null)
+			localBean.setLPDateStr(lpDate);
 			
 		/** Specific route to send on, only used in the case of loops or serial number is used
 		 * When sending to a device, the route is ignored and the porter connection takes care
@@ -119,6 +118,10 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		
 		if (clear != null)
 			localBean.clearResultText();
+		else if( action != null && action.equalsIgnoreCase("LoadRPHData"))
+		{
+			localBean.loadRPHData();	//reload the current RPH Data vector, based on selected pointid and timestamp		    
+		}
 		else if( action!= null && action.equalsIgnoreCase("SelectDevice"))
 		{
 			redirectURL = redirectURL.substring(0, redirectURL.lastIndexOf('/')+1).concat("CommandDevice.jsp");
@@ -184,44 +187,50 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 
 			if( command.length() > 0 )
 			{
-					
-				/** Time to wait for return to calling jsp
-				 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
-				String timeOut = req.getParameter("timeOut");
-				if( timeOut == null)
-					timeOut = "8000";	// 8 secs default
-				if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
+				if( !localBean.isPilConnValid())
 				{
-					int commandCount = 1;
-					for (int i = 0; i < command.length(); i++)
-					{
-						if( command.charAt(i) == '&')
-							commandCount++;
-					}
-					timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
+					localBean.setErrorMsg("Connection to PORTER is not established");
 				}
+				else
+				{
+					/** Time to wait for return to calling jsp
+					 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
+					String timeOut = req.getParameter("timeOut");
+					if( timeOut == null)
+						timeOut = "8000";	// 8 secs default
+					if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
+					{
+						int commandCount = 1;
+						for (int i = 0; i < command.length(); i++)
+						{
+							if( command.charAt(i) == '&')
+								commandCount++;
+						}
+						timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
+					}
+			
+					localBean.setTimeOut(new Integer(timeOut).intValue());
+					localBean.setCommandString(command);
+					localBean.setErrorMsg("");	//clear out any old error messages
+					localBean.executeCommand();
 		
-				localBean.setTimeOut(new Integer(timeOut).intValue());
-				localBean.setCommandString(command);
-				localBean.setErrorMsg("");	//clear out any old error messages
-				localBean.executeCommand();
-	
-				/** Don't return to the jsp until we have the message or we've timed out.*/
-				while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
-						//localBean.getExecuteCmdsVector().size() > 0)
-				{
-					try
+					/** Don't return to the jsp until we have the message or we've timed out.*/
+					while( (localBean.getRequestMessageIDs().size() > 0 && localBean.isWatchRunning()))// || 
+							//localBean.getExecuteCmdsVector().size() > 0)
 					{
-						Thread.sleep(1000);
+						try
+						{
+							Thread.sleep(1000);
+						}
+						catch (InterruptedException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					catch (InterruptedException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
+							" |VectorSize " + localBean.getExecuteCmdsVector().size());
 				}
-				System.out.println("MessageSize " + localBean.getRequestMessageIDs().size() + " |Watching " + localBean.isWatchRunning() + 
-						" |VectorSize " + localBean.getExecuteCmdsVector().size());
 			}
 			
 		}
