@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/04/28 20:06:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/05/12 20:00:19 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,6 +163,11 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._io      = Emetcon::IO_Read;
     cs._funcLen = make_pair((int)MCT470_Memory_IntervalsPos,
                             (int)MCT470_Memory_IntervalsLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::GetValue_LoadProfile;
+    cs._io      = Emetcon::IO_Function_Read;
+    cs._funcLen = make_pair(0, 0);
     s.insert(cs);
 
     cs._cmd     = Emetcon::GetStatus_LoadProfile;
@@ -877,7 +882,7 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 {
     int          status = NORMAL, i;
     point_info_t pi;
-    RWCString    resultString, stateName;
+    RWCString    resultString, pointString, stateName;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
@@ -959,9 +964,11 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
                 pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-                resultString += getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                //  if the point exists, we don't need the "POINT UNDEFINED" guys hanging around
+                resultString = "";
 
-                if( pData = makePointDataMsg(pPoint, pi, resultString) )
+                if( pData = makePointDataMsg(pPoint, pi, pointString) )
                 {
                     if( i != 4 )
                     {
@@ -975,16 +982,15 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             }
             else if( i == 4 )
             {
-                resultString  = ReturnMsg->ResultString();
                 resultString += getName() + " / Blink Counter = " + CtiNumStr(pi.value) + "\n";
-                ReturnMsg->setResultString(resultString);
             }
             else if( i == 0 )
             {
-                resultString  = getName() + " / Channel 1 Demand = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB\n";
-                ReturnMsg->setResultString(resultString);
+                resultString += getName() + " / Channel 1 Demand = " + CtiNumStr(pi.value) + "  --  POINT UNDEFINED IN DB\n";
             }
         }
+
+        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -1282,7 +1288,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
             }
             else
             {
-                resultString += getName() + " / KW rate " + RWCString((char)('A' + rate)) + " total = " + CtiNumStr(pi.value);
+                resultString += getName() + " / KW rate " + RWCString((char)('A' + rate)) + " peak = " + CtiNumStr(pi.value);
 
                 resultString += " @ " + peak_time.asString() + "\n";
             }
@@ -1560,17 +1566,9 @@ INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                         }
                     }
 
-                    //  insert a point data message for TDC and the like
-                    //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
-                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(pi.value,
-                                                                                          ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
-                    if( pdata = makePointDataMsg(point, pi, val_report.c_str()) )
-                    {
-                        pdata->setTime(timestamp + interval_len * 6);
-                        ret_msg->insert(pdata);
-                    }
-
+                    //  unnecessary?
                     setLastLPTime (timestamp + interval_len * 6);
+
                     _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
                 }
                 else
