@@ -35,6 +35,7 @@ public class CommandCategory
 	public static final String STRING_CMD_TCU_BASE = "All TCUs";
 	public static final String STRING_CMD_STATUSINPUT_BASE = "All Status Input";
 	public static final String STRING_CMD_PING_BASE = "All Ping-able";
+	public static final String STRING_CMD_LCR_BASE = "All LCRs";
 
 	//Strings that commander uses to decide what "category" it is displaying, these are for specific items
 	// that don't necessarily have a deviceType, or where deviceType doesn't help find the commands.	
@@ -66,9 +67,10 @@ public class CommandCategory
 		STRING_CMD_TCU_BASE,
 		STRING_CMD_STATUSINPUT_BASE,
 		STRING_CMD_PING_BASE,
-		STRING_CMD_VERSACOM_SERIAL,
-		STRING_CMD_EXPRESSCOM_SERIAL,
-		STRING_CMD_SERIALNUMBER
+		STRING_CMD_LCR_BASE
+//		STRING_CMD_VERSACOM_SERIAL,
+//		STRING_CMD_EXPRESSCOM_SERIAL,
+//		STRING_CMD_SERIALNUMBER
 //		STRING_CMD_COLLECTION_GROUP
 //		STRING_CMD_CICUSTOMER
 	};
@@ -89,9 +91,10 @@ public class CommandCategory
 	private static ArrayList CAT_TCU_BASE_DEVTYPES = null;
 	private static ArrayList CAT_STATUSINPUT_BASE_DEVTYPES = null;
 	private static ArrayList CAT_PING_BASE_DEVTYPES = null;
-	private static ArrayList CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
-	private static ArrayList CAT_SERIALNUMBER_BASE_DEVTYPES = null;
-	private static ArrayList CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
+	private static ArrayList CAT_LCR_BASE_DEVTYPES = null;
+//	private static ArrayList CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
+//	private static ArrayList CAT_SERIALNUMBER_BASE_DEVTYPES = null;
+//	private static ArrayList CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
 		
 	/**
 	 * Returns String [] of all Categories  
@@ -185,23 +188,27 @@ public class CommandCategory
 		{
 			return getAllPingableDevTypes();
 		}
-		else if( category.equalsIgnoreCase(STRING_CMD_VERSACOM_SERIAL))
+		else if (category.equalsIgnoreCase(STRING_CMD_LCR_BASE))
 		{
-			return getAllVersacomSerialDevTypes();
+		    return getAllLCRDevTypes();
 		}
-		else if( category.equalsIgnoreCase(STRING_CMD_EXPRESSCOM_SERIAL))
-		{
-			return getAllExpresscomSerialDevTypes();
-		}
-		else if( category.equalsIgnoreCase(STRING_CMD_SERIALNUMBER))
-		{
-			return getAllSerialNumberDevTypes();
-		}
+//		else if( category.equalsIgnoreCase(STRING_CMD_VERSACOM_SERIAL))
+//		{
+//			return getAllVersacomSerialDevTypes();
+//		}
+//		else if( category.equalsIgnoreCase(STRING_CMD_EXPRESSCOM_SERIAL))
+//		{
+//			return getAllExpresscomSerialDevTypes();
+//		}
+//		else if( category.equalsIgnoreCase(STRING_CMD_SERIALNUMBER))
+//		{
+//			return getAllSerialNumberDevTypes();
+//		}
 		//TODO what to return if not found?
 		return null;
 	}
 
-	/**
+    /**
 	 * @return
 	 */
 	private static ArrayList getAllStatusInputDevTypes()
@@ -233,44 +240,59 @@ public class CommandCategory
 		}
 		return CAT_PING_BASE_DEVTYPES;
 	}
-	/**
-	 * @return
-	 */
-	private static ArrayList getAllSerialNumberDevTypes()
-	{
-		if( CAT_SERIALNUMBER_BASE_DEVTYPES == null)
-		{
-			CAT_SERIALNUMBER_BASE_DEVTYPES = new ArrayList();
-			CAT_SERIALNUMBER_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
-		}
-		return CAT_SERIALNUMBER_BASE_DEVTYPES;
-	}
 
 	/**
-	 * @return
-	 */
-	private static ArrayList getAllExpresscomSerialDevTypes()
-	{
-		if( CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES == null)
-		{
-			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = new ArrayList();
-			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
-		}
-		return CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES;
-	}
-
+     * @return
+     */
+    private static ArrayList getAllLCRDevTypes()
+    {
+        if (CAT_LCR_BASE_DEVTYPES == null)
+        {
+            CAT_LCR_BASE_DEVTYPES = new ArrayList();
+            CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
+            CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+            CAT_LCR_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+        }
+        return CAT_LCR_BASE_DEVTYPES;
+    }	
 	/**
 	 * @return
 	 */
-	private static ArrayList getAllVersacomSerialDevTypes()
-	{
-		if( CAT_VERSACOMSERIAL_BASE_DEVTYPES == null)
-		{
-			CAT_VERSACOMSERIAL_BASE_DEVTYPES = new ArrayList();
-			CAT_VERSACOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
-		}
-		return CAT_VERSACOMSERIAL_BASE_DEVTYPES;
-	}
+//	private static ArrayList getAllSerialNumberDevTypes()
+//	{
+//		if( CAT_SERIALNUMBER_BASE_DEVTYPES == null)
+//		{
+//			CAT_SERIALNUMBER_BASE_DEVTYPES = new ArrayList();
+//			CAT_SERIALNUMBER_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_SERIALNUMBER);
+//		}
+//		return CAT_SERIALNUMBER_BASE_DEVTYPES;
+//	}
+//
+//	/**
+//	 * @return
+//	 */
+//	private static ArrayList getAllExpresscomSerialDevTypes()
+//	{
+//		if( CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES == null)
+//		{
+//			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = new ArrayList();
+//			CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+//		}
+//		return CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES;
+//	}
+//
+//	/**
+//	 * @return
+//	 */
+//	private static ArrayList getAllVersacomSerialDevTypes()
+//	{
+//		if( CAT_VERSACOMSERIAL_BASE_DEVTYPES == null)
+//		{
+//			CAT_VERSACOMSERIAL_BASE_DEVTYPES = new ArrayList();
+//			CAT_VERSACOMSERIAL_BASE_DEVTYPES.add(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+//		}
+//		return CAT_VERSACOMSERIAL_BASE_DEVTYPES;
+//	}
 
 	/**
 	 * @return
