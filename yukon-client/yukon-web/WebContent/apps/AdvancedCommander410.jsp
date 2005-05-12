@@ -10,30 +10,240 @@ if( request.getParameter("clearids") != null)
 %>
 <SCRIPT  LANGUAGE="JavaScript" SRC="../JavaScript/calendar.js"></SCRIPT>
 <SCRIPT language="JavaScript">
-function setCommand(cmd)
+
+function promptParameters(channel, cmd)
 {
-	var offset;
-	var offsetGroup = commandForm.type;
-	for (var i = 0; i < offsetGroup.length; i++)
+	if (true)
 	{
-		if( offsetGroup[i].checked)
+		var captionStr = '';
+		var htmlStr = '';
+		var bgColor = '#666699';
+		
+		var isValid = false;
+		
+		var channelGroup = channel;
+		for (var i = 0; i < channelGroup.length; i++)
 		{
-			cmd = cmd + offsetGroup[i].value;
+			if( channelGroup[i].checked)
+			{
+				captionStr = 'Please select the Load Profile parameters for Channel ' + channelGroup[i].value;
+				htmlStr = buildPopupHTML(cmd);				
+				isValid = true;
+				break;
+			}
+		}
+		
+		if( !isValid)
+		{
+			captionStr = 'Invalid Operation';
+			htmlStr = '<td class="columnHeader" align="center">You must select a Channel to perform this action on.</td>';
+			bgColor = '#FF0000';
+		}
+
+		overlib(	htmlStr,
+					STICKY,
+					CAPTION, captionStr,
+					CLOSECLICK,
+					LEFT,
+					ANCHOR, "",
+					ANCHORALIGN, "LL", "UL",
+					ANCHORX, -4,
+					ANCHORY, 2,
+					BGCOLOR, bgColor,
+					BORDER, 2,
+					CAPCOLOR, "#FFFFFF",
+					CLOSECOLOR, "FFFFFF",
+					CAPTIONSIZE, "12px",
+					FGCOLOR, "#FFFFFF",
+					CELLPAD, 4,
+					HAUTO, VAUTO,
+					WIDTH, 400,
+					HEIGHT, 200
+				);
+	}
+}
+
+function buildPopupHTML(cmd)
+{
+	var htmlStr = '';
+	if( cmd == 'DataCollection')
+	{
+		htmlStr += '<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">';
+		htmlStr += '  <tr> ';
+		htmlStr += '    <td width="50%" class="columnHeader">Date</td>';
+		htmlStr += '    <td class="columnHeader" align="center"><div id="hourLabel">Hour</div></td>';
+		htmlStr += '    <td class="columnHeader" align="center"><div id="minuteLabel">Minute</div></td>';
+		htmlStr += '  </tr><tr>';
+		htmlStr += '    <td width="50%" class="main" valign="bottom">';
+		htmlStr += '      <input id="cal" type="text" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">';
+		htmlStr += '		<a href="javascript:openCalendar(document.getElementById(\'cal\'))"';
+		htmlStr += '		onMouseOver="window.status=\'Date Calendar\';return true;"';
+		htmlStr += '		onMouseOut="window.status=\'\';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>';
+		htmlStr += '	</td>';
+		htmlStr += '	<td class="main" valign="bottom" align="center">';
+		htmlStr += '	  <select name="hour" id="hourID">';
+			for (var i = 0; i < 24; i++) {
+				var iStr = i.toString();
+				if( i < 10)	{
+					iStr = '0' + iStr;
+				}
+				htmlStr += '		<option value="' + i + '">' + iStr + '</option>';
+			}
+		htmlStr += '	  </select>';
+		htmlStr += '	</td>';
+		htmlStr += '	<td class="main" valign="bottom" align="center">';
+		htmlStr += '	  <select name="minute" id="minuteID">';
+			for (var i = 0; i < 60; i=i+5) {
+				var iStr = i.toString();
+				if( i < 10)	{
+					iStr = '0' + iStr;
+				}
+				htmlStr += '		<option value="' + i + '">' + iStr + '</option>';
+			}
+		htmlStr += '	  </select>';
+		htmlStr += '	</td>';
+		htmlStr += '  </tr><tr>';
+		htmlStr += '    <td width="50%" class="columnHeader">&nbsp;</td>';
+		htmlStr += '	<td colspan="2" class="main" align="center" height="100" valign="bottom">';
+		htmlStr += '	  <a href="javascript:setCommand(\'' + cmd + '\', \'getvalue lp \');disableAllButtons();" style="font-weight:bold" class="Link4">Collect</a>';
+		htmlStr += '&nbsp;and archive up to 12 Load Profile intervals, inclusive of the hour and minute selected';
+		htmlStr += '	</td>';
+		htmlStr += '  </tr>';
+		htmlStr += '</table>';
+	}
+	else if( cmd == 'PeakReport')
+	{
+		htmlStr += '<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">';
+		htmlStr += '  <tr>';
+		htmlStr += '	<td class="columnHeader">Date</td>';
+		htmlStr += '	<td class="columnHeader"><div id="rateLabel">Rate</div></td>';
+		htmlStr += '	<td class="columnHeader"><div id="numDaysLabel">Num Days</div></td>';
+		htmlStr += '  </tr>';
+		htmlStr += '  <tr>';
+		htmlStr += '	<td class="main" valign="bottom">';
+		htmlStr += '	  <input id="cal" type="text" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">';
+		htmlStr += '		<a href="javascript:openCalendar(document.getElementById(\'cal\'))"';
+		htmlStr += '		onMouseOver="window.status=\'Date Calendar\';return true;"';
+		htmlStr += '		onMouseOut="window.status=\'\';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>';
+		htmlStr += '	</td>';
+		htmlStr += '	<td class="main" valign="bottom">';
+		htmlStr += '	  <select name="rate" id="rateID">';
+		htmlStr += '		<option value="day">Day</option>';
+		htmlStr += '		<option value="hour">Hour</option>';
+		htmlStr += '		<option value="interval">Interval</option>';
+		htmlStr += '	  </select>';
+		htmlStr += '	</td>';
+		htmlStr += '	<td class="main" valign="bottom">';
+		htmlStr += '	  <input type="text" size="3" id="numDaysID" name="numDays" value="5">';
+		htmlStr += '	</td>';
+		htmlStr += '  </tr><tr>';
+ 		htmlStr += '    <td width="50%" class="columnHeader">&nbsp;</td>';
+		htmlStr += '	<td colspan="2" class="main" align="center" height="100" valign="bottom">';
+		htmlStr += '	  <a href="javascript:setCommand(\'' + cmd + '\', \'getvalue lp \');disableAllButtons();" style="font-weight:bold" class="Link4">Read Load Profile Peak Report</a>';
+		htmlStr += '	</td>';
+		htmlStr += '  </tr>';
+		htmlStr += '</table>';
+	}	
+	
+	return htmlStr;
+}
+
+function StopPropagation(e)
+{
+	if (true)
+	{
+		if (window.event)	// if IE or Safari
+			window.event.cancelBubble = true;
+		else
+			e.stopPropagation();
+	}
+}
+
+
+function setCommand(type, cmd)
+{
+	var channel = ' channel ';
+	var channelGrp = commandForm.channel;
+	for (var i = 0; i < channelGrp.length; i++)
+	{
+		if( channelGrp[i].checked)
+		{
+			channel += channelGrp[i].value;
+			break;
 		}
 	}
-	cmd = cmd + " " + document.commandForm.startDate.value;
-	cmd = cmd + " " + document.commandForm.startHour.value;
-	cmd = cmd + ":" + document.commandForm.startMin.value;
+	
+	if (type == 'DataCollection')
+	{
+		var offsetGroup = commandForm.channel;
+		cmd += channel;
+		cmd += " " + document.getElementById('cal').value;
+		cmd += " " + document.getElementById('hourID').value;
+		cmd += ":" + document.getElementById('minuteID').value;
+	}
+	else if( type = 'PeakReport' )
+	{
+		d = new Date(document.getElementById('cal').value);
+		d.setTime(d.getTime() + (86400000 * (parseInt(document.getElementById('numDaysID').value - 1) )));	//subtract one to include the full date
+		
+		cmd += " peak " + document.getElementById('rateID').value;
+		cmd += channel;
+		cmd += " " + [d.getMonth()+1,d.getDate(),d.getYear()].join('/');
+		cmd += " " + document.getElementById('numDaysID').value;
+	}
+	else
+	{
+		cmd = "";
+	}
 	document.commandForm.command.value = cmd;
 }
 
 function disableAllButtons()
 {
 	document.body.style.cursor = 'wait';
-	document.getElementById('readLPID').disabled = true;
+	document.getElementById('DataCollectionID').disabled = true;	
+	document.getElementById('ArchivedDataID').disabled = true;
+	document.getElementById('PeakReportID').disabled = true;
+	document.commandForm.lpDate.value=document.getElementById('cal').value;
 	document.commandForm.submit();
 }
 
+function enableFields(form)
+{
+	if(document.getElementById("lpActionArchiveID").checked)
+	{
+		form.hour.disabled = true;
+		document.getElementById('hourLabel').disabled = true;
+		form.minute.disabled = true;
+		document.getElementById('minuteLabel').disabled = true;
+		form.rate.disabled = true;
+		document.getElementById('rateLabel').disabled = true;
+		form.numDays.disabled= true;
+		document.getElementById('numDaysLabel').disabled = true;
+	}
+	else if( document.getElementById("lpActionCollectionID").checked)
+	{
+		form.hour.disabled = false;
+		document.getElementById('hourLabel').disabled = false;
+		form.minute.disabled = false;
+		document.getElementById('minuteLabel').disabled = false;
+		form.rate.disabled = true;
+		document.getElementById('rateLabel').disabled = true;		
+		form.numDays.disabled= true;
+		document.getElementById('numDaysLabel').disabled = true;
+	}
+	else if( document.getElementById("lpActionReportID").checked)
+	{
+		form.hour.disabled = true;
+		document.getElementById('hourLabel').disabled = true;
+		form.minute.disabled = true;
+		document.getElementById('minuteLabel').disabled = true;
+		form.rate.disabled = false;
+		document.getElementById('rateLabel').disabled = false;
+		form.numDays.disabled= false;
+		document.getElementById('numDaysLabel').disabled = false;
+	}
+}
 </SCRIPT>
           <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
             <input type="hidden" name="deviceID" value="<%=deviceID%>">
@@ -41,6 +251,7 @@ function disableAllButtons()
             <input type="hidden" name="command" value="">
             <input type="hidden" name="timeOut" value="8000">
 			<input type="hidden" name="updateDB" value="true">
+            <input type='hidden' name='action' value=''>
             <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
             <input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
             <td width="657" valign="top" bgcolor="#FFFFFF"> 
@@ -56,6 +267,7 @@ function disableAllButtons()
                   </tr>
                 </table>
                 <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+			    <% if (YC_BEAN.getErrorMsg().length() > 0 ) out.write("<span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span><br>"); %>
                 <table width="530" border="0" cellspacing="0" cellpadding="0">
                   <tr> 
                     <td> 
@@ -69,68 +281,17 @@ function disableAllButtons()
 							  <td align="center"><a href='<%=request.getContextPath()%>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>' class='Link1'><span class='NavText'>Back To:&nbsp;<%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(deviceID)%></span></a></td>
 			               <%}%>
 				  		</tr>
-					  </table>								  
+					  </table>
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader" align="center">Please select a time period to review</td>
-						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
-						</tr>
-						<tr>
-						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
-						  <td>
-							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-							  <tr> 
-								<td class="main" width="47%" valign="bottom" align="right">Start Date:
-									  <input id="startCal" type="text" name="startDate" value="<%= datePart.format(YC_BEAN.getLPStartDate()) %>" size="8">
-									  <a href="javascript:openCalendar(document.getElementById('commandForm').startCal)"
-									  onMouseOver="window.status='Start Date Calendar';return true;"
-									  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
-								</td>			  
-								<td class="main" width="20%" valign="bottom" align="right">HR
-									<select name="startHour" id="startHourID">
-									  <%for (int i = 0; i < 24; i++)
-									  {%>
-										<option value="<%=format_2char.format(i)%>"><%=format_2char.format(i)%></option>
-									<%} %>
-									</select>								  
-								</td>
-								<td class="main" width="1%" valign="bottom" align="right" height="29">&nbsp;</td>								  
-								<td class="main" width="20%" valign="bottom" align="left">MIN
-									<select name="startMin" id="startMinID">
-									  <%for (int i = 0; i < 12; i++)
-									  {%>
-										<option value="<%=format_2char.format(i*5)%>"><%=format_2char.format(i*5)%></option>
-									<%} %>
-									</select>
-								</td>
-							  </tr>
-							  <tr> 
-								<td class="main">&nbsp;</td>
-							  </tr>
-							  <tr> 
-								<td class="main">&nbsp;</td>
+						  <td height="19" bgcolor="888888" class="tableHeader">
+							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						      <tr>
+							    <td class="tableHeader"">Load Profile Channel Selection</td>
 							  </tr>
 							</table>
 						  </td>
-						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
-						</tr>
-						<tr>
-						  <td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
-						  <td background="<%=request.getContextPath()%>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
-						  <td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
-						</tr>
-					  </table>
-					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-						<tr> 
-						  <td><br>
-						  </td>
-						</tr>
-					  </table>
-					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-						<tr> 
-						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader" align="center">Please select a Point to collect Load Profile On</td>
 						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
 						</tr>
 						<tr>
@@ -138,44 +299,54 @@ function disableAllButtons()
 						  <td>
 							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
 							  <tr> 
-								<td> 
-								  <table class="TableCell" align="center" width="33%">
+								<td class="columnHeader" height="22" align="center">Channel</td>
+							  </tr>
+							  <tr>
+								<td class="main" valign="top">
+								 <table class="TableCell" width="100%" align="center">
 							<%
 								com.cannontech.database.data.lite.LitePoint [] litePoints = 
 									com.cannontech.database.cache.functions.PAOFuncs.getLitePointsForPAObject(deviceID);
 								if( litePoints != null)
 								{
-									boolean first = true;
+									boolean found = false;
+									com.cannontech.database.data.lite.LitePoint kwLP = null;
+									com.cannontech.database.data.lite.LitePoint voltageLP = null;
 									for (int i = 0; i < litePoints.length; i++)
 									{
 										if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)
-										{%>
-										<tr> 
-										  <td class="main" width="20%"> 
-											<input id = "type" type="radio" name="type" value="1" <%=(YC_BEAN.getPointID()==litePoints[i].getPointID())? "checked":""%> onClick="document.commandForm.pointID.value=<%=litePoints[i].getPointID()%>;">
-											<%=litePoints[i].getPointName()%> </td>
-										</tr>
-										<%}
+										{
+											kwLP = litePoints[i];
+										}
 										else if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND )
-										{%>
+										{
+											voltageLP = litePoints[i];
+										}
+									}%>
 										<tr> 
-										  <td width="20%"> 
-											<input id = "type" type="radio" name="type" value="4" <%=(YC_BEAN.getPointID()==litePoints[i].getPointID())? "checked":""%> onClick="document.commandForm.pointID.value=<%=litePoints[i].getPointID()%>;">
-											<%=litePoints[i].getPointName()%> </td>
+										  <td class="main" width="20%" align="center">
+										  <%
+										  if( kwLP != null)
+										  {%> 
+											<input id = "channelID" type="radio" name="channel" value="1" <%=( kwLP.getPointID() == YC_BEAN.getPointID()? "checked":"")%> onClick="document.commandForm.pointID.value=<%=kwLP.getPointID()%>;"><%= kwLP.getPointName()%>
+										  <%}else{%>
+											<input id = "channelID" type="radio" name="channel" value="1" <%=( voltageLP == null || voltageLP.getPointID() != YC_BEAN.getPointID()? "checked":"")%> onClick="document.commandForm.pointID.value=<%=PointTypes.SYS_PID_SYSTEM%>;">Channel 1 (kW-LP)
+										  <%}%>
+										  </td>
+										  <td class="main" width="20%" align="center"> 
+										  <%if( voltageLP != null)
+										  {%>
+											<input id = "channelID" type="radio" name="channel" value="4" <%=(voltageLP.getPointID() == YC_BEAN.getPointID()? "checked":"")%> onClick="document.commandForm.pointID.value=<%=voltageLP.getPointID()%>;"><%=voltageLP.getPointName()%>
+										  <%} else {%>
+											<input id = "channelID" type="radio" name="channel" value="4" onClick="document.commandForm.pointID.value=<%=PointTypes.SYS_PID_SYSTEM%>;">Channel 4 (Voltage-LP)
+										  <%}%>
+										  </td>
 										</tr>
-										<%}
-									}
-								}%>
+								<%}%>
+								
 								  </table>
-								</td>
-								<td class="main" width="30%" align="center" height="35" valign="middle">Pressing 'GO' will collect and archive 
-                                  (up to) 12 intervals, inclusive of the hour and minute selected 
-                                  <input type="image" onClick="setCommand('getvalue lp channel ');disableAllButtons();" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" id="readLPID" name="readLP" align="middle">
-								</td>
+								</td>							  
 							  </tr>
-							  <tr>
-								<td colspan="2" height="19" class="main" align="center" bgcolor="EEEEEE">
-									<a href="javascript:disableAllButtons();" style="font-weight:bold" class="Link4">Refresh</a>&nbsp;Tabular Data View (using above settings)</td></tr>
 						   </table>
 						  </td>
 						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
@@ -186,20 +357,223 @@ function disableAllButtons()
 						  <td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
 						</tr>
 					  </table>
+					  					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						<tr> 
+						  <td><br>
+						  </td>
+						</tr>
+					  </table>					  								  
+					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						<tr> 
+						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+						  <td height="19" bgcolor="888888" class="tableHeader">
+							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						      <tr>
+							    <td class="tableHeader"">Load Profile Peak Reporting</td>
+								<td class="tableHeader" align="right">
+								  <a href="javascript:promptParameters(document.commandForm.channel, 'PeakReport');" style="font-weight:bold" class="Link3" id="PeakReportID" name="PeakReport"
+									  onMouseOver="window.status='Read the Load Profile peak report for the channel selected';return true;"
+									  onMouseOut="window.status='';return true;">Read</a>
+								</td>
+							  </tr>
+							</table>
+						  </td>
+						  
+						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
+						</tr>
+						<tr>
+						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
+						  <td>
+							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+							<tr>
+						    <td>
+							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+
+							  
+							  </table>
+							  </td>
+							  </tr>
+							  <tr colspan="3" style="text-decoration:underline"> 
+							    <td class="columnHeader">Load Profile Peak Report - Channel 1</td>
+							  </tr>
+							<%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);%>							  
+							<%if( pointData != null){
+								boolean bg = true;
+								String tempStr = pointData.getStr();
+								int beginIndex = 0;
+								int endIndex = tempStr.indexOf("\n");
+								while( endIndex > 0)
+								{%>
+							  <tr>
+							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+									<%=tempStr.substring(beginIndex, endIndex)%>
+									<%
+									tempStr = tempStr.substring(endIndex+1);
+									endIndex = tempStr.indexOf("\n");
+									bg = !bg;
+									%>
+							    </td>
+							  </tr>
+								<%}
+	 						} else {%>
+						  	  <tr>
+							    <td class="main">---</td>
+  							  </tr>
+							<%}%>
+							  <tr> 
+							    <td class="columnHeader">&nbsp;</td>
+							  </tr>
+							  <tr style="text-decoration:underline"> 
+							    <td class="columnHeader">Load Profile Peak Report - Channel 4</td>
+							  </tr>
+							<%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);%>
+							<%if( pointData != null){
+								boolean bg = true;
+								String tempStr = pointData.getStr();
+								int beginIndex = 0;
+								int endIndex = tempStr.indexOf("\n");
+								while( endIndex > 0)
+								{%>
+							  <tr>
+							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+									<%=tempStr.substring(beginIndex, endIndex)%>
+									<%
+									tempStr = tempStr.substring(endIndex+1);
+									endIndex = tempStr.indexOf("\n");
+									bg = !bg;
+									%>
+							    </td>
+							  </tr>
+								<%}
+							} else {%>
+							  <tr>
+							    <td class="main">---</td>
+  						  	  </tr>
+							<%}%>
+						    </table>
+						  </td>
+						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
+						</tr>
+						<tr>
+						  <td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+						  <td background="<%=request.getContextPath()%>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+						  <td width="6" height="9"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+						</tr>
+					  </table>
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
 						  <td><br>
 						  </td>
 						</tr>
-					  </table>
+					  </table>					  								  
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
-						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="50"></td>
-						  <td height="19" bgcolor="888888" class="tableHeader" align="center">Data currently stored in Database:<BR><%=liteYukonPao.getPaoName()%> - <%=com.cannontech.database.cache.functions.PointFuncs.getPointName(YC_BEAN.getPointID())%>
-							&nbsp;[<%=datePart.format(YC_BEAN.getLPStartDate())%>]<BR><a href="javascript:disableAllButtons();" class="Link3">Refresh</a>&nbsp;Tabular Data View (using above settings)
+						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
+						  <td height="19" bgcolor="888888" class="tableHeader">
+							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						      <tr>
+							    <td class="tableHeader"">Load Profile Data Collection</td>
+								<td class="tableHeader" align="right">
+								  <a href="javascript:promptParameters(document.commandForm.channel, 'DataCollection');" style="font-weight:bold" class="Link3" id="DataCollectionID" name="DataCollection"
+									  onMouseOver="window.status='Collect and Archive Load Profile data for the channel selected';return true;"
+									  onMouseOut="window.status='';return true;">Collect</a>
+								</td>
+							  </tr>
+							</table>
 						  </td>
-						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="50"></td>		  
+						  
+						  <td width="6" height="19"><img src="<%=request.getContextPath()%>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>		  
 						</tr>
+						<tr>
+						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
+						  <td>
+							<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
+							  <tr colspan="3" style="text-decoration:underline"> 
+							    <td class="columnHeader">Recently Archived Load Profile Data - Channel 1</td>
+							  </tr>
+							
+							<%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_ARCHIVED_DATA);%>
+							<%if( pointData != null){
+								boolean bg = true;
+								String tempStr = pointData.getStr();
+								int beginIndex = 0;
+								int endIndex = tempStr.indexOf("\n");
+								while( endIndex > 0)
+								{%>
+							  <tr>
+							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+									<%=tempStr.substring(beginIndex, endIndex)%>
+									<%
+									tempStr = tempStr.substring(endIndex+1);
+									endIndex = tempStr.indexOf("\n");
+									bg = !bg;
+									%>
+							    </td>
+							  </tr>
+								<%}
+	 						} else {%>
+						  	  <tr>
+							    <td class="main">---</td>
+  							  </tr>
+							<%}%>
+							  <tr> 
+							    <td class="columnHeader">&nbsp;</td>
+							  </tr>
+							  <tr colspan="3" style="text-decoration:underline"> 
+							    <td class="columnHeader">Recently Archived Load Profile Data - Channel 4</td>
+							  </tr>
+							<%pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_ARCHIVED_DATA);%>
+							<%if( pointData != null){
+								boolean bg = true;
+								String tempStr = pointData.getStr();
+								int beginIndex = 0;
+								int endIndex = tempStr.indexOf("\n");
+								while( endIndex > 0)
+								{%>
+							  <tr>
+							    <td class="main" <%=(bg?"bgcolor='EEEEEE'":"")%>>
+									<%=tempStr.substring(beginIndex, endIndex)%>
+									<%
+									tempStr = tempStr.substring(endIndex+1);
+									endIndex = tempStr.indexOf("\n");
+									bg = !bg;
+									%>
+							    </td>
+							  </tr>
+								<%}
+	 						} else {%>
+						  	  <tr>
+							    <td class="main">---</td>
+  							  </tr>
+  							<%}%>
+							  <tr> 
+							    <td class="columnHeader">&nbsp;</td>
+							  </tr>
+						    </table>
+						  </td>
+						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
+						</tr>
+						<tr> 
+						  <td height="19" bgcolor="888888" ></td>
+						  <td height="19" bgcolor="888888" class="tableHeader">
+							<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+						      <tr>
+						        <td class="tableHeader" >Load Profile Archived Data Display<BR><%=liteYukonPao.getPaoName()%> - <%=(YC_BEAN.getPointID() == PointTypes.SYS_PID_SYSTEM?"Undefined Point":com.cannontech.database.cache.functions.PointFuncs.getPointName(YC_BEAN.getPointID()))%>
+						        </td>
+						        <td class="tableHeader" align="right">
+								  <input id="cal" type="text" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
+									<a href="javascript:openCalendar(document.getElementById('cal'))"
+									onMouseOver="window.status='Date Calendar';return true;"
+									onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+									<a href="javascript:document.commandForm.action.value='LoadRPHData';disableAllButtons();" class="Link3" id="ArchivedDataID" 
+										onMouseOver="window.status='Refresh the archived data view for the date and channel selected';return true;"
+										onMouseOut="window.status='';return true;">View</a>
+								</td>
+							  </tr>
+							</table>
+						  </td>
+						  <td height="19" bgcolor="888888" ></td>		  
+						</tr>						
 						<tr>
 						  <td width="6" background="<%=request.getContextPath()%>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
 						  <td>
@@ -210,13 +584,13 @@ function disableAllButtons()
 							  		<tr>
 							  		  <td colspan="4"> 
 										<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#FFFFFF" align="center">
-								  		  <tr> 
+								  		  <tr style="text-decoration:underline"> 
 											<td width="25%" class="columnHeader" align="center">Timestamp</td>
 											<td width="25%"class="columnHeader" align="center">Value</td>
 											<td width="25%" class="columnHeader" align="center">Timestamp</td>
 											<td width="25%"class="columnHeader" align="center">Value</td>
 								  		  </tr>
-										    <%java.util.Vector lrphVector = YC_BEAN.getRPHData(YC_BEAN.getPointID());
+										    <%java.util.Vector lrphVector = YC_BEAN.getCurrentRPHVector();
 											if( lrphVector != null){
 												int half = lrphVector.size()/2;
 												int vecSize = lrphVector.size();
@@ -227,7 +601,7 @@ function disableAllButtons()
 												{
 												  lrph = (LiteRawPointHistory)lrphVector.get(i);
 												  %>
-												  <tr <%=(i%2==1)? "bgcolor='EEEEEE'":""%>> 
+												  <tr <%=!(i%2==1)? "bgcolor='EEEEEE'":""%>> 
 													<td width="25%" align="center" class="main"><%=dateTimeFormat.format(new java.util.Date(lrph.getTimeStamp()))%> 
 													</td>
 													<td width="25%" align="center" class="main"><%=format_nv3.format(lrph.getValue())%> 
@@ -281,20 +655,7 @@ function disableAllButtons()
                   <tr> 
                     <td>&nbsp;</td>
                   </tr>
-<%--					<tr align="center"> 
-					  <td class="SubtitleHeader"  valign="top">Command Execution Log</td>
-					</tr>
-					<tr> 
-					  <td > 
-						<div align="center"> 
-						  <textarea id="resultText" name="resultText" class="TableCell" readonly="readonly" cols="100" rows="10" wrap="VIRTUAL"><%= YC_BEAN.getResultText()%></textarea>
-						  <input type="submit" name="clearText" id="clearTextID"  value="Clear Results">
-						  <input type="reset" name="refresh" id="refreshID" value="Refresh" onClick="window.location.reload()">
-						</div>
-					  </td>
-					</tr>
---%>					
-                </table>
+n                </table>
                 <br>
               </div>
           </form>
