@@ -144,4 +144,27 @@ public boolean isVisible()
 		return true;
 	return false;
 }
+
+public void setDeviceCommandID(Integer devID)
+{
+	getDeviceTypeCommand().setDeviceCommandID(devID);
+}
+public void setCommandID(Integer cmdID)
+{
+	getDeviceTypeCommand().setCommandID(cmdID);
+	getCommand().setCommandID(cmdID);
+}
+public void setDeviceType(String devType)
+{
+	getDeviceTypeCommand().setDeviceType(devType);
+}
+public void setDisplayOrder(Integer dispOrder)
+{
+	getDeviceTypeCommand().setDisplayOrder(dispOrder);
+}
+public void setVisibleFlag(Character visible)
+{
+	getDeviceTypeCommand().setVisibleFlag(visible);
+}
+
 }
