@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/21 20:47:20 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/12 19:59:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,12 +220,20 @@ public:
         FuncWrite_TSyncLen       =    6
     };
 
-    enum
+    enum Disconnect_Raw
     {
-        MCT410_StatusConnected              = 0x00,
-        MCT410_StatusConnectArmed           = 0x01,
-        MCT410_StatusDisconnected           = 0x02,
-        MCT410_StatusDisconnectedConfirmed  = 0x03
+        MCT410_RawStatus_Connected               = 0x00,
+        MCT410_RawStatus_ConnectArmed            = 0x01,
+        MCT410_RawStatus_DisconnectedUnconfirmed = 0x02,
+        MCT410_RawStatus_DisconnectedConfirmed   = 0x03
+    };
+
+    enum Disconnect_StateGroup
+    {
+        MCT410_StateGroup_DisconnectedConfirmed   = 0,
+        MCT410_StateGroup_Connected               = 1,
+        MCT410_StateGroup_DisconnectedUnconfirmed = 2,
+        MCT410_StateGroup_ConnectArmed            = 3
     };
 
     CtiDeviceMCT410( );
