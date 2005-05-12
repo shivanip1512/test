@@ -9,10 +9,19 @@
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <cti:checklogin/> 
+
+<script language='JavaScript' src='../JavaScript/ol/overlib_mini.js'></script>
+<script language='JavaScript' src='../JavaScript/ol/overlib_anchor_mini.js'></script>
+<script language='JavaScript' src='../JavaScript/ol/overlib_centerpopup_mini.js'></script>
+<script language='JavaScript' src='../JavaScript/ol/overlib_hideform_mini.js'></script>
+
+
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 <%-- Grab the search criteria --%>
 
 <%
+	PointData pointData = null;
+	
 	boolean manual = false;
 	if( request.getParameter("manual") != null)
 	{	//Force going to the Commander page instead of a page based on the DeviceType
@@ -47,6 +56,7 @@
 <link rel="stylesheet" href="../WebConfig/yukon/Base.css" type="text/css">
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:200;"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
