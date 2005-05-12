@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/05/11 14:58:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/05/12 19:46:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,6 +74,7 @@ protected:
     static owner_map_t init_owner_map();
     static key_map_t   init_key_map();
 
+    long   _entry_id;
     long   _pao_id;
     Owners _owner_id;
 
@@ -110,14 +111,16 @@ public:
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     void DecodeDatabaseReader(RWDBReader& rdr);
 
-    long          getPaoID() const;
-    Owners        getOwner() const;
-    Keys          getKey()   const;
+    long          getPaoID()   const;
+    long          getEntryID() const;
+    Owners        getOwner()   const;
+    Keys          getKey()     const;
     const string &getStringValue() const;
     double        getDoubleValue();
     long          getLongValue();
 
     CtiTableDynamicPaoInfo &setPaoID(long pao_id);
+    CtiTableDynamicPaoInfo &setEntryID(long entry_id);
     CtiTableDynamicPaoInfo &setOwner(Owners o);
     CtiTableDynamicPaoInfo &setKey(Keys k);
     CtiTableDynamicPaoInfo &setValue(const string &s);

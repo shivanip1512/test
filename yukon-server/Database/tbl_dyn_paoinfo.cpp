@@ -7,14 +7,15 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/05/11 14:58:12 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/05/12 19:46:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dbaccess.h"
+#include "rwutil.h"
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_paoinfo.h"
@@ -293,7 +294,7 @@ void CtiTableDynamicPaoInfo::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 }
 void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
 {
-    RWCString tmp_owner, tmp_key, tmp_value;
+    string tmp_owner, tmp_key, tmp_value;
     long tmp_entryid, tmp_paoid;
 
     key_map_t::const_iterator k_itr;
@@ -305,23 +306,47 @@ void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
     rdr["key"]     >> tmp_key;
     rdr["value"]   >> tmp_value;
 
-/*
-    itr = _owner_map.find(tmp_ownerid);
-    if( itr != _owner_map.end() )
-    {
-        e_id = itr->second;
-    }
-*/
-
+    setEntryID(tmp_entryid);
     setPaoID(tmp_paoid);
-    //setOwner(e_id);
-    //setKey(tmp_string.data());
-    //setValue(tmp_string.data());
+
+    o_itr = _owner_map.begin();
+    while( o_itr != _owner_map.end() )
+    {
+        if( !tmp_owner.compare(*(o_itr->second)) )
+        {
+            setOwner(o_itr->first);
+            o_itr = _owner_map.end();
+        }
+        else
+        {
+            o_itr++;
+        }
+    }
+
+    k_itr = _key_map.begin();
+    while( k_itr != _key_map.end() )
+    {
+        if( !tmp_key.compare(*(k_itr->second)) )
+        {
+            setKey(k_itr->first);
+            k_itr = _key_map.end();
+        }
+        else
+        {
+            k_itr++;
+        }
+    }
+
+    setValue(tmp_value);
 
     resetDirty(FALSE);
 }
 
 
+long CtiTableDynamicPaoInfo::getEntryID() const
+{
+    return _entry_id;
+}
 long CtiTableDynamicPaoInfo::getPaoID() const
 {
     return _pao_id;
@@ -352,6 +377,12 @@ double CtiTableDynamicPaoInfo::getDoubleValue()
 }
 
 
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setEntryID(long entry_id)
+{
+    _entry_id = entry_id;
+
+    return *this;
+}
 CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setPaoID(long pao_id)
 {
     _pao_id = pao_id;
