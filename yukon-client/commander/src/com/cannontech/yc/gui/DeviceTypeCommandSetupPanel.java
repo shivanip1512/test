@@ -639,6 +639,7 @@ private javax.swing.JButton getRemoveCommandButton() {
 			ivjRemoveCommandButton.setName("RemoveCommandButton");
 			ivjRemoveCommandButton.setText("Remove");
 			// user code begin {1}
+			ivjRemoveCommandButton.setEnabled(false);
 			ivjRemoveCommandButton.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -661,6 +662,7 @@ private javax.swing.JButton getEditCommandButton() {
 			ivjEditCommandButton.setName("EditCommandButton");
 			ivjEditCommandButton.setText("Edit");
 			// user code begin {1}
+			ivjEditCommandButton.setEnabled(false);
 			ivjEditCommandButton.addActionListener(this);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
