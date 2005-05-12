@@ -1,7 +1,7 @@
 package com.cannontech.billing.record;
 
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.amr.BillingRole;
+import com.cannontech.roles.application.BillingRole;;
 
 /**
  * Insert the type's description here.
