@@ -107,6 +107,26 @@ update lmprogramdirect set restoreoffset = 0.0;
 alter table lmprogramdirect modify restoreoffset float not null;
 
 
+insert into YukonRoleProperty values(-10602,-106,'Header Label','Billing','The header label for billing.');
+insert into YukonRoleProperty values(-10603,-106,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
+insert into YukonRoleProperty values(-10604,-106,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
+insert into YukonRoleProperty values(-10605,-106,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
+insert into YukonRoleProperty values(-10606,-106,'Append To File','false','Append to existing file.');
+insert into YukonRoleProperty values(-10607,-106,'Remove Multiplier','false','Remove the multiplier value from the reading.');
+insert into YukonRoleProperty values(-10608,-106,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
+update yukonroleproperty set description = 'The NCDC format takes in an input file.' where rolepropertyid = -10601;
+
+delete from yukongrouprole where roleid = -500;
+delete from yukonuserrole where roleid = -500;
+delete yukonroleproperty where rolepropertyid in (-50000, -50001, -50002, -50003, -50004, -50005, -50006, -50007);
+delete yukonrole where roleid = -500;
+
+insert into YukonGroupRole values(-232,-1,-106,-10602,'(none)');
+insert into YukonGroupRole values(-233,-1,-106,-10603,'(none)');
+insert into YukonGroupRole values(-234,-1,-106,-10604,'(none)');
+insert into YukonGroupRole values(-235,-1,-106,-10605,'(none)');
+insert into YukonGroupRole values(-236,-1,-106,-10606,'(none)');
+insert into YukonGroupRole values(-237,-1,-106,-10607,'(none)');
 
 
 
