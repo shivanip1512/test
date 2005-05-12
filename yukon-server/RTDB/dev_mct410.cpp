@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/04/28 20:06:18 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/05/12 20:01:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2472,21 +2472,13 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
                             //  the data goes from latest to earliest...  it's kind of backwards
                             pdata->setTime(timestamp + interval_len * (6 - offset));
 
+                            pdata->setTags(TAG_POINT_LOAD_PROFILE_DATA);
+
                             ret_msg->insert(pdata);
                         }
                     }
 
-                    //  insert a point data message for TDC and the like
-                    //    note that timeStamp, pointQuality, and Value are set in the final iteration of the above for loop
-                    val_report = getName() + " / " + point->getName() + " = " + CtiNumStr(pi.value,
-                                                                                          ((CtiPointNumeric *)point)->getPointUnits().getDecimalPlaces());
-
-                    if( pdata = makePointDataMsg(point, pi, val_report.c_str()) )
-                    {
-                        pdata->setTime(timestamp + interval_len * 6);
-                        ret_msg->insert(pdata);
-                    }
-
+                    //  unnecessary?
                     setLastLPTime (timestamp + interval_len * 6);
 
                     _lp_info[channel - 1].archived_reading = timestamp + interval_len * 6;
@@ -2784,10 +2776,10 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, RWTime &TimeNo
 
         switch( DSt->Message[0] & 0x03 )
         {
-            case MCT410_StatusConnected:                resultStr += "connected\n";                 break;
-            case MCT410_StatusConnectArmed:             resultStr += "connect armed\n";             break;
-            case MCT410_StatusDisconnected:             resultStr += "disconnected\n";              break;
-            case MCT410_StatusDisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
+            case MCT410_RawStatus_Connected:                resultStr += "connected\n";                 break;
+            case MCT410_RawStatus_ConnectArmed:             resultStr += "connect armed\n";             break;
+            case MCT410_RawStatus_DisconnectedUnconfirmed:  resultStr += "unconfirmed disconnected\n";  break;
+            case MCT410_RawStatus_DisconnectedConfirmed:    resultStr += "confirmed disconnected\n";    break;
         }
 
         if( DSt->Message[1] & 0x02 )
