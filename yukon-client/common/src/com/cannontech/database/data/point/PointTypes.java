@@ -63,9 +63,12 @@ public final class PointTypes implements IPointOffsets
 	public static final int OUTAGE_5 = 39;
 	public static final int OUTAGE_6 = 40;
 	
+	public static final int LP_PEAK_REPORT = 41;
+	public static final int LP_ARCHIVED_DATA = 42;
+	
 	//More Control Type constants
-	public static final int CONTROLTYPE_SBO_LATCH = 41;
-	public static final int CONTROLTYPE_SBO_PULSE = 42;
+	public static final int CONTROLTYPE_SBO_LATCH = 43;
+	public static final int CONTROLTYPE_SBO_PULSE = 44;
 	
 	
 	//All the strings associated with points and the database
@@ -103,7 +106,9 @@ public final class PointTypes implements IPointOffsets
 		"Outage 3",
 		"Outage 4",
 		"Outage 5",
-		"Outage 6", //40		
+		"Outage 6", //40
+		"LP Peak Report",
+		"LP Archived Data",
 		"SBO Latch",
 		"SBO Pulse"		
 	};	
