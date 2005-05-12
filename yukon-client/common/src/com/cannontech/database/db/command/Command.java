@@ -1,11 +1,13 @@
 package com.cannontech.database.db.command;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.CommandFuncs;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -400,8 +402,29 @@ public void update() throws java.sql.SQLException
 						DBChangeMsg.CAT_COMMAND,
 						typeOfChange ) );
  
+		//if we are deleteing this Command, we need to take in account the DeviceTypeCommand entries that also get deleted	
+		if( typeOfChange == DBChangeMsg.CHANGE_TYPE_DELETE )
+		{
+			//get all the deviceCommandIds that have this Command
+		    Vector liteDevTypeCmds = CommandFuncs.getAllDevTypeCommands(getCommandID().intValue());
+			
+			//add a new message for each point
+			for( int i = 0; i < liteDevTypeCmds.size(); i++ )
+			{
+				DBChangeMsg msg = new DBChangeMsg(
+							((LiteDeviceTypeCommand)liteDevTypeCmds.get(i)).getDeviceCommandID(),
+							DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
+							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+							DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+							typeOfChange );
+						
+				list.add( msg );
+			}	
+		}
+		
 		DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
 		return (DBChangeMsg[])list.toArray( dbChange );
+		
 	}
 
 }
