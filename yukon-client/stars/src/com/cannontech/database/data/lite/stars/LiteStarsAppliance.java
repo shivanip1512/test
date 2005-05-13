@@ -511,8 +511,8 @@ public class LiteStarsAppliance extends LiteBase {
 	private int locationID = CtiUtilities.NONE_ZERO_ID;
 	private String notes = null;
 	private String modelNumber = null;
-	private int kwCapacity = 0;
-	private int efficiencyRating = 0;
+	private double kwCapacity = 0.0;
+	private double efficiencyRating = 0.0;
 	
 	private int inventoryID = CtiUtilities.NONE_ZERO_ID;
 	private int addressingGroupID = 0;
@@ -710,7 +710,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Returns the efficiencyRating.
 	 * @return int
 	 */
-	public int getEfficiencyRating() {
+	public double getEfficiencyRating() {
 		return efficiencyRating;
 	}
 
@@ -718,7 +718,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Returns the kwCapacity.
 	 * @return int
 	 */
-	public int getKWCapacity() {
+	public double getKWCapacity() {
 		return kwCapacity;
 	}
 
@@ -726,7 +726,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Sets the efficiencyRating.
 	 * @param efficiencyRating The efficiencyRating to set
 	 */
-	public void setEfficiencyRating(int efficiencyRating) {
+	public void setEfficiencyRating(double efficiencyRating) {
 		this.efficiencyRating = efficiencyRating;
 	}
 
@@ -734,7 +734,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Sets the kwCapacity.
 	 * @param kwCapacity The kwCapacity to set
 	 */
-	public void setKWCapacity(int kwCapacity) {
+	public void setKWCapacity(double kwCapacity) {
 		this.kwCapacity = kwCapacity;
 	}
 

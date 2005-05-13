@@ -84,14 +84,14 @@ public abstract class StarsApp implements java.io.Serializable {
 
     private java.lang.String _modelNumber;
 
-    private int _KWCapacity;
+    private double _KWCapacity;
 
     /**
      * keeps track of state for field: _KWCapacity
     **/
     private boolean _has_KWCapacity;
 
-    private int _efficiencyRating;
+    private double _efficiencyRating;
 
     /**
      * keeps track of state for field: _efficiencyRating
@@ -229,10 +229,10 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @return the value of field 'efficiencyRating'.
     **/
-    public int getEfficiencyRating()
+    public double getEfficiencyRating()
     {
         return this._efficiencyRating;
-    } //-- int getEfficiencyRating() 
+    } //-- double getEfficiencyRating() 
 
     /**
      * Returns the value of field 'generator'.
@@ -289,10 +289,10 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @return the value of field 'KWCapacity'.
     **/
-    public int getKWCapacity()
+    public double getKWCapacity()
     {
         return this._KWCapacity;
-    } //-- int getKWCapacity() 
+    } //-- double getKWCapacity() 
 
     /**
      * Returns the value of field 'loadNumber'.
@@ -527,11 +527,11 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @param efficiencyRating the value of field 'efficiencyRating'
     **/
-    public void setEfficiencyRating(int efficiencyRating)
+    public void setEfficiencyRating(double efficiencyRating)
     {
         this._efficiencyRating = efficiencyRating;
         this._has_efficiencyRating = true;
-    } //-- void setEfficiencyRating(int) 
+    } //-- void setEfficiencyRating(double) 
 
     /**
      * Sets the value of field 'generator'.
@@ -589,7 +589,7 @@ public abstract class StarsApp implements java.io.Serializable {
      * 
      * @param KWCapacity the value of field 'KWCapacity'.
     **/
-    public void setKWCapacity(int KWCapacity)
+    public void setKWCapacity(double KWCapacity)
     {
         this._KWCapacity = KWCapacity;
         this._has_KWCapacity = true;

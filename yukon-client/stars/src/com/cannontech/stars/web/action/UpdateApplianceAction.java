@@ -117,7 +117,7 @@ public class UpdateApplianceAction implements ActionBase {
 			}
 			try {
 				if (req.getParameter("KWCapacity").length() > 0)
-					updateApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+					updateApp.setKWCapacity( Double.parseDouble(req.getParameter("KWCapacity")) );
 				else
 					updateApp.deleteKWCapacity();
 			}
@@ -126,7 +126,7 @@ public class UpdateApplianceAction implements ActionBase {
 			}
 			try {
 				if (req.getParameter("EffRating").length() > 0)
-					updateApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+					updateApp.setEfficiencyRating( Double.parseDouble(req.getParameter("EffRating")) );
 				else
 					updateApp.deleteEfficiencyRating();
 			}
@@ -452,9 +452,9 @@ public class UpdateApplianceAction implements ActionBase {
 		if (updateApp.hasYearManufactured())
 			appDB.setYearManufactured( new Integer(updateApp.getYearManufactured()) );
 		if (updateApp.hasKWCapacity())
-			appDB.setKWCapacity( new Integer(updateApp.getKWCapacity()) );
+			appDB.setKWCapacity( new Double(updateApp.getKWCapacity()) );
 		if (updateApp.hasEfficiencyRating())
-			appDB.setEfficiencyRating( new Integer(updateApp.getEfficiencyRating()) );
+			appDB.setEfficiencyRating( new Double(updateApp.getEfficiencyRating()) );
     	
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
 		StarsLiteFactory.setLiteStarsAppliance( liteApp, app );

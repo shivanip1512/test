@@ -439,8 +439,8 @@ public class StarsLiteFactory {
 		liteApp.setLocationID( app.getApplianceBase().getLocationID().intValue() );
 		liteApp.setNotes( app.getApplianceBase().getNotes() );
 		liteApp.setModelNumber( app.getApplianceBase().getModelNumber() );
-		liteApp.setKWCapacity( app.getApplianceBase().getKWCapacity().intValue() );
-		liteApp.setEfficiencyRating( app.getApplianceBase().getEfficiencyRating().intValue() );
+		liteApp.setKWCapacity( app.getApplianceBase().getKWCapacity().doubleValue() );
+		liteApp.setEfficiencyRating( app.getApplianceBase().getEfficiencyRating().doubleValue() );
 		
 		if (app.getLMHardwareConfig().getInventoryID() != null) {
 			liteApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
@@ -944,8 +944,8 @@ public class StarsLiteFactory {
 		app.getApplianceBase().setLocationID( new Integer(liteApp.getLocationID()) );
 		app.getApplianceBase().setNotes( liteApp.getNotes() );
 		app.getApplianceBase().setModelNumber( liteApp.getModelNumber() );
-		app.getApplianceBase().setKWCapacity( new Integer(liteApp.getKWCapacity()) );
-		app.getApplianceBase().setEfficiencyRating( new Integer(liteApp.getEfficiencyRating()) );
+		app.getApplianceBase().setKWCapacity( new Double(liteApp.getKWCapacity()) );
+		app.getApplianceBase().setEfficiencyRating( new Double(liteApp.getEfficiencyRating()) );
 		
 		if (liteApp.getInventoryID() != CtiUtilities.NONE_ZERO_ID) {
 			app.getLMHardwareConfig().setApplianceID( app.getApplianceBase().getApplianceID() );

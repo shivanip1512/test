@@ -26,8 +26,8 @@ public class ApplianceBase extends DBPersistent {
 	private Integer yearManufactured = new Integer(0);
 	private Integer manufacturerID = new Integer( CtiUtilities.NONE_ZERO_ID );
 	private Integer locationID = new Integer( CtiUtilities.NONE_ZERO_ID );
-	private Integer kwCapacity = new Integer(0);
-	private Integer efficiencyRating = new Integer(0);
+	private Double kwCapacity = new Double(0.0);
+	private Double efficiencyRating = new Double(0.0);
 	private String notes = "";
 	private String modelNumber = "";
 
@@ -121,8 +121,8 @@ public class ApplianceBase extends DBPersistent {
 			setYearManufactured( (Integer) results[3] );
 			setManufacturerID( (Integer) results[4] );
 			setLocationID( (Integer) results[5] );
-			setKWCapacity( (Integer) results[6] );
-			setEfficiencyRating( (Integer) results[7] );
+			setKWCapacity( (Double) results[6] );
+			setEfficiencyRating( (Double) results[7] );
 			setNotes( (String) results[8] );
 			setModelNumber( (String) results[9] );
 		}
@@ -249,7 +249,7 @@ public class ApplianceBase extends DBPersistent {
 	 * Returns the efficiencyRating.
 	 * @return Integer
 	 */
-	public Integer getEfficiencyRating() {
+	public Double getEfficiencyRating() {
 		return efficiencyRating;
 	}
 
@@ -257,7 +257,7 @@ public class ApplianceBase extends DBPersistent {
 	 * Returns the kwCapacity.
 	 * @return Double
 	 */
-	public Integer getKWCapacity() {
+	public Double getKWCapacity() {
 		return kwCapacity;
 	}
 
@@ -281,7 +281,7 @@ public class ApplianceBase extends DBPersistent {
 	 * Sets the efficiencyRating.
 	 * @param efficiencyRating The efficiencyRating to set
 	 */
-	public void setEfficiencyRating(Integer efficiencyRating) {
+	public void setEfficiencyRating(Double efficiencyRating) {
 		this.efficiencyRating = efficiencyRating;
 	}
 
@@ -289,7 +289,7 @@ public class ApplianceBase extends DBPersistent {
 	 * Sets the kwCapacity.
 	 * @param kwCapacity The kwCapacity to set
 	 */
-	public void setKWCapacity(Integer kwCapacity) {
+	public void setKWCapacity(Double kwCapacity) {
 		this.kwCapacity = kwCapacity;
 	}
 

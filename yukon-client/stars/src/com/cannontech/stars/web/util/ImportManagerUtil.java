@@ -888,7 +888,7 @@ public class ImportManagerUtil {
 		}
 		
 		if (fields[IDX_APP_KW].length() > 0) {
-			int kwCap = (int) Double.parseDouble(fields[IDX_APP_KW]);
+			double kwCap = Double.parseDouble(fields[IDX_APP_KW]);
 			if (kwCap >= 0) app.setKWCapacity( kwCap );
 		}
 		

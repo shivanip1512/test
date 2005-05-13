@@ -494,7 +494,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setValidator(fieldValidator);
         
         //-- _KWCapacity
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_KWCapacity", "KWCapacity", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_KWCapacity", "KWCapacity", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -502,7 +502,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                 StarsApp target = (StarsApp) object;
                 if(!target.hasKWCapacity())
                     return null;
-                return new Integer(target.getKWCapacity());
+                return new Double(target.getKWCapacity());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
@@ -514,7 +514,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                         target.deleteKWCapacity();
                         return;
                     }
-                    target.setKWCapacity( ((Integer)value).intValue());
+                    target.setKWCapacity( ((Double)value).doubleValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -531,13 +531,13 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         //-- validation code for: _KWCapacity
         fieldValidator = new FieldValidator();
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
+            DoubleValidator iv = new DoubleValidator();
             fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);
         
         //-- _efficiencyRating
-        desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_efficiencyRating", "EfficiencyRating", NodeType.Element);
+        desc = new XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_efficiencyRating", "EfficiencyRating", NodeType.Element);
         handler = (new XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
@@ -545,7 +545,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                 StarsApp target = (StarsApp) object;
                 if(!target.hasEfficiencyRating())
                     return null;
-                return new Integer(target.getEfficiencyRating());
+                return new Double(target.getEfficiencyRating());
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
@@ -557,7 +557,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                         target.deleteEfficiencyRating();
                         return;
                     }
-                    target.setEfficiencyRating( ((Integer)value).intValue());
+                    target.setEfficiencyRating( ((Double)value).doubleValue());
                 }
                 catch (Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -574,7 +574,7 @@ public class StarsAppDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         //-- validation code for: _efficiencyRating
         fieldValidator = new FieldValidator();
         { //-- local scope
-            IntegerValidator iv = new IntegerValidator();
+            DoubleValidator iv = new DoubleValidator();
             fieldValidator.setValidator(iv);
         }
         desc.setValidator(fieldValidator);

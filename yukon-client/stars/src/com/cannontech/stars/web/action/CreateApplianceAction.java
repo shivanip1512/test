@@ -103,14 +103,14 @@ public class CreateApplianceAction implements ActionBase {
 			}
 			try {
 				if (req.getParameter("KWCapacity").length() > 0)
-					newApp.setKWCapacity( Integer.parseInt(req.getParameter("KWCapacity")) );
+					newApp.setKWCapacity( Double.parseDouble(req.getParameter("KWCapacity")) );
 			}
 			catch (NumberFormatException e) {
 				throw new WebClientException("Invalid number format '" + req.getParameter("KWCapacity") + "' for KW capacity");
 			}
 			try {
 				if (req.getParameter("EffRating").length() > 0)
-					newApp.setEfficiencyRating( Integer.parseInt(req.getParameter("EffRating")) );
+					newApp.setEfficiencyRating( Double.parseDouble(req.getParameter("EffRating")) );
 			}
 			catch (NumberFormatException e) {
 				throw new WebClientException("Invalid number format '" + req.getParameter("EffRating") + "' for efficiency rating");
@@ -422,9 +422,9 @@ public class CreateApplianceAction implements ActionBase {
 		if (newApp.hasYearManufactured())
 			appDB.setYearManufactured( new Integer(newApp.getYearManufactured()) );
 		if (newApp.hasKWCapacity())
-			appDB.setKWCapacity( new Integer(newApp.getKWCapacity()) );
+			appDB.setKWCapacity( new Double(newApp.getKWCapacity()) );
 		if (newApp.hasEfficiencyRating())
-			appDB.setEfficiencyRating( new Integer(newApp.getEfficiencyRating()) );
+			appDB.setEfficiencyRating( new Double(newApp.getEfficiencyRating()) );
         
 		if (newApp.getInventoryID() > 0) {
 			app.getLMHardwareConfig().setInventoryID( new Integer(newApp.getInventoryID()) );

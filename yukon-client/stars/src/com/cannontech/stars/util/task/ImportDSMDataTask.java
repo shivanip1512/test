@@ -1582,7 +1582,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				app.setEfficiencyRating( -1 );
 				
 				if (fields[6].trim().length() > 0)
-					app.setKWCapacity( Math.round(Float.parseFloat(fields[6].trim())) );
+					app.setKWCapacity( Double.parseDouble(fields[6].trim()) );
 				
 				Location location = new Location();
 				location.setEntryID( CtiUtilities.NONE_ZERO_ID );
