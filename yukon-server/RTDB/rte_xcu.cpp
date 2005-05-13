@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/04/27 14:04:48 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/05/13 16:13:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -816,7 +816,7 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
     else
     {
         xmore = false;
-        resultString = "Route " + getName() + " did not transmit commands";
+        resultString = "Route " + getName() + " did not transmit commands.  Syntax may be in error.";
 
         RWCString desc, actn;
 
