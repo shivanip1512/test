@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/05/04 20:49:33 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/05/13 16:11:53 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.25  2005/05/13 16:11:53  cplender
+* Altered the computeShedTimes() function to correctly choose the "closest" time to that asked for.
+*
 * Revision 1.24  2005/05/04 20:49:33  cplender
 * Adjusted coldload and tamper detect code for the SA stuff.
 *
@@ -1241,6 +1244,7 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
     int oastime[] = { 0, 1, 2, 3, 4, 5, 6, 7  };   // These are the available cycle times in "matrix"
 #endif
 
+    int rep;
     int bestoffset = 0;                             // Pick a 450 scond shed by default?
     int ctimesize = sizeof(ctimes)/sizeof(int);
     int currentbestdelta = INT_MAX;                         // We must be closer than one hour!
@@ -1251,7 +1255,9 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
         {
             _sa._cycleTime = ctimes[i];
             _sa._swTimeout = ctimes[i];
-            _sa._repeats = (shed_time / ctimes[i]) - 1;
+            rep = (shed_time / ctimes[i]) - 1;
+            rep = rep < 0 ? 0 : rep;
+            _sa._repeats = rep;
             _cTime = oactime[i];
             _sTime = oastime[i];
             break;
@@ -1259,11 +1265,14 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
         else
         {
             // This one is not a perfect match, so we will try to see how close we can get!
-            int rep = shed_time / ctimes[i] > 8 ? 7 : (shed_time / ctimes[i]) - 1;
-            int delta = shed_time - ((rep+1) * ctimes[i]);
+            rep = shed_time / ctimes[i] > 8 ? 7 : (shed_time / ctimes[i]) - 1;
+            rep = rep < 0 ? 0 : rep;
+            int delta = abs(shed_time - ((rep+1) * ctimes[i]));
 
             if(delta < currentbestdelta)
             {
+                currentbestdelta = delta;
+
                 _sa._cycleTime = ctimes[i];
                 _sa._swTimeout = ctimes[i];
                 _sa._repeats = rep;
@@ -1485,12 +1494,12 @@ RWCString CtiProtocolSA3rdParty::strategyAsString() const
     {
     case sac_toos:
         {
-            rstr = RWCString( " temporary out of service " + CtiNumStr(_sa._swTimeout) + " hours" );
+            rstr = RWCString( " Temporary out of service " + CtiNumStr(_sa._swTimeout) + " hours" );
             break;
         }
     case sac_address_config:
         {
-            rstr = RWCString( " address configuration: Code " + RWCString(_sa._codeSimple) + " assigned");
+            rstr = RWCString( " Address configuration: Code " + RWCString(_sa._codeSimple) );// + " assigned to position " + RWCString(_sa._codeSlot));
             break;
         }
     default:
@@ -1509,6 +1518,11 @@ RWCString CtiProtocolSA3rdParty::functionAsString() const
 
     switch(_sa._function)
     {
+    case 0:
+        {
+            rstr += RWCString("Memory Reset.");
+            break;
+        }
     case 1:
         {
             rstr += RWCString("Shed: Load 3.");
