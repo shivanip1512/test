@@ -469,19 +469,31 @@ void CtiCalcLogicService::Run( )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
+                    Sleep(5000);
                 }
             } // end for userquit
 
 
-            //  interrupt the calculation and i/o threads, and tell it to come back home
+            try
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Run()." << endl;
+                //  interrupt the calculation and i/o threads, and tell it to come back home
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Run()." << endl;
+                }
+                dropDispatchConnection();
+                calcThreadFunc.requestInterrupt( );
+                calcThreadFunc.releaseInterrupt( );
+                calcThreadFunc.join( );
             }
-            dropDispatchConnection();
-            calcThreadFunc.requestInterrupt( );
-            calcThreadFunc.releaseInterrupt( );
-            calcThreadFunc.join( );
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                Sleep(5000);
+            }
 
             //  from this point out, i'm one thread again
             // CGP do not loose the list if it can be helped. // delete calcThread;
