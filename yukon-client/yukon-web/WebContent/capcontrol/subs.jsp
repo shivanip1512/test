@@ -95,7 +95,7 @@ for( int i = 0; i < areaSubs.length; i++ )
 	        <tr class="<%=css%>">
 				<td>
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
-				<a href="#" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
+				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</a></td>
 				

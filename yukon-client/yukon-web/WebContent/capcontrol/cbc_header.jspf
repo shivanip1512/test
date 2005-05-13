@@ -56,6 +56,9 @@
                 <td height="1" class="trimBGColor"></td>
               </tr>
               <tr> 
+			
+			<form id="subMenuFrm" action="results.jsp" method="post">
+			<input type="hidden" name="type">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Substation</a> 
@@ -71,19 +74,21 @@
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="showPopUpForChkBoxes('<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a> 
-					<a href="#" class="submenuLink" onclick="showPopUpForChkBoxes('<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a> 
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a> 
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a> 
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="results.jsp?type=oFeeders" class="submenuLink">Orphaned Feeders</a> 
-					<a href="results.jsp?type=oBanks" class="submenuLink">Orphaned CapBanks</a> 
-					<a href="results.jsp?type=oCBCs" class="submenuLink">Orphaned CBCs</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_CBCS%>')">Orphaned CBCs</a> 
 
 					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
 					</cti:isPropertyFalse>
 				  </div>
 				</td>
+			</form>
+
 			</tr>
 			</table>
 

@@ -26,12 +26,12 @@
 
   <table id="chartTable" width="505px" border="0" cellspacing="0" cellpadding="0">
     <tr> 
-      <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
+      <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
       <td class="trimBGColor cellImgShort">Charts (Only the first <%=MAX_TRENDS%> selected are displayed)</td>
-      <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
+      <td class="cellImgFill"><img src="images/Header_right.gif" class="cellImgFill"></td>
     </tr>
     <tr>
-      <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
+      <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
       <td>
       
       <div class="scrollSmall">
@@ -39,7 +39,7 @@
 <%
 	if( chartParam.length == 0 ) {
 %>
-        <tr>
+        <tr class="columnHeader">
 			<td><br></td>
 		</tr>
         <tr class="tableCell">
@@ -51,7 +51,7 @@
 	else for( int i = 0; i < chartParam.length && i < MAX_TRENDS; i++ ) {
 		if( chartParam[i] != null ) {
 %>
-        <tr>
+        <tr class="columnHeader">
 			<td><br></td>
 		</tr>
         <tr class="altTableCell">
@@ -61,7 +61,7 @@
             <td><img src="<%=chartParam[i]%>"/></td>
 		</tr>
 <%	  	} else {  %>
-        <tr>
+        <tr class="columnHeader">
 			<td><br></td>
 		</tr>
         <tr class="altTableCell">
@@ -78,11 +78,11 @@
     </div>
 
       </td>
-      <td class="cellImgFill rAlign" background="images\Side_right.gif"></td>
+      <td class="cellImgFill rAlign" background="images/Side_right.gif"></td>
     </tr>
     <tr>
-      <td class="cellImgShort"><img src="images\Bottom_left.gif"></td>
-      <td class="cellImgShort" background="images\Bottom.gif"></td>
-      <td class="cellImgShort"><img src="images\Bottom_right.gif"></td>
+      <td class="cellImgShort"><img src="images/Bottom_left.gif"></td>
+      <td class="cellImgShort" background="images/Bottom.gif"></td>
+      <td class="cellImgShort"><img src="images/Bottom_right.gif"></td>
     </tr>
   </table>

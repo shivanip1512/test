@@ -13,6 +13,7 @@
 	Feeder[] feeders = capControlCache.getFeedersBySub( new Integer(subid) );
 	CapBankDevice[] capBanks = capControlCache.getCapBanksBySub( new Integer(subid) );
 
+	boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
 <HTML>
@@ -177,7 +178,7 @@ if( subBus != null ) {
 					<td>Watts</td>
 					<td>Daily Ops</td>
 				</tr>
-				<%
+<%
 for( int i = 0; i < feeders.length; i++ )
 {
 	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
@@ -187,13 +188,11 @@ for( int i = 0; i < feeders.length; i++ )
 					<td><input type="checkbox" name="cti_chkbxFdrs" value="<%=feeder.getCcId()%>"/><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></td>
 
 					<td>
-<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+<% if( hasControl ) { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" href="javascript:void(0);" onmouseover="intFeederID=<%=feeder.getCcId()%>;menuAppear(event, 'fdrPopupMenu')" onmouseout="menuDisappear(event, 'fdrPopupMenu')">
-</cti:isPropertyTrue>
-<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
+<% } else { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>">
-</cti:isPropertyFalse>
-
+<% } %>
 <font color="<%=CBCDisplay.getHTMLFgColor(feeder)%>">
 	<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_CURRENT_STATE_COLUMN)%>
 </font>
@@ -270,28 +269,41 @@ for( int i = 0; i < capBanks.length; i++ )
 %>
 				<tr class="<%=css%>">
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
-					<a href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankFldPopupMenu')" onmouseout="menuDisappear(event, 'bankFldPopupMenu')">
-						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
-					</a>
+					<% if( hasControl ) { %>
+						<a class="<%=css%>" href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankFldPopupMenu')" onmouseout="menuDisappear(event, 'bankFldPopupMenu')">
+					<% } else { %>
+						<a class="<%=css%>" href="javascript:void(0);">
+					<% } %>
+							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
+						</a>
 					</td>
 
-					<td><a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankSysPopupMenu')" onmouseout="menuDisappear(event, 'bankSysPopupMenu')">
+					<td>
+					<% if( hasControl ) { %>
+						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankSysPopupMenu')" onmouseout="menuDisappear(event, 'bankSysPopupMenu')">
+					<% } else { %>
+						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);">
+					<% } %>
 					<font color="<%=CBCDisplay.getHTMLFgColor(capBank)%>"> <%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN) %>
-					</font></a>
+					</font>
+					</a>
 					</td>
 
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_ADDRESS_COLUMN)%></td>
 					<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>
 					</td>
+					
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
-<% if( capBank.isBankMoved() ) {%>
+					
+					<% if( capBank.isBankMoved() ) {%>
 					<td class="warning" onmouseover="statusMsg(this, 'This bank has been temporarily moved from it\'s original feeder');" >
-<% } else { %>
+					<% } else { %>
 					<td>
-<% } %>
+					<% } %>
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
 					</td>
+
 					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
 					</td>
@@ -389,9 +401,11 @@ for( int i = 0; i < capBanks.length; i++ )
 
 <div id="bankFldPopupMenu" class="popupMenu"> 
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr onmouseover="statusMsg(this, 'Field Commands are any operations that send out a command message to a field device');">
+    <tr>
       <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">Field Commands</td>
+      <td class="trimBGColor popupHeader">Field Cmds
+      <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Field Commands are any operations that send out a command message to a field device');"/>
+      </td>
       <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
     </tr>
     <tr>
@@ -448,9 +462,11 @@ for( int i = 0; i < capBanks.length; i++ )
 
 <div id="bankSysPopupMenu" class="popupMenu"> 
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr onmouseover="statusMsg(this, 'System Commands are any operations that do NOT send out a command message to a field device');">
+    <tr>
       <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">System Commands</td>
+      <td class="trimBGColor popupHeader">System Cmds
+      <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands are any operations that do NOT send out a command message to a field device');"/>
+      </td>
       <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
     </tr>
     <tr>
@@ -475,6 +491,13 @@ for( int i = 0; i < capBanks.length; i++ )
 				onmouseover="changeOptionStyle(this)"
 				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>)"
 				>Temp Move Back</a>
+		  </td></tr>
+
+          <tr><td>
+          	<a href="#" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="showPopUp('tempmove.jsp?bankid='+intCapBankID);"
+				>Temp Move</a>
 		  </td></tr>
 
           <tr><td>

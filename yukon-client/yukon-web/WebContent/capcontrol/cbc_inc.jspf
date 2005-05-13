@@ -23,14 +23,18 @@
 </cti:isPropertyFalse>
 
 <script type="text/JavaScript" src="js/cbc_funcs.js"></script>
-<script type="text/JavaScript" src="js/minmax.js"></script>
-<script type="text/JavaScript" src="js/xmlhttp.js"></script>
-<script type="text/JavaScript" src="js/overlib_mini.js"></script>
+<script type="text/JavaScript" src="../JavaScript/minmax.js"></script>
+<script type="text/JavaScript" src="../JavaScript/xmlhttp.js"></script>
+<script type="text/JavaScript" src="../JavaScript/ol/overlib_mini.js"></script>
+<script type="text/JavaScript" src="../JavaScript/validation.js"></script>
+
 
 <jsp:useBean id="cbcSession"
 	class="com.cannontech.cbc.web.CBCSessionInfo"
 	type="com.cannontech.cbc.web.CBCSessionInfo" scope="session">
 </jsp:useBean>
+
+
 <%
 	if(cbcSession != null)
 		cbcSession.updateState( request );

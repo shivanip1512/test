@@ -99,7 +99,7 @@ pageEncoding="ISO-8859-1"
 	        <tr class="<%=css%>">
 				<td>				
 				<input type="checkbox" id="chkBxAreas" onclick="showRowElems( 'allAreas<%=i%>', this );"/>
-				<a href="#" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
+				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
 				<%=areaStr%></a>
 				</td>
 				<td><%=areaBuses.length%> Substation(s)</td>
@@ -118,7 +118,7 @@ pageEncoding="ISO-8859-1"
 			CapBankDevice[] subCapBanks = capControlCache.getCapBanksBySub(subBus.getCcId());
 %>
 		        <tr class="<%=css%>" style="display: none;">
-					<td><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></td>
+					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
 					<td><%=subFeeders.length%> Feeder(s), <%=subCapBanks.length%> Bank(s)</td>
 					<td></td>
 					<td></td>

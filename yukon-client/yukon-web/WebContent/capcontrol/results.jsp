@@ -9,17 +9,17 @@
 	String srchCriteria = ParamUtil.getString(request, "searchCriteria", "");
 	LiteWrapper[] items = new LiteWrapper[0];
 
-	if( "oFeeders".equals(type) )
+	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(type) )
 	{
 		items = capControlCache.getOrphanedFeeders();
 		srchCriteria = "Orphaned Feeders";
 	}
-	else if( "oBanks".equals(type) )
+	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(type) )
 	{
 		items = capControlCache.getOrphanedCapBanks();
 		srchCriteria = "Orphaned CapBanks";
 	}
-	else if( "oCBCs".equals(type) )
+	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(type) )
 	{
 		items = capControlCache.getOrphanedCBCs();
 		srchCriteria = "Orphaned CBCs";
@@ -95,7 +95,7 @@ pageEncoding="ISO-8859-1"
               </tr>
 
 			<form id="resForm" action="feeders.jsp" method="post">
-			<input type="hidden" id="<%=CBCSessionInfo.STR_SUBID%>" />
+			<input type="hidden" name="itemid" />
 <%
 for( int i = 0; i < items.length; i++ )
 {
@@ -104,7 +104,7 @@ for( int i = 0; i < items.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-				<a href="#" onclick="postIt('resultItemID', <%=item.getItemID()%>, 'resForm')">
+				<a href="#" onclick="postMany('resForm', 'itemid', <%=item.getItemID()%>)">
 				<%=item.toString()%>
 				</a></td>
 				<td><%=item.getItemType()%></td>

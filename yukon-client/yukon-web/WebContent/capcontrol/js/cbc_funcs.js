@@ -37,24 +37,6 @@ function postMany( frmName )
 }
 
 // -------------------------------------------
-//post events with a form rather than using the URL line
-// -------------------------------------------
-function postIt( paramName, paramVal, frmName )
-{
-	if( !validateData(frmName) )
-		return false;
-
-	if( !validateData(paramName) )
-		return false;
-
-	var f = document.getElementById(frmName);
-	var ev = eval('f.'+paramName);
-	ev.value = paramVal;
-
-	f.submit();
-}
-
-// -------------------------------------------
 //validates input data for post events
 // -------------------------------------------
 function validateData( elemName )
@@ -404,10 +386,8 @@ function processMenuReq()
 		// ...processing statements go here...
  		response = req.responseText;
 
- 		
 		overlib(
-			response, FULLHTML, STICKY, MOUSEOFF);
-			//,WIDTH, 200, HEIGHT, 200, WRAP);
+			response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 50);
 
 		//always do this
 		freeReq( manMsgID );
@@ -430,10 +410,12 @@ function statusMsg(elem, msgStr)
 }
 
 // -------------------------------------------
-//Shows a sticky popup for the checked boxe elements
-// that are valid values AND that are checked
+//Shows a sticky popup for the checked box elements
+// that are valid values AND that are checked. The returned
+// html is placed in the popup box and then the box is
+// made visible
 // -------------------------------------------
-function showPopUpForChkBoxes( typeStr )
+function showPopUpChkBoxes( typeStr )
 {
 	if( typeStr == null )
 		return;
@@ -450,6 +432,20 @@ function showPopUpForChkBoxes( typeStr )
 
 	var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
 	manMsgID = loadXMLDoc(url, 'processMenuReq');
+}
+
+// -------------------------------------------
+//Shows a sticky popup for the given urlStr The returned
+// html is placed in the popup box and then the box is
+// made visible
+// -------------------------------------------
+function showPopUp( urlStr )
+{
+	if( urlStr == null )
+		return;
+
+	//var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
+	manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
 }
 
 function doValidChecks( elems, validElems )
