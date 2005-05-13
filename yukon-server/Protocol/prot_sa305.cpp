@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/05/11 19:33:32 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/05/13 16:12:48 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.18  2005/05/13 16:12:48  cplender
+* Changes to try to support GRE Verification.
+*
 * Revision 1.17  2005/05/11 19:33:32  cplender
 * Protocol should not send bytes if message did not parse correctly.
 *
@@ -848,6 +851,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
         }
         else if(parse.isKeyValid("sa_coldload"))
         {
+            bool configed = false;
             RWCString serialstr = CtiNumStr(parse.getiValue("serial"));
             RWCString clpstr;
 
@@ -858,6 +862,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
 
                 if( (clsec = parse.getiValue(clpstr,-1)) >= 0 )
                 {
+                    configed = true;
                     clpCount = (int)( (float)clsec / 14.0616 );
                     // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
                     {
@@ -879,6 +884,11 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
                         newmessageneeded = true;
                     }
                 }
+            }
+
+            if(!configed)
+            {
+                status = NoMethod;
             }
         }
         else if( 0 <= (val = parse.getiValue("sa_lorm0",-1)) )
@@ -1605,29 +1615,29 @@ RWCString  CtiProtocolSA305::asString() const
     UINT maddr = 0;
     UINT haddr = 0;
 
-    rstr += "Utility " + CtiNumStr(uaddr) + " ";
+    rstr += "Util: " + CtiNumStr(uaddr) + " ";
 
     if(!addresstype)
     { // Individual Addressed switch
         serial = getBits(bit, 22);
-        rstr += ".  Serial Number " + CtiNumStr(serial) + " ";
+        rstr += ".  SN: " + CtiNumStr(serial) + " ";
     }
     else
     {
         if(group)
         {
             gaddr = getBits(bit, 6);
-            rstr += ". Group " + CtiNumStr(gaddr) + " ";
+            rstr += ". Grp: " + CtiNumStr(gaddr) + " ";
         }
         if(div)
         {
             daddr = getBits(bit, 6);
-            rstr += ". Division " + CtiNumStr(daddr) + " ";
+            rstr += ". Div: " + CtiNumStr(daddr) + " ";
         }
         if(sub)
         {
             saddr = getBits(bit, 10);
-            rstr += ". Substation " + CtiNumStr(saddr) + " ";
+            rstr += ". Sub: " + CtiNumStr(saddr) + " ";
         }
 
         faddr = getBits(bit, 3);
@@ -1636,12 +1646,12 @@ RWCString  CtiProtocolSA305::asString() const
 
         raddr = faddr*16 + maddr;
 
-        if(!f1) rstr += ", Family " + CtiNumStr(faddr) + ", Member " + CtiNumStr(maddr) + " (Rate = " + CtiNumStr(raddr) + ").";
+        if(!f1) rstr += ", Fam: " + CtiNumStr(faddr) + ", Mbr: " + CtiNumStr(maddr) + " (R: " + CtiNumStr(raddr) + ").";
     }
 
     if(!f1)
     {
-        rstr += ".  Operational Command";
+        rstr += ".  Ctl Cmd";
         UINT strategy = getBits(bit, 6);
         UINT func4 = getBits(bit, 1);
         UINT func3 = getBits(bit, 1);
@@ -1650,7 +1660,7 @@ RWCString  CtiProtocolSA305::asString() const
         UINT reps = getBits(bit, 4);
         UINT priority = getBits(bit, 2);
 
-        rstr += ". " + _strategyStr[strategy] + " Function";
+        rstr += ". " + _strategyStr[strategy];
 
         if(func1)
         {
@@ -1682,13 +1692,13 @@ RWCString  CtiProtocolSA305::asString() const
                 rstr += " Abrupt";
         }
         else
-            rstr += ", Repetitions " + CtiNumStr(reps);
+            rstr += ", Reps " + CtiNumStr(reps);
 
-        rstr += ", Priority " + CtiNumStr(priority);
+        rstr += ", Pri " + CtiNumStr(priority);
     }
     else
     {
-        rstr += ".  Assignment Command";
+        rstr += ".  Cfg Cmd";
 
         if(f0)  // Full addressing command (29-bit)
         {
@@ -1715,27 +1725,27 @@ RWCString  CtiProtocolSA305::asString() const
             {
             case 0:
                 {
-                    rstr += ". Cold Load F1 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    rstr += ". CLP F1 = " + CtiNumStr(dataval * 14.0616) + " sec";
                     break;
                 }
             case 1:
                 {
-                    rstr += ". Cold Load F2 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    rstr += ". CLP F2 = " + CtiNumStr(dataval * 14.0616) + " sec";
                     break;
                 }
             case 2:
                 {
-                    rstr += ". Cold Load F3 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    rstr += ". CLP F3 = " + CtiNumStr(dataval * 14.0616) + " sec";
                     break;
                 }
             case 3:
                 {
-                    rstr += ". Cold Load F4 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    rstr += ". CLP F4 = " + CtiNumStr(dataval * 14.0616) + " sec";
                     break;
                 }
             case 4:
                 {
-                    rstr += ". Cold Load F1-F4 set to " + CtiNumStr(dataval * 14.0616) + " seconds";
+                    rstr += ". CLP F1-F4 = " + CtiNumStr(dataval * 14.0616) + " sec";
                     break;
                 }
             case 5:
