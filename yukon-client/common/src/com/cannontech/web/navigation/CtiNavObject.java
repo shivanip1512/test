@@ -17,10 +17,17 @@ public class CtiNavObject
 	private String currentPage;
 	private String previousPage;
 	
+	/*
+	 * This field is for use only in STARS.
+	 * It is used to aid in member management for Energy Company Administration.
+	 */
+	private boolean memberECAdmin;
+	
 	public CtiNavObject()
 	{
 		setCurrentPage("");
 		setPreviousPage("");
+		setMemberECAdmin(false);
 	}
 	
 	public String getCurrentPage()
@@ -31,6 +38,11 @@ public class CtiNavObject
 	public String getPreviousPage()
 	{
 		return previousPage;
+	}
+	
+	public boolean isMemberECAdmin()
+	{
+		return memberECAdmin;
 	}
 	
 	public void setCurrentPage(String page)
@@ -52,5 +64,10 @@ public class CtiNavObject
 	{
 		previousPage = currentPage;
 		currentPage = page;
+	}
+	
+	public void setMemberECAdmin(boolean isManaging)
+	{
+		memberECAdmin = isManaging;
 	}
 }

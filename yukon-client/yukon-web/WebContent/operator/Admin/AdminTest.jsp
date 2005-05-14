@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonUserFuncs" %>
 <%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%	if (!AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY)
 		|| ecSettings == null) {
 		response.sendRedirect("../Operations.jsp"); return;
@@ -10,6 +11,10 @@
 <%
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	
+	boolean canMembersChangeLogins = false; 
+    boolean canMembersChangeRoutes = false;
+    boolean isMember = false;
+    
 	ArrayList members = liteEC.getChildren();
 	ArrayList memberCandidates = new ArrayList();
 	if (AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
@@ -20,6 +25,26 @@
 			if (members.contains(company)) continue;	// exclude existing members
 			if (ECUtils.getAllDescendants(company).contains(liteEC)) continue;	// prevent circular reference
 			memberCandidates.add(company);
+		}
+	}
+	
+	LiteStarsEnergyCompany parentEC = liteEC.getParent();
+	//is this company a member company of someone else?
+	if(parentEC != null)
+    {
+		isMember = true;
+		CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+		//see if this an admin of the parent energy company accessing member pages
+		if(nav.isMemberECAdmin())
+		{
+			canMembersChangeRoutes = true;
+			canMembersChangeLogins = true;
+		}
+		//if it isn't an admin, then check to see if this member has access specifically
+		else
+		{
+			canMembersChangeRoutes = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_ROUTE_SELECT);
+			canMembersChangeLogins = AuthFuncs.checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MEMBER_LOGIN_CNTRL);	
 		}
 	}
 %>
@@ -198,7 +223,8 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
-<% if (!ECUtils.isSingleEnergyCompany(liteEC)) { %>
+<% if (!ECUtils.isSingleEnergyCompany(liteEC) && 
+		(!isMember || (isMember && canMembersChangeRoutes))) { %>
                     <tr> 
                       <td><b><font color="#0000FF">Routes:</font></b> 
                         <table width="100%" border="1" cellspacing="0" cellpadding="0" align="center">
@@ -628,7 +654,8 @@ function removeAllMembers(form) {
                     </tr>
                     <%
 	}
-%>
+	if(!isMember || (isMember && canMembersChangeLogins)) 
+	{%>
                     <tr> 
                       <td> 
                         <form name="form6" method="post" action="<%=request.getContextPath()%>/servlet/StarsAdmin">
@@ -723,6 +750,7 @@ function removeAllMembers(form) {
                         </form>
                       </td>
                     </tr>
+ <% } %>
                     <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_MANAGE_MEMBERS %>"> 
                     <tr> 
                       <td> 

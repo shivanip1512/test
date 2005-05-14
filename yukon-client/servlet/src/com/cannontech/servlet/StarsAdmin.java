@@ -1775,6 +1775,16 @@ public class StarsAdmin extends HttpServlet {
 	private void memberLogin(StarsYukonUser user, HttpServletRequest req, HttpSession session) {
 		int userID = Integer.parseInt( req.getParameter("UserID") );
 		LiteYukonUser memberLogin = YukonUserFuncs.getLiteYukonUser( userID );
+		boolean isMemberManager = false;
+		
+		/*
+		 * This is for energy company member management in STARS, and oh yes,
+		 * it is rather hackish.  w00t.
+		 */
+		CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
+		
+		if(nav.getCurrentPage().toLowerCase().indexOf("managemembers.jsp") >= 0)
+			isMemberManager = true;
 		
 		LiteYukonUser liteUser = null;
 		if (memberLogin == null ||
@@ -1787,6 +1797,15 @@ public class StarsAdmin extends HttpServlet {
 		{
 			session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The member login is no longer valid" );
 			return;
+		}
+		
+		if(isMemberManager)
+		{
+			nav = new CtiNavObject();
+			nav.setMemberECAdmin(isMemberManager);
+			HttpSession sess = req.getSession(false);
+			if(sess != null)
+				sess.setAttribute(ServletUtils.NAVIGATE, nav);	
 		}
 		
 		redirect = AuthFuncs.getRolePropertyValue( liteUser, WebClientRole.HOME_URL );
