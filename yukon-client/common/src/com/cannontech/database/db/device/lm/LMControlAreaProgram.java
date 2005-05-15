@@ -6,7 +6,7 @@ import java.util.Vector;
  * This type was created in VisualAge.
  */
 
-public class LMControlAreaProgram extends com.cannontech.database.db.DBPersistent implements DeviceListItem
+public class LMControlAreaProgram extends com.cannontech.database.db.NestedDBPersistent implements DeviceListItem
 {
 	private Integer deviceID = null;
 	private Integer lmProgramDeviceID = new Integer(0);
@@ -202,6 +202,63 @@ public static final Vector getAllProgramsInControlAreas()
     	
 	return null;
 }
+
+public static final java.util.Vector getAllProgramsForAnArea( Integer ctrlAreaDeviceID, java.sql.Connection conn)
+{
+	java.util.Vector progList = new java.util.Vector();
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+	String sql = "SELECT DEVICEID,LMPROGRAMDEVICEID,StartPriority,StopPriority " +
+					 "FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
+
+	try
+	{		
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be (null).");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, ctrlAreaDeviceID.intValue() );
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				LMControlAreaProgram item = new LMControlAreaProgram();
+
+				item.setDbConnection(conn);
+				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+				item.setLmProgramDeviceID( new Integer(rset.getInt("LMProgramDeviceID")) );
+				item.setStartPriority( new Integer(rset.getInt("StartPriority")));
+				item.setStopPriority( new Integer(rset.getInt("StopPriority")));
+
+				progList.add( item );
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+	return progList;
+}
+
 
 /**
  * This method was created in VisualAge.

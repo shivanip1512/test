@@ -1,5 +1,11 @@
 package com.cannontech.database.data.device.lm;
 
+import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
+import com.cannontech.database.db.device.lm.LMControlAreaProgram;
+import java.util.Vector;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.common.util.CtiUtilities;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -10,10 +16,10 @@ public class LMControlArea extends com.cannontech.database.data.pao.YukonPAObjec
 	private com.cannontech.database.db.device.lm.LMControlArea controlArea = null;
 
 	//contains com.cannontech.database.db.device.lm.LMControlAreaTrigger
-	private java.util.Vector lmControlAreaTriggerVector = null;
+	private Vector lmControlAreaTriggerVector = null;
 
 	//contains com.cannontech.database.db.device.lm.LMControlAreaProgramList
-	private java.util.Vector lmControlAreaProgramVector = null;
+	private Vector lmControlAreaProgramVector = null;
 /**
  * LMProgramBase constructor comment.
  */
@@ -36,13 +42,13 @@ public void add() throws java.sql.SQLException
 	// add all the triggers for this control area
 	if( getLmControlAreaTriggerVector() != null )
 		for( int i = 0; i < getLmControlAreaTriggerVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getLmControlAreaTriggerVector().elementAt(i)).add();
+			((LMControlAreaTrigger) getLmControlAreaTriggerVector().elementAt(i)).add();
 
 			
 	// add all the associated LMPrograms for this control area
 	if( getLmControlAreaProgramVector() != null )
 		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getLmControlAreaProgramVector().elementAt(i)).add();
+			((LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).add();
 }
 /**
  * This method was created in VisualAge.
@@ -92,10 +98,10 @@ public com.cannontech.database.db.device.lm.LMControlArea getControlArea()
  * Creation date: (3/16/2001 12:15:21 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getLmControlAreaProgramVector() 
+public Vector getLmControlAreaProgramVector() 
 {
 	if( lmControlAreaProgramVector == null )
-		lmControlAreaProgramVector = new java.util.Vector(10);
+		lmControlAreaProgramVector = new Vector(10);
 		
 	return lmControlAreaProgramVector;
 }
@@ -104,10 +110,10 @@ public java.util.Vector getLmControlAreaProgramVector()
  * Creation date: (3/21/2001 1:56:30 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getLmControlAreaTriggerVector() 
+public Vector getLmControlAreaTriggerVector() 
 {
 	if( lmControlAreaTriggerVector == null )
-		lmControlAreaTriggerVector = new java.util.Vector(5);
+		lmControlAreaTriggerVector = new Vector(5);
 		
 	return lmControlAreaTriggerVector;
 }
@@ -163,13 +169,13 @@ public void setDbConnection(java.sql.Connection conn)
 	// do all the triggers for this control area
 	if( getLmControlAreaTriggerVector() != null )
 		for( int i = 0; i < getLmControlAreaTriggerVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getLmControlAreaTriggerVector().elementAt(i)).setDbConnection(conn);
+			((LMControlAreaTrigger) getLmControlAreaTriggerVector().elementAt(i)).setDbConnection(conn);
 
 			
 	// do all the associated LMPrograms for this control area
 	if( getLmControlAreaProgramVector() != null )
 		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getLmControlAreaProgramVector().elementAt(i)).setDbConnection(conn);
+			((LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).setDbConnection(conn);
 
 }
 /**
@@ -200,13 +206,13 @@ public void setPAObjectID(Integer paoID)
 	// do all the triggers for this control area
 	if( getLmControlAreaTriggerVector() != null )
 		for( int i = 0; i < getLmControlAreaTriggerVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaTrigger) getLmControlAreaTriggerVector().elementAt(i)).setDeviceID(paoID);
+			((LMControlAreaTrigger) getLmControlAreaTriggerVector().elementAt(i)).setDeviceID(paoID);
 
 			
 	// do all the associated LMPrograms for this control area
 	if( getLmControlAreaProgramVector() != null )
 		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).setDeviceID(paoID);
+			((LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).setDeviceID(paoID);
 }
 /**
  * This method was created in VisualAge.
@@ -218,24 +224,31 @@ public void update() throws java.sql.SQLException
 	
 	setPAObjectID( controlArea.getDeviceID() );
 
-	//deleteFromDynamicTables();
-	//Only delete from 1 dynamic table!
-	delete("DynamicLMControlAreaTrigger", "deviceID", getPAObjectID() );
-
-
-	// delete all the triggers for this control area
-	com.cannontech.database.db.device.lm.LMControlAreaTrigger.deleteAllControlAreaTriggers( getControlArea().getDeviceID(), getDbConnection() );
-	// add all the triggers for this control area
-	if( getLmControlAreaTriggerVector() != null )
-		for( int i = 0; i < getLmControlAreaTriggerVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaTrigger) getLmControlAreaTriggerVector().elementAt(i)).add();
-
+	//grab all the previous trigger entries for this control area
+	Vector oldTrigs = LMControlAreaTrigger.getAllTriggersForAnArea(getPAObjectID(), getDbConnection());
 	
-	// delete all the associated LMPrograms for this control area
-	com.cannontech.database.db.device.lm.LMControlAreaProgram.deleteAllControlAreaProgramList( getControlArea().getDeviceID(), getDbConnection() );
-	// add all the associated LMPrograms for this control area
-	if( getLmControlAreaProgramVector() != null )
-		for( int i = 0; i < getLmControlAreaProgramVector().size(); i++ )
-			((com.cannontech.database.db.device.lm.LMControlAreaProgram) getLmControlAreaProgramVector().elementAt(i)).add();
+	//unleash the power of the NestedDBPersistent
+	Vector comparedTrigs = CtiUtilities.NestedDBPersistentComparator(oldTrigs, getLmControlAreaTriggerVector());
+
+	//throw the triggers at the Db
+	for( int i = 0; i < comparedTrigs.size(); i++ )
+	{
+		((LMControlAreaTrigger)comparedTrigs.elementAt(i)).setDeviceID( getPAObjectID() );
+		((NestedDBPersistent)comparedTrigs.elementAt(i)).executeNestedOp();
+	}
+	
+	//grab all the previous program entries for this scenario
+	java.util.Vector oldProgs = LMControlAreaProgram.getAllProgramsForAnArea(getPAObjectID(), getDbConnection());
+	
+	//unleash the power of the NestedDBPersistent
+	Vector comparedPrograms = CtiUtilities.NestedDBPersistentComparator(oldProgs, getLmControlAreaProgramVector());
+
+	//throw the programs into the Db
+	for( int i = 0; i < comparedPrograms.size(); i++ )
+	{
+		((LMControlAreaProgram)comparedPrograms.elementAt(i)).setDeviceID( getPAObjectID() );
+		((NestedDBPersistent)comparedPrograms.elementAt(i)).executeNestedOp();
+
+	}
 }
 }

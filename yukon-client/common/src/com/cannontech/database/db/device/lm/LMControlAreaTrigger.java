@@ -9,7 +9,7 @@ import com.cannontech.database.data.point.PointTypes;
 /**
  * This type was created in VisualAge.
  */
-public class LMControlAreaTrigger extends com.cannontech.database.db.DBPersistent 
+public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPersistent 
 {
 	private Integer deviceID = null;
 	private Integer triggerNumber = new Integer(0);
@@ -194,6 +194,73 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 	tmpList.toArray( retVal );
 	
 	return retVal;
+}
+
+public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDeviceID, java.sql.Connection conn)
+{
+	java.util.Vector tmpList = new java.util.Vector(10);
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
+		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
+		"TriggerNumber,TriggerType,DeviceID " + 
+		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
+
+	try
+	{		
+		if (conn == null)
+					throw new IllegalArgumentException("Received a (null) database connection");
+		
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, ctrlAreaDeviceID.intValue() );
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
+			{
+				LMControlAreaTrigger item = new LMControlAreaTrigger();
+
+				item.setDbConnection(conn);
+				item.setMinRestoreOffset( new Double(rset.getDouble("MinRestoreOffset")) );
+				item.setNormalState( new Integer(rset.getInt("NormalState")) );
+				item.setPeakPointID( new Integer(rset.getInt("PeakPointID")) );
+				item.setPointID( new Integer(rset.getInt("PointID")) );
+				item.setProjectAheadDuration( new Integer(rset.getInt("ProjectAheadDuration")) );
+				item.setProjectionPoints( new Integer(rset.getInt("ProjectionPoints")) );
+				item.setProjectionType( rset.getString("ProjectionType") );
+				item.setThreshold( new Double(rset.getDouble("Threshold")) );
+				item.setThresholdKickPercent( new Integer(rset.getInt("ThresholdKickPercent")) );
+				item.setTriggerNumber( new Integer(rset.getInt("TriggerNumber")) );
+				item.setTriggerType( rset.getString("TriggerType") );
+				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+
+				tmpList.add( item );
+			}
+					
+		}		
+	}
+	
+	catch (java.sql.SQLException e)
+	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if (pstmt != null)
+				pstmt.close();
+		}
+		catch (java.sql.SQLException e2)
+		{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+		}
+	}
+
+	return tmpList;
 }
 /**
  * Insert the method's description here.
