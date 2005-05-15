@@ -4,6 +4,10 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.UserUtils;
 /**
  * This type was created in VisualAge.
  */
@@ -300,11 +304,21 @@ public void setValue(Object val)
 		 	if( type == EDITOR_TYPES[i][j] )
 			{
 				Object[] panelTabs = createNewPanel(i);
-
 				tempPanel = (DataInputPanel)panelTabs[0];
-				panels.addElement( tempPanel );
-				tabs.addElement( panelTabs[1] );
-				break;				
+				
+				//make sure that this user is allowed to have a member control tab
+				boolean allowMemCntrl = ClientSession.getInstance().getRolePropertyValue(
+				DBEditorRole.ALLOW_MEMBER_PROGRAMS, "FALSE").trim().equalsIgnoreCase("TRUE");
+				if((!allowMemCntrl && ((LiteYukonUser)ClientSession.getInstance().getUser()).getUserID() != UserUtils.USER_ADMIN_ID) && tempPanel instanceof com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel)
+				{
+					i++;
+				}
+				else
+				{
+					panels.addElement( tempPanel );
+					tabs.addElement( panelTabs[1] );
+					break;
+				}				
 			}
 	 	}
  	}

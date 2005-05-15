@@ -21,4 +21,6 @@ public interface DBEditorRole {
 	public static final int ALLOW_USER_ROLES = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 9;
 	//Minnkota RIPPLE panel, SA protocol on/off toggle, etc.
 	public static final int OPTIONAL_PRODUCT_DEV = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 10;
+	//LM Direct Programs have a Member Management tab if this is true
+	public static final int ALLOW_MEMBER_PROGRAMS = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 11;
 }
