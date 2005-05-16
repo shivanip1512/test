@@ -98,7 +98,26 @@ go
 /* Default user for STARS customers who don't have a login */
 insert into YukonUser values (-9999,'(none)','(none)',0,'01-JAN-2000','Disabled');
 
-alter table YukonWebConfiguration alter column AlternateDisplayName varchar(100);
+
+/* @error ignore */
+create table YukonWebConfiguration (
+   ConfigurationID      numeric              not null,
+   LogoLocation         varchar(100)         null,
+   Description          varchar(500)         null,
+   AlternateDisplayName varchar(100)         null,
+   URL                  varchar(100)         null
+);
+go
+/* @error ignore */
+INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
+/* @error ignore */
+INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
+/* @error ignore */
+insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
+/* @error ignore */
+alter table YukonWebConfiguration add constraint PK_YUKONWEBCONFIGURATION primary key  (ConfigurationID);
+go
+
 
 /* energy company role properties */
 update YukonRoleProperty set Description='(Deprecated) Use this value as the admin email address only if the energy company''s primary contact doesn''t have an email address.' where RolePropertyId=-1100;
@@ -973,8 +992,6 @@ insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
 insert into YukonUserRole values (-1012, -100, -200, -20002, '(none)');
 insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
 
-INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
-INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 
 /* @error ignore */
 insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
