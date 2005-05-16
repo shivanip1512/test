@@ -121,7 +121,6 @@ private BillingFile getBillingFile()
 	{
 		billingFile = new BillingFile();
 		billingFile.setAllBillGroupsVector(getBillingFile().retrieveAllBillGroupsVector());
-		billingFile.retrieveFileFormats();
 	}
 	return billingFile;
 }

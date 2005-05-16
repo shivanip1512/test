@@ -1132,7 +1132,6 @@ private void initialize() {
 		//	 defined in billingFileDefaults class.
 		billingFile = new BillingFile();
 		billingFile.setAllBillGroupsVector(getBillingFile().retrieveAllBillGroupsVector());
-		billingFile.retrieveFileFormats();
 		
 		// user code end
 		setName("BillingFile");
