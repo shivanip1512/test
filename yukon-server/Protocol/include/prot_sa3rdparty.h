@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/04/27 13:45:01 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/05/16 20:37:24 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.12  2005/05/16 20:37:24  cplender
+* Altered the terminate syntax to send a 0 count cycle if we are before the last period or nothing if beyond that point.
+*
 * Revision 1.11  2005/04/27 13:45:01  cplender
 * Code change to record the most recent control command to be sent out so that a restore can use the same stime/ctime.
 * Removed unused OutMessage argument from several methods.
@@ -86,6 +89,7 @@ protected:
 
     int _sTime;
     int _cTime;
+    RWTime _onePeriodTime;
 
     bool _messageReady;
 
@@ -157,6 +161,7 @@ public:
     RWCString functionAsString() const;
     int getStrategySTime() const;
     int getStrategyCTime() const;
+    RWTime getStrategyOnePeriodTime() const;
 
     static INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
     static INT TMSlen (UCHAR *abuf, INT *len);

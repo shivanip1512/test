@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/27 13:44:25 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/05/16 20:37:24 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,8 @@
 
 CtiDeviceGroupSA205::CtiDeviceGroupSA205() :
 _lastSTime(0),
-_lastCTime(0)
+_lastCTime(0),
+_onePeriodLeft(YUKONEOT)
 {
 }
 
@@ -42,7 +43,8 @@ _lastCTime(0)
 
 CtiDeviceGroupSA205::CtiDeviceGroupSA205(const CtiDeviceGroupSA205& aRef) :
 _lastSTime(0),
-_lastCTime(0)
+_lastCTime(0),
+_onePeriodLeft(YUKONEOT)
 {
     *this = aRef;
 }
@@ -148,31 +150,92 @@ void CtiDeviceGroupSA205::DecodeDatabaseReader(RWDBReader &rdr)
 
 INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
+    bool gracefulrestore = false;
     INT   nRet = NoError;
     RWCString resultString;
-
     CtiRouteSPtr Route;
+    RWTime now;
 
     // These are stored and forwarded in case there is a restore or terminate operation required.
     parse.setValue("sa205_last_stime", _lastSTime);
     parse.setValue("sa205_last_ctime", _lastCTime);
-
+    parse.setValue("sa205_one_period_time", (DOUBLE)_onePeriodLeft.seconds());
     parse.setValue("type", ProtocolSA205Type);
     parse.parse();
 
     bool control = (parse.getFlags() & (CMD_FLAG_CTL_SHED | CMD_FLAG_CTL_CYCLE));
+
+    if((parse.getFlags() & CMD_FLAG_CTL_TERMINATE))      // This is a terminate that SHOULD go out as a 0 repeat control cycle!
+    {
+        /*
+         * If the previous control period has not completed and a terminate is sent,
+         * we send a repeat cycle control with zero repeats.
+         *
+         * Up until the last period, a graceful restore should repeat the cycle and set repeats to zero.
+         * In the last period, a graceful restore should do nothing.
+         * Beyond the last period, a graceful restore should do nothing.
+         */
+
+        if(parse.getCommandStr().contains(" abrupt", RWCString::ignoreCase))
+        {
+            control = false;
+        }
+        else if(now < _onePeriodLeft)
+        {
+            {
+                CtiLockGuard<CtiLogger> slog_guard(slog);
+                slog << RWTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
+            }
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
+                dout << RWTime() << " " << getName() << " Last interval of previous control begins at... " << _onePeriodLeft << endl;
+            }
+
+            control = true; // Cause the protocol's function to remain a control type command, (not restore).
+            parse.setValue("cycle_count", 0);       // Do a repeat of the last control but with 0 counts!
+        }
+        else
+        {
+            gracefulrestore = true;                 // Prevent anything from being sent control or restore-wise.
+        }
+    }
+
     int func = _loadGroup.getFunction(control);
 
     parse.setValue("sa_opaddress", atoi(_loadGroup.getOperationalAddress().data()));
     parse.setValue("sa_function", func);
 
     // Recover the "new" s/ctime.
-    CtiProtocolSA3rdParty prot;
-    prot.parseCommand(parse);
-    _lastSTime = prot.getStrategySTime();
-    _lastCTime = prot.getStrategyCTime();
+    if(control)
+    {
+        CtiProtocolSA3rdParty prot;
+        prot.parseCommand(parse);
+        _lastSTime = prot.getStrategySTime();
+        _lastCTime = prot.getStrategyCTime();
+        _onePeriodLeft = prot.getStrategyOnePeriodTime();
+    }
 
-    if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_RESTORE)
+    if(gracefulrestore)
+    {
+        resultString = RWTime().asString() + " " + getName() + " is within the  graceful restore period.  No action is required to terminate the cycling. Use \"abrupt\" to force command.";
+        {
+            CtiLockGuard<CtiLogger> slog_guard(slog);
+            slog << resultString << endl;
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << resultString << endl;
+        }
+
+
+        nRet = BADPARAM;
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+        retList.insert( pRet );
+
+        return nRet;
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_RESTORE)
     {
         if(func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase))
         {
@@ -186,11 +249,6 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_TERMINATE)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         parse.setValue("cycle_count", 0);
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)

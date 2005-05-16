@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/05/13 16:11:53 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/05/16 20:37:24 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.26  2005/05/16 20:37:24  cplender
+* Altered the terminate syntax to send a 0 count cycle if we are before the last period or nothing if beyond that point.
+*
 * Revision 1.25  2005/05/13 16:11:53  cplender
 * Altered the computeShedTimes() function to correctly choose the "closest" time to that asked for.
 *
@@ -108,13 +111,15 @@
 
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
+_onePeriodTime(YUKONEOT),
 _messageReady(false)
 {
     memset(&_sa, 0, sizeof(_sa));
     _sa._maxTxTime = (0x3f);
 }
 
-CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa)
+CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa) :
+_onePeriodTime(YUKONEOT)
 {
     _sa = sa;
     _messageReady = true;
@@ -373,7 +378,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8) - 1;
+        INT repeat     = parse.getiValue("cycle_count", 8) - 1;  repeat = repeat < 0 ? 0 : repeat;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
@@ -399,6 +404,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
         {
             _sTime = parse.getiValue("sa205_last_stime", 0);
             _cTime = parse.getiValue("sa205_last_ctime", 0);
+            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
         }
         else
         {
@@ -422,6 +428,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             // Repeat the initial control intformation.  This is a terminate graceful by default.
             _sTime = parse.getiValue("sa205_last_stime", 3);
             _cTime = parse.getiValue("sa205_last_ctime", 5);
+            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
         }
     }
     else
@@ -685,7 +692,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         int shed_seconds = parse.getiValue("shed", 0);
         int cycle_percent = parse.getiValue("cycle",0);
         int cycle_period = parse.getiValue("cycle_period", 30);
-        int cycle_count = parse.getiValue("cycle_count", 8) - 1;
+        int cycle_count = parse.getiValue("cycle_count", 8) - 1;  cycle_count = cycle_count < 0 ? 0 : cycle_count;            // Make sure we are not negative!
 
         if(shed_seconds)
         {
@@ -1135,6 +1142,15 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             }
 
             _sa._repeats = cycle_count;
+
+            if(cycle_count >= 0)
+            {
+                _onePeriodTime = RWTime() + (_sa._cycleTime * cycle_count);
+            }
+            else
+            {
+                _onePeriodTime = RWTime(YUKONEOT);  // This is not a cycle we want to record.  Set to EOT.
+            }
         }
         else
         {
@@ -1239,7 +1255,6 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
     int oastime[] = { 5, 5, 5, 5 };                 // These are the available cycle times in "matrix"
 #else
     int ctimes[] = { 450, 900, 1350, 1800, 2250, 2700, 3150, 3600 };        // These are the available cycle times in seconds
-    // int ctimes[] = { 450, 900, 1800, 3600 };    // These are the available cycle times in seconds
     int oactime[] = { 0, 1, 2, 3, 4, 5, 6, 7 };    // These are the available timeout times in "matrix"
     int oastime[] = { 0, 1, 2, 3, 4, 5, 6, 7  };   // These are the available cycle times in "matrix"
 #endif
@@ -1955,3 +1970,10 @@ int CtiProtocolSA3rdParty::getStrategyCTime() const
 {
     return _cTime;
 }
+
+RWTime CtiProtocolSA3rdParty::getStrategyOnePeriodTime() const
+{
+    return _onePeriodTime;
+}
+
+

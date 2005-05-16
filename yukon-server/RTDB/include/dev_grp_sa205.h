@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/04/27 13:44:25 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/05/16 20:37:24 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@ private:
 
     int _lastSTime;     // Holds the last sent message for the restore graceful command.
     int _lastCTime;
+    RWTime _onePeriodLeft;
 
 public:
 
