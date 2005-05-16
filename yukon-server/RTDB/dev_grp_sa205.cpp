@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/05/16 20:37:24 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/16 22:27:15 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,14 +207,11 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.setValue("sa_function", func);
 
     // Recover the "new" s/ctime.
-    if(control)
-    {
-        CtiProtocolSA3rdParty prot;
-        prot.parseCommand(parse);
-        _lastSTime = prot.getStrategySTime();
-        _lastCTime = prot.getStrategyCTime();
-        _onePeriodLeft = prot.getStrategyOnePeriodTime();
-    }
+    CtiProtocolSA3rdParty prot;
+    prot.parseCommand(parse);
+    _lastSTime = prot.getStrategySTime();
+    _lastCTime = prot.getStrategyCTime();
+    _onePeriodLeft = prot.getStrategyOnePeriodTime();
 
     if(gracefulrestore)
     {
@@ -267,7 +264,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8);
+        INT repeat     = parse.getiValue("cycle_count", 8);  repeat = repeat > 7 ? 7 : repeat;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );

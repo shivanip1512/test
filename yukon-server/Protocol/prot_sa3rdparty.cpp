@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/05/16 20:37:24 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/05/16 22:27:15 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.27  2005/05/16 22:27:15  cplender
+* repeats cannot be greater than 8
+*
 * Revision 1.26  2005/05/16 20:37:24  cplender
 * Altered the terminate syntax to send a 0 count cycle if we are before the last period or nothing if beyond that point.
 *
@@ -378,7 +381,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8) - 1;  repeat = repeat < 0 ? 0 : repeat;
+        INT repeat     = parse.getiValue("cycle_count", 8) - 1;  repeat = repeat < 0 ? 0 : repeat;  repeat = repeat > 7 ? 7 : repeat;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
@@ -692,7 +695,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         int shed_seconds = parse.getiValue("shed", 0);
         int cycle_percent = parse.getiValue("cycle",0);
         int cycle_period = parse.getiValue("cycle_period", 30);
-        int cycle_count = parse.getiValue("cycle_count", 8) - 1;  cycle_count = cycle_count < 0 ? 0 : cycle_count;            // Make sure we are not negative!
+        int cycle_count = parse.getiValue("cycle_count", 8) - 1;  cycle_count = cycle_count < 0 ? 0 : cycle_count;   cycle_count = cycle_count > 7 ? 7 : cycle_count;           // Make sure we are not negative!
 
         if(shed_seconds)
         {
@@ -1149,7 +1152,7 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
             }
             else
             {
-                _onePeriodTime = RWTime(YUKONEOT);  // This is not a cycle we want to record.  Set to EOT.
+                _onePeriodTime = RWTime();  // This is not a cycle we want to record.  Set to EOT.
             }
         }
         else
