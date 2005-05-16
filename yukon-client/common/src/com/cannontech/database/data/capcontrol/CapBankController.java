@@ -44,6 +44,11 @@ public void add() throws java.sql.SQLException {
 	super.add();
 	getDeviceCBC().add();
 }
+
+public void addPartial() throws java.sql.SQLException {
+	super.addPartial();
+	getDeviceCBC().add();
+}
 /**
  * This method was created in VisualAge.
  */

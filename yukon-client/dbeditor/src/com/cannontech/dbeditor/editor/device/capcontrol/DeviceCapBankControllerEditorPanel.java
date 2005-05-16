@@ -1135,7 +1135,7 @@ public boolean isInputValid()
 
 	String breakfastSerial = getSerialNumberTextField().getText();
 		
-	if(breakfastSerial.length() != 9 || !breakfastSerial.startsWith("7", 0))
+	if(getCbcType() == DeviceTypes.CBC_7010 && (breakfastSerial.length() != 9 || !breakfastSerial.startsWith("7", 0)))
 	{
 		setErrorString("A 7000 series CBC needs a nine digit serial number that begins with a 7");
 		return false;
