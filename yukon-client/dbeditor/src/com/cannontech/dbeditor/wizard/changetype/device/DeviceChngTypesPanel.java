@@ -23,6 +23,8 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.ICapBankController;
 
 public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener {
 	
@@ -35,10 +37,11 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 		DeviceClasses.TRANSMITTER,
 		DeviceClasses.METER,
 		DeviceClasses.RTU,
-		DeviceClasses.GROUP 
+		DeviceClasses.GROUP
    };
 	private static final String DEVICE_TYPES[][] = 
    { { //MCTs
+			PAOGroups.STRING_MCT_470[0],
 			PAOGroups.STRING_MCT_410IL[0],
 			PAOGroups.STRING_MCT_410CL[0],
 			PAOGroups.STRING_MCT_370[0],
@@ -91,8 +94,13 @@ public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInp
 	private static final String[] REPEATERS_LIST = 
 	{ 
 		PAOGroups.STRING_REPEATER[1], PAOGroups.STRING_REPEATER_800[0] 
-	};	
-
+	};
+	
+	private static final String[] CBC_LIST =
+	{
+		PAOGroups.STRING_CAP_BANK_CONTROLLER[0], PAOGroups.STRING_CBC_7010[0],
+		PAOGroups.STRING_CBC_EXPRESSCOM[0]	
+	};
 
 	private javax.swing.JLabel ivjJLabelDevice = null;
 	private javax.swing.JList ivjJListDevices = null;
@@ -441,6 +449,10 @@ public Object getValue(Object val)
 					((TwoWayDevice) oldDevice).getDeviceScanRateVector() );
 		}
 		
+		if( val instanceof CapBankController)
+		{
+			((CapBankController) val).setDeviceCBC(((CapBankController)oldDevice).getDeviceCBC());
+		}
 		
 		//execute the actual command in the database 
 		try
@@ -555,7 +567,10 @@ private void initialize() {
 public static boolean isDeviceTypeChangeable( String devType )
 {
    if( PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER_800) 
-       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER) )
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_REPEATER)
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_CBC_7010)
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_CBC_EXPRESSCOM)
+       || PAOGroups.isStringDevice(devType, PAOGroups.STRING_CAP_BANK_CONTROLLER) )
    {
       return true;
    }
@@ -616,6 +631,11 @@ private void listDeviceType_Selection( javax.swing.event.ListSelectionEvent ev )
 		{
 
 			handleMCT_410IL();
+		}
+		else if( PAOGroups.getDeviceType(PAOGroups.STRING_MCT_470[0])
+					 == PAOGroups.getDeviceType(selObj.toString()) ) {
+
+			handleMCT_470();
 		}
 		else
 			extraObj = null;
@@ -700,6 +720,44 @@ private void handleMCT_410IL()
 
 }
 
+private void handleMCT_470()
+{
+	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
+					getCurrentDevice().getPAObjectID().intValue() );
+	/*
+	for( int i = 0; i < ltPoints.length; i++ ) {
+		LitePoint point = ltPoints[i];	
+
+		if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
+			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ){
+
+			getJTextPaneNotes().setText(
+				"A Load Profile Demand point will NOT be " +
+				"generated for this change type since one already exists." );
+			
+			extraObj = null;
+			return;
+		}
+	}
+	
+	getJTextPaneNotes().setText(
+		"A Load Profile Demand point will be " +
+		"generated for this change type" );
+
+	extraObj = 
+		 PointFactory.createDmdAccumPoint(
+			"kW-LP",
+			getCurrentDevice().getPAObjectID(),
+			new Integer( PointFuncs.getMaxPointID() + 1 ),
+			PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+			PointUnits.UOMID_KW,
+			.1 );*/
+			
+	extraObj = null;
+	return;
+
+}
+
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -733,8 +791,14 @@ private void setList(int deviceClass, String type)
 	if( PAOGroups.isStringDevice(type, PAOGroups.STRING_REPEATER_800) 
        || PAOGroups.isStringDevice(type, PAOGroups.STRING_REPEATER)  )
 	{
-
 		getJListDevices().setListData( REPEATERS_LIST );
+		getJListDevices().setSelectedIndex(0);
+	}
+	else if(PAOGroups.isStringDevice(type, PAOGroups.STRING_CBC_7010)
+		|| PAOGroups.isStringDevice(type, PAOGroups.STRING_CBC_EXPRESSCOM)
+		|| PAOGroups.isStringDevice(type, PAOGroups.STRING_CAP_BANK_CONTROLLER)  )
+	{
+		getJListDevices().setListData( CBC_LIST );
 		getJListDevices().setSelectedIndex(0);
 	}
 	else

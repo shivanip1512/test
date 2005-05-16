@@ -52,6 +52,7 @@ import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 
 import java.awt.Dimension;
 
@@ -2299,7 +2300,8 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            com.cannontech.database.data.lite.LiteYukonPAObject litYuk =
 	                  (com.cannontech.database.data.lite.LiteYukonPAObject)selectedNode.getUserObject();
 	            
-	            if( litYuk.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL 
+	            if( (litYuk.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL 
+	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getType())) 
 	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RIPPLE
 	                || litYuk.getType() == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
 	                || litYuk.getPaoClass() == com.cannontech.database.data.pao.DeviceClasses.LOADMANAGEMENT )
