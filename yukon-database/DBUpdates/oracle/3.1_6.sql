@@ -16,9 +16,6 @@ insert into state values( -6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
 insert into state values( -6, 3, 'Connect Armed', 5, 6, 0);
 
 
-
-
-
 delete from devicetypecommand where devicecommandid in (-8, -74, -75, -77, -132, -133, -134, -135, -136, -137, -138,  -139, -140, -141, -142, -143, -144, -145);
 delete from command where commandID in (-46, -47, -49, -70, -71, -72, -73, -74, -75, -76, -77, -78, -79, -80);
 insert into command values(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
@@ -129,6 +126,21 @@ insert into YukonGroupRole values(-236,-1,-106,-10606,'(none)');
 insert into YukonGroupRole values(-237,-1,-106,-10607,'(none)');
 
 update yukonroleproperty set defaultvalue = 'Administrator' where defaultvalue = 'Administor';
+
+insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring of all batched switch commands');
+insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
+insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
+insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
+insert into YukonRoleProperty values(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
+
+insert into YukonGroupRole values(-110,-100,-100,-10010,'(none)');
+insert into YukonGroupRole values(-111,-100,-100,-10011,'(none)');
+insert into YukonGroupRole values(-1011,-2,-100,-10011,'(none)');
+
+
+
+
+
 
 
 
