@@ -706,6 +706,7 @@ private void initialize() {
 	getUpdateTypeComboBox().addItem("On All Change");
 	getUpdateTypeComboBox().addItem("On Timer");
 	getUpdateTypeComboBox().addItem("On Timer+Change");
+	getUpdateTypeComboBox().addItem("Constant");
 	getUpdateTypeComboBox().addItem("Historical");
 	
 	//Load the Periodic Rate combo box with default possible values

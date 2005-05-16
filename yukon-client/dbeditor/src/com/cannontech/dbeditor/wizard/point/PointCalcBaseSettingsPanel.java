@@ -45,7 +45,8 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 		// user code end
 		this.fireInputUpdate();
 		// user code begin {2}
-		if( ((String)getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer") )
+		if( ((String)getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer") 
+			|| ((String)getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer+Change"))
 		{
 			getPeriodicRateLabel().setEnabled(true);
 			getPeriodicRateComboBox().setEnabled(true);
@@ -161,6 +162,8 @@ private javax.swing.JComboBox getUpdateTypeComboBox() {
 			ivjUpdateTypeComboBox.addItem("On First Change");
 			ivjUpdateTypeComboBox.addItem("On All Change");
 			ivjUpdateTypeComboBox.addItem("On Timer");
+			ivjUpdateTypeComboBox.addItem("On Timer+Change");
+			ivjUpdateTypeComboBox.addItem("Constant");
 			ivjUpdateTypeComboBox.addItem("Historical");
 			
 			// user code end

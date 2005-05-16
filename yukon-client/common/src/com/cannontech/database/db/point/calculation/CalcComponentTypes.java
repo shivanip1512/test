@@ -58,6 +58,7 @@ public class CalcComponentTypes
 	public static final String ABS_VALUE = "Absolute Value";
    
    public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
+   public static final String MODULO_DIVIDE = "Modulo Divide";
 
    
 	//our operation function strings
@@ -71,6 +72,7 @@ public class CalcComponentTypes
 		MIN_FUNCTION,
 		MAX_FUNCTION,
 		MAX_DIFFERENCE,
+		MODULO_DIVIDE,
 		GREATER_THAN_FUNCTION,
 		GREATER_THAN_EQUAL_TO_FUNCTION,
 		LESS_THAN_FUNCTION,
