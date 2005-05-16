@@ -4,6 +4,7 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 /**
  * This type was created in VisualAge.
@@ -793,6 +794,11 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setMinimumSize(new java.awt.Dimension(132, 20));
 			// user code begin {1}
+			ivjNameTextField.setDocument(
+					new TextFieldDocument(
+						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+						TextFieldDocument.INVALID_CHARS_PAO) );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -913,18 +919,20 @@ private javax.swing.JLabel getTypeTextField() {
 public com.cannontech.database.data.device.DeviceBase createNewCBC( 
          final com.cannontech.database.data.multi.MultiDBPersistent multiVal )
 {
-   com.cannontech.database.data.device.DeviceBase capBankController = null;
+   	com.cannontech.database.data.device.DeviceBase capBankController = null;
    
-   if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800 )
-      capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
-   else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER )
-      capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
-   else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510 )
-      capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+   	if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800 )
+      	capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
+   	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER )
+      	capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
+   	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510 )
+      	capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
 	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM )
 		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
-   else
-      throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
+	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_7010 )
+		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
+   	else
+    	throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
 
 
    //get a new PAOID for the CBC
@@ -1125,9 +1133,16 @@ public boolean isInputValid()
 		return false;
 	}
 
+	String breakfastSerial = getSerialNumberTextField().getText();
+		
+	if(breakfastSerial.length() != 9 || !breakfastSerial.startsWith("7", 0))
+	{
+		setErrorString("A 7000 series CBC needs a nine digit serial number that begins with a 7");
+		return false;
+	}
 
-   if( !getJTextFieldSlaveAddress().isVisible() )
-   	return checkCBCSerialNumbers(
+   	if( !getJTextFieldSlaveAddress().isVisible() )
+   		return checkCBCSerialNumbers(
    			Integer.parseInt(getSerialNumberTextField().getText()) );
    else
 	  return true;

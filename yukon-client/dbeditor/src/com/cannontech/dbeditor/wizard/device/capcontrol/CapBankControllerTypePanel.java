@@ -1,17 +1,18 @@
 package com.cannontech.dbeditor.wizard.device.capcontrol;
 
 import java.awt.Dimension;
+
+import com.cannontech.database.data.pao.DeviceTypes;
  
-/**
- * This type was created in VisualAge.
+/*
+ *  GUI NOTE: Websphere GUI builder over a previous Visual Age creation
  */
  
 public class CapBankControllerTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.ButtonGroup buttonGroup = null;
 	private javax.swing.JPanel ivjCapBankControllerTypePanel = null;
-	private javax.swing.JRadioButton ivjJRadioButtonCBCFP2800 = null;
 	private javax.swing.JRadioButton ivjJRadioButtonVersacomCBC = null;
-	private javax.swing.JRadioButton ivjJRadioButtonCBCDNP6510 = null;
+	private javax.swing.JRadioButton ivjJRadioButtonCBC7000Series = null;
 	private javax.swing.JRadioButton ivjJRadioButtonExpresscomCBC = null;
 /**
  * Constructor
@@ -72,34 +73,27 @@ private javax.swing.JPanel getCapBankControllerTypePanel() {
 	if (ivjCapBankControllerTypePanel == null) {
 		try {
 			ivjCapBankControllerTypePanel = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints9 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints10 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints11 = new java.awt.GridBagConstraints();
+			consGridBagConstraints11.insets = new java.awt.Insets(8,80,76,132);
+			consGridBagConstraints11.ipadx = 14;
+			consGridBagConstraints11.gridy = 2;
+			consGridBagConstraints11.gridx = 0;
+			consGridBagConstraints9.insets = new java.awt.Insets(16,80,10,132);
+			consGridBagConstraints9.ipadx = 27;
+			consGridBagConstraints9.gridy = 0;
+			consGridBagConstraints9.gridx = 0;
+			consGridBagConstraints10.insets = new java.awt.Insets(10,80,8,132);
+			consGridBagConstraints10.ipadx = 18;
+			consGridBagConstraints10.gridy = 1;
+			consGridBagConstraints10.gridx = 0;
 			ivjCapBankControllerTypePanel.setName("CapBankControllerTypePanel");
 			ivjCapBankControllerTypePanel.setLayout(new java.awt.GridBagLayout());
 
-			java.awt.GridBagConstraints constraintsJRadioButtonVersacomCBC = new java.awt.GridBagConstraints();
-			constraintsJRadioButtonVersacomCBC.gridx = 1; constraintsJRadioButtonVersacomCBC.gridy = 1;
-			constraintsJRadioButtonVersacomCBC.ipadx = 27;
-			constraintsJRadioButtonVersacomCBC.insets = new java.awt.Insets(20, 80, 9, 132);
-			getCapBankControllerTypePanel().add(getJRadioButtonVersacomCBC(), constraintsJRadioButtonVersacomCBC);
-
-			java.awt.GridBagConstraints constraintsJRadioButtonCBCFP2800 = new java.awt.GridBagConstraints();
-			constraintsJRadioButtonCBCFP2800.gridx = 1; constraintsJRadioButtonCBCFP2800.gridy = 2;
-			constraintsJRadioButtonCBCFP2800.ipadx = 40;
-			constraintsJRadioButtonCBCFP2800.insets = new java.awt.Insets(9, 80, 9, 132);
-			getCapBankControllerTypePanel().add(getJRadioButtonCBCFP2800(), constraintsJRadioButtonCBCFP2800);
-
-			java.awt.GridBagConstraints constraintsJRadioButtonCBCDNP6510 = new java.awt.GridBagConstraints();
-			constraintsJRadioButtonCBCDNP6510.gridx = 1; constraintsJRadioButtonCBCDNP6510.gridy = 3;
-			constraintsJRadioButtonCBCDNP6510.ipadx = 31;
-			constraintsJRadioButtonCBCDNP6510.insets = new java.awt.Insets(9, 80, 9, 132);
-			getCapBankControllerTypePanel().add(getJRadioButtonCBCDNP6510(), constraintsJRadioButtonCBCDNP6510);
-
-			java.awt.GridBagConstraints constraintsJRadioButtonExpresscomCBC = new java.awt.GridBagConstraints();
-			constraintsJRadioButtonExpresscomCBC.gridx = 1; constraintsJRadioButtonExpresscomCBC.gridy = 4;
-			constraintsJRadioButtonExpresscomCBC.ipadx = 20;
-			constraintsJRadioButtonExpresscomCBC.insets = new java.awt.Insets(9, 80, 38, 132);
-			getCapBankControllerTypePanel().add(getJRadioButtonExpresscomCBC(), constraintsJRadioButtonExpresscomCBC);
-			// user code begin {1}
-			// user code end
+			ivjCapBankControllerTypePanel.add(getJRadioButtonVersacomCBC(), consGridBagConstraints9);
+			ivjCapBankControllerTypePanel.add(getJRadioButtonCBC7000Series(), consGridBagConstraints10);
+			ivjCapBankControllerTypePanel.add(getJRadioButtonExpresscomCBC(), consGridBagConstraints11);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -114,15 +108,15 @@ private javax.swing.JPanel getCapBankControllerTypePanel() {
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getJRadioButtonCBCDNP6510() {
-	if (ivjJRadioButtonCBCDNP6510 == null) {
+private javax.swing.JRadioButton getJRadioButtonCBC7000Series() {
+	if (ivjJRadioButtonCBC7000Series == null) {
 		try {
-			ivjJRadioButtonCBCDNP6510 = new javax.swing.JRadioButton();
-			ivjJRadioButtonCBCDNP6510.setName("JRadioButtonCBCDNP6510");
-			ivjJRadioButtonCBCDNP6510.setText("CBC DNP 6510");
+			ivjJRadioButtonCBC7000Series = new javax.swing.JRadioButton();
+			ivjJRadioButtonCBC7000Series.setName("JRadioButtonCBCDNP6510");
+			ivjJRadioButtonCBC7000Series.setText("CBC 7000 Series");
 			// user code begin {1}
          
-         getButtonGroup().add( ivjJRadioButtonCBCDNP6510 );
+         getButtonGroup().add( ivjJRadioButtonCBC7000Series );
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -131,31 +125,7 @@ private javax.swing.JRadioButton getJRadioButtonCBCDNP6510() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJRadioButtonCBCDNP6510;
-}
-/**
- * Return the JRadioButtonCBCFP2800 property value.
- * @return javax.swing.JRadioButton
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getJRadioButtonCBCFP2800() {
-	if (ivjJRadioButtonCBCFP2800 == null) {
-		try {
-			ivjJRadioButtonCBCFP2800 = new javax.swing.JRadioButton();
-			ivjJRadioButtonCBCFP2800.setName("JRadioButtonCBCFP2800");
-			ivjJRadioButtonCBCFP2800.setText("CBC FP-2800");
-			// user code begin {1}
-
-			getButtonGroup().add( ivjJRadioButtonCBCFP2800 );
-			
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJRadioButtonCBCFP2800;
+	return ivjJRadioButtonCBC7000Series;
 }
 /**
  * Return the JRadioButtonExpresscomCBC property value.
@@ -225,10 +195,8 @@ public int getSelectedType()
 {
 	if( getJRadioButtonVersacomCBC().isSelected() )
 		return com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER;
-	else if( getJRadioButtonCBCFP2800().isSelected() )
-		return com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800;
-	else if( getJRadioButtonCBCDNP6510().isSelected() )
-		return com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510;
+	else if( getJRadioButtonCBC7000Series().isSelected() )
+		return DeviceTypes.CBC_7010;
 	if( getJRadioButtonExpresscomCBC().isSelected() )
 		return com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM;
 	else //oops! slacker!!!

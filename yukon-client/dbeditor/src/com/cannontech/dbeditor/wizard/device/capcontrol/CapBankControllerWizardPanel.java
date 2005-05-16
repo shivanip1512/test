@@ -9,8 +9,9 @@ import com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankControllerE
 public class CapBankControllerWizardPanel extends com.cannontech.common.wizard.WizardPanel 
 {
 	private CapBankControllerTypePanel capBankControllerTypePanel;
-   private DeviceCapBankControllerEditorPanel deviceCapBankControllerEditorPanel;
-   private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
+   	private DeviceCapBankControllerEditorPanel deviceCapBankControllerEditorPanel;
+   	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
+   	private CapBankControllerSpecialTypePanel capBankControllerSpecialTypePanel;
 
    /**
     * Insert the method's description here.
@@ -56,6 +57,14 @@ public class CapBankControllerWizardPanel extends com.cannontech.common.wizard.W
    
    	return capBankControllerTypePanel;
    }
+   
+   public CapBankControllerSpecialTypePanel getCapBankControllerSpecialTypePanel() 
+   {
+		if( capBankControllerSpecialTypePanel == null )
+			capBankControllerSpecialTypePanel = new CapBankControllerSpecialTypePanel();
+   
+		return capBankControllerSpecialTypePanel;
+   }
    /**
     * getHeaderText method comment.
     */
@@ -75,14 +84,22 @@ public class CapBankControllerWizardPanel extends com.cannontech.common.wizard.W
    	else if( currentInputPanel == getCapBankControllerTypePanel() )
    	{
    		getDeviceCapBankControllerEditorPanel().setCbcType( getCapBankControllerTypePanel().getSelectedType() );
-   		return getDeviceCapBankControllerEditorPanel();
+   		if(getCapBankControllerTypePanel().getSelectedType() == com.cannontech.database.data.pao.DeviceTypes.CBC_7010)
+   			return getCapBankControllerSpecialTypePanel();
+   		else
+   			return getDeviceCapBankControllerEditorPanel();
    	}
-      else if( currentInputPanel == getDeviceCapBankControllerEditorPanel()
+	else if( currentInputPanel == getCapBankControllerSpecialTypePanel() )
+	{
+		getDeviceCapBankControllerEditorPanel().setCbcType( getCapBankControllerSpecialTypePanel().getSelectedType() );
+		return getDeviceCapBankControllerEditorPanel();
+	}
+    else if( currentInputPanel == getDeviceCapBankControllerEditorPanel()
                 && getDeviceCapBankControllerEditorPanel().getCbcType() == com.cannontech.database.data.pao.DeviceTypes.DNP_CBC_6510 )
-      {
-         getDeviceScanRateEditorPanel().setDeviceType( getCapBankControllerTypePanel().getSelectedType() );
-         return getDeviceScanRateEditorPanel();
-      }
+    {
+    	getDeviceScanRateEditorPanel().setDeviceType( getCapBankControllerTypePanel().getSelectedType() );
+        return getDeviceScanRateEditorPanel();
+    }
    	else
    	{
    		System.err.println( getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");

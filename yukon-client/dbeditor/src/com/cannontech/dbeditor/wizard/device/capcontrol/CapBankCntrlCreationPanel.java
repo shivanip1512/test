@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.*;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.common.gui.util.TextFieldDocument;
  
 public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 {
@@ -34,6 +35,9 @@ public class CapBankCntrlCreationPanel extends com.cannontech.common.gui.util.Da
 	private javax.swing.JPanel ivjJPanelControlDevice = null;
 	private javax.swing.JPanel ivjJPanelNewCBC = null;
 	private javax.swing.JLabel ivjJLabelCBCSerial = null;
+	private javax.swing.JTextField jTextFieldCBCName = null;
+	private javax.swing.JLabel jLabelCBCName = null;
+	private boolean is7000Series = false;
 /**
  * Constructor
  */
@@ -250,13 +254,15 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
 	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
 		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
-   else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
-      newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
-   else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
-   	  newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
-
-   //store the SerialNumber
-   Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
+   	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
+      	newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+   	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
+   	  	newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
+	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]))
+	   	newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
+	
+	//store the SerialNumber
+   	Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
    
    //routeID or PortID, depends on the CBC type
    Integer comboID = 
@@ -279,8 +285,12 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
 	newCBC.setDeviceID( com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID() );
 
-   //just use the serial number in the name
-   newCBC.setPAOName( "CBC " + serialNumber );
+  	String cbcName = getJTextFieldCBCName().getText();
+	//if no specified name, just use the serial number in the name
+   	if(cbcName == null || cbcName.length() <= 0 )
+   		newCBC.setPAOName( "CBC " + serialNumber );
+   	else
+   		newCBC.setPAOName( cbcName );
 
 	//get the pattern used for auto created CBC's
 /*
@@ -298,8 +308,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
 
 	
 	//a status point is automatically added to all capbank controllers
-   com.cannontech.database.data.point.PointBase newPoint =
-   	CapBankController.createStatusControlPoint( 
+   	com.cannontech.database.data.point.PointBase newPoint =
+   		CapBankController.createStatusControlPoint( 
    			newCBC.getDevice().getDeviceID().intValue() );
 
 	ogMulti.insertDBPersistentAt( newCBC, 0 );
@@ -451,9 +461,6 @@ private javax.swing.JComboBox getJComboBoxCBCRoute() {
 		try {
 			ivjJComboBoxCBCRoute = new javax.swing.JComboBox();
 			ivjJComboBoxCBCRoute.setName("JComboBoxCBCRoute");
-			ivjJComboBoxCBCRoute.setBounds(75, 84, 202, 23);
-			// user code begin {1}
-
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
@@ -482,12 +489,11 @@ private javax.swing.JComboBox getJComboBoxCBCType() {
 		try {
 			ivjJComboBoxCBCType = new javax.swing.JComboBox();
 			ivjJComboBoxCBCType.setName("JComboBoxCBCType");
-			ivjJComboBoxCBCType.setBounds(75, 18, 202, 23);
-			// user code begin {1}
-
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
-			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
-         	ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+			//ivjJComboBoxCBCType.addItem( "7020" );
+			//ivjJComboBoxCBCType.addItem( "7025" );
+			//ivjJComboBoxCBCType.addItem( "7030" );
          	ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
 
 			// user code end
@@ -511,8 +517,6 @@ private javax.swing.JLabel getJLabelCBCRoute() {
 			ivjJLabelCBCRoute.setName("JLabelCBCRoute");
 			ivjJLabelCBCRoute.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelCBCRoute.setText("Route:");
-			ivjJLabelCBCRoute.setBounds(13, 84, 60, 19);
-			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -534,8 +538,6 @@ private javax.swing.JLabel getJLabelCBCSerial() {
 			ivjJLabelCBCSerial.setName("JLabelCBCSerial");
 			ivjJLabelCBCSerial.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelCBCSerial.setText("Serial #:");
-			ivjJLabelCBCSerial.setBounds(13, 50, 60, 19);
-			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -557,8 +559,6 @@ private javax.swing.JLabel getJLabelCBCType() {
 			ivjJLabelCBCType.setName("JLabelCBCType");
 			ivjJLabelCBCType.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelCBCType.setText("Type:");
-			ivjJLabelCBCType.setBounds(13, 17, 60, 19);
-			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -580,17 +580,68 @@ private javax.swing.JPanel getJPanelCBCNew() {
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitle("New Cap Bank Controller");
 			ivjJPanelCBCNew = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints18 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints17 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints21 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints19 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints22 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints24 = new java.awt.GridBagConstraints();
+			consGridBagConstraints20.insets = new java.awt.Insets(4,0,3,13);
+			consGridBagConstraints20.ipady = -2;
+			consGridBagConstraints20.ipadx = 171;
+			consGridBagConstraints20.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints20.weightx = 1.0;
+			consGridBagConstraints20.gridy = 3;
+			consGridBagConstraints20.gridx = 1;
+			consGridBagConstraints22.insets = new java.awt.Insets(1,2,5,11);
+			consGridBagConstraints22.ipady = -2;
+			consGridBagConstraints22.ipadx = 171;
+			consGridBagConstraints22.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints22.weightx = 1.0;
+			consGridBagConstraints22.gridy = 0;
+			consGridBagConstraints22.gridx = 1;
+			consGridBagConstraints21.insets = new java.awt.Insets(4,8,7,0);
+			consGridBagConstraints21.ipadx = 18;
+			consGridBagConstraints21.gridy = 3;
+			consGridBagConstraints21.gridx = 0;
+			consGridBagConstraints23.insets = new java.awt.Insets(6,0,5,13);
+			consGridBagConstraints23.ipady = 3;
+			consGridBagConstraints23.ipadx = 198;
+			consGridBagConstraints23.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints23.weightx = 1.0;
+			consGridBagConstraints23.gridy = 1;
+			consGridBagConstraints23.gridx = 1;
+			consGridBagConstraints18.insets = new java.awt.Insets(5,8,8,0);
+			consGridBagConstraints18.ipadx = 8;
+			consGridBagConstraints18.gridy = 2;
+			consGridBagConstraints18.gridx = 0;
+			consGridBagConstraints24.insets = new java.awt.Insets(6,8,9,0);
+			consGridBagConstraints24.ipadx = 16;
+			consGridBagConstraints24.gridy = 1;
+			consGridBagConstraints24.gridx = 0;
+			consGridBagConstraints17.insets = new java.awt.Insets(0,8,10,0);
+			consGridBagConstraints17.ipadx = 24;
+			consGridBagConstraints17.gridy = 0;
+			consGridBagConstraints17.gridx = 0;
+			consGridBagConstraints19.insets = new java.awt.Insets(5,0,4,13);
+			consGridBagConstraints19.ipadx = 66;
+			consGridBagConstraints19.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints19.weightx = 1.0;
+			consGridBagConstraints19.gridy = 2;
+			consGridBagConstraints19.gridx = 1;
 			ivjJPanelCBCNew.setName("JPanelCBCNew");
 			ivjJPanelCBCNew.setBorder(ivjLocalBorder);
-			ivjJPanelCBCNew.setLayout(null);
-			getJPanelCBCNew().add(getJLabelCBCType(), getJLabelCBCType().getName());
-			getJPanelCBCNew().add(getJLabelCBCSerial(), getJLabelCBCSerial().getName());
-			getJPanelCBCNew().add(getJTextFieldCBCAddress(), getJTextFieldCBCAddress().getName());
-			getJPanelCBCNew().add(getJComboBoxCBCRoute(), getJComboBoxCBCRoute().getName());
-			getJPanelCBCNew().add(getJLabelCBCRoute(), getJLabelCBCRoute().getName());
-			getJPanelCBCNew().add(getJComboBoxCBCType(), getJComboBoxCBCType().getName());
-			// user code begin {1}
-			// user code end
+			ivjJPanelCBCNew.setLayout(new java.awt.GridBagLayout());
+			ivjJPanelCBCNew.add(getJLabelCBCType(), consGridBagConstraints17);
+			ivjJPanelCBCNew.add(getJLabelCBCSerial(), consGridBagConstraints18);
+			ivjJPanelCBCNew.add(getJTextFieldCBCAddress(), consGridBagConstraints19);
+			ivjJPanelCBCNew.add(getJComboBoxCBCRoute(), consGridBagConstraints20);
+			ivjJPanelCBCNew.add(getJLabelCBCRoute(), consGridBagConstraints21);
+			ivjJPanelCBCNew.add(getJComboBoxCBCType(), consGridBagConstraints22);
+			ivjJPanelCBCNew.add(getJTextFieldCBCName(), consGridBagConstraints23);
+			ivjJPanelCBCNew.add(getJLabelCBCName(), consGridBagConstraints24);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -656,7 +707,6 @@ private javax.swing.JPanel getJPanelControlDevice() {
 			constraintsControlDeviceComboBox.insets = new java.awt.Insets(3, 1, 2, 35);
 			getJPanelControlDevice().add(getControlDeviceComboBox(), constraintsControlDeviceComboBox);
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -674,28 +724,21 @@ private javax.swing.JPanel getJPanelNewCBC() {
 	if (ivjJPanelNewCBC == null) {
 		try {
 			ivjJPanelNewCBC = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
+			consGridBagConstraints25.insets = new java.awt.Insets(3,5,2,59);
+			consGridBagConstraints25.ipadx = 41;
+			consGridBagConstraints25.gridy = 0;
+			consGridBagConstraints25.gridx = 0;
+			consGridBagConstraints26.insets = new java.awt.Insets(2,24,9,17);
+			consGridBagConstraints26.ipady = -4;
+			consGridBagConstraints26.gridy = 1;
+			consGridBagConstraints26.gridx = 0;
 			ivjJPanelNewCBC.setName("JPanelNewCBC");
 			ivjJPanelNewCBC.setLayout(new java.awt.GridBagLayout());
 
-			java.awt.GridBagConstraints constraintsJCheckBoxCreateCBC = new java.awt.GridBagConstraints();
-			constraintsJCheckBoxCreateCBC.gridx = 1; constraintsJCheckBoxCreateCBC.gridy = 1;
-			constraintsJCheckBoxCreateCBC.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJCheckBoxCreateCBC.ipadx = 64;
-			constraintsJCheckBoxCreateCBC.insets = new java.awt.Insets(3, 5, 2, 59);
-			getJPanelNewCBC().add(getJCheckBoxCreateCBC(), constraintsJCheckBoxCreateCBC);
-
-			java.awt.GridBagConstraints constraintsJPanelCBCNew = new java.awt.GridBagConstraints();
-			constraintsJPanelCBCNew.gridx = 1; constraintsJPanelCBCNew.gridy = 2;
-			constraintsJPanelCBCNew.fill = java.awt.GridBagConstraints.BOTH;
-			constraintsJPanelCBCNew.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJPanelCBCNew.weightx = 1.0;
-			constraintsJPanelCBCNew.weighty = 1.0;
-			constraintsJPanelCBCNew.ipadx = 293;
-			constraintsJPanelCBCNew.ipady = 121;
-			constraintsJPanelCBCNew.insets = new java.awt.Insets(2, 24, 6, 17);
-			getJPanelNewCBC().add(getJPanelCBCNew(), constraintsJPanelCBCNew);
-			// user code begin {1}
-			// user code end
+			ivjJPanelNewCBC.add(getJCheckBoxCreateCBC(), consGridBagConstraints25);
+			ivjJPanelNewCBC.add(getJPanelCBCNew(), consGridBagConstraints26);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -715,7 +758,6 @@ private javax.swing.JTextField getJTextFieldCBCAddress() {
 			ivjJTextFieldCBCAddress = new javax.swing.JTextField();
 			ivjJTextFieldCBCAddress.setName("JTextFieldCBCAddress");
 			ivjJTextFieldCBCAddress.setFont(new java.awt.Font("sansserif", 0, 14));
-			ivjJTextFieldCBCAddress.setBounds(75, 50, 202, 23);
 			ivjJTextFieldCBCAddress.setColumns(12);
 			// user code begin {1}
 			
@@ -895,6 +937,11 @@ private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
       for( int i = 0; i < list.size(); i++ )
          getJComboBoxCBCRoute().addItem( list.get(i) );
    }
+   
+   is7000Series = getJComboBoxCBCType().getSelectedItem().toString().equals(
+		 com.cannontech.database.data.pao.DeviceTypes.STRING_CBC_7010[0] );
+		 
+	fireInputUpdate();
 
 }
 
@@ -923,29 +970,21 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("CapBankCntrlCreationPanel");
+		java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
+		consGridBagConstraints29.insets = new java.awt.Insets(5,2,24,7);
+		consGridBagConstraints29.gridy = 1;
+		consGridBagConstraints29.gridx = 0;
+		consGridBagConstraints30.insets = new java.awt.Insets(5,2,4,7);
+		consGridBagConstraints30.ipady = -14;
+		consGridBagConstraints30.ipadx = -10;
+		consGridBagConstraints30.gridy = 0;
+		consGridBagConstraints30.gridx = 0;
 		setLayout(new java.awt.GridBagLayout());
-		setSize(343, 298);
+		this.add(getJPanelNewCBC(), consGridBagConstraints29);
+		this.add(getJPanelControlDevice(), consGridBagConstraints30);
+		setSize(343, 336);
 
-		java.awt.GridBagConstraints constraintsJPanelNewCBC = new java.awt.GridBagConstraints();
-		constraintsJPanelNewCBC.gridx = 1; constraintsJPanelNewCBC.gridy = 2;
-		constraintsJPanelNewCBC.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelNewCBC.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJPanelNewCBC.weightx = 1.0;
-		constraintsJPanelNewCBC.weighty = 1.0;
-		constraintsJPanelNewCBC.ipady = -2;
-		constraintsJPanelNewCBC.insets = new java.awt.Insets(5, 2, 21, 7);
-		add(getJPanelNewCBC(), constraintsJPanelNewCBC);
-
-		java.awt.GridBagConstraints constraintsJPanelControlDevice = new java.awt.GridBagConstraints();
-		constraintsJPanelControlDevice.gridx = 1; constraintsJPanelControlDevice.gridy = 1;
-		constraintsJPanelControlDevice.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelControlDevice.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJPanelControlDevice.weightx = 1.0;
-		constraintsJPanelControlDevice.weighty = 1.0;
-		constraintsJPanelControlDevice.ipadx = -10;
-		constraintsJPanelControlDevice.ipady = -9;
-		constraintsJPanelControlDevice.insets = new java.awt.Insets(5, 2, 4, 7);
-		add(getJPanelControlDevice(), constraintsJPanelControlDevice);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -978,7 +1017,19 @@ public boolean isInputValid()
 		setErrorString("This CapBank must be assigned to a new or existing CBC");
 		return false;
 	}
-
+	
+	if(is7000Series)
+	{
+		String breakfastSerial = getJTextFieldCBCAddress().getText();
+		System.out.println(breakfastSerial.length() + "whoop whoop: " + breakfastSerial.charAt(0));
+		
+		if(breakfastSerial.length() != 9 || !breakfastSerial.startsWith("7", 0))
+		{
+			setErrorString("A 7000 series CBC needs a nine digit serial number that begins with a 7");
+			return false;
+		}
+	}
+	
 	return true;
 }
 /**
@@ -1087,4 +1138,33 @@ private static void getBuilderData() {
 	GGG
 **end of data**/
 }
-}
+	/**
+	 * This method initializes jTextFieldCBCName
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private javax.swing.JTextField getJTextFieldCBCName() {
+		if(jTextFieldCBCName == null) {
+			jTextFieldCBCName = new javax.swing.JTextField();
+			
+			jTextFieldCBCName.setDocument(
+				new TextFieldDocument(
+					TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
+					TextFieldDocument.INVALID_CHARS_PAO) );
+		}
+		return jTextFieldCBCName;
+	}
+	/**
+	 * This method initializes jLabelCBCName
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabelCBCName() {
+		if(jLabelCBCName == null) {
+			jLabelCBCName = new javax.swing.JLabel();
+			jLabelCBCName.setText("Name: ");
+			jLabelCBCName.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 14));
+		}
+		return jLabelCBCName;
+	}
+}  //  @jve:visual-info  decl-index=0 visual-constraint="10,10"
