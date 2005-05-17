@@ -7,12 +7,13 @@ public final class PointTypes implements IPointOffsets
 {
 	//System point id constants - these mirror the #defines
 	// in pointtypes.h
-	public static final int SYS_PID_SYSTEM			=	0;
-	public static final int SYS_PID_PORTER 			=	-1;
-	public static final int SYS_PID_SCANNER 		= 	-2;
-	public static final int SYS_PID_DISPATCH		=   -3;
-	public static final int SYS_PID_MACS	 		=	-4;
-	public static final int SYS_PID_LOADMANAGEMENT	=	-10;
+	public static final int SYS_PID_SYSTEM			=  0;
+	public static final int SYS_PID_PORTER 			= -1;
+	public static final int SYS_PID_SCANNER 		= -2;
+	public static final int SYS_PID_DISPATCH		= -3;
+	public static final int SYS_PID_MACS	 		= -4;
+	public static final int SYS_PID_CAPCONTROL 		= -5;
+	public static final int SYS_PID_LOADMANAGEMENT	= -10;
 	
 	//System point id constants - client
 	public static final int SYS_PID_THRESHOLD	=	-100;
