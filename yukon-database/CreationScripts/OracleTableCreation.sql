@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i2                           */
-/* Created on:     4/19/2005 9:55:07 AM                         */
+/* Created on:     5/17/2005 11:18:11 AM                        */
 /*==============================================================*/
 
 
@@ -935,25 +935,39 @@ insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Count
 insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
 insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
 insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
-insert into command values(-68, 'putconfig xcom serv out temp 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
-insert into command values(-69, 'putconfig xcom serv out temp', 'In Service', 'ExpresscomSerial');
+insert into command values(-68, 'putconfig xcom service out temp offhours 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
+insert into command values(-69, 'putconfig xcom service in', 'In-Service', 'ExpresscomSerial');
+
 /* LCRSerial */
-insert into command values(-70, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'LCRSerial');
-insert into command values(-71, 'control restore relay 1', 'Restore Relay 1', 'LCRSerial');
-insert into command values(-72, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'LCRSerial');
-insert into command values(-73, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'LCRSerial');
-insert into command values(-74, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'LCRSerial');
-insert into command values(-75, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
-insert into command values(-76, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'LCRSerial');
-insert into command values(-77, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'LCRSerial');
-insert into command values(-78, 'putconfig xcom raw 40 ?''Weighting (1-8)''', 'Store a TrueCycle Day', 'LCRSerial');
-insert into command values(-79, 'putconfig raw 36 1', 'Set Versacom Mode', 'LCRSerial');
-insert into command values(-80, 'putconfig raw 35 0', 'Set Emetcon Mode', 'LCRSerial');
+insert into command values(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
+
+/* VersacomSerial */
+insert into command values(-71, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'VersacomSerial');
+insert into command values(-72, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'VersacomSerial');
+insert into command values(-73, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'VersacomSerial');
+insert into command values(-74, 'putconfig raw 35 0', 'Set LCR 3000 to Emetcon Mode', 'VersacomSerial');
+insert into command values(-75, 'putconfig raw 36 1', 'Set LCR 3000 to Versacom Mode', 'VersacomSerial');
+
 /* MCT410IL */
 insert into command values(-81, 'getvalue demand', 'Read KW Demand, Current Voltage, Blink Count', 'MCT-410IL');
 insert into command values(-82, 'getvalue voltage', 'Read Min / Max Voltage', 'MCT-410IL');
 insert into command values(-83, 'putconfig emetcon timesync', 'Write Time/Date to Meter', 'MCT-410IL');
 insert into command values(-84, 'getvalue peak', 'Read Current Peak', 'MCT-410IL');
+
+/* All LCRs */
+insert into command values(-85, 'control shed 5m relay 1', 'Shed 5-min Relay 1', 'All LCRs');
+insert into command values(-86, 'control shed 5m relay 2', 'Shed 5-min Relay 2', 'All LCRs');
+insert into command values(-87, 'control shed 5m relay 3', 'Shed 5-min Relay 3', 'All LCRs');
+insert into command values(-88, 'control restore relay 1', 'Restore Relay 1', 'All LCRs');
+insert into command values(-89, 'control restore relay 2', 'Restore Relay 2', 'All LCRs');
+insert into command values(-90, 'control restore relay 3', 'Restore Relay 3', 'All LCRs');
+insert into command values(-91, 'control cycle 50 period 30 relay 1', 'Cycle 50 Period-30 Relay 1', 'All LCRs');
+insert into command values(-92, 'control cycle terminate relay 1', 'Terminate Cycle Relay 1', 'All LCRs');
+insert into command values(-93, 'control cycle terminate relay 2', 'Terminate Cycle Relay 2', 'All LCRs');
+insert into command values(-94, 'control cycle terminate relay 3', 'Terminate Cycle Relay 3', 'All LCRs');
+insert into command values(-95, 'putconfig service out', 'Set to Out-of-Service', 'All LCRs');
+insert into command values(-96, 'putconfig service in', 'Set to In-Service', 'All LCRs');
+insert into command values(-97, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'All LCRs');
 alter table Command
    add constraint PK_COMMAND primary key (CommandID);
 
@@ -1718,7 +1732,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-4, 0, 'Landis-Gyr S4', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-5, 0, 'MCT Broadcast', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-6, 0, 'Sixnet', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-7, 0, 'Tap Terminal', 1, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-8, 0, 'VersacomSerial', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-9, 0, 'SA205Serial', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-10, 0, 'SA305Serial', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-11, 0, 'CollectionGroup', 1, 'Y');
@@ -1784,10 +1797,10 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-70, -27, 'Versacom Group', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-71, -28, 'Versacom Group', 2, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-72, -44, 'Versacom Group', 3, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-73, -45, 'Versacom Group', 4, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-74, -46, 'Versacom Group', 5, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-75, -47, 'Versacom Group', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-74, -95, 'Versacom Group', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-75, -96, 'Versacom Group', 6, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-76, -48, 'Versacom Group', 7, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-77, -49, 'Versacom Group', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-77, -97, 'Versacom Group', 8, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-78, -34, 'TCU-5000', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-79, -35, 'TCU-5000', 2, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-80, -36, 'TCU-5000', 3, 'Y');
@@ -1842,21 +1855,20 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-128, -66, 'ExpresscomSerial', 4, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-129, -67, 'ExpresscomSerial', 5, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-130, -68, 'ExpresscomSerial', 6, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-131, -69, 'ExpresscomSerial', 7, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-132, -70, 'LCRSerial', 1, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-133, -71, 'LCRSerial', 2, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-134, -72, 'LCRSerial', 3, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-135, -73, 'LCRSerial', 4, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-136, -74, 'LCRSerial', 5, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-137, -46, 'LCRSerial', 6, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-138, -47, 'LCRSerial', 7, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-139, -75, 'LCRSerial', 8, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-140, -76, 'LCRSerial', 9, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-141, -77, 'LCRSerial', 10, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-142, -78, 'LCRSerial', 11, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-143, -79, 'LCRSerial', 12, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-144, -80, 'LCRSerial', 13, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-145, -49, 'LCRSerial', 14, 'Y');
-INSERT INTO DEVICETYPECOMMAND VALUES (-146, -48, 'LCRSerial', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-132, -85, 'ExpresscomSerial', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-133, -86, 'ExpresscomSerial', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-134, -87, 'ExpresscomSerial', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-135, -88, 'ExpresscomSerial', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-136, -89, 'ExpresscomSerial', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-137, -90, 'ExpresscomSerial', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-138, -91, 'ExpresscomSerial', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-139, -92, 'ExpresscomSerial', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-140, -93, 'ExpresscomSerial', 16, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-141, -94, 'ExpresscomSerial', 17, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
+
 INSERT INTO DEVICETYPECOMMAND VALUES (-147, -1, 'MCT-210', 1, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-148, -2, 'MCT-210', 2, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-149, -3, 'MCT-210', 3, 'Y');
@@ -2038,6 +2050,41 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-324, -18, 'MCT-410IL', 7, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-325, -19, 'MCT-410IL', 8, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-326, -83, 'MCT-410IL', 9, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-327, -84, 'MCT-410IL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-328, -70, 'LCRSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-329, -85, 'LCRSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-330, -86, 'LCRSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-331, -87, 'LCRSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-332, -88, 'LCRSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-333, -89, 'LCRSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-334, -90, 'LCRSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-335, -91, 'LCRSerial', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-336, -92, 'LCRSerial', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-337, -93, 'LCRSerial', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-338, -94, 'LCRSerial', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-339, -95, 'LCRSerial', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-340, -96, 'LCRSerial', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-341, -97, 'LCRSerial', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-342, -48, 'LCRSerial', 15, 'Y');
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-343, -71, 'VersacomSerial', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-344, -72, 'VersacomSerial', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-345, -73, 'VersacomSerial', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-346, -74, 'VersacomSerial', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-347, -75, 'VersacomSerial', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-348, -85, 'VersacomSerial', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-349, -86, 'VersacomSerial', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-350, -87, 'VersacomSerial', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-351, -88, 'VersacomSerial', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-352, -89, 'VersacomSerial', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-353, -90, 'VersacomSerial', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-354, -91, 'VersacomSerial', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-355, -92, 'VersacomSerial', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-356, -93, 'VersacomSerial', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-357, -94, 'VersacomSerial', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-358, -95, 'VersacomSerial', 16, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-359, -96, 'VersacomSerial', 17, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-360, -97, 'VersacomSerial', 18, 'Y');
+
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID);
 
@@ -2241,7 +2288,8 @@ create table DynamicLMGroup  (
    ControlStartTime     DATE                            not null,
    ControlCompleteTime  DATE                            not null,
    NextControlTime      DATE                            not null,
-   InternalState        NUMBER                          not null
+   InternalState        NUMBER                          not null,
+   dailyops             SMALLINT                        not null
 );
 
 alter table DynamicLMGroup
@@ -2273,7 +2321,6 @@ create table DynamicLMProgramDirect  (
    StartTime            DATE                            not null,
    StopTime             DATE                            not null,
    TimeStamp            DATE                            not null,
-   DailyOps             NUMBER                          not null,
    NotifyTime           DATE                            not null,
    StartedRampingOut    DATE                            not null
 );
@@ -3200,7 +3247,9 @@ create table LMProgramDirect  (
    NotifyOffset         NUMBER                          not null,
    Heading              VARCHAR2(40)                    not null,
    MessageHeader        VARCHAR2(160)                   not null,
-   MessageFooter        VARCHAR2(160)                   not null
+   MessageFooter        VARCHAR2(160)                   not null,
+   TriggerOffset        SMALLINT                        not null,
+   RestoreOffset        FLOAT                           not null
 );
 
 alter table LMProgramDirect
@@ -3768,32 +3817,16 @@ create unique index Indx_RouteDevID on Route (
 create table STATE  (
    STATEGROUPID         NUMBER                          not null,
    RAWSTATE             NUMBER                          not null,
-   TEXT                 VARCHAR2(20)                    not null,
+   TEXT                 VARCHAR2(32)                    not null,
    FOREGROUNDCOLOR      NUMBER                          not null,
    BACKGROUNDCOLOR      NUMBER                          not null,
    ImageID              NUMBER                          not null
 );
 
-INSERT INTO State VALUES ( -1, 0, 'AnalogText', 0, 6 , 0);
-INSERT INTO State VALUES ( -2, 0, 'AccumulatorText', 0, 6 , 0);
-INSERT INTO State VALUES ( -3, 0, 'CalculatedText', 0, 6 , 0);
-INSERT INTO State VALUES ( 0, 0, 'SystemText', 0, 6 , 0);
-INSERT INTO State VALUES ( 1, -1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES ( 1, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES ( 1, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES ( 2, -1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES ( 2, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES ( 2, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES ( 2, 2, 'Unknown', 2, 6 , 0);
-INSERT INTO State VALUES ( 3, -1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES ( 3, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES ( 3, 1, 'Close', 1, 6 , 0);
-INSERT INTO State VALUES ( 3, 2, 'OpenQuestionable', 2, 6 , 0);
-INSERT INTO State VALUES ( 3, 3, 'CloseQuestionable', 3, 6 , 0);
-INSERT INTO State VALUES ( 3, 4, 'OpenFail', 4, 6 , 0);
-INSERT INTO State VALUES ( 3, 5, 'CloseFail', 5, 6 , 0);
-INSERT INTO State VALUES ( 3, 6, 'OpenPending', 7, 6 , 0);
-INSERT INTO State VALUES ( 3, 7, 'ClosePending', 8, 6 , 0);
+insert into state values(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
+insert into state values(-6, 1, 'Connected', 0, 6, 0);
+insert into state values(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
+insert into state values(-6, 3, 'Connect Armed', 5, 6, 0);
 INSERT INTO State VALUES(-5, 0, 'Events', 2, 6, 0);
 INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6, 0);
 INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6, 0);
@@ -3804,7 +3837,28 @@ INSERT INTO State VALUES(-5, 6, 'Priority 6', 5, 6, 0);
 INSERT INTO State VALUES(-5, 7, 'Priority 7', 3, 6, 0);
 INSERT INTO State VALUES(-5, 8, 'Priority 8', 2, 6, 0);
 INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
-INSERT INTO State VALUES(-5, 10, 'Priority 10', 9, 6, 0);
+INSERT INTO State VALUES(-5,10, 'Priority 10', 9, 6, 0);
+INSERT INTO State VALUES(-3, 0, 'CalculatedText', 0, 6 , 0);
+INSERT INTO State VALUES(-2, 0, 'AccumulatorText', 0, 6 , 0);
+INSERT INTO State VALUES(-1, 0, 'AnalogText', 0, 6 , 0);
+INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
+INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES( 1, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES( 2,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( 2, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES( 2, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES( 2, 2, 'Unknown', 2, 6 , 0);
+INSERT INTO State VALUES( 3,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( 3, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES( 3, 1, 'Close', 1, 6 , 0);
+INSERT INTO State VALUES( 3, 2, 'OpenQuestionable', 10, 6 , 0);
+INSERT INTO State VALUES( 3, 3, 'CloseQuestionable', 3, 6 , 0);
+INSERT INTO State VALUES( 3, 4, 'OpenFail', 4, 6 , 0);
+INSERT INTO State VALUES( 3, 5, 'CloseFail', 5, 6 , 0);
+INSERT INTO State VALUES( 3, 6, 'OpenPending', 7, 6 , 0);
+INSERT INTO State VALUES( 3, 7, 'ClosePending', 8, 6 , 0);
+
 alter table STATE
    add constraint PK_STATE primary key (STATEGROUPID, RAWSTATE);
 
@@ -3824,14 +3878,16 @@ create table STATEGROUP  (
    GroupType            VARCHAR2(20)                    not null
 );
 
-INSERT INTO StateGroup VALUES ( -1, 'DefaultAnalog', 'Analog' );
-INSERT INTO StateGroup VALUES ( -2, 'DefaultAccumulator', 'Accumulator' );
-INSERT INTO StateGroup VALUES ( -3, 'DefaultCalculated', 'Calculated' );
-INSERT INTO StateGroup VALUES (-5, 'Event Priority', 'System' );
-INSERT INTO StateGroup VALUES ( 0, 'SystemState', 'System' );
-INSERT INTO StateGroup VALUES ( 1, 'TwoStateStatus', 'Status' );
-INSERT INTO StateGroup VALUES ( 2, 'ThreeStateStatus', 'Status' );
-INSERT INTO StateGroup VALUES ( 3, 'CapBankStatus', 'Status' );
+insert into stategroup values(-6, '410 Disconnect', 'Status');
+INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
+INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator' );
+INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated' );
+INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog' );
+INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System' );
+INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status' );
+INSERT INTO StateGroup VALUES( 2, 'ThreeStateStatus', 'Status' );
+INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status' );
+
 alter table STATEGROUP
    add constraint SYS_C0013128 primary key (STATEGROUPID);
 
@@ -4194,6 +4250,8 @@ insert into YukonGroupRole values(-105,-100,-100,-10005,'(none)');
 insert into YukonGroupRole values(-107,-100,-100,-10007,'(none)');
 insert into YukonGroupRole values(-108,-100,-100,-10008,'(none)');
 insert into YukonGroupRole values(-109,-100,-100,-10009,'(none)');
+insert into YukonGroupRole values(-110,-100,-100,-10010,'(none)');
+insert into YukonGroupRole values(-111,-100,-100,-10011,'(none)');
 
 
 /* TDC */
@@ -4202,11 +4260,8 @@ insert into YukonGroupRole values(-121,-100,-101,-10101,'(none)');
 insert into YukonGroupRole values(-122,-100,-101,-10102,'(none)');
 insert into YukonGroupRole values(-123,-100,-101,-10103,'(none)');
 insert into YukonGroupRole values(-124,-100,-101,-10104,'(none)');
-insert into YukonGroupRole values(-125,-100,-101,-10105,'(none)');
-insert into YukonGroupRole values(-126,-100,-101,-10106,'(none)');
 insert into YukonGroupRole values(-127,-100,-101,-10107,'(none)');
 insert into YukonGroupRole values(-128,-100,-101,-10108,'(none)');
-insert into YukonGroupRole values(-129,-100,-101,-10109,'(none)');
 
 /* Trending */
 insert into YukonGroupRole values(-150,-100,-102,-10200,'(none)');
@@ -4230,6 +4285,12 @@ insert into YukonGroupRole values(-211,-1,-105,-10501,'(none)');
 /* Billing for Yukon Gorup */
 insert into YukonGroupRole values(-230,-1,-106,-10600,'(none)');
 insert into YukonGroupRole values(-231,-1,-106,-10601,'(none)');
+insert into YukonGroupRole values(-232,-1,-106,-10602,'(none)');
+insert into YukonGroupRole values(-233,-1,-106,-10603,'(none)');
+insert into YukonGroupRole values(-234,-1,-106,-10604,'(none)');
+insert into YukonGroupRole values(-235,-1,-106,-10605,'(none)');
+insert into YukonGroupRole values(-236,-1,-106,-10606,'(none)');
+insert into YukonGroupRole values(-237,-1,-106,-10607,'(none)');
 
 /* Esubstation Editor */
 insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
@@ -4386,6 +4447,7 @@ insert into yukongrouprole values (-757,-301,-201,-20157,'(none)');
 
 insert into yukongrouprole values (-765,-301,-210,-21000,'(none)');
 insert into yukongrouprole values (-766,-301,-210,-21001,'(none)');
+insert into yukongrouprole values (-767,-301,-210,-21002,'(none)');
 
 insert into yukongrouprole values (-770,-301,-202,-20200,'(none)');
 insert into yukongrouprole values (-775,-301,-203,-20300,'(none)');
@@ -4477,19 +4539,16 @@ insert into YukonGroupRole values(-1007,-2,-100,-10007,'(none)');
 insert into YukonGroupRole values(-1008,-2,-100,-10008,'(none)');
 insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
 insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
+insert into YukonGroupRole values(-1011,-2,-100,-10011,'(none)');
 
 insert into YukonGroupRole values(-1020,-2,-101,-10100,'(none)');
 insert into YukonGroupRole values(-1021,-2,-101,-10101,'(none)');
 insert into YukonGroupRole values(-1022,-2,-101,-10102,'(none)');
 insert into YukonGroupRole values(-1023,-2,-101,-10103,'(none)');
 insert into YukonGroupRole values(-1024,-2,-101,-10104,'(none)');
-insert into YukonGroupRole values(-1025,-2,-101,-10105,'(none)');
-insert into YukonGroupRole values(-1026,-2,-101,-10106,'(none)');
 insert into YukonGroupRole values(-1027,-2,-101,-10107,'(none)');
 insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
-insert into YukonGroupRole values(-1029,-2,-101,-10109,'(none)');
 insert into YukonGroupRole values(-1030,-2,-101,-10111,'(none)');
-insert into YukonGroupRole values(-1031,-2,-101,-10112,'(none)');
 
 insert into YukonGroupRole values(-1050,-2,-102,-10200,'(none)');
 
@@ -4603,6 +4662,7 @@ insert into YukonGroupRole values (-1257,-2,-201,-20157,'(none)');
 
 insert into YukonGroupRole values (-1265,-2,-210,-21000,'(none)');
 insert into YukonGroupRole values (-1266,-2,-210,-21001,'(none)');
+insert into YukonGroupRole values (-1267,-2,-210,-21002,'(none)');
 
 insert into YukonGroupRole values (-1270,-2,-202,-20200,'(none)');
 insert into YukonGroupRole values (-1275,-2,-203,-20300,'(none)');
@@ -4683,6 +4743,7 @@ insert into yukongrouprole values (-2057,-303,-201,-20157,'(none)');
 
 insert into yukongrouprole values (-2070,-303,-210,-21000,'(none)');
 insert into yukongrouprole values (-2071,-303,-210,-21001,'(none)');
+insert into yukongrouprole values (-2072,-303,-210,-21002,'(none)');
 
 insert into yukongrouprole values (-2080,-303,-209,-20900,'(none)');
 insert into yukongrouprole values (-2081,-303,-209,-20901,'(none)');
@@ -5310,9 +5371,6 @@ insert into YukonRole values(-306, 'User Control', 'CICustomer', 'Customer acces
 /* Consumer roles */
 insert into YukonRole values(-400,'Residential Customer','Consumer','Access to residential customer information');
 
-/* Billing AMR role */
-insert into YukonRole values (-500,'Billing','AMR','Access to billing file generation.');
-
 /* Reporting Analysis role */
 insert into YukonRole values (-600,'Reporting','Analysis','Access to reports generation.');
 insert into YukonRole values (-601,'Trending','Analysis','Access to trending functionality.');
@@ -5395,6 +5453,7 @@ insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','fal
 insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
 insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
 insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
+insert into YukonRoleProperty values(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -5402,13 +5461,9 @@ insert into YukonRoleProperty values(-10101,-101,'macs_edit','00000CCC','The fol
 insert into YukonRoleProperty values(-10102,-101,'tdc_express','ludicrous_speed','<description>');
 insert into YukonRoleProperty values(-10103,-101,'tdc_max_rows','500','The number of rows shown before creating a new page of data');
 insert into YukonRoleProperty values(-10104,-101,'tdc_rights','00000000','The following settings are valid: HIDE_MACS(0x00001000), HIDE_CAPCONTROL(0x00002000), HIDE_LOADCONTROL(0x00004000), HIDE_ALL_DISPLAYS(0x0000F000), CONTROL_YUKON_SERVICES(0x00010000), HIDE_ALARM_COLORS(0x80000000)');
-insert into YukonRoleProperty values(-10105,-101,'CAP_CONTROL_INTERFACE','amfm','<description>');
-insert into YukonRoleProperty values(-10106,-101,'cbc_creation_name','CBC %PAOName%','What text will be added onto CBC names when they are created');
 insert into YukonRoleProperty values(-10107,-101,'tdc_alarm_count','3','Total number alarms that are displayed in the quick access list');
 insert into YukonRoleProperty values(-10108,-101,'decimal_places','2','How many decimal places to show for real values');
-insert into YukonRoleProperty values(-10109,-101,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
-insert into YukonRoleProperty values(-10112,-101,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 
 
 /* Trending Role */
@@ -5433,6 +5488,14 @@ insert into YukonRoleProperty values(-10501,-105,'run_interval','900','<descript
 /* Billing Role Properties */
 insert into YukonRoleProperty values(-10600,-106,'wiz_activate','false','<description>');
 insert into YukonRoleProperty values(-10601,-106,'input_file','c:\yukon\client\bin\BillingIn.txt','<description>');
+insert into YukonRoleProperty values(-10602,-106,'Header Label','Billing','The header label for billing.');
+insert into YukonRoleProperty values(-10603,-106,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
+insert into YukonRoleProperty values(-10604,-106,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
+insert into YukonRoleProperty values(-10605,-106,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
+insert into YukonRoleProperty values(-10606,-106,'Append To File','false','Append to existing file.');
+insert into YukonRoleProperty values(-10607,-106,'Remove Multiplier','false','Remove the multiplier value from the reading.');
+insert into YukonRoleProperty values(-10608,-106,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
+
 
 /* Esubstation Editor Role Properties */
 insert into YukonRoleProperty values(-10700,-107,'default','false','The default esub editor property');
@@ -5481,6 +5544,10 @@ insert into YukonRoleProperty values(-20000,-200,'Config Energy Company','false'
 insert into YukonRoleProperty values(-20001,-200,'Create Energy Company','false','Controls whether to allow creating a new energy company');
 insert into YukonRoleProperty values(-20002,-200,'Delete Energy Company','false','Controls whether to allow deleting the energy company');
 insert into YukonRoleProperty values(-20003,-200,'Manage Members','false','Controls whether to allow managing the energy company''s members');
+insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring of all batched switch commands');
+insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
+insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
+insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
 
 /* Operator Commercial Metering Role Properties*/
 insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The disclaimer that appears with trends');
@@ -5668,16 +5735,6 @@ insert into YukonRoleProperty values(-40194,-400,'Heading Trending','Trending','
 insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
 insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
 
-/* Billing AMR role properties */
-insert into YukonRoleProperty values(-50000,-500,'Header Label','Billing','The header label for billing.');
-insert into YukonRoleProperty values(-50001,-500,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
-insert into YukonRoleProperty values(-50002,-500,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
-insert into YukonRoleProperty values(-50003,-500,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
-insert into YukonRoleProperty values(-50004,-500,'Append To File','false','Append to existing file.');
-insert into YukonRoleProperty values(-50005,-500,'Remove Multiplier','false','Remove the multiplier value from the reading.');
-insert into YukonRoleProperty values(-50006,-500,'Input File Location','c:\yukon\client\bin\BillingIn.txt','The NCDC format takes in an input file.');
-insert into YukonRoleProperty values(-50007,-500,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
-
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-60000,-600,'Header Label','Reporting','The header label for reporting.');
 insert into YukonRoleProperty values(-60001,-600,'Download Reports Enable','true','Access to download the report files..');
@@ -5691,7 +5748,7 @@ insert into YukonRoleProperty values(-60008,-600,'Database Reports Group','true'
 insert into YukonRoleProperty values(-60009,-600,'Stars Reports Group','true','Access to Stars group reports.');
 insert into YukonRoleProperty values(-60010,-600,'Other Reports Group','true','Access to Other group reports.');
 
-insert into YukonRoleProperty values(-60013,-600,'Admin Reports Group Label','Administor','Label (header) for administrative group reports.');
+insert into YukonRoleProperty values(-60013,-600,'Admin Reports Group Label','Administrator','Label (header) for administrative group reports.');
 insert into YukonRoleProperty values(-60014,-600,'AMR Reports Group Label','Metering','Label (header) for AMR group reports.');
 insert into YukonRoleProperty values(-60015,-600,'Statistical Reports Group Label','Statistical','Label (header) for statistical group reports.');
 insert into YukonRoleProperty values(-60016,-600,'Load Managment Reports Group Label','Load Management','Label (header) for Load Management group reports.');
@@ -5728,6 +5785,11 @@ insert into YukonRoleProperty values(-70001,-700,'Allow Control','true','Enables
 insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets the visibility of reports.');
 insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
 insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets the visibility of one-line displays.');
+insert into YukonRoleProperty values(-70005,-700,'cap_control_interface','amfm','Optional interface to the AMFM mapping system');
+insert into YukonRoleProperty values(-70006,-700,'cbc_creation_name','CBC %PAOName%','What text will be added onto CBC names when they are created');
+insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
+insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
+insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID);
 
@@ -5826,10 +5888,10 @@ create table YukonServices  (
    ParamValues          VARCHAR2(300)                   not null
 );
 
-insert into YukonServices values( 1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
-/* insert into YukonServices values( 2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' ); */
-/* insert into YukonServices values( 3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' ); */
-/* insert into YukonServices values( 4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)'); */
+insert into YukonServices values( -1, 'Notification_Server', 'com.cannontech.jmx.services.DynamicNotifcationServer', '(none)', '(none)' );
+insert into YukonServices values( -2, 'WebGraph', 'com.cannontech.jmx.services.DynamicWebGraph', '(none)', '(none)' );
+insert into YukonServices values( -3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );
+insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)');
 insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)' );
 alter table YukonServices
    add constraint PK_YUKSER primary key (ServiceID);

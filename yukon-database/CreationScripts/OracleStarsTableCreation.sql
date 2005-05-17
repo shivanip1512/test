@@ -1,6 +1,6 @@
 /*==============================================================*/
-/* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2005 5:26:25 PM                          */
+/* DBMS name:      ORACLE Version 9i2                           */
+/* Created on:     5/17/2005 11:41:09 AM                        */
 /*==============================================================*/
 
 
@@ -151,8 +151,8 @@ create table ApplianceBase  (
    YearManufactured     NUMBER,
    ManufacturerID       NUMBER,
    LocationID           NUMBER,
-   KWCapacity           NUMBER,
-   EfficiencyRating     NUMBER,
+   KWCapacity           FLOAT,
+   EfficiencyRating     FLOAT,
    Notes                VARCHAR2(500),
    ModelNumber          VARCHAR2(40)                    not null
 );

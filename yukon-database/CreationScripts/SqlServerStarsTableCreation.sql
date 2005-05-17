@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/3/2005 5:25:41 PM                          */
+/* Created on:     5/17/2005 11:40:31 AM                        */
 /*==============================================================*/
 
 
@@ -483,8 +483,8 @@ create table ApplianceBase (
    YearManufactured     numeric              null,
    ManufacturerID       numeric              null,
    LocationID           numeric              null,
-   KWCapacity           numeric              null,
-   EfficiencyRating     numeric              null,
+   KWCapacity           float                null,
+   EfficiencyRating     float                null,
    Notes                varchar(500)         null,
    ModelNumber          varchar(40)          not null
 )
