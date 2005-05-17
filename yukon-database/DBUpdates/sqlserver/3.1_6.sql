@@ -152,6 +152,8 @@ insert into YukonGroupRole values(-111,-100,-100,-10011,'(none)');
 insert into YukonGroupRole values(-1011,-2,-100,-10011,'(none)');
 go
 
+update command set command = 'putconfig emetcon install' where commandid = -53;
+go
 
 
 
