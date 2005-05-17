@@ -387,7 +387,7 @@ function processMenuReq()
  		response = req.responseText;
 
 		overlib(
-			response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 50);
+			response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 95);
 
 		//always do this
 		freeReq( manMsgID );
@@ -415,9 +415,9 @@ function statusMsg(elem, msgStr)
 // html is placed in the popup box and then the box is
 // made visible
 // -------------------------------------------
-function showPopUpChkBoxes( typeStr )
+function showPopUpChkBoxes( baseUrl )
 {
-	if( typeStr == null )
+	if( baseUrl == null )
 		return;
 
 	var elemSubs = document.getElementsByName('cti_chkbxSubs');
@@ -429,9 +429,26 @@ function showPopUpChkBoxes( typeStr )
 	doValidChecks( elemFdrs, validElems );
 	//doValidChecks( elemBanks, validElems );
 
-
-	var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
+	var url = createURLreq( validElems, baseUrl, 'value' );
 	manMsgID = loadXMLDoc(url, 'processMenuReq');
+}
+
+function showRecentCmds( baseUrl )
+{
+	if( baseUrl == null )
+		return;
+
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+
+	var validElems = new Array();
+	doValidChecks( elemSubs, validElems );
+	doValidChecks( elemFdrs, validElems );
+	doValidChecks( elemBanks, validElems );
+
+	var url = createURLreq( validElems, baseUrl, 'value' );
+	return url;
 }
 
 // -------------------------------------------

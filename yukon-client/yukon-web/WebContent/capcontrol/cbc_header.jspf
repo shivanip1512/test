@@ -59,6 +59,7 @@
 			
 			<form id="subMenuFrm" action="results.jsp" method="post">
 			<input type="hidden" name="type">
+			<input type="hidden" name="value">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Substation</a> 
@@ -74,8 +75,9 @@
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a> 
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a> 
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a>
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a>
+					<a href="#" class="submenuLink" onclick="window.location=showRecentCmds('tabledata.jsp?type=<%=CBCWebUtils.TYPE_RECENT_CNTRLS%>');">Recent Controls</a>
 				  </div>
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 

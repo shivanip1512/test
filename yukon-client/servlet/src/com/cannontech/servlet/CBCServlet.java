@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.cannontech.cbc.web.CBCCommandExec;
+import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -114,9 +115,10 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
 
 	//handle any commands that a client may want to send to the CBC server
-	String redirectURL = ParamUtil.getString( req, "redirectURL" );
+	String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
-	if( user != null )
+	//be sure we have a valid user and that user has the rights to control
+	if( user != null && CBCWebUtils.hasControlRights(session) )
 	{
 		try
 		{
@@ -152,8 +154,9 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 		CTILogger.warn( "CBC Command servlet was hit, but NO command was sent" );
 	
 
-	//always forward the client to the specified URL
-	resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+	//always forward the client to the specified URL if present
+	if( redirectURL != null )
+		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
 }
 
 /**
@@ -310,12 +313,9 @@ private boolean _handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
 
 
 /**
- * Allows the execution of commands to the cbc server.
+ * Allows the execution of commands to the cbc server for all
+ * CBC object types.
  * 
- * @param cmdID_ int : the id of the command from CBCCommand to be executed
- * @param cmdType_ String : type of command to execute ( CMD_SUB,CMD_FEEDER,CMD_CAPBANK ) 
- * @param rowID_ int : the row from a types data model to execute 
- * @param manChange_ Integer : the state index field for a capbank, null if not present
  */
 private synchronized void _executeCommand( int _cmdID, String _cmdType, int _paoID,
 			int[] _optParams, String _userName )

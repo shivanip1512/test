@@ -11,6 +11,7 @@
 <%@page import="com.cannontech.web.lite.*" %>
 <%@page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
+<%@page import="com.cannontech.database.data.point.SystemLogData" %>
 
 <!--------------------------
 -

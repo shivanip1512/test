@@ -45,7 +45,7 @@ a.altTableCell:hover {color: #006699; }
 .cAlign { text-align: center}
 .lIndent { margin-left: 27px; }
 .cellImgFill { width: 6; height: 25}
-.cellImgShort { height: 9}
+.cellImgShort { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; height: 9; }
 .cellImgHdr { width: 100%; height: 25; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: #FFFFFF;  background-color: 888888; margin-right: 1px; margin-left: 1px;}
 
 .mainMenuHdr { height: 23; }
