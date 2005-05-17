@@ -11,9 +11,11 @@ package com.cannontech.dbtools.diff;
  * @author: Aaron Lauinger
  * @see DBDiff
  */
-public class DBDescription {
-	private static String GET_ALL_TABLES_ORACLE = "select tname from tab";	
-	private static String GET_ALL_TABLES_SQLSERVER = "SELECT NAME FROM SYSOBJECTS WHERE TYPE = 'U'";
+public class DBDescription
+{
+	//private static String GET_ALL_TABLES_ORACLE = "select tname from tab";	
+	//private static String GET_ALL_TABLES_SQLSERVER = "SELECT NAME FROM SYSOBJECTS WHERE TYPE = 'U'";
+
 /**
  * DBDescription constructor comment.
  */
@@ -31,8 +33,14 @@ public static void main(String[] args)
 	if( args.length != 4 )
 	{
 		System.out.println("DBDescription url driver username password");
-		System.out.println("Example of a url is:  jdbc:oracle:thin:@127.0.0.1:1521:yuk1");
-		System.out.println("Example of a driver is:  oracle.jdbc.driver.OracleDriver");
+		System.out.println("Examples of url:");
+		System.out.println("		jdbc:oracle:thin:@127.0.0.1:1521:yuk1");
+		System.out.println("		jdbc:jtds:sqlserver://127.0.0.1:1433;APPNAME=yukon-client;TDS=8.0");
+		System.out.println("");
+		System.out.println("Example of a driver is:");
+		System.out.println("		oracle.jdbc.driver.OracleDriver");
+		System.out.println("		net.sourceforge.jtds.jdbc.Driver");
+		
 		return;
 	}
 
@@ -51,8 +59,6 @@ public static void main(String[] args)
 		return;
 	}
 	
-	long startTime = (new java.util.Date()).getTime() / 1000;
-
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
 	java.sql.ResultSet rset = null;
@@ -71,14 +77,18 @@ public static void main(String[] args)
 	try
 	{
 		stmt = conn.createStatement();
-		rset = stmt.executeQuery(GET_ALL_TABLES_ORACLE);
+		if( url1.toLowerCase().indexOf("oracle") >= 0 )
+		{
+			//get all ORACLE tables from the database using the userName as the Schema
+			rset = conn.getMetaData().getTables( null, user1.toUpperCase(), null, null);
+		}
+		else
+			rset = conn.getMetaData().getTables( null, null, null, new String[]{"TABLE","VIEW"});
+
 
 		java.util.ArrayList tables = new java.util.ArrayList();
 		while( rset.next() )
-		{
-					
-			tables.add( rset.getString(1) );
-		}
+			tables.add( rset.getString("TABLE_NAME") );
 
 		rset.close();
 		
@@ -86,13 +96,12 @@ public static void main(String[] args)
 		while( iter.hasNext() )
 		{
 			String tableName = (String) iter.next();
-			System.out.print(tableName + "=" );
-			rset = stmt.executeQuery("select * from " + tableName);
-			java.sql.ResultSetMetaData meta = rset.getMetaData();
+			System.out.print(tableName + "=" );			
 
-			int numColumns = meta.getColumnCount();
-			for( int i = 0; i < numColumns; i++ )			
-				System.out.print(meta.getColumnName(i+1) + " ");
+			rset = conn.getMetaData().getColumns( null, null, tableName, "%");
+			while( rset.next() )
+				System.out.print(rset.getString("COLUMN_NAME") + " ");
+
 
 			rset.close();
 			System.out.print("\r\n");
