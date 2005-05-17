@@ -91,10 +91,8 @@ public class LiteBaseResults
 			}
 			
 			//sort base on name			
-			Collections.sort( tempVect, LiteComparators.liteNameComparator );
-			
-			foundItems = new LiteWrapper[tempVect.size()];
-			foundItems = (LiteWrapper[])tempVect.toArray( foundItems );
+			Collections.sort( tempVect, LiteComparators.liteNameComparator );			
+			foundItems = (LiteWrapper[])tempVect.toArray( new LiteWrapper[tempVect.size()] );
 		}
 
 	}

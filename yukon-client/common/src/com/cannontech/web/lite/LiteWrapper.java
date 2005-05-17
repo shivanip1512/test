@@ -7,6 +7,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUnits;
 
 /**
  * @author ryan
@@ -16,6 +17,7 @@ import com.cannontech.database.data.point.PointTypes;
  */
 public class LiteWrapper
 {
+	private static final String NO_DATA = "---";	
 	private LiteBase liteBase = null;
 
 
@@ -61,7 +63,7 @@ public class LiteWrapper
 				((LitePoint)_getLiteBase()).getPaobjectID()).getPaoName();			
 		}
 		else
-			return "---";
+			return NO_DATA;
 	}
 	
 	public String toString()
@@ -75,7 +77,7 @@ public class LiteWrapper
 	public String getDescription()
 	{
 		//default the type to invalid
-		String retVal = PAOGroups.STRING_INVALID;
+		String retVal = NO_DATA;
 		
 		if( _getLiteBase() instanceof LiteYukonPAObject )
 		{
@@ -83,9 +85,13 @@ public class LiteWrapper
 		}
 		else if( _getLiteBase() instanceof LitePoint )
 		{
-			retVal =
-				UnitMeasureFuncs.getLiteUnitMeasure(
-					((LitePoint)_getLiteBase()).getUofmID() ).toString();
+			if( ((LitePoint)_getLiteBase()).getUofmID() > PointUnits.UOMID_INVALID )
+			{
+				retVal =
+					UnitMeasureFuncs.getLiteUnitMeasure(
+						((LitePoint)_getLiteBase()).getUofmID() ).toString();
+			}
+
 		}
 
 		return retVal.toLowerCase();
