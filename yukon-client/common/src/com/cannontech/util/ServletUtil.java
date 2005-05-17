@@ -1048,4 +1048,20 @@ public static Date roundToMinute(Date toRound) {
 			(LiteYukonUser)session.getAttribute(ATT_YUKON_USER);
 	}
 
+
+	/**
+	 * Returns the fully qualified URL that was requested
+	 *
+	 */
+	public static String getFullURL( HttpServletRequest req )
+	{
+		if( req == null ) return "";
+
+		String q = "";
+		if( req.getQueryString() != null )
+			q = "?" + req.getQueryString();
+
+		return req.getRequestURI() + q;		
+	}
+
 }
