@@ -77,6 +77,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capObj.setCcDisableFlag( 
 			((int)vstr.extractUnsignedInt() == 1) 
 			? new Boolean(true) : new Boolean(false)  );
+
+	capObj.setParentID( (int)vstr.extractUnsignedInt() );
 }
 /**
  * saveGuts method comment.
@@ -95,5 +97,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 		(capObj.getCcDisableFlag().booleanValue() == true)
 		? 1 : 0 );
+
+	vstr.insertUnsignedInt( capObj.getParentID() );
 }
 }
