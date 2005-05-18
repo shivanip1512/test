@@ -94,6 +94,13 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
 
+//	feeder.setSubControlUnits( (String)vstr.restoreObject(SimpleMappings.CString) );
+//	feeder.setSubDecimalPlaces( (int)vstr.extractUnsignedInt() );
+//	feeder.setSubPeakTimeFlag(
+//		 ((int)vstr.extractUnsignedInt() == 1)
+//		 ? new Boolean(true) : new Boolean(false) );
+
+
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
@@ -103,8 +110,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	{
 		capBanksVector.addElement(vstr.restoreObject(polystr));
 	}
-	feeder.setCcCapBanks(capBanksVector);
+	feeder.setCcCapBanks(capBanksVector);		
 }
+
 /**
  * saveGuts method comment.
  */
@@ -155,6 +163,12 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 		(feeder.getWaiveControlFlag().booleanValue() == true)
 		? 1 : 0 );
+
+//	vstr.saveObject( feeder.getSubControlUnits(), SimpleMappings.CString );
+//	vstr.insertUnsignedInt( feeder.getSubDecimalPlaces() );
+//	vstr.insertUnsignedInt( 
+//		(feeder.getSubPeakTimeFlag().booleanValue() == true)
+//		? 1 : 0 );
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */

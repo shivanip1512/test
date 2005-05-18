@@ -554,4 +554,28 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		return subPeakTimeFlag;
 	}
 
+	/**
+	 * @param string
+	 */
+	public void setSubControlUnits(String string)
+	{
+		subControlUnits = string;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setSubDecimalPlaces(int i)
+	{
+		subDecimalPlaces = i;
+	}
+
+	/**
+	 * @param boolean1
+	 */
+	public void setSubPeakTimeFlag(Boolean boolean1)
+	{
+		subPeakTimeFlag = boolean1;
+	}
+
 }
