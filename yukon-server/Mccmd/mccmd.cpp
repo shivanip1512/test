@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/05/18 15:28:23 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/05/18 21:04:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -464,45 +464,17 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     /* Load up the initialization script */
     RWCString init_script;
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
+    
+    init_script = gConfigParms.getValueAsString(MCCMD_CTL_SCRIPTS_DIR, "c:/yukon/server/macsscripts");
+    init_script += "/";
+    init_script += gConfigParms.getValueAsString(MCCMD_INIT_SCRIPT, "init.tcl");
 
-    if(hLib)
+    gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
+    
+    if( gMccmdDebugLevel > 0 )
     {
-        char temp[80];
-
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        if( (*fpGetAsString)(MCCMD_CTL_SCRIPTS_DIR, temp, 64) )
-            init_script = temp;
-        else
-            init_script = "c:/yukon/server/macsscripts";
-
-        init_script += "/";
-
-        if( (*fpGetAsString)(MCCMD_INIT_SCRIPT, temp, 64) )
-            init_script += temp;
-        else
-            init_script += "init.tcl";
-
-        if( (*fpGetAsString)(MCCMD_DEBUG_LEVEL, temp, 64) )
-        {
-            char *eptr;
-            gMccmdDebugLevel = strtoul(temp, &eptr, 16);
-        }
-            //    gMccmdDebugLevel = atoi(temp);
-
-        if( gMccmdDebugLevel > 0 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
-        }
-
-        FreeLibrary(hLib);
-    }
-    else
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "Unable to load cparms dll " << endl;
+	CtiLockGuard<CtiLogger> doubt_guard(dout);
+	dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
     }
 
     if( gMccmdDebugLevel & MCCMD_DEBUG_INIT )
