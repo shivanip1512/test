@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/02/10 23:23:53 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/05/18 15:28:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -218,139 +218,102 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     //RWASSERT( PILConnection == 0 && VanGoghConnection == 0 );
 
     //Set up the defaults
-    INT pil_port = PORTERINTERFACENEXUS;
-    RWCString pil_host = "127.0.0.1";
+    int pil_port;
+    RWCString pil_host;
 
-    INT vangogh_port = VANGOGHNEXUS;
-    RWCString vangogh_host = "127.0.0.1";
+    int dispatch_port;
+    RWCString dispatch_host;
+    RWCString fm_config_range;
 
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-    if(hLib)
     {
-        char temp[80];
-
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        BOOL trouble = FALSE;
-
-        //What are the keys?
-        if( (*fpGetAsString)("PIL_MACHINE", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the pil host" << endl;
-            pil_host = temp;
-        }
-        else
-            trouble = TRUE;
-
-        if( (*fpGetAsString)("PIL_PORT", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the pil port" << endl;
-            pil_port = atoi(temp);
-        }
-        else
-            trouble = TRUE;
-
-
-        if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the vangogh host" << endl;
-            vangogh_host = temp;
-        }
-        else
-            trouble = TRUE;
-
-        if( (*fpGetAsString)("DISPATCH_PORT", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << RWTime()  << " - Using " << temp << " as the vangogh port" << endl;
-            vangogh_port = atoi(temp);
-        }
-        else
-            trouble = TRUE;
-
-        /* The next few are optional cparms for customs */
-        if( (*fpGetAsString)("PAGING_CONFIG_ROUTE_ID", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            gPagingConfigRouteID = atoi(temp);
-            dout << RWTime()  << " PAGING_CONFIG_ROUTE_ID=" << gPagingConfigRouteID << endl;
-        }
-
-        if( (*fpGetAsString)("FM_CONFIG_ROUTE_ID", temp, 64) )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            gFMConfigRouteID = atoi(temp);
-            dout << RWTime()  << " FM_CONFIG_ROUTE_ID=" << gFMConfigRouteID << endl;
-        }
-
-        // init these in case none are found
-        gFMConfigSerialLow[0] = -1;
-        gFMConfigSerialHigh[0] = -1;
-
-        if( (*fpGetAsString)("FM_CONFIG_SERIAL_RANGE", temp, 64) )
-        {
-            RWCTokenizer nextRange(temp);
-            RWCString range;
-
-            int index = 0;
-            while( !(range = nextRange(",\r\n")).isNull() )
-            {
-                RWCTokenizer nextSerial(range);
-                RWCString low;
-                RWCString high;
-
-                low = nextSerial("-");
-                high = nextSerial(" \r\n");
-                high = high.strip(RWCString::leading, '-');
-
-                if( !low.isNull() && !high.isNull() )
-                {
-                    int lowi = atoi(low.data());
-                    int highi = atoi(high.data());
-
-                    if( lowi != 0 && highi != 0 )
-                    {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                        dout << RWTime() << " FM_CONFIG_SERIAL_RANGE " << lowi << "-" << highi << endl;
-                        gFMConfigSerialLow[index] = lowi;
-                        gFMConfigSerialHigh[index] = highi;
-                        index++;
-                    }
-                }
-            }
-
-            gFMConfigSerialLow[index] = -1;
-            gFMConfigSerialHigh[index] = -1;
-        }
-
-        if( trouble )
-        {
-            {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << RWTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
-            }
-
-        }
-
-        FreeLibrary(hLib);
+        CtiLockGuard< CtiLogger > guard(dout);    
+        dout << RWTime() << " MCCMD loading cparms:" << endl;
     }
-    else
+
+    pil_host = gConfigParms.getValueAsString("PIL_MACHINE", "127.0.0.1");
+    pil_port = gConfigParms.getValueAsInt("PIL_PORT", PORTERINTERFACENEXUS);
+
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << "Unable to load cparms dll " << endl;
+        dout << " Connecting to porter, host: " << pil_host << ", port: " << pil_port << endl;
     }
 
+    dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
+    dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS);
+
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
+    }
+
+    gPagingConfigRouteID = gConfigParms.getValueAsInt("PAGING_CONFIG_ROUTE_ID", -1);
+    gFMConfigRouteID = gConfigParms.getValueAsInt("FM_CONFIG_ROUTE_ID", -1);
+    fm_config_range = gConfigParms.getValueAsString("FM_CONFIG_SERIAL_RANGE", "");
+
+    if(gPagingConfigRouteID != -1)
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << " Using route id: " << gPagingConfigRouteID << " as the paging route" << endl;
+    }
+
+    if(gFMConfigRouteID != -1)
+    {
+        CtiLockGuard< CtiLogger > guard(dout);  
+        dout << " Using route id: " << gFMConfigRouteID << " as the FM config route" << endl;
+    }
+
+    // init these in case none are found
+    gFMConfigSerialLow[0] = -1;
+    gFMConfigSerialHigh[0] = -1;
+
+    if(fm_config_range != "")
+    {
+        RWCTokenizer nextRange(fm_config_range);
+        RWCString range;
+
+        int index = 0;
+        while( !(range = nextRange(",\r\n")).isNull() )
+        {
+            RWCTokenizer nextSerial(range);
+            RWCString low;
+            RWCString high;
+
+            low = nextSerial("-");
+            high = nextSerial(" \r\n");
+            high = high.strip(RWCString::leading, '-');
+
+            if( !low.isNull() && !high.isNull() )
+            {
+                int lowi = atoi(low.data());
+                int highi = atoi(high.data());
+
+                if( lowi != 0 && highi != 0 )
+                {
+                    CtiLockGuard< CtiLogger > guard(dout);
+                    dout << " Using " << lowi << "-" << highi << " as a fm serial number range" << endl;
+                    gFMConfigSerialLow[index] = lowi;
+                    gFMConfigSerialHigh[index] = highi;
+                    index++;
+                }
+            }
+        }
+
+        gFMConfigSerialLow[index] = -1;
+        gFMConfigSerialHigh[index] = -1;
+    }
+
+    {
+        CtiLockGuard< CtiLogger > guard(dout);    
+        dout << RWTime() << " MCCMD done loading cparms" << endl;
+    }
+    
     PILConnection = new CtiConnection( pil_port, pil_host );
 
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
     PILConnection->WriteConnQue( reg );
 
-    VanGoghConnection = new CtiConnection( vangogh_port, vangogh_host );
+    VanGoghConnection = new CtiConnection( dispatch_port, dispatch_host );
 
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
