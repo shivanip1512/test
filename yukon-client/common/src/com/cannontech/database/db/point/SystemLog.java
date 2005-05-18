@@ -1,9 +1,11 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.database.data.point.SystemLogData;
+
 /**
  * This type was created in VisualAge.
  */
-public class SystemLog extends com.cannontech.database.db.DBPersistent 
+public class SystemLog extends com.cannontech.database.db.DBPersistent implements SystemLogData 
 {
 	private Integer logID = null;
 	private Integer pointID = null;
