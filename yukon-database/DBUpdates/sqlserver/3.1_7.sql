@@ -2,6 +2,10 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create   index Indx_lmcnt_paoid on LMControlHistory (
+PAObjectID
+);
+go
 
 
 

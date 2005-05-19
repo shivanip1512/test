@@ -2,7 +2,9 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-
+create index Indx_lmcnt_paoid on LMControlHistory (
+   PAObjectID ASC
+);
 
 
 
