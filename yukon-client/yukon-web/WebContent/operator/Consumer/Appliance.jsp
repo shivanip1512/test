@@ -105,7 +105,7 @@ function deleteAppliance(form) {
 			
               <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                 <tr>
-				<form name="form1" method="post" action="/servlet/SOAPClient"> 
+				<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient"> 
 				  <input type="hidden" name="action" value="UpdateAppliance">
 				  <input type="hidden" name="AppID" value="<%= appliance.getApplianceID() %>">
                   <td width="300" valign="top" bgcolor="#FFFFFF"> 
