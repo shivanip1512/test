@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -20,11 +21,13 @@ public final class YukonUserLoader implements Runnable
 	private static final String sql = "SELECT UserID,Username,Password,Status FROM YukonUser";
 	
    	private final List allUsers;
+	private final Map allUsersMap;
 	private final String dbAlias;
 
-	public YukonUserLoader(final ArrayList allUsers, final String dbAlias) {
+	public YukonUserLoader(final ArrayList allUsers, Map allUsersMap, final String dbAlias) {
    		this.allUsers = allUsers;
-      	this.dbAlias = dbAlias;      	
+      	this.dbAlias = dbAlias;
+		this.allUsersMap = allUsersMap;
    	}
 
 	/**
@@ -50,6 +53,7 @@ public final class YukonUserLoader implements Runnable
       			
             	final LiteYukonUser user = new LiteYukonUser(userID,username,password,status);            
            		allUsers.add(user);
+				allUsersMap.put( new Integer(user.getUserID()), user );
          	}
       	}
       	catch(SQLException e ) {

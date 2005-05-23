@@ -129,6 +129,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allCommands = null;
 	private Map allCommandsMap = null;
 	private Map allStateGroupMap = null;
+	private Map allUsersMap = null;
 
 
 /**
@@ -855,6 +856,23 @@ public synchronized java.util.Map getAllPAOsMap()
 }
 
 /**
+ * A map for all LiteYukonUser objects keyed by userid
+ * 
+ */
+public synchronized java.util.Map getAllUsersMap()
+{
+	if( allUsersMap != null )
+		return allUsersMap;
+	else
+	{
+		releaseAllYukonUsers();
+		getAllYukonUsers();
+
+		return allUsersMap;
+	}
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
@@ -1236,15 +1254,21 @@ public synchronized java.util.List getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUsers()
 	 */
-	public synchronized List getAllYukonUsers() {		
-		if(allYukonUsers == null) {
+	public synchronized List getAllYukonUsers()
+	{		
+		if( allYukonUsers != null && allUsersMap != null )
+			return allYukonUsers;
+		else
+		{
 			allYukonUsers = new ArrayList();
-			YukonUserLoader l = new YukonUserLoader(allYukonUsers, databaseAlias);
+			allUsersMap = new HashMap();
+			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap, databaseAlias);
 			l.run();
+			return allYukonUsers;
 		}
-		return allYukonUsers;		
+
 	}
-	
+
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRolePropertyMap()
 	 */
@@ -1622,7 +1646,6 @@ private synchronized LiteBase handleYukonImageChange( int changeType, int id )
  */
 private synchronized LiteBase handleContactChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 	
 	// if the storage is not already loaded, we must not care about it
@@ -1704,7 +1727,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	int dbType = dbChangeMsg.getTypeOfChange();
 	int database = dbChangeMsg.getDatabase();
 	int id = dbChangeMsg.getId();
-	boolean alreadyAdded = false;
 	LiteBase retLBase = null;
 
 	if( database == DBChangeMsg.CHANGE_POINT_DB )
@@ -2367,7 +2389,6 @@ private synchronized LiteBase handleTOUDayChange( int changeType, int id )
  */
 private synchronized LiteBase handleCommandChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
@@ -2722,7 +2743,6 @@ private synchronized LiteBase handleContactNotificationChange( int changeType, i
  */
 private synchronized LiteBase handlePointChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
@@ -2825,7 +2845,6 @@ private synchronized LiteBase handleStateGroupChange( int changeType, int id )
  */
 private synchronized LiteBase handleCustomerChange( int changeType, int id, String dbCategory)
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
@@ -2947,54 +2966,46 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
  */
 private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
-	if( allYukonUsers == null )
+	if( allYukonUsers == null || allUsersMap == null )
 		return lBase;
 
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allYukonUsers.size();i++)
-				{
-					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allYukonUsers.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteYukonUser lcst = new LiteYukonUser(id);
-					lcst.retrieve(databaseAlias);
-					allYukonUsers.add(lcst);
-					lBase = lcst;
-				}
-				break;
+			lBase = (LiteBase)allUsersMap.get( new Integer(id) );				
+			if( lBase == null )
+			{
+				LiteYukonUser lu = new LiteYukonUser(id);
+				lu.retrieve(databaseAlias);
+				allYukonUsers.add(lu);
+				allUsersMap.put( new Integer(lu.getUserID()), lu );
+		
+				lBase = lu;
+			}
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allYukonUsers.size();i++)
-				{
-					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
-					{
-						((LiteYukonUser)allYukonUsers.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allYukonUsers.get(i);
-						break;
-					}
-				}
-				break;
+			LiteYukonUser lu = (LiteYukonUser)allUsersMap.get( new Integer(id) );				
+			lu.retrieve( databaseAlias );
+						
+			lBase = lu;
+			break;
+
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allYukonUsers.size();i++)
+			for(int i=0;i<allYukonUsers.size();i++)
+			{
+				if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
 				{
-					if( ((LiteYukonUser)allYukonUsers.get(i)).getUserID() == id )
-					{
-						lBase = (LiteBase)allYukonUsers.remove(i);
-						break;
-					}
+					allUsersMap.remove( new Integer(id) );
+					lBase = (LiteBase)allYukonUsers.remove(i);
+					break;
 				}
-				break;
+			}
+			break;
+
 		default:
 				releaseAllYukonUsers();
 				break;
@@ -3009,7 +3020,6 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
  */
 private synchronized LiteBase handleYukonPAOChange( int changeType, int id )
 {
-	boolean alreadyAdded = false;
 	LiteBase lBase = null;
 
 	// if the storage is not already loaded, we must not care about it
@@ -3144,6 +3154,7 @@ public synchronized void releaseAllCache()
 	allPAOsMap = null;
 	allCustomersMap = null;
 	allContactsMap = null;
+	allUsersMap = null;
 
 
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
@@ -3281,6 +3292,7 @@ public synchronized void releaseAllPoints()
  */
 public synchronized void releaseAllYukonUsers(){
 	allYukonUsers = null;
+	allUsersMap = null;
 }
 /**
  * Insert the method's description here.

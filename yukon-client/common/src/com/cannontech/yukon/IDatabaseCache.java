@@ -25,8 +25,6 @@ public interface IDatabaseCache
 
 	public java.util.List getAllCICustomers();
 	public java.util.List getAllCustomers();
-	//	Map<Integer(custID), LiteCustomer>
-	public java.util.Map getAllCustomersMap();
 
 	public java.util.List getAllDeviceMeterGroups();
 	public java.util.List getAllDMG_CollectionGroups();	//distinct DeviceMeterGroup.CollectionGroups
@@ -105,6 +103,12 @@ public interface IDatabaseCache
 	//Map<LiteYukonUser, Map<Integer(roleid), LiteYukonRole>>
 	//Provided as a means to efficiently obtain a role
 	public java.util.Map getYukonUserRoleIDLookupMap();
+
+	//Map<Integer(custID), LiteCustomer>
+	public java.util.Map getAllCustomersMap();
+	
+	//Map<Integer(userID), LiteYukonUser>
+	public java.util.Map getAllUsersMap();
 
 	//Map<LiteYukonUser,Map<Integer(roleid),Pair<LiteYukonRole,String(value)>>
 	//Provided as a means to efficiently obtain a role and its value

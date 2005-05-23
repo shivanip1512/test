@@ -424,6 +424,15 @@ public class DatabaseCacheBean implements IDatabaseCache
     }
 
 	/**
+	 * @ejb:interface-method
+	 * tview-type="remote" 
+	**/
+	public synchronized java.util.Map getAllUsersMap()
+	{
+		return getCache().getAllUsersMap();
+	}
+
+	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRoleMap()
 	 */
 	public synchronized Map getYukonGroupRolePropertyMap() {
