@@ -11,13 +11,19 @@ public interface YukonListEntryTypes
 	//standard EntryIDs that should be in every DB
 	public static final int YUK_ENTRY_ID_EMAIL = 1;
 	public static final int YUK_ENTRY_ID_PHONE = 2;
-	public static final int YUK_ENTRY_ID_PAGER = 3;
-	
+	public static final int YUK_ENTRY_ID_PAGER = 3;	
 	public static final int YUK_ENTRY_ID_FAX = 4;
 	public static final int YUK_ENTRY_ID_HOME_PHONE = 5;
 	public static final int YUK_ENTRY_ID_WORK_PHONE = 6;
+	public static final int YUK_ENTRY_ID_PIN = 7;
 
-	
+	//standard YukonDefinitionIDs that should be in every DB
+	public static final int YUK_DEF_ID_EMAIL = 1;
+	public static final int YUK_DEF_ID_PHONE = 2;
+	public static final int YUK_DEF_ID_PIN = 3;
+
+
+
 	//YukonDefinitionIDs used by STARS 
 	public static final int YUK_DEF_ID_CUST_EVENT_LMPROGRAM			= 1001;
 	public static final int YUK_DEF_ID_CUST_EVENT_LMHARDWARE		= 1002;
