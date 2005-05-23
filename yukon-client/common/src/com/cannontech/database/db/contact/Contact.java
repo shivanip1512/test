@@ -1,6 +1,10 @@
 package com.cannontech.database.db.contact;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -12,7 +16,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	private Integer contactID = null;
 	private String contFirstName = CtiUtilities.STRING_NONE;
 	private String contLastName = CtiUtilities.STRING_NONE;
-	private Integer logInID = new Integer(UserUtils.USER_YUKON_ID);
+	private Integer logInID = new Integer(UserUtils.USER_DEFAULT_ID);
 	private Integer addressID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	
@@ -298,6 +302,52 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 
+
+	/**
+	 * Returns YukonUsers IDs that are not used by a contact. Also the
+	 * NONE userid is always returned along with the given ignoreID.
+	 * 
+	 */
+	public final static int[] findAvailableUserIDs( int ignoreID ) 
+	{		
+		String sql =
+			"select userid from " + YukonUser.TABLE_NAME + " where userid not in" +
+			"(select loginid from " + Contact.TABLE_NAME +
+			" where loginid != " + UserUtils.USER_DEFAULT_ID + 
+			" and loginid != " + ignoreID + ")";
+	
+		NativeIntVector intVect = new NativeIntVector(32);
+
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		
+		try 
+		{		
+			stmt = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ).createStatement();
+			rset = stmt.executeQuery( sql );	
+				
+			while( rset.next() )
+				intVect.add( rset.getInt(1) );
+		}
+		catch( Exception e ) 
+		{
+			CTILogger.error( "A db error occured", e );
+		}
+		finally 
+		{
+			try 
+			{
+				if( rset != null ) rset.close();
+				if( stmt != null ) stmt.close();
+			}
+			catch (java.sql.SQLException e2) 
+			{
+				CTILogger.error(e2);
+			}
+		}	
+
+		return intVect.toArray();
+	}
 
 	/**
 	 * retrieve method comment.
