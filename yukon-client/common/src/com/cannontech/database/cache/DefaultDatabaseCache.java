@@ -471,14 +471,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
         return getDBCache().getAllContactsMap();
     }
     
-//   /**
-//    * @ejb:interface-method
-//    * tview-type="remote" 
-//   **/
-//   public IDatabaseCache getDBCache()
-//   {
-//      return this;
-//   }
+   /**
+    * @ejb:interface-method
+    * tview-type="remote" 
+   **/
+   public synchronized java.util.Map getAllUsersMap()
+   {
+      return getDBCache().getAllUsersMap();
+   }
 
    /**
     * @ejb:interface-method
