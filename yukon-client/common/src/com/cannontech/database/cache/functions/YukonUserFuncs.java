@@ -1,5 +1,6 @@
 package com.cannontech.database.cache.functions;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.LiteContact;
 
@@ -21,23 +22,16 @@ public final class YukonUserFuncs
 	}
 
    
-   public static LiteYukonUser getLiteYukonUser( int userID_ )
-   {
-      com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	public static LiteYukonUser getLiteYukonUser( int userID_ )
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
       
-      synchronized( cache )
-      {
-         java.util.List users = cache.getAllYukonUsers();
-         
-         for( int j = 0; j < users.size(); j++ )
-         {
-            if( userID_ == ((LiteYukonUser)users.get(j)).getUserID() )
-               return (LiteYukonUser)users.get(j);
-         }
-   
-         return null;
-      }	
-   }
+		synchronized( cache )
+		{
+			return (LiteYukonUser)
+				cache.getAllUsersMap().get( new Integer(userID_) );
+		}
+	}
 
 	public static LiteYukonUser getLiteYukonUser( String userName_ )
 	{
@@ -45,7 +39,7 @@ public final class YukonUserFuncs
 			return null;
 
 
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
       
 		synchronized( cache )
 		{
@@ -63,7 +57,7 @@ public final class YukonUserFuncs
 	
    public static LiteContact getLiteContact ( int userID_ )
    {
-      com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+      DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
       
       synchronized( cache )
       {
