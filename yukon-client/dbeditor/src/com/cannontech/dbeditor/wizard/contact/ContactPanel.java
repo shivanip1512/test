@@ -9,9 +9,11 @@ import java.util.Vector;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.UserUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, javax.swing.event.ListSelectionListener {
@@ -386,23 +388,7 @@ private javax.swing.JComboBox getJComboBoxLoginUser() {
 		try {
 			ivjJComboBoxLoginUser = new javax.swing.JComboBox();
 			ivjJComboBoxLoginUser.setName("JComboBoxLoginUser");
-			// user code begin {1}
-
-
-			getJComboBoxLoginUser().addItem( 
-				com.cannontech.common.util.CtiUtilities.STRING_NONE );
-
-			com.cannontech.database.cache.DefaultDatabaseCache cache =
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-			synchronized( cache )
-			{
-				java.util.List yukUsers = cache.getAllYukonUsers();
-
-				for( int i = 0; i < yukUsers.size(); i++ )
-					getJComboBoxLoginUser().addItem( yukUsers.get(i) );
-			}
-			
+			// user code begin {1}			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -820,14 +806,10 @@ public Object getValue(Object val)
 	//cn.getContact().setContactID( recID );
 	cnt.getContact().setContFirstName( getJTextFieldFirstName().getText() );
 	cnt.getContact().setContLastName( getJTextFieldLastName().getText() );
+	
+	cnt.getContact().setLogInID( new Integer( 
+		((LiteYukonUser)getJComboBoxLoginUser().getSelectedItem()).getLiteID()) );
 
-	Object selLg = getJComboBoxLoginUser().getSelectedItem();
-	if( selLg instanceof LiteYukonUser )
-	{
-		cnt.getContact().setLogInID( 
-			new Integer( ((LiteYukonUser)selLg).getLiteID()) );
-	}
-	//must be none, that should be the default of the DBPersistent object
 
 	Vector holder = new Vector();
 	//grab the latest ContactNotification list
@@ -882,6 +864,18 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonAddress().addActionListener(this);
 }
 
+private void initUserCombo( int currID )
+{
+	int[] availUserids =
+		com.cannontech.database.db.contact.Contact.findAvailableUserIDs( currID );
+
+	for( int i = 0; i < availUserids.length; i++ )
+	{
+		getJComboBoxLoginUser().addItem(
+			YukonUserFuncs.getLiteYukonUser(availUserids[i]) );
+	}
+
+}
 
 /**
  * Initialize the class.
@@ -1044,8 +1038,8 @@ public void disableFlag_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	ContactNotification currentTableSelection = getTableModel().getContactNotificationRow(getJTableEmail().getSelectedRow());
 	currentTableSelection.setDisableFlag( getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
 	getTableModel().fireTableDataChanged();
+
 	return;
-	
 }
 
 /**
@@ -1139,12 +1133,16 @@ public static void main(java.lang.String[] args) {
 
 private void setSelectedLogin( Contact cnt )
 {
-	
+	initUserCombo(
+		(cnt == null
+			? UserUtils.USER_DEFAULT_ID
+			: cnt.getContact().getLogInID().intValue()) );
+
 	for( int i = 0; i < getJComboBoxLoginUser().getItemCount(); i++ )
 	{
-		Object user = getJComboBoxLoginUser().getItemAt(i);
-		if( user instanceof LiteYukonUser
-			 && ( ((LiteYukonUser)user).getLiteID() == cnt.getContact().getLogInID().intValue()) )
+		LiteYukonUser user = (LiteYukonUser)getJComboBoxLoginUser().getItemAt(i);
+		if( cnt == null 
+			|| user.getLiteID() == cnt.getContact().getLogInID().intValue() )
 		{
 			getJComboBoxLoginUser().setSelectedIndex( i );
 			break;	
@@ -1160,7 +1158,10 @@ private void setSelectedLogin( Contact cnt )
 public void setValue(Object val) 
 {
 	if( val == null )
+	{
+		setSelectedLogin( null );
 		return;
+	}
 	
 	Contact cnt = (Contact)val;
 
@@ -1176,7 +1177,7 @@ public void setValue(Object val)
 		ContactNotification cntNotif = (ContactNotification)cnt.getContactNotifVect().get(i);
 
 		getTableModel().addRowValue( cntNotif );
-	}	
+	}
 
 }
 
@@ -1187,9 +1188,6 @@ public void setValue(Object val)
 public void valueChanged(javax.swing.event.ListSelectionEvent event) 
 {
 	javax.swing.ListSelectionModel lsm = (javax.swing.ListSelectionModel) event.getSource();
-	
-	//only one should be selected
-	int selectedRow = lsm.getMinSelectionIndex();
 	
 	if( lsm.isSelectionEmpty() )
 	{
