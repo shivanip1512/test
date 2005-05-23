@@ -8,6 +8,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.util.Validator;
 
 /**
  * @author rneuharth
@@ -280,23 +281,20 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	{
 		switch( entryID_ )
 		{
-			case YukonListEntryTypes.YUK_ENTRY_ID_EMAIL:
-				return (
-					entry_ != null
-					&& entry_.length() > 0
-					&& entry_.indexOf("@") > -1);
+			case YukonListEntryTypes.YUK_DEF_ID_EMAIL:
+				return Validator.isEmailAddress( entry_ );
 				 
-			case YukonListEntryTypes.YUK_ENTRY_ID_PHONE:
-				break; //no validation of phone numbers yet!
+			case YukonListEntryTypes.YUK_DEF_ID_PHONE:
+				return Validator.isPhoneNumber( entry_ );
 			
+			case YukonListEntryTypes.YUK_DEF_ID_PIN:
+				return Validator.isNumber( entry_ );
 			
 			
 			default: //what is this?? Must be good!!
 				return true;
 		}
 
-
-		return true;
 	}
 	
 	public static boolean areSameInYukon(int entryID1, int entryID2) {

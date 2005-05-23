@@ -303,4 +303,9 @@ public class Validator
 		return true;
 	}
 
+	public static boolean isPhoneNumber(String phoneNumber)
+	{
+		return isNumber(PhoneNumber.strip(phoneNumber));
+	}
+
 }
