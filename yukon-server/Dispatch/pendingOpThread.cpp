@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/18 14:34:28 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/05/24 00:39:51 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.16  2005/05/24 00:39:51  cplender
+* Added additional try catch on the DB writing threads which use transactions.
+* Improved the use of the thread monitor.
+*
 * Revision 1.15  2005/02/18 14:34:28  cplender
 * Make pendingOpThread announce itself every 5 like the others do.
 *
@@ -660,244 +664,254 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
  */
 void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, int cause, const RWTime &thetime, RWTime &now )
 {
-    switch(cause)
+    try
     {
-    case (CtiPendingPointOperations::newcontrol):
+        switch(cause)
         {
-            /*
-             *  newcontrol record should fully define a control in a way that dispatch can recover from a shutdown
-             *  accross their occurrence.
-             */
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
-               ppc.getControl().getControlDuration() != RESTORE_DURATION)
+        case (CtiPendingPointOperations::newcontrol):
             {
-                RWTime completiontime = ppc.getControl().getStopTime();
-                ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
-                ppc.getControl().setStopTime( completiontime );
-                ppc.getControl().setControlCompleteTime( completiontime );                          // This is when we think this control should complete.
+                /*
+                 *  newcontrol record should fully define a control in a way that dispatch can recover from a shutdown
+                 *  accross their occurrence.
+                 */
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
+                   ppc.getControl().getControlDuration() != RESTORE_DURATION)
+                {
+                    RWTime completiontime = ppc.getControl().getStopTime();
+                    ppc.getControl().incrementTimes( thetime, 0 );                                      // This effectively primes the entry for the next write.  Critical.
+                    ppc.getControl().setStopTime( completiontime );
+                    ppc.getControl().setControlCompleteTime( completiontime );                          // This is when we think this control should complete.
 
-                ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
+                    ppc.getControl().setActiveRestore( LMAR_NEWCONTROL );                               // Record this as a start interval.
 
-                insertControlHistoryRow(ppc, __LINE__);                                             // Drop the row in there!
-                postControlHistoryPoints(ppc, true);                                  // May ignore this if it has been posted recently.
-                postControlStopPoint(ppc, true);                                                    // Let everyone know when control should end.  Force the update.
+                    insertControlHistoryRow(ppc, __LINE__);                                             // Drop the row in there!
+                    postControlHistoryPoints(ppc, true);                                  // May ignore this if it has been posted recently.
+                    postControlStopPoint(ppc, true);                                                    // Let everyone know when control should end.  Force the update.
 
-                ppc.getControl().setStopTime( thetime );
-                ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
+                    ppc.getControl().setStopTime( thetime );
+                    ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
+                }
+
+                break;
             }
-
-            break;
-        }
-    case (CtiPendingPointOperations::intervalcrossing):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+        case (CtiPendingPointOperations::intervalcrossing):
             {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
                 {
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
 
-                    // Create some lies
-                    ppc.getControl().setActiveRestore( LMAR_LOGTIMER );             // Record this as a start or continue interval.
-                    insertControlHistoryRow(ppc, __LINE__);
-                    postControlHistoryPoints(ppc);                                  // May ignore this if it has been posted recently.
-
-                    // OK, set them out for the next run ok. Undo the lies.
-                    ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            break;
-        }
-    case (CtiPendingPointOperations::intervalpointpostcrossing):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
-            {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    CtiPendingPointOperations temporaryPPC(ppc);
-                    temporaryPPC.getControl().incrementTimes( thetime, addnlseconds );
-                    postControlHistoryPoints(temporaryPPC, true);
-                    postControlStopPoint(temporaryPPC, true);
-                }
-            }
-
-            break;
-        }
-    case (CtiPendingPointOperations::stopintervalcrossing):
-        {
-            postControlStopPoint(ppc);
-            break;
-        }
-    case (CtiPendingPointOperations::repeatcontrol):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
-               ppc.getControl().getControlDuration() != RESTORE_DURATION)     // This indicates a restore.
-            {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().setStopTime(thetime);
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
-
-                    insertControlHistoryRow(ppc, __LINE__);
-                    postControlHistoryPoints(ppc, true);
-                    postControlStopPoint(ppc, true);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
-                    ppc.dump();
-                }
-            }
-
-            break;
-        }
-    case (CtiPendingPointOperations::control):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
-            {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
-                    ppc.setControlState( CtiPendingPointOperations::controlCompleteCommanded );
-
-                    insertControlHistoryRow(ppc, __LINE__);
-                    postControlHistoryPoints(ppc, true);
-                    postControlStopPoint(ppc, true);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-
-            break;
-        }
-    case (CtiPendingPointOperations::datachange):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
-            {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
-
-                    if(thetime < ppc.getControl().getControlCompleteTime())         // The control did not run for its full duration.  It must have been manually resotred
+                    if(addnlseconds >= 0)
                     {
-                        ppc.getControl().setActiveRestore( LMAR_MANUAL_RESTORE );
-                        ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+
+                        // Create some lies
+                        ppc.getControl().setActiveRestore( LMAR_LOGTIMER );             // Record this as a start or continue interval.
+                        insertControlHistoryRow(ppc, __LINE__);
+                        postControlHistoryPoints(ppc);                                  // May ignore this if it has been posted recently.
+
+                        // OK, set them out for the next run ok. Undo the lies.
+                        ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
                     }
                     else
                     {
-                        ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::intervalpointpostcrossing):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        CtiPendingPointOperations temporaryPPC(ppc);
+                        temporaryPPC.getControl().incrementTimes( thetime, addnlseconds );
+                        postControlHistoryPoints(temporaryPPC, true);
+                        postControlStopPoint(temporaryPPC, true);
+                    }
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::stopintervalcrossing):
+            {
+                postControlStopPoint(ppc);
+                break;
+            }
+        case (CtiPendingPointOperations::repeatcontrol):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress &&
+                   ppc.getControl().getControlDuration() != RESTORE_DURATION)     // This indicates a restore.
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        ppc.getControl().setStopTime(thetime);
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+
+                        insertControlHistoryRow(ppc, __LINE__);
+                        postControlHistoryPoints(ppc, true);
+                        postControlStopPoint(ppc, true);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
+                        ppc.dump();
+                    }
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::control):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+                        ppc.setControlState( CtiPendingPointOperations::controlCompleteCommanded );
+
+                        insertControlHistoryRow(ppc, __LINE__);
+                        postControlHistoryPoints(ppc, true);
+                        postControlStopPoint(ppc, true);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::datachange):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+
+                        if(thetime < ppc.getControl().getControlCompleteTime())         // The control did not run for its full duration.  It must have been manually resotred
+                        {
+                            ppc.getControl().setActiveRestore( LMAR_MANUAL_RESTORE );
+                            ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
+                        }
+                        else
+                        {
+                            ppc.setControlState( CtiPendingPointOperations::controlCompleteTimedIn );
+                        }
 
 
-                    insertControlHistoryRow(ppc, __LINE__);
-                    postControlHistoryPoints(ppc, true);
-                    postControlStopPoint(ppc, true);
+                        insertControlHistoryRow(ppc, __LINE__);
+                        postControlHistoryPoints(ppc, true);
+                        postControlStopPoint(ppc, true);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
+                        ppc.dump();
+                    }
+                }
+                break;
+            }
+        case (CtiPendingPointOperations::seasonReset):
+            {
+                /*
+                 *  seasonreset.  No matter the state of the control, the seasonal hours should be reset...
+                 */
+
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+
+                        // Create some lies
+                        ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                         // Record this as a continuation.
+                        insertControlHistoryRow(ppc, __LINE__);
+                        postControlHistoryPoints(ppc);
+
+                        // OK, set them out for the next run ok. Undo the lies.
+                        ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
+
+                        postControlStopPoint(ppc);
+                    }
                 }
                 else
+                {
+                    RWTime writetime = ppc.getControl().getStopTime();
+                    ppc.getControl().incrementTimes( thetime, 0, true );                                // This effectively primes the entry for the write.  Seasonal hours are reset.  Critical.
+                    ppc.getControl().setStopTime( writetime );
+                    ppc.getControl().setControlCompleteTime( writetime );                               // This is when we think this control should complete.
+
+                    ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                       // Record this as a control adjustment.
+
+                    insertControlHistoryRow(ppc, __LINE__);                                                  // Drop the row in there!
+                    postControlHistoryPoints(ppc);
+                    postControlStopPoint(ppc);                                                      // Let everyone know when control should end.
+
+                    ppc.getControl().setStopTime( thetime );
+                    ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
+                }
+
+                break;
+            }
+        case (CtiPendingPointOperations::dispatchShutdown):
+            {
+                if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
+                {
+                    LONG addnlseconds = ppc.getControl().getControlCompleteTime().seconds() - ppc.getControl().getPreviousLogTime().seconds();
+
+                    if(addnlseconds >= 0)
+                    {
+                        ppc.getControl().incrementTimes( thetime, addnlseconds );
+                        ppc.getControl().setStopTime( ppc.getControl().getControlCompleteTime() );
+                        ppc.getControl().setActiveRestore( LMAR_DISPATCH_SHUTDOWN );
+                        ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
+
+                        insertControlHistoryRow(ppc, __LINE__);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") AR : " << ppc.getControl().getActiveRestore(  ) << " " << ppc.getControl().getControlCompleteTime() << " < " << ppc.getControl().getPreviousLogTime() << endl;
+                        ppc.dump();
+                    }
+                }
+                break;
+            }
+        default:
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Thetime seconds() = " << thetime << " addnlt time = " << addnlseconds << endl;
-                    ppc.dump();
                 }
+                break;
             }
-            break;
         }
-    case (CtiPendingPointOperations::seasonReset):
+    }
+    catch(...)
+    {
         {
-            /*
-             *  seasonreset.  No matter the state of the control, the seasonal hours should be reset...
-             */
-
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
-            {
-                LONG addnlseconds = thetime.seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
-
-                    // Create some lies
-                    ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                         // Record this as a continuation.
-                    insertControlHistoryRow(ppc, __LINE__);
-                    postControlHistoryPoints(ppc);
-
-                    // OK, set them out for the next run ok. Undo the lies.
-                    ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );        // Reset to the original completion state.
-
-                    postControlStopPoint(ppc);
-                }
-            }
-            else
-            {
-                RWTime writetime = ppc.getControl().getStopTime();
-                ppc.getControl().incrementTimes( thetime, 0, true );                                // This effectively primes the entry for the write.  Seasonal hours are reset.  Critical.
-                ppc.getControl().setStopTime( writetime );
-                ppc.getControl().setControlCompleteTime( writetime );                               // This is when we think this control should complete.
-
-                ppc.getControl().setActiveRestore( LMAR_CONTROLACCT_ADJUST );                       // Record this as a control adjustment.
-
-                insertControlHistoryRow(ppc, __LINE__);                                                  // Drop the row in there!
-                postControlHistoryPoints(ppc);
-                postControlStopPoint(ppc);                                                      // Let everyone know when control should end.
-
-                ppc.getControl().setStopTime( thetime );
-                ppc.getControl().setActiveRestore( ppc.getControl().getDefaultActiveRestore() );    // Reset to the original completion state.
-            }
-
-            break;
-        }
-    case (CtiPendingPointOperations::dispatchShutdown):
-        {
-            if(ppc.getControlState() == CtiPendingPointOperations::controlInProgress)
-            {
-                LONG addnlseconds = ppc.getControl().getControlCompleteTime().seconds() - ppc.getControl().getPreviousLogTime().seconds();
-
-                if(addnlseconds >= 0)
-                {
-                    ppc.getControl().incrementTimes( thetime, addnlseconds );
-                    ppc.getControl().setStopTime( ppc.getControl().getControlCompleteTime() );
-                    ppc.getControl().setActiveRestore( LMAR_DISPATCH_SHUTDOWN );
-                    ppc.setControlState( CtiPendingPointOperations::controlCompleteManual );
-
-                    insertControlHistoryRow(ppc, __LINE__);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") AR : " << ppc.getControl().getActiveRestore(  ) << " " << ppc.getControl().getControlCompleteTime() << " < " << ppc.getControl().getPreviousLogTime() << endl;
-                    ppc.dump();
-                }
-            }
-            break;
-        }
-    default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            break;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -1129,11 +1143,21 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
 
                 conn.beginTransaction(controlHistory);
 
-                while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                try
                 {
-                    panicCounter++;
-                    pTblEntry->Insert(conn);
-                    delete pTblEntry;
+                    while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                    {
+                        panicCounter++;
+                        pTblEntry->Insert(conn);
+                        delete pTblEntry;
+                    }
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
 
                 conn.commitTransaction(controlHistory);
@@ -1194,11 +1218,21 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
 
                 conn.beginTransaction(controlHistory);
 
-                while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
+                try
                 {
-                    panicCounter++;
-                    pTblEntry->UpdateDynamic(conn);
-                    delete pTblEntry;
+                    while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
+                    {
+                        panicCounter++;
+                        pTblEntry->UpdateDynamic(conn);
+                        delete pTblEntry;
+                    }
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
 
                 conn.commitTransaction(controlHistory);

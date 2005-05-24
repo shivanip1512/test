@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2005/05/05 17:07:57 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2005/05/24 00:39:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1374,6 +1374,9 @@ void CtiVanGogh::VGArchiverThread()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
                     }
+
+                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "RTDB Archiver Thread", CtiThreadRegData::None, 900 );
+                    ThreadMonitor.tickle( data );
                 }
 
                 // This should be an WaitForSync API call.
@@ -1422,6 +1425,9 @@ void CtiVanGogh::VGTimedOperationThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch Timed Operation Thread Active. TID:  " << rwThreadId() << endl;
                 }
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::None, 900 );
+                ThreadMonitor.tickle( data );
+
                 reportOnThreads();
             }
 
@@ -2242,7 +2248,20 @@ int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
 
     try
     {
-        status = archiveCommErrorHistoryMessage(*pMsg);
+        switch( pMsg->getErrorNumber() )
+        {
+        case DEVICEINHIBITED:
+        case PORTINHIBITED:
+            {
+                // Do nothing.  No need to fill the DB with garbage.
+                break;
+            }
+        default:
+            {
+                status = archiveCommErrorHistoryMessage(*pMsg);
+                break;
+            }
+        }
     }
     catch(const RWxmsg& x)
     {
@@ -2491,8 +2510,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager &VGCM, int
             if(VGCM.WriteConnQue(pMulti, 5000))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
+                dout << RWTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << VGCM.getClientName() << " / " << VGCM.getClientAppId() << endl;
             }
         }
         else
@@ -5066,6 +5084,8 @@ void CtiVanGogh::VGRPHWriterThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch RawPointHistory Writer Thread Active. TID:  " << rwThreadId() << endl;
                 }
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "RawPointHistory Writer Thread", CtiThreadRegData::None, 900 );
+                ThreadMonitor.tickle( data );
                 reportOnThreads();
             }
 
@@ -5121,6 +5141,8 @@ void CtiVanGogh::VGDBWriterThread()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
+                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Writer Thread", CtiThreadRegData::None, 900 );
+                    ThreadMonitor.tickle( data );
                     reportOnThreads();
                 }
 
@@ -5213,7 +5235,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Unable to aqcuire the _server_exclusion for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " TID " << rwThreadId() << " Unable to aqcuire the _server_exclusion for deviceLiteFind() " << __FILE__ << " (" << __LINE__ << ") Owned by TID " << _server_exclusion.lastAcquiredByTID() << endl;
     }
 
     return dliteit;
@@ -5285,7 +5307,7 @@ void CtiVanGogh::reportOnThreads()
 
     try
     {
-        CtiServerExclusion sguard(_server_exclusion, 1000);
+        CtiServerExclusion sguard(_server_exclusion, 100);
 
         if(sguard.isAcquired())
         {
@@ -5742,7 +5764,7 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -6455,6 +6477,8 @@ void CtiVanGogh::VGDBSignalWriterThread()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Writer Thread Active. TID:  " << rwThreadId() << endl;
                     }
+                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Writer Thread", CtiThreadRegData::None, 900 );
+                    ThreadMonitor.tickle( data );
                     reportOnThreads();
                 }
 
@@ -6517,6 +6541,8 @@ void CtiVanGogh::VGDBSignalEmailThread()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Email Thread Active. TID:  " << rwThreadId() << endl;
                     }
+                    CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DB Signal Email Thread", CtiThreadRegData::None, 900 );
+                    ThreadMonitor.tickle( data );
                     reportOnThreads();
                 }
 
