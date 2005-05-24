@@ -4243,6 +4243,7 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     INT         iValue = 0;
     DOUBLE      dValue = 0.0;
 
+    CHAR        *p;
     CHAR        tbuf[80];
     CHAR        tbuf2[80];
 
@@ -4297,19 +4298,19 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
 
     if(CmdStr.contains(" function"))
     {
-        if(!(temp = CmdStr.match(" function +[0-9]+")).isNull())
-        {
-            if(!(valStr = temp.match("[0-9]+")).isNull())
-            {
-                iValue = atoi(valStr.data());
-                _cmd["sa_function"] = CtiParseValue(iValue);
-            }
-        }
-        else if(!(temp = CmdStr.match(" function +[01][01][01][01]")).isNull())
+        if(!(temp = CmdStr.match(" function +[01][01][01][01]")).isNull())
         {
             if(!(valStr = temp.match("[01][01][01][01]")).isNull())
             {
                 iValue = binaryStringToInt(valStr.data(), valStr.length());
+                _cmd["sa_function"] = CtiParseValue(iValue);
+            }
+        }
+        else if(!(temp = CmdStr.match(" function +[0-9]+")).isNull())
+        {
+            if(!(valStr = temp.match("[0-9]+")).isNull())
+            {
+                iValue = atoi(valStr.data());
                 _cmd["sa_function"] = CtiParseValue(iValue);
             }
         }
