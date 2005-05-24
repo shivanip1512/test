@@ -902,6 +902,8 @@ insert into lmgroup values( 0, 0 );
 insert into UserPaoOwner select operatorloginid, scheduleid from LMMacsscheduleoperatorlist;
 drop table LMMacsscheduleoperatorlist;
 
+/* @error ignore */
+alter table operatorlogin drop constraint FK_OpSGrp_OpLg;
 insert into UserPaoOwner select loginid, lmgroupid from OperatorSerialGroup;
 drop table OperatorSerialGroup;
 
