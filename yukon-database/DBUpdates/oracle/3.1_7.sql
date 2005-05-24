@@ -7,6 +7,7 @@ create index Indx_lmcnt_paoid on LMControlHistory (
 );
 
 
+update LMProgramConstraints set MaxHoursDaily=MaxHoursDaily*3600,MaxHoursMonthly=MaxHoursMonthly*3600,MaxHoursSeasonal=MaxHoursSeasonal*3600,MaxHoursAnnually=MaxHoursAnnually*3600;
 
 
 
@@ -25,4 +26,4 @@ create index Indx_lmcnt_paoid on LMControlHistory (
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.1', 'Ryan', '25-MAY-2005', 'Manual version insert done', 7);
+/* __YUKON_VERSION__ */
