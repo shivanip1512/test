@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/05/24 00:39:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,10 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
 {
     extern CtiConnection VanGoghConnection;
 
-    if(OutMessage != 0 && ErrorCode != NORMAL)
+    if( OutMessage != 0 &&
+        ErrorCode != NORMAL &&
+        !( ErrorCode != DEVICEINHIBITED ||  // Do nothing in these cases.  This would just fill a database table with garbage.
+           ErrorCode != PORTINHIBITED) )
     {
         INT ErrorType = GetErrorType(ErrorCode);
 
