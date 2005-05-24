@@ -313,7 +313,25 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
 	}
-	
+
+	/**
+	 * Checks for an email entry
+	 */
+	public static boolean isEmail( int listEntryID )
+	{
+		return
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL;
+	}
+
+	/**
+	 * Checks for a PIN entry
+	 */
+	public static boolean isPIN( int listEntryID )
+	{
+		return
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PIN;
+	}
+
 	/**
 	 * Get the selection list name based on the specified list entry yukon definition ID 
 	 */
