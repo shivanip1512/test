@@ -812,10 +812,11 @@ public Object getValue(Object val)
 
 
 	Vector holder = new Vector();
-	//grab the latest ContactNotification list
 	for( int i = 0; i < getTableModel().getRowCount(); i++ )
 	{
-		holder.addElement(getTableModel().getContactNotificationRow(i));
+		ContactNotification cn = getTableModel().getContactNotificationRow(i);
+		cn.setOrdering( new Integer(i) );
+		holder.addElement(cn);
 	}
 	
 	//run all the ContactNotifications through the NestedDBPersistent comparator
@@ -1009,10 +1010,9 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		cn.setDisableFlag( 
 				getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
 
-		//cn.setContactID( ContactNotification.DUMMY_CONTACTID );
-		
-		getTableModel().addRowValue( cn );
-	
+		cn.setOrdering( new Integer(getTableModel().getRowCount()) );
+
+		getTableModel().addRowValue( cn );	
 		getTableModel().fireTableDataChanged();
 		fireInputUpdate();
 	}

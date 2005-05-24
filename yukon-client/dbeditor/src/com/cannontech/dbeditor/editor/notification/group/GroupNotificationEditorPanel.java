@@ -4,7 +4,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.notification.GroupNotification;
+import com.cannontech.database.data.notification.NotificationGroup;
 
 /**
  * Insert the type's description here.
@@ -454,11 +454,11 @@ private javax.swing.JTextField getJTextFieldSubject() {
  */
 public Object getValue(Object val) 
 {
-	GroupNotification gn = null;
+	NotificationGroup gn = null;
 	if( val == null )
-		gn = new GroupNotification();
+		gn = new NotificationGroup();
 	else
-		gn = (GroupNotification)val; 
+		gn = (NotificationGroup)val; 
 
 
 	String groupName = getJTextFieldName().getText();
@@ -624,7 +624,7 @@ public void setValue(Object val)
 	if( val == null )
 		return;
 
-	GroupNotification gn = (GroupNotification)val;
+	NotificationGroup gn = (NotificationGroup)val;
 	
 	String groupName = gn.getNotificationGroup().getGroupName();
 	if( groupName != null )

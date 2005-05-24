@@ -766,6 +766,7 @@ public class StarsLiteFactory {
 			notif.setNotificationCatID( new Integer(liteNotif.getNotificationCategoryID()) );
 			notif.setDisableFlag( liteNotif.getDisableFlag() );
 			notif.setNotification( liteNotif.getNotification() );
+			notif.setOrdering( new Integer(i) );
 			
 			contact.getContactNotifVect().add( notif );
 		}

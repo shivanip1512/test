@@ -7,7 +7,7 @@ import com.cannontech.database.db.command.Command;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
-import com.cannontech.database.data.notification.GroupNotification;
+import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -93,9 +93,9 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 				((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setGraphDefinitionID(new Integer(((LiteGraphCustomerList)liteObject).getGraphDefinitionID()));
 				break;
 			case LiteTypes.NOTIFICATION_GROUP:
-				returnObject = new com.cannontech.database.data.notification.GroupNotification();
-				((com.cannontech.database.data.notification.GroupNotification)returnObject).setNotificatoinGroupID(new Integer(((LiteNotificationGroup)liteObject).getNotificationGroupID()));
-				((com.cannontech.database.data.notification.GroupNotification)returnObject).getNotificationGroup().setGroupName(((LiteNotificationGroup)liteObject).getNotificationGroupName());
+				returnObject = new com.cannontech.database.data.notification.NotificationGroup();
+				((com.cannontech.database.data.notification.NotificationGroup)returnObject).setNotificatoinGroupID(new Integer(((LiteNotificationGroup)liteObject).getNotificationGroupID()));
+				((com.cannontech.database.data.notification.NotificationGroup)returnObject).getNotificationGroup().setGroupName(((LiteNotificationGroup)liteObject).getNotificationGroupName());
 				break;
 			case LiteTypes.ALARM_CATEGORIES:
 				returnObject = new com.cannontech.database.db.notification.AlarmCategory();
@@ -344,16 +344,16 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 				((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getGraphDefinitionID().intValue(),
 				((com.cannontech.database.data.graph.GraphDefinition)val).getGraphDefinition().getName()	);
 	}
-	else if( val instanceof com.cannontech.database.data.notification.GroupNotification )
+	else if( val instanceof com.cannontech.database.data.notification.NotificationGroup )
 	{
 		LiteNotificationGroup lGrp = new LiteNotificationGroup( 
-				((GroupNotification)val).getNotificationGroup().getNotificationGroupID().intValue(),
-				((GroupNotification)val).getNotificationGroup().getGroupName() );
+				((NotificationGroup)val).getNotificationGroup().getNotificationGroupID().intValue(),
+				((NotificationGroup)val).getNotificationGroup().getGroupName() );
 				
-		lGrp.setEmailFrom( ((GroupNotification)val).getNotificationGroup().getEmailFromAddress() );
-		lGrp.setEmailBody( ((GroupNotification)val).getNotificationGroup().getEmailMessage() );
-		lGrp.setEmailSubject( ((GroupNotification)val).getNotificationGroup().getEmailSubject() );
-		lGrp.setDisabled( ((GroupNotification)val).getNotificationGroup().getDisableFlag().equalsIgnoreCase("Y") );
+		lGrp.setEmailFrom( ((NotificationGroup)val).getNotificationGroup().getEmailFromAddress() );
+		lGrp.setEmailBody( ((NotificationGroup)val).getNotificationGroup().getEmailMessage() );
+		lGrp.setEmailSubject( ((NotificationGroup)val).getNotificationGroup().getEmailSubject() );
+		lGrp.setDisabled( ((NotificationGroup)val).getNotificationGroup().getDisableFlag().equalsIgnoreCase("Y") );
 				
 		returnLite = lGrp;
 	}		

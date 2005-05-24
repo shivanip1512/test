@@ -102,6 +102,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		getAddress().setAddressID( 
 				getContact().getAddressID() );
 	
+		delete("ContactNotifGroupMap", "ContactID", getContact().getContactID());
+
 		getContact().delete();
 
 		if (getAddress().getAddressID().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)

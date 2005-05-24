@@ -417,6 +417,7 @@ public class StarsFactory {
 				notif.setNotificationCatID( new Integer(starsNotif.getNotifCatID()) );
 				notif.setDisableFlag( starsNotif.getDisabled()? "Y" : "N" );
 				notif.setNotification( starsNotif.getNotification() );
+				notif.setOrdering( new Integer(i) );
 				notif.setOpCode( Transaction.INSERT );
 				contact.getContactNotifVect().add( notif );
 			}

@@ -15,13 +15,15 @@ public class ContactNotification extends NestedDBPersistent
 	private Integer notificationCatID= null;
 	private String disableFlag = "N";
 	private String notification = CtiUtilities.STRING_NONE;
+	private Integer ordering = new Integer(0);
 	
 
 	private final String CONSTRAINT_COLUMNS[] = { "ContactNotifID" };
 	
 	private final String SELECT_COLUMNS[] = 
 	{  
-		"ContactID", "NotificationCategoryID", "DisableFlag", "Notification" 
+		"ContactID", "NotificationCategoryID", "DisableFlag",
+		"Notification", "Ordering" 
 	};
 
 	public static final String TABLE_NAME = "ContactNotification";
@@ -37,8 +39,8 @@ public class ContactNotification extends NestedDBPersistent
 	/**
 	 * ContactNotification constructor comment.
 	 */
-	public ContactNotification(Integer contNotifID_, Integer contactID_, Integer notifID_,
-			String disableFlag_, String notif_ )
+	protected ContactNotification(Integer contNotifID_, Integer contactID_, Integer notifID_,
+			String disableFlag_, String notif_, Integer ordering_ )
 	{
 		this();
 		setContactNotifID( contNotifID_ );
@@ -46,6 +48,7 @@ public class ContactNotification extends NestedDBPersistent
 		setNotificationCatID( notifID_ );
 		setDisableFlag( disableFlag_);
 		setNotification( notif_ );
+		setOrdering( ordering_ );
 	}
 
 	private void deleteDependencies() throws java.sql.SQLException
@@ -97,7 +100,7 @@ public class ContactNotification extends NestedDBPersistent
 		Object setValues[] = 
 		{ 
 			getContactNotifID(), getContactID(), getNotificationCatID(), 
-			getDisableFlag(), getNotification()
+			getDisableFlag(), getNotification(), getOrdering()
 		};
 	
 		add( TABLE_NAME, setValues );
@@ -113,49 +116,7 @@ public class ContactNotification extends NestedDBPersistent
 	
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
-	
-	/**
-	 * This method was created by Cannon Technologies Inc.
-	 * @return boolean
-	 * @param deviceID java.lang.Integer	
-	 */
-/*
-	public static boolean deleteAllContactNotification(int contactID_, java.sql.Connection conn )
-	{
-		String sql1 = 
-            "DELETE FROM " + TABLE_NAME + 
-				" WHERE Contact=" + contactID_;
 
-		String sql2 = 
-            "DELETE FROM " + PointAlarming.TABLE_NAME + 
-				" WHERE RecipientID=" + contactID_;
-	
-		String sql3 = 
-            "DELETE FROM " + NotificationDestination.TABLE_NAME + 
-				" WHERE RecipientID=" + contactID_;
-	
-		try
-		{		
-			if( conn == null )
-			{
-				throw new IllegalStateException("Error getting database connection.");
-			}
-			else
-			{
-				conn.createStatement().execute( sql2 );
-				conn.createStatement().execute( sql3 );
-				conn.createStatement().execute( sql1 );
-			}		
-		}
-		catch( java.sql.SQLException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-	
-		return true;
-	}
-*/
 	/**
 	 * This method was created in VisualAge.
 	 * @return com.cannontech.database.db.point.State[]
@@ -169,8 +130,8 @@ public class ContactNotification extends NestedDBPersistent
 		
 		String sql = 
 			"SELECT ContactNotifID, ContactID, NotificationCategoryID, " + 
-			"DisableFlag, Notification " +
-			"FROM " + TABLE_NAME + " ORDER BY Notification";
+			"DisableFlag, Notification, Ordering " +
+			"FROM " + TABLE_NAME + " ORDER BY Ordering";
 	
 		try
 		{		
@@ -191,7 +152,8 @@ public class ContactNotification extends NestedDBPersistent
 								new Integer(rset.getInt(2)),
 								new Integer(rset.getInt(3)),
 								rset.getString(4),
-								rset.getString(5) ) );
+								rset.getString(5),
+								new Integer(rset.getInt(6)) ) );
 				}
 						
 			}		
@@ -233,10 +195,10 @@ public class ContactNotification extends NestedDBPersistent
 		
 		String sql = 
 			"SELECT ContactNotifID, ContactID, NotificationCategoryID, " + 
-			"DisableFlag, Notification " +
+			"DisableFlag, Notification, Ordering " +
 			"FROM " + TABLE_NAME + " " +
 			"WHERE ContactID = " + contactID_ + " " + 
-			"ORDER BY Notification";
+			"ORDER BY Ordering";
 	
 		try
 		{		
@@ -257,7 +219,8 @@ public class ContactNotification extends NestedDBPersistent
 								new Integer(rset.getInt(2)),
 								new Integer(rset.getInt(3)),
 								rset.getString(4),
-								rset.getString(5) ) );
+								rset.getString(5),
+								new Integer(rset.getInt(6)) ) );
 				}
 						
 			}		
@@ -334,35 +297,7 @@ public class ContactNotification extends NestedDBPersistent
 			catch (java.sql.SQLException e) {}
 		}
 	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @return NotificationRecipient
-	 * @param Integer
-	 */
-/*	
-	public final static ContactNotification getNotificationRecipient( Integer contactID_ )
-	{
-		ContactNotification cntNotif = new ContactNotification(); 
-		cntNotif.setContactID( contactID_ );
-	
-		try
-		{
-			com.cannontech.database.Transaction t =
-					com.cannontech.database.Transaction.createTransaction(
-							com.cannontech.database.Transaction.RETRIEVE,
-							cntNotif);
-	
-			cntNotif = (ContactNotification)t.execute();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		
-		return cntNotif;
-	}
-*/	
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/16/00 2:30:10 PM)
@@ -387,6 +322,7 @@ public class ContactNotification extends NestedDBPersistent
 			setNotificationCatID( (Integer) results[1] );
 			setDisableFlag( (String) results[2] );
 			setNotification( (String) results[3] );
+			setOrdering( (Integer) results[4] );
 		}
 		else
 			throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -420,7 +356,8 @@ public class ContactNotification extends NestedDBPersistent
 			getContactID(),
 			getNotificationCatID(), 
 			getDisableFlag(), 
-			getNotification()
+			getNotification(),
+			getOrdering()
 		};
 		
 		update( TABLE_NAME, SELECT_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -531,6 +468,22 @@ public class ContactNotification extends NestedDBPersistent
 	 */
 	public void setContactNotifID(Integer contactNotifID) {
 		this.contactNotifID = contactNotifID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getOrdering()
+	{
+		return ordering;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setOrdering(Integer integer)
+	{
+		ordering = integer;
 	}
 
 }

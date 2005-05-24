@@ -96,7 +96,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				Object addValues[] = 
 				{ 	
 					getCustomer().getCustomerID(), 
-					new Integer( getCustomerContactIDs()[i] )
+					new Integer( getCustomerContactIDs()[i] ),
+					new Integer(i)
 				};
 	
 				//just add the bridge value to the mapping table
@@ -128,7 +129,9 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		
 		// delete all the contacts for this customer
 		Contact.deleteAllAdditionalContacts( getCustomerID(), getDbConnection() );
-		
+
+		delete("CustomerNotifGroupMap", "CustomerID", getCustomerID());
+
 		getCustomer().delete();	
 	}
 
@@ -237,7 +240,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				Object addValues[] =
 				{
 					getCustomer().getCustomerID(),
-					new Integer( getCustomerContactIDs()[i] )
+					new Integer( getCustomerContactIDs()[i] ),
+					new Integer(i)
 				};
 	
 				//just add the bridge value to the mapping table

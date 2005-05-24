@@ -155,14 +155,14 @@ public class DBDeletionFuncs
 	    * statement. Do this when performance becomes an issue and put it into the
 	    * NotificationBase class 
 	    */
-		if( com.cannontech.database.data.notification.GroupNotification.hasAlarmCategory( theID ) )
+		if( com.cannontech.database.data.notification.NotificationGroup.hasAlarmCategory( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append(CR_LF + "because it is used by an Alarm Category.");
 			return STATUS_DISALLOW;
 		}
 	
-		if( com.cannontech.database.data.notification.GroupNotification.hasPointAlarming( theID ) )
+		if( com.cannontech.database.data.notification.NotificationGroup.hasPointAlarming( theID ) )
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append(CR_LF + "because it is used by a point alarm.");
@@ -428,11 +428,11 @@ public class DBDeletionFuncs
 			anID = ((com.cannontech.database.data.customer.Contact) toDelete).getContact().getContactID().intValue();
 			deletionType = DBDeletionFuncs.CONTACT_TYPE;
 		}		
-		else if (toDelete instanceof com.cannontech.database.data.notification.GroupNotification)
+		else if (toDelete instanceof com.cannontech.database.data.notification.NotificationGroup)
 		{
 			message.append("Are you sure you want to permanently delete '" + nodeName + "'?");
 			unableDel.append("You cannot delete the notification group '" + nodeName + "'");
-			anID = ((com.cannontech.database.data.notification.GroupNotification) toDelete).getNotificationGroup().getNotificationGroupID().intValue();
+			anID = ((com.cannontech.database.data.notification.NotificationGroup) toDelete).getNotificationGroup().getNotificationGroupID().intValue();
 			deletionType = DBDeletionFuncs.NOTIF_GROUP_TYPE;
 		}
 		else if (toDelete instanceof com.cannontech.database.data.state.GroupState)

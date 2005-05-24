@@ -82,13 +82,13 @@ public class CustomerLoader implements Runnable
 			
 			
 			sqlString = 
-				"SELECT ca.CustomerID, ca.ContactID " + 
+				"SELECT ca.CustomerID, ca.ContactID, ca.Ordering " + 
 				"FROM CustomerAdditionalContact ca, " + 
 				Customer.TABLE_NAME + " c " + 
 				"WHERE ca.CustomerID=c.CustomerID " +
-				"ORDER BY ca.CustomerID";
+				"ORDER BY ca.Ordering";
 			
-			Vector vectVals = new Vector(30);
+			Vector vectVals = new Vector(32);
 			rset = stmt.executeQuery(sqlString);
 
 			while( rset.next() )

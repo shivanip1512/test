@@ -102,7 +102,7 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
  */
 public Object getValue(Object val)
 {
-	com.cannontech.database.data.notification.GroupNotification gn = (com.cannontech.database.data.notification.GroupNotification)val;
+	com.cannontech.database.data.notification.NotificationGroup gn = (com.cannontech.database.data.notification.NotificationGroup)val;
 	
 	java.util.Vector destinationVector = new java.util.Vector( getAddRemovePanel().rightListGetModel().getSize() );
 	Integer locationID = null;
@@ -307,7 +307,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
  */
 public void setValue(Object val) 
 {
-	com.cannontech.database.data.notification.GroupNotification gn = (com.cannontech.database.data.notification.GroupNotification)val;
+	com.cannontech.database.data.notification.NotificationGroup gn = (com.cannontech.database.data.notification.NotificationGroup)val;
 	java.util.Vector destinationVector = gn.getDestinationVector();
 
 	java.util.Vector assignedLocations = new java.util.Vector();

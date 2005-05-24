@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.notification.NotificationGroup;
@@ -16,6 +19,13 @@ public class LiteNotificationGroup extends LiteBase
 	
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
 	private java.util.ArrayList notificationDestinations = null;
+
+	//contains ints of ContactIDs
+	private int[] contactIDs = new int[0];
+
+	//contains ints of CustomerIDs
+	private int[] customerIDs = new int[0];
+
 
 	/**
 	 * LiteNotificationGroup
@@ -52,59 +62,94 @@ public class LiteNotificationGroup extends LiteBase
 	/**
 	 * retrieve method comment.
 	 */
-	public void retrieve(String databaseAlias) {
-	
-	 	com.cannontech.database.SqlStatement stmt =
-	 		new com.cannontech.database.SqlStatement(
-					"SELECT GroupName, EmailFromAddress, EmailMessage, " +
-					"EmailSubject, DisableFlag " +
-					"FROM " + NotificationGroup.TABLE_NAME + " " + 
-					"WHERE NotificationGroupID = " + 
-					Integer.toString(getNotificationGroupID()),
-					databaseAlias);
-	
-	 	try
-	 	{
-	 		stmt.execute();
-			setNotificationGroupName( (String)stmt.getRow(0)[0] );
-			setEmailFrom( (String)stmt.getRow(0)[1] );
-			setEmailBody( (String)stmt.getRow(0)[2] );
-			setEmailSubject( (String)stmt.getRow(0)[3] );
-			setDisabled( stmt.getRow(0)[4].toString().trim().equalsIgnoreCase("Y") );
+	public void retrieve(String databaseAlias)
+	{
+	 	String notifSQL = 
+			"SELECT GroupName, EmailFromAddress, EmailMessage, " +
+			"EmailSubject, DisableFlag " +
+			"FROM " + NotificationGroup.TABLE_NAME + " " + 
+			"WHERE NotificationGroupID = " + 
+			Integer.toString(getNotificationGroupID());
 
+		String contNotifSQL =
+			"SELECT n.ContactNotifID, n.ContactID, n.NotificationCategoryID, " + 
+			"n.DisableFlag, n.Notification " + 
+			"FROM " + ContactNotification.TABLE_NAME + " n, " +
+			NotificationDestination.TABLE_NAME + " nd " +
+			"WHERE nd.notificationgroupID = " + getNotificationGroupID() +
+			" and n.ContactNotifID = nd.RecipientID " +
+			" ORDER BY nd.destinationorder";
 
-
-			stmt = new com.cannontech.database.SqlStatement(
-				"SELECT n.ContactNotifID, n.ContactID, n.NotificationCategoryID, " + 
-				"n.DisableFlag, n.Notification " + 
-		 		"FROM " + ContactNotification.TABLE_NAME + " n, " +
-		 		NotificationDestination.TABLE_NAME + " nd " +
-		 		"WHERE nd.notificationgroupID = " + getNotificationGroupID() +
-		 		" and n.ContactNotifID = nd.RecipientID " +
-		 		" ORDER BY nd.destinationorder",
-				databaseAlias);
-				
-			stmt.execute();
+		java.sql.Connection conn = null;
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
 	
+		try
+		{
+			conn = PoolManager.getInstance().getConnection( databaseAlias );
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery(notifSQL);
+
+			while( rset.next() )
+			{
+				setNotificationGroupName( rset.getString(1).trim() );
+				setEmailFrom( rset.getString(2).trim() );
+				setEmailBody( rset.getString(3).trim() );
+				setEmailSubject( rset.getString(4).trim() );
+				setDisabled( rset.getString(5).trim().charAt(0) == CtiUtilities.trueChar.charValue() );
+			}
+			
+			rset = stmt.executeQuery(contNotifSQL);
 			LiteContactNotification lcc = null;
-			for(int i=0;i<stmt.getRowCount();i++)
+			while( rset.next() )
 			{
 				lcc = new LiteContactNotification(
-					((java.math.BigDecimal)stmt.getRow(i)[0]).intValue(),
-					((java.math.BigDecimal)stmt.getRow(i)[1]).intValue(),
-					((java.math.BigDecimal)stmt.getRow(i)[2]).intValue(),
-					stmt.getRow(i)[3].toString(),
-					stmt.getRow(i)[4].toString() );
+					rset.getInt(1),
+					rset.getInt(2),
+					rset.getInt(3),
+					rset.getString(4).trim(),
+					rset.getString(5).trim() );
 
 
 				getNotificationDestinations().add(lcc);
 			}
-	 	}
-	 	catch( Exception e )
-	 	{
-	 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	 	}
+
+			setContactIDs(
+				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContactIDs(
+					new Integer(getNotificationGroupID()),
+					conn) );
+
+			setCustomerIDs(
+				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomerIDs(
+					new Integer(getNotificationGroupID()),
+					conn) );
+		}
+		catch( java.sql.SQLException e ) {
+			try { ///close all the stuff here
+				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
+            
+				stmt = null;
+				conn = null;
+			}
+			catch( java.sql.SQLException ex ) {
+				CTILogger.error( ex.getMessage(), ex);
+			}
+		}
+		finally {
+			try {
+				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
+			}
+			catch( java.sql.SQLException e ) {
+				CTILogger.error( e.getMessage(), e );
+			}
+
+		}
+	 	
+	 	
 	}
+
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
@@ -210,6 +255,38 @@ public class LiteNotificationGroup extends LiteBase
 	public void setEmailBody(String string)
 	{
 		emailBody = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public int[] getContactIDs()
+	{
+		return contactIDs;
+	}
+
+	/**
+	 * @return
+	 */
+	public int[] getCustomerIDs()
+	{
+		return customerIDs;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setContactIDs(int[] is)
+	{
+		contactIDs = is;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setCustomerIDs(int[] is)
+	{
+		customerIDs = is;
 	}
 
 }

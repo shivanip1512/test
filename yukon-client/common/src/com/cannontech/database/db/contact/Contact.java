@@ -149,7 +149,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 			"SELECT cnt.ContactID, cnt.ContFirstName, cnt.ContLastName, " +
 			"cnt.LogInID, cnt.AddressID " + 
 			"FROM " + TABLE_NAME + " cnt, CustomerAdditionalContact list " +
-			"WHERE list.CustomerID= ? and list.CONTACTID=cnt.CONTACTID";
+			"WHERE list.CustomerID= ? and list.CONTACTID=cnt.CONTACTID " +
+			"order by list.ordering";
 	
 		try
 		{		

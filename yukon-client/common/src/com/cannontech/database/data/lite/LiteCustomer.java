@@ -74,7 +74,7 @@ public class LiteCustomer extends LiteBase {
 					"WHERE " +
 					"c.CustomerID=" + getCustomerID() + " " +
 					"AND c.CustomerID=ca.CustomerID " +
-					"ORDER BY c.CustomerID",
+					"ORDER BY ca.Ordering",
 					conn );
 			
 			stat.execute();

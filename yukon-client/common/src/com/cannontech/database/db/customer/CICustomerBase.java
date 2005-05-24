@@ -36,7 +36,8 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 			"WHERE ci.CustomerID=cst.CustomerID " +
 			"AND cac.CustomerID=cst.CustomerID " +
 			"AND cac.ContactID=cnt.ContactID " +
-			"AND cnt.ContactID=?";
+			"AND cnt.ContactID=? " +
+			"order by cac.ordering";
 
 
 	/**

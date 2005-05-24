@@ -1868,6 +1868,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		//only let the Customer DBChange go into here
 		if( database == DBChangeMsg.CHANGE_CUSTOMER_DB )
 		{
+			allNotificationGroups = null;
 			retLBase = handleCustomerChange( dbType, id, dbCategory );
 			
 			//TODO Find a better way to update the cicustomers, this sweep is begining to hurt my knees.

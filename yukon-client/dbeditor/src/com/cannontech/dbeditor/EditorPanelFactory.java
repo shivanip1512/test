@@ -56,7 +56,7 @@ public final class EditorPanelFactory
    	{com.cannontech.database.data.port.DirectPort.class,
 	  	com.cannontech.dbeditor.editor.port.PortEditorPanel.class},
 
-   	{com.cannontech.database.data.notification.GroupNotification.class,
+   	{com.cannontech.database.data.notification.NotificationGroup.class,
 		 com.cannontech.dbeditor.editor.notification.group.NotificationGroupEditorPanel.class},
 
 	//{com.cannontech.database.data.notification.ContactNotification.class,

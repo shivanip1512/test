@@ -69,7 +69,8 @@ public class UserEnergyCompanyLoader implements Runnable
 	    String sql2 = "SELECT Contact.LoginID,EnergyCompanyCustomerList.EnergyCompanyID " + 
 	    					  " FROM EnergyCompanyCustomerList,CustomerAdditionalContact,Contact " + 
 	    					  " WHERE EnergyCompanyCustomerList.CustomerID=CustomerAdditionalContact.CustomerID " +
-	    					  " AND CustomerAdditionalContact.ContactID=Contact.ContactID";
+	    					  " AND CustomerAdditionalContact.ContactID=Contact.ContactID " + 
+	    					  " ORDER by CustomerAdditionalContact.Ordering";
 	    					     					
    	    String sql3 = "SELECT OperatorLoginID,EnergyCompanyID FROM EnergyCompanyOperatorLoginList";
    	         		

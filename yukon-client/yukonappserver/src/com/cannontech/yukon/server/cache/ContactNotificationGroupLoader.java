@@ -78,6 +78,15 @@ public class ContactNotificationGroupLoader implements Runnable
 				lGrp.setEmailSubject( rset.getString(5).trim() );
 				lGrp.setDisabled( rset.getString(6).trim().equalsIgnoreCase("Y") );
 
+				lGrp.setContactIDs(
+					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContactIDs(
+						new Integer(lGrp.getNotificationGroupID()),
+						conn) );
+
+				lGrp.setCustomerIDs(
+					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomerIDs(
+						new Integer(lGrp.getNotificationGroupID()),
+						conn) );
 
 				allContactNotificationGroups.add( lGrp );
 			}
@@ -118,6 +127,7 @@ public class ContactNotificationGroupLoader implements Runnable
 					}
 				}
 			}
+
 
 			
 		}

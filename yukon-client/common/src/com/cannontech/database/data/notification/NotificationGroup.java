@@ -1,23 +1,46 @@
 package com.cannontech.database.data.notification;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.DBPersistent;
+
 /**
  * This type was created in VisualAge.
  */
 
-public class GroupNotification extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
+public class NotificationGroup extends DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.notification.NotificationGroup notificationGroup = null;
 	private java.util.Vector destinationVector = null;
+
+	//contains ints of ContactIDs
+	private int[] contactIDs = new int[0];
+
+	//contains ints of CustomerIDs
+	private int[] customerIDs = new int[0];
+
+	public static final String SQL_CUSTOMER_NOTIFGRP = 
+		"SELECT CustomerID " +
+		"FROM CustomerNotifGroupMap " +
+		"WHERE NotificationGroupID = ?";
+
+	public static final String SQL_CONTACT_NOTIFGRP =
+		"SELECT ContactID " +
+		"FROM ContactNotifGroupMap " +
+		"WHERE NotificationGroupID = ?";
+
+
 /**
  * StatusPoint constructor comment.
  */
-public GroupNotification() {
+public NotificationGroup() {
 	super();
 }
 /**
  * StatusPoint constructor comment.
  */
-public GroupNotification(Integer notificationGroupID) {
+public NotificationGroup(Integer notificationGroupID) {
 	super();
 	getNotificationGroup().setNotificationGroupID(notificationGroupID);
 }
@@ -25,20 +48,51 @@ public GroupNotification(Integer notificationGroupID) {
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
  */
-public void add() throws java.sql.SQLException {
-	
+public void add() throws java.sql.SQLException
+{
 	getNotificationGroup().add();
 
 	if( getDestinationVector() != null )
 		for( int i = 0; i < getDestinationVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getDestinationVector().elementAt(i)).add();
+			((DBPersistent) getDestinationVector().elementAt(i)).add();
+			
+			
+	for( int i = 0; i < getContactIDs().length; i++ )
+	{
+		Object addValues[] = 
+		{ 	
+			new Integer(getContactIDs()[i]),
+			getNotificationGroup().getNotificationGroupID()
+		};
+	
+		//just add the bridge value to the mapping table
+		// showing that this contact belongs to the current NotificationGroup 
+		add("ContactNotifGroupMap", addValues);
+	}
+
+	for( int i = 0; i < getCustomerIDs().length; i++ )
+	{
+		Object addValues[] = 
+		{ 	
+			new Integer(getCustomerIDs()[i]),
+			getNotificationGroup().getNotificationGroupID()
+		};
+	
+		//just add the bridge value to the mapping table
+		// showing that this contact belongs to the current NotificationGroup 
+		add("CustomerNotifGroupMap", addValues);
+	}
 }
+
 /**
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
  */
 public void delete() throws java.sql.SQLException 
 {
+	delete("ContactNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete("CustomerNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	
 	// remove all the destantions for this group
 	com.cannontech.database.db.notification.NotificationDestination.deleteAllDestinations( 
             getNotificationGroup().getNotificationGroupID(), getDbConnection() );
@@ -100,9 +154,10 @@ public final static boolean hasAlarmCategory(Integer pointID) throws java.sql.SQ
  */
 public final static boolean hasAlarmCategory(Integer groupID, String databaseAlias) throws java.sql.SQLException 
 {
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT NotificationGroupID FROM " + com.cannontech.database.db.notification.AlarmCategory.TABLE_NAME + " WHERE NotificationGroupID=" + groupID,
-													databaseAlias );
+	SqlStatement stmt =
+		new SqlStatement(
+			"SELECT NotificationGroupID FROM " + com.cannontech.database.db.notification.AlarmCategory.TABLE_NAME + " WHERE NotificationGroupID=" + groupID,
+			databaseAlias );
 
 	try
 	{
@@ -128,9 +183,10 @@ public final static boolean hasPointAlarming(Integer recipientID) throws java.sq
  */
 public final static boolean hasPointAlarming(Integer groupID, String databaseAlias) throws java.sql.SQLException 
 {
-	com.cannontech.database.SqlStatement stmt =
-		new com.cannontech.database.SqlStatement("SELECT NotificationGroupID FROM " + com.cannontech.database.db.point.PointAlarming.TABLE_NAME + " WHERE NotificationGroupID=" + groupID,
-													databaseAlias );
+	SqlStatement stmt =
+		new SqlStatement(
+			"SELECT NotificationGroupID FROM " + com.cannontech.database.db.point.PointAlarming.TABLE_NAME + " WHERE NotificationGroupID=" + groupID,
+			databaseAlias );
 
 	try
 	{
@@ -142,6 +198,79 @@ public final static boolean hasPointAlarming(Integer groupID, String databaseAli
 		return false;
 	}
 }
+
+/**
+ * Returns the Customer IDs that are inside the NotifcationGroup
+ * identified by the given ID
+ * 
+ */
+public static final int[] getAllNotifGroupCustomerIDs(Integer notifGroupID, java.sql.Connection conn ) throws java.sql.SQLException
+{
+	return getIDs( SQL_CUSTOMER_NOTIFGRP, notifGroupID, conn );
+}
+
+/**
+ * Returns the conact IDs that are inside the NotifcationGroup
+ * identified by the given ID
+ * 
+ */
+public static final int[] getAllNotifGroupContactIDs(Integer notifGroupID, java.sql.Connection conn ) throws java.sql.SQLException
+{
+	return getIDs( SQL_CONTACT_NOTIFGRP, notifGroupID, conn );
+}
+
+/**
+ * Generic call to get an int[] of ids from the given query
+ * identified by the given ID
+ * 
+ */
+protected static final int[] getIDs(String sql, Integer notifGroupID, java.sql.Connection conn ) throws java.sql.SQLException
+{
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	NativeIntVector intVect = new NativeIntVector(16);
+
+	try
+	{
+		if( conn == null )
+		{
+			throw new IllegalStateException("Database connection should not be null.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, notifGroupID.intValue() );
+				
+			rset = pstmt.executeQuery();							
+		
+			while( rset.next() )
+			{
+				intVect.add( rset.getInt(1) );
+			}
+						
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( rset != null ) rset.close();
+			if( pstmt != null ) pstmt.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+	
+	return intVect.toArray();
+}
+
+
 /**
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
@@ -166,10 +295,19 @@ public void retrieve() throws java.sql.SQLException {
 		//not necessarily an error
 	}
 
-	//for( int i = 0; i < getDestinationVector().size(); i++ )
-		//((com.cannontech.database.db.DBPersistent) getDestinationVector().elementAt(i)).retrieve();
+	setContactIDs(
+		getAllNotifGroupContactIDs(
+			getNotificationGroup().getNotificationGroupID(),
+			getDbConnection()) );
+
+	setCustomerIDs(
+		getAllNotifGroupCustomerIDs(
+			getNotificationGroup().getNotificationGroupID(),
+			getDbConnection()) );
 
 }
+
+
 /**
  * Insert the method's description here.
  * Creation date: (1/4/00 3:32:03 PM)
@@ -186,7 +324,7 @@ public void setDbConnection(java.sql.Connection conn)
 	if( v != null )
 	{
 		for( int i = 0; i < v.size(); i++ )
-			((com.cannontech.database.db.DBPersistent) v.elementAt(i)).setDbConnection(conn);
+			((DBPersistent) v.elementAt(i)).setDbConnection(conn);
 	}
 }
 /**
@@ -230,6 +368,61 @@ public void update() throws java.sql.SQLException
 	
 	if( getDestinationVector() != null )
 		for( int i = 0; i < getDestinationVector().size(); i++ )
-			((com.cannontech.database.db.DBPersistent) getDestinationVector().elementAt(i)).add();
+			((DBPersistent) getDestinationVector().elementAt(i)).add();
+
+	delete("ContactNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete("CustomerNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+
+	for( int i = 0; i < getContactIDs().length; i++ )
+	{
+		Object addValues[] = { 	
+			new Integer(getContactIDs()[i]),
+			getNotificationGroup().getNotificationGroupID()
+		};
+		add("ContactNotifGroupMap", addValues);
+	}
+
+	for( int i = 0; i < getCustomerIDs().length; i++ )
+	{
+		Object addValues[] = { 	
+			new Integer(getCustomerIDs()[i]),
+			getNotificationGroup().getNotificationGroupID()
+		};
+		add("CustomerNotifGroupMap", addValues);
+	}
+
 }
+
+	/**
+	 * @return
+	 */
+	public int[] getContactIDs()
+	{
+		return contactIDs;
+	}
+
+	/**
+	 * @return
+	 */
+	public int[] getCustomerIDs()
+	{
+		return customerIDs;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setContactIDs(int[] is)
+	{
+		contactIDs = is;
+	}
+
+	/**
+	 * @param is
+	 */
+	public void setCustomerIDs(int[] is)
+	{
+		customerIDs = is;
+	}
+
 }

@@ -160,7 +160,7 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 		DataInputPanel tempPanel;
 		final int PANEL_COUNT = 2;
 	
-		com.cannontech.database.data.notification.GroupNotification stateGroup = (com.cannontech.database.data.notification.GroupNotification) val;
+		com.cannontech.database.data.notification.NotificationGroup stateGroup = (com.cannontech.database.data.notification.NotificationGroup) val;
 	
 	 	for( int i = 0; i < PANEL_COUNT; i++ )
 	 	{
