@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/05/24 00:38:38 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.28  2005/05/24 00:38:38  cplender
+* Prevent verification objects if they are not valid.
+*
 * Revision 1.27  2005/04/15 19:04:10  mfisher
 * got rid of magic number debuglevel checks
 *
@@ -638,6 +641,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             OutMessage->VerificationSequence = VerificationSequenceGen();
         }
 
+        CtiVerificationWork *work = 0;
         if( OutMessage->Buffer.SASt._code305[0] != '\0' )
         {
             memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
@@ -647,15 +651,16 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
         {
             strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
             codestr[12] = 0;
+            work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, codestr, seconds(60));
         }
         else
         {
             strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
             codestr[6] = 0;
+            work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
         }
 
-        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
-        _verification_objects.push(work);
+        if(work) _verification_objects.push(work);
 
         while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
         {
