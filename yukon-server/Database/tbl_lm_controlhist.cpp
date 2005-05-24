@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/05/24 00:40:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
 _currentSeasonalTime(season), _currentAnnualTime(annual), _defaultActiveRestore(restore),
 _reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start),
-_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL)
+_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL), _activeRestore("U")
 {
 }
 
@@ -573,7 +573,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     getCurrentMonthlyTime() <<
     getCurrentSeasonalTime() <<
     getCurrentAnnualTime() <<
-    getActiveRestore() <<
+    (getActiveRestore().isNull() ? "U" : getActiveRestore()) <<
     getReductionValue() <<
     RWDBDateTime(getStopTime());
 
