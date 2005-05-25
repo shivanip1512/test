@@ -6,43 +6,29 @@
  */
 package com.cannontech.capcontrol;
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.ScrollPane;
-import java.awt.Toolkit;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.border.EtchedBorder;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 import javax.swing.Timer;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.capcontrol.CapBank;
+
 /**
  * @author ASolberg
  *
@@ -79,6 +65,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private final int ONE_SECOND = 1000;
 	private boolean valid = false;
 	private ActionNotifier notifier = new ActionNotifier(this);
+
 
 	public InputFrame()
 	{
@@ -156,19 +143,19 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		bankSizeCB.addItem(new Integer(1100));
 		bankSizeCB.addItem(new Integer(1200));
 
-		//		routeCB.removeAllItems();
-		//		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-		//		synchronized(cache)
-		//		{         
-		////			java.util.List list = 
-		////			(cbcType == DeviceTypes.DNP_CBC_6510)
-		////			? cache.getAllPorts()
-		////			: cache.getAllRoutes();
-		//			java.util.List list = cache.getAllRoutes();
-		//
-		//		for( int i = 0; i < list.size(); i++ )
-		//		routeCB.addItem( list.get(i) );
-		//		}
+		routeCB.removeAllItems();
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache)
+		{         
+//			java.util.List list = 
+//			(cbcType == DeviceTypes.DNP_CBC_6510)
+//			? cache.getAllPorts()
+//			: cache.getAllRoutes();
+			java.util.List list = cache.getAllRoutes();
+
+			for( int i = 0; i < list.size(); i++ )
+				routeCB.addItem( list.get(i) );
+		}
 
 		contentPane.add(serialRangeLabel);
 		contentPane.add(serialFromTF);
@@ -220,7 +207,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			// check data with our input validater
 			if ("".equalsIgnoreCase(serialFromTF.getText()) || "".equalsIgnoreCase(serialToTF.getText()))
 			{
-				JOptionPane.showMessageDialog(null, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
 			} else
 			{
 				bar.setVisible(true);
@@ -230,7 +217,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				Integer from = new Integer(fromS);
 				String toS = serialToTF.getText();
 				Integer to = new Integer(toS);
-				String route = (String) routeCB.getSelectedItem();
+				String route = (String) routeCB.getSelectedItem().toString();
 				String banksize = (String) bankSizeCB.getSelectedItem().toString();
 				String manufacturer = (String) switchManCB.getSelectedItem();
 				String type = (String) switchTypeCB.getSelectedItem();
@@ -253,7 +240,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			while (true)
 			{
 				boolean rangeOK = val.checkRange();
-				Thread.sleep(2000);
 				if (rangeOK)
 				{
 					progress += 17;
@@ -264,7 +250,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean routeOK = val.checkRoute();
-				Thread.sleep(2000);
 				if (routeOK)
 				{
 					progress += 17;
@@ -275,7 +260,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean bankOK = val.checkBankSize();
-				Thread.sleep(2000);
 				if (bankOK)
 				{
 					progress += 17;
@@ -286,7 +270,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean switchManOK = val.checkManufacturer();
-				Thread.sleep(2000);
 				if (switchManOK)
 				{
 					progress += 17;
@@ -297,7 +280,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean switchTypeOK = val.checkSwitchType();
-				Thread.sleep(2000);
 				if (switchTypeOK)
 				{
 					progress += 17;
@@ -308,7 +290,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean switchConTypeOK = val.checkConType();
-				Thread.sleep(2000);
 				if (switchConTypeOK)
 				{
 					progress += 100;
@@ -324,7 +305,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 
 		} catch (Exception e)
 		{
-			System.out.println("error while validating");
+			CTILogger.info("error while validating");
 			e.printStackTrace(System.out);
 		}
 	}
@@ -335,13 +316,13 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		{
 			for(int i = val.getFrom(); i <= val.getTo();i++){
 				// create devices
-				System.out.println("creating device: "+ i);
+				CTILogger.info("creating device: "+ i);
 			}
 			return true;
 		}catch (Exception e)
 		{
 			// do something
-			System.out.println("error writing to database");
+			CTILogger.info("error writing to database");
 			e.printStackTrace(System.out);
 			return false;
 		}
@@ -376,24 +357,27 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 
 		if (os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_SUCCESSFUL)
 		{
-			System.out.println("success");
+			CTILogger.info("validation success");
 			boolean success = writeToDB(val);
 			if(success){
+				CTILogger.info("dbwrite success");
 				notifier.setActionCode(ActionNotifier.ACTION_DBWRITE_SUCCESSFUL);
 			}else
 			{
+				
 				notifier.setActionCode(ActionNotifier.ACTION_DBWRITE_FAILURE);
 			}
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_FAILURE)
 		{
-			System.out.println("failure");
+			CTILogger.info(" validation failure");
+			JOptionPane.showMessageDialog(this, "Some of the numbers in the specified serial range are used.", "Serial Range Conflict", JOptionPane.WARNING_MESSAGE);
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
 			// fire a db change
 			
-		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_FAILURE)
+		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_FAILURE)
 		{
-			
+			CTILogger.info("dbwrite failure");
 		}
 	}
 }
