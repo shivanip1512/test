@@ -306,6 +306,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_TCU;
 		case ROUTE_VERSACOM:
 			return STRING_VERSACOM;
+		case ROUTE_RTC:
+			return STRING_RTC_ROUTE;
 
 		//capcontrol
 		case CAP_CONTROL_SUBBUS:

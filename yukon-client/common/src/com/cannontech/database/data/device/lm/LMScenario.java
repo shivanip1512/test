@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 
 /**
  * @author jdayton
@@ -159,7 +160,7 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	   java.util.Vector oldProgs = LMControlScenarioProgram.getAllProgramsForAScenario(getPAObjectID(), getDbConnection());
 	
 	   //unleash the power of the NestedDBPersistent
-	   Vector comparedPrograms = CtiUtilities.NestedDBPersistentComparator(oldProgs, getAllThePrograms());
+	   Vector comparedPrograms = NestedDBPersistentComparators.NestedDBPersistentCompare(oldProgs, getAllThePrograms(), NestedDBPersistentComparators.lmControlScenarioProgramComparator);
 
 	   //throw the programs into the Db
 	   for( int i = 0; i < comparedPrograms.size(); i++ )

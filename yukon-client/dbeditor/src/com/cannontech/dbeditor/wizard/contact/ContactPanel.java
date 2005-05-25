@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
 import com.cannontech.common.util.CtiUtilities;
 
+
 public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, javax.swing.event.ListSelectionListener {
 	private ContactNotificationTableModel tableModel = null;
 	private javax.swing.JButton ivjJButtonAdd = null;
@@ -819,13 +820,8 @@ public Object getValue(Object val)
 		holder.addElement(cn);
 	}
 	
-	//run all the ContactNotifications through the NestedDBPersistent comparator
-	//to see which ones need to be added, updated, or deleted.
-	Vector newVect = CtiUtilities.NestedDBPersistentComparator(cnt.getContactNotifVect(), holder );
-	
 	cnt.getContactNotifVect().clear();
-	cnt.getContactNotifVect().addAll( newVect );
-
+	cnt.getContactNotifVect().addAll( holder );
 
 	return cnt;
 }

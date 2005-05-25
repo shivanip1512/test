@@ -246,6 +246,63 @@ public class ContactNotification extends NestedDBPersistent
 		
 		return retVal;
 	}
+	
+	public static final java.util.Vector getContactNotifications( int contactID_, java.sql.Connection conn ) throws java.sql.SQLException 
+	{
+		java.util.Vector tmpList = new java.util.Vector(50);
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		
+		String sql = 
+			"SELECT ContactNotifID, ContactID, NotificationCategoryID, " + 
+			"DisableFlag, Notification " +
+			"FROM " + TABLE_NAME + " " +
+			"WHERE ContactID = " + contactID_ + " " + 
+			"ORDER BY Notification";
+	
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Error getting database connection.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement(sql.toString());
+				
+				rset = pstmt.executeQuery();							
+		
+				while( rset.next() )
+				{
+					tmpList.add( new ContactNotification( 
+								new Integer(rset.getInt(1)),
+								new Integer(rset.getInt(2)),
+								new Integer(rset.getInt(3)),
+								rset.getString(4),
+								rset.getString(5),
+								new Integer(rset.getInt(6)) ) );
+				}
+						
+			}		
+		}
+		catch( java.sql.SQLException e )
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( pstmt != null ) pstmt.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+	
+		return tmpList;
+	}
 
 
 	/**

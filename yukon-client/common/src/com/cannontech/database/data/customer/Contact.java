@@ -8,6 +8,8 @@ import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 
 /**
  * This type was created in VisualAge.
@@ -255,25 +257,25 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		getAddress().setAddressID( getContact().getAddressID() );
 		getAddress().update();
 	
-
-		
 		//be sure all or our objects share the same contactID 
 		setContactID( getContact().getContactID() ); 
 
 		getContact().update();
 
-
-		for( int i = (getContactNotifVect().size()-1); i >= 0; i-- )
+		//grab all the previous gear entries for this program
+		java.util.Vector oldContactNotifies = ContactNotification.getContactNotifications(this.getContact().getContactID().intValue(), getDbConnection());
+	
+		//run all the ContactNotifications through the NestedDBPersistent comparator
+		//to see which ones need to be added, updated, or deleted.
+		Vector newVect = NestedDBPersistentComparators.NestedDBPersistentCompare(oldContactNotifies, getContactNotifVect(), NestedDBPersistentComparators.contactNotificationComparator);
+	
+		//throw the gears into the Db
+		for( int i = 0; i < newVect.size(); i++ )
 		{
-			ContactNotification cNotif = (ContactNotification)getContactNotifVect().get(i);
-			
-			cNotif.executeNestedOp();
-			
-			//remove any deleted items from our list (this is why we must decrement the loop)
-			if( cNotif.getOpCode() == Transaction.DELETE )
-				getContactNotifVect().remove( i );
+			((NestedDBPersistent)newVect.elementAt(i)).setDbConnection(getDbConnection());
+			((NestedDBPersistent)newVect.elementAt(i)).executeNestedOp();
 		}
-
+		
 	}
 
 

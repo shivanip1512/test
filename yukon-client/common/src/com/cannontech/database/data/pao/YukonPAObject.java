@@ -7,6 +7,7 @@ import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 
 /**
  * This type was created in VisualAge.
@@ -329,7 +330,7 @@ public void update() throws java.sql.SQLException
 	oldPAOExclusion = PAOExclusion.getAdditionalExcludedPAOs(getPAObjectID().intValue(), getDbConnection(), oldPAOExclusion);
 	
 	//unleash the power of the NestedDBPersistent
-	Vector exclusionVector = CtiUtilities.NestedDBPersistentComparator(oldPAOExclusion, getPAOExclusionVector());
+	Vector exclusionVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldPAOExclusion, getPAOExclusionVector(), NestedDBPersistentComparators.paoExclusionComparator);
 
 	//throw the PAOExclusions into the Db
 	for( int i = 0; i < exclusionVector.size(); i++ )

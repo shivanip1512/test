@@ -6,6 +6,7 @@ import java.util.Vector;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -228,12 +229,11 @@ public void update() throws java.sql.SQLException
 	Vector oldTrigs = LMControlAreaTrigger.getAllTriggersForAnArea(getPAObjectID(), getDbConnection());
 	
 	//unleash the power of the NestedDBPersistent
-	Vector comparedTrigs = CtiUtilities.NestedDBPersistentComparator(oldTrigs, getLmControlAreaTriggerVector());
+	Vector comparedTrigs = NestedDBPersistentComparators.NestedDBPersistentCompare(oldTrigs, getLmControlAreaTriggerVector(), NestedDBPersistentComparators.lmControlAreaTriggerComparator);
 
 	//throw the triggers at the Db
 	for( int i = 0; i < comparedTrigs.size(); i++ )
 	{
-		((LMControlAreaTrigger)comparedTrigs.elementAt(i)).setDeviceID( getPAObjectID() );
 		((NestedDBPersistent)comparedTrigs.elementAt(i)).executeNestedOp();
 	}
 	
@@ -241,7 +241,7 @@ public void update() throws java.sql.SQLException
 	java.util.Vector oldProgs = LMControlAreaProgram.getAllProgramsForAnArea(getPAObjectID(), getDbConnection());
 	
 	//unleash the power of the NestedDBPersistent
-	Vector comparedPrograms = CtiUtilities.NestedDBPersistentComparator(oldProgs, getLmControlAreaProgramVector());
+	Vector comparedPrograms = NestedDBPersistentComparators.NestedDBPersistentCompare(oldProgs, getLmControlAreaProgramVector(), NestedDBPersistentComparators.lmControlAreaProgramComparator);
 
 	//throw the programs into the Db
 	for( int i = 0; i < comparedPrograms.size(); i++ )

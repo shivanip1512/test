@@ -10,6 +10,7 @@ import java.util.Vector;
 import com.cannontech.database.db.device.DeviceVerification;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 
 /**
  * @author jdayton
@@ -102,7 +103,7 @@ public void update() throws java.sql.SQLException
 	java.util.Vector oldVeries = DeviceVerification.getAllVerifications(getPAObjectID(), getDbConnection());
 	
 	//unleash the power of the NestedDBPersistent
-	veriesVector = CtiUtilities.NestedDBPersistentComparator(oldVeries, getDeviceVerificationVector());
+	veriesVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldVeries, getDeviceVerificationVector(), NestedDBPersistentComparators.deviceVerificationComparator);
 
 	//throw the gears into the Db
 	for( int i = 0; i < veriesVector.size(); i++ )

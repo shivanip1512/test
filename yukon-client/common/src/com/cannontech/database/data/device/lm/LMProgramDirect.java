@@ -10,6 +10,7 @@ import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.database.db.NestedDBPersistentComparators;
 
 public class LMProgramDirect extends LMProgramBase
 {
@@ -205,7 +206,7 @@ public void update() throws java.sql.SQLException
 	java.util.Vector oldGears = LMProgramDirectGear.getAllDirectGears(getPAObjectID(), getDbConnection());
 	
 	//unleash the power of the NestedDBPersistent
-	gearVector = CtiUtilities.NestedDBPersistentComparator(oldGears, getLmProgramDirectGearVector());
+	gearVector = NestedDBPersistentComparators.NestedDBPersistentCompare(oldGears, getLmProgramDirectGearVector(), NestedDBPersistentComparators.lmDirectGearComparator);
 
 	//throw the gears into the Db
 	for( int i = 0; i < gearVector.size(); i++ )

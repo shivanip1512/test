@@ -12,9 +12,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import com.cannontech.database.Transaction;
-import com.cannontech.database.db.NestedDBPersistent;
-
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
@@ -1372,73 +1369,7 @@ public static String getExtension(java.io.File f) {
 		return default_;
 	}
 
-/**
- * Insert the type's description here.
- * Creation date: (1/12/2004 12:54:55 PM)
- * @author: jdayton
- */
-
-public static Vector NestedDBPersistentComparator(Vector oldList, Vector newList)
-{
-	Vector tempVect = new Vector();
 	
-	//checks for old or unused objects to update or delete
-	for( int j = 0; j < oldList.size(); j++ )
-	{
-		NestedDBPersistent oldNest = (NestedDBPersistent)oldList.get(j);
-		boolean fnd = false;
-		
-		for( int i = 0; i < newList.size(); i++ )
-		{
-		
-			NestedDBPersistent newNest = (NestedDBPersistent)newList.get(i);
-			
-			if( oldNest.equals(newNest) )
-			{
-				// item in OLD list & NEW list, update
-				newNest.setOpCode( Transaction.UPDATE );
-				tempVect.add( newNest );
-				fnd = true;
-				break;
-			}
-		}
-
-		if( !fnd )
-		{
-			// item in OLD list only, delete
-			oldNest.setOpCode( Transaction.DELETE );
-			tempVect.add( oldNest );
-		}
-	}
-	
-	//checks for brand new objects to add
-	for( int x = 0; x < newList.size(); x++ )
-	{
-		NestedDBPersistent newNest = (NestedDBPersistent)newList.get(x);
-		boolean inOld = false;
-			
-		for( int i = 0; i < oldList.size(); i++ )
-		{
-		
-			NestedDBPersistent oldNest = (NestedDBPersistent)oldList.get(i);
-			
-			if( newNest.equals(oldNest) )
-			{
-				inOld = true;
-				break;
-			}
-		}
-		if(!inOld)
-		{
-		// item in NEW list, add
-		newNest.setOpCode( Transaction.INSERT );
-		tempVect.add( newNest );
-		}
-	}
-	return tempVect;
-}
-	
-
 /**
  * Returns a string with (best guess) html removed.
  * Useful for taking text from web pages and using it in java.

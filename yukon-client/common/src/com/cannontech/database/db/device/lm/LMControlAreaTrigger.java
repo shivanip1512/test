@@ -23,6 +23,7 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPer
 	private Integer thresholdKickPercent = new Integer(0);
 	private Double minRestoreOffset = new Double(0.0);
 	private Integer peakPointID = new Integer(0);
+	private Integer triggerID = null;
 
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -30,10 +31,10 @@ public class LMControlAreaTrigger extends com.cannontech.database.db.NestedDBPer
 		"TriggerNumber", "TriggerType", "PointID", "NormalState",
 		"Threshold", "ProjectionType", "ProjectionPoints",
 		"ProjectAheadDuration", "ThresholdKickPercent", "MinRestoreOffset",
-		"PeakPointID"
+		"PeakPointID", "DeviceID"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "deviceID" };
+	public static final String CONSTRAINT_COLUMNS[] = { "TriggerID" };
 
 
 	public static final String TABLE_NAME = "LMControlAreaTrigger";
@@ -52,10 +53,13 @@ public LMControlAreaTrigger() {
  */
 public void add() throws java.sql.SQLException 
 {
+	if (getTriggerID() == null)
+		setTriggerID( new Integer(getNextTriggerID(getDbConnection())) );
+	
 	Object addValues[] = { getDeviceID(), getTriggerNumber(), getTriggerType(),
 				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
 				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID() };
+				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getTriggerID() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -63,7 +67,8 @@ public void add() throws java.sql.SQLException
  * delete method comment.
  */
 public void delete() throws java.sql.SQLException {
-	delete( TABLE_NAME, "DeviceID", getDeviceID() );
+	delete("DynamicLMControlAreaTrigger", "DeviceID", getDeviceID() );
+	delete( TABLE_NAME, "TriggerID", getTriggerID() );
 }
 /**
  * This method was created by Cannon Technologies Inc.
@@ -131,7 +136,7 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 
 	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
 		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID " + 
+		"TriggerNumber,TriggerType,DeviceID,TriggerID " + 
 		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
 
 	try
@@ -166,6 +171,7 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 				item.setTriggerNumber( new Integer(rset.getInt("TriggerNumber")) );
 				item.setTriggerType( rset.getString("TriggerType") );
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
 
 				tmpList.add( item );
 			}
@@ -198,13 +204,13 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 
 public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDeviceID, java.sql.Connection conn)
 {
-	java.util.Vector tmpList = new java.util.Vector(10);
+	java.util.Vector tmpList = new java.util.Vector(5);
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 
 	String sql = "SELECT MinRestoreOffset,NormalState,PeakPointID,PointID,ProjectAheadDuration, " +
 		"ProjectionPoints,ProjectionType,Threshold,ThresholdKickPercent, "+
-		"TriggerNumber,TriggerType,DeviceID " + 
+		"TriggerNumber,TriggerType,DeviceID,TriggerID " + 
 		"FROM " + TABLE_NAME + " WHERE DEVICEID= ?";
 
 	try
@@ -236,6 +242,7 @@ public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDe
 				item.setTriggerNumber( new Integer(rset.getInt("TriggerNumber")) );
 				item.setTriggerType( rset.getString("TriggerType") );
 				item.setDeviceID( new Integer(rset.getInt("DeviceID")) );
+				item.setTriggerID( new Integer(rset.getInt("TriggerID")) );
 
 				tmpList.add( item );
 			}
@@ -358,12 +365,58 @@ public java.lang.Integer getTriggerNumber() {
 public java.lang.String getTriggerType() {
 	return triggerType;
 }
+
+public java.lang.Integer getTriggerID() {
+	return triggerID;
+}
+
+public static final int getNextTriggerID( java.sql.Connection conn ) throws java.sql.SQLException
+{
+   	java.sql.PreparedStatement pstmt = null;
+   	java.sql.ResultSet rset = null;
+
+   	String sql = "select MAX(TriggerID) + 1 from " + TABLE_NAME;
+      
+   	try
+   	{
+	  	if (conn == null)
+			throw new IllegalArgumentException("Received a (null) database connection");
+
+	  	pstmt = conn.prepareStatement(sql.toString());
+
+	  	rset = pstmt.executeQuery();
+
+	  	while( rset.next() )
+	  	{
+			return rset.getInt(1);
+	  	}
+   	}
+   	catch (java.sql.SQLException e)
+   	{
+		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+   	}
+   	finally
+   	{
+	  	try
+	  	{
+			if (pstmt != null)
+				pstmt.close();
+	  	}
+	  	catch (java.sql.SQLException e2)
+	  	{
+			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
+	  	}
+   	}
+
+   	throw new java.sql.SQLException("Unable to retrieve the next TriggerID");
+}
+
 /**
  * retrieve method comment.
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	Object constraintValues[] = { getDeviceID() };
+	Object constraintValues[] = { getTriggerID() };
 
 	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
@@ -380,6 +433,7 @@ public void retrieve() throws java.sql.SQLException
 		setThresholdKickPercent( (Integer) results[8] );
 		setMinRestoreOffset( (Double) results[9] );
 		setPeakPointID( (Integer) results[10] );
+		setDeviceID( (Integer) results[11] );
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -483,6 +537,11 @@ public void setTriggerType(java.lang.String newTriggerType) {
 	triggerType = newTriggerType;
 }
 
+public void setTriggerID(java.lang.Integer newTriggerID) 
+{
+	triggerID = newTriggerID;
+}
+
 private LitePoint getLtPoint()
 {
 	if( getPointID().intValue() == PointTypes.SYS_PID_SYSTEM )
@@ -533,9 +592,9 @@ public void update() throws java.sql.SQLException
 	Object setValues[] = { getTriggerNumber(), getTriggerType(),
 				getPointID(), getNormalState(), getThreshold(), getProjectionType(),
 				getProjectionPoints(), getProjectAheadDuration(),
-				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID() };
+				getThresholdKickPercent(), getMinRestoreOffset(), getPeakPointID(), getDeviceID() };
 
-	Object constraintValues[] = { getDeviceID() };
+	Object constraintValues[] = { getTriggerID() };
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
