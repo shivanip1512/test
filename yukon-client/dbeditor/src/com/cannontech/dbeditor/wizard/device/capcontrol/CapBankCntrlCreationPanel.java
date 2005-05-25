@@ -1021,7 +1021,6 @@ public boolean isInputValid()
 	if(is7000Series)
 	{
 		String breakfastSerial = getJTextFieldCBCAddress().getText();
-		System.out.println(breakfastSerial.length() + "whoop whoop: " + breakfastSerial.charAt(0));
 		
 		if(breakfastSerial.length() != 9 || !breakfastSerial.startsWith("7", 0))
 		{
