@@ -48,7 +48,7 @@ public class RoleFuncs
 	 * This global value is a property that belongs to the Yukon Group.
 	 *  
 	 * @param LiteYukonRole
-	 * @return LiteYukonRoleProperty[]
+	 * @return String
 	 */
 	public static String getGlobalPropertyValue( int rolePropertyID_ ) 
 	{		
