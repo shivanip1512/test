@@ -10,6 +10,8 @@ import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.database.data.lite.LiteComparators;
 import java.util.Collections;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 
 /*
  * @author jdayton
@@ -347,7 +349,31 @@ public Object getValue(Object o)
 			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxRoutes().getSelectedItem()).getYukonID()) );
 	}
 	
-	return o;
+	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
+	objectsToAdd.getDBPersistentVector().add(group);
+	
+	LitePoint[] litPts = PAOFuncs.getLitePointsForPAObject( previousGroupID );
+	int startingPointID = com.cannontech.database.db.point.Point.getNextPointID();
+	
+	for(int c = 0; c < litPts.length; c++)
+	{
+		com.cannontech.database.data.point.PointBase pointBase = (com.cannontech.database.data.point.PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litPts[c]);
+		try
+		{
+			com.cannontech.database.Transaction t =
+				com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
+			t.execute();
+		}
+		catch (com.cannontech.database.TransactionException e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		pointBase.setPointID(new Integer(startingPointID + c));
+		pointBase.getPoint().setPaoID(group.getPAObjectID());
+		objectsToAdd.getDBPersistentVector().add(pointBase);
+	}	
+	
+	return objectsToAdd;
 }
 /**
  * Called whenever the part throws an exception.
@@ -414,7 +440,7 @@ private void initialize() {
 		this.add(getJComboBoxRoutes(), consGridBagConstraints4);
 		setSize(412, 392);
 
-  		initConnections();
+		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
