@@ -61,4 +61,32 @@ public class InputValidater
 	{
 		return true;
 	}
+	
+	public int getFrom(){
+		return from;
+	}
+	
+	public int getTo(){
+		return to;
+	}
+	
+	public String getRoute(){
+		return route;
+	}
+	
+	public String getBankSize(){
+		return banksize;
+	}
+	
+	public String getSwitchMan(){
+		return manufacturer;
+	}
+	
+	public String getSwitchType(){
+		return switchType;
+	}
+	
+	public String getControllerType(){
+		return conType;
+	}
 }
