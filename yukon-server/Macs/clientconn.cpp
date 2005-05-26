@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clientconn.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/05/26 20:57:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,12 +31,25 @@
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiMCConnection::CtiMCConnection(RWPortal portal)
-: _valid(true), _closed(false), _portal(new RWPortal(portal) ), _in(15), _out(100)
+CtiMCConnection::CtiMCConnection()
+: _valid(true), _closed(false), _in(15), _out(100)
 {
+}
 
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiMCConnection::~CtiMCConnection()
+{
+    close();
+}
+
+void CtiMCConnection::initialize(RWPortal portal)
+{
     try
     {
+	_portal = new RWPortal(portal);
+	
         sinbuf  = new RWPortalStreambuf(*_portal);
         soubuf  = new RWPortalStreambuf(*_portal);
         oStream = new RWpostream(soubuf);
@@ -59,15 +72,7 @@ CtiMCConnection::CtiMCConnection(RWPortal portal)
         }
 
         _valid = FALSE;
-    }
-}
-
-/*---------------------------------------------------------------------------
-    Destructor
----------------------------------------------------------------------------*/
-CtiMCConnection::~CtiMCConnection()
-{
-    close();
+    }    
 }
 
 /*---------------------------------------------------------------------------
@@ -369,4 +374,3 @@ void CtiMCConnection::_close()
         dout << RWTime() << " Exception occured closing connection out buffer" << endl;
     }
 }
-                                                                                                                                                                                                                                                                                                                  

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clientconn.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:59:10 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/05/26 20:57:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,9 +71,11 @@ class CtiMCConnection : public CtiObservable
 {
 public:
 
-    CtiMCConnection(RWPortal portal);
+    CtiMCConnection();
     ~CtiMCConnection();
 
+    void initialize(RWPortal portal);
+    
     BOOL isValid();
 
     void close();

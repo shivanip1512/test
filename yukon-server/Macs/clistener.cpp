@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/05/26 20:57:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,13 +220,15 @@ void CtiMCClientListener::run()
                 dout << RWTime()  << " Accepted a client connection." << endl;
             }
 
-            CtiMCConnection* conn = new CtiMCConnection(portal);
+            CtiMCConnection* conn = new CtiMCConnection();
             conn->addObserver((CtiObserver&) *this);
 
             {
                 RWMutexLock::LockGuard guard( _connmutex );
                 _connections.insert(conn);
             }
+
+	    conn->initialize(portal);
         }
     }
     catch ( RWxmsg& msg )
