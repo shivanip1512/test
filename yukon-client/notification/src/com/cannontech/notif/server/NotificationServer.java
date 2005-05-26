@@ -1,15 +1,14 @@
 package com.cannontech.notif.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.notif.handler.LoadManagementMessageHandler;
+import com.cannontech.notif.outputs.*;
 import com.cannontech.roles.yukon.SystemRole;
 
 /**
@@ -42,13 +41,13 @@ public class NotificationServer implements Runnable
 	// Total number of connections to the server made
 	private long connsMade = 0;
 
+    private NotifMsgHandler _msgHandler;
 
-	/**
-	 * 
-	 */
+    private OutputHandlerHelper _outputHelper;
+
+
 	public NotificationServer()
 	{
-		super();
 		setBindAddress(
                 RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
         
@@ -56,25 +55,16 @@ public class NotificationServer implements Runnable
                 RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
 	}
 
-	/**
-	 * @return
-	 */
 	public int getBacklog()
 	{
 		return backlog;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getPort()
 	{
 		return port;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setBacklog(int i)
 	{
 		if( i <= 0 )
@@ -82,9 +72,6 @@ public class NotificationServer implements Runnable
 		backlog = i;
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setPort(int i)
 	{
 		port = i;
@@ -114,46 +101,60 @@ public class NotificationServer implements Runnable
 	}
 
 	/**
-	 * Start the notification server on port and begin listening for requests.
+     * Start the notification server.
+     * If this fails with an exception, no threads will have been started.
+	 * @throws IOException
 	 */
-	public void start() throws IOException
-	{
-		try
-		{
-			server = new ServerSocket( 
-					getPort(), 
-					getBacklog(), 
-					null ); //bindAddress );
+	public void start() throws IOException {
+        server = new ServerSocket(getPort(), getBacklog(), null);
 
-			CTILogger.info("Started Notification server: " + server);
+        CTILogger.info("Started Notification server: " + server);
 
+        dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
+        DefaultDatabaseCache.getInstance().addDBChangeListener(dbCacheHandler);
 
-			dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
-			DefaultDatabaseCache.getInstance().addDBChangeListener( dbCacheHandler );
+        _outputHelper = new OutputHandlerHelper();
+        // create voice handler, add to output helper
+        VoiceHandler _voiceHandler = new VoiceHandler();
+        _outputHelper.addOutputHandler(_voiceHandler);
 
-			acceptThread = new Thread( this, "NotifListener" );
-			acceptThread.start();
-		}
-		catch (IOException e)
-		{
-			throw e;
-		}
+        // create email handler, add to output helper
+        OutputHandler emailHandler = new EmailHandler();
+        _outputHelper.addOutputHandler(emailHandler);
+        
+        // start output handlers
+        _outputHelper.startup();
+
+        _msgHandler = new NotifMsgHandler();
+        // create load management handler
+        LoadManagementMessageHandler lmMsgHandler = new LoadManagementMessageHandler(_outputHelper);
+        _msgHandler.registerHandler(lmMsgHandler);
+
+        acceptThread = new Thread(this, "NotifListener");
+        acceptThread.start();
+
 	}
 
 
-	/** 
-	 * Close the notification server listening socket
-	 */
+	/**
+     * Shutdown the notification server
+     */
 	public void stop()
 	{
 		try
 		{
 			dbCacheHandler.getClientConnection().disconnect();
 			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbCacheHandler );
-			
-			ServerSocket srv = server;
-			server = null;
-			srv.close();
+
+            if (server != null) {
+                server.close();
+                server = null;
+            }
+            
+            //TODO how does the accept thread get shutdown?
+            
+            // shutdown voice handler
+            _outputHelper.shutdown();
 		}
 		catch (Exception e)
 		{}
@@ -203,7 +204,7 @@ public class NotificationServer implements Runnable
 			try 
 			{
 				//start handling the message here
-				NotifServerConnection conn = new NotifServerConnection( socket );
+				NotifServerConnection conn = new NotifServerConnection( socket, _msgHandler );
 
 				conn.connectWithoutWait(); //passes control to another thread
 			}

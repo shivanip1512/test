@@ -8,5 +8,15 @@
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/third-party"/>
 	<classpathentry kind="lib" path="/third-party/vvr_tools.jar"/>
+	<classpathentry kind="lib" path="/third-party/jdom.jar">
+		<attributes>
+			<attribute value="http://jdom.org/docs/apidocs/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/third-party/backport-util-concurrent/src" kind="lib" path="/third-party/backport-util-concurrent/backport-util-concurrent.jar">
+		<attributes>
+			<attribute value="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/doc/api/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,69 +1,53 @@
 package com.cannontech.notif.server;
 
-import com.cannontech.clientutils.CTILogger;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.message.util.*;
 import com.cannontech.notif.handler.NotifHandler;
-import com.cannontech.notif.message.NotifEmailMsg;
-import com.cannontech.notif.message.NotifVoiceMsg;
 
 /**
- * @author rneuharth
- *
  * Handles messages for the Notifcation Server.
- *
+ * @author rneuharth
  */
 public class NotifMsgHandler implements MessageListener
 {
+    private LinkedList _handlers = new LinkedList();
+    
 	public NotifMsgHandler()
 	{
-		super();
 	}
-	
+    
 	public void messageReceived( MessageEvent e )
 	{
 		//do the stuff here
 		handleMessage( e.getMessage() );
         
 	}
+    
+    public void registerHandler(NotifHandler handler) {
+       _handlers.add(handler);
+    }
 
-
-	private void handleMessage( Object msg_ )
+	private void handleMessage( Message msg_ )
 	{
 		if( msg_ instanceof Multi )
 		{
+            Multi multiMsg = (Multi)msg_;
 			for( int i = 0; i < ((Multi)msg_).getVector().size(); i++ )
 			{
-				handleMessage( ((Multi)msg_).getVector().get(i) );
+				handleMessage( (Message)multiMsg.getVector().get(i) );
 			}
-			
 		}
-		else if( msg_ instanceof NotifEmailMsg )
+		else 
 		{
-			CTILogger.debug(
-				" Notification server got an email message from: " + ((NotifEmailMsg)msg_).getSource() );
-
-            NotifHandler.findHandler( (NotifEmailMsg)msg_ ).start();
+            for (Iterator iter = _handlers.iterator(); iter.hasNext();) {
+                NotifHandler handler = (NotifHandler) iter.next();
+                if (handler.canHandle(msg_)) {
+                    handler.handleMessage(msg_);
+                }
+            }
 		}
-        else if( msg_ instanceof NotifVoiceMsg )
-        {
-            CTILogger.debug(
-                " Notification server got an outbound voice message request from: " +
-                ((NotifVoiceMsg)msg_).getSource() );
-
-            
-            NotifHandler.findHandler( (NotifVoiceMsg)msg_ ).start();
-        }
-/*
-		else
-		{
-			CTILogger.debug(
-				" ERROR message received that is of an unknown type: " + msg_.getClass().getName() );
-
-		}
-*/
-
 	}
-
 }
