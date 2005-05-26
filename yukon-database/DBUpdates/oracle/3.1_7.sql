@@ -9,6 +9,23 @@ create index Indx_lmcnt_paoid on LMControlHistory (
 
 update LMProgramConstraints set MaxHoursDaily=MaxHoursDaily*3600,MaxHoursMonthly=MaxHoursMonthly*3600,MaxHoursSeasonal=MaxHoursSeasonal*3600,MaxHoursAnnually=MaxHoursAnnually*3600;
 
+alter table LMControlAreaTrigger add TriggerID number;
+alter table DynamicLMControlAreaTrigger add TriggerID number;
+
+update LMControlAreaTrigger SET TriggerID = ROWNUM;
+update dynamiclmcontrolareatrigger set triggerid =
+(select lmcontrolareatrigger.triggerid
+from lmcontrolareatrigger
+where lmcontrolareatrigger.deviceid = dynamiclmcontrolareatrigger.deviceid
+and lmcontrolareatrigger.triggernumber = dynamiclmcontrolareatrigger.triggernumber);
+
+alter table LMControlAreaTrigger modify TriggerID not null;
+alter table DynamicLMControlAreaTrigger modify TriggerID not null;
+
+create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
+	TriggerID ASC
+);
+
 
 
 

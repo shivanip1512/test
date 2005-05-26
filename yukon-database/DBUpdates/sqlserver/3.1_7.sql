@@ -10,6 +10,32 @@ go
 update LMProgramConstraints set MaxHoursDaily=MaxHoursDaily*3600,MaxHoursMonthly=MaxHoursMonthly*3600,MaxHoursSeasonal=MaxHoursSeasonal*3600,MaxHoursAnnually=MaxHoursAnnually*3600;
 go
 
+update LMProgramConstraints set MaxHoursDaily=MaxHoursDaily*3600,MaxHoursMonthly=MaxHoursMonthly*3600,MaxHoursSeasonal=MaxHoursSeasonal*3600,MaxHoursAnnually=MaxHoursAnnually*3600;
+go
+
+alter table LMControlAreaTrigger add TriggerID numeric;
+go
+alter table DynamicLMControlAreaTrigger add TriggerID numeric;
+go
+
+declare @cnt numeric set @cnt = 0 update LMControlAreaTrigger SET @cnt = TriggerID = @cnt + 1;
+update dynamiclmcontrolareatrigger set triggerid =
+(select lmcontrolareatrigger.triggerid
+from lmcontrolareatrigger
+where lmcontrolareatrigger.deviceid = dynamiclmcontrolareatrigger.deviceid
+and lmcontrolareatrigger.triggernumber = dynamiclmcontrolareatrigger.triggernumber);
+go
+
+alter table LMControlAreaTrigger alter column TriggerID numeric not null;
+go
+alter table DynamicLMControlAreaTrigger alter column TriggerID numeric not null;
+go
+
+create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
+TriggerID
+);
+
+
 
 
 
