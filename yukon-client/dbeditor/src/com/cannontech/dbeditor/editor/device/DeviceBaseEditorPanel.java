@@ -54,6 +54,7 @@ public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JLabel ivjSenderLabel = null;
 	private javax.swing.JTextField ivjSenderTextField = null;
 
+	private javax.swing.JPanel jPanelMCTSettings = null;
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == DeviceBaseEditorPanel.this.getDisableFlagCheckBox()) 
@@ -616,185 +617,160 @@ private javax.swing.JPanel getCommunicationPanel() {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
 			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 12));
+			ivjLocalBorder1.setTitleFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 			ivjLocalBorder1.setTitle("Communication");
 			ivjCommunicationPanel = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints102 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints101 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints103 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints104 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints105 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints106 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints107 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints109 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints108 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints110 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints111 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints113 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints114 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints115 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints116 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints117 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints118 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints112 = new java.awt.GridBagConstraints();
+			consGridBagConstraints104.insets = new java.awt.Insets(4,3,5,17);
+			consGridBagConstraints104.fill = java.awt.GridBagConstraints.BOTH;
+			consGridBagConstraints104.weightx = 1.0;
+			consGridBagConstraints104.gridwidth = 2;
+			consGridBagConstraints104.gridy = 2;
+			consGridBagConstraints104.gridx = 2;
+			consGridBagConstraints105.insets = new java.awt.Insets(8,33,3,2);
+			consGridBagConstraints105.gridy = 3;
+			consGridBagConstraints105.gridx = 1;
+			consGridBagConstraints103.insets = new java.awt.Insets(6,33,4,2);
+			consGridBagConstraints103.gridy = 2;
+			consGridBagConstraints103.gridx = 1;
+			consGridBagConstraints101.insets = new java.awt.Insets(26,3,3,17);
+			consGridBagConstraints101.fill = java.awt.GridBagConstraints.BOTH;
+			consGridBagConstraints101.weightx = 1.0;
+			consGridBagConstraints101.gridwidth = 2;
+			consGridBagConstraints101.gridy = 1;
+			consGridBagConstraints101.gridx = 2;
+			consGridBagConstraints114.insets = new java.awt.Insets(3,3,4,17);
+			consGridBagConstraints114.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints114.weightx = 1.0;
+			consGridBagConstraints114.gridwidth = 2;
+			consGridBagConstraints114.gridy = 5;
+			consGridBagConstraints114.gridx = 2;
+			consGridBagConstraints113.insets = new java.awt.Insets(3,33,5,2);
+			consGridBagConstraints113.gridy = 5;
+			consGridBagConstraints113.gridx = 1;
+			consGridBagConstraints107.insets = new java.awt.Insets(7,11,7,33);
+			consGridBagConstraints107.ipadx = -9;
+			consGridBagConstraints107.gridy = 3;
+			consGridBagConstraints107.gridx = 3;
+			consGridBagConstraints102.insets = new java.awt.Insets(26,33,7,2);
+			consGridBagConstraints102.ipady = -3;
+			consGridBagConstraints102.gridy = 1;
+			consGridBagConstraints102.gridx = 1;
+			consGridBagConstraints106.insets = new java.awt.Insets(5,3,3,11);
+			consGridBagConstraints106.ipadx = 18;
+			consGridBagConstraints106.gridy = 3;
+			consGridBagConstraints106.gridx = 2;
+			consGridBagConstraints115.ipady = -20;
+			consGridBagConstraints115.ipadx = -138;
+			consGridBagConstraints115.gridheight = -1;
+			consGridBagConstraints115.gridwidth = -1;
+			consGridBagConstraints115.gridy = 1;
+			consGridBagConstraints115.gridx = 1;
+			consGridBagConstraints111.insets = new java.awt.Insets(4,33,5,2);
+			consGridBagConstraints111.gridy = 6;
+			consGridBagConstraints111.gridx = 1;
+			consGridBagConstraints117.ipady = -20;
+			consGridBagConstraints117.ipadx = -138;
+			consGridBagConstraints117.gridheight = -1;
+			consGridBagConstraints117.gridwidth = -1;
+			consGridBagConstraints117.gridy = 1;
+			consGridBagConstraints117.gridx = 1;
+			consGridBagConstraints118.ipady = -20;
+			consGridBagConstraints118.ipadx = -120;
+			consGridBagConstraints118.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints118.weightx = 1.0;
+			consGridBagConstraints118.gridheight = -1;
+			consGridBagConstraints118.gridwidth = -1;
+			consGridBagConstraints118.gridy = 1;
+			consGridBagConstraints118.gridx = 1;
+			consGridBagConstraints110.insets = new java.awt.Insets(3,3,3,17);
+			consGridBagConstraints110.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints110.weightx = 1.0;
+			consGridBagConstraints110.gridwidth = 2;
+			consGridBagConstraints110.gridy = 4;
+			consGridBagConstraints110.gridx = 2;
+			consGridBagConstraints110.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints101.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints106.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints109.insets = new java.awt.Insets(5,33,6,2);
+			consGridBagConstraints109.gridy = 4;
+			consGridBagConstraints109.gridx = 1;
+			consGridBagConstraints109.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints103.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints103.fill = java.awt.GridBagConstraints.VERTICAL;
+			consGridBagConstraints105.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints112.insets = new java.awt.Insets(4,3,4,17);
+			consGridBagConstraints112.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints112.weightx = 1.0;
+			consGridBagConstraints112.gridwidth = 2;
+			consGridBagConstraints112.gridy = 6;
+			consGridBagConstraints112.gridx = 2;
+			consGridBagConstraints108.insets = new java.awt.Insets(4,33,5,19);
+			consGridBagConstraints108.ipady = 1;
+			consGridBagConstraints108.ipadx = 5;
+			consGridBagConstraints108.gridwidth = 3;
+			consGridBagConstraints108.gridy = 7;
+			consGridBagConstraints108.gridx = 1;
+			consGridBagConstraints108.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints111.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints104.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints113.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints102.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints102.fill = java.awt.GridBagConstraints.VERTICAL;
+			consGridBagConstraints112.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints116.ipady = -20;
+			consGridBagConstraints116.ipadx = -120;
+			consGridBagConstraints116.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints116.weightx = 1.0;
+			consGridBagConstraints116.gridheight = -1;
+			consGridBagConstraints116.gridwidth = -1;
+			consGridBagConstraints116.gridy = 1;
+			consGridBagConstraints116.gridx = 1;
+			consGridBagConstraints107.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints114.anchor = java.awt.GridBagConstraints.NORTHWEST;
 			ivjCommunicationPanel.setName("CommunicationPanel");
 			ivjCommunicationPanel.setBorder(ivjLocalBorder1);
 			ivjCommunicationPanel.setLayout(new java.awt.GridBagLayout());
-			ivjCommunicationPanel.setMaximumSize(new java.awt.Dimension(394, 337));
-			ivjCommunicationPanel.setPreferredSize(new java.awt.Dimension(394, 337));
-			ivjCommunicationPanel.setMinimumSize(new java.awt.Dimension(0, 0));
+			ivjCommunicationPanel.add(getRouteComboBox(), consGridBagConstraints101);
+			ivjCommunicationPanel.add(getRouteLabel(), consGridBagConstraints102);
+			ivjCommunicationPanel.add(getPortLabel(), consGridBagConstraints103);
+			ivjCommunicationPanel.add(getPortComboBox(), consGridBagConstraints104);
+			ivjCommunicationPanel.add(getPostCommWaitLabel(), consGridBagConstraints105);
+			ivjCommunicationPanel.add(getPostCommWaitSpinner(), consGridBagConstraints106);
+			ivjCommunicationPanel.add(getWaitLabel(), consGridBagConstraints107);
+			ivjCommunicationPanel.add(getDialupSettingsPanel(), consGridBagConstraints108);
+			ivjCommunicationPanel.add(getPasswordLabel(), consGridBagConstraints109);
+			ivjCommunicationPanel.add(getPasswordTextField(), consGridBagConstraints110);
+			ivjCommunicationPanel.add(getSlaveAddressLabel(), consGridBagConstraints111);
+			ivjCommunicationPanel.add(getSlaveAddressComboBox(), consGridBagConstraints112);
+			ivjCommunicationPanel.add(getJLabelCCUAmpUseType(), consGridBagConstraints113);
+			ivjCommunicationPanel.add(getJComboBoxAmpUseType(), consGridBagConstraints114);
+			ivjCommunicationPanel.add(getSenderLabel(), consGridBagConstraints115);
+			ivjCommunicationPanel.add(getSenderTextField(), consGridBagConstraints116);
+			ivjCommunicationPanel.add(getSecurityCodeLabel(), consGridBagConstraints117);
+			ivjCommunicationPanel.add(getSecurityCodeTextField(), consGridBagConstraints118);
+			ivjCommunicationPanel.setMaximumSize(new java.awt.Dimension(394,252));
+			ivjCommunicationPanel.setPreferredSize(new java.awt.Dimension(394,265));
+			ivjCommunicationPanel.setMinimumSize(new java.awt.Dimension(0,0));
 
-			java.awt.GridBagConstraints constraintsRouteComboBox = new java.awt.GridBagConstraints();
-			constraintsRouteComboBox.gridx = 3; constraintsRouteComboBox.gridy = 2;
-			constraintsRouteComboBox.gridwidth = 2;
-			constraintsRouteComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsRouteComboBox.weightx = 1.0;
-			constraintsRouteComboBox.ipadx = -55;
-			constraintsRouteComboBox.ipady = -5;
-			constraintsRouteComboBox.insets = new java.awt.Insets(52, 3, 3, 47);
-			getCommunicationPanel().add(getRouteComboBox(), constraintsRouteComboBox);
-
-			java.awt.GridBagConstraints constraintsRouteLabel = new java.awt.GridBagConstraints();
-			constraintsRouteLabel.gridx = 2; constraintsRouteLabel.gridy = 2;
-			constraintsRouteLabel.insets = new java.awt.Insets(52, 23, 4, 31);
-			getCommunicationPanel().add(getRouteLabel(), constraintsRouteLabel);
-
-			java.awt.GridBagConstraints constraintsPortLabel = new java.awt.GridBagConstraints();
-			constraintsPortLabel.gridx = 2; constraintsPortLabel.gridy = 3;
-			constraintsPortLabel.ipadx = 34;
-			constraintsPortLabel.insets = new java.awt.Insets(6, 23, 7, 2);
-			getCommunicationPanel().add(getPortLabel(), constraintsPortLabel);
-
-			java.awt.GridBagConstraints constraintsPortComboBox = new java.awt.GridBagConstraints();
-			constraintsPortComboBox.gridx = 3; constraintsPortComboBox.gridy = 3;
-			constraintsPortComboBox.gridwidth = 2;
-			constraintsPortComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsPortComboBox.weightx = 1.0;
-			constraintsPortComboBox.ipadx = -55;
-			constraintsPortComboBox.ipady = -5;
-			constraintsPortComboBox.insets = new java.awt.Insets(4, 3, 5, 47);
-			getCommunicationPanel().add(getPortComboBox(), constraintsPortComboBox);
-
-			java.awt.GridBagConstraints constraintsPostCommWaitLabel = new java.awt.GridBagConstraints();
-			constraintsPostCommWaitLabel.gridx = 2; constraintsPostCommWaitLabel.gridy = 4;
-			constraintsPostCommWaitLabel.insets = new java.awt.Insets(8, 23, 6, 2);
-			getCommunicationPanel().add(getPostCommWaitLabel(), constraintsPostCommWaitLabel);
-
-			java.awt.GridBagConstraints constraintsPostCommWaitSpinner = new java.awt.GridBagConstraints();
-			constraintsPostCommWaitSpinner.gridx = 3; constraintsPostCommWaitSpinner.gridy = 4;
-			constraintsPostCommWaitSpinner.insets = new java.awt.Insets(5, 3, 3, 3);
-			getCommunicationPanel().add(getPostCommWaitSpinner(), constraintsPostCommWaitSpinner);
-
-			java.awt.GridBagConstraints constraintsWaitLabel = new java.awt.GridBagConstraints();
-			constraintsWaitLabel.gridx = 4; constraintsWaitLabel.gridy = 4;
-			constraintsWaitLabel.ipadx = -5;
-			constraintsWaitLabel.insets = new java.awt.Insets(7, 4, 7, 85);
-			getCommunicationPanel().add(getWaitLabel(), constraintsWaitLabel);
-
-			java.awt.GridBagConstraints constraintsDialupSettingsPanel = new java.awt.GridBagConstraints();
-			constraintsDialupSettingsPanel.gridx = 2; constraintsDialupSettingsPanel.gridy = 10;
-			constraintsDialupSettingsPanel.gridwidth = 3;
-			constraintsDialupSettingsPanel.fill = java.awt.GridBagConstraints.BOTH;
-			constraintsDialupSettingsPanel.weightx = 1.0;
-			constraintsDialupSettingsPanel.weighty = 3.0;
-			constraintsDialupSettingsPanel.ipadx = -2;
-			constraintsDialupSettingsPanel.insets = new java.awt.Insets(4, 23, 11, 49);
-			getCommunicationPanel().add(getDialupSettingsPanel(), constraintsDialupSettingsPanel);
-
-			java.awt.GridBagConstraints constraintsPasswordLabel = new java.awt.GridBagConstraints();
-			constraintsPasswordLabel.gridx = 2; constraintsPasswordLabel.gridy = 5;
-			constraintsPasswordLabel.insets = new java.awt.Insets(5, 23, 4, 36);
-			getCommunicationPanel().add(getPasswordLabel(), constraintsPasswordLabel);
-
-			java.awt.GridBagConstraints constraintsPasswordTextField = new java.awt.GridBagConstraints();
-			constraintsPasswordTextField.gridx = 3; constraintsPasswordTextField.gridy = 5;
-			constraintsPasswordTextField.gridwidth = 2;
-			constraintsPasswordTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsPasswordTextField.weightx = 1.0;
-			constraintsPasswordTextField.ipadx = 35;
-			constraintsPasswordTextField.ipady = 4;
-			constraintsPasswordTextField.insets = new java.awt.Insets(3, 3, 2, 47);
-			getCommunicationPanel().add(getPasswordTextField(), constraintsPasswordTextField);
-
-			java.awt.GridBagConstraints constraintsSlaveAddressLabel = new java.awt.GridBagConstraints();
-			constraintsSlaveAddressLabel.gridx = 2; constraintsSlaveAddressLabel.gridy = 9;
-			constraintsSlaveAddressLabel.insets = new java.awt.Insets(4, 23, 8, 36);
-			getCommunicationPanel().add(getSlaveAddressLabel(), constraintsSlaveAddressLabel);
-
-			java.awt.GridBagConstraints constraintsSlaveAddressComboBox = new java.awt.GridBagConstraints();
-			constraintsSlaveAddressComboBox.gridx = 3; constraintsSlaveAddressComboBox.gridy = 9;
-			constraintsSlaveAddressComboBox.gridwidth = 2;
-			constraintsSlaveAddressComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsSlaveAddressComboBox.weightx = 1.0;
-			constraintsSlaveAddressComboBox.ipadx = 35;
-			constraintsSlaveAddressComboBox.ipady = -5;
-			constraintsSlaveAddressComboBox.insets = new java.awt.Insets(4, 3, 4, 47);
-			getCommunicationPanel().add(getSlaveAddressComboBox(), constraintsSlaveAddressComboBox);
-
-			java.awt.GridBagConstraints constraintsJLabelCCUAmpUseType = new java.awt.GridBagConstraints();
-			constraintsJLabelCCUAmpUseType.gridx = 2; constraintsJLabelCCUAmpUseType.gridy = 8;
-			constraintsJLabelCCUAmpUseType.insets = new java.awt.Insets(4, 23, 8, 36);
-			getCommunicationPanel().add(getJLabelCCUAmpUseType(), constraintsJLabelCCUAmpUseType);
-
-			java.awt.GridBagConstraints constraintsJComboBoxAmpUseType = new java.awt.GridBagConstraints();
-			constraintsJComboBoxAmpUseType.gridx = 3; constraintsJComboBoxAmpUseType.gridy = 8;
-			constraintsJComboBoxAmpUseType.gridwidth = 2;
-			constraintsJComboBoxAmpUseType.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJComboBoxAmpUseType.weightx = 1.0;
-			constraintsJComboBoxAmpUseType.ipadx = 35;
-			constraintsJComboBoxAmpUseType.ipady = -5;
-			constraintsJComboBoxAmpUseType.insets = new java.awt.Insets(4, 3, 4, 47);
-			getCommunicationPanel().add(getJComboBoxAmpUseType(), constraintsJComboBoxAmpUseType);
-
-			java.awt.GridBagConstraints constraintsConfigLabel = new java.awt.GridBagConstraints();
-			constraintsConfigLabel.gridx = 2; constraintsConfigLabel.gridy = 2;
-			constraintsConfigLabel.gridwidth = -1;
-constraintsConfigLabel.gridheight = -1;
-			constraintsConfigLabel.ipadx = -83;
-			constraintsConfigLabel.ipady = -19;
-			getCommunicationPanel().add(getConfigLabel(), constraintsConfigLabel);
-
-			java.awt.GridBagConstraints constraintsConfigComboBox = new java.awt.GridBagConstraints();
-			constraintsConfigComboBox.gridx = 2; constraintsConfigComboBox.gridy = 2;
-			constraintsConfigComboBox.gridwidth = -1;
-constraintsConfigComboBox.gridheight = -1;
-			constraintsConfigComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsConfigComboBox.weightx = 1.0;
-			constraintsConfigComboBox.ipadx = -120;
-			constraintsConfigComboBox.ipady = -25;
-			getCommunicationPanel().add(getConfigComboBox(), constraintsConfigComboBox);
-
-			java.awt.GridBagConstraints constraintsTOULabel = new java.awt.GridBagConstraints();
-			constraintsTOULabel.gridx = 2; constraintsTOULabel.gridy = 2;
-			constraintsTOULabel.gridwidth = -1;
-constraintsTOULabel.gridheight = -1;
-			constraintsTOULabel.ipadx = -100;
-			constraintsTOULabel.ipady = -19;
-			getCommunicationPanel().add(getTOULabel(), constraintsTOULabel);
-
-			java.awt.GridBagConstraints constraintsTOUComboBox = new java.awt.GridBagConstraints();
-			constraintsTOUComboBox.gridx = 2; constraintsTOUComboBox.gridy = 2;
-			constraintsTOUComboBox.gridwidth = -1;
-constraintsTOUComboBox.gridheight = -1;
-			constraintsTOUComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsTOUComboBox.weightx = 1.0;
-			constraintsTOUComboBox.ipadx = -120;
-			constraintsTOUComboBox.ipady = -25;
-			getCommunicationPanel().add(getTOUComboBox(), constraintsTOUComboBox);
-
-			java.awt.GridBagConstraints constraintsSenderLabel = new java.awt.GridBagConstraints();
-			constraintsSenderLabel.gridx = 2; constraintsSenderLabel.gridy = 6;
-			constraintsSenderLabel.insets = new java.awt.Insets(3, 23, 6, 36);
-			getCommunicationPanel().add(getSenderLabel(), constraintsSenderLabel);
-
-			java.awt.GridBagConstraints constraintsSenderTextField = new java.awt.GridBagConstraints();
-			constraintsSenderTextField.gridx = 3; constraintsSenderTextField.gridy = 6;
-			constraintsSenderTextField.gridwidth = 2;
-			constraintsSenderTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsSenderTextField.weightx = 1.0;
-			constraintsSenderTextField.ipadx = 35;
-			constraintsSenderTextField.ipady = 4;
-			constraintsSenderTextField.insets = new java.awt.Insets(2, 3, 3, 47);
-			getCommunicationPanel().add(getSenderTextField(), constraintsSenderTextField);
-
-			java.awt.GridBagConstraints constraintsSecurityCodeLabel = new java.awt.GridBagConstraints();
-			constraintsSecurityCodeLabel.gridx = 2; constraintsSecurityCodeLabel.gridy = 7;
-			constraintsSecurityCodeLabel.insets = new java.awt.Insets(3, 23, 8, 36);
-			getCommunicationPanel().add(getSecurityCodeLabel(), constraintsSecurityCodeLabel);
-
-			java.awt.GridBagConstraints constraintsSecurityCodeTextField = new java.awt.GridBagConstraints();
-			constraintsSecurityCodeTextField.gridx = 3; constraintsSecurityCodeTextField.gridy = 7;
-			constraintsSecurityCodeTextField.gridwidth = 2;
-			constraintsSecurityCodeTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsSecurityCodeTextField.weightx = 1.0;
-			constraintsSecurityCodeTextField.ipadx = 35;
-			constraintsSecurityCodeTextField.ipady = 4;
-			constraintsSecurityCodeTextField.insets = new java.awt.Insets(3, 3, 4, 47);
-			getCommunicationPanel().add(getSecurityCodeTextField(), constraintsSecurityCodeTextField);
-			// user code begin {1}
-			// user code end
+            // user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -814,11 +790,11 @@ private javax.swing.JComboBox getConfigComboBox() {
 		try {
 			ivjConfigComboBox = new javax.swing.JComboBox();
 			ivjConfigComboBox.setName("ConfigComboBox");
-			ivjConfigComboBox.setMaximumSize(new java.awt.Dimension(32767, 25));
-			ivjConfigComboBox.setVisible(false);
-			ivjConfigComboBox.setPreferredSize(new java.awt.Dimension(120, 25));
+			ivjConfigComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjConfigComboBox.setVisible(true);
+			ivjConfigComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjConfigComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjConfigComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
+			ivjConfigComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -842,8 +818,11 @@ private javax.swing.JLabel getConfigLabel() {
 			ivjConfigLabel.setName("ConfigLabel");
 			ivjConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjConfigLabel.setText("MCT Config: ");
-			ivjConfigLabel.setVisible(false);
+			ivjConfigLabel.setVisible(true);
 			// user code begin {1}
+			ivjConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+			ivjConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
 			ivjConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -933,7 +912,6 @@ private javax.swing.JPanel getDialupSettingsPanel() {
 			constraintsJButtonAdvanced.insets = new java.awt.Insets(2, 15, 10, 21);
 			getDialupSettingsPanel().add(getJButtonAdvanced(), constraintsJButtonAdvanced);
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -990,48 +968,36 @@ private javax.swing.JPanel getIdentificationPanel() {
 			ivjIdentificationPanel.setLayout(new java.awt.GridBagLayout());
 			ivjIdentificationPanel.setMaximumSize(new java.awt.Dimension(394, 143));
 			ivjIdentificationPanel.setPreferredSize(new java.awt.Dimension(394, 143));
-			ivjIdentificationPanel.setMinimumSize(new java.awt.Dimension(394, 143));
+			ivjIdentificationPanel.setMinimumSize(new java.awt.Dimension(0,0));
 
 			java.awt.GridBagConstraints constraintsTypeTextField = new java.awt.GridBagConstraints();
 			constraintsTypeTextField.gridx = 2; constraintsTypeTextField.gridy = 1;
 			constraintsTypeTextField.insets = new java.awt.Insets(14, 5, 3, 56);
-			getIdentificationPanel().add(getTypeTextField(), constraintsTypeTextField);
-
 			java.awt.GridBagConstraints constraintsTypeLabel = new java.awt.GridBagConstraints();
 			constraintsTypeLabel.gridx = 1; constraintsTypeLabel.gridy = 1;
 			constraintsTypeLabel.ipadx = 37;
 			constraintsTypeLabel.ipady = 3;
 			constraintsTypeLabel.insets = new java.awt.Insets(14, 8, 3, 5);
-			getIdentificationPanel().add(getTypeLabel(), constraintsTypeLabel);
-
 			java.awt.GridBagConstraints constraintsNameLabel = new java.awt.GridBagConstraints();
 			constraintsNameLabel.gridx = 1; constraintsNameLabel.gridy = 2;
 			constraintsNameLabel.ipadx = 33;
 			constraintsNameLabel.ipady = 7;
 			constraintsNameLabel.insets = new java.awt.Insets(3, 8, 4, 5);
-			getIdentificationPanel().add(getNameLabel(), constraintsNameLabel);
-
 			java.awt.GridBagConstraints constraintsNameTextField = new java.awt.GridBagConstraints();
 			constraintsNameTextField.gridx = 2; constraintsNameTextField.gridy = 2;
 			constraintsNameTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsNameTextField.weightx = 1.0;
 			constraintsNameTextField.insets = new java.awt.Insets(3, 5, 4, 56);
-			getIdentificationPanel().add(getNameTextField(), constraintsNameTextField);
-
 			java.awt.GridBagConstraints constraintsPhysicalAddressLabel = new java.awt.GridBagConstraints();
 			constraintsPhysicalAddressLabel.gridx = 1; constraintsPhysicalAddressLabel.gridy = 3;
 			constraintsPhysicalAddressLabel.ipadx = 8;
 			constraintsPhysicalAddressLabel.ipady = 7;
 			constraintsPhysicalAddressLabel.insets = new java.awt.Insets(5, 8, 5, 5);
-			getIdentificationPanel().add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
-
 			java.awt.GridBagConstraints constraintsPhysicalAddressTextField = new java.awt.GridBagConstraints();
 			constraintsPhysicalAddressTextField.gridx = 2; constraintsPhysicalAddressTextField.gridy = 3;
 			constraintsPhysicalAddressTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsPhysicalAddressTextField.weightx = 1.0;
 			constraintsPhysicalAddressTextField.insets = new java.awt.Insets(5, 5, 5, 56);
-			getIdentificationPanel().add(getPhysicalAddressTextField(), constraintsPhysicalAddressTextField);
-
 			java.awt.GridBagConstraints constraintsDisableFlagCheckBox = new java.awt.GridBagConstraints();
 			constraintsDisableFlagCheckBox.gridx = 1; constraintsDisableFlagCheckBox.gridy = 4;
 			constraintsDisableFlagCheckBox.ipadx = -1;
@@ -1040,8 +1006,20 @@ private javax.swing.JPanel getIdentificationPanel() {
 			getIdentificationPanel().add(getDisableFlagCheckBox(), constraintsDisableFlagCheckBox);
 
 			java.awt.GridBagConstraints constraintsControlInhibitCheckBox = new java.awt.GridBagConstraints();
+			constraintsPhysicalAddressTextField.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			constraintsTypeLabel.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			constraintsTypeTextField.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			constraintsNameTextField.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			constraintsPhysicalAddressLabel.anchor = java.awt.GridBagConstraints.NORTHWEST;
 			constraintsControlInhibitCheckBox.gridx = 2; constraintsControlInhibitCheckBox.gridy = 4;
 			constraintsControlInhibitCheckBox.insets = new java.awt.Insets(5, 5, 12, 56);
+			constraintsNameLabel.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			ivjIdentificationPanel.add(getTypeTextField(), constraintsTypeTextField);
+			ivjIdentificationPanel.add(getTypeLabel(), constraintsTypeLabel);
+			ivjIdentificationPanel.add(getNameLabel(), constraintsNameLabel);
+			ivjIdentificationPanel.add(getNameTextField(), constraintsNameTextField);
+			ivjIdentificationPanel.add(getPhysicalAddressLabel(), constraintsPhysicalAddressLabel);
+			ivjIdentificationPanel.add(getPhysicalAddressTextField(), constraintsPhysicalAddressTextField);
 			getIdentificationPanel().add(getControlInhibitCheckBox(), constraintsControlInhibitCheckBox);
 			// user code begin {1}
 			getControlInhibitCheckBox().setVisible(false);
@@ -1090,13 +1068,12 @@ private javax.swing.JComboBox getJComboBoxAmpUseType() {
 		try {
 			ivjJComboBoxAmpUseType = new javax.swing.JComboBox();
 			ivjJComboBoxAmpUseType.setName("JComboBoxAmpUseType");
-			ivjJComboBoxAmpUseType.setMaximumSize(new java.awt.Dimension(32767, 25));
-			ivjJComboBoxAmpUseType.setPreferredSize(new java.awt.Dimension(120, 25));
+			ivjJComboBoxAmpUseType.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjJComboBoxAmpUseType.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjJComboBoxAmpUseType.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJComboBoxAmpUseType.setMinimumSize(new java.awt.Dimension(120, 25));
+			ivjJComboBoxAmpUseType.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
 
-			//CCU-710 has only Amp1 & Amp2
 			ivjJComboBoxAmpUseType.addItem( com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_AMP1 );
 			ivjJComboBoxAmpUseType.addItem( com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_AMP2 );
 			
@@ -1121,13 +1098,12 @@ private javax.swing.JLabel getJLabelCCUAmpUseType() {
 			ivjJLabelCCUAmpUseType = new javax.swing.JLabel();
 			ivjJLabelCCUAmpUseType.setName("JLabelCCUAmpUseType");
 			ivjJLabelCCUAmpUseType.setText("CCU Amp Use Type:");
-			ivjJLabelCCUAmpUseType.setMaximumSize(new java.awt.Dimension(138, 16));
+			ivjJLabelCCUAmpUseType.setMaximumSize(new java.awt.Dimension(172,19));
 			ivjJLabelCCUAmpUseType.setVisible(true);
-			ivjJLabelCCUAmpUseType.setPreferredSize(new java.awt.Dimension(138, 16));
+			ivjJLabelCCUAmpUseType.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjJLabelCCUAmpUseType.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelCCUAmpUseType.setMinimumSize(new java.awt.Dimension(138, 16));
+			ivjJLabelCCUAmpUseType.setMinimumSize(new java.awt.Dimension(172,19));
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1205,12 +1181,11 @@ private javax.swing.JLabel getPasswordLabel() {
 			ivjPasswordLabel = new javax.swing.JLabel();
 			ivjPasswordLabel.setName("PasswordLabel");
 			ivjPasswordLabel.setText("Password:");
-			ivjPasswordLabel.setMaximumSize(new java.awt.Dimension(138, 20));
-			ivjPasswordLabel.setPreferredSize(new java.awt.Dimension(138, 20));
+			ivjPasswordLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjPasswordLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjPasswordLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjPasswordLabel.setMinimumSize(new java.awt.Dimension(138, 20));
+			ivjPasswordLabel.setMinimumSize(new java.awt.Dimension(172,19));
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1230,17 +1205,16 @@ private javax.swing.JTextField getPasswordTextField() {
 		try {
 			ivjPasswordTextField = new javax.swing.JTextField();
 			ivjPasswordTextField.setName("PasswordTextField");
-			ivjPasswordTextField.setMaximumSize(new java.awt.Dimension(2147483647, 20));
+			ivjPasswordTextField.setMaximumSize(new java.awt.Dimension(162,24));
 			ivjPasswordTextField.setColumns(0);
-			ivjPasswordTextField.setPreferredSize(new java.awt.Dimension(120, 20));
+			ivjPasswordTextField.setPreferredSize(new java.awt.Dimension(162,24));
 			ivjPasswordTextField.setFont(new java.awt.Font("sansserif", 0, 14));
-			ivjPasswordTextField.setMinimumSize(new java.awt.Dimension(120, 20));
+			ivjPasswordTextField.setMinimumSize(new java.awt.Dimension(162,24));
 			// user code begin {1}
 			
 			ivjPasswordTextField.setDocument(
 				new TextFieldDocument(TextFieldDocument.MAX_IED_PASSWORD_LENGTH));
 
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1373,12 +1347,11 @@ private javax.swing.JComboBox getPortComboBox() {
 		try {
 			ivjPortComboBox = new javax.swing.JComboBox();
 			ivjPortComboBox.setName("PortComboBox");
-			ivjPortComboBox.setMaximumSize(new java.awt.Dimension(32767, 25));
-			ivjPortComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
+			ivjPortComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjPortComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjPortComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjPortComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
+			ivjPortComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1399,10 +1372,10 @@ private javax.swing.JLabel getPortLabel() {
 			ivjPortLabel = new javax.swing.JLabel();
 			ivjPortLabel.setName("PortLabel");
 			ivjPortLabel.setText("Communication Channel:");
-			ivjPortLabel.setMaximumSize(new java.awt.Dimension(138, 16));
-			ivjPortLabel.setPreferredSize(new java.awt.Dimension(138, 16));
+			ivjPortLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjPortLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjPortLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjPortLabel.setMinimumSize(new java.awt.Dimension(138, 16));
+			ivjPortLabel.setMinimumSize(new java.awt.Dimension(172,19));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1426,11 +1399,10 @@ private javax.swing.JLabel getPostCommWaitLabel() {
 			ivjPostCommWaitLabel.setName("PostCommWaitLabel");
 			ivjPostCommWaitLabel.setText("Post Communication Wait:");
 			ivjPostCommWaitLabel.setMaximumSize(new java.awt.Dimension(172, 16));
-			ivjPostCommWaitLabel.setPreferredSize(new java.awt.Dimension(172, 16));
+			ivjPostCommWaitLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjPostCommWaitLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPostCommWaitLabel.setMinimumSize(new java.awt.Dimension(172, 16));
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1476,9 +1448,10 @@ private javax.swing.JComboBox getRouteComboBox() {
 		try {
 			ivjRouteComboBox = new javax.swing.JComboBox();
 			ivjRouteComboBox.setName("RouteComboBox");
-			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(210, 25));
-			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(210, 25));
+			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(162,20));
+			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
+			ivjRouteComboBox.setMaximumSize(new java.awt.Dimension(162,20));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1502,7 +1475,10 @@ private javax.swing.JLabel getRouteLabel() {
 			ivjRouteLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjRouteLabel.setText("Communication Route:");
 			// user code begin {1}
-			// user code end
+			ivjRouteLabel.setPreferredSize(new java.awt.Dimension(172,19));
+			ivjRouteLabel.setAlignmentX(0.0F);
+			ivjRouteLabel.setMinimumSize(new java.awt.Dimension(172,19));
+			ivjRouteLabel.setMaximumSize(new java.awt.Dimension(172,19));
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1630,10 +1606,10 @@ private javax.swing.JComboBox getSlaveAddressComboBox() {
 		try {
 			ivjSlaveAddressComboBox = new javax.swing.JComboBox();
 			ivjSlaveAddressComboBox.setName("SlaveAddressComboBox");
-			ivjSlaveAddressComboBox.setMaximumSize(new java.awt.Dimension(32767, 25));
-			ivjSlaveAddressComboBox.setPreferredSize(new java.awt.Dimension(120, 25));
+			ivjSlaveAddressComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjSlaveAddressComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjSlaveAddressComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjSlaveAddressComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
+			ivjSlaveAddressComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
 
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_STAND_ALONE );
@@ -1664,12 +1640,11 @@ private javax.swing.JLabel getSlaveAddressLabel() {
 			ivjSlaveAddressLabel = new javax.swing.JLabel();
 			ivjSlaveAddressLabel.setName("SlaveAddressLabel");
 			ivjSlaveAddressLabel.setText("Slave Address:");
-			ivjSlaveAddressLabel.setMaximumSize(new java.awt.Dimension(138, 16));
-			ivjSlaveAddressLabel.setPreferredSize(new java.awt.Dimension(138, 16));
+			ivjSlaveAddressLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjSlaveAddressLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjSlaveAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjSlaveAddressLabel.setMinimumSize(new java.awt.Dimension(138, 16));
+			ivjSlaveAddressLabel.setMinimumSize(new java.awt.Dimension(172,19));
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1689,13 +1664,13 @@ private javax.swing.JComboBox getTOUComboBox() {
 		try {
 			ivjTOUComboBox = new javax.swing.JComboBox();
 			ivjTOUComboBox.setName("TOUComboBox");
-			ivjTOUComboBox.setMaximumSize(new java.awt.Dimension(32767, 25));
-			ivjTOUComboBox.setVisible(false);
-			ivjTOUComboBox.setPreferredSize(new java.awt.Dimension(120, 25));
+			ivjTOUComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjTOUComboBox.setVisible(true);
+			ivjTOUComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjTOUComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjTOUComboBox.setMinimumSize(new java.awt.Dimension(120, 25));
+			ivjTOUComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
-			ivjTOUComboBox.setEnabled(false);
+			ivjTOUComboBox.setEnabled(true);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1718,10 +1693,13 @@ private javax.swing.JLabel getTOULabel() {
 			ivjTOULabel.setName("TOULabel");
 			ivjTOULabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTOULabel.setText("TOU Schedule: ");
-			ivjTOULabel.setVisible(false);
+			ivjTOULabel.setVisible(true);
 			// user code begin {1}
-			ivjTOULabel.setEnabled(false);
+			ivjTOULabel.setEnabled(true);
 			// user code end
+			ivjTOULabel.setPreferredSize(new java.awt.Dimension(172,19));
+			ivjTOULabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjTOULabel.setMinimumSize(new java.awt.Dimension(172,19));
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -2120,29 +2098,57 @@ private void initialize() {
 		// user code end
 		setName("DeviceBaseEditorPanel");
 		setPreferredSize(new java.awt.Dimension(407, 497));
+		java.awt.GridBagConstraints consGridBagConstraints151 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints152 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints153 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints24 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
+		consGridBagConstraints25.insets = new java.awt.Insets(2,6,5,7);
+		consGridBagConstraints25.ipady = -7;
+		consGridBagConstraints25.gridy = 2;
+		consGridBagConstraints25.gridx = 0;
+		consGridBagConstraints25.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		consGridBagConstraints153.insets = new java.awt.Insets(2,6,1,7);
+		consGridBagConstraints153.gridy = 1;
+		consGridBagConstraints153.gridx = 0;
+		consGridBagConstraints153.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		consGridBagConstraints153.fill = java.awt.GridBagConstraints.VERTICAL;
+		consGridBagConstraints153.weighty = 0.0D;
+		consGridBagConstraints153.ipady = -5;
+		consGridBagConstraints151.insets = new java.awt.Insets(7,6,2,7);
+		consGridBagConstraints151.ipady = -7;
+		consGridBagConstraints151.gridy = 0;
+		consGridBagConstraints151.gridx = 0;
+		consGridBagConstraints151.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		consGridBagConstraints152.insets = new java.awt.Insets(1,6,8,7);
+		consGridBagConstraints152.gridy = 2;
+		consGridBagConstraints152.gridx = 0;
+		consGridBagConstraints152.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		consGridBagConstraints152.fill = java.awt.GridBagConstraints.VERTICAL;
+		consGridBagConstraints152.weighty = 0.0D;
+		consGridBagConstraints152.ipady = -3;
+		consGridBagConstraints151.fill = java.awt.GridBagConstraints.VERTICAL;
+		consGridBagConstraints151.weighty = 0.0D;
+		consGridBagConstraints24.insets = new java.awt.Insets(2,6,2,7);
+		consGridBagConstraints24.ipady = -121;
+		consGridBagConstraints24.gridy = 1;
+		consGridBagConstraints24.gridx = 0;
+		consGridBagConstraints24.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		consGridBagConstraints23.insets = new java.awt.Insets(5,6,2,7);
+		consGridBagConstraints23.gridy = 0;
+		consGridBagConstraints23.gridx = 0;
+		consGridBagConstraints23.anchor = java.awt.GridBagConstraints.NORTHWEST;
 		setLayout(new java.awt.GridBagLayout());
-		setSize(407, 485);
-		setMinimumSize(new java.awt.Dimension(407, 497));
-		setMaximumSize(new java.awt.Dimension(407, 497));
+		this.add(getIdentificationPanel(), consGridBagConstraints23);
+		this.add(getCommunicationPanel(), consGridBagConstraints24);
+		this.add(getJPanelMCTSettings(), consGridBagConstraints25);
+		setSize(407, 379);
+		setMinimumSize(new java.awt.Dimension(407,503));
+		setMaximumSize(new java.awt.Dimension(407,503));
 
-		java.awt.GridBagConstraints constraintsIdentificationPanel = new java.awt.GridBagConstraints();
-		constraintsIdentificationPanel.gridx = 1; constraintsIdentificationPanel.gridy = 1;
-		constraintsIdentificationPanel.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsIdentificationPanel.weightx = 1.0;
-		constraintsIdentificationPanel.weighty = -3.0;
-		constraintsIdentificationPanel.insets = new java.awt.Insets(7, 6, 3, 7);
-		add(getIdentificationPanel(), constraintsIdentificationPanel);
-
-		java.awt.GridBagConstraints constraintsCommunicationPanel = new java.awt.GridBagConstraints();
-		constraintsCommunicationPanel.gridx = 1; constraintsCommunicationPanel.gridy = 2;
-		constraintsCommunicationPanel.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsCommunicationPanel.weightx = 1.0;
-		constraintsCommunicationPanel.weighty = 1.0;
-		constraintsCommunicationPanel.ipadx = 394;
-		constraintsCommunicationPanel.ipady = 321;
-		constraintsCommunicationPanel.insets = new java.awt.Insets(3, 6, 8, 7);
-		add(getCommunicationPanel(), constraintsCommunicationPanel);
-		initConnections();
+		this.setDoubleBuffered(true);
+  		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
@@ -2774,4 +2780,51 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }
-}
+	/**
+	 * This method initializes jPanelMCTSettings
+	 * 
+	 * @return javax.swing.JPanel
+	 */
+	private javax.swing.JPanel getJPanelMCTSettings() {
+		if(jPanelMCTSettings == null) {
+			jPanelMCTSettings = new javax.swing.JPanel();
+			java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints21 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints19 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints22 = new java.awt.GridBagConstraints();
+			consGridBagConstraints20.insets = new java.awt.Insets(4,33,1,2);
+			consGridBagConstraints20.gridy = 1;
+			consGridBagConstraints20.gridx = 0;
+			consGridBagConstraints20.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints22.insets = new java.awt.Insets(4,3,0,21);
+			consGridBagConstraints22.ipadx = -9;
+			consGridBagConstraints22.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints22.weightx = 1.0;
+			consGridBagConstraints22.gridy = 1;
+			consGridBagConstraints22.gridx = 1;
+			consGridBagConstraints22.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints19.insets = new java.awt.Insets(1,33,5,2);
+			consGridBagConstraints19.gridy = 0;
+			consGridBagConstraints19.gridx = 0;
+			consGridBagConstraints21.insets = new java.awt.Insets(1,3,4,21);
+			consGridBagConstraints21.ipadx = -9;
+			consGridBagConstraints21.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints21.weightx = 1.0;
+			consGridBagConstraints21.gridy = 0;
+			consGridBagConstraints21.gridx = 1;
+			consGridBagConstraints21.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			consGridBagConstraints19.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			jPanelMCTSettings.setLayout(new java.awt.GridBagLayout());
+			jPanelMCTSettings.add(getConfigLabel(), consGridBagConstraints19);
+			jPanelMCTSettings.add(getTOULabel(), consGridBagConstraints20);
+			jPanelMCTSettings.add(getTOUComboBox(), consGridBagConstraints21);
+			jPanelMCTSettings.add(getConfigComboBox(), consGridBagConstraints22);
+			jPanelMCTSettings.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "MCT Additional Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12), java.awt.Color.black));
+			jPanelMCTSettings.setName("JPanelMCTSettings");
+			jPanelMCTSettings.setPreferredSize(new java.awt.Dimension(394,81));
+			jPanelMCTSettings.setMinimumSize(new java.awt.Dimension(0,0));
+			jPanelMCTSettings.setMaximumSize(new java.awt.Dimension(394,81));
+		}
+		return jPanelMCTSettings;
+	}
+}  //  @jve:visual-info  decl-index=0 visual-constraint="10,10"
