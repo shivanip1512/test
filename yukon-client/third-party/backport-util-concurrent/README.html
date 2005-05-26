@@ -1,0 +1,533 @@
+<html>
+  <head>
+    <title>JSR 166 (java.util.concurrent) backport to J2SE 1.4 - Distributed Computing Laboratory</title>
+    <meta content="java.util.concurrent backport">
+    <link rel="stylesheet" href="../../style.css"  type="text/css">
+  </head>
+  <body>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><p><h1>Java 1.4 backport of JSR 166 (java.util.concurrent)</h1>
+<p>
+Project page: <a href="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/">http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/</a>
+</p>
+</td></tr>
+</table>
+<br>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+  <td><h3>Project summary</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+This package is the backport of 
+<a href="http://gee.cs.oswego.edu/dl/concurrency-interest/">java.util.concurrent</a> API, 
+introduced in 
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/concurrency/overview.html">Java 5.0</a>,
+to Java 1.4. The backport is based on public-domain sources from the
+<a href="http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/main/java/">
+JSR 166 CVS repository</a>, and the
+<a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html">
+dl.util.concurrent</a> package.
+The backport is nearly complete; unsupported functionality is 
+limited mostly to the following cases: 1) things that require explicit 
+JVM support, 2) some non-essential functions 
+described in the original javadoc as "designed primarily for use in 
+monitoring in system state, not for synchronization control", 3) 
+functionality which emulation would affect performance, or 4) functionality 
+that would require development of substantial amount of new code.
+</p>
+<p>
+The purpose of this library is to enable gradual transition from Java 1.4 
+to 5.0: the library allows to develop concurrent applications for Java 1.4 
+that should work with Java 5.0 simply by changing package names.
+</p>
+</td></tr>
+</table>
+<br>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+  <td><h3>License</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+This software is released to the 
+<a href="http://creativecommons.org/licenses/publicdomain">public domain</a>,
+as is the original code written by Doug Lea.
+The code can be used for any purpose, modified, and redistributed 
+without acknowledgment. No warranty is provided, either express or implied.
+A few source files in this library originate from SUN JDK and bear SUN source 
+code license, as stated in file headers.
+</p>
+
+</td></tr></table>
+<br>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+<td><h3>News</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+<h4>Feb 7, 2004</h4>
+The backport, version 1.1_01, has been released. New release fixes
+a bug affecting fair reentrant lock and several dependent classes. 
+Additionally, starting with this version, the library is stress-tested 
+using the "loop" tests
+from the JSR 166 package. See the changelog, below, for more information.
+
+<h4>Feb 7, 2004</h4>
+Courtesy of Doug Lea and the JSR 166 Expert Group, the
+<a href="http://altair.cs.oswego.edu/mailman/listinfo/concurrency-interest">Concurrency-Interest mailing list</a>
+can be now used as a discussion forum for this library. When posting a comment, 
+please clearly indicate if your message regards the backport rather than the original
+JSR 166 API. I suggest prefixing the subject line with "backport: ".
+
+<h4>Jan 21, 2004</h4>
+The backport, version 1.1, has been released. An important bug
+was fixed, and some new functionality was added. Users of
+1.1_01 are urged to upgrade. See the changelog, below,
+for more information.
+
+<h4>Dec 28, 2004</h4>
+The backport, version 1.0_01, has been released. A few bugs have
+been fixed since 1.0, and some new functionality was added. See the
+changelog, below, for more information. 
+
+<h4>Dec 1, 2004</h4>
+The backport, version 1.0, has been released. It is based
+on JSR 166 sources as of Jan 14, 2004, and dl.util.concurrent 1.3.4.
+
+</p>
+</td></tr>
+</table>
+
+<br>
+
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+<td><h3><a name="overview">What is supported</a></h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+
+<p>
+The following list enumerates the functionality of java.util.concurrent
+that is included in this backport:
+<ul>
+<li>All JSR 166 executors, utilities, and everything related (thread pools, 
+FutureTask, scheduled tasks and executors, etc.)</li>
+<li>Locks: ReentrantLock, Semaphore, ReentrantReadWriteLock (see remarks 
+below), Conditions</li>
+<li>Queues: synchronous, array, linked, delay, and priority queues</li>
+<li>Deques: array, and linked deques</li>
+<li>Atomics: everything except reflection-based updaters</li>
+<li>Other concurrency utils: CountDownLatch, CyclicBarrier</li>
+<li>Collections: ConcurrentHashMap, CopyOnWriteArrayList, CopyOnWriteArraySet</li>
+</ul>
+</p>
+<p>
+<em>Note on package naming:</em> since user libraries cannot define classes in
+java.* packages, all the original package names have been prefixed with
+<code>edu.emory.mathcs.backport</code>. For instance, <code>java.util.concurrent.Future</code> becomes <code>edu.emory.mathcs.backport.java.util.concurrent.Future</code>.
+</p>
+<p><em>Compatibility:</em> The backport, version 1.1 and above, includes some 
+functionality of JSR 166 (deques, "allowCoreThreadTimeOut" in ThreadPoolExecutor etc.)
+that did not make it for Java 5.0, but which is scheduled for addition in the next 
+Java release. Pay attention to the "since" javadoc tags if conformance with specific 
+Java platform versions is desired.
+</p>
+</td></tr>
+</table>
+<br>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+<td><h3><a name="overview">Stability</a></h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+
+<p>
+The library passes 1091 tests from 
+<a href="http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/test/tck/">TCK test package</a>
+designed for java.util.concurrent (the tests of unsupported functionality 
+were skipped).
+</p>
+<p>
+The following classes were unit-tested (listed in the alphabetical order):
+AbstractExecutorServiceTest, 
+AbstractQueueTest, 
+ArrayBlockingQueueTest, 
+ArrayDequeTest, 
+AtomicBooleanTest, 
+AtomicIntegerArrayTest, 
+AtomicIntegerTest, 
+AtomicLongArrayTest, 
+AtomicLongTest, 
+AtomicMarkableReferenceTest, 
+AtomicReferenceArrayTest, 
+AtomicReferenceTest, 
+AtomicStampedReferenceTest, 
+ConcurrentHashMapTest, 
+CopyOnWriteArrayListTest, 
+CopyOnWriteArraySetTest, 
+CountDownLatchTest, 
+CyclicBarrierTest, 
+DelayQueueTest, 
+ExchangerTest, 
+ExecutorsTest, 
+ExecutorCompletionServiceTest, 
+FutureTaskTest, 
+LinkedBlockingDequeTest, 
+LinkedBlockingQueueTest, 
+PriorityBlockingQueueTest, 
+PriorityQueueTest, 
+ReentrantLockTest, 
+ReentrantReadWriteLockTest, 
+ScheduledExecutorTest, 
+SemaphoreTest, 
+SynchronousQueueTest, 
+ThreadLocalTest, 
+ThreadPoolExecutorTest, 
+TimeUnitTest.
+</p>
+<p>
+<font color="red"><strong>New: </strong></font> version 1.1_01 of the 
+backport has been stress-tested using the "loops" tests from JSR 166 
+(courtesy of Doug Lea and the JSR 166 Expert Group). The tests, included 
+in the development source 
+bundle, thoroughly evaluate behavior and performance of various types 
+of locks, queues, maps, futures, and other API classes, under various 
+conditions (contention etc.) and circumstances, including cancellation.
+The backport has withstood days of testing on Windows XP, Linux, 
+and Solaris (SMP), running up to 400 concurrent threads. 
+</p>
+<p>
+In addition, it is important to emphasize that vast proportion of the backport
+is based on source code from JSR 166 and dl.util.concurrent, both very 
+well tested. Whenever possible, the JSR 166 code was used. In cases when 
+it was infeasible (e.g. the JSR 166 code had strong dependencies on 
+native JVM support), the dl.util.concurrent code was adapted. The new 
+code was introduced only when absolutely necessary, e.g. to make 
+dl.util.concurrent code conforming to JSR 166 interfaces and semantics.
+</p>
+<p>
+However, as any software, this library may still contain bugs. If you find 
+one, please report it, or better yet, contribute a fix. 
+</p>
+</td></tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+<td><h3><a name="unsupported">What is NOT supported</a></h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr>
+<p>
+Detailed discussion of functionality that has not been backported
+is presented below.
+</p>
+
+<h4>Java 5.0 Syntax</h4>
+<p>
+Package java.util.concurrent exploits new language features
+added to Java in release 5.0: most API classes are
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/generics.html">generic types</a>.
+In the backport, they had to be flattened to standard, non-generic 
+classes. Still, programs linked against the backport should compile 
+with Java 5.0 (after changing package names). Nevertheless, you may 
+want to consider gradually switching to using generics once you make 
+the transition to Java 5.0, since it gives better compile-time 
+type checking.
+</p>
+
+<h4>In Condition</h4>
+<p>
+Method long awaitNanos(long nanosTimeout) is not supported, since the
+emulation cannot reliably report remaining times with nanosecond 
+precision. Thus, it probably would be too dangerous to leave the
+emulated method in the Condition interface. However, the method is
+still available, for those who know what they are doing,
+in the <a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/helpers/Utils.html">util.concurrent.helpers.Utils</a> class.
+</p>
+
+<h4>In ReentrantLock</h4>
+<p>
+The following monitoring methods are not supported: boolean 
+hasWaiters(Condition), int getWaitQueueLength(Condition), Collection 
+getWaitingThreads(Condition).
+</p>
+<p>
+the following monitoring methods are supported only for fair locks: 
+boolean hasQueuedThreads(), int getQueueLength(), Collection 
+getQueuedThreads(), boolean isQueued().
+</p>
+
+<h4>In ReentrantReadWriteLock</h4>
+<p>
+The current backport implementation is based on dl.util.concurrent class
+ReentrantWriterPreferenceReadWriteLock, and thus slightly departs
+from java.util.concurrent that does not specify acquisition order but 
+allows to enable/disable fairness. The backport implementation does not 
+have a single-parameter constructor allowing to specify fairness policy; 
+it always behaves like writer-preference lock with no fairness guarantees.
+Because of these characteristics, this class is compliant with JSR 166 
+specification of non-fair reentrant read-write locks, while the exact 
+semantics of fair locks are not supported (and the appropriate 
+constructor is thus not provided).
+</p>
+<p>
+Also, the following instrumentation and status methods are not 
+supported: Collection getQueuedWriterThreads(), Collection 
+getQueuedReaderThreads(), boolean hasQueuedThreads(), boolean 
+hasQueuedThread(Thread), Collection getQueuedThreads(), boolean 
+hasWaiters(Condition), int getWaitQueueLength(Condition), Collection 
+getWaitingThreads(Condition).
+</p>
+
+<h4>In Semaphore</h4>
+<p>
+Atomic multi-acquires: tryAcquire(int permits) and tryAcquire(int 
+permits, long timeout, TimeUnit unit) are not supported.
+</p>
+
+<h4>Platform-level functionality</h4>
+<p>
+To emulate System.nanoTime(), the method 
+<a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/helpers/Utils.html#nanoTime()">nanoTime()</a> 
+is provided in the class 
+dl.util.concurrent.helpers.Utils. On Java 1.4.2, it attempts to use
+high-precision timer via sun.misc.Perf (thanks to Craig Mattocks
+for suggesting this). On older Java platforms, or when sun.misc.Perf
+is not supported, it falls back to System.currentTimeMillis().
+</p>
+<p>
+Class <a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/helpers/ThreadHelpers.html">ThreadHelpers</a>
+(added in 1.0_01) is provided to emulate certain aspects of Thread.UncaughtExceptionHandler.
+</p>
+
+<h4>Note on nanosecond precision timing</h4>
+<p>
+The backport strives to honor nanosecond timeouts, if such are requested, 
+by using two-parameter variant of Object.wait(). Note, however, that most 
+Java platforms before 5.0 will round up the timeout to full milliseconds 
+anyway.
+</p>
+
+<h4>Low-level concurrency classes</h4>
+<p>
+The following classes are not supported: 
+LockSupport, AbstractQueuedSynchronizer. 
+</p><p><i>Rationale: </i> on Java 5.0, these classes depend on explicit
+JVM support, delegating to low-level OS concurrency primitives. There seems
+to be no simple way of emulating them without introducing prohibitive 
+performance overhead. (If you think they should be present in the backport
+anyway, let me know).
+</p>
+
+<h4>Atomic utilities</h4>
+<p>
+The following "atomic" utilities are not supported: 
+Atomic[Integer,Long,Reference]FieldUpdater.
+
+</p>
+
+<h4>Collections</h4>
+<p>
+JSR 166 introduces a few improvements to core collection classes, such as 
+Tree[Map,Set], AbstractMap, LinkedList, and Collections. For instance, 
+LinkedList now implements Deque, and TreeSet is now navigable. I have been
+hesitant to include these classes in the backport, mainly because of the
+fear of breaking compile-time backward compatibility. Namely, ambiguities
+would arise from importing both java.util.* and ..backport.java.util.*.
+However, I am having second thoughts on this, since navigable sets are
+actually pretty useful. Opinions in this matter are greatly appreciated.
+</p>
+<p>
+The following concurrent collection classes are not yet supported: 
+ConcurrentLinkedQueue, ConcurrentSkipList[Map,Set]. They will most likely be 
+added in future releases.
+</p>
+</td></tr>
+</table>
+
+<br>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr bgcolor="#FFDD88">
+   <td><h3>Change Log</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+
+Version 1.1_01 (Feb 7, 2005) [<a href="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/dist/backport-util-concurrent-1.1_01/backport-util-concurrent-1.1_01-changelog.html">CVS log</a>]
+<ul>
+<li>Bugfix: race condition in the fair implementation of ReentrantLock 
+caused it to occassionally cause IllegalMonitorState exceptions. Non-fair
+implementation was not affected, however, classes that depend on fair reentrant locks,
+namely: fair ArrayBlockingQueue, fair SynchronousQueue, and PriorityQueue, were
+affected.
+Thanks to Ramesh Nethi for reporting this bug and helping to track it down.</li>
+
+<li>Testing: backport has been stress-tested using the "loops" tests
+(courtesy of Doug Lea and the JSR 166 Expert Group). The tests
+are included in the development source bundle.</li>
+</ul>
+
+Version 1.1 (Jan 21, 2005) [<a href="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/dist/backport-util-concurrent-1.1/backport-util-concurrent-1.1-changelog.html">CVS log</a>]
+<ul>
+<li>Bugfix: on Windows platforms with Java 1.4.2, the library
+were sometimes behaving as if timeouts were ignored or misinterpreted,
+typically resulting in indefinite waits. This resulted from an internal
+timer overflow that occurred every several hours, and was also manifested
+as a discontinuity in System.nanoTime() values. The problem would happen
+if the overflow occurred during blocked timed wait, if additionally
+a spurious wakeup occurred after the overflow but before timeout
+in the underlying Object.wait().
+This has now been fixed; 1.0_01 users are urged to upgrade to version 1.1.
+Thanks to Ramesh Nethi for reporting this bug and greatly contributing
+to tracking it down.</li>
+
+<li>Feature: backport has been reconciled with JSR 166 CVS repository
+    on Jan 14, 2005. This results in a handful of new things:
+    <ul>
+    <li>New 
+        <a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/TimeUnit.html">time units</a>: 
+        MINUTES, HOURS, and DAYS.</li>
+    <li><a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/ThreadPoolExecutor.html#allowCoreThreadTimeOut(boolean)">allowCoreThreadTimeOut</a>
+        in ThreadPoolExecutor, which enables <em>bounded</em>
+        pools that kills threads if they are idle for too long.</li>
+    <li>ThreadPoolExecutor now handles excessive interruption requests more gracefully 
+        (previously, it was reported to be able to crash older JVMs).</li>
+    <li><a href="doc/api/edu/emory/mathcs/backport/java/util/Deque.html">Deques</a>.</li>
+    <li>Javadoc improvements.</li>
+    </ul>
+</li>
+</ul>
+
+Version 1.0_01 (Dec 28, 2004) [<a href="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/dist/backport-util-concurrent-1.0_01/backport-util-concurrent-1.0_01-changelog.html">CVS log</a>]
+<ul>
+<li>Feature: development source bundle with ant scripts allowing to build and
+    test the distribution is now available for download.</li>
+
+<li>Feature: emulation of UncaughtExceptionHandler, in class
+    <a href="doc/api/edu/emory/mathcs/backport/java/util/concurrent/helpers/ThreadHelpers.html">ThreadHelpers</a>.</li>
+
+<li>Documentation: improved, more consistent and accurate javadoc.</li>
+
+<li>Bugfix: NoClassDefFoundError when using nanoTime() on Java prior to 1.4.2.
+    Thanks to Gabriel Wolosin for reporting this bug.</li>
+
+<li>Bugfix: deadlocks in ConcurrentLinkedQueue when drainTo() or clear() was
+    invoked when there was blocked put(). Thanks to Jean Morissette for
+    reporting this bug.</li>
+
+<li>Bugfix: minor glitch in Utils.nanoTime() would cause timer to lose
+    accuracy, about 1ns every 11 days, if JVM was running continuously.
+    (Note: as it turned out, the fix itself had a bug; see the log for 
+    version 1.1)</li>
+</ul>
+    
+Version 1.0 (Dec 1, 2004)
+<ul>
+<li>Initial revision</li>
+</ul>
+
+</p>
+</td></tr>
+</table>
+
+
+
+<br>
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<tr bgcolor="#FFDD88">
+   <td><h3>Documentation and support</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+For more information:
+<ul>
+<LI><a href="doc/api/">Browse Javadoc</a></LI>
+<LI>Consult the original 
+    <a href="http://gee.cs.oswego.edu/dl/concurrency-interest/">
+    java.util.concurrent</a> documentation and Java 5.0 
+    <a href="http://java.sun.com/j2se/1.5.0/docs/guide/concurrency/overview.html">Concurrency Utilities Overview</a></LI>
+
+<li>Check the <a href="http://www.mathcs.emory.edu/dcl/util/backport-util-concurrent/">project Web page</a> for updates.</li>
+
+<li>For questions, comments, and discussion, use the
+<a href="http://altair.cs.oswego.edu/mailman/listinfo/concurrency-interest">Concurrency-Interest 
+mailing list</a> (courtesy of Doug Lea and the JSR 166 Expert Group). Please clearly indicate
+that your message regards the backport rather than the original JSR 166 API, by prefixing
+the subject line with "backport: " and including appropriate annotation in the message body.
+You may also send 
+e-mail directly to <a href="mailto:dawidk@mathcs.emory.edu">Dawid Kurzyniec</a>.</li>
+</ul>
+</p>
+</td></tr>
+</table>
+
+<br>
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<tr bgcolor="#FFDD88">
+   <td><h3>Related links</h3></td>
+</tr>
+</table>
+
+<table width="100%" border=0 cellspacing=2 cellpadding=4>
+<tr><td>
+<p>
+Java concurrency-related Web sites:
+<ul>
+<li><a href="http://gee.cs.oswego.edu/dl/concurrency-interest/">
+    Concurrency JSR-166 Interest Site</a></li>
+<li><a href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html">Overview 
+    of package dl.util.concurrent</a></li>
+</ul>
+Other general-purpose utility classes for Java:
+<ul>
+<li><a href="http://jakarta.apache.org/commons/">Jakarta Commons</a> library</li>
+</ul>
+
+</p>
+</td></tr></table>
+<br>
+
+<hr>
+Copyright (C) 2004-2005
+<a href="http://www.mathcs.emory.edu/dcl/">Distributed Computing Laboratory</a>,
+Emory University
+<br>
+Last updated: Feb 7, 2005
+
+</body>
+</html>
