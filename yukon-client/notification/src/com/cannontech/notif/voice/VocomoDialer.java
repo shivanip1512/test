@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.notif.voice.callstates.UnknownError;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.roles.yukon.VoiceServerRole;
 import com.vocomo.vxml.tools.MakeCall;
 
 /**
@@ -17,21 +20,18 @@ public class VocomoDialer extends Dialer {
         call.changeState(new Connecting());
         String phoneNumber = getPhonePrefix()
                              + call.getNumber().getPhoneNumber();
-        //String voiceHost =
-        // RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceHost = "10.100.2.100";
+        String voiceHost =
+            RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
         MakeCall mc = new MakeCall(voiceHost, true);
 
         int rInt;
         try {
             String queryString = generateQueryString(call.getCallParameters());
             
-            //String voiceApp =
-            // RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
-            String voiceApp = "login";
-            //int callTimeout =
-            // Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT));
-            int callTimeout = 10;
+            String voiceApp =
+                RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
+            int callTimeout =
+                Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT));
 
             rInt = mc.makeCall(phoneNumber, voiceApp, callTimeout, queryString);
             switch (rInt) {
@@ -61,12 +61,12 @@ public class VocomoDialer extends Dialer {
 
     }
     
-    private String decodeStatus(int status) {
+    private static String decodeStatus(int status) {
         Field[] fields = MakeCall.class.getFields();
         for (int i = 0; i < fields.length; i++) {
             try {
                 Field field = fields[i];
-                if (field.getType().equals(Integer.class)) {
+                if (field.getType().equals(int.class)) {
                     if (field.getInt(null) == status) {
                         return field.getName();
                     }
