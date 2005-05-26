@@ -31,7 +31,6 @@ public class InputValidater
 		from = fromvar;
 		to = tovar;
 		route = routevar;
-		System.out.println(route);
 		banksize = banksizevar;
 		manufacturer = manufacturervar;
 		switchType = switchTypevar;
@@ -91,7 +90,7 @@ public class InputValidater
 	
 	public boolean checkRoute()
 	{
-		return true;	
+		return true;
 	}
 	
 	public boolean checkBankSize()
