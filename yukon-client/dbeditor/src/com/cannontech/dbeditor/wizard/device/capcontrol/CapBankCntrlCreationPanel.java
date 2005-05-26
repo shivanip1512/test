@@ -461,6 +461,9 @@ private javax.swing.JComboBox getJComboBoxCBCRoute() {
 		try {
 			ivjJComboBoxCBCRoute = new javax.swing.JComboBox();
 			ivjJComboBoxCBCRoute.setName("JComboBoxCBCRoute");
+			ivjJComboBoxCBCRoute.setMaximumSize(new java.awt.Dimension(202,23));
+			ivjJComboBoxCBCRoute.setMinimumSize(new java.awt.Dimension(202,23));
+			ivjJComboBoxCBCRoute.setPreferredSize(new java.awt.Dimension(202,23));
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
@@ -489,6 +492,9 @@ private javax.swing.JComboBox getJComboBoxCBCType() {
 		try {
 			ivjJComboBoxCBCType = new javax.swing.JComboBox();
 			ivjJComboBoxCBCType.setName("JComboBoxCBCType");
+			ivjJComboBoxCBCType.setPreferredSize(new java.awt.Dimension(202,23));
+			ivjJComboBoxCBCType.setMinimumSize(new java.awt.Dimension(202,23));
+			ivjJComboBoxCBCType.setMaximumSize(new java.awt.Dimension(202,23));
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
 			//ivjJComboBoxCBCType.addItem( "7020" );
@@ -580,68 +586,62 @@ private javax.swing.JPanel getJPanelCBCNew() {
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitle("New Cap Bank Controller");
 			ivjJPanelCBCNew = new javax.swing.JPanel();
-			java.awt.GridBagConstraints consGridBagConstraints18 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints17 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints21 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints19 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints22 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints24 = new java.awt.GridBagConstraints();
-			consGridBagConstraints20.insets = new java.awt.Insets(4,0,3,13);
-			consGridBagConstraints20.ipady = -2;
-			consGridBagConstraints20.ipadx = 171;
-			consGridBagConstraints20.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints20.weightx = 1.0;
-			consGridBagConstraints20.gridy = 3;
-			consGridBagConstraints20.gridx = 1;
-			consGridBagConstraints22.insets = new java.awt.Insets(1,2,5,11);
-			consGridBagConstraints22.ipady = -2;
-			consGridBagConstraints22.ipadx = 171;
-			consGridBagConstraints22.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints22.weightx = 1.0;
-			consGridBagConstraints22.gridy = 0;
-			consGridBagConstraints22.gridx = 1;
-			consGridBagConstraints21.insets = new java.awt.Insets(4,8,7,0);
-			consGridBagConstraints21.ipadx = 18;
-			consGridBagConstraints21.gridy = 3;
-			consGridBagConstraints21.gridx = 0;
-			consGridBagConstraints23.insets = new java.awt.Insets(6,0,5,13);
-			consGridBagConstraints23.ipady = 3;
-			consGridBagConstraints23.ipadx = 198;
-			consGridBagConstraints23.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints23.weightx = 1.0;
-			consGridBagConstraints23.gridy = 1;
-			consGridBagConstraints23.gridx = 1;
-			consGridBagConstraints18.insets = new java.awt.Insets(5,8,8,0);
-			consGridBagConstraints18.ipadx = 8;
-			consGridBagConstraints18.gridy = 2;
-			consGridBagConstraints18.gridx = 0;
-			consGridBagConstraints24.insets = new java.awt.Insets(6,8,9,0);
-			consGridBagConstraints24.ipadx = 16;
-			consGridBagConstraints24.gridy = 1;
-			consGridBagConstraints24.gridx = 0;
-			consGridBagConstraints17.insets = new java.awt.Insets(0,8,10,0);
-			consGridBagConstraints17.ipadx = 24;
-			consGridBagConstraints17.gridy = 0;
-			consGridBagConstraints17.gridx = 0;
-			consGridBagConstraints19.insets = new java.awt.Insets(5,0,4,13);
-			consGridBagConstraints19.ipadx = 66;
-			consGridBagConstraints19.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints19.weightx = 1.0;
-			consGridBagConstraints19.gridy = 2;
-			consGridBagConstraints19.gridx = 1;
+			java.awt.GridBagConstraints consGridBagConstraints2 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints1 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints3 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints5 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints4 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints6 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints8 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints7 = new java.awt.GridBagConstraints();
+			consGridBagConstraints3.insets = new java.awt.Insets(5,1,4,11);
+			consGridBagConstraints3.ipadx = 66;
+			consGridBagConstraints3.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints3.weightx = 1.0;
+			consGridBagConstraints3.gridy = 2;
+			consGridBagConstraints3.gridx = 1;
+			consGridBagConstraints2.insets = new java.awt.Insets(5,8,8,1);
+			consGridBagConstraints2.ipadx = 8;
+			consGridBagConstraints2.gridy = 2;
+			consGridBagConstraints2.gridx = 0;
+			consGridBagConstraints4.insets = new java.awt.Insets(4,1,1,11);
+			consGridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints4.weightx = 1.0;
+			consGridBagConstraints4.gridy = 3;
+			consGridBagConstraints4.gridx = 1;
+			consGridBagConstraints5.insets = new java.awt.Insets(4,8,5,1);
+			consGridBagConstraints5.ipadx = 18;
+			consGridBagConstraints5.gridy = 3;
+			consGridBagConstraints5.gridx = 0;
+			consGridBagConstraints6.insets = new java.awt.Insets(1,1,5,11);
+			consGridBagConstraints6.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints6.weightx = 1.0;
+			consGridBagConstraints6.gridy = 0;
+			consGridBagConstraints6.gridx = 1;
+			consGridBagConstraints8.insets = new java.awt.Insets(6,8,9,1);
+			consGridBagConstraints8.ipadx = 16;
+			consGridBagConstraints8.gridy = 1;
+			consGridBagConstraints8.gridx = 0;
+			consGridBagConstraints7.insets = new java.awt.Insets(6,1,5,11);
+			consGridBagConstraints7.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			consGridBagConstraints7.weightx = 1.0;
+			consGridBagConstraints7.gridy = 1;
+			consGridBagConstraints7.gridx = 1;
+			consGridBagConstraints1.insets = new java.awt.Insets(0,8,10,1);
+			consGridBagConstraints1.ipadx = 24;
+			consGridBagConstraints1.gridy = 0;
+			consGridBagConstraints1.gridx = 0;
 			ivjJPanelCBCNew.setName("JPanelCBCNew");
 			ivjJPanelCBCNew.setBorder(ivjLocalBorder);
 			ivjJPanelCBCNew.setLayout(new java.awt.GridBagLayout());
-			ivjJPanelCBCNew.add(getJLabelCBCType(), consGridBagConstraints17);
-			ivjJPanelCBCNew.add(getJLabelCBCSerial(), consGridBagConstraints18);
-			ivjJPanelCBCNew.add(getJTextFieldCBCAddress(), consGridBagConstraints19);
-			ivjJPanelCBCNew.add(getJComboBoxCBCRoute(), consGridBagConstraints20);
-			ivjJPanelCBCNew.add(getJLabelCBCRoute(), consGridBagConstraints21);
-			ivjJPanelCBCNew.add(getJComboBoxCBCType(), consGridBagConstraints22);
-			ivjJPanelCBCNew.add(getJTextFieldCBCName(), consGridBagConstraints23);
-			ivjJPanelCBCNew.add(getJLabelCBCName(), consGridBagConstraints24);
+			ivjJPanelCBCNew.add(getJLabelCBCType(), consGridBagConstraints1);
+			ivjJPanelCBCNew.add(getJLabelCBCSerial(), consGridBagConstraints2);
+			ivjJPanelCBCNew.add(getJTextFieldCBCAddress(), consGridBagConstraints3);
+			ivjJPanelCBCNew.add(getJComboBoxCBCRoute(), consGridBagConstraints4);
+			ivjJPanelCBCNew.add(getJLabelCBCRoute(), consGridBagConstraints5);
+			ivjJPanelCBCNew.add(getJComboBoxCBCType(), consGridBagConstraints6);
+			ivjJPanelCBCNew.add(getJTextFieldCBCName(), consGridBagConstraints7);
+			ivjJPanelCBCNew.add(getJLabelCBCName(), consGridBagConstraints8);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -724,21 +724,21 @@ private javax.swing.JPanel getJPanelNewCBC() {
 	if (ivjJPanelNewCBC == null) {
 		try {
 			ivjJPanelNewCBC = new javax.swing.JPanel();
-			java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
-			consGridBagConstraints25.insets = new java.awt.Insets(3,5,2,59);
-			consGridBagConstraints25.ipadx = 41;
-			consGridBagConstraints25.gridy = 0;
-			consGridBagConstraints25.gridx = 0;
-			consGridBagConstraints26.insets = new java.awt.Insets(2,24,9,17);
-			consGridBagConstraints26.ipady = -4;
-			consGridBagConstraints26.gridy = 1;
-			consGridBagConstraints26.gridx = 0;
+			java.awt.GridBagConstraints consGridBagConstraints10 = new java.awt.GridBagConstraints();
+			java.awt.GridBagConstraints consGridBagConstraints9 = new java.awt.GridBagConstraints();
+			consGridBagConstraints10.insets = new java.awt.Insets(2,24,9,17);
+			consGridBagConstraints10.ipady = -2;
+			consGridBagConstraints10.gridy = 1;
+			consGridBagConstraints10.gridx = 0;
+			consGridBagConstraints9.insets = new java.awt.Insets(3,5,2,59);
+			consGridBagConstraints9.ipadx = 41;
+			consGridBagConstraints9.gridy = 0;
+			consGridBagConstraints9.gridx = 0;
 			ivjJPanelNewCBC.setName("JPanelNewCBC");
 			ivjJPanelNewCBC.setLayout(new java.awt.GridBagLayout());
 
-			ivjJPanelNewCBC.add(getJCheckBoxCreateCBC(), consGridBagConstraints25);
-			ivjJPanelNewCBC.add(getJPanelCBCNew(), consGridBagConstraints26);
+			ivjJPanelNewCBC.add(getJCheckBoxCreateCBC(), consGridBagConstraints9);
+			ivjJPanelNewCBC.add(getJPanelCBCNew(), consGridBagConstraints10);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -762,6 +762,9 @@ private javax.swing.JTextField getJTextFieldCBCAddress() {
 			// user code begin {1}
 			
 			ivjJTextFieldCBCAddress.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(0, 999999999));
+			ivjJTextFieldCBCAddress.setPreferredSize(new java.awt.Dimension(202,23));
+			ivjJTextFieldCBCAddress.setMinimumSize(new java.awt.Dimension(202,23));
+			ivjJTextFieldCBCAddress.setMaximumSize(new java.awt.Dimension(202,23));
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -970,19 +973,19 @@ private void initialize() {
 		// user code begin {1}
 		// user code end
 		setName("CapBankCntrlCreationPanel");
-		java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
-		consGridBagConstraints29.insets = new java.awt.Insets(5,2,24,7);
-		consGridBagConstraints29.gridy = 1;
-		consGridBagConstraints29.gridx = 0;
-		consGridBagConstraints30.insets = new java.awt.Insets(5,2,4,7);
-		consGridBagConstraints30.ipady = -14;
-		consGridBagConstraints30.ipadx = -10;
-		consGridBagConstraints30.gridy = 0;
-		consGridBagConstraints30.gridx = 0;
+		java.awt.GridBagConstraints consGridBagConstraints12 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints11 = new java.awt.GridBagConstraints();
+		consGridBagConstraints11.insets = new java.awt.Insets(5,2,24,7);
+		consGridBagConstraints11.gridy = 1;
+		consGridBagConstraints11.gridx = 0;
+		consGridBagConstraints12.insets = new java.awt.Insets(5,2,4,7);
+		consGridBagConstraints12.ipady = -14;
+		consGridBagConstraints12.ipadx = -10;
+		consGridBagConstraints12.gridy = 0;
+		consGridBagConstraints12.gridx = 0;
 		setLayout(new java.awt.GridBagLayout());
-		this.add(getJPanelNewCBC(), consGridBagConstraints29);
-		this.add(getJPanelControlDevice(), consGridBagConstraints30);
+		this.add(getJPanelNewCBC(), consGridBagConstraints11);
+		this.add(getJPanelControlDevice(), consGridBagConstraints12);
 		setSize(343, 336);
 
 		initConnections();
@@ -1150,6 +1153,9 @@ private static void getBuilderData() {
 				new TextFieldDocument(
 					TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
 					TextFieldDocument.INVALID_CHARS_PAO) );
+			jTextFieldCBCName.setMinimumSize(new java.awt.Dimension(202,23));
+			jTextFieldCBCName.setPreferredSize(new java.awt.Dimension(202,23));
+			jTextFieldCBCName.setMaximumSize(new java.awt.Dimension(202,23));
 		}
 		return jTextFieldCBCName;
 	}
