@@ -4,36 +4,36 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.notif.voice.callstates.UnknownError;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
 import com.vocomo.vxml.tools.MakeCall;
 
 /**
  *  
  */
 public class VocomoDialer extends Dialer {
+    
+    private String _voiceHost;
+    private String _voiceApp;
+    private int _callTimeout;
+
+    public VocomoDialer(String voiceHost, String voiceApp) {
+        _voiceHost = voiceHost;
+        _voiceApp = voiceApp;
+        _callTimeout = 120; // I think this is seconds, but it isn't well documented
+    }
 
     public void dialCall(Call call) {
         call.changeState(new Connecting());
         String phoneNumber = getPhonePrefix()
                              + call.getNumber().getPhoneNumber();
-        String voiceHost =
-            RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        MakeCall mc = new MakeCall(voiceHost, true);
+        MakeCall mc = new MakeCall(_voiceHost, true);
 
         int rInt;
         try {
             String queryString = generateQueryString(call.getCallParameters());
             
-            String voiceApp =
-                RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
-            int callTimeout =
-                Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT));
-
-            rInt = mc.makeCall(phoneNumber, voiceApp, callTimeout, queryString);
+            rInt = mc.makeCall(phoneNumber, _voiceApp, _callTimeout, queryString);
             switch (rInt) {
             case MakeCall.CONNECTED:
                 // there is nothing we do at this point, we must wait to hear from the JSP
@@ -80,6 +80,20 @@ public class VocomoDialer extends Dialer {
 
     public String toString() {
         return "Vocomo Dialer";
+    }
+
+    /**
+     * @return Number of seconds to wait for connection
+     */
+    public int getCallTimeout() {
+        return _callTimeout;
+    }
+
+    /**
+     * @param callTimeout Number of seconds to wait for connection
+     */
+    public void setCallTimeout(int callTimeout) {
+        _callTimeout = callTimeout;
     }
 
 }

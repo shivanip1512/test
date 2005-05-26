@@ -3,9 +3,11 @@ package com.cannontech.notif.outputs;
 import org.jdom.Document;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.outputs.NotificationTransformer.TransformException;
-import com.cannontech.notif.test.TestDialer;
 import com.cannontech.notif.voice.*;
+import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.roles.yukon.VoiceServerRole;
 
 /**
  * @author rneuharth
@@ -22,7 +24,12 @@ public class VoiceHandler extends OutputHandler
     
     public VoiceHandler() {
         super(Contactable.VOICE);
-        Dialer dialer = new TestDialer();
+        
+        String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
+        String voiceApp = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
+        VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
+        dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
+        
         dialer.setPhonePrefix("9");
         _callPool = new CallPool(dialer, 1);
         _queue = new NotificationQueue();
