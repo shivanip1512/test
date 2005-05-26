@@ -9,7 +9,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     // RogueWave classId
-    public static final int MSG_ID = 704; // TODO what is my number?
+    public static final int MSG_ID = 706;
 
     public Object create(VirtualInputStream vstr) throws IOException {
         return new NotifAlarmMsg();

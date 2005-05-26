@@ -7,12 +7,12 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
-    //RogueWave classId
-    public static final int MSG_ID = 708;
+public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
+    // RogueWave classId
+    public static final int MSG_ID = 705;
 
-    public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new VoiceDataRequestMsg();
+    public Object create(VirtualInputStream vstr) throws IOException {
+        return new NotifCompletedMsg();
     }
 
     public Comparator getComparator() {
@@ -36,21 +36,26 @@ public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_VoiceDataRequestMsg.class;
+        return DefColl_NotifCompletedMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
+        super.restoreGuts(obj, vstr, polystr);
+        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
 
         msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.gotConfirmation = 
+            vstr.restoreObject(SimpleMappings.CString).equals("y");
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
+        super.saveGuts(obj, vstr, polystr);
+        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
 
         vstr.saveObject(msg.token, SimpleMappings.CString);
+        vstr.saveObject(msg.gotConfirmation ? "y" : "n", SimpleMappings.CString);
 
     }
 
