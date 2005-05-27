@@ -17,8 +17,11 @@ import com.cannontech.tools.email.SimpleEmailMessage;
 public class EmailHandler extends OutputHandler
 {
 
+    private NotificationTransformer _transformer;
+
     public EmailHandler() {
         super(Contactable.EMAIL);
+        _transformer = new NotificationTransformer("whatever");
     }
     
     public void handleNotification(Notification notif, Contactable contact) {
@@ -26,8 +29,7 @@ public class EmailHandler extends OutputHandler
         {
             List emailList = contact.getEmailList();
             
-            NotificationTransformer transformer = NotificationTransformer.getInstance();
-            Element outXml = transformer.transform(notif, getType()).getRootElement();
+            Element outXml = _transformer.transform(notif, getType()).getRootElement();
             
             String emailSubject = outXml.getChildText("subject");
             String emailBody = outXml.getChildText("body");

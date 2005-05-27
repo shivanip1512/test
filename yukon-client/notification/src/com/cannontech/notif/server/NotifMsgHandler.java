@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.*;
+import com.cannontech.notif.handler.MessageHandler;
 import com.cannontech.notif.handler.NotifHandler;
 
 /**
@@ -26,7 +27,7 @@ public class NotifMsgHandler implements MessageListener
         
 	}
     
-    public void registerHandler(NotifHandler handler) {
+    public void registerHandler(MessageHandler handler) {
        _handlers.add(handler);
     }
 
@@ -43,7 +44,7 @@ public class NotifMsgHandler implements MessageListener
 		else 
 		{
             for (Iterator iter = _handlers.iterator(); iter.hasNext();) {
-                NotifHandler handler = (NotifHandler) iter.next();
+                MessageHandler handler = (MessageHandler) iter.next();
                 if (handler.canHandle(msg_)) {
                     handler.handleMessage(msg_);
                 }

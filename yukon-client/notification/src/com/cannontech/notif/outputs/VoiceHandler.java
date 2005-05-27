@@ -6,6 +6,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.outputs.NotificationTransformer.TransformException;
 import com.cannontech.notif.voice.*;
+import com.cannontech.notif.voice.callstates.Confirmed;
+import com.cannontech.notif.voice.callstates.Unconfirmed;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.roles.yukon.VoiceServerRole;
 
@@ -21,6 +23,7 @@ public class VoiceHandler extends OutputHandler
     private WorkerThread _worker;
     private CallPool _callPool;
     private boolean _acceptNewNotifications = false;
+    private NotificationTransformer _transformer;
     
     public VoiceHandler() {
         super(Contactable.VOICE);
@@ -28,12 +31,14 @@ public class VoiceHandler extends OutputHandler
         String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
         String voiceApp = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
         VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
         
-        dialer.setPhonePrefix("9");
-        _callPool = new CallPool(dialer, 1);
+        dialer.setPhonePrefix("9"); //TODO use role property
+        int callTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT));
+        int numberOfChannels = 1; //TODO use role property
+        _callPool = new CallPool(dialer, numberOfChannels, callTimeout);
         _queue = new NotificationQueue();
         _worker = new WorkerThread(_queue, _callPool);
+        _transformer = new NotificationTransformer("file://blah/blah/");
     }
     
     public void handleNotification(Notification notif, Contactable contact) {
@@ -44,11 +49,11 @@ public class VoiceHandler extends OutputHandler
             return;
         }
         
-        NotificationTransformer transform = NotificationTransformer.getInstance();
         try {
-            Document voiceXml = transform.transform(notif, getType());
+            Document voiceXml = _transformer.transform(notif, getType());
             //TODO should we convert to text right here???
             
+
             SingleNotification singleNotification = 
                 new SingleNotification(contact, voiceXml);
             _queue.add(singleNotification);
@@ -85,6 +90,20 @@ public class VoiceHandler extends OutputHandler
     
     public CallPool getCallPool() {
         return _callPool;
+    }
+
+    public void completeCall(String token, boolean gotConfirmation) {
+        Call call = _callPool.getCall(token);
+        if (gotConfirmation) {
+            call.changeState(new Confirmed());
+        } else {
+            call.changeState(new Unconfirmed());
+        }
+    }
+
+    public Object getCallData(String token) {
+        Call call = _callPool.getCall(token);
+        return call.getMessage();
     }
     
 }

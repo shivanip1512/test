@@ -25,11 +25,12 @@ public class CallPool implements PropertyChangeListener {
     final Timer _timer = new Timer();
     private Dialer _dialer;
     private HashMap _timerTasks = new HashMap();
-    private static final long CALL_TIMEOUT_SECONDS = 3 * 60; // 3 minutes
-    private static AtomicInteger _callThreadId = new AtomicInteger();
+    private static AtomicInteger _callThreadId = new AtomicInteger(1);
+    private final int _callTimeoutSeconds;
 
-    public CallPool(Dialer dialer, int numberOfChannels) {
+    public CallPool(Dialer dialer, int numberOfChannels, int callTimeoutSeconds) {
         _dialer = dialer;
+        _callTimeoutSeconds = callTimeoutSeconds;
         
         final ThreadGroup threadGroup = new ThreadGroup("Threads for " + dialer);
         ThreadFactory threadFactory = new ThreadFactory() {
@@ -38,7 +39,6 @@ public class CallPool implements PropertyChangeListener {
                 return new Thread(threadGroup, r, name);
             }
         };
-        
         _threadPool = new ThreadPoolExecutor(numberOfChannels,
                                              numberOfChannels,
                                              5,
@@ -48,13 +48,11 @@ public class CallPool implements PropertyChangeListener {
     }
 
     /**
-     * Submits a call to be called when a thread is available. This method will
-     * block until a thread (and thus, a channel) is available to handle the
-     * call.
+     * Submits a call to be called when a thread is available.
      * @param call The Call object to be called.
      * @throws InterruptedException Thrown if the caller's thread is blocked.
      */
-    public void submitCall(final Call call) throws InterruptedException {
+    public void submitCall(final Call call) {
 
         // add call to our pending list
         _pendingCalls.put(call.getToken(), call);
@@ -87,7 +85,7 @@ public class CallPool implements PropertyChangeListener {
                     }
                 };
                 _timerTasks.put(call, task);
-                _timer.schedule(task, CALL_TIMEOUT_SECONDS * 1000);
+                _timer.schedule(task, _callTimeoutSeconds);
             } else if (oldState instanceof Connecting) {
                 TimerTask task = (TimerTask) _timerTasks.get(call);
                 task.cancel();

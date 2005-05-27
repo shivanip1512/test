@@ -17,7 +17,6 @@ public class WorkerThread extends Thread {
         super("VoiceNotifWorkerThread");
         _notificationQueue = notificationQueue;
         _callPool = callPool;
-        //setDaemon(true);
     }
 
     public void run() {
@@ -26,12 +25,7 @@ public class WorkerThread extends Thread {
             while (true) {
                 SingleNotification nextNotification = _notificationQueue.getNext();
                 nextCall = nextNotification.createNewCall();
-                try {
-                    _callPool.submitCall(nextCall);
-                } catch (InterruptedException e1) {
-                    nextCall.changeState(new com.cannontech.notif.voice.callstates.UnknownError(e1));
-                    throw e1;
-                }
+                _callPool.submitCall(nextCall);
             }
         } catch (InterruptedException e) {
             // someone has requested thread shutdown

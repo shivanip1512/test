@@ -10,23 +10,27 @@ import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
 
+/**
+ * This class is responsible for transforming the XML Document stored within
+ * a Notification object to an XML Document suitable for output. By default,
+ * this class uses a XSLT stylesheet to perform the transformation. The stylesheet
+ * is located by the concatenation of the following string:
+ *    rootDirectory + messageType + "_" + outputType + ".xsl"
+ * Where rootDirectory is specified when the class is constructed and should 
+ * specify the root of a URL and end with a slash. For instance, to point to
+ * a file on the local file system:
+ *    file://
+ */
 public class NotificationTransformer {
-    private static NotificationTransformer _self;
     /**
      * This shall contain Notification -> (String -> Document) mapping.
      */
     private WeakHashMap _cache = new WeakHashMap();
-    private static final String ROOT_DIRECTORY = null;
+    private final String _rootDirectory;
 
-    private NotificationTransformer() {
+    public NotificationTransformer(String rootDirectory) {
+        _rootDirectory = rootDirectory;
         
-    }
-    
-    public static NotificationTransformer getInstance() {
-        if (_self == null) {
-            _self = new NotificationTransformer();
-        }
-        return _self;
     }
     
     public Document transform(Notification notif, String outputType) throws TransformException {
@@ -55,7 +59,7 @@ public class NotificationTransformer {
     }
 
     private InputStream getStyleSheet(String messageType, String outputType) throws TransformException {
-        String urlString = ROOT_DIRECTORY + messageType + "_" + outputType + ".xsl";
+        String urlString = _rootDirectory + messageType + "_" + outputType + ".xsl";
         try {
             URL url = new URL(urlString);
             return url.openStream();
@@ -65,7 +69,6 @@ public class NotificationTransformer {
     }
     
     public class TransformException extends Exception {
-        private static final long serialVersionUID = 1L;
 
         public TransformException(String message, Throwable cause) {
             super(message, cause);
