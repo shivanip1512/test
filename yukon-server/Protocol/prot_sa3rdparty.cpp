@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/05/16 22:27:15 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/05/27 02:39:21 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.28  2005/05/27 02:39:21  cplender
+* Only allow 60 seconds max for the rtc time slot message.
+*
 * Revision 1.27  2005/05/16 22:27:15  cplender
 * repeats cannot be greater than 8
 *
@@ -118,7 +121,7 @@ _onePeriodTime(YUKONEOT),
 _messageReady(false)
 {
     memset(&_sa, 0, sizeof(_sa));
-    _sa._maxTxTime = (0x3f);
+    _sa._maxTxTime = (0x3c);
 }
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const CtiSAData sa) :
@@ -129,6 +132,30 @@ _onePeriodTime(YUKONEOT)
 
     computeSnCTime();
 }
+
+#if 0
+CtiProtocolSA3rdParty::CtiProtocolSA3rdParty(const SA_CODE &sacode)
+{
+#if 0
+typedef struct schedCode
+{
+   CHAR code[7];
+   SHORT function;      /* The DCU function to be activated */
+   USHORT type;         /* Type of DCU defined below */
+   USHORT swTime;       /* desired (virtual) switch timeout in minutes */
+   USHORT cycleTime;    /* cycle time  in minutes */
+   SHORT repeats;       /* number repeats to effect virtual timeout */
+                        /* or number cycleTimes in control period (205)*/
+}SA_CODE;
+#endif
+
+    _sa._groupType = sacode.type;
+    _sa.
+    _messageReady = true;
+
+    computeSnCTime();
+}
+#endif
 
 CtiProtocolSA3rdParty::~CtiProtocolSA3rdParty()
 {
@@ -1382,7 +1409,14 @@ void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(int transmitter,
 
     _sa._transmitterAddress = transmitter;
     _sa._delayToTx = delayToTx;
-    _sa._maxTxTime = maxTx;
+    if(maxTx < 1 || maxTx > 60)
+    {
+        _sa._maxTxTime = 60;
+    }
+    else
+    {
+        _sa._maxTxTime = maxTx;
+    }
     _sa._lbt = lbtMode;
 
 
