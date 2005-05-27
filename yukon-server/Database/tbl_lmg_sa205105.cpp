@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/17 16:55:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/05/27 02:35:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,6 +119,10 @@ int CtiTableSA205105Group::getFunction(bool shed) const
     else if(!getLoadNumber().compareTo("test", RWCString::ignoreCase))
     {
         function = shed ? 7 : 2;                // shed ? TEST_ON : TEST_OFF;
+    }
+    else if(!getLoadNumber().compareTo("memory erase", RWCString::ignoreCase))
+    {
+        function = shed ? 0 : 0;
     }
 
     return function;
