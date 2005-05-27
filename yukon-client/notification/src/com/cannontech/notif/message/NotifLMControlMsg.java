@@ -7,10 +7,5 @@ import com.cannontech.message.util.Message;
 public class NotifLMControlMsg extends Message {
     public int programId;
     public Date startTime;
-    /**
-     * Duration in seconds
-     */
-    public int durration;
-    
-
+    public Date stopTime;
 }
