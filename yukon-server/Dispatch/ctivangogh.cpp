@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2005/05/24 00:39:51 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2005/05/27 02:34:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3640,16 +3640,20 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
             // We check if the point has been sent in as a Manual Update.  If so, we ALWAYS log this occurence.
             if(pData->getQuality() == ManualQuality)
             {
-                char tstr[80];
-                _snprintf(tstr, sizeof(tstr), "Value set to %.3f", pData->getValue());
-                RWCString addn = "Manual Update";
-
-                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, addn);
-                if(pSig != NULL)
+                // If the value has changed, OR the last quality WAS NOT Manual, we then write into the system log!
+                if( pDyn->getDispatch().getQuality() != ManualQuality || pDyn->getDispatch().getValue() != pData->getValue() )
                 {
-                    pSig->setUser(pData->getUser());
-                    aWrap.getMulti()->insert( pSig );
-                    pSig = NULL;
+                    char tstr[80];
+                    _snprintf(tstr, sizeof(tstr), "Value set to %.3f", pData->getValue());
+                    RWCString addn = "Manual Update";
+
+                    pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), tstr, addn);
+                    if(pSig != NULL)
+                    {
+                        pSig->setUser(pData->getUser());
+                        aWrap.getMulti()->insert( pSig );
+                        pSig = NULL;
+                    }
                 }
             }
 
