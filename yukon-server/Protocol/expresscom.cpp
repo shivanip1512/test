@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/05/27 02:36:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1139,8 +1139,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         BYTE action = 0x01;
         BYTE subaction = 0x03 + parse.getiValue("ovuv");
+        BYTE data1 = parse.getiValue("cbc_data1", 0);
+        BYTE data2 = parse.getiValue("cbc_data2", 0);
 
-        status = capControl( action, subaction );
+        status = capControl( action, subaction, data1, data2 );
     }
 
 
@@ -1159,9 +1161,11 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMess
     {
         BYTE action = 0x01;
         BYTE subaction = 0x03 + parse.getiValue("ovuv");
+        BYTE data1 = parse.getiValue("cbc_data1", 0);
+        BYTE data2 = parse.getiValue("cbc_data2", 0);
 
-        status = capControl( action, subaction );
-    }
+        status = capControl( action, subaction, data1, data2 );
+  }
 
     return status;
 }
