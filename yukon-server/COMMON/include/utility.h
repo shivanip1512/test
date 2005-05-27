@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2004/09/08 19:54:07 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/05/27 02:34:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,7 @@ IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
+IM_EX_CTIBASE double limitValue(double input, double min, double max);
 
 
 // SendMail defines /////////////////////////////////////////////

@@ -2719,3 +2719,17 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
     return id;
 }
 
+double limitValue(double input, double min, double max)
+{
+    if(input < min)
+    {
+        input = min;
+    }
+    else if(input > max)
+    {
+        input = max;
+    }
+
+    return input;
+}
+
