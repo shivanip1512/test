@@ -45,6 +45,7 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
         super.restoreGuts(obj, vstr, polystr);
         NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
+        msg.notifType = vstr.extractInt();
         msg.programId = vstr.extractInt();
         msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Date);
         msg.stopTime = (Date) vstr.restoreObject(SimpleMappings.Date);        
@@ -55,6 +56,7 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
         super.saveGuts(obj, vstr, polystr);
         NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
+        vstr.insertInt(msg.notifType);
         vstr.insertInt(msg.programId);
         vstr.saveObject(msg.startTime, SimpleMappings.Date);
         vstr.saveObject(msg.stopTime, SimpleMappings.Date);
