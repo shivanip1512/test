@@ -75,6 +75,8 @@ private:
     INT     isTokenThermostatScheduleDOW(RWCString &token);
     void    doParsePutConfigThermostatScheduleDOW(RWTokenizer &tok, INT &key);
 
+    void    doParsePutConfigCBC(const RWCString &CmdStr);
+
 
 public:
 

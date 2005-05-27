@@ -3984,6 +3984,10 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const RWCString &CmdStr)
         _cmd["xcschedule"] = TRUE;
         doParsePutConfigThermostatSchedule(CmdStr);
     }
+    else if(CmdStr.contains(" cbc"))
+    {
+        doParsePutConfigCBC(CmdStr);
+    }
 }
 
 void  CtiCommandParser::doParsePutStatusExpresscom(const RWCString &CmdStr)
@@ -4723,6 +4727,256 @@ CtiCommandParser& CtiCommandParser::parseAsString(const RWCString str)
 
 
     return *this;
+}
+
+
+void  CtiCommandParser::doParsePutConfigCBC(const RWCString &CmdStr)
+{
+    CHAR *p;
+    INT         _num;
+    UINT        flag   = 0;
+    UINT        offset = 0;
+    UINT        iValue = 0;
+    DOUBLE      dValue = 0.0;
+    CHAR        tbuf[80];
+
+    RWCString   str;
+    RWCString   temp;
+    RWCString   valStr;
+    RWCString   token;
+    RWCString   xcraw("0x60 ");
+
+    if(CmdStr.contains(" emergency"))
+    {
+        int ov = 0, uv = 0, timer = 0;
+
+        if(!(token = CmdStr.match(" uv[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            uv = atoi(str.data());
+            uv = limitValue(uv, 105, 122);
+            _cmd["cbc_emergency_uv_close_voltage"] = CtiParseValue( uv );
+            valStr = RWCString("Emergency UV Close Voltage ") + CtiNumStr(uv);
+            _actionItems.insert(valStr);
+        }
+
+        if(!(token = CmdStr.match(" ov[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            ov = atoi(str.data());
+            ov = limitValue(ov, 118, 135);
+            _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( ov );
+            valStr = RWCString("Emergency OV Trip Voltage ") + CtiNumStr(ov);
+            _actionItems.insert(valStr);
+        }
+
+        if(!(token = CmdStr.match(" timer[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            timer = atoi(str.data());
+            timer = limitValue(timer, 1, 255);
+            _cmd["cbc_emergency_ov_trip_voltage"] = CtiParseValue( timer );
+            valStr = RWCString("Emergency OV Trip Voltage ") + CtiNumStr(timer);
+            _actionItems.insert(valStr);
+        }
+
+        if(ov != 0 && uv != 0 && timer != 0)
+        {
+            xcraw += "0x24 0x" + CtiNumStr(ov).hex() + " 0x" + CtiNumStr(uv).hex() + " 0x" + CtiNumStr(timer).hex();
+            _cmd["xcrawconfig"] = xcraw;
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    else if(!(token = CmdStr.match(" ovuv control trigger time[ =]+[0-9]+")).isNull())
+    {
+        int random = 0;
+        str = token.match("[0-9]+");
+        iValue = atoi(str.data());
+        iValue = limitValue(iValue, 0, 0xffff);
+        _cmd["cbc_ovuv_control_trigger_time"] = CtiParseValue( iValue );
+
+        if(!(token = CmdStr.match(" random[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            random = atoi(str.data());
+            random = limitValue(random, 0, 0xff);
+        }
+
+        valStr = RWCString("OVUV Control Trigger Time ") + CtiNumStr(iValue) + " random " + CtiNumStr(random);
+        _actionItems.insert(valStr);
+
+        xcraw += "0x0b 0x" + CtiNumStr(HIBYTE(iValue)).hex() + " 0x" + CtiNumStr(LOBYTE(iValue)).hex() + " 0x" + CtiNumStr(random).hex();
+        _cmd["xcrawconfig"] = xcraw;
+    }
+    else if(!(token = CmdStr.match(" daily auto control limit[ =]+[0-9]+")).isNull())
+    {
+        str = token.match("[0-9]+");
+        iValue = atoi(str.data());
+        iValue = limitValue(iValue, 1, 30);
+        _cmd["cbc_daily_control_limit"] = CtiParseValue( iValue );
+        valStr = RWCString("OV Trip Voltage ") + CtiNumStr(iValue);
+        _actionItems.insert(valStr);
+
+        xcraw += "0x10 0x" + CtiNumStr(iValue).hex();
+        _cmd["xcrawconfig"] = xcraw;
+    }
+    else if(!(token = CmdStr.match(" comms lost")).isNull())
+    {
+        BYTE action = 0;
+        USHORT commlosstime = 0;
+        BYTE uvclval = 0;
+        BYTE ovclval = 0;
+
+        if( !CmdStr.contains(" disable") ) // This disables all comms lost behavior!  action = 0!
+        {
+            if(CmdStr.contains("timed"))
+            {
+                action |= 0x01;
+            }
+            if(CmdStr.contains("ovuv"))
+            {
+                action |= 0x02;
+            }
+            if(CmdStr.contains("temperature"))
+            {
+                action |= 0x04;
+            }
+            if(CmdStr.contains("analogin1"))
+            {
+                action |= 0x08;
+            }
+            if(CmdStr.contains("analogin2"))
+            {
+                action |= 0x10;
+            }
+            if(CmdStr.contains("analogin3"))
+            {
+                action |= 0x20;
+            }
+            if(CmdStr.contains("digitalin1"))
+            {
+                action |= 0x40;
+            }
+            if(CmdStr.contains("digitalin2"))
+            {
+                action |= 0x80;
+            }
+        }
+
+        xcraw += "0x23 0x" + CtiNumStr(action).hex();
+
+        if(!(token = CmdStr.match(" time[ =]+[0-9]+")).isNull())    // Ignored if the action == 0.
+        {
+            str = token.match("[0-9]+");
+            commlosstime = atoi(str.data());
+            commlosstime = limitValue(commlosstime, 0, 0xffff);
+            _cmd["cbc_comms_lost_time"] = CtiParseValue( commlosstime );
+        }
+        xcraw += " 0x" + CtiNumStr(HIBYTE(commlosstime)).hex() + " 0x" + CtiNumStr(LOBYTE(commlosstime)).hex();
+
+        if(!(token = CmdStr.match(" (ov|uv)[ =]+[0-9]+.*(ov|uv)[ =]+[0-9]+")).isNull())
+        {
+            if(!(token = CmdStr.match(" uv[ =]+[0-9]+")).isNull())    // Ignored if the action == 0.
+            {
+                str = token.match("[0-9]+");
+                uvclval = atoi(str.data());
+                uvclval = limitValue(uvclval, 105, 122);
+                _cmd["cbc_comms_lost_uvpt"] = CtiParseValue( uvclval );
+
+                xcraw += " 0x" + CtiNumStr(uvclval).hex();
+            }
+
+            if(!(token = CmdStr.match(" ov[ =]+[0-9]+")).isNull())    // Ignored if the action == 0.
+            {
+                str = token.match("[0-9]+");
+                ovclval = atoi(str.data());
+                ovclval = limitValue(ovclval, 118, 135);
+                _cmd["cbc_comms_lost_ovpt"] = CtiParseValue( ovclval );
+
+                xcraw += " 0x" + CtiNumStr(ovclval).hex();
+            }
+        }
+
+        _cmd["xcrawconfig"] = xcraw;
+    }
+    else if(CmdStr.contains(" temperature"))
+    {
+        if(CmdStr.contains(" control enable"))
+        {
+            iValue = TRUE;
+        }
+        else if(CmdStr.contains(" control disable"))
+        {
+            iValue = FALSE;
+        }
+        _cmd["cbc_tempcontrol_enable"] = CtiParseValue( iValue );
+        valStr = RWCString("Temperature control ") + (iValue ? RWCString("enable") : RWCString("disable"));
+        _actionItems.insert(valStr);
+
+        _cmd["xcrawconfig"] = xcraw;
+    }
+    else if(CmdStr.contains(" time control"))
+    {
+        if(CmdStr.contains(" control enable"))
+        {
+            iValue = TRUE;
+        }
+        else if(CmdStr.contains(" control disable"))
+        {
+            iValue = FALSE;
+        }
+        _cmd["cbc_timecontrol_enable"] = iValue;
+        valStr = RWCString("Time control ") + (iValue ? RWCString("enable") : RWCString("disable"));
+        _actionItems.insert(valStr);
+
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        xcraw += "0x22 0x" + CtiNumStr(iValue).hex();
+        _cmd["xcrawconfig"] = xcraw;
+    }
+    else
+    {
+        if(!(token = CmdStr.match(" uv[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            iValue = atoi(str.data());
+            iValue = limitValue(iValue, 105, 122);
+            _cmd["cbc_uv_close_voltage"] = CtiParseValue( iValue );
+            valStr = RWCString("UV Close Voltage ") + CtiNumStr(iValue);
+            _actionItems.insert(valStr);
+
+            xcraw += "0x09 0x" + CtiNumStr(iValue).hex();
+            _cmd["xcrawconfig"] = xcraw;
+        }
+        else if(!(token = CmdStr.match(" ov[ =]+[0-9]+")).isNull())
+        {
+            str = token.match("[0-9]+");
+            iValue = atoi(str.data());
+            iValue = limitValue(iValue, 118, 135);
+            _cmd["cbc_ov_trip_voltage"] = CtiParseValue( iValue );
+            valStr = RWCString("OV Trip Voltage ") + CtiNumStr(iValue);
+            _actionItems.insert(valStr);
+
+            xcraw += "0x0a 0x" + CtiNumStr(iValue).hex();
+            _cmd["xcrawconfig"] = xcraw;
+        }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << endl << " XCRAW: " << xcraw << endl << endl;
+    }
+    return;
 }
 
 
