@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2005/05/26 20:03:32 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2005/05/27 02:29:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -525,6 +525,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "cbc 6510")
     {
         nRet = TYPECBC6510;
+    }
+    else if(rwsTemp == "cbc 7010")
+    {
+        nRet = TYPECBC7010;
     }
     else if(rwsTemp == "cbc versacom")
     {
@@ -1076,6 +1080,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPEMCT470:
     case TYPELMT2:
     case TYPECBC6510:
+    case TYPECBC7010:
     case TYPE_RTC:
     case TYPE_RTM:
         {

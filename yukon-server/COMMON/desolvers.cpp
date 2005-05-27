@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/05/26 20:03:32 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/05/27 02:29:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -421,6 +421,10 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPECBC6510)
    {
       Ret = "cbc 6510";
+   }
+   else if(aType == TYPECBC7010)
+   {
+      Ret = "cbc 7010";
    }
    else if(aType == TYPE_TAPTERM)
    {

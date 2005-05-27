@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/21 21:43:05 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/05/27 02:29:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@
 #define TYPEEXPRESSCOMCBC                    221
 #define TYPEFISHERPCBC                       230
 #define TYPECBC6510                          240
+#define TYPECBC7010                          250
 
 #define TYPE_DAS08                           500
 #define TYPE_EVWATCH                         600
