@@ -2433,7 +2433,8 @@ private void loadParamMapFromSwingComp()
 	    fileName += ".ctl";
     getScriptTemplate().getParamToValueMap().put(SCRIPT_FILE_NAME_PARAM, fileName);
     getScriptTemplate().getParamToValueMap().put(SCRIPT_DESC_PARAM, getDescriptionTextField().getText());
-    getScriptTemplate().getParamToValueMap().put(GROUP_NAME_PARAM, getGroupComboBox().getSelectedItem().toString());
+    if( getGroupComboBox().getItemCount() > 0)	//make sure there are items here before "getting" a selected item
+        getScriptTemplate().getParamToValueMap().put(GROUP_NAME_PARAM, getGroupComboBox().getSelectedItem().toString());
   
     if( getGroupTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(DeviceMeterGroup.ALTGROUP_DISPLAY_STRING))
         getScriptTemplate().getParamToValueMap().put(GROUP_TYPE_PARAM, "altgroup");
@@ -2586,6 +2587,8 @@ public void setScriptValues(final ScriptFile file)
  */
 public void setTemplateType(int templateType)
 {
+	this.templateType = templateType;
+	
     //Set the tabs based on the template type.
     getTabbedPane().removeAll();
     int tabCount = 0;
@@ -2610,7 +2613,6 @@ public void setTemplateType(int templateType)
     getRetryPanel().setVisible(!ScriptTemplateTypes.isRetryTemplate(templateType));
 
     CTILogger.info("Set TemplateType, component visiblity updated.");
-	this.templateType = templateType;
 }
 /**
  * This method was created in VisualAge.
