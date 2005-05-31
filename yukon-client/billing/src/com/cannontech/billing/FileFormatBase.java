@@ -22,24 +22,29 @@ public abstract class FileFormatBase
 	
 	public static final int validAnalogPtOffsets[] =
 	{
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 24, 26, 28
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31
 	};
 	//Added offset 1 to AnalogPtOffsets for IED meters per David 3.0.30
 	
 	
 	public static final int kwAnalogOffsets[] =
 	{
-		2, 4, 6, 8
+		2, 4, 6, 8, 10
 	};
 	
 	public static final int kwhAnalogOffsets[] =
 	{
-		1, 3, 5, 7, 9
+		1, 3, 5, 7, 9, 11
 	};
 	
 	public static final int kvarAnalogOffsets[] =
 	{
-		22, 24, 26, 28
+		22, 24, 26, 28, 30
+	};
+
+	public static final int kvarhAnalogOffsets[] =
+	{
+		21, 23, 25, 27, 29, 31
 	};
 	
 	public static final int validAccPtOffsets[] =
@@ -59,6 +64,7 @@ public abstract class FileFormatBase
 	public static final int kvarAnalogPtOffsets_MASK = 0x0008;
 	public static final int validAccPtOffsets_MASK = 0x0016;
 	public static final int kwDemandAccOffsets_MASK = 0x0032;
+	public static final int kvarhAnalogOffsets_MASK = 0x0064;
 
 	/**
 	 * FileFormatBase constructor comment.
@@ -188,6 +194,23 @@ public abstract class FileFormatBase
 		for (int i = 0; i < kvarAnalogOffsets.length; i++)
 		{
 			if( offset == kvarAnalogOffsets[i])
+				return true;
+		}
+		return false;
+	}
+	
+
+	/**
+	 * Returns the flag that determines if offset is valid for the static kvarhAnalogOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKVARH(int offset) 
+	{
+		for (int i = 0; i < kvarhAnalogOffsets.length; i++)
+		{
+			if( offset == kvarhAnalogOffsets[i])
 				return true;
 		}
 		return false;

@@ -20,12 +20,12 @@ public class TurtleRecordBase implements BillingRecordBase
 	private String stat = null;	//null or bb6(always)
 	
 	
-	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yy/MM/dd");
-	private static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
+	protected static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("yy/MM/dd");
+	protected static java.text.SimpleDateFormat TIME_FORMAT = new java.text.SimpleDateFormat("HH:mm");
 	//***THIS FORMAT TRUNCATES THE VALUE (FROM THE LEFT) TO MAX 5 NUMBERS SO MOST SIGNIFICANT DIGITS MAY BE LOST!!!
-	private static java.text.DecimalFormat KWH_FORMAT_NODECIMAL = new java.text.DecimalFormat("#####");
-	private static java.text.DecimalFormat KW_FORMAT_3v3 = new java.text.DecimalFormat("##0.000");
-	private static int KW_FIELD_SIZE = 7;
+	protected static java.text.DecimalFormat KWH_FORMAT_NODECIMAL = new java.text.DecimalFormat("#####");
+	protected static java.text.DecimalFormat KW_FORMAT_3v3 = new java.text.DecimalFormat("##0.000");
+	protected static int KW_FIELD_SIZE = 7;
 
 	/**
 	 * BaseRecord constructor comment.

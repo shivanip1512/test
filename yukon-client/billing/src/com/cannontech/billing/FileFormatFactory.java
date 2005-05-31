@@ -13,78 +13,61 @@ public final class FileFormatFactory
  */
 public final static FileFormatBase createFileFormat(int type)
 {
-	FileFormatBase retFFB = null;
 	switch(type)
 	{
 		case FileFormatTypes.SEDC:
-			retFFB =  new SEDCFormat();
-			break;
-
+			return new SEDCFormat();
+		
 		case FileFormatTypes.CADP:
-			retFFB =  new CADPFormat();
-			break;
+			return new CADPFormat();
 
 		case FileFormatTypes.CADPXL2:
-			retFFB = new CADPXL2Format();
-			break;
+			return new CADPXL2Format();
 
 		case FileFormatTypes.NCDC:
-			retFFB = new NCDCFormat();
-			break;
+			return new NCDCFormat();
 
 		case FileFormatTypes.CTICSV:
-			retFFB = new CTICSVFormat();
-			break;
+			return new CTICSVFormat();
 
 		case FileFormatTypes.OPU:
-			retFFB = new OPUFormat();
-			break;
+			return new OPUFormat();
 
 		case FileFormatTypes.WLT_40:
-			retFFB = new WLT_40Format();
-			break;
+			return new WLT_40Format();
 			
 		case FileFormatTypes.DAFFRON:
-			retFFB =  new DAFFRONFormat();
-			break;
+			return new DAFFRONFormat();
 
 		case FileFormatTypes.MV_90:
-			retFFB =  new MV_90Format();
-			break;
+			return new MV_90Format();
 
 		case FileFormatTypes.SEDC_5_4:
-			retFFB =  new SEDC54Format();
-			break;
+			return new SEDC54Format();
 
 		case FileFormatTypes.NISC:
-			retFFB =  new NISCFormat();
-			break;
+			return new NISCFormat();
 
 		case FileFormatTypes.NISC_NCDC:
-			retFFB =  new NISC_NCDCFormat();
-			break;
+			return new NISC_NCDCFormat();
 
 		case FileFormatTypes.NCDC_HANDHELD:
-			retFFB =  new NCDC_HandheldFormat();
-			break;
+			return new NCDC_HandheldFormat();
 			
 		case FileFormatTypes.CTIStandard2:
-			retFFB = new CTIStandard2Format();
-			break;
+			return new CTIStandard2Format();
 
 		case FileFormatTypes.MVRS:
-			retFFB =  new MVRSFormat();
-			break;
+			return new MVRSFormat();
 /*
 		case FileFormatTypes.CTIStandard2:
-			retFFB = new CTIStandard2Format();
-			break;
+			return new CTIStandard2Format();
 */
-			
+	    case FileFormatTypes.NISC_TOU_KVARH:
+	        return new NISC_TOU_kVarHFormat();
 		
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");
 	}
-	return retFFB;
 }
 }
