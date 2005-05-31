@@ -411,9 +411,21 @@ private javax.swing.JTextField getLabelTextField() {
 	 */
 	public Object getValue(Object o)
 	{
-	    //update the commandValue object with the changes in the text fields
-		commandValue.setCommand(getCommandTextField().getText().trim());
-		commandValue.setLabel(getLabelTextField().getText().trim());
+	    if (commandValue == null)
+	        commandValue = new Command();
+	    
+	    if(getCommandTextField().getText().trim().length() > 0 &&
+	            getLabelTextField().getText().trim().length() > 0)
+	    {
+		    //update the commandValue object with the changes in the text fields
+			commandValue.setCommand(getCommandTextField().getText().trim());
+			commandValue.setLabel(getLabelTextField().getText().trim());
+	    }
+	    else
+	    {
+	        setButtonPushed(CANCEL);
+	        return null;
+	    }
 		
 		return commandValue;
 	}
