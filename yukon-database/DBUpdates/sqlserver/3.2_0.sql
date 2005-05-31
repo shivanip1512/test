@@ -39,7 +39,8 @@ alter table ContactNotification alter column Ordering smallint not null;
 
 create table ContactNotifGroupMap (
    ContactID            numeric              not null,
-   NotificationGroupID  numeric              not null
+   NotificationGroupID  numeric              not null,
+   Attribs              char(16)             not null
 );
 alter table ContactNotifGroupMap
    add constraint PK_CONTACTNOTIFGROUPMAP primary key  (ContactID, NotificationGroupID);
@@ -52,7 +53,8 @@ alter table ContactNotifGroupMap
 
 create table CustomerNotifGroupMap (
    CustomerID           numeric              not null,
-   NotificationGroupID  numeric              not null
+   NotificationGroupID  numeric              not null,
+   Attribs              char(16)             not null
 );
 alter table CustomerNotifGroupMap
    add constraint PK_CUSTOMERNOTIFGROUPMAP primary key  (CustomerID, NotificationGroupID);
@@ -63,7 +65,12 @@ alter table CustomerNotifGroupMap
    add constraint FK_CST_CSTNOFGM foreign key (CustomerID)
       references Customer (CustomerID);
 
-
+alter table NotificationDestination add Attribs char(16);
+go
+update NotificationDestination set Attribs = '0000000000000000';
+go
+alter table NotificationDestination alter column Attribs char(16) not null;
+go
 
 
 
