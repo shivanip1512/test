@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/05/31 21:05:55 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.14  2005/05/31 21:05:55  cplender
+* the cycle "count" is now one based to match versacom and expresscom parse syntax.
+* Control history was off by one repeat prior to this checkin.
+*
 * Revision 1.13  2005/04/15 19:04:10  mfisher
 * got rid of magic number debuglevel checks
 *
@@ -179,11 +183,11 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8);
+        INT repeat     = parse.getiValue("cycle_count", 8);   repeat = repeat > 14 ? 14 : repeat;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
-        parse.setValue("control_interval", 60 * period * repeat);
+        parse.setValue("control_interval", 60 * period * (repeat+1));
     }
 
 

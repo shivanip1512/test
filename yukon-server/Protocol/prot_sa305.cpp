@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/05/13 16:12:48 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/05/31 21:05:55 $
 *
 * HISTORY      :
 * $Log: prot_sa305.cpp,v $
+* Revision 1.19  2005/05/31 21:05:55  cplender
+* the cycle "count" is now one based to match versacom and expresscom parse syntax.
+* Control history was off by one repeat prior to this checkin.
+*
 * Revision 1.18  2005/05/13 16:12:48  cplender
 * Changes to try to support GRE Verification.
 *
@@ -748,22 +752,28 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
         INT period     = parse.getiValue("cycle_period", 30);
-        INT repeat     = parse.getiValue("cycle_count", 8);
+        INT repeat     = parse.getiValue("cycle_count", 8) - 1;  repeat = repeat < 0 ? 0 : repeat;  repeat = repeat > 14 ? 14 : repeat;
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
-        parse.setValue("control_interval", 60 * period * repeat);
+        parse.setValue("control_interval", 60 * period * (repeat+1));
 
         cycleLoadControl();
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {
+        parse.setValue("control_interval", 0);
+        parse.setValue("control_reduction", 0 );
+
         _strategy = 61;
         restoreLoadControl();
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
+        parse.setValue("control_interval", 0);
+        parse.setValue("control_reduction", 0 );
+
         _strategy = 61;
         cycleLoadControl();
     }

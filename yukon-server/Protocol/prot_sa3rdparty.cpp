@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/05/27 02:39:21 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/05/31 21:05:55 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.29  2005/05/31 21:05:55  cplender
+* the cycle "count" is now one based to match versacom and expresscom parse syntax.
+* Control history was off by one repeat prior to this checkin.
+*
 * Revision 1.28  2005/05/27 02:39:21  cplender
 * Only allow 60 seconds max for the rtc time slot message.
 *
@@ -412,7 +416,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
-        parse.setValue("control_interval", 60 * period * repeat);
+        parse.setValue("control_interval", 60 * period * (repeat+1));
     }
     else if(CtlReq == CMD_FLAG_CTL_RESTORE)
     {

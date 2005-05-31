@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/16 22:27:15 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/05/31 21:05:55 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -268,7 +268,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
-        parse.setValue("control_interval", 60 * period * repeat);
+        parse.setValue("control_interval", 60 * period * (repeat+1));
     }
     else
     {
