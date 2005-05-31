@@ -66,7 +66,10 @@ public class HorizontalSkipLabelsCategoryAxis extends CategoryAxis
 
 			int i = 0;			//CTI
 			int numLabels = 5;	//CTI
-			int mod = ticks.size()/ 5;	//CTI
+			int mod = ticks.size();
+			if (mod > 5 )
+				mod = ticks.size()/ 5;	//CTI
+
 			
 			while (iterator.hasNext()) {
 				CategoryTick tick = (CategoryTick) iterator.next();
