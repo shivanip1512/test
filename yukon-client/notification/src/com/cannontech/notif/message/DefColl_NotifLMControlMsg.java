@@ -47,8 +47,8 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
 
         msg.notifType = vstr.extractInt();
         msg.programId = vstr.extractInt();
-        msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Date);
-        msg.stopTime = (Date) vstr.restoreObject(SimpleMappings.Date);        
+        msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Time);
+        msg.stopTime = (Date) vstr.restoreObject(SimpleMappings.Time);        
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -58,7 +58,7 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
 
         vstr.insertInt(msg.notifType);
         vstr.insertInt(msg.programId);
-        vstr.saveObject(msg.startTime, SimpleMappings.Date);
-        vstr.saveObject(msg.stopTime, SimpleMappings.Date);
+        vstr.saveObject(msg.startTime, SimpleMappings.Time);
+        vstr.saveObject(msg.stopTime, SimpleMappings.Time);
     }
 }
