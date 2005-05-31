@@ -373,7 +373,16 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public synchronized List getAllPointLimits() {
 		return getDBCache().getAllPointLimits();
     }
-    
+
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public synchronized Map getAllContactNotifsMap()
+	{
+		return getDBCache().getAllContactNotifsMap();
+	}
+
    /**
     * @ejb:interface-method
     * tview-type="remote" 

@@ -18,16 +18,12 @@ public class YukonUser extends DBPersistent
 	private Integer userID = null;
 	private String username = null;
 	private String password = null;
-	private Integer loginCount = new Integer(0);
-	private Date lastLogin = CtiUtilities.get1990GregCalendar().getTime();
 	private String status = UserUtils.STATUS_DISABLED;
 
 	private static final String[] SELECT_COLUMNS = 
 	{ 	
 		"Username", 
 		"Password",
-		"LoginCount",
-		"LastLogin",
 		"Status" 
 	};
 	
@@ -36,7 +32,7 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-		Object[] addValues = { getUserID(), getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
+		Object[] addValues = { getUserID(), getUsername(), getPassword(), getStatus() };
 		add(TABLE_NAME, addValues);
 	}
 
@@ -77,8 +73,6 @@ public class YukonUser extends DBPersistent
 					user.setUserID( new Integer(rset.getInt("UserID")) );
 					user.setUsername( rset.getString("UserName") );
 					user.setPassword( rset.getString("Password") );
-					user.setLoginCount( new Integer(rset.getInt("LoginCount")) );
-					user.setLastLogin( new Date(rset.getTimestamp("LastLogin").getTime()) );
 					user.setStatus( rset.getString("Status") );
 				}
 						
@@ -172,9 +166,7 @@ public class YukonUser extends DBPersistent
 		if(results.length == SELECT_COLUMNS.length) {
 			setUsername((String) results[0]);
 			setPassword((String) results[1]);
-			setLoginCount((Integer) results[2]);
-			setLastLogin((Date) results[3]);
-			setStatus((String) results[4]);
+			setStatus((String) results[2]);
 		}
 	}
 
@@ -182,7 +174,7 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		Object[] setValues = { getUsername(), getPassword(), getLoginCount(), getLastLogin(), getStatus() };
+		Object[] setValues = { getUsername(), getPassword(), getStatus() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
@@ -239,43 +231,11 @@ public class YukonUser extends DBPersistent
 	}
 
 	/**
-	 * Returns the lastLogin.
-	 * @return Date
-	 */
-	public Date getLastLogin() {
-		return lastLogin;
-	}
-
-	/**
-	 * Returns the loginCount.
-	 * @return Integer
-	 */
-	public Integer getLoginCount() {
-		return loginCount;
-	}
-
-	/**
 	 * Returns the status.
 	 * @return String
 	 */
 	public String getStatus() {
 		return status;
-	}
-
-	/**
-	 * Sets the lastLogin.
-	 * @param lastLogin The lastLogin to set
-	 */
-	public void setLastLogin(Date lastLogin) {
-		this.lastLogin = lastLogin;
-	}
-
-	/**
-	 * Sets the loginCount.
-	 * @param loginCount The loginCount to set
-	 */
-	public void setLoginCount(Integer loginCount) {
-		this.loginCount = loginCount;
 	}
 
 	/**

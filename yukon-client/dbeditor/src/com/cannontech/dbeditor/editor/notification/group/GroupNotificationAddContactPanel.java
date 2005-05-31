@@ -6,6 +6,8 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.notification.NotifDestinationMap;
+
 import java.util.Collections;
 
 /**
@@ -103,27 +105,18 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 public Object getValue(Object val)
 {
 	com.cannontech.database.data.notification.NotificationGroup gn = (com.cannontech.database.data.notification.NotificationGroup)val;
+	int locationID = 0;
 	
-	java.util.Vector destinationVector = new java.util.Vector( getAddRemovePanel().rightListGetModel().getSize() );
-	Integer locationID = null;
-	
+	NotifDestinationMap[] notifDests = new NotifDestinationMap[getAddRemovePanel().rightListGetModel().getSize()];
 	for( int i = 0; i < getAddRemovePanel().rightListGetModel().getSize(); i++ )
 	{
-		locationID = new Integer( 
-				((LiteContactNotification)getAddRemovePanel().rightListGetModel().getElementAt(i)).getContactNotifID() );
+		locationID =
+			((LiteContactNotification)getAddRemovePanel().rightListGetModel().getElementAt(i)).getContactNotifID();
 
-		com.cannontech.database.db.notification.NotificationDestination dest = 
-			new com.cannontech.database.db.notification.NotificationDestination
-			(
-				new Integer(i+1),
-				gn.getNotificationGroup().getNotificationGroupID(),
-				locationID
-			);
-		
-		destinationVector.addElement(dest);
+		notifDests[i] = new NotifDestinationMap( locationID );
 	}
 
-	gn.setDestinationVector(destinationVector);
+	gn.setNotifDestinationMap( notifDests );
 	
 	return val;
 }
@@ -308,7 +301,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 public void setValue(Object val) 
 {
 	com.cannontech.database.data.notification.NotificationGroup gn = (com.cannontech.database.data.notification.NotificationGroup)val;
-	java.util.Vector destinationVector = gn.getDestinationVector();
+	NotifDestinationMap[] notifDestMap = gn.getNotifDestinationMap();
 
 	java.util.Vector assignedLocations = new java.util.Vector();
 	java.util.Vector availableLocations = new java.util.Vector();
@@ -320,12 +313,12 @@ public void setValue(Object val)
 		java.util.List cntctNotifs = ContactFuncs.getAllContactNotifications();
 		Collections.sort( cntctNotifs, LiteComparators.liteStringComparator );
 
-		for(int i = 0; i < destinationVector.size(); i++)
+		for(int i = 0; i < notifDestMap.length; i++)
 		{
 			for( int j = 0; j < cntctNotifs.size(); j++ )
 			{
 				if( ((LiteContactNotification)cntctNotifs.get(j)).getContactNotifID() ==
-					((NotificationDestination)destinationVector.elementAt(i)).getRecipientID().intValue() )
+					notifDestMap[i].getRecipientID() )
 				{
 					assignedLocations.addElement( cntctNotifs.get(j) );
 					break;

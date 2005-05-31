@@ -3,8 +3,9 @@ package com.cannontech.database.data.lite;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.contact.ContactNotification;
-import com.cannontech.database.db.notification.NotificationDestination;
+import com.cannontech.database.data.notification.ContactNotifGroupMap;
+import com.cannontech.database.data.notification.CustomerNotifGroupMap;
+import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.db.notification.NotificationGroup;
 
 /*
@@ -18,13 +19,11 @@ public class LiteNotificationGroup extends LiteBase
 	private boolean disabled = false;
 	
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
-	private java.util.ArrayList notificationDestinations = null;
+	//private java.util.ArrayList notificationDestinations = null;
 
-	//contains ints of ContactIDs
-	private int[] contactIDs = new int[0];
-
-	//contains ints of CustomerIDs
-	private int[] customerIDs = new int[0];
+	private NotifDestinationMap[] notifDestinationMap = new NotifDestinationMap[0];
+	private ContactNotifGroupMap[] contactMap = new ContactNotifGroupMap[0];
+	private CustomerNotifGroupMap[] customerMap = new CustomerNotifGroupMap[0];
 
 
 	/**
@@ -71,15 +70,6 @@ public class LiteNotificationGroup extends LiteBase
 			"WHERE NotificationGroupID = " + 
 			Integer.toString(getNotificationGroupID());
 
-		String contNotifSQL =
-			"SELECT n.ContactNotifID, n.ContactID, n.NotificationCategoryID, " + 
-			"n.DisableFlag, n.Notification " + 
-			"FROM " + ContactNotification.TABLE_NAME + " n, " +
-			NotificationDestination.TABLE_NAME + " nd " +
-			"WHERE nd.notificationgroupID = " + getNotificationGroupID() +
-			" and n.ContactNotifID = nd.RecipientID " +
-			" ORDER BY nd.destinationorder";
-
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
@@ -98,31 +88,19 @@ public class LiteNotificationGroup extends LiteBase
 				setEmailSubject( rset.getString(4).trim() );
 				setDisabled( rset.getString(5).trim().charAt(0) == CtiUtilities.trueChar.charValue() );
 			}
-			
-			rset = stmt.executeQuery(contNotifSQL);
-			LiteContactNotification lcc = null;
-			while( rset.next() )
-			{
-				lcc = new LiteContactNotification(
-					rset.getInt(1),
-					rset.getInt(2),
-					rset.getInt(3),
-					rset.getString(4).trim(),
-					rset.getString(5).trim() );
 
+			setNotifDestinationMap(
+				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupDestinations(
+					new Integer(getNotificationGroupID()), conn) );
 
-				getNotificationDestinations().add(lcc);
-			}
+			setContactMap(
+				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContacts(
+					new Integer(getNotificationGroupID()), conn) );
 
-			setContactIDs(
-				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupContactIDs(
-					new Integer(getNotificationGroupID()),
-					conn) );
+			setCustomerMap(
+				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomers(
+					new Integer(getNotificationGroupID()), conn) );
 
-			setCustomerIDs(
-				com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupCustomerIDs(
-					new Integer(getNotificationGroupID()),
-					conn) );
 		}
 		catch( java.sql.SQLException e ) {
 			try { ///close all the stuff here
@@ -153,9 +131,9 @@ public class LiteNotificationGroup extends LiteBase
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
-	public void setNotificationDestinationsList(java.util.List newList) {
-		this.notificationDestinations = new java.util.ArrayList(newList);
-	}
+//	public void setNotificationDestinationsList(java.util.List newList) {
+//		this.notificationDestinations = new java.util.ArrayList(newList);
+//	}
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
@@ -202,12 +180,12 @@ public class LiteNotificationGroup extends LiteBase
 	/**
 	 * @return
 	 */
-	public java.util.ArrayList getNotificationDestinations()
-	{
-		if( notificationDestinations == null )
-			notificationDestinations = new java.util.ArrayList(8);
-		return notificationDestinations;
-	}
+//	public java.util.ArrayList getNotificationDestinations()
+//	{
+//		if( notificationDestinations == null )
+//			notificationDestinations = new java.util.ArrayList(8);
+//		return notificationDestinations;
+//	}
 
 	/**
 	 * @param b
@@ -236,10 +214,10 @@ public class LiteNotificationGroup extends LiteBase
 	/**
 	 * @param list
 	 */
-	public void setNotificationDestinations(java.util.ArrayList list)
-	{
-		notificationDestinations = list;
-	}
+//	public void setNotificationDestinations(java.util.ArrayList list)
+//	{
+//		notificationDestinations = list;
+//	}
 
 	/**
 	 * @return
@@ -257,36 +235,53 @@ public class LiteNotificationGroup extends LiteBase
 		emailBody = string;
 	}
 
-	/**
-	 * @return
-	 */
-	public int[] getContactIDs()
-	{
-		return contactIDs;
-	}
 
 	/**
 	 * @return
 	 */
-	public int[] getCustomerIDs()
+	public ContactNotifGroupMap[] getContactMap()
 	{
-		return customerIDs;
+		return contactMap;
 	}
 
 	/**
-	 * @param is
+	 * @return
 	 */
-	public void setContactIDs(int[] is)
+	public CustomerNotifGroupMap[] getCustomerMap()
 	{
-		contactIDs = is;
+		return customerMap;
 	}
 
 	/**
-	 * @param is
+	 * @param maps
 	 */
-	public void setCustomerIDs(int[] is)
+	public void setContactMap(ContactNotifGroupMap[] maps)
 	{
-		customerIDs = is;
+		contactMap = maps;
+	}
+
+	/**
+	 * @param maps
+	 */
+	public void setCustomerMap(CustomerNotifGroupMap[] maps)
+	{
+		customerMap = maps;
+	}
+
+	/**
+	 * @return
+	 */
+	public NotifDestinationMap[] getNotifDestinationMap()
+	{
+		return notifDestinationMap;
+	}
+
+	/**
+	 * @param maps
+	 */
+	public void setNotifDestinationMap(NotifDestinationMap[] maps)
+	{
+		notifDestinationMap = maps;
 	}
 
 }

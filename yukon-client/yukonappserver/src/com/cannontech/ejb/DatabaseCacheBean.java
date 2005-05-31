@@ -510,6 +510,14 @@ public class DatabaseCacheBean implements IDatabaseCache
 	public synchronized Map getAllUserEnergyCompanies() {
 		return getCache().getAllUserEnergyCompanies();
 	}
+		
+	/**
+	 * @ejb:interface-method
+	 * tview-type="remote"
+	 */
+	public synchronized Map getAllContactNotifsMap() {
+		return getCache().getAllContactNotifsMap();
+	}
 	
 		
 //   /**

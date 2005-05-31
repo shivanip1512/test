@@ -53,8 +53,11 @@ public interface IDatabaseCache
 	public java.util.List getAllTOUDays();
 
 	public java.util.List getAllPoints();
-	//	Map<Integer(ptID), LitePoint>
+	//Map<Integer(ptID), LitePoint>
 	public java.util.Map getAllPointsMap();
+	
+	//Map<Integer(contactNotifID), LiteContactNotification>
+	public java.util.Map getAllContactNotifsMap();
 
 	public java.util.List getAllPointsUnits();
 	public java.util.List getAllPointLimits();

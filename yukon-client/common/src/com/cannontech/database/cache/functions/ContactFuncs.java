@@ -260,23 +260,7 @@ public final class ContactFuncs
 	 */
 	public static List getAllContactNotifications() 
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		
-		ArrayList cntNotifs = null;
-		
-		synchronized( cache )		
-		{
-			List cstCnts = cache.getAllContacts();
-			cntNotifs = new ArrayList( cstCnts.size() );
-			
-			for( int j = 0; j < cstCnts.size(); j++ )
-			{
-				LiteContact contact = (LiteContact)cstCnts.get(j);
-				
-				cntNotifs.addAll( contact.getLiteContactNotifications() );
-			}
-		}
-		return cntNotifs;
+		return ContactNotifcationFuncs.getAllContactNotifications();
 	}
 
 
@@ -341,8 +325,6 @@ public final class ContactFuncs
 	 */
 	public static LiteCICustomer getCICustomer (int contactID_)
 	{
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-
 		LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
 		if( liteCICust == null)
 			liteCICust = getOwnerCICustomer(contactID_);

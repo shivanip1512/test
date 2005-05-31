@@ -6,6 +6,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.notification.NotifDestinationMap;
 
 /**
  * Insert the type's description here.
@@ -30,14 +31,17 @@ public final class NotificationGroupFuncs
 
 		synchronized( c )
 		{		
-			for( int j = 0; j < lGrp_.getNotificationDestinations().size(); j++ )
+			for( int j = 0; j < lGrp_.getNotifDestinationMap().length; j++ )
 			{
-				LiteContactNotification lCntNotif =
-					(LiteContactNotification)lGrp_.getNotificationDestinations().get(j);
+				NotifDestinationMap notifDest = lGrp_.getNotifDestinationMap()[j];
+				
+				LiteContactNotification lcn = (LiteContactNotification)
+					c.getAllContactNotifsMap().get(
+						new Integer(notifDest.getRecipientID()) );
 
 				//we have an email address, add it to our list
-				if( lCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
-					emailList.add( lCntNotif.getNotification() );
+				if( lcn.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
+					emailList.add( lcn.getNotification() );
 			}
 			
 		}

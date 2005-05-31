@@ -18,7 +18,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
@@ -112,11 +111,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	
 	//Maps that are created by the joining/parsing of existing lists
 	private HashMap allPointidMultiplierHashMap = null;
-	private HashMap allPointIDOffsetHashMap = null;
-	private HashMap allPointsMap = null;
-	private HashMap allPAOsMap = null;
-	private HashMap allCustomersMap = null;    
-	private HashMap allContactsMap = null;
+	private Map allPointIDOffsetHashMap = null;
+	private Map allPointsMap = null;
+	private Map allPAOsMap = null;
+	private Map allCustomersMap = null;    
+	private Map allContactsMap = null;
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
@@ -130,6 +129,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map allCommandsMap = null;
 	private Map allStateGroupMap = null;
 	private Map allUsersMap = null;
+	private Map allContactNotifsMap = null;
 
 
 /**
@@ -275,8 +275,11 @@ public synchronized java.util.List getAllContacts()
 	{
 		allContacts = new ArrayList();        
 		allContactsMap = new HashMap();
-		ContactLoader contactLoader = new ContactLoader(allContacts, allContactsMap, databaseAlias);
-		contactLoader.run();
+
+		ContactLoader contactLoader =
+			new ContactLoader(allContacts, allContactsMap, databaseAlias);
+
+		contactLoader.run();		
 		return allContacts;
 	}
 }
@@ -890,6 +893,21 @@ public synchronized java.util.Map getAllContactsMap()
 	}
 }
 
+public synchronized java.util.Map getAllContactNotifsMap()
+{
+	if( allContactNotifsMap != null )
+		return allContactNotifsMap;
+	else
+	{
+		allContactNotifsMap = new HashMap();
+
+		ContactNotifcationLoader notifLoader =
+			new ContactNotifcationLoader(allContactNotifsMap, databaseAlias);
+
+		notifLoader.run();		
+		return allContactNotifsMap;
+	}
+}
 
 /**
  * Insert the method's description here.
@@ -1816,6 +1834,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		//clear out the CICustomers & NotificationGroups as they may have changed
 		allCICustomers = null;
 		allNotificationGroups = null;
+		allContactNotifsMap = null;
 
 		retLBase = handleContactChange( dbType, id );		
 	}
@@ -2325,65 +2344,65 @@ private synchronized LiteBase handleTOUScheduleChange( int changeType, int id )
 	return lBase;
 }
 
-private synchronized LiteBase handleTOUDayChange( int changeType, int id )
-{
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allTOUDays == null )
-		return lBase;
-
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allTOUDays.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allTOUDays.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteTOUDay lh = new com.cannontech.database.data.lite.LiteTOUDay(id);
-					lh.retrieve(databaseAlias);
-					allTOUDays.add(lh);
-					lBase = lh;
-				}
-				break;
-				
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allTOUDays.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-					{
-						((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allTOUDays.get(i);
-						break;
-					}
-				}
-				break;
-				
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allTOUDays.size();i++)
-				{
-					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
-					{
-						lBase = (LiteBase)allTOUDays.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllTOUDays();
-				break;
-	}
-
-	return lBase;
-}
+//private synchronized LiteBase handleTOUDayChange( int changeType, int id )
+//{
+//	boolean alreadyAdded = false;
+//	LiteBase lBase = null;
+//
+//	// if the storage is not already loaded, we must not care about it
+//	if( allTOUDays == null )
+//		return lBase;
+//
+//	switch(changeType)
+//	{
+//		case DBChangeMsg.CHANGE_TYPE_ADD:
+//				for(int i=0;i<allTOUDays.size();i++)
+//				{
+//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+//					{
+//						alreadyAdded = true;
+//						lBase = (LiteBase)allTOUDays.get(i);
+//						break;
+//					}
+//				}
+//				if( !alreadyAdded )
+//				{
+//					com.cannontech.database.data.lite.LiteTOUDay lh = new com.cannontech.database.data.lite.LiteTOUDay(id);
+//					lh.retrieve(databaseAlias);
+//					allTOUDays.add(lh);
+//					lBase = lh;
+//				}
+//				break;
+//				
+//		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+//				for(int i=0;i<allTOUDays.size();i++)
+//				{
+//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+//					{
+//						((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).retrieve(databaseAlias);
+//						lBase = (LiteBase)allTOUDays.get(i);
+//						break;
+//					}
+//				}
+//				break;
+//				
+//		case DBChangeMsg.CHANGE_TYPE_DELETE:
+//				for(int i=0;i<allTOUDays.size();i++)
+//				{
+//					if( ((com.cannontech.database.data.lite.LiteTOUDay)allTOUDays.get(i)).getDayID() == id )
+//					{
+//						lBase = (LiteBase)allTOUDays.remove(i);
+//						break;
+//					}
+//				}
+//				break;
+//		default:
+//				releaseAllTOUDays();
+//				break;
+//	}
+//
+//	return lBase;
+//}
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -2681,63 +2700,63 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
  */
-private synchronized LiteBase handleContactNotificationChange( int changeType, int id )
-{
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
-
-	// if the storage is not already loaded, we must not care about it
-	if( allContactNotifications == null )
-		return lBase;
-
-	switch(changeType)
-	{
-		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allContactNotifications.size();i++)
-				{
-					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allContactNotifications.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteContactNotification lg = new LiteContactNotification(id);
-					lg.retrieve(databaseAlias);
-					allContactNotifications.add(lg);
-					lBase = lg;
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allContactNotifications.size();i++)
-				{
-					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-					{
-						((LiteContactNotification)allContactNotifications.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allContactNotifications.get(i);
-						break;
-					}
-				}
-				break;
-		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allContactNotifications.size();i++)
-				{
-					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
-					{
-						lBase = (LiteBase)allContactNotifications.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllContactNotifications();
-				break;
-	}
-
-	return lBase;
-}
+//private synchronized LiteBase handleContactNotificationChange( int changeType, int id )
+//{
+//	boolean alreadyAdded = false;
+//	LiteBase lBase = null;
+//
+//	// if the storage is not already loaded, we must not care about it
+//	if( allContactNotifications == null )
+//		return lBase;
+//
+//	switch(changeType)
+//	{
+//		case DBChangeMsg.CHANGE_TYPE_ADD:
+//				for(int i=0;i<allContactNotifications.size();i++)
+//				{
+//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
+//					{
+//						alreadyAdded = true;
+//						lBase = (LiteBase)allContactNotifications.get(i);
+//						break;
+//					}
+//				}
+//				if( !alreadyAdded )
+//				{
+//					LiteContactNotification lg = new LiteContactNotification(id);
+//					lg.retrieve(databaseAlias);
+//					allContactNotifications.add(lg);
+//					lBase = lg;
+//				}
+//				break;
+//		case DBChangeMsg.CHANGE_TYPE_UPDATE:
+//				for(int i=0;i<allContactNotifications.size();i++)
+//				{
+//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
+//					{
+//						((LiteContactNotification)allContactNotifications.get(i)).retrieve(databaseAlias);
+//						lBase = (LiteBase)allContactNotifications.get(i);
+//						break;
+//					}
+//				}
+//				break;
+//		case DBChangeMsg.CHANGE_TYPE_DELETE:
+//				for(int i=0;i<allContactNotifications.size();i++)
+//				{
+//					if( ((LiteContactNotification)allContactNotifications.get(i)).getContactID() == id )
+//					{
+//						lBase = (LiteBase)allContactNotifications.remove(i);
+//						break;
+//					}
+//				}
+//				break;
+//		default:
+//				releaseAllContactNotifications();
+//				break;
+//	}
+//
+//	return lBase;
+//}
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
@@ -3092,6 +3111,7 @@ public synchronized void releaseAllCache()
 	allStateGroupMap = null;
 	allUnitMeasures = null;
 	allNotificationGroups = null;
+	allContactNotifsMap = null;
     
 	//allUsedContactNotifications = null;
 	allContactNotifications = null;
@@ -3173,6 +3193,7 @@ public synchronized void releaseAllContacts()
 {
 	allContacts = null;
 	allContactsMap = null;
+	allContactNotifsMap = null;
 }
 /**
  * Insert the method's description here.
