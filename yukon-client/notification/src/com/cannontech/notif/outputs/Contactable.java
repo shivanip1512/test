@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.notification.*;
 
 /**
  * 
@@ -22,48 +23,47 @@ import com.cannontech.database.data.lite.*;
 public class Contactable implements Callable, Emailable {
     public static final String EMAIL = "email";
     public static final String VOICE = "voice";
-    private List _contactPhoneNumberList;
-    private List _emailList;
+    private List _contactPhoneNumberList = new LinkedList();
+    private List _emailList = new LinkedList();
     private String _label;
 
-    /**
-     * Create a Contactable from a LiteCustomer.
-     * @param customer the LiteCustomer to use
-     */
-    public Contactable(LiteCustomer customer) {
-        List contacts = CustomerFuncs.getAllContacts(customer.getCustomerID());
+    public Contactable(CustomerNotifGroupMap customerGroupMap) {
+        List contacts = CustomerFuncs.getAllContacts(customerGroupMap.getCustomerID());
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
             LiteContact contact = (LiteContact) iter.next();
-            addPhoneNumbersForContact(contact);
-            addEmailsForContact(contact);
+            if (customerGroupMap.isSendOutboundCalls()) {
+                addPhoneNumbersForContact(contact);
+            }
+            if (customerGroupMap.isSendEmails()) {
+                addEmailsForContact(contact);
+            }
         }
-        _label = "Customer " + customer.getCustomerID();
+        _label = "Customer " + customerGroupMap.getCustomerID();
     }
 
-    /**
-     * Create a Contactable from a LiteContact.
-     * @param contact the LiteContact to use
-     */
-    public Contactable(LiteContact contact) {
-        addPhoneNumbersForContact(contact);
-        addEmailsForContact(contact);
+    public Contactable(ContactNotifGroupMap notifGroupMap) {
+        LiteContact contact = ContactFuncs.getContact(notifGroupMap.getContactID());
+        if (notifGroupMap.isSendOutboundCalls()) {
+            addPhoneNumbersForContact(contact);
+        }
+        if (notifGroupMap.isSendEmails()) {
+            addEmailsForContact(contact);
+        }
         _label = "Contact " + contact.toString();
     }
 
-    /**
-     * Create a Contactable from a single email/phone of a
-     * LiteContactNotification.
-     * @param notification An email address or phone number.
-     */
-    public Contactable(LiteContactNotification notification) {
-        if (YukonListFuncs.isPhoneNumber(notification.getNotificationCategoryID())) {
+    public Contactable(NotifDestinationMap destinationMap) {
+        LiteContactNotification notification = ContactNotifcationFuncs.getContactNotification(destinationMap.getRecipientID());
+        if (YukonListFuncs.isPhoneNumber(notification.getNotificationCategoryID())
+                && destinationMap.isSendOutboundCalls()) {
             addPhoneNumber(notification);
-        } else if (YukonListFuncs.isEmail(notification.getNotificationCategoryID())) {
+        } else if (YukonListFuncs.isEmail(notification.getNotificationCategoryID())
+                && destinationMap.isSendEmails()) {
             _emailList.add(notification.getNotification());
         }
         _label = notification.getNotification();
     }
-
+    
     private void addPhoneNumbersForContact(LiteContact contact) {
         LiteContactNotification[] _rawNumbers = ContactFuncs.getAllPhonesNumbers(contact.getContactID());
         for (int i = 0; i < _rawNumbers.length; i++) {
@@ -108,7 +108,13 @@ public class Contactable implements Callable, Emailable {
      * @return True if this object should be notified by the specified method
      */
     public boolean hasNotificationMethod(String type) {
-        return false; // TODO fix this
+        if (type.equals(EMAIL)) {
+            return _emailList.size() > 0;
+        } else if (type.equals(VOICE)) {
+            return _contactPhoneNumberList.size() > 0;
+        } else {
+            throw new IllegalArgumentException("Unknown output type");
+        }
     }
     
     public String toString() {
@@ -125,24 +131,22 @@ public class Contactable implements Callable, Emailable {
      */
     public static List getContactablesForGroup(LiteNotificationGroup lng) {
         LinkedList resultList = new LinkedList();
-        int[] customerIds = lng.getCustomerIDs();
-        for (int i = 0; i < customerIds.length; i++) {
-            int customerId = customerIds[i];
-            LiteCustomer lCustomer = CustomerFuncs.getLiteCustomer(customerId);
-            resultList.add(new Contactable(lCustomer));
+        CustomerNotifGroupMap[] customerMap = lng.getCustomerMap();
+        for (int i = 0; i < customerMap.length; i++) {
+            CustomerNotifGroupMap notifGroupMap = customerMap[i];
+            resultList.add(new Contactable(notifGroupMap));
         }
-        
-        int[] contactIds = lng.getContactIDs();
-        for (int i = 0; i < contactIds.length; i++) {
-            int contactId = contactIds[i];
-            LiteContact lContact = ContactFuncs.getContact(contactId);
-            resultList.add(new Contactable(lContact));
+
+        ContactNotifGroupMap[] contactMap = lng.getContactMap();
+        for (int i = 0; i < contactMap.length; i++) {
+            ContactNotifGroupMap notifGroupMap = contactMap[i];
+            resultList.add(new Contactable(notifGroupMap));
         }
-        
-        ArrayList notificationDestinations = lng.getNotificationDestinations();
-        for (Iterator iter = notificationDestinations.iterator(); iter.hasNext();) {
-            LiteContactNotification lNotification = (LiteContactNotification) iter.next();
-            resultList.add(new Contactable(lNotification));
+
+        NotifDestinationMap[] notifDestinationMap = lng.getNotifDestinationMap();
+        for (int i = 0; i < notifDestinationMap.length; i++) {
+            NotifDestinationMap destinationMap = notifDestinationMap[i];
+            resultList.add(new Contactable(destinationMap));
         }
         
         return resultList;
