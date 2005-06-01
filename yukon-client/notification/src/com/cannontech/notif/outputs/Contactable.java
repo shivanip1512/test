@@ -7,10 +7,6 @@ import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.*;
 
 /**
- * 
- */
-
-/**
  * This class represents a single entity that needs to be reached
  * to deliver a notification. This entity could originate as a 
  * customer, a contact, or a single email address or phone number.
@@ -27,6 +23,10 @@ public class Contactable implements Callable, Emailable {
     private List _emailList = new LinkedList();
     private String _label;
 
+    /**
+     * Create a Contactable object from a CustomerNotifGroupMap.
+     * @param customerGroupMap
+     */
     public Contactable(CustomerNotifGroupMap customerGroupMap) {
         List contacts = CustomerFuncs.getAllContacts(customerGroupMap.getCustomerID());
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
@@ -41,6 +41,10 @@ public class Contactable implements Callable, Emailable {
         _label = "Customer " + customerGroupMap.getCustomerID();
     }
 
+    /**
+     * Create a Contactable object from a ContactNotifGroupMap.
+     * @param notifGroupMap
+     */
     public Contactable(ContactNotifGroupMap notifGroupMap) {
         LiteContact contact = ContactFuncs.getContact(notifGroupMap.getContactID());
         if (notifGroupMap.isSendOutboundCalls()) {
@@ -52,6 +56,10 @@ public class Contactable implements Callable, Emailable {
         _label = "Contact " + contact.toString();
     }
 
+    /**
+     * Create a Contactable object from a NotifDestinationMap.
+     * @param destinationMap
+     */
     public Contactable(NotifDestinationMap destinationMap) {
         LiteContactNotification notification = ContactNotifcationFuncs.getContactNotification(destinationMap.getRecipientID());
         if (YukonListFuncs.isPhoneNumber(notification.getNotificationCategoryID())
@@ -106,6 +114,7 @@ public class Contactable implements Callable, Emailable {
      * output type set.
      * @param type {email, voice}
      * @return True if this object should be notified by the specified method
+     * @throws IllegalArgumentException If type is not "email" or "voice"
      */
     public boolean hasNotificationMethod(String type) {
         if (type.equals(EMAIL)) {
