@@ -20,6 +20,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
  */
 public class CallPool implements PropertyChangeListener {
 
+    private static final int MAX_SHUTDOWN_WAIT = 120; // in seconds
     final protected ThreadPoolExecutor _threadPool;
     final protected Map _pendingCalls = new HashMap();
     final Timer _timer = new Timer();
@@ -27,6 +28,7 @@ public class CallPool implements PropertyChangeListener {
     private HashMap _timerTasks = new HashMap();
     private static AtomicInteger _callThreadId = new AtomicInteger(1);
     private final int _callTimeoutSeconds;
+    private boolean _shutdown = false;
 
     public CallPool(Dialer dialer, int numberOfChannels, int callTimeoutSeconds) {
         _dialer = dialer;
@@ -53,6 +55,10 @@ public class CallPool implements PropertyChangeListener {
      * @throws InterruptedException Thrown if the caller's thread is blocked.
      */
     public void submitCall(final Call call) {
+        if (_shutdown) {
+            CTILogger.warn("Someone tried to submit call after shutdown: " + call);
+            return;
+        }
 
         // add call to our pending list
         _pendingCalls.put(call.getToken(), call);
@@ -66,7 +72,6 @@ public class CallPool implements PropertyChangeListener {
             }
         };
         
-        // the following will block until there is an available thread
         _threadPool.execute(callTask);
     }
 
@@ -106,6 +111,7 @@ public class CallPool implements PropertyChangeListener {
     }
 
     public void shutdown() throws InterruptedException {
+        _shutdown  = true;
         _threadPool.shutdown();
         
         // this is odd, even if we do a shutdownNow, the phone calls will still
@@ -113,7 +119,7 @@ public class CallPool implements PropertyChangeListener {
         // the JVM from exiting... so it is probably best just to do a 
         // threadPool.shutdownAfterProcessingCurrentlyQueuedTasks so that
         // we can monitor the process...
-        _threadPool.awaitTermination(120,TimeUnit.SECONDS);
+        _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT,TimeUnit.SECONDS);
         if (!_threadPool.isTerminated()) {
             CTILogger.error("Unable to cleanly shutdown notification call pool. Forcing shutdown.");
             _threadPool.shutdownNow();

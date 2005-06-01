@@ -39,6 +39,24 @@ public class SingleNotification implements PropertyChangeListener {
 		return nextCall;
 	}
 	
+    public void propertyChange(PropertyChangeEvent evt) {
+        // check for changes to a call's state
+        if (evt.getPropertyName().equals(Call.CALL_STATE)) {
+            CallState callState = (CallState) evt.getNewValue();
+            if (callState instanceof Confirmed) {
+                setState(STATE_COMPLETE);
+            } else if (callState instanceof Connecting) {
+                setState(STATE_CALLING);
+            } else if (callState.isDone()) {
+                if (_phoneIterator.hasNext()) {
+                    setState(STATE_READY);
+                } else {
+                    setState(STATE_FAILED);
+                }
+            }
+        }
+    }
+        
 	/**
 	 * @param listener
 	 */
@@ -69,28 +87,13 @@ public class SingleNotification implements PropertyChangeListener {
 	 */
 	public String setState(String state) {
 		String oldState = assignState(state);
-		_listeners.firePropertyChange(NOTIFICATION_STATE, oldState, state);
-        CTILogger.info("Notification '" + this + "' changing from " + oldState + " to " + state);
+        if (!oldState.equals(state)) {
+    		_listeners.firePropertyChange(NOTIFICATION_STATE, oldState, state);
+            CTILogger.info("Notification '" + this + "' changing from " + oldState + " to " + state);
+        }
         return oldState;
 	}
 
-	public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Call.CALL_STATE)) {
-            CallState callState = (CallState) evt.getNewValue();
-            if (callState instanceof Confirmed) {
-                setState(STATE_COMPLETE);
-            } else if (callState instanceof Connecting) {
-                setState(STATE_CALLING);
-            } else if (callState.isDone()) {
-                if (_phoneIterator.hasNext()) {
-                    setState(STATE_READY);
-                } else {
-                    setState(STATE_FAILED);
-                }
-            }
-        }
-    }
-        
     public Object getMessage() {
         return _message;
     }

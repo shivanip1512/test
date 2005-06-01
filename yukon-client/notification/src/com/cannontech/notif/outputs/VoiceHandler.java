@@ -1,6 +1,8 @@
 package com.cannontech.notif.outputs;
 
 import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -20,7 +22,6 @@ import com.cannontech.roles.yukon.VoiceServerRole;
 public class VoiceHandler extends OutputHandler
 {
     private NotificationQueue _queue;
-    private WorkerThread _worker;
     private CallPool _callPool;
     private boolean _acceptNewNotifications = false;
     private NotificationTransformer _transformer;
@@ -36,9 +37,8 @@ public class VoiceHandler extends OutputHandler
         int callTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT));
         int numberOfChannels = 1; //TODO use role property
         _callPool = new CallPool(dialer, numberOfChannels, callTimeout);
-        _queue = new NotificationQueue();
-        _worker = new WorkerThread(_queue, _callPool);
-        _transformer = new NotificationTransformer("file://blah/blah/");
+        _queue = new NotificationQueue(_callPool);
+        _transformer = new NotificationTransformer("file:/C:/Documents and Settings/tmack/Desktop/"); //TODO use role property
     }
     
     public void handleNotification(Notification notif, Contactable contact) {
@@ -51,11 +51,12 @@ public class VoiceHandler extends OutputHandler
         
         try {
             Document voiceXml = _transformer.transform(notif, getType());
-            //TODO should we convert to text right here???
+            XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+            //TODO this is a waste of memory
+            String voiceXmlString = outputter.outputString(voiceXml);
             
-
             SingleNotification singleNotification = 
-                new SingleNotification(contact, voiceXml);
+                new SingleNotification(contact, voiceXmlString);
             _queue.add(singleNotification);
             
         } catch (TransformException e) {
@@ -64,7 +65,6 @@ public class VoiceHandler extends OutputHandler
     }
 
     public void startup() {
-        _worker.start();
         _acceptNewNotifications = true;
     }
 
@@ -72,11 +72,6 @@ public class VoiceHandler extends OutputHandler
         try {
             // First, stop accepting new notifications. 
             _acceptNewNotifications  = false;
-            
-            // Next, shutdown the worker thread so objects will stop getting 
-            // put on the call pool, this method blocks until the thread
-            // is fully stopped.
-            _worker.shutdown();
             
             // Finally, shutdown the call pool. This call will block until
             // all calls have completed.
