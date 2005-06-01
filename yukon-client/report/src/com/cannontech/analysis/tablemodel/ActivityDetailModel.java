@@ -665,7 +665,7 @@ public class ActivityDetailModel extends ReportModelBase
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 
 		
 		html += "  </tr>" + LINE_SEPARATOR;

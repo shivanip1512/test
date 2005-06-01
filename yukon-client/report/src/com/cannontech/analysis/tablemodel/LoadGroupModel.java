@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -60,10 +59,10 @@ public class LoadGroupModel extends ReportModelBase
 	public final static String CONTROL_DURATION_STRING = "Control Duration";
 	public final static String ACTIVE_RESTORE_STRING = "Active Restore";
 	public final static String CONTROL_TYPE_STRING= "Control Type";
-	public final static String DAILY_CONTROL_STRING= "Daily Control";
-	public final static String MONTHLY_CONTROL_STRING= "Monthly Control";
-	public final static String SEASONAL_CONTROL_STRING= "Seasonal Control";
-	public final static String ANNUAL_CONTROL_STRING= "Annual Control";
+	public final static String DAILY_CONTROL_STRING= "Daily";
+	public final static String MONTHLY_CONTROL_STRING= "Monthly";
+	public final static String SEASONAL_CONTROL_STRING= "Seasonal";
+	public final static String ANNUAL_CONTROL_STRING= "Annual";
 
 	/** A string for the title of the data */
 	private static String title = "LOAD GROUP ACCOUNTING";
@@ -85,7 +84,7 @@ public class LoadGroupModel extends ReportModelBase
 		{
 			String thisVal = PAOFuncs.getYukonPAOName(((LMControlHistory)o1).getPaObjectID().intValue());
 			String anotherVal = PAOFuncs.getYukonPAOName(((LMControlHistory)o2).getPaObjectID().intValue());
-			return ( thisVal.compareToIgnoreCase(anotherVal));
+		    return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
 		public boolean equals(Object obj)
 		{
@@ -95,7 +94,7 @@ public class LoadGroupModel extends ReportModelBase
 	
 	public LoadGroupModel()
 	{
-		super();
+		this(null, null, null);
 	}	
 
 	/**
@@ -120,8 +119,9 @@ public class LoadGroupModel extends ReportModelBase
 	{
 		super(start_, stop_);
 		setPaoIDs(paoIDs_);
-		setPaoModelTypes(new int[]{ModelFactory.LMGROUPS});
-		setPaoModelType(getPaoModelTypes()[0]);
+		setFilterModelTypes(new int[]{ 
+    			ModelFactory.LMGROUPS}
+				);
 	}	
 		
 	/**
@@ -204,7 +204,7 @@ public class LoadGroupModel extends ReportModelBase
 					}
 					sql.append(") ");
 				}
-				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCH.StopDateTime");
+				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime");	//, LMCH.StopDateTime");
 		return sql;
 	}	
 	/* (non-Javadoc)
@@ -245,7 +245,12 @@ public class LoadGroupModel extends ReportModelBase
 					addDataRow(rset);
 				}
 				if(!getData().isEmpty())
+				{
 					Collections.sort(getData(), lmControlHistoryPAONameComparator);
+					if( getSortOrder() == DESCENDING)
+					    Collections.reverse(getData());
+				}
+				
 			}
 		}
 				
@@ -270,24 +275,6 @@ public class LoadGroupModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-
-
-	/**
-	 * Convert seconds of time into hh:mm:ss string.
-	 * @param int seconds
-	 * @return String in format hh:mm:ss
-	 */
-	private String convertSecondsToTimeString(int seconds)
-	{
-		DecimalFormat format = new DecimalFormat("00");
-		int hour = seconds / 3600;
-		int temp = seconds % 3600;
-		int min = temp / 60;
-		int sec = temp % 60; 
-			
-		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
-	}
-	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
@@ -307,7 +294,7 @@ public class LoadGroupModel extends ReportModelBase
 				case CONTROL_STOP_TIME_COLUMN:
 					return lmch.getStopDateTime();
 				case CONTROL_DURATION_COLUMN:
-					return lmch.getControlDuration();
+					return convertSecondsToTimeString(lmch.getControlDuration().intValue());
 				case ACTIVE_RESTORE_COLUMN:
 					return lmch.getActiveRestore();
 				case CONTROL_TYPE_COLUMN:
@@ -385,7 +372,7 @@ public class LoadGroupModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 130, null),
+				new ColumnProperties(0, 1, 100, null),
 				new ColumnProperties(0, 1, 60, "MM/dd/yyyy"),
 				new ColumnProperties(60, 1, 50, "HH:mm:ss"),
 				new ColumnProperties(110, 1, 50, "HH:mm:ss"),
@@ -394,8 +381,8 @@ public class LoadGroupModel extends ReportModelBase
 				new ColumnProperties(260, 1, 190, null),
 				new ColumnProperties(450, 1, 50, null),
 				new ColumnProperties(500, 1, 50, null),
-				new ColumnProperties(0, 1, 100, null),
-				new ColumnProperties(0, 1, 100, null)
+				new ColumnProperties(550, 1, 50, null),
+				new ColumnProperties(600, 1, 50, null)
 			};
 		}
 		return columnProperties;
@@ -455,7 +442,23 @@ public class LoadGroupModel extends ReportModelBase
 		html += "        </tr>" + LINE_SEPARATOR;
 
 		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Sort By Load Group</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		for (int i = 0; i < getAllSortOrders().length; i++)
+		{
+			html += "        <tr>" + LINE_SEPARATOR;
+			html += "          <td><input type='radio' name='" +ATT_SORT_ORDER + "' value='" + getAllSortOrders()[i] + "' " +  
+			 (i==0? "checked" : "") + ">" + getSortOrderString(getAllSortOrders()[i])+ LINE_SEPARATOR;
+			html += "          </td>" + LINE_SEPARATOR;
+			html += "        </tr>" + LINE_SEPARATOR;
+		}
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		
 		html += "</table>" + LINE_SEPARATOR;

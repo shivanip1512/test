@@ -17,15 +17,13 @@ public class StatisticData
 	
 	
 	private String paoName = null;
+	private String paoType = null;
 	private Integer attempts = null;
 	private Integer commErrors = null;
 	private Integer systemErrors = null;
 	private Integer protocolErrs = null;
 	private Integer completions = null;
 	private Integer requests = null;
-	
-	/** (attempts - commErrors) / attempts */
-	private Double portPercent = null;
 	
 	/** completions / requests */
 	private Double successPercent = null;
@@ -39,8 +37,27 @@ public class StatisticData
 	/** attempts - commErrors - systemErrors */
 	private Integer dlcAttempts = null;
 	
-	/** (attempts - protocolErrors) / attempts */
-	private Double dlcPercent = null;
+	
+	/** (attempts - requests) */
+	private Integer extraAttempts = null;
+	
+	/** commErrors / attempts */
+	private Double channelErrorPercent= null;
+	
+	/** protocolErrors / attempts */
+	private Double protocolErrorPercent= null;
+	
+	/** systemErrors / attempts */
+	private Double systemErrorPercent= null;
+	
+//	/** (attempts - commErrors) / attempts */
+//	private Double channelErrorPercent = null;	//old portPercent
+//	
+//	/** (attempts - protocolErrors) / attempts */
+//	private Double protocolErrorPercent = null;	//old dlcPercent
+//	
+//	/** (attempts - systemErrors) / attempts */
+//	private Double systemErrorPercent = null;	
 	
 	/**
 	 * @param paoName_
@@ -51,9 +68,10 @@ public class StatisticData
 	 * @param completions_
 	 * @param requests_
 	 */
-	public StatisticData(String paoName_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_)
+	public StatisticData(String paoName_, String paoType_, Integer attempts_, Integer commErrors_, Integer systemErrors_, Integer protocolErrs_, Integer completions_, Integer requests_)
 	{	
 		setPAOName( paoName_);
+		setPAOType(paoType_);
 		setAttempts( attempts_);
 		setCommErrors( commErrors_);
 		setSystemErrors( systemErrors_);
@@ -185,13 +203,33 @@ public class StatisticData
 	/**
 	 * @return
 	 */
-	public Double getPortPercent()
+	public Double getChannelErrorPercent()
 	{
-		if (portPercent == null)
-			portPercent =new Double((getAttempts().doubleValue() - getCommErrors().doubleValue()) / getAttempts().doubleValue());
-		return portPercent;
+		if (channelErrorPercent == null)
+			channelErrorPercent = new Double(getCommErrors().doubleValue() / getAttempts().doubleValue());
+		return channelErrorPercent;
 	}
 
+	/**
+	 * @return
+	 */
+	public Double getProtocolErrorPercent()
+	{
+		if (protocolErrorPercent == null)
+			protocolErrorPercent = new Double(getProtocolErrs().doubleValue() / getAttempts().doubleValue());
+		return protocolErrorPercent;
+	}
+	
+	/**
+	 * @return
+	 */
+	public Double getSystemErrorPercent()
+	{
+		if (systemErrorPercent == null)
+			systemErrorPercent = new Double(getSystemErrors().doubleValue() / getAttempts().doubleValue());
+		return systemErrorPercent;
+	}
+	
 	/**
 	 * @return
 	 */
@@ -200,16 +238,6 @@ public class StatisticData
 		if( successPercent == null)
 			successPercent = new Double((getCompletions().doubleValue()/ getRequests().doubleValue()));
 		return successPercent;
-	}
-
-	/**
-	 * @return
-	 */
-	public Double getCommErrPercent()
-	{
-		if( commErrPercent == null)
-			commErrPercent = new Double (getTotalErrs().doubleValue() / getAttempts().doubleValue());
-		return commErrPercent;
 	}
 
 	/**
@@ -231,14 +259,28 @@ public class StatisticData
 		
 		return dlcAttempts;
 	}
+	
+	public Integer getExtraAttempts()
+	{
+		if( extraAttempts == null)
+			extraAttempts = new Integer(getAttempts().intValue() - getRequests().intValue());
+		return extraAttempts;	
+	}
 
 	/**
 	 * @return
 	 */
-	public Double getDlcPercent()
+	public String getPAOType()
 	{
-		if( dlcPercent == null )
-			dlcPercent = new Double( (getAttempts().doubleValue() - getProtocolErrs().doubleValue()) / getAttempts().doubleValue());
-		return dlcPercent;
-	}	
+		return paoType;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setPAOType(String type)
+	{
+		paoType = type;
+	}
+
 }

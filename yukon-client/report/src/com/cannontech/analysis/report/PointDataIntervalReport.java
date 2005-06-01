@@ -21,7 +21,6 @@ import org.jfree.report.modules.gui.base.PreviewDialog;
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 
 /**
  * Created on Dec 15, 2003
@@ -81,7 +80,6 @@ public class PointDataIntervalReport extends YukonReportBase
 		reportModel.setOrderBy(PointDataIntervalModel.ORDER_BY_VALUE);
 		reportModel.setPointType(PointDataIntervalModel.LOAD_PROFILE_POINT_TYPE);
 		reportModel.setSortOrder(ReportModelBase.DESCENDING);
-		reportModel.setBillingGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
 		reportModel.setBillingGroups(new String[]{"Default"});
 		dbReport.getModel().collectData();
 	

@@ -18,25 +18,8 @@ import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.jfree.report.modules.output.pageable.base.PageableReportProcessor;
 import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 
-import com.cannontech.analysis.report.CapBankReport;
-import com.cannontech.analysis.report.CarrierDBReport;
-import com.cannontech.analysis.report.DailyPeaksReport;
-import com.cannontech.analysis.report.DisconnectReport;
-import com.cannontech.analysis.report.ECActivityDetailReport;
-import com.cannontech.analysis.report.ECActivityLogReport;
-import com.cannontech.analysis.report.LGAccountingReport;
-import com.cannontech.analysis.report.MeterReadReport;
-import com.cannontech.analysis.report.PointDataIntervalReport;
-import com.cannontech.analysis.report.PointDataSummaryReport;
-import com.cannontech.analysis.report.PowerFailReport;
-import com.cannontech.analysis.report.ProgramDetailReport;
-import com.cannontech.analysis.report.RouteMacroReport;
-import com.cannontech.analysis.report.StatisticReport;
-import com.cannontech.analysis.report.SystemLogReport;
-import com.cannontech.analysis.report.WorkOrder;
-import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.LMControlLogModel;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.analysis.report.*;
+import com.cannontech.analysis.tablemodel.*;
 import com.keypoint.PngEncoder;
 import com.klg.jclass.util.swing.encode.EncoderException;
 import com.klg.jclass.util.swing.encode.page.PDFEncoder;
@@ -49,64 +32,64 @@ import com.klg.jclass.util.swing.encode.page.PDFEncoder;
  */
 public class ReportFuncs
 {
-	public static YukonReportBase createYukonReport(int reportType)
+	public static YukonReportBase createYukonReport(ReportModelBase model)
 	{
-		CTILogger.info(" REPRT TYPE: " + reportType);
-		switch (reportType)
-		{
-			case ReportTypes.STATISTIC_DATA:
-				return new StatisticReport();
-			
-			case ReportTypes.SYSTEM_LOG_DATA:
-				return new SystemLogReport();
-			case ReportTypes.LM_CONTROL_LOG_DATA:	//override the systemLogModel
-				return new SystemLogReport(new LMControlLogModel());
-				
-			case ReportTypes.LG_ACCOUNTING_DATA:
-				return new LGAccountingReport();
-				
-			case ReportTypes.LM_DAILY_PEAKS_DATA:
-				return new DailyPeaksReport();
-				
-			case ReportTypes.METER_READ_DATA:
-				return new MeterReadReport();
-				
-			case ReportTypes.CARRIER_DB_DATA:
-				return new CarrierDBReport();
-				
-			case ReportTypes.POWER_FAIL_DATA:
-				return new PowerFailReport();
-				
-			case ReportTypes.DISCONNECT_METER_DATA:
-				return new DisconnectReport();
-				
-			case ReportTypes.EC_ACTIVITY_LOG_DATA:
-				return new ECActivityLogReport();
+	    YukonReportBase returnVal = null;
+	    if( model instanceof StatisticModel)
+	        returnVal = new StatisticReport();
+	    else if( model instanceof SystemLogModel)
+	        returnVal = new SystemLogReport();
+	    else if( model instanceof LMControlLogModel)
+			returnVal = new SystemLogReport((LMControlLogModel)model);
+	    else if( model instanceof LoadGroupModel)
+			returnVal = new LGAccountingReport();
+	    else if( model instanceof DailyPeaksModel)
+			returnVal = new DailyPeaksReport();
+	    else if( model instanceof MeterReadModel)
+			returnVal = new MeterReadReport();
+	    else if( model instanceof MeterOutageModel)
+		    returnVal = new MeterOutageReport();
+	    else if( model instanceof CarrierDBModel)
+	        returnVal = new CarrierDBReport();
+	    else if( model instanceof PowerFailModel)
+	        returnVal = new PowerFailReport();
+	    else if( model instanceof DisconnectModel)
+	        returnVal = new DisconnectReport();
+	    else if( model instanceof ActivityModel)
+			returnVal = new ECActivityLogReport();
+	    else if( model instanceof RouteMacroModel)
+	        returnVal = new RouteMacroReport();
+	    else if(model instanceof RouteDBModel)
+	        returnVal = new RouteDBReport();
+	    else if( model instanceof LPSetupDBModel)
+	        returnVal = new LPSetupDBReport();
+	    else if( model instanceof ActivityDetailModel)
+	        returnVal = new ECActivityDetailReport();
+	    else if( model instanceof ProgramDetailModel)
+	        returnVal = new ProgramDetailReport();
+	    else if( model instanceof WorkOrderModel)
+	        returnVal = new WorkOrder();
+	    else if( model instanceof StarsLMSummaryModel)
+	        returnVal = new StarsLMSummaryReport();
+	    else if( model instanceof StarsLMDetailModel)
+	        returnVal = new StarsLMDetailReport();
+//	    else if( model instanceof StarsAMRSummaryModel) TODO
+//	        returnVal = new StarsAMRSummaryReport();
+	    else if( model instanceof StarsAMRDetailModel)
+	        returnVal = new StarsAMRDetailReport();
+	    else if( model instanceof PointDataIntervalModel)
+	        returnVal = new PointDataIntervalReport();
+	    else if( model instanceof PointDataSummaryModel)
+	        returnVal = new PointDataSummaryReport();
+	    else if( model instanceof CapBankListModel)
+	        returnVal = new CapBankReport();
+	    else if( model instanceof CapControlNewActivityModel)
+	        returnVal = new CapControlNewActivityReport();
+	    else
+	        return null;
 
-			case ReportTypes.CARRIER_ROUTE_MACRO_DATA:
-				return new RouteMacroReport();
-
-			case ReportTypes.EC_ACTIVITY_DETAIL_DATA:
-				return new ECActivityDetailReport();
-				
-			case ReportTypes.PROGRAM_DETAIL_DATA:
-				return new ProgramDetailReport();
-			
-			case ReportTypes.EC_WORK_ORDER_DATA:
-				return new WorkOrder();
-			
-			case ReportTypes.POINT_DATA_INTERVAL_DATA:
-				return new PointDataIntervalReport();
-
-			case ReportTypes.POINT_DATA_SUMMARY_DATA:
-				return new PointDataSummaryReport();
-				
-			case ReportTypes.CBC_BANK_DATA:
-				return new CapBankReport();
-				
-			default:
-				return new CarrierDBReport();	//give us something at least....
-		}
+	    returnVal.setModel(model);
+	    return returnVal;
 	}
 	
 	public static void outputYukonReport(JFreeReport report, String ext, OutputStream out)
@@ -121,7 +104,6 @@ public class ReportFuncs
 		
 		if (ext.equalsIgnoreCase("pdf"))
 		{
-//			final PDFOutputTarget target = new PDFOutputTarget(out,pageFormat,true);
 		    final PDFOutputTarget target = new PDFOutputTarget(out);
 			
 			target.setProperty(PDFOutputTarget.TITLE, "Title");

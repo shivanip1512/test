@@ -29,32 +29,51 @@ import com.cannontech.database.data.pao.PAOGroups;
 public class StatisticModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 5;
+	protected final int NUMBER_COLUMNS = 9;
 	
 	/** Enum values for column representation */
 	public static final int PAO_NAME_COLUMN = 0;
-	public static final int TOTAL_ATTEMPTS_COLUMN = 1;
-	public static final int DLC_ATTEMPTS_OR_ERRORS_COLUMN = 2;
-	public static final int DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN = 3;
-	public static final int SUCC_COMM_PERC_COLUMN = 4;
+	public static final int PAO_TYPE_COLUMN = 1;
+	public static final int REQUESTS_COLUMN = 2;
+	public static final int TOTAL_ATTEMPTS_COLUMN = 3;
+//	public static final int EXTRA_ATTEMPTS_COLUMN = 3;
+	public static final int TOTAL_ERRORS_COLUMN = 4;
+	public static final int CHANNEL_ERRORS_PERCENT_COLUMN = 5;
+	public static final int PROTOCOL_ERRORS_PERCENT_COLUMN = 6;
+	public static final int SYSTEM_ERRORS_PERCENT_COLUMN = 7;
+	public static final int SUCCESS_PERCENT_COLUMN = 8;
+	
+	/** NOTE:  When comm stat type is used, the PROTOCOL_ERRORS_PERCENT_COLUMN will actually return the SUCCESS_PERCENT value
+	 * This is because the PROTOCOL_ERRORS... and SYSTEM_ERRORS... columns are NOT applicable  (SN - crappy hack 4/19/04) */
+	
 
+
+//	public static final int DLC_ATTEMPTS_OR_ERRORS_COLUMN = 4;	/** Deprecated */
+	
 	/** String values for column representation */
-	//Carrier
-	public final static String MCT_NAME_STRING = "MCT Name";
-	public final static String TOTAL_ATTEMPTS_STRING = "Total Attempts";
-	public final static String DLC_ATTEMPTS_STRING = "DLC Attempts";
-	public final static String DLC_PERCENT_STRING = "DLC Percent";
-	public final static String SUCC_COMM_PERC_STRING= "Successful Communication%";
-	//CommChannel
-	public final static String PORT_NAME_STRING = "Port Name";
-	public final static String PORT_FAILURES_STRING = "Port Failures";
-	public final static String PORT_PERCENT_STRING = "Port Percent";
-	//Device
-	public final static String DEVICE_NAME_STRING = "Device Name";
-	public final static String TOTAL_ERRORS_STRING = "Total Errors";
-	public final static String COMM_ERROR_PERCENT_STRING = "Communication Error%";
-	//Transmitter
-	public final static String TRANSMITTER_NAME_STRING = "Transmitter Name";
+	public final static String PAO_NAME_STRING = "Name";
+	public final static String PAO_TYPE_STRING = "Type";
+	public final static String REQUESTS_STRING = "Requests";
+	public final static String TOTAL_ATTEMPTS_STRING = "Total\nAttempts";
+//	public final static String EXTRA_ATTEMPTS_STRING = "Addt'l System Retries";
+	
+	public final static String TOTAL_ERRORS_STRING = "Total\nErrors";
+	public final static String CHANNEL_ERRORS_PERCENT_STRING = "Channel\nErrors %";
+	public final static String PROTOCOL_ERRORS_PERCENT_STRING = "Protocol\nErrors %";
+	public final static String SYSTEM_ERRORS_PERCENT_STRING = "System\nErrors %";
+	public final static String SUCCESS_PERCENT_STRING= "Success %";
+//Carrier
+//	public final static String DLC_ATTEMPTS_STRING = "DLC Attempts";
+//	public final static String DLC_PERCENT_STRING = "DLC %";
+//	public final static String SUCC_COMM_PERC_STRING= "Successful Comm %";
+//	//CommChannel
+//	public final static String PORT_FAILURES_STRING = "Port Failures";
+//	public final static String PORT_PERCENT_STRING = "Port %";
+//	//Device
+//	public final static String TOTAL_ERRORS_STRING = "Total Errors";
+//	public final static String COMM_ERROR_PERCENT_STRING = "Comm Error %";
+//	//Transmitter
+//	public final static String TRANSMITTER_NAME_STRING = "Transmitter Name";
 			
 	/** Class fields */
 	public static final int STAT_CARRIER_COMM_DATA = 0;
@@ -187,7 +206,7 @@ public class StatisticModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer("SELECT PAO.PAOName, DPS.ATTEMPTS, DPS.COMMERRORS, DPS.COMPLETIONS, DPS.REQUESTS, " +
-		" DPS.SYSTEMERRORS, DPS.PROTOCOLERRORS " + 
+		" DPS.SYSTEMERRORS, DPS.PROTOCOLERRORS, PAO.TYPE " + 
 		" FROM DYNAMICPAOSTATISTICS DPS, YUKONPAOBJECT PAO " +
 		" WHERE DPS.PAOBJECTID = PAO.PAOBJECTID ");
 		if(getPaoIDs() != null)
@@ -229,8 +248,9 @@ public class StatisticModel extends ReportModelBase
 			Integer requests = new Integer(rset.getInt(5));
 			Integer systemErrs = new Integer(rset.getInt(6));
 			Integer protocolErrs = new Integer(rset.getInt(7));
+			String paoType = rset.getString(8);
 			
-			StatisticData stat = new StatisticData(paoName, attempts, commErrors, systemErrs, protocolErrs, completions, requests);
+			StatisticData stat = new StatisticData(paoName, paoType, attempts, commErrors, systemErrs, protocolErrs, completions, requests);
 			getData().add(stat);
 		}
 		catch(java.sql.SQLException e)
@@ -356,14 +376,17 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public String getDateRangeString()
 	{
-		if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING) ||
-			getStatPeriodType().equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
-		{
-			SimpleDateFormat monthlyFormat = new SimpleDateFormat("MMMMM yyyy");
-			return getStatPeriodType() + ": " + monthlyFormat.format(getStartDate());
-		}
-		else
-			return getStatPeriodType() + ": " + getDateFormat().format(getStartDate());
+		SimpleDateFormat monthlyFormat = new SimpleDateFormat("MMMMM yyyy");
+				
+		if( getStatPeriodType().equalsIgnoreCase(MONTHLY_STAT_PERIOD_TYPE_STRING))
+			return MONTHLY_STAT_PERIOD_TYPE_STRING + ": " + monthlyFormat.format(getStartDate());
+		else if (getStatPeriodType().equalsIgnoreCase(LASTMONTH_STAT_PERIOD_TYPE_STRING))
+			return LASTMONTH_STAT_PERIOD_TYPE_STRING + ": " + monthlyFormat.format(getStartDate());
+		else if( getStatPeriodType().equalsIgnoreCase(DAILY_STAT_PERIOD_TYPE_STRING) )
+			return DAILY_STAT_PERIOD_TYPE_STRING + ": " + getDateFormat().format(getStartDate());
+		else if( getStatPeriodType().equalsIgnoreCase(YESTERDAY_STAT_PERIOD_TYPE_STRING) )
+			return YESTERDAY_STAT_PERIOD_TYPE_STRING + ": " + getDateFormat().format(getStartDate());
+		return getDateFormat().format(getStartDate());
 	}
 
 	/* (non-Javadoc)
@@ -378,11 +401,39 @@ public class StatisticModel extends ReportModelBase
 			{
 				case PAO_NAME_COLUMN:
 					return statData.getPAOName();
-			
+					
+				case PAO_TYPE_COLUMN:
+					return statData.getPAOType();
+					
+				case REQUESTS_COLUMN:
+					return statData.getRequests();
+					
 				case TOTAL_ATTEMPTS_COLUMN:
 					return statData.getAttempts();
 
-				case DLC_ATTEMPTS_OR_ERRORS_COLUMN:
+//				case EXTRA_ATTEMPTS_COLUMN:
+//					return statData.getExtraAttempts();
+
+				case SUCCESS_PERCENT_COLUMN:
+					return statData.getSuccessPercent();
+					
+				case TOTAL_ERRORS_COLUMN:
+					return statData.getTotalErrs();
+					
+				case CHANNEL_ERRORS_PERCENT_COLUMN:
+					return statData.getChannelErrorPercent();
+					
+				case PROTOCOL_ERRORS_PERCENT_COLUMN:
+				{
+					if( getStatType() == STAT_COMM_CHANNEL_DATA)
+						return statData.getSuccessPercent();
+					return statData.getProtocolErrorPercent();
+				}
+					
+				case SYSTEM_ERRORS_PERCENT_COLUMN:
+					return statData.getSystemErrorPercent();
+					
+/*				case DLC_ATTEMPTS_OR_ERRORS_COLUMN:
 					if( getStatType() == STAT_CARRIER_COMM_DATA)
 						return statData.getDlcAttempts();
 						
@@ -393,6 +444,7 @@ public class StatisticModel extends ReportModelBase
 					else if( getStatType() == STAT_DEVICE_COMM_DATA)
 						return statData.getTotalErrs();
 					break;
+
 				case DLC_OR_PORT_OR_COMMERR_PERCENT_COLUMN:
 					if( getStatType() == STAT_CARRIER_COMM_DATA)
 						return statData.getDlcPercent();
@@ -404,8 +456,7 @@ public class StatisticModel extends ReportModelBase
 					else if( getStatType() == STAT_DEVICE_COMM_DATA)
 						return statData.getCommErrPercent();
 					break;
-				case SUCC_COMM_PERC_COLUMN:
-					return statData.getSuccessPercent();
+*/					
 			}
 		}
 		return null;
@@ -420,42 +471,35 @@ public class StatisticModel extends ReportModelBase
 		{
 			switch (getStatType())
 			{
-				case STAT_CARRIER_COMM_DATA:
-					columnNames = new String[]{
-						MCT_NAME_STRING,
-						TOTAL_ATTEMPTS_STRING,
-						DLC_ATTEMPTS_STRING,
-						DLC_PERCENT_STRING,
-						SUCC_COMM_PERC_STRING
-					};				
-					break;
 				case STAT_COMM_CHANNEL_DATA:
 					columnNames = new String[]{
-					   PORT_NAME_STRING,
+					   PAO_NAME_STRING,
+					   PAO_TYPE_STRING,
+					   REQUESTS_STRING,
 					   TOTAL_ATTEMPTS_STRING,
-					   PORT_FAILURES_STRING,
-					   PORT_PERCENT_STRING,
-					   SUCC_COMM_PERC_STRING
+//					   EXTRA_ATTEMPTS_STRING,
+					   TOTAL_ERRORS_STRING,
+					   CHANNEL_ERRORS_PERCENT_STRING,
+					   SUCCESS_PERCENT_STRING					   
 					};
 					break;
+									
+				case STAT_CARRIER_COMM_DATA:
 				case STAT_DEVICE_COMM_DATA:
-					columnNames = new String[]{
-						DEVICE_NAME_STRING,
-						TOTAL_ATTEMPTS_STRING,
-						TOTAL_ERRORS_STRING,
-						COMM_ERROR_PERCENT_STRING,
-						SUCC_COMM_PERC_STRING
-					};
-					break;
 				case STAT_TRANS_COMM_DATA:
 					columnNames = new String[]{
-						TRANSMITTER_NAME_STRING,
+						PAO_NAME_STRING,
+						PAO_TYPE_STRING,
+						REQUESTS_STRING,
 						TOTAL_ATTEMPTS_STRING,
-						PORT_FAILURES_STRING,
-						PORT_PERCENT_STRING,
-						SUCC_COMM_PERC_STRING
-					};
-					break;					
+//						EXTRA_ATTEMPTS_STRING,
+						TOTAL_ERRORS_STRING,
+						CHANNEL_ERRORS_PERCENT_STRING,
+						PROTOCOL_ERRORS_PERCENT_STRING,
+						SYSTEM_ERRORS_PERCENT_STRING,
+						SUCCESS_PERCENT_STRING
+					};				
+					break;
 			}
 		}
 		return columnNames;
@@ -470,14 +514,31 @@ public class StatisticModel extends ReportModelBase
 		{
 			switch (getStatType())
 			{
+				case STAT_COMM_CHANNEL_DATA:
+				columnTypes = new Class[]{
+					String.class,
+					String.class,
+					Integer.class,
+					Integer.class,
+//					Integer.class,
+					Integer.class,
+					Double.class,
+					Double.class					
+				};
+				break;
+				
 				case STAT_CARRIER_COMM_DATA:
 				case STAT_DEVICE_COMM_DATA:
-				case STAT_COMM_CHANNEL_DATA:
 				case STAT_TRANS_COMM_DATA:			
 					columnTypes = new Class[]{
 						String.class,
+						String.class,
 						Integer.class,
 						Integer.class,
+//						Integer.class,
+						Integer.class,
+						Double.class,
+						Double.class,
 						Double.class,
 						Double.class
 					};
@@ -496,16 +557,32 @@ public class StatisticModel extends ReportModelBase
 		{
 			switch (getStatType())
 			{
+				case STAT_COMM_CHANNEL_DATA:
+					columnProperties = new ColumnProperties[]{
+						new ColumnProperties(0, 1, 200, null),
+						new ColumnProperties(200, 1, 75, null),
+						new ColumnProperties(275, 1, 75, "#,##0"),
+						new ColumnProperties(350, 1, 75, "#,##0"),
+//						new ColumnProperties(350, 1, 75, "#,##0"),
+						new ColumnProperties(425, 1, 75, "#,##0"),
+						new ColumnProperties(500, 1, 75, "##0.00%"),
+						new ColumnProperties(575, 1, 75, "##0.00%")
+					};				
+					break;
 				case STAT_CARRIER_COMM_DATA:
 				case STAT_DEVICE_COMM_DATA:
-				case STAT_COMM_CHANNEL_DATA:
 				case STAT_TRANS_COMM_DATA:
 					columnProperties = new ColumnProperties[]{
 						new ColumnProperties(0, 1, 200, null),
-						new ColumnProperties(200, 1, 80, "#,##0"),
-						new ColumnProperties(280, 1, 80, "#,##0"),
-						new ColumnProperties(360, 1, 90, "##0.00%"),
-						new ColumnProperties(450, 1, 100, "##0.00%")
+						new ColumnProperties(200, 1, 65, null),
+						new ColumnProperties(265, 1, 65, "#,##0"),
+						new ColumnProperties(330, 1, 65, "#,##0"),
+//						new ColumnProperties(330, 1, 65, "#,##0"),
+						new ColumnProperties(395, 1, 65, "#,##0"),
+						new ColumnProperties(460, 1, 65, "##0.00%"),
+						new ColumnProperties(525, 1, 65, "##0.00%"),
+						new ColumnProperties(590, 1, 65, "##0.00%"),
+						new ColumnProperties(655, 1, 65, "##0.00%")
 					};
 					break;
 			}
@@ -621,4 +698,16 @@ public class StatisticModel extends ReportModelBase
 	{
 		return false;
 	}
+	
+//	/**
+//	 * Boolean to hide All Error Percents (or rather to hide the Protocol and System Error percents)
+//	 * Note:  Channel Error Percent is shown for all statTypes.
+//	 * @return
+//	 */
+//	public boolean hideErrorPercents()
+//	{
+//		if( getStatType() == STAT_COMM_CHANNEL_DATA)
+//			return true;
+//		return false;
+//	}
 }

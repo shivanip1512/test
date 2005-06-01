@@ -8,6 +8,9 @@ package com.cannontech.analysis.gui;
 
 import java.util.Date;
 
+import org.jfree.report.JFreeReport;
+import org.jfree.report.function.FunctionInitializeException;
+
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.report.YukonReportBase;
@@ -23,7 +26,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class ReportBean
 {
-	private YukonReportBase report = null;
+	private ReportModelBase model = null;
 	private int type = -1;
 	private int groupType = -1;
 	
@@ -102,12 +105,16 @@ public class ReportBean
 	}
 	public Date getStartDate()
 	{
+	    if (getModel() == null)
+	        return ServletUtil.getYesterday();
+	    
 		return getModel().getStartDate();
 	}
 	public Date getStopDate()
 	{
-		return getModel().getStopDate()
-		;
+	    if( getModel() == null)
+	        return ServletUtil.getTomorrow();
+		return getModel().getStopDate();
 	}
 	/**
 	 * @param string
@@ -150,29 +157,37 @@ public class ReportBean
 	}
 
 	/**
+	 * Returns the ReportModelBase, creates a new ReportModelBase if isChanged flag is true.
+	 * Resets the isChanged flag on new model creation.
 	 * @return
 	 */
-	public YukonReportBase getReport()
-	{
-		if( report == null || isChanged())
-		{
-			report = ReportFuncs.createYukonReport(getType());
-			setChanged(false); //reset the chagned flag here (?)
-		}
-		return report;
-	}
-	
 	public ReportModelBase getModel()
 	{
-		return getReport().getModel();
+	    if (model == null || isChanged())
+	    {
+	        model = ReportTypes.create(getType());
+	        setChanged(false);
+	    }
+		return model;
 	}
-
 	/**
-	 * @param base
+	 * Returns a JFreeReport instance using a YukonReportBase parameter.
+	 * Uses the getModel() field value to create the YukonReportBase parameter.
+	 * Collects the model data and sets the JFreeReports data field using the getModel() field.  
+	 * @return
+	 * @throws FunctionInitializeException
 	 */
-	public void setReport(YukonReportBase base)
+	public JFreeReport createReport() throws FunctionInitializeException
 	{
-		report = base;
+	    //Create an instance of JFreeReport from the YukonReportBase
+	    YukonReportBase report = ReportFuncs.createYukonReport(getModel());
+	    JFreeReport jfreeReport = report.createReport();
+	    
+	    //Collecto the data for the model and set the freeReports data
+	    getModel().collectData();
+	    jfreeReport.setData(getModel());
+	    
+	    return jfreeReport;
 	}
 
 	/**
@@ -205,4 +220,11 @@ public class ReportBean
 			return "";
 		return getModel().getHTMLBaseOptionsTable();
 	}
+    /**
+     * @param model The model to set.
+     */
+    public void setModel(ReportModelBase model)
+    {
+        this.model = model;
+    }
 }

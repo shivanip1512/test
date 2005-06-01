@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +16,6 @@ import com.cannontech.analysis.Reportable;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.util.ServletUtil;
 
@@ -40,8 +40,10 @@ import com.cannontech.util.ServletUtil;
 public abstract class ReportModelBase extends javax.swing.table.AbstractTableModel implements Reportable
 {
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	
+	public String NULL_STRING = "---";
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+	protected String columnDateTimeFormat = "MM/dd/yyyy HH:mm:ss";
+	protected String columnValueFormat = "#,##0.000";
 	private TimeZone timeZone = TimeZone.getDefault();		
 	
 	/** Array of String values representing the column names. */
@@ -56,14 +58,13 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/** String for the title for the table model */
 	protected String title;
 	
-	/** Yukon.paobjectid's to query for, null means all */
-	private int[] paoIDs = null;
-	private int paoModelType = -1;	//default to invalid?	, the currently selected model
-	private int[] paoModelTypes = null;	//all models valid for a report type (ONLY PAOBJECTS TODAY!)
-
+	private int[] filterModelTypes = null;	//all models for a report type (ModelFactory.xxx)
+	private int filterModelType = -1;	//default to invalid?  The currently selected model.
+	
 	/** Yukon.DeviceMeterGroup's to query for, null means all */
 	private String [] billingGroups = null;
-	private int billingGroupType = DeviceMeterGroup.COLLECTION_GROUP;
+	/** Yukon.paobjectid's to query for, null means all */
+	private int[] paoIDs = null;
 	
 	/** Vector of data (of inner class type from implementors)*/
 	protected java.util.Vector data = new java.util.Vector(100);
@@ -76,13 +77,12 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	protected static final String ATT_START_DATE = "startDate";
 	protected static final String ATT_STOP_DATE = "stopDate";
 	protected static final String ATT_EC_ID = "ecID";	//ONLY TAKES ONE ID, BUT MORE CAN BE SET USING THE STRING[] setter
-	protected static final String ATT_BILLING_GROUP_VALUES = "billGroupValues";
 	protected static final String ATT_PAOBJECT_IDS = "paoIDs";
 	protected static final String ATT_SORT_ORDER = "sortOrder";	
 	
-	protected static final String ATT_BILLING_GROUP_TYPE = "billGroupType";
-	protected static final String ATT_PAOBJECT_MODEL_TYPE = "paoModelType";
-	
+	protected static final String ATT_FILTER_MODEL_TYPE = "filterModelType";
+	protected static final String ATT_FILTER_MODEL_VALUES = "filterValues";
+
 	public  static final int ASCENDING = 0;
 	public static final int DESCENDING = 1;
 	protected int sortOrder = ASCENDING;
@@ -284,8 +284,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	 */
 	public void setECIDs(Integer ecID)
 	{
-		if( ecID != null)
-			setECIDs(new int[]{ecID.intValue()});
+	    if( ecID != null)
+	        setECIDs(new int[]{ecID.intValue()});
 	}
 	/**
 	 * @return
@@ -345,30 +345,20 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "  }" + LINE_SEPARATOR;
 		html += "}" + LINE_SEPARATOR;
 
-		if (useBillingGroup())
+		if (getFilterModelTypes() != null)
 		{
 			html += "function changeFilter(filterBy) {" + LINE_SEPARATOR;
 			html += "  document.getElementById('selectAll').disabled = (filterBy == -1);" + LINE_SEPARATOR;
-			html += "  var typeGroup = document.reportForm.billGroupValues;" + LINE_SEPARATOR;
-			html += "  for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
-			html += "    typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
+			html += "  var filterModelValues = document.reportForm." + ATT_FILTER_MODEL_VALUES+";" + LINE_SEPARATOR;
+			html += "  for (var i = 0; i < filterModelValues.length; i++) {" + LINE_SEPARATOR;
+			html += "    filterModelValues[i].selectedIndex = -1;" + LINE_SEPARATOR;
 			html += "  }" + LINE_SEPARATOR + LINE_SEPARATOR;
-			html += "  document.getElementById('DivCollGroup').style.display = (filterBy == " + DeviceMeterGroup.COLLECTION_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
-			html += "  document.getElementById('DivAltGroup').style.display = (filterBy == " + DeviceMeterGroup.TEST_COLLECTION_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
-			html += "  document.getElementById('DivBillGroup').style.display = (filterBy == " + DeviceMeterGroup.BILLING_GROUP + ")? \"\" : \"none\";" + LINE_SEPARATOR;
+			
+			for(int i = 0; i < getFilterModelTypes().length; i++)
+			{
+				html += "  document.getElementById('Div"+ ModelFactory.getModelString(getFilterModelTypes()[i])+"').style.display = (filterBy == " + getFilterModelTypes()[i] + ")? \"\" : \"none\";" + LINE_SEPARATOR;			    
+			}
 			html += "}" + LINE_SEPARATOR + LINE_SEPARATOR;
-		}
-		if (usePaobjects())
-		{
-			html += "function changePaoFilter(filterBy) {" + LINE_SEPARATOR;
-			html += "  document.getElementById('selectAll').disabled = (filterBy == -1);" + LINE_SEPARATOR;
-			html += "  var typeGroup = document.reportForm.paoIDs;" + LINE_SEPARATOR;
-			html += "  for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
-			html += "    typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
-			html += "  }" + LINE_SEPARATOR + LINE_SEPARATOR;
-			html += "  document.getElementById('DivControlArea').style.display = (filterBy == " + ModelFactory.LMCONTROLAREA + ")? \"\" : \"none\";" + LINE_SEPARATOR;
-			html += "  document.getElementById('DivMCT').style.display = (filterBy == " + ModelFactory.MCT + ")? \"\" : \"none\";" + LINE_SEPARATOR;
-			html += "}" + LINE_SEPARATOR;
 		}
 		html += "</SCRIPT>" + LINE_SEPARATOR + LINE_SEPARATOR;
 
@@ -376,27 +366,16 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td class='main' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
 		
-		if( useBillingGroup() )
+		if( getFilterModelTypes() != null )
 		{
-			html += "      <div id='DivBillGroupType' style='display:true'>" + LINE_SEPARATOR;
-			html += "        <select id='billGroupType' name='billGroupType' onChange='changeFilter(this.value)'>" + LINE_SEPARATOR;
-			String [] billGroupTypes = DeviceMeterGroup.getValidBillGroupTypeDisplayStrings();
-			for (int i = 0; i < billGroupTypes.length; i++)
+			html += "      <div id='DivFilterModelType' style='display:true'>" + LINE_SEPARATOR;
+
+			if (getFilterModelTypes() != null)
 			{
-				html += "          <option value='" + DeviceMeterGroup.getValidBillGroupTypeIDs()[i] +"'>" + billGroupTypes[i] + "</option>"  + LINE_SEPARATOR;
-			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-		}
-		if( usePaobjects() )
-		{
-			html += "      <div id='DivPaoModelType' style='display:true'>" + LINE_SEPARATOR;
-			if( getPaoModelTypes() != null)
-			{
-				html += "        <select id='paoModelType' name='paoModelType'  onChange='changePaoFilter(this.value)'>" + LINE_SEPARATOR;
-				for(int i = 0; i < getPaoModelTypes().length; i++)
-				{					
-					html += "          <option value='" + getPaoModelTypes()[i] + "'>" + ((DBTreeModel) ModelFactory.create(getPaoModelTypes()[i])).toString() + "</option>" + LINE_SEPARATOR;
+				html += "        <select id='" + ATT_FILTER_MODEL_TYPE+ "' name='" + ATT_FILTER_MODEL_TYPE + "' onChange='changeFilter(this.value)'>" + LINE_SEPARATOR;
+				for (int i = 0; i < getFilterModelTypes().length; i++)
+				{
+					html += "          <option value='" + getFilterModelTypes()[i] +"'>" + ModelFactory.getModelString(getFilterModelTypes()[i]).toString() + "</option>"  + LINE_SEPARATOR;
 				}
 				html += "        </select>" + LINE_SEPARATOR;
 			}
@@ -408,76 +387,32 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
 		
-		if( useBillingGroup())
+		if( getFilterModelTypes() != null)
 		{
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			List collGroups = cache.getAllDMG_CollectionGroups();
-			List altGroups = cache.getAllDMG_AlternateGroups();
-			List billGroups = cache.getAllDMG_BillingGroups();
-			
-			html += "      <div id='DivCollGroup' style='display:true'>" + LINE_SEPARATOR;
-			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
-			for (int i = 0; i < collGroups.size(); i++)
+			for(int i = 0; i < getFilterModelTypes().length; i++)
 			{
-				String val = (String)collGroups.get(i);
-				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
-			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-	
-			html += "      <div id='DivAltGroup' style='display:none'>" + LINE_SEPARATOR;
-			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
-
-			for (int i = 0; i < altGroups.size(); i++)
-			{
-				String val = (String)altGroups.get(i);
-				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
-			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-			
-			html += "      <div id='DivBillGroup' style='display:none'>" + LINE_SEPARATOR;
-			html += "        <select name='billGroupValues' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
-			for (int i = 0; i < billGroups.size(); i++)
-			{
-				String val = (String)billGroups.get(i);
-				html += "          <option value='" + val + "'>" + val + "</option>" + LINE_SEPARATOR;
-			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-		}
-		
-		if( usePaobjects() )
-		{
-			html += "      <div id='DivControlArea' style='display:" + (usePaobjects() ? "true" : "none") + "'>" + LINE_SEPARATOR;
-			html += "        <select name='paoIDs' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
-			List litePaos = getPaobjectsByModel(ModelFactory.LMCONTROLAREA);
-			if( litePaos != null) {
-				for (int i = 0; i < litePaos.size(); i++) {
-					LiteYukonPAObject lpao = (LiteYukonPAObject)litePaos.get(i);
-					html += "          <option value='" + lpao.getYukonID() + "'>" + lpao.getPaoName() + "</option>" + LINE_SEPARATOR;
+				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
+				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+				List objects = getObjectsByModelType(getFilterModelTypes()[i]);
+				if (objects != null)
+				{
+					for (int j = 0; j < objects.size(); j++)
+					{
+					    if( objects.get(j) instanceof String)
+					        html += "          <option value='" + objects.get(j).toString()+ "'>" + objects.get(j).toString() + "</option>" + LINE_SEPARATOR;
+					    else if (objects.get(j) instanceof LiteYukonPAObject)
+					        html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
+					}
 				}
+				html += "        </select>" + LINE_SEPARATOR;
+				html += "      </div>" + LINE_SEPARATOR;
 			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
-			html += "      <div id='DivMCT' style='display:none'>" + LINE_SEPARATOR;
-			html += "        <select name='paoIDs' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
-	
-			litePaos = getPaobjectsByModel(ModelFactory.MCT);
-			if( litePaos != null) {
-				for (int i = 0; i < litePaos.size(); i++) {
-					LiteYukonPAObject lpao = (LiteYukonPAObject)litePaos.get(i);
-					html += "          <option value='" + lpao.getYukonID() + "'>" + lpao.getPaoName() + "</option>" + LINE_SEPARATOR;
-				}
-			}
-			html += "        </select>" + LINE_SEPARATOR;
-			html += "      </div>" + LINE_SEPARATOR;
 		}
 		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
-		if( useBillingGroup() || usePaobjects())
+		if( getFilterModelTypes() != null)
 		{
 			html += "      <div id='DivSelectAll' style='displaytrue'>" + LINE_SEPARATOR;
 			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='disableGroup(document.reportForm);'>Select All" + LINE_SEPARATOR;
@@ -512,36 +447,45 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			else
 				setStopDate(null);
 				
-			param = req.getParameter(ATT_BILLING_GROUP_TYPE);
+			param = req.getParameter(ATT_FILTER_MODEL_TYPE);
 			if( param != null)
-				setBillingGroupType(Integer.valueOf(param).intValue());
+				setFilterModelType(Integer.valueOf(param).intValue());
 			else
-				setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				setFilterModelType(-1);	//default to nothing selected?
 			
-			String[] paramArray = req.getParameterValues(ATT_BILLING_GROUP_VALUES);
-			if( paramArray != null)
-				setBillingGroups(paramArray);
-			else
-				setBillingGroups(null);
-				
-			param = req.getParameter(ATT_PAOBJECT_MODEL_TYPE);
-			if( param != null)
-				setPaoModelType(Integer.valueOf(param).intValue());
-			else
-				setPaoModelType(-1);
-								
-			paramArray = req.getParameterValues(ATT_PAOBJECT_IDS);
-			if( paramArray != null)
+			//Load billingGroup model values
+			if ( getFilterModelType() == ModelFactory.COLLECTIONGROUP ||
+		        getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP ||
+		        getFilterModelType() == ModelFactory.BILLING_GROUP )
 			{
-				int [] idsArray = new int[paramArray.length];
-				for (int i = 0; i < paramArray.length; i++)
-				{
-					idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
-				}
-				setPaoIDs(idsArray);
+				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
+				if( paramArray != null)
+					setBillingGroups(paramArray);
+				else
+					setBillingGroups(null);
 			}
+			else	//Load PaobjectID int values
+			{
+				String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);
+				if( paramArray != null)
+				{
+					int [] idsArray = new int[paramArray.length];
+					for (int i = 0; i < paramArray.length; i++)
+					{
+						idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+					}
+					setPaoIDs(idsArray);
+				}
+				else
+					setPaoIDs(null);
+			}
+			//This parameter is not implemented in this getHTMLOptionsTable since most of the implementing classes
+			//	have their own rendering of this parameter.  But setting it here takes care of all the other classes not having to do it.
+			param = req.getParameter(ATT_SORT_ORDER);
+			if( param != null)
+				setSortOrder(Integer.valueOf(param).intValue());
 			else
-				setPaoIDs(null);				
+				setSortOrder(ASCENDING);			
 		}
 	}
 	/**
@@ -571,43 +515,28 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	/**
 	 * @return
 	 */
-	public int getBillingGroupType()
+	public int getFilterModelType()
 	{
-		return billingGroupType;
+	    return filterModelType;
 	}
-
 	/**
 	 * @param i
 	 */
-	public void setBillingGroupType(int billGroupType)
+	public void setFilterModelType(int modelType)
 	{
-		if( billingGroupType != billGroupType)
-			billingGroupType = billGroupType;
+	    if( filterModelType != modelType)
+	        filterModelType = modelType;
 	}
-	/**
-	 * @return
-	 */
-	public int getPaoModelType()
-	{
-		return paoModelType;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setPaoModelType(int paoModelType_)
-	{
-		if( paoModelType != paoModelType_)
-			paoModelType = paoModelType_;
-	}
+	
 	/**
 	 * Override this function if an extended model does not have a Billing Group
 	 * @return
 	 */
-	public boolean useBillingGroup()
-	{
-		return false;
-	}
+//	public boolean useFilterModel()
+//	{
+//		return false;
+//	}
+		
 	/**
 	 * Override this function if an extended model does not use a Start Date
 	 * @return
@@ -624,45 +553,57 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	{
 		return true;
 	}
-	/**
-	 * @return
-	 */
-	public boolean usePaobjects()
-	{
-		return (getPaoModelTypes() != null);
-	}
 	
 	/**
 	 * @return
 	 */
-	public int[] getPaoModelTypes()
+	public int[] getFilterModelTypes()
 	{
-		return paoModelTypes;
+	    return filterModelTypes;
 	}
-
 	/**
 	 * @param is
 	 */
-	public void setPaoModelTypes(int[] is)
+	public void setFilterModelTypes(int[] models)
 	{
-		paoModelTypes = is;
+	    filterModelTypes = models;
 	}
 
-	public List getPaobjectsByModel(int model)
+	/*
+	 * Returns a List of Objects (Strings for DeviceMeterGroup stuff, and LiteYukonPaobjects for pao stuff)
+	 * List is from cache.
+	 */
+	public List getObjectsByModelType(int model)
 	{
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		List litePaos = null;
-		if( model == ModelFactory.LMCONTROLAREA)
-		{
-			litePaos = cache.getAllLMControlAreas();
-		}
-		else if( model == ModelFactory.MCT)
-		{
-			litePaos = cache.getAllMCTs();
-		}
-		return litePaos;
+		switch (model)
+        {
+	        case ModelFactory.LMCONTROLAREA:
+	            return cache.getAllLMControlAreas();
+	        case ModelFactory.LMGROUPS:
+	            return cache.getAllLMGroups();
+	        case ModelFactory.MCT:
+	            return cache.getAllMCTs();
+	        case ModelFactory.COLLECTIONGROUP:
+	            return cache.getAllDMG_CollectionGroups();
+	        case ModelFactory.TESTCOLLECTIONGROUP:
+	            return cache.getAllDMG_AlternateGroups();
+	        case ModelFactory.BILLING_GROUP:
+	            return cache.getAllDMG_BillingGroups();
+	        case ModelFactory.ROUTE:
+	        	return cache.getAllRoutes();
+        }
+		return null;
 	}
-
+	public static String getBillingGroupDatabaseString(int modelType)
+	{
+	    if ( modelType == ModelFactory.TESTCOLLECTIONGROUP)
+	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.TEST_COLLECTION_GROUP];
+	    else if ( modelType == ModelFactory.BILLING_GROUP)
+	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.BILLING_GROUP];
+	    else	// if ( modelType == ModelFactory.COLLECTIONGROUP)
+	        return DeviceMeterGroup.getValidBillGroupTypeStrings()[DeviceMeterGroup.COLLECTION_GROUP];
+	}
 	public int getSortOrder()
 	{
 		return sortOrder;
@@ -710,4 +651,19 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		return tempCal;
 	}
 	
+	/**
+	 * Convert seconds of time into hh:mm:ss string.
+	 * @param int seconds
+	 * @return String in format hh:mm:ss
+	 */
+	protected static String convertSecondsToTimeString(int seconds)
+	{
+		DecimalFormat format = new DecimalFormat("00");
+		int hour = seconds / 3600;
+		int temp = seconds % 3600;
+		int min = temp / 60;
+		int sec = temp % 60; 
+			
+		return format.format(hour) + ":" + format.format(min) + ":" + format.format(sec);
+	}	
 }

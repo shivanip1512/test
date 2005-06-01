@@ -1,8 +1,6 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -14,30 +12,27 @@ import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.DisconnectModel;
+import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 
 /**
- * Created on Feb 06, 2003
- * Creates a DisconnectReport using the com.cannontech.analysis.data.DisconnectData tableModel
- * Groups data by Collection Group and then by Device.  
+ * Created on Dec 15, 2003
+ * Creates a DatabaseReport using the com.cannontech.analysis.data.DatabaseModel tableModel
+ * No Group by used, only by column headings.
+ *  
  * @author snebben
- * @author bjonasson
  */
-public class DisconnectReport extends YukonReportBase
+public class LPSetupDBReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf DatabaseModel.
 	 */
-	public DisconnectReport()
+	public LPSetupDBReport()
 	{
-		this(new DisconnectModel());
+		this(new LPSetupDBModel());
 	}
 
 	/**
@@ -45,11 +40,12 @@ public class DisconnectReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf DatabaseModel.
 	 * @param data_ - DatabaseModel TableModel data
 	 */
-	public DisconnectReport(DisconnectModel model_)
+	public LPSetupDBReport(LPSetupDBModel model_)
 	{
 		super();
 		setModel(model_);
-	}	
+	}
+
 	/**
 	 * Runs this report and shows a preview dialog.
 	 * @param args the arguments (ignored).
@@ -60,25 +56,15 @@ public class DisconnectReport extends YukonReportBase
 		// initialize JFreeReport
 		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-
-		DisconnectModel model = new DisconnectModel(false);
-		
-		//start and stop time are only valid when model.showHist is false
-		GregorianCalendar cal = new GregorianCalendar();
-		model.setStopDate(cal.getTime());
-
-		cal.set(Calendar.MONTH,0);
-		cal.set(Calendar.DAY_OF_MONTH,1);
-		model.setStartDate(cal.getTime());
-//		model.setShowConnected(true);
-//		model.setShowDisconnected(true);
-
-		YukonReportBase disconnectReport = new DisconnectReport(model);
-		disconnectReport.getModel().collectData();		
+	
+		LPSetupDBModel reportModel = new LPSetupDBModel();
+		YukonReportBase dbReport = new LPSetupDBReport(reportModel);
+		dbReport.getModel().collectData();
+	
 		//Create the report
-		JFreeReport report = disconnectReport.createReport();
-		report.setData(disconnectReport.getModel());
-				
+		JFreeReport report = dbReport.createReport();
+		report.setData(dbReport.getModel());
+	
 		final PreviewDialog dialog = new PreviewDialog(report);
 		// Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
 		dialog.addWindowListener(new java.awt.event.WindowAdapter()
@@ -90,11 +76,11 @@ public class DisconnectReport extends YukonReportBase
 				System.exit(0);
 			};
 		});
-		
+	
 		dialog.setModal(true);
 		dialog.pack();
 		dialog.setVisible(true);
-	}		
+	}
 
 	/**
 	 * Create a Group for Column Headings only.  
@@ -106,7 +92,6 @@ public class DisconnectReport extends YukonReportBase
 		collHdgGroup.setName("Column Heading");
 	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-
 		LabelElementFactory factory;
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
@@ -122,7 +107,6 @@ public class DisconnectReport extends YukonReportBase
 
 		return collHdgGroup;
 	}
-
 	/**
 	 * Create a GroupList and all Group(s) to it.
 	 * @return the groupList.
@@ -142,70 +126,27 @@ public class DisconnectReport extends YukonReportBase
 	protected ItemBand createItemBand()
 	{
 		ItemBand items = ReportFactory.createItemBandDefault();
-
-		if(showBackgroundColor)
+	
+		if( showBackgroundColor )
 		{
 			items.addElement(StaticShapeElementFactory.createRectangleShapeElement
 				("background", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0),
-				new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
+					new java.awt.geom.Rectangle2D.Float(0, 0, -100, -100), false, true));
 			items.addElement(StaticShapeElementFactory.createHorizontalLine
-				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f),0));
+				("top", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
 			items.addElement(StaticShapeElementFactory.createHorizontalLine
 				("bottom", java.awt.Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
 		}
-		
+			
+		TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), 0);
+		items.addElement(factory.createElement());
+	
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			items.addElement(factory.createElement());
 		}
+
 		return items;
 	}
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-		
-		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemDevice");
-		hideItem.setField(DisconnectModel.DEVICE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemMeterNum");
-		hideItem.setField(DisconnectModel.METER_NUMBER_STRING);
-		hideItem.setElement(DisconnectModel.METER_NUMBER_STRING+ ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemAddress");
-		hideItem.setField(DisconnectModel.ADDRESS_STRING);
-		hideItem.setElement(DisconnectModel.ADDRESS_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemType");
-		hideItem.setField(DisconnectModel.TYPE_STRING);
-		hideItem.setElement(DisconnectModel.TYPE_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemRoute");
-		hideItem.setField(DisconnectModel.ROUTE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.ROUTE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemCollGrp");
-		hideItem.setField(DisconnectModel.COLL_GROUP_NAME_STRING);
-		hideItem.setElement(DisconnectModel.COLL_GROUP_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		return expressions;
-	}	
 }

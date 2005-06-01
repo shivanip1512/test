@@ -143,8 +143,8 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		report.setExpressions(getExpressions());
 		report.setPropertyMarked("report.date", true);
 		report.setPageDefinition(getPageDefinition());
-//		report.getReportConfiguration().setConfigProperty
-//            ("org.jfree.report.modules.output.pageable.pdf.Encoding", "Identity-H");
+		report.getReportConfiguration().setConfigProperty
+            ("org.jfree.report.modules.output.pageable.pdf.Encoding", "Identity-H");
 		
     return report;
 	}
@@ -410,7 +410,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
         if( pageDefinition == null)
         {
     		java.awt.print.Paper reportPaper = new java.awt.print.Paper();
-    		reportPaper.setImageableArea(30, 40, 552, 712);	//8.5 x 11 -> 612w 792h
+    		reportPaper.setImageableArea(30, 30, 552, 732);	//8.5 x 11 -> 612w 792h
     		PageFormat pageFormat = new java.awt.print.PageFormat();
     		pageFormat.setOrientation(getPageOrientation());
     		pageFormat.setPaper(reportPaper);

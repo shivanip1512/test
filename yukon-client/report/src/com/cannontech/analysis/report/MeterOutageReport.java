@@ -14,30 +14,26 @@ import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.DisconnectModel;
+import com.cannontech.analysis.tablemodel.MeterOutageModel;
 
 /**
- * Created on Feb 06, 2003
- * Creates a DisconnectReport using the com.cannontech.analysis.data.DisconnectData tableModel
+ * Created on May 16, 2005
+ * Creates an Outage Reoprt using com.cannontech.analysis.data.MeterOutageModel tableModel
  * Groups data by Collection Group and then by Device.  
  * @author snebben
- * @author bjonasson
  */
-public class DisconnectReport extends YukonReportBase
+public class MeterOutageReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
 	 * Data Base for this report type is instanceOf DatabaseModel.
 	 */
-	public DisconnectReport()
+	public MeterOutageReport()
 	{
-		this(new DisconnectModel());
+		this(new MeterOutageModel());
 	}
 
 	/**
@@ -45,7 +41,7 @@ public class DisconnectReport extends YukonReportBase
 	 * Data Base for this report type is instanceOf DatabaseModel.
 	 * @param data_ - DatabaseModel TableModel data
 	 */
-	public DisconnectReport(DisconnectModel model_)
+	public MeterOutageReport(MeterOutageModel model_)
 	{
 		super();
 		setModel(model_);
@@ -61,7 +57,7 @@ public class DisconnectReport extends YukonReportBase
 		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		DisconnectModel model = new DisconnectModel(false);
+		MeterOutageModel model = new MeterOutageModel();
 		
 		//start and stop time are only valid when model.showHist is false
 		GregorianCalendar cal = new GregorianCalendar();
@@ -70,10 +66,8 @@ public class DisconnectReport extends YukonReportBase
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 		model.setStartDate(cal.getTime());
-//		model.setShowConnected(true);
-//		model.setShowDisconnected(true);
 
-		YukonReportBase disconnectReport = new DisconnectReport(model);
+		YukonReportBase disconnectReport = new MeterOutageReport(model);
 		disconnectReport.getModel().collectData();		
 		//Create the report
 		JFreeReport report = disconnectReport.createReport();
@@ -161,51 +155,4 @@ public class DisconnectReport extends YukonReportBase
 		}
 		return items;
 	}
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-		
-		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemDevice");
-		hideItem.setField(DisconnectModel.DEVICE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemMeterNum");
-		hideItem.setField(DisconnectModel.METER_NUMBER_STRING);
-		hideItem.setElement(DisconnectModel.METER_NUMBER_STRING+ ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemAddress");
-		hideItem.setField(DisconnectModel.ADDRESS_STRING);
-		hideItem.setElement(DisconnectModel.ADDRESS_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemType");
-		hideItem.setField(DisconnectModel.TYPE_STRING);
-		hideItem.setElement(DisconnectModel.TYPE_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemRoute");
-		hideItem.setField(DisconnectModel.ROUTE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.ROUTE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemCollGrp");
-		hideItem.setField(DisconnectModel.COLL_GROUP_NAME_STRING);
-		hideItem.setElement(DisconnectModel.COLL_GROUP_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		return expressions;
-	}	
 }

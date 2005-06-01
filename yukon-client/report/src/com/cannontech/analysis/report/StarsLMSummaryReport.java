@@ -14,38 +14,33 @@ import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
-import org.jfree.report.function.ExpressionCollection;
-import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.DisconnectModel;
+import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 
 /**
- * Created on Feb 06, 2003
- * Creates a DisconnectReport using the com.cannontech.analysis.data.DisconnectData tableModel
- * Groups data by Collection Group and then by Device.  
+ * Created on May 22, 2005
+ * Creates a STARS LM Summary Report using com.cannontech.analysis.data.StarsLMSummaryModel tableModel
  * @author snebben
- * @author bjonasson
  */
-public class DisconnectReport extends YukonReportBase
+public class StarsLMSummaryReport extends YukonReportBase
 {
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseModel.
+	 * Data Base for this report type is instanceOf StarsLMSummaryModel.
 	 */
-	public DisconnectReport()
+	public StarsLMSummaryReport()
 	{
-		this(new DisconnectModel());
+		this(new StarsLMSummaryModel());
 	}
 
 	/**
 	 * Constructor for Report.
-	 * Data Base for this report type is instanceOf DatabaseModel.
-	 * @param data_ - DatabaseModel TableModel data
+	 * Data Base for this report type is instanceOf StarsLMSummaryModel.
+	 * @param data_ - StarsLMSummaryModel TableModel data
 	 */
-	public DisconnectReport(DisconnectModel model_)
+	public StarsLMSummaryReport(StarsLMSummaryModel model_)
 	{
 		super();
 		setModel(model_);
@@ -61,7 +56,7 @@ public class DisconnectReport extends YukonReportBase
 		JFreeReportBoot.getInstance().start();
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
-		DisconnectModel model = new DisconnectModel(false);
+		StarsLMSummaryModel model = new StarsLMSummaryModel();
 		
 		//start and stop time are only valid when model.showHist is false
 		GregorianCalendar cal = new GregorianCalendar();
@@ -70,10 +65,8 @@ public class DisconnectReport extends YukonReportBase
 		cal.set(Calendar.MONTH,0);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 		model.setStartDate(cal.getTime());
-//		model.setShowConnected(true);
-//		model.setShowDisconnected(true);
 
-		YukonReportBase disconnectReport = new DisconnectReport(model);
+		YukonReportBase disconnectReport = new StarsLMSummaryReport(model);
 		disconnectReport.getModel().collectData();		
 		//Create the report
 		JFreeReport report = disconnectReport.createReport();
@@ -110,8 +103,18 @@ public class DisconnectReport extends YukonReportBase
 		LabelElementFactory factory;
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			factory = ReportFactory.createGroupLabelElementDefault(model, i);
-			header.addElement(factory.createElement());
+		    boolean show = true;
+		    if( !((StarsLMSummaryModel)getModel()).isShowCapacity() &&
+		        ( StarsLMSummaryModel.GROUP_CAPACITY_COLUMN == i ||
+		          StarsLMSummaryModel.RECEIVERS_TOTAL_CAPACITY_COLUMN == i ||
+		          StarsLMSummaryModel.ADJUSTED_TOTAL_CAPACITY_COLUMN == i) )
+		        show = false;
+
+		    if( show)
+		    {
+				factory = ReportFactory.createGroupLabelElementDefault(model, i);
+				header.addElement(factory.createElement());
+		    }
 		}
 	
 		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
@@ -156,56 +159,20 @@ public class DisconnectReport extends YukonReportBase
 		
 		for (int i = 0; i < getModel().getColumnNames().length; i++)
 		{
-			TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
-			items.addElement(factory.createElement());
+		    boolean show = true;
+		    if( !((StarsLMSummaryModel)getModel()).isShowCapacity() &&
+		        ( StarsLMSummaryModel.GROUP_CAPACITY_COLUMN == i ||
+		          StarsLMSummaryModel.RECEIVERS_TOTAL_CAPACITY_COLUMN == i ||
+		          StarsLMSummaryModel.ADJUSTED_TOTAL_CAPACITY_COLUMN == i) )
+		        show = false;
+
+		    if( show)
+		    {
+			    
+				TextFieldElementFactory factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
+				items.addElement(factory.createElement());
+		    }
 		}
 		return items;
 	}
-	/**
-	 * Creates the function collection. The xml definition for this construct:
-	 * @return the functions.
-	 * @throws FunctionInitializeException if there is a problem initialising the functions.
-	 */
-	protected ExpressionCollection getExpressions() throws FunctionInitializeException
-	{
-		super.getExpressions();
-		
-		ItemHideFunction hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemDevice");
-		hideItem.setField(DisconnectModel.DEVICE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.DEVICE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemMeterNum");
-		hideItem.setField(DisconnectModel.METER_NUMBER_STRING);
-		hideItem.setElement(DisconnectModel.METER_NUMBER_STRING+ ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemAddress");
-		hideItem.setField(DisconnectModel.ADDRESS_STRING);
-		hideItem.setElement(DisconnectModel.ADDRESS_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemType");
-		hideItem.setField(DisconnectModel.TYPE_STRING);
-		hideItem.setElement(DisconnectModel.TYPE_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemRoute");
-		hideItem.setField(DisconnectModel.ROUTE_NAME_STRING);
-		hideItem.setElement(DisconnectModel.ROUTE_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		hideItem = new ItemHideFunction();
-		hideItem.setName("hideItemCollGrp");
-		hideItem.setField(DisconnectModel.COLL_GROUP_NAME_STRING);
-		hideItem.setElement(DisconnectModel.COLL_GROUP_NAME_STRING + ReportFactory.NAME_ELEMENT);
-		expressions.add(hideItem);
-
-		return expressions;
-	}	
 }

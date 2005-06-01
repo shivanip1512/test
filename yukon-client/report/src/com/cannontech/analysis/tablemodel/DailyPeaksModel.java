@@ -145,9 +145,10 @@ public class DailyPeaksModel extends ReportModelBase
 	{
 		super(start_, stop_);
 		setPaoIDs(paoIDs_);
-		setPaoModelTypes(new int[]{ModelFactory.LMCONTROLAREA});
-		setPaoModelType(getPaoModelTypes()[0]);
-	}
+		setFilterModelTypes(new int[]{ 
+    			ModelFactory.LMCONTROLAREA}
+				);
+		}
 	
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#collectData()

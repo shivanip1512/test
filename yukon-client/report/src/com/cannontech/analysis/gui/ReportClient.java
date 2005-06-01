@@ -46,7 +46,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.model.Checkable;
 import com.cannontech.database.model.CommChannelCheckBoxTreeModel;
@@ -217,14 +216,14 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			enableComponents(false, false);
 			loadTreeModels(DISCONNECT_MODELS);
 			tempModel = new DisconnectModel();
-			((DisconnectModel)tempModel).setShowConnected(true);
+			((DisconnectModel)tempModel).setDisconnectState(DisconnectModel.DISCONNECTED_STATE);
 		}
 		else if ( event.getSource() == getReportsMenu().getDisconnectedMenuItem())
 		{
 			enableComponents(false, false);
 			loadTreeModels(DISCONNECT_MODELS);
 			tempModel = new DisconnectModel();
-			((DisconnectModel)tempModel).setShowDisconnected(true);
+			((DisconnectModel)tempModel).setDisconnectState(DisconnectModel.CONNECTED_STATE);
 		}
 		else if ( event.getSource() == getReportsMenu().getCurrentStateMenuItem())
 		{
@@ -322,7 +321,7 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			else if (model instanceof DisconnectModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setFilterModelType(ModelFactory.COLLECTIONGROUP);
 				model.setBillingGroups(collGrps);
 				report = new DisconnectReport();
 			}
@@ -335,14 +334,14 @@ private com.cannontech.common.gui.util.CheckBoxTreeViewPanel ivjCheckBoxTreeView
 			else if (model instanceof MeterReadModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setFilterModelType(ModelFactory.COLLECTIONGROUP);
 				model.setBillingGroups(collGrps);
 				report = new MeterReadReport();
 			}
 			else if (model instanceof PowerFailModel)
 			{
 				String[] collGrps = getStringsFromNodes();
-				model.setBillingGroupType(DeviceMeterGroup.COLLECTION_GROUP);
+				model.setFilterModelType(ModelFactory.COLLECTIONGROUP);
 				model.setBillingGroups(collGrps);
 				report = new PowerFailReport();
 			}

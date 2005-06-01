@@ -1,16 +1,18 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -56,31 +58,11 @@ public class CarrierDBModel extends ReportModelBase
 	public CarrierDBModel()
 	{
 		super();
-	}
-
-	/**
-	 * Add CarrierData objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 */
-	public void addDataRow(ResultSet rset)
-	{
-		try
-		{
-			String paoName = rset.getString(1);
-			String paoType = rset.getString(2);
-			String address = rset.getString(3);			
-			String routeName = rset.getString(4);
-			String collGroup = rset.getString(5);
-			String testCollGroup = rset.getString(6);
-			String meterNumber = rset.getString(7);
-					
-			Carrier carrier = new Carrier(paoName, paoType, meterNumber, address, routeName, collGroup, testCollGroup);
-			getData().add(carrier);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+		setFilterModelTypes(new int[]{ 
+		        			ModelFactory.COLLECTIONGROUP, 
+		        			ModelFactory.TESTCOLLECTIONGROUP, 
+		        			ModelFactory.BILLING_GROUP}
+							);
 	}
 
 	/**
@@ -89,17 +71,18 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAONAME MCT, PAO1.TYPE, DCS.ADDRESS, PAO2.PAONAME ROUTE, COLLECTIONGROUP, TESTCOLLECTIONGROUP, METERNUMBER " + 
-			" FROM YUKONPAOBJECT PAO1, YUKONPAOBJECT PAO2, DEVICEROUTES DR, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG "+
-			" WHERE PAO1.PAOBJECTID = DMG.DEVICEID "+
-			" AND PAO1.PAOBJECTID = DR.DEVICEID " + 
-			" AND PAO2.PAOBJECTID = DR.ROUTEID " +
-			" AND PAO1.PAOBJECTID = DCS.DEVICEID ");
-
+		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAOBJECTID " + 
+			" FROM YUKONPAOBJECT PAO1 ");
+			if( getBillingGroups() != null && getBillingGroups().length > 0)
+			    sql.append(", DEVICEMETERGROUP DMG ");
+			    
+			sql.append(" WHERE PAO1.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER +"' ");
+			
 			//billing group selection
 			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
-				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+				sql.append(" AND PAO1.PAOBJECTID = DMG.DEVICEID " +
+						" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
 				for (int i = 1; i < getBillingGroups().length; i++)
 					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
@@ -113,10 +96,6 @@ public class CarrierDBModel extends ReportModelBase
 					sql.append(", " + getPaoIDs()[i]);
 				sql.append(") ");
 			}
-			
-			if( getPaoClass() != null ) 
-				sql.append(" AND PAO1.PAOCLASS = '" + getPaoClass() + "' ");
-			sql.append(" ORDER BY PAO1.PAONAME" );
 		return sql;
 	}
 		
@@ -151,7 +130,8 @@ public class CarrierDBModel extends ReportModelBase
 				rset = pstmt.executeQuery();
 				while( rset.next())
 				{
-					addDataRow(rset);
+					Integer paobjectID = new Integer(rset.getInt(1));
+					getData().add(paobjectID);
 				}
 			}
 		}
@@ -178,15 +158,6 @@ public class CarrierDBModel extends ReportModelBase
 		return;
 	}
 	
-	/**
-	 * Return the paoclass
-	 * @return String paoClass
-	 */
-	private String getPaoClass()
-	{
-		return DeviceClasses.STRING_CLASS_CARRIER;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
 	 */
@@ -201,31 +172,32 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if ( o instanceof Carrier)
+		if ( o instanceof Integer)
 		{
-			Carrier carrier = ((Carrier)o); 
+		    LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(((Integer)o).intValue());
+		    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(((Integer)o).intValue());
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return carrier.getPaoName();
+					return lPao.getPaoName();
 		
 				case PAO_TYPE_COLUMN:
-					return carrier.getPaoType();
+					return PAOGroups.getPAOTypeString(lPao.getType());
 
 				case METER_NUMBER_COLUMN:
-					return carrier.getMeterNumber();
+				    return ldmn.getMeterNumber();
 				    
 				case ADDRESS_COLUMN:
-					return carrier.getAddress();
+					return String.valueOf(lPao.getAddress());
 	
 				case ROUTE_NAME_COLUMN:
-					return carrier.getRouteName();
+					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
 				
 				case COLL_GROUP_NAME_COLUMN:
-					return carrier.getCollGroup();
+					return ldmn.getCollGroup();
 				
 				case TEST_COLL_GROUP_NAME_COLUMN:
-					return carrier.getTestCollGroup();
+					return ldmn.getTestCollGroup();
 			}
 		}
 		return null;
@@ -296,15 +268,7 @@ public class CarrierDBModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		return title + " - " +getPaoClass();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
-	 */
-	public boolean useBillingGroup()
-	{
-		return true;
+		return title + " - Carrier";
 	}
 	
 	/* (non-Javadoc)

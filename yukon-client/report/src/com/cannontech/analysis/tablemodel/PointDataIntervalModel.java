@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -126,6 +126,11 @@ public class PointDataIntervalModel extends ReportModelBase
 		setPointType(intervalPointType);
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
+		setFilterModelTypes(new int[]{ 
+    			ModelFactory.COLLECTIONGROUP, 
+    			ModelFactory.TESTCOLLECTIONGROUP, 
+    			ModelFactory.BILLING_GROUP}
+				);
 	}
 	/**
 	 * Add CarrierData objects to data, retrieved from rset.
@@ -162,7 +167,7 @@ public class PointDataIntervalModel extends ReportModelBase
 			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 			
 			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
-				sql.append(", DEVICEMETERGROUP DMG ");
+			    sql.append(", DEVICEMETERGROUP DMG ");
 		
 			sql.append(" WHERE P.POINTID = RPH.POINTID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " +
@@ -171,8 +176,8 @@ public class PointDataIntervalModel extends ReportModelBase
 			//Use billing groups in query if they exist
 			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
-				sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");			    
-				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");			    
+				sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
 				for (int i = 1; i < getBillingGroups().length; i++)
 					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
@@ -548,12 +553,5 @@ public class PointDataIntervalModel extends ReportModelBase
 				setSortOrder(ASCENDING);
 			
 		}
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
-	 */
-	public boolean useBillingGroup()
-	{
-		return true;
 	}
 }

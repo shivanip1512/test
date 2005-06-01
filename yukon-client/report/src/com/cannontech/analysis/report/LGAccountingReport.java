@@ -2,7 +2,6 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
-import java.awt.print.PageFormat;
 import java.util.Date;
 
 import org.jfree.report.Group;
@@ -45,7 +44,6 @@ public class LGAccountingReport extends YukonReportBase
 	public LGAccountingReport(LoadGroupModel model_)
 	{
 		super();
-		setPageOrientation(PageFormat.PORTRAIT);
 		setModel(model_);
 	}
 
@@ -117,7 +115,7 @@ public class LGAccountingReport extends YukonReportBase
 		header.addElement(tfactory.createElement());
 		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
 
-		for (int i = 1; i <= LoadGroupModel.MONTHLY_CONTROL_COLUMN; i++)
+		for (int i = 1; i < getModel().getColumnCount(); i++)
 		{
 			factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), 30));	//lower this row of "headings"
@@ -126,23 +124,23 @@ public class LGAccountingReport extends YukonReportBase
 		collGrpGroup.setHeader(header);
 
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-
-		factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.SEASONAL_CONTROL_COLUMN);
-		factory.setText(factory.getText() + ":");
-		footer.addElement(factory.createElement());
-
-		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.SEASONAL_CONTROL_COLUMN);
-		tfactory.setAbsolutePosition(new Point2D.Float(100, 1));	//override
-		footer.addElement(tfactory.createElement());
+		//Moved into the header and item band
+//		factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.SEASONAL_CONTROL_COLUMN);
+//		factory.setText(factory.getText() + ":");
+//		footer.addElement(factory.createElement());
+//
+//		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.SEASONAL_CONTROL_COLUMN);
+//		tfactory.setAbsolutePosition(new Point2D.Float(100, 1));	//override
+//		footer.addElement(tfactory.createElement());
 		
-		factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
-		factory.setText(factory.getText() + ":");
-		factory.setAbsolutePosition(new Point2D.Float(0, 12));	//override
-		footer.addElement(factory.createElement());
-
-		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
-		tfactory.setAbsolutePosition(new Point2D.Float(100, 12));	//override
-		footer.addElement(tfactory.createElement());
+//		factory = ReportFactory.createGroupLabelElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
+//		factory.setText(factory.getText() + ":");
+//		factory.setAbsolutePosition(new Point2D.Float(0, 12));	//override
+//		footer.addElement(factory.createElement());
+//
+//		tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), LoadGroupModel.ANNUAL_CONTROL_COLUMN);
+//		tfactory.setAbsolutePosition(new Point2D.Float(100, 12));	//override
+//		footer.addElement(tfactory.createElement());
 		
 		collGrpGroup.setFooter(footer);
 
@@ -181,7 +179,7 @@ public class LGAccountingReport extends YukonReportBase
 
 		TextFieldElementFactory factory;
 		//Start at 1, we don't want to include the Load Group column, our group by column.
-		for (int i = 1; i <= LoadGroupModel.MONTHLY_CONTROL_COLUMN; i++)
+		for (int i = 1; i < getModel().getColumnCount(); i++)
 		{
 			factory = ReportFactory.createTextFieldElementDefault(getModel(), i);
 			items.addElement(factory.createElement());

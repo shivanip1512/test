@@ -13,7 +13,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.device.Carrier;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -22,7 +21,7 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -186,6 +185,11 @@ public class PointDataSummaryModel extends ReportModelBase
 	public PointDataSummaryModel()
 	{
 		super();
+		setFilterModelTypes(new int[]{ 
+    			ModelFactory.COLLECTIONGROUP, 
+    			ModelFactory.TESTCOLLECTIONGROUP, 
+    			ModelFactory.BILLING_GROUP}
+				);
 	}
 	/**
 	 * Constructor class
@@ -212,25 +216,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	 */
 	public void addDataRow(ResultSet rset)
 	{
-		try
-		{
-			String paoName = rset.getString(1);
-			String paoType = rset.getString(2);
-			String address = rset.getString(3);			
-			String routeName = rset.getString(4);
-			String collGroup = rset.getString(5);
-			String testCollGroup = rset.getString(6);
-			String meterNumber = null;
-			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to only meters.
-				meterNumber = rset.getString(7);
-					
-			Carrier carrier = new Carrier(paoName, paoType, meterNumber, address, routeName, collGroup, testCollGroup);
-			getData().add(carrier);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
+	    //NOT IMPLEMENTED, data rows are added in the collectData method 
 	}
 
 	/**
@@ -242,12 +228,12 @@ public class PointDataSummaryModel extends ReportModelBase
 		StringBuffer sql = new StringBuffer	("SELECT CHANGEID, RPH.POINTID, TIMESTAMP, QUALITY, VALUE, PAO.PAONAME ");
 		
 		if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to meters.
-			sql.append(", METERNUMBER ");
+		    sql.append(", METERNUMBER ");
 		
 		sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO");
 		
 		if( getBillingGroups() != null && getBillingGroups().length > 0 ) //Have a BILLING Group, can limit query to meters.
-			sql.append(", DEVICEMETERGROUP DMG ");
+		    sql.append(", DEVICEMETERGROUP DMG ");
 			
 			sql.append(" WHERE P.POINTID = RPH.POINTID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID ");	//Use PAO for ordering
@@ -281,7 +267,7 @@ public class PointDataSummaryModel extends ReportModelBase
 			if( getBillingGroups() != null && getBillingGroups().length > 0)
 			{
 				sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
-				sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+				sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
 				for (int i = 1; i < getBillingGroups().length; i++)
 					sql.append("', '" + getBillingGroups()[i]);
 				sql.append("') ");
@@ -812,12 +798,5 @@ public class PointDataSummaryModel extends ReportModelBase
 				setPointType(LOAD_PROFILE_POINT_TYPE);
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
-	 */
-	public boolean useBillingGroup()
-	{
-		return true;
-	}
+
 }

@@ -30,9 +30,9 @@ import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
+import com.cannontech.analysis.jfreereport.ItemMaxValueFunction;
+import com.cannontech.analysis.jfreereport.ItemMinValueFunction;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
-import com.cannotech.analysis.jfreereport.ItemMaxValueFunction;
-import com.cannotech.analysis.jfreereport.ItemMinValueFunction;
 
 /**
  * Created on Dec 15, 2003

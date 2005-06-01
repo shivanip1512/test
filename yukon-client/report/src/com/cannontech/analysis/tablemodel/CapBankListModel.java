@@ -32,15 +32,17 @@ public class CapBankListModel extends ReportModelBase
 	public final static int CB_ADDRESS_COLUMN = 1;
 	public final static int CB_SIZE_COLUMN = 2;
 	public final static int CBC_NAME_COLUMN = 3;
-	public final static int CB_SERIAL_COLUMN = 4;
-	public final static int FEEDER_NAME_COLUMN = 5;
-	public final static int SUB_NAME_COLUMN = 6;
+	public final static int CBC_TYPE_COLUMN = 4;
+	public final static int CB_SERIAL_COLUMN = 5;
+	public final static int FEEDER_NAME_COLUMN = 6;
+	public final static int SUB_NAME_COLUMN = 7;
 	
 	/** String values for column representation */
 	public final static String CB_NAME_STRING = "Bank Name";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String CB_SIZE_STRING = "Size";
 	public final static String CBC_NAME_STRING = "CBC Name";
+	public final static String CBC_TYPE_STRING = "Type";
 	public final static String CB_SERIAL_NAME_STRING = "Serial #";
 	public final static String FEEDER_NAME_STRING = "Feeder";
 	public final static String SUB_NAME_STRING = "Sub";
@@ -77,7 +79,8 @@ public class CapBankListModel extends ReportModelBase
 				(rset.getString(4) == null ? "---" : rset.getString(4)),
 				(rset.getString(5) == null ? "---" : rset.getString(5)),
 				(rset.getString(6) == null ? "---" : rset.getString(6)),
-				(rset.getString(7) == null ? "---" : rset.getString(7))
+				(rset.getString(7) == null ? "---" : rset.getString(7)),
+				(rset.getString(7) == null ? "---" : rset.getString(8))
 			};
 					
 			getData().add(values);
@@ -95,7 +98,7 @@ public class CapBankListModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	(
-			"select y.paoname, y.description, c.banksize, cbcy.paoname, cbcd.serialnumber, yfdr.paoname, ysub.paoname " +
+			"select y.paoname, y.description, c.banksize, cbcy.paoname, cbcy.type, cbcd.serialnumber, yfdr.paoname, ysub.paoname " +
 			"from " +
 			"(((capbank c join yukonpaobject y on c.deviceid = y.paobjectid) left outer join " +
 			"(yukonpaobject yfdr join ccfeederbanklist fdrl on yfdr.paobjectid = fdrl.feederid) on c.deviceid = fdrl.deviceid) " +
@@ -210,6 +213,7 @@ public class CapBankListModel extends ReportModelBase
 				ADDRESS_STRING,
 				CB_SIZE_STRING,
 				CBC_NAME_STRING,
+				CBC_TYPE_STRING,
 				CB_SERIAL_NAME_STRING,
 				FEEDER_NAME_STRING,
 				SUB_NAME_STRING
@@ -232,6 +236,7 @@ public class CapBankListModel extends ReportModelBase
 				String.class,
 				String.class,
 				String.class,
+				String.class,
 				String.class
 			};
 		}
@@ -248,13 +253,14 @@ public class CapBankListModel extends ReportModelBase
 			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, offset+=150, null),
+				new ColumnProperties(offset, 1, offset+=120, null),
 				new ColumnProperties(offset, 1, offset+=120, null),
 				new ColumnProperties(offset, 1, offset+=40, null),
-				new ColumnProperties(offset, 1, offset+=130, null),
+				new ColumnProperties(offset, 1, offset+=120, null),
+				new ColumnProperties(offset, 1, offset+=78, null),
 				new ColumnProperties(offset, 1, offset+=40, null),
 				new ColumnProperties(offset, 1, offset+=110, null),
-				new ColumnProperties(offset, 1, offset+=120, null)
+				new ColumnProperties(offset, 1, offset+=110, null)
 			};
 		}
 		return columnProperties;

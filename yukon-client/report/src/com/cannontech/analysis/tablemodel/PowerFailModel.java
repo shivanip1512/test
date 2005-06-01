@@ -11,7 +11,7 @@ import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.ModelFactory;
 
 /**
  * Created on Dec 15, 2003
@@ -53,6 +53,11 @@ public class PowerFailModel extends ReportModelBase
 	public PowerFailModel()
 	{
 		super();
+		setFilterModelTypes(new int[]{ 
+    			ModelFactory.COLLECTIONGROUP, 
+    			ModelFactory.TESTCOLLECTIONGROUP, 
+    			ModelFactory.BILLING_GROUP}
+				);
 	}
 	
 	/**
@@ -98,7 +103,7 @@ public class PowerFailModel extends ReportModelBase
 			
 		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
-			sql.append(" AND " + DeviceMeterGroup.getValidBillGroupTypeStrings()[getBillingGroupType()] + " IN ( '" + getBillingGroups()[0]);
+			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
 			for (int i = 1; i < getBillingGroups().length; i++)
 				sql.append("', '" + getBillingGroups()[i]);
 			sql.append("') ");
@@ -279,12 +284,5 @@ public class PowerFailModel extends ReportModelBase
 	public void setParameters( HttpServletRequest req )
 	{
 		super.setParameters(req);
-	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useBillingGroup()
-	 */
-	public boolean useBillingGroup()
-	{
-		return true;
 	}
 }

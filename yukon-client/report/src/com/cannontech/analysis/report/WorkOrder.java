@@ -21,6 +21,7 @@ import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.modules.gui.base.PreviewDialog;
 import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
@@ -231,7 +232,6 @@ public class WorkOrder extends YukonReportBase
 		factory = ReportFactory.createLabelElementDefault("Signature", 0, posY + colHeight, 50);
 		footer.addElement(factory.createElement());
 		footer.addElement(StaticShapeElementFactory.createShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2), true, false));
-//		footer.addElement(StaticShapeElementFactory.createLineShapeElement("sigLine", null, new BasicStroke(0.5f), new Line2D.Float(50, posY + colHeight*2, 300, posY+ colHeight*2)));
 		
 		//Date label
 		factory = ReportFactory.createLabelElementDefault("Date", 330, posY + colHeight, 30);

@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package com.cannotech.analysis.jfreereport;
+package com.cannontech.analysis.jfreereport;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

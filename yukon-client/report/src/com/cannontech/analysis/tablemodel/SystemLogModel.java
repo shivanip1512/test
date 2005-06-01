@@ -457,7 +457,7 @@ public class SystemLogModel extends ReportModelBase
 			html += "        </tr>" + LINE_SEPARATOR;
 		}
 		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
 		
 		html += "</table>" + LINE_SEPARATOR;
@@ -488,14 +488,6 @@ public class SystemLogModel extends ReportModelBase
 				else
 					setLogType(null);
 			}
-				
-			
-			param = req.getParameter(ATT_SORT_ORDER);
-			if( param != null)
-				setSortOrder(Integer.valueOf(param).intValue());
-			else
-				setSortOrder(ASCENDING);
-			
 		}
 	}
 }

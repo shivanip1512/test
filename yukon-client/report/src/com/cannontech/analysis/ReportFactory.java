@@ -62,7 +62,8 @@ public class ReportFactory
 		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
 		header.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
 		header.setRepeat(true);
-//		header.setDynamicContent(true);	//CAUSED ME GREAT PAIN
+//If it cannot be guaranteed that the dynamic content will not consume all space of the page, dynamic elements should not be used in the page header or any repeating group header. 
+//		header.setDynamicContent(true);
 		
 		return header;
 	}
@@ -72,6 +73,7 @@ public class ReportFactory
 		GroupFooter footer = new GroupFooter();
 		footer.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, GROUP_HEADER_STYLE_DIMENSION);
 		footer.getStyle().setFontDefinitionProperty(GROUP_HEADER_BAND_FONT);
+//...But as the effects when using dynamic elements in the page footer is unpredictable I usually recommend to avoid dynamic elements in that band. 
 //		footer.setDynamicContent(true);
 		return footer;
 	}
@@ -121,6 +123,7 @@ public class ReportFactory
 		factory.setText(name);
 		factory.setAbsolutePosition(new Point2D.Float(posX, posY));
 		factory.setMinimumSize(new FloatDimension(width, 18));
+//		Avoid dynamic elements whenever possible. Plain Labels should never be dynamic - label contents usually do not change, if the designer carefully chooses a suitable size for the element, report processing will have less work to do. 
 		factory.setDynamicHeight(Boolean.TRUE);
 		factory.setHorizontalAlignment(ElementAlignment.LEFT);
 		factory.setVerticalAlignment(ElementAlignment.BOTTOM);

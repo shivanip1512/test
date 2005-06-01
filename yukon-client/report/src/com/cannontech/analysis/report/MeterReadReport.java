@@ -1,7 +1,6 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
@@ -132,7 +131,7 @@ public class MeterReadReport extends YukonReportBase
 			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
 		    header.addElement(factory.createElement());
 		}
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2 ", null, new BasicStroke(0.5f), 38));
+	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
 	    collGrpGroup.setHeader(header);
 
 
