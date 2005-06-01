@@ -5,12 +5,11 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.cannontech.clientutils.CTILogger;
-
 
 public abstract class Dialer {
 
     String _phonePrefix = "";
+    private static final int RETRY_DELAY = 3000;
 
     public String getPhonePrefix() {
         return _phonePrefix;
@@ -26,17 +25,14 @@ public abstract class Dialer {
             
             dialCall(call);
             if (call.isRetry()) {
-                Thread.sleep(3000);
-                while (call.isReady()) {
-                    CTILogger.info("Retrying call (try " + ++count + "): "
-                                       + call);
-       
+                Thread.sleep(RETRY_DELAY);
+                while (call.isReady()) {       
                     dialCall(call);
-                    Thread.sleep(3000);
+                    Thread.sleep(RETRY_DELAY);
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            call.changeState(new com.cannontech.notif.voice.callstates.UnknownError(e));
         }
     }
 
