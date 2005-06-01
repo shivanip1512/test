@@ -455,7 +455,7 @@ public Object getValue(Object o)
 	else
 		program.getDirectProgram().setMessageFooter( getJTextPaneMsgFooter().getText() );
 
-	program.getDirectProgram().setNotifyOffset( new Integer( ((Number)getJCSpinFieldMinNotifyTime().getValue()).intValue() * 60 ) );
+	program.getDirectProgram().setNotifyActiveOffset( new Integer( ((Number)getJCSpinFieldMinNotifyTime().getValue()).intValue() * 60 ) );
 
 	return o;
 }
@@ -577,7 +577,7 @@ public void setValue(Object o)
 	if(program.getDirectProgram().getMessageFooter().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgFooter().setText( program.getDirectProgram().getMessageFooter() );
 		
-	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyOffset().intValue() / 60) );
+	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyActiveOffset().intValue() / 60) );
 	
 }
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
