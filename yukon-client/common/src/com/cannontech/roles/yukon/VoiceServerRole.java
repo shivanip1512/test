@@ -12,5 +12,8 @@ public interface VoiceServerRole
 	
 	public static final int VOICE_APP = YukonRoleDefs.VOICE_PROPERTYID_BASE;
 	public static final int CALL_TIMEOUT = YukonRoleDefs.VOICE_PROPERTYID_BASE - 1;
-	public static final int CALL_RESPONSE_TIMEOUT = YukonRoleDefs.VOICE_PROPERTYID_BASE - 2;	
+	public static final int CALL_RESPONSE_TIMEOUT = YukonRoleDefs.VOICE_PROPERTYID_BASE - 2;
+    public static final int CALL_PREFIX = YukonRoleDefs.VOICE_PROPERTYID_BASE - 3;
+    public static final int NUMBER_OF_CHANNELS = YukonRoleDefs.VOICE_PROPERTYID_BASE - 4;
+    public static final int TEMPLATE_ROOT = YukonRoleDefs.VOICE_PROPERTYID_BASE - 5;	
 }
