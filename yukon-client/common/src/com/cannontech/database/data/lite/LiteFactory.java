@@ -350,9 +350,6 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 				((NotificationGroup)val).getNotificationGroup().getNotificationGroupID().intValue(),
 				((NotificationGroup)val).getNotificationGroup().getGroupName() );
 				
-		lGrp.setEmailFrom( ((NotificationGroup)val).getNotificationGroup().getEmailFromAddress() );
-		lGrp.setEmailBody( ((NotificationGroup)val).getNotificationGroup().getEmailMessage() );
-		lGrp.setEmailSubject( ((NotificationGroup)val).getNotificationGroup().getEmailSubject() );
 		lGrp.setDisabled( ((NotificationGroup)val).getNotificationGroup().getDisableFlag().equalsIgnoreCase("Y") );
 				
 		returnLite = lGrp;

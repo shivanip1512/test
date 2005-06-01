@@ -13,9 +13,6 @@ import com.cannontech.database.db.notification.NotificationGroup;
 public class LiteNotificationGroup extends LiteBase
 {
 	private String notificationGroupName = null;
-	private String emailSubject = null;
-	private String emailFrom = null;
-	private String emailBody = null;
 	private boolean disabled = false;
 	
 	//contains instances of com.cannontech.database.data.lite.LiteContactNotification
@@ -64,8 +61,7 @@ public class LiteNotificationGroup extends LiteBase
 	public void retrieve(String databaseAlias)
 	{
 	 	String notifSQL = 
-			"SELECT GroupName, EmailFromAddress, EmailMessage, " +
-			"EmailSubject, DisableFlag " +
+			"SELECT GroupName, DisableFlag " +
 			"FROM " + NotificationGroup.TABLE_NAME + " " + 
 			"WHERE NotificationGroupID = " + 
 			Integer.toString(getNotificationGroupID());
@@ -83,10 +79,7 @@ public class LiteNotificationGroup extends LiteBase
 			while( rset.next() )
 			{
 				setNotificationGroupName( rset.getString(1).trim() );
-				setEmailFrom( rset.getString(2).trim() );
-				setEmailBody( rset.getString(3).trim() );
-				setEmailSubject( rset.getString(4).trim() );
-				setDisabled( rset.getString(5).trim().charAt(0) == CtiUtilities.trueChar.charValue() );
+				setDisabled( rset.getString(2).trim().charAt(0) == CtiUtilities.trueChar.charValue() );
 			}
 
 			setNotifDestinationMap(
@@ -162,79 +155,12 @@ public class LiteNotificationGroup extends LiteBase
 	}
 
 	/**
-	 * @return
-	 */
-	public String getEmailFrom()
-	{
-		return emailFrom;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getEmailSubject()
-	{
-		return emailSubject;
-	}
-
-	/**
-	 * @return
-	 */
-//	public java.util.ArrayList getNotificationDestinations()
-//	{
-//		if( notificationDestinations == null )
-//			notificationDestinations = new java.util.ArrayList(8);
-//		return notificationDestinations;
-//	}
-
-	/**
 	 * @param b
 	 */
 	public void setDisabled(boolean b)
 	{
 		disabled = b;
 	}
-
-	/**
-	 * @param string
-	 */
-	public void setEmailFrom(String string)
-	{
-		emailFrom = string;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setEmailSubject(String string)
-	{
-		emailSubject = string;
-	}
-
-	/**
-	 * @param list
-	 */
-//	public void setNotificationDestinations(java.util.ArrayList list)
-//	{
-//		notificationDestinations = list;
-//	}
-
-	/**
-	 * @return
-	 */
-	public String getEmailBody()
-	{
-		return emailBody;
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setEmailBody(String string)
-	{
-		emailBody = string;
-	}
-
 
 	/**
 	 * @return

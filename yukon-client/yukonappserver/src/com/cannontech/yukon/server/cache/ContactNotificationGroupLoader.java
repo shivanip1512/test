@@ -38,8 +38,7 @@ public class ContactNotificationGroupLoader implements Runnable
 	timerStart = new java.util.Date();
 	//temp code
 		String sqlString = 
-				"SELECT NotificationGroupID, GroupName, EmailFromAddress, EmailMessage, " +
-				"EmailSubject, DisableFlag " +
+				"SELECT NotificationGroupID, GroupName, DisableFlag " +
 				"FROM " + NotificationGroup.TABLE_NAME + " " + 
 				"WHERE NotificationGroupID > 0 " + 
 				"ORDER BY GroupName";
@@ -58,10 +57,8 @@ public class ContactNotificationGroupLoader implements Runnable
 				LiteNotificationGroup lGrp =
 						new LiteNotificationGroup( rset.getInt(1), rset.getString(2).trim() );
 
-				lGrp.setEmailFrom( rset.getString(3).trim() );
-				lGrp.setEmailBody( rset.getString(4).trim() );
-				lGrp.setEmailSubject( rset.getString(5).trim() );
-				lGrp.setDisabled( rset.getString(6).trim().equalsIgnoreCase("Y") );
+				lGrp.setDisabled( rset.getString(3).trim().equalsIgnoreCase("Y") );
+
 
 				lGrp.setNotifDestinationMap(
 					com.cannontech.database.data.notification.NotificationGroup.getAllNotifGroupDestinations(
