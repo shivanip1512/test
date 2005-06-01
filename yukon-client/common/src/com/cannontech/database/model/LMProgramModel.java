@@ -34,11 +34,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 	return( DeviceTypesFuncs.isLMProgram(type_)
 			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_LOADCONTROL );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Load Program";
-}
 }

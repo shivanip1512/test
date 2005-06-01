@@ -33,11 +33,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 			  && class_ == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL
 			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Cap Bank Controller";
-}
 }

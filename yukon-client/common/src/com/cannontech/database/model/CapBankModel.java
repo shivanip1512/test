@@ -24,11 +24,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 	return( type_ == PAOGroups.CAPBANK
 			  && category_ == PAOGroups.CAT_DEVICE );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Cap Bank";
-}
 }

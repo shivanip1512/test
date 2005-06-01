@@ -42,11 +42,4 @@ public class LMScenarioModel extends DeviceTreeModel
 		return( type_ == PAOGroups.LM_SCENARIO
 				  && category_ == PAOGroups.CAT_LOADCONTROL );
 	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.String
-	 */
-	public String toString() {
-		return "Scenario";
-	}
 }

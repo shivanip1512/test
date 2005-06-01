@@ -28,13 +28,6 @@ public boolean isLiteTypeSupported( int liteType )
 }
 /**
  * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Login";
-}
-/**
- * This method was created in VisualAge.
  */
 public void update() {
 

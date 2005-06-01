@@ -399,9 +399,9 @@ public synchronized void sortChildNodes(DBTreeNode parentNode, int sortType)
  * This method was created in VisualAge.
  * @return java.lang.String
  */
-public String toString() {
-	return "Device";
-}
+//public String toString() {
+//    return ModelFactory.getModelString(this.getClass());
+//}
 /**
  * Insert the method's description here.
  * Creation date: (4/25/2002 12:35:32 PM)

@@ -32,14 +32,6 @@ public class LMConstraintModel extends DBTreeModel
 	}
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (8/24/2001 11:27:44 AM)
-	 * @return java.lang.String
-	 */
-	public String toString() {
-		return "Constraint";
-	}
-	/**
-	 * Insert the method's description here.
 	 * Creation date: (8/24/2001 10:45:51 AM)
 	 */
 	public void update()

@@ -20,14 +20,13 @@ import com.cannontech.database.data.lite.LiteTypes;
 */
 public class EnergyCompanyCheckBoxTreeModel extends CheckBoxDBTreeModel 
 {
-	private static String TITLE_STRING = "Energy Company";
 	/**
 	 * EnergyCompanyCheckBoxTreeModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EnergyCompanyCheckBoxTreeModel()
 	{
-		super( new CheckNode(TITLE_STRING) );
+		super( new CheckNode(ModelFactory.getModelString(ModelFactory.ENERGYCOMPANY_CHECKBOX)) );
 	}
 
 	/**
@@ -57,15 +56,6 @@ public class EnergyCompanyCheckBoxTreeModel extends CheckBoxDBTreeModel
 	//			node.add( new DBTreeNode(ciCust.getAdditionalContacts().get(i)) );
 		}
 		node.setWillHaveChildren(false);
-	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.String
-	 */
-	public String toString()
-	{
-		return TITLE_STRING;
 	}
 	
 	/**

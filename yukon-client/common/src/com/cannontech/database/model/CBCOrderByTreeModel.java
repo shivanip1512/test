@@ -8,8 +8,6 @@ import com.cannontech.common.gui.tree.CheckNode;
  */
 public class CBCOrderByTreeModel extends CheckBoxDBTreeModel
 {
-	public static String TITLE_STRING = "CapBank Ordering";
-	
 	public static final String[] ORDER_TYPE_STRINGS =
 	{
 		"Order by CapBank",
@@ -23,7 +21,7 @@ public class CBCOrderByTreeModel extends CheckBoxDBTreeModel
 	 */
 	public CBCOrderByTreeModel()
 	{
-		super(new CheckNode(TITLE_STRING));
+		super(new CheckNode(ModelFactory.getModelString(ModelFactory.CBC_ORDER_BY)));
 		
 	}
 	
@@ -50,10 +48,5 @@ public class CBCOrderByTreeModel extends CheckBoxDBTreeModel
 		}
 	
 		reload();
-	}
-	
-	public String toString()
-	{
-		return TITLE_STRING;
 	}
 }

@@ -12,15 +12,13 @@ import com.cannontech.database.data.pao.PAOGroups;
 
 public class LMGroupsCheckBoxModel extends DeviceCheckBoxTreeModel
 {
-	public static String TITLE_STRING = "Load Group";	
-
 	public LMGroupsCheckBoxModel()
 	{
-		super( new CheckNode(TITLE_STRING) );
+		super( new CheckNode(ModelFactory.getModelString(ModelFactory.LMGROUP_CHECKBOX) ));
 	}
 	public LMGroupsCheckBoxModel( boolean showPointNodes ) 
 	{
-		super( showPointNodes, new CheckNode(TITLE_STRING) );
+		super( showPointNodes, new CheckNode(ModelFactory.getModelString(ModelFactory.LMGROUP_CHECKBOX)) );
 	}
 	public synchronized java.util.List getCacheList( DefaultDatabaseCache cache ) 
 	{
@@ -29,10 +27,5 @@ public class LMGroupsCheckBoxModel extends DeviceCheckBoxTreeModel
 	public boolean isDeviceValid( int category_, int class_, int type_ )
 	{
 		return( class_ == DeviceClasses.GROUP && category_ == PAOGroups.CAT_DEVICE );
-	}
-
-	public String toString()
-	{
-		return TITLE_STRING;
 	}
 }

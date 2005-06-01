@@ -34,11 +34,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 	return( type_ == PAOGroups.LM_CONTROL_AREA
 			  && category_ == PAOGroups.CAT_LOADCONTROL );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Control Area";
-}
 }

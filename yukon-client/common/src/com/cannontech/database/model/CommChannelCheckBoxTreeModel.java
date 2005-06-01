@@ -17,16 +17,14 @@ import com.cannontech.database.data.pao.PAOGroups;
  */
 public class CommChannelCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
-	public static String TITLE_STRING = "Comm Channels";
-	
 	public CommChannelCheckBoxTreeModel()
 	{
-		super( new CheckNode(TITLE_STRING) );
+		this( false);
 	}
 
 	public CommChannelCheckBoxTreeModel( boolean showPointNodes ) 
 	{
-		super( showPointNodes, new CheckNode(TITLE_STRING) );
+		super( showPointNodes, new CheckNode(ModelFactory.getModelString(ModelFactory.COMMCHANNEL_CHECKBOX)) );
 	}
 	
 	public boolean isDeviceValid( int category_, int class_, int type_ )
@@ -37,10 +35,5 @@ public class CommChannelCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 	public synchronized java.util.List getCacheList( DefaultDatabaseCache cache ) 
 	{
 		return cache.getAllPorts();
-	}
-	
-	public String toString()
-	{
-		return TITLE_STRING;
 	}
 }

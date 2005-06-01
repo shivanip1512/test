@@ -19,11 +19,9 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
  */
 public class CollectionGroupCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 {
-	public static String TITLE_STRING = "Collection Group";
-	
 	public CollectionGroupCheckBoxTreeModel()
 	{
-		super( new CheckNode(TITLE_STRING) );
+		super( new CheckNode(ModelFactory.getModelString(ModelFactory.COLLECTIONGROUP_CHECKBOX)) );
 	}
 
 	public boolean isLiteTypeSupported( int liteType )
@@ -31,11 +29,6 @@ public class CollectionGroupCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 		return false;
 	}
 	
-	public String toString()
-	{
-		return TITLE_STRING;
-	}
-
 	public void update()
 	{
 		String availableCollectionGroupsArray[] = null;

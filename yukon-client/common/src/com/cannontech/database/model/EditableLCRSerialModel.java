@@ -6,13 +6,13 @@ package com.cannontech.database.model;
 
 public class EditableLCRSerialModel extends EditableTextModel
 {
-	private static String title = "LCR Serial #";
+//	private static String title = "LCR Serial #";
 	/**
 	 * EditableLCRSerialModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableLCRSerialModel() {
-		super(title);
+		super(ModelFactory.getModelString(ModelFactory.EDITABLE_LCR_SERIAL));
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.
@@ -20,12 +20,5 @@ public class EditableLCRSerialModel extends EditableTextModel
 	 */
 	public EditableLCRSerialModel(String sortByTitle) {
 		super(sortByTitle);
-	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.String
-	 */
-	public String toString() {
-		return title;
 	}
 }

@@ -32,11 +32,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 	return( type_ == com.cannontech.database.data.pao.PAOGroups.CAP_CONTROL_FEEDER
 			  && category_ == com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Cap Feeders";
-}
 }

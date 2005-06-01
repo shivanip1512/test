@@ -17,13 +17,12 @@ import com.cannontech.database.db.point.SystemLog;
  */
 public class SystemLogTypeCheckBoxTreeModel extends CheckBoxDBTreeModel
 {
-	public static String TITLE_STRING = "System Log Type";
 	/**
 	 * @param root
 	 */
 	public SystemLogTypeCheckBoxTreeModel()
 	{
-		super(new CheckNode(TITLE_STRING));
+		super(new CheckNode(ModelFactory.getModelString(ModelFactory.SYSTEMLOG_TYPES_CHECKBOX)));
 	}
 	
 	/* (non-Javadoc)
@@ -52,10 +51,5 @@ public class SystemLogTypeCheckBoxTreeModel extends CheckBoxDBTreeModel
 		}
 	
 		reload();
-	}
-	
-	public String toString()
-	{
-		return TITLE_STRING;
 	}
 }

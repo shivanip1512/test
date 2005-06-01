@@ -33,10 +33,5 @@ public class MCTCheckBoxTreeModel extends DeviceCheckBoxTreeModel
 	{
 		return ( DeviceTypesFuncs.isMCT(type_) && category_ == PAOGroups.CAT_DEVICE );
 	}
-
-	public String toString()
-	{
-		return "MCT";
-	}
 }
 

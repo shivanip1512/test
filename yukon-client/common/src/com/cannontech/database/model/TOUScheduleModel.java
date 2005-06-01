@@ -31,14 +31,6 @@ public boolean isLiteTypeSupported( int liteType )
 }
 /**
  * Insert the method's description here.
- * Creation date: (9/24/2004 11:27:44 AM)
- * @return java.lang.String
- */
-public String toString() {
-	return "TOU Schedule";
-}
-/**
- * Insert the method's description here.
  * Creation date: (9/24/2004 10:45:51 AM)
  */
 public void update()

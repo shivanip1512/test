@@ -6,13 +6,12 @@ package com.cannontech.database.model;
 
 public class EditableExpresscomModel extends EditableTextModel
 {
-	private static String title = "Expresscom Serial";
 	/**
 	 * EditableLCRSerialModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableExpresscomModel() {
-		super(title);
+		super(ModelFactory.getModelString(ModelFactory.EDITABLE_EXPRESSCOM_SERIAL));
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.
@@ -20,12 +19,5 @@ public class EditableExpresscomModel extends EditableTextModel
 	 */
 	public EditableExpresscomModel(String sortByTitle) {
 		super(sortByTitle);
-	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.String
-	 */
-	public String toString() {
-		return title;
 	}	
 }

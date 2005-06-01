@@ -1,5 +1,7 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+
 /**
  * This type was created in VisualAge.
  */
@@ -23,35 +25,28 @@ public boolean isLiteTypeSupported( int liteType )
 	return false;
 }
 /**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Test Collection Group";
-}
-/**
  * update method comment.
  */
 public void update()
 {
-	String availableTestCollectionGroupsArray[] = null;
+    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+
+	synchronized(cache)
+	{
+	    //Returns a List of Strings
+		java.util.List testCollGroups = cache.getAllDMG_AlternateGroups();
+		java.util.Collections.sort( testCollGroups);
+		
+		DBTreeNode rootNode = (DBTreeNode) getRoot();
+		rootNode.removeAllChildren();
+		
+		for( int i = 0; i < testCollGroups.size(); i++ )
+		{
+			DBTreeNode groupNode = new DBTreeNode( testCollGroups.get(i) );
+			rootNode.add( groupNode );
+		}
+	}
 	
-	try
-	{
-		availableTestCollectionGroupsArray = com.cannontech.database.db.device.DeviceMeterGroup.getDeviceTestCollectionGroups();
-	}
-	catch(java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-
-	DBTreeNode rootNode = (DBTreeNode) getRoot();
-	rootNode.removeAllChildren();
-
-	for (int i = 0; i < availableTestCollectionGroupsArray.length; i++)
-	{
-		DBTreeNode areaCodeGroupNode = new DBTreeNode( availableTestCollectionGroupsArray[i] );
-		rootNode.add(areaCodeGroupNode);
-	}
+	reload();
 }
 }

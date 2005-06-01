@@ -36,12 +36,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 				&& category_ == PAOGroups.CAT_DEVICE
 				&& !DeviceTypesFuncs.isIon(type_);
 }
-
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "RTU";
-}
 }

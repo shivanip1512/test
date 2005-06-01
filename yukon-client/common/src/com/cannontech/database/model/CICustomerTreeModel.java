@@ -145,14 +145,6 @@ com.cannontech.clientutils.CTILogger.info("*** !!! UPDATE Took " +
 */
 
 /**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "CI Customers";
-}
-
-/**
  * Insert the method's description here.
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase

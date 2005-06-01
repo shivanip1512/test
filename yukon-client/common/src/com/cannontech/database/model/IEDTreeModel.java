@@ -27,11 +27,4 @@ public boolean isDeviceValid( int category_, int class_, int type_ )
 		 	  || type_ == PAOGroups.DAVISWEATHER
 			  && category_ == PAOGroups.CAT_DEVICE );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "IED";
-}
 }

@@ -76,6 +76,8 @@ public final class ModelFactory
 	public static final int TOUSCHEDULE = 55;
 	public static final int CBC_ORDER_BY = 56;
 	
+	public static final int BILLING_GROUP = 57;
+	
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -136,8 +138,73 @@ public final class ModelFactory
 /* 53*/	SystemLogTypeCheckBoxTreeModel.class,
 		LMGroupMacroModel.class,
 		TOUScheduleModel.class,
-		CBCOrderByTreeModel.class
+		CBCOrderByTreeModel.class,
+		BillingGroupModel.class
 	};
+	
+//	The above is an enumeration of indices into
+	//the following array
+	private static String[] typeToStringMap =
+	{
+	    "Device",
+	    "IED",
+	    "MCT",
+	    "Meter",
+	    "Comm Channel        ",
+	    "Route",
+	    "RTU",
+	    "Transmitter",
+	    "Load Group",
+	    "EMETCON Group",
+/*10*/	"VERSACOM Group",
+		"State Group",
+		"Cap Bank",
+		"Cap Bank Controller",
+		"Substation Bus",
+/*15*/	"Notification Group",
+		"Contacts",
+		"Alarm Categories",
+		"Load Program",
+		"LCR Serial #",
+		"Control Area",
+/*21*/	"CI Customers",
+		"Device - CustomPoints",	//overridden value in class.toString()
+		"Holiday Schedule",
+		"Meter Number",
+		"Collection Group",
+		"Test Collection Group",
+/*27*/	"Cap Feeders",
+		"MCT Broadcast",
+		"Login",
+		"Login Group",
+		"Baseline",
+		"EXPRESSCOM Group",
+/*33 */	"MCT Config",
+		"Tag",
+		"Load Group",
+		"MCT",
+		"Device",
+		"Transmitter",
+		"Comm Channels",
+		"Collection Group",
+		"Constraint",
+/* 42*/	"Scenario",
+		"Versacom Serial",
+		"Expresscom Serial",
+		"DCU-305 Serial",
+		"DCU-205 Serial",
+/* 47*/	"Season Schedule",
+		"SA-305 Group",
+		"SA-205 Group",
+		"SA-Digital Group",
+		"Golay Group",
+		"Energy Company",
+/* 53*/	"System Log Type",
+		"Macro Group",
+		"TOU Schedule",
+		"CapBank Ordering",
+		"Billing Group"
+	};	
 
 /**
  * This method was created in VisualAge.
@@ -181,6 +248,28 @@ public static DBTreeModel create(int type) {
 		return typeToClassMap[type];
 	}
 
+	/**
+	 * Based on the classes available in typeToClassMap, find the index of the one that has the same class name
+	 * and return the typeToStringMap value for that same index.
+	 * @return
+	 */
+	public static String getModelString(Class model)
+	{
+	    for (int i = 0; i < typeToClassMap.length; i++)
+	    {
+	        if( model.toString().equalsIgnoreCase(typeToClassMap[i].toString()))
+	            return getModelString(i);
+	    }
+	    return "Unknown";
+	}
+	
+	public static String getModelString(int modelType)
+	{
+	    if( modelType < 0 || modelType >= typeToStringMap.length)
+	        return "Unknown";
+	    return typeToStringMap[modelType];
+	}
+	
 	/**
 	 * @param type
 	 * @return

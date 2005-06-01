@@ -1,8 +1,5 @@
 package com.cannontech.database.model;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteTypes;
 
 /**
  * This type was created in VisualAge.
@@ -24,15 +21,7 @@ public ContactTreeModel() {
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CONTACT );
-}
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Contacts";
-}
-/**
+}/**
  * This method was created in VisualAge.
  */
 public void update() 

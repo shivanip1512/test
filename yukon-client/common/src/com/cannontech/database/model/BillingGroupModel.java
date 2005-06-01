@@ -6,14 +6,14 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
  * This type was created in VisualAge.
  */
 
-public class CollectionGroupModel extends DBTreeModel 
+public class BillingGroupModel extends DBTreeModel 
 {
 /**
  * LMGroupEmetconModel constructor comment.
  * @param root javax.swing.tree.TreeNode
  */
-public CollectionGroupModel() {
-	super( new DBTreeNode("Collection Group") );
+public BillingGroupModel() {
+	super( new DBTreeNode("Billing Group") );
 }
 /**
  * Insert the method's description here.
@@ -34,15 +34,15 @@ public void update()
 	synchronized(cache)
 	{
 	    //Returns a List of Strings
-		java.util.List collGroups = cache.getAllDMG_CollectionGroups();
-		java.util.Collections.sort( collGroups);
+		java.util.List billingGroups = cache.getAllDMG_BillingGroups();
+		java.util.Collections.sort( billingGroups);
 		
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 		
-		for( int i = 0; i < collGroups.size(); i++ )
+		for( int i = 0; i < billingGroups.size(); i++ )
 		{
-			DBTreeNode groupNode = new DBTreeNode( collGroups.get(i) );
+			DBTreeNode groupNode = new DBTreeNode( billingGroups.get(i) );
 			rootNode.add( groupNode );
 		}
 	}

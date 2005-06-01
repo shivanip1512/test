@@ -6,13 +6,12 @@ package com.cannontech.database.model;
 
 public class EditableSA305Model extends EditableTextModel
 {
-	private static String title = "DCU-305 Serial";
 	/**
 	 * EditableLCRSerialModel constructor comment.
 	 * @param root javax.swing.tree.TreeNode
 	 */
 	public EditableSA305Model() {
-		super(title);
+		super(ModelFactory.getModelString(ModelFactory.EDITABLE_SA305_SERIAL));
 	}
 	/**
 	 * EditableLCRSerialModel constructor comment.
@@ -20,12 +19,5 @@ public class EditableSA305Model extends EditableTextModel
 	 */
 	public EditableSA305Model(String sortByTitle) {
 		super(sortByTitle);
-	}
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.String
-	 */
-	public String toString() {
-		return title;
 	}
 }

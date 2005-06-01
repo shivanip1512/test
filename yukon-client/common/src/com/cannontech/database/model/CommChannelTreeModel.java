@@ -42,13 +42,7 @@ public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.YUKON_PAOBJECT );
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Comm Channel        ";
-}
+
 /**
  * This method was created in VisualAge.
  */

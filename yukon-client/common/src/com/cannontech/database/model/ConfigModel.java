@@ -30,14 +30,7 @@ public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CONFIG );
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/24/2001 11:27:44 AM)
- * @return java.lang.String
- */
-public String toString() {
-	return "MCT Config";
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 10:45:51 AM)

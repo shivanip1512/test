@@ -24,13 +24,6 @@ public boolean isLiteTypeSupported( int liteType )
 }
 /**
  * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() {
-	return "Alarm Categories";
-}
-/**
- * This method was created in VisualAge.
  */
 public void update() {
 

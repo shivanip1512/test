@@ -192,5 +192,11 @@ com.cannontech.clientutils.CTILogger.info("*** UPDATE Took " +
 	return false;
 }
 
-
+/**
+ * This method was created in VisualAge.
+ * @return java.lang.String
+ */
+public String toString() {
+    return ModelFactory.getModelString(this.getClass());
+}
 }
