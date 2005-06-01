@@ -16,7 +16,8 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private Integer lastGroupControlled = null;
 	private GregorianCalendar directStartTime = null;
 	private GregorianCalendar directStopTime = null;
-	private GregorianCalendar notifyTime = null;
+	private GregorianCalendar notifyActiveTime = null;
+	private GregorianCalendar notifyInactiveTime = null;	
 	private GregorianCalendar startedRampingOut = null;
 	private Integer triggerOffset = null;
 	private Integer triggerRestoreOffset = null;	
@@ -254,20 +255,6 @@ public void setLastGroupControlled(Integer newLastGroupControlled) {
 	}
 
 	/**
-	 * @return
-	 */
-	public java.util.GregorianCalendar getNotifyTime() {
-		return notifyTime;
-	}
-
-	/**
-	 * @param calendar
-	 */
-	public void setNotifyTime(java.util.GregorianCalendar calendar) {
-		notifyTime = calendar;
-	}
-
-	/**
 	 * @return Returns the activeMasterProgramsVector.
 	 */
 	public Vector getActiveMasterPrograms() {
@@ -291,5 +278,17 @@ public void setLastGroupControlled(Integer newLastGroupControlled) {
 	public void setActiveSubordinatePrograms(
 			Vector activeSubordinateProgramsVector) {
 		this.activeSubordinateProgramsVector = activeSubordinateProgramsVector;
+	}
+	public GregorianCalendar getNotifyActiveTime() {
+		return notifyActiveTime;
+	}
+	public void setNotifyActiveTime(GregorianCalendar notifyActiveTime) {
+		this.notifyActiveTime = notifyActiveTime;
+	}
+	public GregorianCalendar getNotifyInactiveTime() {
+		return notifyInactiveTime;
+	}
+	public void setNotifyInactiveTime(GregorianCalendar notifyInactiveTime) {
+		this.notifyInactiveTime = notifyInactiveTime;
 	}
 }
