@@ -2,7 +2,6 @@ package com.cannontech.notif.handler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
 
 import com.cannontech.database.cache.functions.NotificationGroupFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -43,10 +42,9 @@ public class LoadManagementMessageHandler extends NotifHandler {
         LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
         notif.put("programname", liteYukonPAO.getPaoName());
 
-        for (Iterator iter = msg.notifGroupIds.iterator(); iter.hasNext();) {
-            Integer notifGroupId = (Integer) iter.next();
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
-                NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId.intValue());
+                NotificationGroupFuncs.getLiteNotificationGroup(msg.notifGroupIds[i]);
             
             outputNotification(notif, notificationGroup);
         }
