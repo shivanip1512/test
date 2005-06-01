@@ -798,6 +798,7 @@ private javax.swing.JComboBox getJComboBoxBankOperation() {
 
 			ivjJComboBoxBankOperation.addItem( com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE );
 			ivjJComboBoxBankOperation.addItem( com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE );
+			ivjJComboBoxBankOperation.addItem( com.cannontech.database.data.capcontrol.CapBank.UNINSTALLED_OPSTATE );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

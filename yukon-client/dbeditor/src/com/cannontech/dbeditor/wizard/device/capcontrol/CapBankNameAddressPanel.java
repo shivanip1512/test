@@ -4,6 +4,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
@@ -330,6 +331,11 @@ private javax.swing.JComboBox getOperationStateComboBox() {
 			ivjOperationStateComboBox = new javax.swing.JComboBox();
 			ivjOperationStateComboBox.setName("OperationStateComboBox");
 			// user code begin {1}
+			
+			ivjOperationStateComboBox.addItem( CapBank.SWITCHED_OPSTATE );
+			ivjOperationStateComboBox.addItem( CapBank.FIXED_OPSTATE );
+			ivjOperationStateComboBox.addItem( CapBank.UNINSTALLED_OPSTATE );
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -494,8 +500,6 @@ private void initialize() {
 	if( getOperationStateComboBox().getModel().getSize() > 0 )
 		getOperationStateComboBox().removeAllItems();
 		
-	getOperationStateComboBox().addItem("Switched");
-	getOperationStateComboBox().addItem("Fixed");
 	getJLabelAlreadyUsed().setVisible(false);
 
 
