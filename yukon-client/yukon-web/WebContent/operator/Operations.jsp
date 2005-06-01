@@ -304,7 +304,7 @@ function confirmDelete() {
           <td width="25%">&nbsp;</td>
           <td width="25%">&nbsp;</td>
           <td width="43%"><font face="Arial, Helvetica, sans-serif" size="1">Search 
-            for existing serivce order:</font></td>
+            for existing service order:</font></td>
           <td width="7%">&nbsp;</td>
         </tr>
         <tr> 
