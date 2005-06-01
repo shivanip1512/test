@@ -17,8 +17,8 @@ import com.cannontech.notif.outputs.OutputHandlerHelper;
  */
 public class LoadManagementMessageHandler extends NotifHandler {
 
-    private static final DateFormat _dateFormater = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday May 31"
-    private static final DateFormat _timeFormater = new SimpleDateFormat("h:m a"); // e.g. "3:45 PM"
+    private static final DateFormat _dateFormater = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
+    private static final DateFormat _timeFormater = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
 
     public LoadManagementMessageHandler(OutputHandlerHelper helper) {
         super(helper);
