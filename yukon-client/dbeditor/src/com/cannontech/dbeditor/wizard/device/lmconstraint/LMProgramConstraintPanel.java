@@ -1217,10 +1217,10 @@ public Object getValue(Object o)
 	
 	con.setConstraintName(getJTextFieldConstraintName().getText());
 	
-	con.setMaxHoursDaily( new Integer( ((Number)getJCSpinFieldMaxHoursDaily().getValue()).intValue() ) );
-	con.setMaxHoursMonthly( new Integer( ((Number)getJCSpinFieldMaxHoursMonthly().getValue()).intValue() ) );
-	con.setMaxHoursSeasonal( new Integer( ((Number)getJCSpinFieldMaxHoursSeasonal().getValue()).intValue() ) );
-	con.setMaxHoursAnnually( new Integer( ((Number)getJCSpinFieldMaxHoursAnnually().getValue()).intValue() ) );
+	con.setMaxHoursDaily( new Integer( ((Number)getJCSpinFieldMaxHoursDaily().getValue()).intValue() * 3600 ) );
+	con.setMaxHoursMonthly( new Integer( ((Number)getJCSpinFieldMaxHoursMonthly().getValue()).intValue() * 3600) );
+	con.setMaxHoursSeasonal( new Integer( ((Number)getJCSpinFieldMaxHoursSeasonal().getValue()).intValue() * 3600) );
+	con.setMaxHoursAnnually( new Integer( ((Number)getJCSpinFieldMaxHoursAnnually().getValue()).intValue() * 3600) );
 	con.setMinActivateTime( new Integer( ((Number)getJCSpinFieldMinActivateTime().getValue()).intValue() ) );
 	con.setMinRestartTime( new Integer( ((Number)getJCSpinFieldMinRestart().getValue()).intValue() ) );
 	con.setMaxActivateTime( new Integer( ((Number)getJCSpinFieldMaxActivateTime().getValue()).intValue() ) );
@@ -1495,10 +1495,10 @@ public void setValue(Object o)
 		getJCheckBoxDayChooser().setSelectedCheckBoxes( con.getAvailableWeekdays() );
 		getJCheckBoxDayChooser().setHolidaySelected(false);
 		
-		getJCSpinFieldMaxHoursDaily().setValue( con.getMaxHoursDaily() );
-		getJCSpinFieldMaxHoursMonthly().setValue( con.getMaxHoursMonthly() );
-		getJCSpinFieldMaxHoursSeasonal().setValue( con.getMaxHoursSeasonal() );
-		getJCSpinFieldMaxHoursAnnually().setValue( con.getMaxHoursAnnually() );
+		getJCSpinFieldMaxHoursDaily().setValue( new Integer(con.getMaxHoursDaily().intValue() / 3600) );
+		getJCSpinFieldMaxHoursMonthly().setValue( new Integer(con.getMaxHoursMonthly().intValue() / 3600 ) );
+		getJCSpinFieldMaxHoursSeasonal().setValue( new Integer(con.getMaxHoursSeasonal().intValue() / 3600 ) );
+		getJCSpinFieldMaxHoursAnnually().setValue( new Integer(con.getMaxHoursAnnually().intValue() / 3600 ) );
 		getJCSpinFieldMinActivateTime().setValue( con.getMinActivateTime() );
 		getJCSpinFieldMinRestart().setValue( con.getMinRestartTime() );
 		getJCSpinFieldMaxActivateTime().setValue( con.getMaxActivateTime() );
