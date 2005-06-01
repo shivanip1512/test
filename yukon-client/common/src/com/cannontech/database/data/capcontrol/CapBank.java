@@ -8,6 +8,7 @@ public class CapBank extends CapControlDeviceBase
 	// OPStates that a CapBank can be in
 	public final static String SWITCHED_OPSTATE = "Switched";
 	public final static String FIXED_OPSTATE = "Fixed";	
+	public final static String UNINSTALLED_OPSTATE = "NotThere";
 
 	//all control type of switches
 	public final static String CONTROL_TYPE_DLC = "CTI DLC";
