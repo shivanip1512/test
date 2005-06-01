@@ -280,14 +280,14 @@ function enableDates(value)
 				</td>
                 <td bgcolor="EEEEEE" class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
-				  <input id="startCal" type="text" name="startDate"  <%=(REPORT_BEAN.getModel().useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
-				  <%=(REPORT_BEAN.getModel().useStartDate() ? 
+				  <input id="startCal" type="text" name="startDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
+				  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? 
 				  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
 			    </td>
                 <td bgcolor="EEEEEE" class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
-                  <input id="stopCal" type="text" name="stopDate"  <%=(REPORT_BEAN.getModel().useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
-				  <%=(REPORT_BEAN.getModel().useStopDate() ? 
+                  <input id="stopCal" type="text" name="stopDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
+				  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? 
                   "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
                 </td>
 				<td bgcolor="EEEEEE" class="main">&nbsp;</td>
@@ -299,7 +299,7 @@ function enableDates(value)
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
-					    <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle"">
+					    <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> >
 					  </td>
 					</tr>
 				  </table>
@@ -347,7 +347,7 @@ function enableDates(value)
           <td width="6" height="9"><img src="../WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
         </tr>
       </table>
-	  <%if (REPORT_BEAN.getModel().useBillingGroup() || REPORT_BEAN.getModel().usePaobjects())
+	  <%if (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().getFilterModelTypes() != null)
 	  {%>
 		  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 			<tr> 
