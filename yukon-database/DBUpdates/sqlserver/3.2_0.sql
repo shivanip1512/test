@@ -78,7 +78,14 @@ alter table NotificationDestination alter column Attribs char(16) not null;
 go
 
 
-
+alter table NotificationGroup drop column emailsubject;
+go
+alter table NotificationGroup drop column emailfromaddress;
+go
+alter table NotificationGroup drop column emailmessage;
+go
+alter table NotificationGroup drop column numericpagermessage;
+go
 
 
 

@@ -65,6 +65,10 @@ alter table NotificationDestination add Attribs char(16);
 update NotificationDestination set Attribs = '0000000000000000';
 alter table NotificationDestination modify Attribs char(16) not null;
 
+alter table NotificationGroup drop column emailsubject;
+alter table NotificationGroup drop column emailfromaddress;
+alter table NotificationGroup drop column emailmessage;
+alter table NotificationGroup drop column numericpagermessage;
 
 
 
