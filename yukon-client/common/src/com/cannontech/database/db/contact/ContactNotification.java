@@ -255,10 +255,10 @@ public class ContactNotification extends NestedDBPersistent
 		
 		String sql = 
 			"SELECT ContactNotifID, ContactID, NotificationCategoryID, " + 
-			"DisableFlag, Notification " +
+			"DisableFlag, Notification, Ordering " +
 			"FROM " + TABLE_NAME + " " +
 			"WHERE ContactID = " + contactID_ + " " + 
-			"ORDER BY Notification";
+			"ORDER BY Ordering, Notification";
 	
 		try
 		{		
