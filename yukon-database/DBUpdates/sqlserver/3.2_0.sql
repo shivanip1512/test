@@ -87,6 +87,7 @@ go
 alter table NotificationGroup drop column numericpagermessage;
 go
 
+alter table CapBank alter column OperationalState varchar(16) not null;
 
 
 

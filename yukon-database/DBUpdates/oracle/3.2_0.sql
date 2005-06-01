@@ -70,7 +70,7 @@ alter table NotificationGroup drop column emailfromaddress;
 alter table NotificationGroup drop column emailmessage;
 alter table NotificationGroup drop column numericpagermessage;
 
-
+alter table CapBank modify OperationalState varchar2(16) not null;
 
 
 
