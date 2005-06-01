@@ -28,14 +28,17 @@ alter table yukonuser drop column logincount;
 alter table yukonuser drop column lastlogin;
 update contact set loginid = -9999 where loginid != -100 and loginid < 0;
 insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
+go
 
 alter table CustomerAdditionalContact add Ordering smallint;
 update CustomerAdditionalContact set Ordering = 0;
 alter table CustomerAdditionalContact alter column Ordering smallint not null;
+go
 
 alter table ContactNotification add Ordering smallint;
 update ContactNotification set Ordering = 0;
 alter table ContactNotification alter column Ordering smallint not null;
+go
 
 create table ContactNotifGroupMap (
    ContactID            numeric              not null,
@@ -50,6 +53,7 @@ alter table ContactNotifGroupMap
 alter table ContactNotifGroupMap
    add constraint FK_CNTNOFGM_NTFG foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
+go
 
 create table CustomerNotifGroupMap (
    CustomerID           numeric              not null,
@@ -64,6 +68,7 @@ alter table CustomerNotifGroupMap
 alter table CustomerNotifGroupMap
    add constraint FK_CST_CSTNOFGM foreign key (CustomerID)
       references Customer (CustomerID);
+go
 
 alter table NotificationDestination add Attribs char(16);
 go
