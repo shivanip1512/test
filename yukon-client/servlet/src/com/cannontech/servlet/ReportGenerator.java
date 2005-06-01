@@ -99,13 +99,6 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				reportBean = (ReportBean)session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
 			}	
 			
-			reportBean.getModel().setParameters(req);
-			reportBean.getModel().setTimeZone(tz);
-			reportBean.getModel().setECIDs(energyCompanyID);
-
-			//Add ECId to the reportkey.
-			reportKey += String.valueOf(energyCompanyID);
-			
 			boolean noCache = req.getParameter("NoCache") != null;
 
 			String param;	//holder for the requested parameter
@@ -117,13 +110,20 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			if( param != null){
 				reportBean.setType(Integer.valueOf(param).intValue());
 			}
-				
+			//Setting the type will reset the model instance if the type has changed.
 			if( reportBean.getType() >= 0)
 			{
 				reportKey += String.valueOf(reportBean.getType());
 			}
 			else
 				isKeyIncomplete = true;
+			
+			reportBean.getModel().setParameters(req);
+			reportBean.getModel().setTimeZone(tz);
+			reportBean.getModel().setECIDs(energyCompanyID);
+
+			//Add ECId to the reportkey.
+			reportKey += String.valueOf(energyCompanyID);
 			
 			//The starting date for the report data.
 			reportKey += reportBean.getStartDate().toString();
@@ -212,11 +212,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 						((WorkOrderModel)reportBean.getModel()).setSearchColumn( searchColumn );
 					}
 					
-					reportBean.getModel().collectData();
-					
-					report = reportBean.getReport().createReport();
-					report.setData(reportBean.getModel());
-					
+					report = reportBean.createReport();
 					if( !noCache )
 						session.setAttribute(reportKey + "Report", report);
 				}
