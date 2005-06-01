@@ -14,6 +14,7 @@ import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
@@ -104,6 +105,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList allDevices = null; //PAO
 	private ArrayList allLMPrograms = null; //PAO
 	private ArrayList allLMControlAreas = null;	//PAO
+	private ArrayList allLMGroups = null;//PAO
 	private ArrayList allLoadManagement = null; //PAO
 	private ArrayList allPorts = null; //PAO
 	private ArrayList allRoutes = null; //PAO
@@ -761,6 +763,26 @@ public List getAllLMControlAreas()
 	return allLMControlAreas;
 }
 
+
+/* (non-Javadoc)
+ * @see com.cannontech.yukon.IDatabaseCache#getAllLMGroups()
+ */
+public List getAllLMGroups()
+{
+    if( allLMGroups == null )
+	{
+		allLMGroups = new ArrayList( getAllLoadManagement().size() / 2 );
+
+		for( int i = 0; i < getAllLoadManagement().size(); i++ )
+		{
+			if( DeviceTypesFuncs.isLmGroup( ((LiteYukonPAObject)getAllLoadManagement().get(i)).getType()) )
+				allLMGroups.add( getAllLoadManagement().get(i) );				
+		}
+
+		allLMGroups.trimToSize();
+	}
+	return allLMGroups;
+}
 /**
  * getAllLoadManagement method comment.
  *
@@ -1790,6 +1812,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 			allLoadManagement = null;
 			allLMPrograms = null;
 			allLMControlAreas = null;
+			allLMGroups = null;
 			allLMScenarios = null;
 			allLMScenarioProgs = null;
 			allLMPAOExclusions = null;
@@ -3163,6 +3186,7 @@ public synchronized void releaseAllCache()
 	allDevices = null; //PAO
 	allLMPrograms = null; //PAO
 	allLMControlAreas = null; //PAO
+	allLMGroups = null;	//PAO
 	allLoadManagement = null; //PAO
 	allPorts = null; //PAO
 	allRoutes = null; //PAO

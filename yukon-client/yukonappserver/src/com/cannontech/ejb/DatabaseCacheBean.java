@@ -264,6 +264,11 @@ public class DatabaseCacheBean implements IDatabaseCache
    {
 	  return getCache().getAllLMControlAreas();
    }
+
+   public List getAllLMGroups()
+   {
+       return getCache().getAllLMGroups();
+   }   
    public synchronized java.util.List getAllGears()
    {
 	  return getCache().getAllGears();
