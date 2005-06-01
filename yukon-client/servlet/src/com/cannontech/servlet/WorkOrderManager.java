@@ -22,7 +22,7 @@ import org.jfree.report.JFreeReport;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
-import com.cannontech.analysis.report.YukonReportBase;
+import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -259,14 +259,12 @@ public class WorkOrderManager extends HttpServlet {
 		}
 		
 		try {
-			YukonReportBase rpt = ReportFuncs.createYukonReport( ReportTypes.EC_WORK_ORDER_DATA );
-			rpt.getModel().setECIDs( energyCompany.getEnergyCompanyID() );
-			((WorkOrderModel)rpt.getModel()).setOrderID( new Integer(orderID) );
+		    ReportBean reportBean = new ReportBean();
+		    reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
+		    reportBean.getModel().setECIDs( energyCompany.getEnergyCompanyID() );
+			((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
 			
-			rpt.getModel().collectData();
-			
-			JFreeReport report = rpt.createReport();
-			report.setData(rpt.getModel());
+			JFreeReport report = reportBean.createReport();;
 			
 			File tempDir = new File( ServerUtils.getStarsTempDir(), "/WorkOrder" );
 			if (!tempDir.exists()) tempDir.mkdirs();
