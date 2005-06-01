@@ -43,4 +43,4 @@ create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.1', 'Ryan', '1-JUN-2005', 'Manual version insert done', 7);
