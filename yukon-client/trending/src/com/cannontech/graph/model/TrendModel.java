@@ -1213,6 +1213,16 @@ public Dataset getDataset(int index)
  */
 public JFreeChart refresh()
 {
+	//Need to check that at least one of the trendSeries is GraphType, otherwise return null
+	for(int i = 0; i < getTrendSeries().length; i++)
+	{
+		TrendSerie serie = getTrendSeries()[i];
+		if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
+			break;
+		if(i == getTrendSeries().length - 1)	//last iteration and we are still here
+			return null;
+	} 
+		
 	//Plot setup
 	Plot plot = null;
 	
