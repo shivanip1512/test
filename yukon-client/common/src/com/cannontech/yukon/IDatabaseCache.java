@@ -44,6 +44,7 @@ public interface IDatabaseCache
 	public java.util.List getAllLMScenarios();
 	public java.util.List getAllLMPrograms();
 	public java.util.List getAllLMControlAreas();
+	public java.util.List getAllLMGroups();
 	public java.util.List getAllGears();
 	public java.util.List getAllLoadManagement();
 	public java.util.List getAllLMScenarioProgs();

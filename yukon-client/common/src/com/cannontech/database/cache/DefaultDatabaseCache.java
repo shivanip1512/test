@@ -802,4 +802,12 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		
 	}
 
+    /* (non-Javadoc)
+     * @see com.cannontech.yukon.IDatabaseCache#getAllLMGroups()
+     */
+    public List getAllLMGroups()
+    {
+        return getDBCache().getAllLMGroups();
+    }
+
 }
