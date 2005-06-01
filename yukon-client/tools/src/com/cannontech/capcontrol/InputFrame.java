@@ -59,7 +59,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private JLabel serialToLabel = new JLabel("to");
 	private JTextField serialFromTF = new JTextField("");
 	private JTextField serialToTF = new JTextField("");
-	//private JButton checkButton = new JButton("Check");
 	private JButton submitButton = new JButton("Submit");
 	private JLabel routeLabel = new JLabel("* Route:");
 	private JLabel bankSizeLabel = new JLabel("Bank Size:");
@@ -74,11 +73,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private JComboBox conTypeCB = new JComboBox();
 	private JProgressBar bar;
 	private InputValidater val;
-	private volatile Thread valThread;
+	private volatile Thread progressThread;
 	private Timer timer;
-	private int progress = 0;
+	private double progress = 0;
 	private final int ONE_SECOND = 1000;
-	private boolean valid = false;
+	private boolean validating = false;
 	private ActionNotifier notifier = new ActionNotifier(this);
 	private static DecimalFormat SERIAL_FORM = new DecimalFormat("000000000");
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
@@ -119,7 +118,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		switchTypeCB.setBounds(new Rectangle(110, 130, 120, 20));
 		conTypeLabel.setBounds(new Rectangle(10, 70, 90, 20));
 		conTypeCB.setBounds(new Rectangle(110, 70, 120, 20));
-		//checkButton.setBounds(new Rectangle(60,190,70,25));
 		submitButton.setBounds(new Rectangle(100, 190, 70, 25));
 		requiredLabel.setBounds(new Rectangle(60, 255, 130, 20));
 		bar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
@@ -127,7 +125,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		bar.setStringPainted(true);
 		bar.setBounds(new Rectangle(35, 225, 200, 20));
 		bar.setVisible(false);
-		//checkButton.addActionListener(this);
 		submitButton.addActionListener(this);
 
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
@@ -164,10 +161,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{         
-//			java.util.List list = 
-//			(cbcType == DeviceTypes.DNP_CBC_6510)
-//			? cache.getAllPorts()
-//			: cache.getAllRoutes();
+
 			java.util.List list = cache.getAllRoutes();
 
 			for( int i = 0; i < list.size(); i++ )
@@ -188,7 +182,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		contentPane.add(switchTypeCB);
 		contentPane.add(conTypeLabel);
 		contentPane.add(conTypeCB);
-		//contentPane.add(checkButton);
 		contentPane.add(submitButton);
 		contentPane.add(requiredLabel);
 		contentPane.add(bar);
@@ -198,7 +191,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				bar.setValue(progress);
+				Double newDouble = new Double(progress);
+				int newInt = newDouble.intValue();
+				bar.setValue(newInt);
 
 				if (progress == 100)
 				{
@@ -221,12 +216,17 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		Object obj = e.getSource();
 		if (obj == submitButton)
 		{
-			// check data with our input validater
+			// check data before running
 			if ("".equalsIgnoreCase(serialFromTF.getText()) || "".equalsIgnoreCase(serialToTF.getText()))
 			{
 				JOptionPane.showMessageDialog(this, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
-			} else
+			}else if ( (new Integer (serialFromTF.getText())).intValue() > (new Integer (serialToTF.getText())).intValue() )
 			{
+				JOptionPane.showMessageDialog(this, "Range must be accending: "+serialToTF.getText()+" to "+serialFromTF.getText(), "Finish settings first", JOptionPane.WARNING_MESSAGE);
+			}
+			else
+			{
+				validating = true;
 				bar.setVisible(true);
 				progress = 0;
 				bar.setValue(bar.getMinimum());
@@ -241,8 +241,8 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				String conType = (String) conTypeCB.getSelectedItem();
 				timer.start();
 				val = new InputValidater(from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
-				valThread = new Thread(this, "Validation Thread");
-				valThread.start();
+				progressThread = new Thread(this, "Progress Thread");
+				progressThread.start();
 			}
 		}
 	}
@@ -252,10 +252,12 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	 */
 	public void run()
 	{
+		
 		try
 		{
 			while (true)
 			{
+				// this is all meaningless except for checkRange, maybe needed later.
 				boolean rangeOK = val.checkRange();
 				if (rangeOK)
 				{
@@ -264,6 +266,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
 				boolean routeOK = val.checkRoute();
@@ -274,6 +277,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
 				boolean bankOK = val.checkBankSize();
@@ -284,6 +288,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
 				boolean switchManOK = val.checkManufacturer();
@@ -294,6 +299,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
 				boolean switchTypeOK = val.checkSwitchType();
@@ -304,66 +310,95 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
 				boolean switchConTypeOK = val.checkConType();
+				CTILogger.info("GOT HERE 2");
 				if (switchConTypeOK)
 				{
 					progress += 100;
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_SUCCESSFUL);
+					validating = false;
 					break;
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
 					timer.stop();
+					validating = false;
 					break;
 				}
+				
 			}
 		} catch (Exception e)
 		{
 			CTILogger.info("error while validating");
 			e.printStackTrace(System.out);
 		}
+		CTILogger.info("got here");
 	}
 	
 	private boolean writeToDB(InputValidater val)
 	{
 		try
 		{
+			timer.start();
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
+			
 			int index = 0;
+			CTILogger.info("count: "+ val.getCBCCount());
+			float updateSize = 100.0f / val.getCBCCount();
+			CTILogger.info("updateSize: "+ updateSize);
 			for(int i = val.getFrom(); i <= val.getTo();i++){
 				// create devices
 				CapBank capBank = (CapBank)DeviceFactory.createDevice(PAOGroups.CAPBANK);
-				capBank.setPAOName( "CapBank " + i );
-				//capBank.setLocation( "" );
+				capBank.setPAOName( "CapBank " + SERIAL_FORM.format(i) );
 				String capbankMan = switchManCB.getSelectedItem().toString();
 				capBank.getCapBank().setSwitchManufacture(capbankMan);
 				String typeOfSwitch = switchTypeCB.getSelectedItem().toString();
 				capBank.getCapBank().setTypeOfSwitch(typeOfSwitch);
 				capBank.getCapBank().setOperationalState( CapBank.UNINSTALLED_OPSTATE );
 				capBank.getCapBank().setBankSize(new Integer(bankSizeCB.getSelectedItem().toString()));
+				
 				SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
+				smartMulti.setCreateNewPAOIDs(false);
+				
 				PointFactory.createBankStatusPt( smartMulti );
 				PointFactory.createBankOpCntPoint( smartMulti );
-				//Integer id = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-				//System.out.println("id: "+id);
+				System.out.println("cb deviceID: "+ ids[index]);
 				capBank.setDeviceID( new Integer(ids[index]) );
+				capBank.getDevice().setDeviceID(new Integer(ids[index]));
+				capBank.getCapBank().setDeviceID(new Integer(ids[index]));
+				
 				smartMulti.addDBPersistent( capBank );
 				smartMulti.setOwnerDBPersistent( capBank );
 				
 				DeviceBase newCBC = null;
 				if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
+				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
+					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
+				}
 				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
+				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
+					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
+				}
 				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
+				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+				}
 				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
+				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
+					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
+				}
 				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]))
+				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
-				
+					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+				}
 				if( newCBC instanceof ICapBankController )
 				{
 					ICapBankController cntrler = (ICapBankController)newCBC;
@@ -377,56 +412,67 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				
 				//just use the serial number in the name
 				newCBC.setPAOName( "CBC " + SERIAL_FORM.format(i) );
-				
-				//set the paoID
-				//Integer cbcID = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectID();
-				//System.out.println("id2: "+cbcID);
+				System.out.println("cbc deviceID: "+ids[index+1]);
 				newCBC.setDeviceID( new Integer(ids[index+1]) );
+				newCBC.getDevice().setDeviceID(new Integer(ids[index+1]));
+				System.out.println("id: "+newCBC.getDevice().getDeviceID());
+				
 				index +=2;
 				//a status point is automatically added to all capbank controllers
+				
 				PointBase newPoint = 
 					CapBankController.createStatusControlPoint( 
 							newCBC.getDevice().getDeviceID().intValue() );
 				
-				smartMulti.insertDBPersistentAt( newCBC, 0 );
-				smartMulti.insertDBPersistentAt( newPoint, 1 );
+				smartMulti.insertDBPersistentAt( newCBC,0 );
+				smartMulti.insertDBPersistentAt( newPoint,1 );
 				for( int j = 0; j < smartMulti.size(); j++ )
 				{
-					if( smartMulti.getDBPersistent(i) instanceof PointBase )
+					if( smartMulti.getDBPersistent(j) instanceof PointBase )
 					{
+						System.out.println(((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPointID());
 						capBank.getCapBank().setControlPointID(
-								((PointBase)smartMulti.getDBPersistent(i)).getPoint().getPointID() );
+								((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPointID() );
 
+						System.out.println(((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPaoID() );
 						capBank.getCapBank().setControlDeviceID(
-								((PointBase)smartMulti.getDBPersistent(i)).getPoint().getPaoID() );
+								((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPaoID() );
+								
 						break;
 					}
 				}
 				
 				try
 				{
-					DBPersistent db = (DBPersistent) smartMulti;
-					db = (DBPersistent)Transaction.createTransaction(
-							  Transaction.INSERT, 
-					db).execute();
- 	
+					Transaction.createTransaction(Transaction.INSERT,smartMulti).execute();
+					
 					DBChangeMsg[] dbChange = 
 							DefaultDatabaseCache.getInstance().createDBChangeMessages(
-								(CTIDbChange)db, DBChangeMsg.CHANGE_TYPE_ADD );
+								(CTIDbChange)smartMulti, DBChangeMsg.CHANGE_TYPE_ADD );
 
 					for( int j = 0; j < dbChange.length; j++ )
 					{
 						//handle the DBChangeMsg locally
-						LiteBase lBase = DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+						LiteBase lBase = DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[j]);
 					}
  	
 				}
 				catch( com.cannontech.database.TransactionException t )
 				{
 					CTILogger.error( t.getMessage(), t );
+					
 					return false;
 				}
+				
+				
 				// update progress bar
+				CTILogger.info("progress: "+ progress);
+				CTILogger.info("update: "  + updateSize);
+				CTILogger.info("bar: "+ bar.getValue());
+				progress += updateSize;
+				if(progress > 100){
+					progress = 100;
+				}
 				
 			}
 			return true;
@@ -468,10 +514,12 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 
 		if (os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_SUCCESSFUL)
 		{
+			progress = 0;
+			bar.setValue(0);
 			CTILogger.info("validation success");
+			validating = false;
 			boolean success = writeToDB(val);
 			if(success){
-				CTILogger.info("dbwrite success");
 				notifier.setActionCode(ActionNotifier.ACTION_DBWRITE_SUCCESSFUL);
 			}else
 			{
@@ -480,15 +528,23 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			}
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_FAILURE)
 		{
+			progress = 0;
+			validating = false;
+			bar.setValue(0);
 			CTILogger.info(" validation failure");
 			JOptionPane.showMessageDialog(this, "Some of the numbers in the specified serial range are used.", "Serial Range Conflict", JOptionPane.WARNING_MESSAGE);
+			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
-			// fire a db change
+			CTILogger.info("dbwrite success");
+			progress = 100;
+			bar.setValue(100);
+			timer.stop();
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_FAILURE)
 		{
 			CTILogger.info("dbwrite failure");
+			timer.stop();
 		}
 	}
 }

@@ -25,6 +25,7 @@ public class InputValidater
 	public String switchType;
 	public String conType;
 	private final String TABLE_NAME = "DeviceCBC";
+	public int getCBCCount = 0;
 	
 	public InputValidater(int fromvar, int tovar, String routevar, String banksizevar, String manufacturervar, String switchTypevar, String conTypevar)
 	{
@@ -139,5 +140,9 @@ public class InputValidater
 	
 	public String getControllerType(){
 		return conType;
+	}
+	
+	public int getCBCCount(){
+		return ((to - from)+1);
 	}
 }

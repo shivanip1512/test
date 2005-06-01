@@ -11,7 +11,8 @@
     <classpathentry exported="true" kind="lib" path="/third-party/led.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/rwav.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/xerces.jar"/>
-    <classpathentry exported="true" kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+    <classpathentry exported="true" kind="lib"
+        path="/third-party/log4j-1.2.4.jar" sourcepath="/third-party/log4j-1.2.4.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/castor-xml.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/dom4j.jar"/>
