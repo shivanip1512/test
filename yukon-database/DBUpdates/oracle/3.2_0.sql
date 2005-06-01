@@ -72,6 +72,17 @@ alter table NotificationGroup drop column numericpagermessage;
 
 alter table CapBank modify OperationalState varchar2(16) not null;
 
+insert into YukonRoleProperty values(-1403,-5,'call_prefix','','Any number or numbers that must be dialed before a call can be placed.');
+insert into YukonGroupRole values(-73,-1,-5,-1403,'(none)');
+
+insert into YukonRoleProperty values(-1404,-5,'number_of_channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonGroupRole values(-74,-1,-5,-1404,'(none)');
+
+insert into YukonRoleProperty values(-1405,-5,'template_root','','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonGroupRole values(-75,-1,-5,-1405,'(none)');
+ 
+update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
+update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
 
 
 
