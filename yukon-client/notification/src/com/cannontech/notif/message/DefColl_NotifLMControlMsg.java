@@ -2,12 +2,10 @@ package com.cannontech.notif.message;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Vector;
 
 import com.cannontech.message.util.DefineCollectableMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
-import com.roguewave.vsj.streamer.CollectableMappings;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
@@ -47,7 +45,10 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
         super.restoreGuts(obj, vstr, polystr);
         NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
-        msg.notifGroupIds = (Vector) vstr.restoreObject(polystr);
+        msg.notifGroupIds = new int[vstr.extractInt()];
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	msg.notifGroupIds[i] = vstr.extractInt();
+        }
         msg.notifType = vstr.extractInt();
         msg.programId = vstr.extractInt();
         msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Time);
@@ -59,7 +60,10 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
         super.saveGuts(obj, vstr, polystr);
         NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
-        vstr.saveObject(msg.notifGroupIds, CollectableMappings.allCollectables);
+        vstr.insertInt(msg.notifGroupIds.length);
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	vstr.insertInt(msg.notifGroupIds[i]);
+        }
         vstr.insertInt(msg.notifType);
         vstr.insertInt(msg.programId);
         vstr.saveObject(msg.startTime, SimpleMappings.Time);

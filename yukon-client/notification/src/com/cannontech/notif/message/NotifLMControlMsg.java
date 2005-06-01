@@ -1,6 +1,6 @@
 package com.cannontech.notif.message;
 
-import java.util.*;
+import java.util.Date;
 
 import com.cannontech.message.util.Message;
 
@@ -11,8 +11,7 @@ public class NotifLMControlMsg extends Message {
 	public static final int ADJUSTING_CONTROL_NOTIFICATION = 2;
 	public static final int FINISHING_CONTROL_NOTIFICATION = 3;
 	
-	// Vector<int> contains notification group ids
-	public List notifGroupIds = new Vector(2);
+	public int[] notifGroupIds = new int[0];
 	public int notifType;
     public int programId;
     public Date startTime;
