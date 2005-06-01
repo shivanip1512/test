@@ -16,8 +16,6 @@ public class NotificationGroup extends DBPersistent implements com.cannontech.da
 {
 	private com.cannontech.database.db.notification.NotificationGroup notificationGroup = null;
 	
-	//private java.util.Vector destinationVector = null;
-
 	private NotifDestinationMap[] notifDestinationMap = new NotifDestinationMap[0];
 	private ContactNotifGroupMap[] contactMap = new ContactNotifGroupMap[0];
 	private CustomerNotifGroupMap[] customerMap = new CustomerNotifGroupMap[0];
@@ -25,18 +23,19 @@ public class NotificationGroup extends DBPersistent implements com.cannontech.da
 
 	public static final String SQL_NOTIFDEST_NOTIFGRP = 
 		"SELECT RecipientID, Attribs " +
-		"FROM NotificationDestination " +
-		"WHERE NotificationGroupID = ?";
-
-	public static final String SQL_CUSTOMER_NOTIFGRP = 
-		"SELECT CustomerID, Attribs " +
-		"FROM CustomerNotifGroupMap " +
-		"WHERE NotificationGroupID = ?";
+		"FROM " + NotifDestinationMap.TABLE_NAME +
+		" WHERE NotificationGroupID = ?";
 
 	public static final String SQL_CONTACT_NOTIFGRP =
 		"SELECT ContactID, Attribs " +
-		"FROM ContactNotifGroupMap " +
-		"WHERE NotificationGroupID = ?";
+		"FROM " + ContactNotifGroupMap.TABLE_NAME +
+		" WHERE NotificationGroupID = ?";
+
+	public static final String SQL_CUSTOMER_NOTIFGRP = 
+		"SELECT CustomerID, Attribs " +
+		"FROM " + CustomerNotifGroupMap.TABLE_NAME +
+		" WHERE NotificationGroupID = ?";
+
 
 	private static final int NOTFIF_DEST_MAP = 0;
 	private static final int CONTACT_MAP = 1;
@@ -70,7 +69,7 @@ public void add() throws java.sql.SQLException
 			new Integer(getNotifDestinationMap()[i].getRecipientID()),
 			getNotifDestinationMap()[i].getAttribs()
 		};
-		add("NotificationDestination", addValues);
+		add(NotifDestinationMap.TABLE_NAME, addValues);
 	}
 			
 			
@@ -81,7 +80,7 @@ public void add() throws java.sql.SQLException
 			getNotificationGroup().getNotificationGroupID(),
 			getContactMap()[i].getAttribs()
 		};
-		add("ContactNotifGroupMap", addValues);
+		add(ContactNotifGroupMap.TABLE_NAME, addValues);
 	}
 
 	for( int i = 0; i < getCustomerMap().length; i++ )
@@ -91,7 +90,7 @@ public void add() throws java.sql.SQLException
 			getNotificationGroup().getNotificationGroupID(),
 			getCustomerMap()[i].getAttribs()
 		};
-		add("CustomerNotifGroupMap", addValues);
+		add(CustomerNotifGroupMap.TABLE_NAME, addValues);
 	}
 
 }
@@ -102,9 +101,9 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete("NotificationDestination", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
-	delete("ContactNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
-	delete("CustomerNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(NotifDestinationMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(ContactNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(CustomerNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
 	
 	getNotificationGroup().delete();
 }
@@ -396,9 +395,9 @@ public void update() throws java.sql.SQLException
 {	
 	getNotificationGroup().update();
 
-	delete("NotificationDestination", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
-	delete("ContactNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
-	delete("CustomerNotifGroupMap", "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(NotifDestinationMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(ContactNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
+	delete(CustomerNotifGroupMap.TABLE_NAME, "NotificationGroupID", getNotificationGroup().getNotificationGroupID());
 
 	for( int i = 0; i < getNotifDestinationMap().length; i++ )
 	{
@@ -407,7 +406,7 @@ public void update() throws java.sql.SQLException
 			new Integer(getNotifDestinationMap()[i].getRecipientID()),
 			getNotifDestinationMap()[i].getAttribs()
 		};
-		add("NotificationDestination", addValues);
+		add(NotifDestinationMap.TABLE_NAME, addValues);
 	}
 	
 	for( int i = 0; i < getContactMap().length; i++ )
@@ -417,7 +416,7 @@ public void update() throws java.sql.SQLException
 			getNotificationGroup().getNotificationGroupID(),
 			getContactMap()[i].getAttribs()
 		};
-		add("ContactNotifGroupMap", addValues);
+		add(ContactNotifGroupMap.TABLE_NAME, addValues);
 	}
 
 	for( int i = 0; i < getCustomerMap().length; i++ )
@@ -427,7 +426,7 @@ public void update() throws java.sql.SQLException
 			getNotificationGroup().getNotificationGroupID(),
 			getCustomerMap()[i].getAttribs()
 		};
-		add("CustomerNotifGroupMap", addValues);
+		add(CustomerNotifGroupMap.TABLE_NAME, addValues);
 	}
 
 

@@ -4,8 +4,10 @@ package com.cannontech.database.data.notification;
  * @author ryan
  *
  */
-public class CustomerNotifGroupMap extends NotifMap
-{
+public class CustomerNotifGroupMap extends NotifMap {
+
+	public static final String TABLE_NAME = "CustomerNotifGroupMap";
+
 	public CustomerNotifGroupMap( int id )
 	{
 		super( id );
