@@ -446,6 +446,9 @@ private void handleSubBuses( CBCSubstationBuses busesMsg )
  */
 private synchronized void handleSubBus( SubBus subBus ) 
 {	
+	//remove the old subBus from the area hashmap just in case the area changed
+	removeSubIDToAreaMap( subBus.getCcId() );
+
 	subBusMap.put( subBus.getCcId(), subBus );
 	Vector feeders = subBus.getCcFeeders();
 
@@ -468,7 +471,6 @@ private synchronized void handleSubBus( SubBus subBus )
 	subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
 
 	addSubIDToAreaMap( subBus );
-//	addSubToAreaMap( subBus );
 }
 
 /**
@@ -493,6 +495,26 @@ private void addSubIDToAreaMap( final SubBus subBus )
 		subIDs.add( subBus.getCcId().intValue() );
 		subIDToAreaMap.put( subBus.getCcArea(), subIDs );
 	}
+}
+
+
+/**
+ * Removes an element inside the subIDtoArea hashmap
+ * @param subBus
+ */
+private void removeSubIDToAreaMap( Integer subID )
+{
+	SubBus subBus = (SubBus)getSubBus( subID );
+	if( subBus == null ) return;
+
+	NativeIntVector subIDs = null;
+	if( (subIDs = (NativeIntVector)subIDToAreaMap.get(subBus.getCcArea())) != null )		
+	{
+		int indx = subIDs.indexOf( subBus.getCcId().intValue() );
+		if( indx >= 0 )
+			subIDs.remove( indx );
+	}		
+
 }
 
 /**
