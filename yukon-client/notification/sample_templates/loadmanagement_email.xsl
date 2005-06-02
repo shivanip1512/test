@@ -4,7 +4,10 @@
   <xsl:template match="notificationmessage">
     <emailmsg>
       <subject>HECO Curtailment Event</subject>
-      <body> HECO is dispatching a load control event according to the rules of the CIDLC program. The curtailment event will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> and end at <xsl:value-of select="stoptime"/>.</body>
+      <body>HECO is calling for customers enrolled in the CIDLC program to curtail electric use.  
+Curtailment will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> and last for approximately <xsl:value-of select="durationhours"/> hours.  
+      
+Thank you for your participation.</body>
     </emailmsg>
   </xsl:template>
   

@@ -3,9 +3,11 @@
   
   <xsl:template match="notificationmessage">
     <block>
-    HECO is dispatching a load control event according to the rules of the CIDLC program.
-    The curtailment event will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/>
-    and end at <xsl:value-of select="stoptime"/>.
+      HECO is calling for customers enrolled in the CIDLC program to curtail electric use.  
+      Curtailment will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> 
+      and last for approximately <xsl:value-of select="durationhours"/> hours.  
+      
+      Thank you for your participation.
       </block>
   </xsl:template>
   
