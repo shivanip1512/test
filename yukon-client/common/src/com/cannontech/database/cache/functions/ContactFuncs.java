@@ -1,8 +1,6 @@
 package com.cannontech.database.cache.functions;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -367,4 +365,18 @@ public final class ContactFuncs
 
 		return null;
 	}	
+    
+    public static boolean hasPin(int contactId) {
+        LiteContact contact = getContact( contactId );
+        
+        List liteContactNotifications = contact.getLiteContactNotifications();
+        for (Iterator iter = liteContactNotifications.iterator(); iter.hasNext();) {
+            LiteContactNotification contactNotification = (LiteContactNotification) iter.next();
+            if (contactNotification.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
