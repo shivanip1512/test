@@ -2,9 +2,11 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.*;
+import com.cannontech.user.UserUtils;
 
 /**
  * This class represents a single entity that needs to be reached
@@ -41,10 +43,14 @@ public class Contactable implements Callable, Emailable {
         }
         
         LiteCustomer liteCustomer = CustomerFuncs.getLiteCustomer(customerGroupMap.getCustomerID());
-        String tzString = liteCustomer.getTimeZone();
-        _timeZone = TimeZone.getTimeZone(tzString);
+        configureTimeZone(liteCustomer);
         
         _label = "Customer " + customerGroupMap.getCustomerID();
+    }
+
+    private void configureTimeZone(LiteCustomer liteCustomer) {
+        String tzString = liteCustomer.getTimeZone();
+        _timeZone = TimeZone.getTimeZone(tzString);
     }
 
     /**
@@ -60,8 +66,8 @@ public class Contactable implements Callable, Emailable {
             addEmailsForContact(contact);
         }
         
-        //TODO how to determine time zone
-        _timeZone = TimeZone.getDefault();
+        LiteCICustomer customer = ContactFuncs.getCICustomer(notifGroupMap.getContactID());
+        configureTimeZone(customer);
         
         _label = "Contact " + contact.toString();
     }
@@ -80,17 +86,24 @@ public class Contactable implements Callable, Emailable {
             _emailList.add(notification.getNotification());
         }
         
-        //TODO how to determine time zone
-        _timeZone = TimeZone.getDefault();
+        LiteCICustomer customer = ContactFuncs.getCICustomer(notification.getContactID());
+        configureTimeZone(customer);
         
         _label = notification.getNotification();
     }
     
     private void addPhoneNumbersForContact(LiteContact contact) {
-        LiteContactNotification[] _rawNumbers = ContactFuncs.getAllPhonesNumbers(contact.getContactID());
-        for (int i = 0; i < _rawNumbers.length; i++) {
-            LiteContactNotification number = _rawNumbers[i];
-            addPhoneNumber(number);
+        if (ContactFuncs.hasPin(contact.getContactID())
+                && contact.getLoginID() != UserUtils.USER_DEFAULT_ID) {
+
+            LiteContactNotification[] _rawNumbers = ContactFuncs.getAllPhonesNumbers(contact.getContactID());
+            for (int i = 0; i < _rawNumbers.length; i++) {
+                LiteContactNotification number = _rawNumbers[i];
+                addPhoneNumber(number);
+            }
+        } else {
+            CTILogger.info("Was not able to add phone numbers for '" + contact + "' " +
+                           "because it either did not have a pin or did not have a login.");
         }
     }
 
@@ -103,8 +116,17 @@ public class Contactable implements Callable, Emailable {
     }
 
     private void addPhoneNumber(LiteContactNotification number) {
-        ContactPhone phoneObject = new ContactPhone(number.getNotification(),number.getContactID());
-        _contactPhoneNumberList.add(phoneObject);
+        LiteContact contact = ContactFuncs.getContact(number.getContactID());
+        if (ContactFuncs.hasPin(contact.getContactID()) 
+                && contact.getLoginID() != UserUtils.USER_DEFAULT_ID) {
+
+            ContactPhone phoneObject = new ContactPhone(number.getNotification(),
+                                                        number.getContactID());
+            _contactPhoneNumberList.add(phoneObject);
+        } else {
+            CTILogger.info("Was not able to add phone number '" + number.getNotification() + "' for '" + 
+                           contact + "' " + "because it either did not have a pin or did not have a login.");
+        }
 
     }
 
