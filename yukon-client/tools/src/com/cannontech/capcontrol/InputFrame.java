@@ -13,13 +13,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,7 +26,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.MaskFormatter;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -44,7 +41,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -60,7 +56,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private TitledBorder titledBorder;
 	private JLabel serialRangeLabel = new JLabel("* Serial # Range:");
 	private JLabel serialToLabel = new JLabel("to");
-	private NumberFormat serialFormat = NumberFormat.getIntegerInstance();
 	private JTextField serialFromTF;
 	private JTextField serialToTF;
 	private JButton submitButton = new JButton("Submit");
@@ -108,7 +103,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		contentPane.setLayout(null);
 		this.setSize(new Dimension(290, 350));
 		this.setTitle("CapControl Importer");
-		serialFormat.setMaximumIntegerDigits(9);
+		
 		serialFromTF = new JTextField();
 		serialToTF = new JTextField();
 		serialFromTF.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999));
@@ -229,34 +224,34 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			// check data before running
 			try
 			{
-			
-			if ("".equalsIgnoreCase(serialFromTF.getText()) || "".equalsIgnoreCase(serialToTF.getText()))
-			{
-				JOptionPane.showMessageDialog(this, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
-			}else if ( (new Integer (serialFromTF.getText())).intValue() > (new Integer (serialToTF.getText())).intValue() )
-			{
-				JOptionPane.showMessageDialog(this, "Range must be accending: "+serialToTF.getText()+" to "+serialFromTF.getText(), "Finish settings first", JOptionPane.WARNING_MESSAGE);
-			}
-			else
-			{
-				validating = true;
-				bar.setVisible(true);
-				progress = 0;
-				bar.setValue(bar.getMinimum());
-				String fromS = serialFromTF.getText();
-				Integer from = new Integer(fromS);
-				String toS = serialToTF.getText();
-				Integer to = new Integer(toS);
-				String route = (String) routeCB.getSelectedItem().toString();
-				String banksize = (String) bankSizeCB.getSelectedItem().toString();
-				String manufacturer = (String) switchManCB.getSelectedItem();
-				String type = (String) switchTypeCB.getSelectedItem();
-				String conType = (String) conTypeCB.getSelectedItem();
-				timer.start();
-				val = new InputValidater(this, from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
-				progressThread = new Thread(this, "Progress Thread");
-				progressThread.start();
-			}
+				
+				if ("".equalsIgnoreCase(serialFromTF.getText()) || "".equalsIgnoreCase(serialToTF.getText()))
+				{
+					JOptionPane.showMessageDialog(this, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+				}else if ( (new Integer (serialFromTF.getText())).intValue() > (new Integer (serialToTF.getText())).intValue() )
+				{
+					JOptionPane.showMessageDialog(this, "Range must be accending: "+serialToTF.getText()+" to "+serialFromTF.getText(), "Finish settings first", JOptionPane.WARNING_MESSAGE);
+				}
+				else
+				{
+					validating = true;
+					bar.setVisible(true);
+					progress = 0;
+					bar.setValue(bar.getMinimum());
+					String fromS = serialFromTF.getText();
+					Integer from = new Integer(fromS);
+					String toS = serialToTF.getText();
+					Integer to = new Integer(toS);
+					String route = (String) routeCB.getSelectedItem().toString();
+					String banksize = (String) bankSizeCB.getSelectedItem().toString();
+					String manufacturer = (String) switchManCB.getSelectedItem();
+					String type = (String) switchTypeCB.getSelectedItem();
+					String conType = (String) conTypeCB.getSelectedItem();
+					timer.start();
+					val = new InputValidater(this, from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
+					progressThread = new Thread(this, "Progress Thread");
+					progressThread.start();
+				}
 			}catch(NumberFormatException nfe)
 			{
 				JOptionPane.showMessageDialog(this, "Please enter a valid serial range.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
