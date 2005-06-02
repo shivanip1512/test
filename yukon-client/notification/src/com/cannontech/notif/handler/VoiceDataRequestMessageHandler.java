@@ -1,4 +1,4 @@
-package com.cannontech.notif.server;
+package com.cannontech.notif.handler;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -9,7 +9,6 @@ import org.jdom.output.XMLOutputter;
 
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.handler.MessageHandler;
 import com.cannontech.notif.message.VoiceDataRequestMsg;
 import com.cannontech.notif.outputs.VoiceHandler;
 
