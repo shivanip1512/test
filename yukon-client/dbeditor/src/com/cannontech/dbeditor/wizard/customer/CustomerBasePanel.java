@@ -16,13 +16,13 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 
-public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, DataInputPanelListener 
+public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, DataInputPanelListener 
 {
 	private javax.swing.JButton ivjJButtonNewContact = null;
 	private javax.swing.JComboBox ivjJComboBoxPrimaryContact = null;
 	private javax.swing.JLabel ivjJLabelPrimaryContact = null;
 	private javax.swing.JLabel ivjJLabelTimeZone = null;
-	private javax.swing.JTextField ivjJTextFieldTimeZone = null;
+	private javax.swing.JComboBox ivjJComboBoxTimeZone = null;
 	private javax.swing.JPanel ivjJPanelCustomerInfo = null;
 	private CICustomerBasePanel ivjCICustomerPanel = null;
 
@@ -43,6 +43,10 @@ public CustomerBasePanel() {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
+
+	if (e.getSource() == getJComboBoxTimeZone()) 
+		fireInputUpdate();
+
 	// user code end
 	if (e.getSource() == getJComboBoxPrimaryContact()) 
 		connEtoC7(e);
@@ -51,42 +55,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {2}
 	// user code end
 }
-
-
-/**
- * Method to handle events for the CaretListener interface.
- * @param e javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void caretUpdate(javax.swing.event.CaretEvent e) {
-	// user code begin {1}
-	// user code end
-	if (e.getSource() == getJTextFieldTimeZone()) 
-		connEtoC4(e);
-	// user code begin {2}
-	// user code end
-}
-
-
-/**
- * connEtoC1:  (JTextFieldCompanyName.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC1(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
 
 /**
  * connEtoC2:  (JButtonNewContact.action.actionPerformed(java.awt.event.ActionEvent) --> CustomerBasePanel.jButtonNewContact_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -98,106 +66,6 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 		// user code begin {1}
 		// user code end
 		this.jButtonNewContact_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC2:  (JTextFieldPhoneNumber.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC3:  (JTextField1.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC3(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC4:  (JTextField2.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC5:  (JTextFieldCurtailAmount.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
-
-
-/**
- * connEtoC6:  (JTextFieldCurtailWebHome.caret.caretUpdate(javax.swing.event.CaretEvent) --> CICustomerBasePanel.fireInputUpdate()V)
- * @param arg1 javax.swing.event.CaretEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -471,7 +339,7 @@ private javax.swing.JPanel getJPanelCustomerInfo() {
 			constraintsJTextFieldTimeZone.weightx = 1.0;
 			constraintsJTextFieldTimeZone.ipadx = 186;
 			constraintsJTextFieldTimeZone.insets = new java.awt.Insets(2, 4, 7, 118);
-			getJPanelCustomerInfo().add(getJTextFieldTimeZone(), constraintsJTextFieldTimeZone);
+			getJPanelCustomerInfo().add(getJComboBoxTimeZone(), constraintsJTextFieldTimeZone);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -488,15 +356,21 @@ private javax.swing.JPanel getJPanelCustomerInfo() {
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getJTextFieldTimeZone() {
-	if (ivjJTextFieldTimeZone == null) {
+private javax.swing.JComboBox getJComboBoxTimeZone() {
+	if (ivjJComboBoxTimeZone == null) {
 		try {
-			ivjJTextFieldTimeZone = new javax.swing.JTextField();
-			ivjJTextFieldTimeZone.setName("JTextFieldTimeZone");
+			ivjJComboBoxTimeZone = new javax.swing.JComboBox();
+			ivjJComboBoxTimeZone.setName("JTextFieldTimeZone");
 			// user code begin {1}
 
-			ivjJTextFieldTimeZone.setDocument( 
-					new com.cannontech.common.gui.unchanging.StringRangeDocument(40) );
+			//ivjJComboBoxTimeZone.setDocument( 
+			//		new com.cannontech.common.gui.unchanging.StringRangeDocument(40) );
+
+			ivjJComboBoxTimeZone.setEditable( true );
+			
+			String[] tz = CtiUtilities.getTimeZones();
+			for( int i = 0; i < tz.length; i++ )
+				ivjJComboBoxTimeZone.addItem( tz[i] );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -505,7 +379,7 @@ private javax.swing.JTextField getJTextFieldTimeZone() {
 			handleException(ivjExc);
 		}
 	}
-	return ivjJTextFieldTimeZone;
+	return ivjJComboBoxTimeZone;
 }
 
 
@@ -529,10 +403,10 @@ public Object getValue(Object o)
 
 
 	//get the selected Time Zone if there is one
-	if( getJTextFieldTimeZone().getText() != null
-		 && getJTextFieldTimeZone().getText().length() > 0 )
+	if( getJComboBoxTimeZone().getSelectedItem() != null
+		 && getJComboBoxTimeZone().getSelectedItem().toString().length() > 0 )
 	{
-		customer.getCustomer().setTimeZone( getJTextFieldTimeZone().getText() );
+		customer.getCustomer().setTimeZone( getJComboBoxTimeZone().getSelectedItem().toString() );
 	}
 
 
@@ -581,9 +455,9 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	
 	getCICustomerPanel().addDataInputPanelListener( this );
+	getJComboBoxTimeZone().addActionListener(this);
 
 	// user code end
-	getJTextFieldTimeZone().addCaretListener(this);
 	getJComboBoxPrimaryContact().addActionListener(this);
 	getJButtonNewContact().addActionListener(this);
 }
@@ -799,7 +673,24 @@ public void setValue(Object o)
 		}
 	}
 
-	getJTextFieldTimeZone().setText( customer.getCustomer().getTimeZone() );
+	//try to find out timezone in the combo box
+	getJComboBoxTimeZone().setSelectedIndex(-1);
+	for( int i = 0; i < getJComboBoxTimeZone().getItemCount(); i++ ) {
+		if( customer.getCustomer().getTimeZone().equalsIgnoreCase(
+				getJComboBoxTimeZone().getItemAt(i).toString()) ) {
+			getJComboBoxTimeZone().setSelectedIndex( i );
+			break;
+		}
+	}
+
+	//select the unique string they have entered	
+	if( getJComboBoxTimeZone().getSelectedIndex() <= -1 )
+	{
+		getJComboBoxTimeZone().addItem( customer.getCustomer().getTimeZone() );
+		getJComboBoxTimeZone().setSelectedItem( customer.getCustomer().getTimeZone() );
+	}
+	
+
 
 /*FIXFIX
 	String home = customer.getCustomerWebSettings().getHomeURL();
