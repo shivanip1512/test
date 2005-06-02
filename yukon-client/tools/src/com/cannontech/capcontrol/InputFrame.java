@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
+import java.io.*;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -80,6 +81,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private ActionNotifier notifier = new ActionNotifier(this);
 	private static DecimalFormat SERIAL_FORM = new DecimalFormat("000000000");
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
+	private BufferedReader input;
 	
 
 
@@ -94,6 +96,59 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public InputFrame(String command)
+	{
+		clInit();
+	}
+	
+	private void clInit()
+	{
+		input = new BufferedReader(new InputStreamReader(System.in));
+		try
+		{
+			System.out.println("Enter nine digit starting serial number.( series 7000 CBC's require a s/n starting with '7')");
+			System.out.println("");
+			System.out.print("Serial Range From: ");
+			String from = input.readLine();
+			System.out.print("Serial Range To: ");
+			String to = input.readLine();
+			System.out.print("Route: ");
+			String route = input.readLine();
+			System.out.println("");
+			System.out.println("CBC Types: " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+				
+			System.out.print("CBC Type: ");
+			String capcntrlType = input.readLine();
+			System.out.print("Bank Size: ");
+			String banksize = input.readLine();
+			System.out.println("");
+			System.out.println("Manufacturers: " + com.cannontech.common.util.CtiUtilities.STRING_NONE + ", " +
+				CapBank.SWITCHMAN_WESTING + ", " +
+				CapBank.SWITCHMAN_ABB + ", " +
+				CapBank.SWITCHMAN_COOPER + ", " +
+				CapBank.SWITCHMAN_SIEMENS + ", " +
+				CapBank.SWITCHMAN_TRINETICS);
+				
+				
+			System.out.print("Switch Manufacturer: ");
+			String switchMan = input.readLine();
+			System.out.print("Type of Switch:  Vacuum or Oil: ");
+			String switchType = input.readLine();
+			val = new InputValidater(this, new Integer(from).intValue(), new Integer(to).intValue(), route, banksize, switchMan, switchType, capcntrlType);
+			
+		}catch(Exception e)
+		{
+			
+		}
+		
+		
 	}
 
 	private void init()

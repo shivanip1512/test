@@ -62,9 +62,14 @@ public class CapControlImporter
 		
 		if("c".equalsIgnoreCase(args[0]))
 		{
-			System.out.println("i saw an argument");
+			
+			new InputFrame(args[0]);
+			
+		}else
+		{
+			
+			new CapControlImporter();
+			
 		}
-
-		new CapControlImporter();
 	}
 }
