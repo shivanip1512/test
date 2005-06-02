@@ -13,11 +13,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,6 +28,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -57,8 +60,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private TitledBorder titledBorder;
 	private JLabel serialRangeLabel = new JLabel("* Serial # Range:");
 	private JLabel serialToLabel = new JLabel("to");
-	private JTextField serialFromTF = new JTextField("");
-	private JTextField serialToTF = new JTextField("");
+	private NumberFormat serialFormat = NumberFormat.getIntegerInstance();
+	private JTextField serialFromTF;
+	private JTextField serialToTF;
 	private JButton submitButton = new JButton("Submit");
 	private JLabel routeLabel = new JLabel("* Route:");
 	private JLabel bankSizeLabel = new JLabel("Bank Size:");
@@ -81,6 +85,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private ActionNotifier notifier = new ActionNotifier(this);
 	private static DecimalFormat SERIAL_FORM = new DecimalFormat("000000000");
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
+	
 
 
 	public InputFrame()
@@ -103,9 +108,14 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		contentPane.setLayout(null);
 		this.setSize(new Dimension(290, 350));
 		this.setTitle("CapControl Importer");
-
+		serialFormat.setMaximumIntegerDigits(9);
+		serialFromTF = new JTextField();
+		serialToTF = new JTextField();
+		serialFromTF.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999));
+		serialToTF.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999));
 		serialRangeLabel.setBounds(new Rectangle(10, 10, 90, 20));
 		serialFromTF.setBounds(new Rectangle(100, 10, 60, 20));
+		
 		serialToLabel.setBounds(new Rectangle(170, 10, 20, 20));
 		serialToTF.setBounds(new Rectangle(190, 10, 60, 20));
 		routeLabel.setBounds(new Rectangle(10, 40, 50, 20));
@@ -217,6 +227,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		if (obj == submitButton)
 		{
 			// check data before running
+			try
+			{
+			
 			if ("".equalsIgnoreCase(serialFromTF.getText()) || "".equalsIgnoreCase(serialToTF.getText()))
 			{
 				JOptionPane.showMessageDialog(this, "Please enter values into required fields.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
@@ -240,9 +253,13 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				String type = (String) switchTypeCB.getSelectedItem();
 				String conType = (String) conTypeCB.getSelectedItem();
 				timer.start();
-				val = new InputValidater(from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
+				val = new InputValidater(this, from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
 				progressThread = new Thread(this, "Progress Thread");
 				progressThread.start();
+			}
+			}catch(NumberFormatException nfe)
+			{
+				JOptionPane.showMessageDialog(this, "Please enter a valid serial range.", "Finish settings first", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -314,7 +331,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					break;
 				}
 				boolean switchConTypeOK = val.checkConType();
-				CTILogger.info("GOT HERE 2");
 				if (switchConTypeOK)
 				{
 					progress += 100;
@@ -335,7 +351,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			CTILogger.info("error while validating");
 			e.printStackTrace(System.out);
 		}
-		CTILogger.info("got here");
+		
 	}
 	
 	private boolean writeToDB(InputValidater val)
@@ -346,26 +362,29 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
 			
 			int index = 0;
-			CTILogger.info("count: "+ val.getCBCCount());
+			
 			float updateSize = 100.0f / val.getCBCCount();
-			CTILogger.info("updateSize: "+ updateSize);
+			
 			for(int i = val.getFrom(); i <= val.getTo();i++){
 				// create devices
 				CapBank capBank = (CapBank)DeviceFactory.createDevice(PAOGroups.CAPBANK);
 				capBank.setPAOName( "CapBank " + SERIAL_FORM.format(i) );
-				String capbankMan = switchManCB.getSelectedItem().toString();
+				//String capbankMan = switchManCB.getSelectedItem().toString();
+				String capbankMan = val.getSwitchMan();
 				capBank.getCapBank().setSwitchManufacture(capbankMan);
-				String typeOfSwitch = switchTypeCB.getSelectedItem().toString();
+				//String typeOfSwitch = switchTypeCB.getSelectedItem().toString();
+				String typeOfSwitch = val.getSwitchType();
 				capBank.getCapBank().setTypeOfSwitch(typeOfSwitch);
 				capBank.getCapBank().setOperationalState( CapBank.UNINSTALLED_OPSTATE );
-				capBank.getCapBank().setBankSize(new Integer(bankSizeCB.getSelectedItem().toString()));
+				//capBank.getCapBank().setBankSize(new Integer(bankSizeCB.getSelectedItem().toString()));
+				capBank.getCapBank().setBankSize(new Integer(val.getBankSize()));
 				
 				SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
 				smartMulti.setCreateNewPAOIDs(false);
 				
 				PointFactory.createBankStatusPt( smartMulti );
 				PointFactory.createBankOpCntPoint( smartMulti );
-				System.out.println("cb deviceID: "+ ids[index]);
+				
 				capBank.setDeviceID( new Integer(ids[index]) );
 				capBank.getDevice().setDeviceID(new Integer(ids[index]));
 				capBank.getCapBank().setDeviceID(new Integer(ids[index]));
@@ -374,27 +393,27 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				smartMulti.setOwnerDBPersistent( capBank );
 				
 				DeviceBase newCBC = null;
-				if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
+				if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
 				}
-				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
+				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 				}
-				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
+				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
 				}
-				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
+				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
 				}
-				else if( conTypeCB.getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]))
+				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]))
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
@@ -412,11 +431,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				
 				//just use the serial number in the name
 				newCBC.setPAOName( "CBC " + SERIAL_FORM.format(i) );
-				System.out.println("cbc deviceID: "+ids[index+1]);
 				newCBC.setDeviceID( new Integer(ids[index+1]) );
 				newCBC.getDevice().setDeviceID(new Integer(ids[index+1]));
-				System.out.println("id: "+newCBC.getDevice().getDeviceID());
-				
+								
 				index +=2;
 				//a status point is automatically added to all capbank controllers
 				
@@ -430,11 +447,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					if( smartMulti.getDBPersistent(j) instanceof PointBase )
 					{
-						System.out.println(((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPointID());
+						
 						capBank.getCapBank().setControlPointID(
 								((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPointID() );
 
-						System.out.println(((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPaoID() );
+						
 						capBank.getCapBank().setControlDeviceID(
 								((PointBase)smartMulti.getDBPersistent(j)).getPoint().getPaoID() );
 								
@@ -466,9 +483,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				
 				
 				// update progress bar
-				CTILogger.info("progress: "+ progress);
-				CTILogger.info("update: "  + updateSize);
-				CTILogger.info("bar: "+ bar.getValue());
 				progress += updateSize;
 				if(progress > 100){
 					progress = 100;
@@ -478,7 +492,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			return true;
 		}catch (Exception e)
 		{
-			// do something
 			CTILogger.info("error writing to database");
 			e.printStackTrace(System.out);
 			return false;
@@ -532,7 +545,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			validating = false;
 			bar.setValue(0);
 			CTILogger.info(" validation failure");
-			JOptionPane.showMessageDialog(this, "Some of the numbers in the specified serial range are used.", "Serial Range Conflict", JOptionPane.WARNING_MESSAGE);
+			
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
@@ -547,4 +560,5 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			timer.stop();
 		}
 	}
+
 }

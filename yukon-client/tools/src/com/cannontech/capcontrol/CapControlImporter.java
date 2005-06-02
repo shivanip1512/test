@@ -14,12 +14,12 @@ import javax.swing.UIManager;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class InputFrameLauncher
+public class CapControlImporter
 {
 
 	private boolean packFrame = false;
 	
-	public InputFrameLauncher()
+	public CapControlImporter()
 	{
 		InputFrame frame = new InputFrame();
 		
@@ -60,6 +60,6 @@ public class InputFrameLauncher
 			e.printStackTrace();
 		}
 
-		new InputFrameLauncher();
+		new CapControlImporter();
 	}
 }

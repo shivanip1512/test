@@ -6,6 +6,9 @@
  */
 package com.cannontech.capcontrol;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import com.cannontech.clientutils.CTILogger;
 
 
@@ -26,9 +29,11 @@ public class InputValidater
 	public String conType;
 	private final String TABLE_NAME = "DeviceCBC";
 	public int getCBCCount = 0;
+	public JFrame parent;
 	
-	public InputValidater(int fromvar, int tovar, String routevar, String banksizevar, String manufacturervar, String switchTypevar, String conTypevar)
+	public InputValidater(JFrame parentvar, int fromvar, int tovar, String routevar, String banksizevar, String manufacturervar, String switchTypevar, String conTypevar)
 	{
+		parent = parentvar;
 		from = fromvar;
 		to = tovar;
 		route = routevar;
@@ -79,14 +84,33 @@ public class InputValidater
 			}
 		}
 		
-		if( devices.size() <= 0 )
+		if( devices.size() > 0 )
 		{
-			return true;
-		}
-		else
-		{
+			JOptionPane.showMessageDialog(this.getParent(), "Some of the numbers in the specified serial range are used.", "Serial Range Conflict", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
+		else if( conType.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]) )
+		{
+				
+			if(new Integer(from).toString().length() != 9 || !new Integer(from).toString().startsWith("7", 0))
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+	
+				return false;
+			}
+			if(new Integer(to).toString().length() != 9 || !new Integer(to).toString().startsWith("7", 0))
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+	
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public JFrame getParent(){
+		return parent;
 	}
 	
 	public boolean checkRoute()
