@@ -35,7 +35,7 @@ create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
 TriggerID
 );
 
-
+insert into billingfileformats values (16, 'NISC TOU (kVarH)');
 
 
 
