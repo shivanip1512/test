@@ -7,7 +7,7 @@ alter table dynamiclmgroup add dailyops smallint;
 update dynamiclmgroup set dailyops = 0;
 alter table dynamiclmgroup modify dailyops smallint not null;
 
-alter table state modify text varchar2(32) not null;
+alter table state modify text varchar2(32);
 
 insert into stategroup values( -6, '410 Disconnect', 'Status');
 insert into state values( -6, 0, 'Confirmed Disconnected', 1, 6, 0);
@@ -127,7 +127,9 @@ insert into YukonGroupRole values(-237,-1,-106,-10607,'(none)');
 
 update yukonroleproperty set defaultvalue = 'Administrator' where defaultvalue = 'Administor';
 
+/* @error ignore */
 insert into YukonRoleProperty values(-20004,-200,'View Batch Commands','false','Controls whether to allow monitoring of all batched switch commands');
+/* @error ignore */
 insert into YukonRoleProperty values(-20005,-200,'View Opt Out Events','false','Controls whether to allow monitoring of all scheduled opt out events');
 insert into YukonRoleProperty values(-20006,-200,'Member Login Cntrl','false','Ignored if not a member company -- Controls whether operator logins are shown on the EC administration page.');
 insert into YukonRoleProperty values(-20007,-200,'Member Route Select','false','Ignored if not a member company -- Controls whether routes are visible through the EC administration page.');
