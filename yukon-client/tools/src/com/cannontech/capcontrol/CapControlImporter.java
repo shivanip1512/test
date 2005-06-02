@@ -59,6 +59,11 @@ public class CapControlImporter
 		{
 			e.printStackTrace();
 		}
+		
+		if("c".equalsIgnoreCase(args[0]))
+		{
+			System.out.println("i saw an argument");
+		}
 
 		new CapControlImporter();
 	}
