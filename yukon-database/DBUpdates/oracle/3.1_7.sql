@@ -26,6 +26,7 @@ create unique index INDX_UNQ_LMCNTRTR_TRID on LMControlAreaTrigger (
 	TriggerID ASC
 );
 
+insert into billingfileformats values (15, 'NCDC-Handheld');
 insert into billingfileformats values (16, 'NISC TOU (kVarH)');
 
 
