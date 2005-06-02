@@ -26,11 +26,11 @@ public final class VersionTools
 	{
 		//latest query string is first!
 		"select Version, CTIEmployeeName, DateApplied, Notes, Build from " + 
-			com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
-			"order by Version desc",
+			CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
+			"order by Version, Build desc",
 
 		"select Version, CTIEmployeeName, DateApplied, Notes from " + 
-			com.cannontech.database.db.version.CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
+			CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
 			"order by Version desc"
 	};
 
