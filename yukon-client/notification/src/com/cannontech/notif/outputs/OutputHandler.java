@@ -1,6 +1,7 @@
 package com.cannontech.notif.outputs;
 
 
+
 /**
  * 
  */
@@ -12,7 +13,7 @@ public abstract class OutputHandler {
         _type = type;
     }
 
-    public abstract void handleNotification(Notification notif,
+    public abstract void handleNotification(NotificationBuilder notif,
             Contactable contact);
 
     public String getType() {

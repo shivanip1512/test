@@ -2,7 +2,7 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 
 public class OutputHandlerHelper {
     /**
@@ -10,7 +10,7 @@ public class OutputHandlerHelper {
      */
     private List _handlers = new LinkedList();
     
-    public void handleNotification(Notification notif, LiteNotificationGroup lng) {
+    public void handleNotification(NotificationBuilder notif, LiteNotificationGroup lng) {
         List contactables = Contactable.getContactablesForGroup(lng);
         for (Iterator iter = contactables.iterator(); iter.hasNext();) {
             Contactable contact = (Contactable) iter.next();

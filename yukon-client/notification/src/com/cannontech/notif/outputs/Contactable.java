@@ -22,6 +22,7 @@ public class Contactable implements Callable, Emailable {
     private List _contactPhoneNumberList = new LinkedList();
     private List _emailList = new LinkedList();
     private String _label;
+    private TimeZone _timeZone;
 
     /**
      * Create a Contactable object from a CustomerNotifGroupMap.
@@ -38,6 +39,11 @@ public class Contactable implements Callable, Emailable {
                 addEmailsForContact(contact);
             }
         }
+        
+        LiteCustomer liteCustomer = CustomerFuncs.getLiteCustomer(customerGroupMap.getCustomerID());
+        String tzString = liteCustomer.getTimeZone();
+        _timeZone = TimeZone.getTimeZone(tzString);
+        
         _label = "Customer " + customerGroupMap.getCustomerID();
     }
 
@@ -53,6 +59,10 @@ public class Contactable implements Callable, Emailable {
         if (notifGroupMap.isSendEmails()) {
             addEmailsForContact(contact);
         }
+        
+        //TODO how to determine time zone
+        _timeZone = TimeZone.getDefault();
+        
         _label = "Contact " + contact.toString();
     }
 
@@ -69,6 +79,10 @@ public class Contactable implements Callable, Emailable {
                 && destinationMap.isSendEmails()) {
             _emailList.add(notification.getNotification());
         }
+        
+        //TODO how to determine time zone
+        _timeZone = TimeZone.getDefault();
+        
         _label = notification.getNotification();
     }
     
@@ -95,7 +109,7 @@ public class Contactable implements Callable, Emailable {
     }
 
     /**
-     * @return An immutable List of PhoneNumber objects.
+     * @return An immutable List of ContactPhone objects.
      */
     public List getContactPhoneNumberList() {
         return Collections.unmodifiableList(_contactPhoneNumberList);
@@ -128,6 +142,10 @@ public class Contactable implements Callable, Emailable {
     
     public String toString() {
         return _label;
+    }
+    
+    public TimeZone getTimeZone() {
+        return _timeZone;
     }
 
     /**

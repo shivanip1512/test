@@ -9,8 +9,7 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.message.NotifLMControlMsg;
-import com.cannontech.notif.outputs.Notification;
-import com.cannontech.notif.outputs.OutputHandlerHelper;
+import com.cannontech.notif.outputs.*;
 
 /**
  * 
@@ -29,24 +28,32 @@ public class LoadManagementMessageHandler extends NotifHandler {
     }
 
     public void handleMessage(Message msg_) {
-        NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
+        final NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
 
-        // building the Notification object is the main work of
-        // this function
-        Notification notif = new Notification("loadmanagement");
-        
-        notif.put("starttime", _timeFormater.format(msg.startTime));
-        notif.put("startdate", _dateFormater.format(msg.startTime));
-        notif.put("stoptime", _timeFormater.format(msg.stopTime));
-        notif.put("stopdate", _dateFormater.format(msg.stopTime));
-        LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
-        notif.put("programname", liteYukonPAO.getPaoName());
+        NotificationBuilder notifFormatter = new NotificationBuilder() {
+            public Notification buildNotification(Contactable contact) {
+                Notification notif = new Notification("loadmanagement");
+                
+                LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
+                notif.put("programname", liteYukonPAO.getPaoName());
+
+                _timeFormater.setTimeZone(contact.getTimeZone());
+                _dateFormater.setTimeZone(contact.getTimeZone());
+                
+                notif.put("starttime", _timeFormater.format(msg.startTime));
+                notif.put("startdate", _dateFormater.format(msg.startTime));
+                notif.put("stoptime", _timeFormater.format(msg.stopTime));
+                notif.put("stopdate", _dateFormater.format(msg.stopTime));
+                
+                return notif;
+            }
+        };
 
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
                 NotificationGroupFuncs.getLiteNotificationGroup(msg.notifGroupIds[i]);
             
-            outputNotification(notif, notificationGroup);
+            outputNotification(notifFormatter, notificationGroup);
         }
     }
 

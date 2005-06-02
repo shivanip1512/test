@@ -8,6 +8,8 @@ import javax.mail.MessagingException;
 import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.roles.yukon.VoiceServerRole;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
 
@@ -21,17 +23,21 @@ public class EmailHandler extends OutputHandler
 
     public EmailHandler() {
         super(Contactable.EMAIL);
-        _transformer = new NotificationTransformer("whatever");
+        
+        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.TEMPLATE_ROOT);
+        _transformer = new NotificationTransformer(xslRootDirectory);
     }
     
-    public void handleNotification(Notification notif, Contactable contact) {
+    public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
         try
         {
             List emailList = contact.getEmailList();
             
+            Notification notif = notifFormatter.buildNotification(contact);
+            
             Element outXml = _transformer.transform(notif, getType()).getRootElement();
             
-            String emailSubject = outXml.getChildText("subject");
+            String emailSubject = outXml.getChildTextNormalize("subject");
             String emailBody = outXml.getChildText("body");
             
             SimpleEmailMessage emailMsg = new SimpleEmailMessage();
@@ -54,7 +60,7 @@ public class EmailHandler extends OutputHandler
         }
         catch( Exception e )
         {
-            CTILogger.error("Unable to email notification " + notif + " to " + contact + ".", e );
+            CTILogger.error("Unable to email notification " + notifFormatter + " to " + contact + ".", e );
         }
     }
     

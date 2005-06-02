@@ -43,6 +43,8 @@ public class Notification {
     }
     
     public String toString() {
+        
+        //TODO this is too much!
         XMLOutputter out = new XMLOutputter(Format.getCompactFormat());
         return out.outputString(_root);
         //return _doc.toString();
