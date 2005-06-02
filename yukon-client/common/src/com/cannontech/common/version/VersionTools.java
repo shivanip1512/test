@@ -27,7 +27,7 @@ public final class VersionTools
 		//latest query string is first!
 		"select Version, CTIEmployeeName, DateApplied, Notes, Build from " + 
 			CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
-			"order by Version, Build desc",
+			"order by Version desc, Build desc",
 
 		"select Version, CTIEmployeeName, DateApplied, Notes from " + 
 			CTIDatabase.TABLE_NAME + " where DateApplied is not null " + 
