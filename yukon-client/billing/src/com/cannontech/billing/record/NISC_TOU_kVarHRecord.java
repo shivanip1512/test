@@ -46,6 +46,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 	private Double readingKvarH = null;	// 6digits (no decimal)
 
 	private static java.text.DecimalFormat KVARH_FORMAT_NODECIMAL = new java.text.DecimalFormat("######");
+	private static java.text.DecimalFormat KW_FORMAT_3v2 = new java.text.DecimalFormat("##0.00");
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");	
 	/**
 	 * NISC_TOU_KVARHRecord constructor comment.
@@ -242,4 +243,8 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
     {
         this.readingKvarH = new Double(readingKvarH);
     }
+	public java.text.DecimalFormat getKwFormat()
+	{
+		return KW_FORMAT_3v2;
+	}
 }
