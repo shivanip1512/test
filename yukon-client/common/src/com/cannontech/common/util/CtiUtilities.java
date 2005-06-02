@@ -949,6 +949,24 @@ public final static javax.swing.tree.TreePath getTreePath(javax.swing.JTree tree
 		return null;	
 }
 
+/**
+ * Returns valid US timezone strings.
+ */
+public static final String[] getTimeZones()
+{
+	String[] availableIDs = TimeZone.getAvailableIDs();
+	Vector retVals = new Vector(16);
+	
+	for (int i = 0; i < availableIDs.length; i++) {
+		String zone = availableIDs[i];
+		if (zone.matches("^US.*")) {
+			retVals.add( zone );
+		}
+	}
+
+	availableIDs = new String[retVals.size()];
+	return (String[])retVals.toArray(availableIDs);
+}
 
 /**
  * This method was created in VisualAge.
