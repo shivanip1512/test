@@ -11,6 +11,7 @@ import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -364,4 +365,42 @@ public class AuthFuncs {
 
         return false;
     }    
+
+
+	/**
+	 * Attempts to log a voice user into the system using the
+	 * given ContactID and pin. If the PIN is matched to any PIN 
+	 * the contact hast, then we are logged in. Returns null if
+	 * we are not logged in. This method is CASE SENSITIVE
+	 * 
+	 */
+	public static LiteYukonUser voiceLogin(int contactid, String pin) {
+			
+		LiteContact lContact = ContactFuncs.getContact( contactid );
+
+		if( lContact != null )
+		{
+			CTILogger.info("Attempting a VOICE login with the following Contact info: " + lContact.toString());
+			
+			LiteYukonUser lYukUser = YukonUserFuncs.getLiteYukonUser( lContact.getLoginID() );
+			
+			if( lYukUser != null ) {
+				String[] pins = ContactFuncs.getAllPINs( lContact.getContactID() );
+				for( int i = 0; i < pins.length; i++ ) {
+					if( pins[i].equals(pin) )
+						return lYukUser; //success
+				}
+
+				CTILogger.info("  Failed VOICE login because an inavlid PIN was entered, Contact: " + lContact.toString());
+			}
+			else
+				CTILogger.info("  Failed VOICE login because no YukonUser was found for the Contact: " + lContact.toString());
+		}
+		else
+			CTILogger.info("Failed VOICE login since no Contact exists with a Contactid = " + contactid);
+
+
+		return null;  //failure
+	}
+
 }

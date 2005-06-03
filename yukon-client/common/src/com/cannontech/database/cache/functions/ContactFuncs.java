@@ -224,6 +224,30 @@ public final class ContactFuncs
 		return (String[])strList.toArray( emails );
 	}
 
+	/**
+	 * Returns all the PIN entries found for a given contact. If no
+	 * PIN entries are found, we return a zero length String array.
+	 * 
+	 */
+	public static String[] getAllPINs( int contactID_ )
+	{
+		LiteContact contact = getContact( contactID_ );
+		ArrayList strList = new ArrayList(16);
+
+		//find all the PINs in the list ContactNotifications
+		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
+		{	
+			LiteContactNotification ltCntNotif =
+					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+					
+			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN )
+				strList.add( ltCntNotif.getNotification() );
+		}
+
+		String[] pins = new String[ strList.size() ];
+		return (String[])strList.toArray( pins );
+	}
+
     /**
      * Finds all notifcations that are of a phone type. Returns a zero length array
      * when no phone numbers are found.
