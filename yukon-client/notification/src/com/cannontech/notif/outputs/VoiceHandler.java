@@ -1,12 +1,11 @@
 package com.cannontech.notif.outputs;
 
 import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.voice.*;
+import com.cannontech.notif.voice.CallPool.CallPoolException;
 import com.cannontech.notif.voice.callstates.Confirmed;
 import com.cannontech.notif.voice.callstates.Unconfirmed;
 import com.cannontech.roles.yukon.SystemRole;
@@ -44,7 +43,7 @@ public class VoiceHandler extends OutputHandler
         _transformer = new NotificationTransformer(xslRootDirectory);
     }
     
-    public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
+    public void handleNotification(NotificationBuilder notifBuilder, Contactable contact) {
         if (!_acceptNewNotifications) {
             // I could throw an exception here, but what would the caller do???
             CTILogger.error("com.cannontech.notif.outputs.VoiceHandler.handleNotification() " +
@@ -53,15 +52,12 @@ public class VoiceHandler extends OutputHandler
         }
         
         try {
-            Notification notif = notifFormatter.buildNotification(contact);
+            Notification notif = notifBuilder.buildNotification(contact);
             
             Document voiceXml = _transformer.transform(notif, getType());
-            XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-            //TODO this is a waste of memory
-            String voiceXmlString = outputter.outputString(voiceXml);
             
             SingleNotification singleNotification = 
-                new SingleNotification(contact, voiceXmlString);
+                new SingleNotification(contact, voiceXml);
             _queue.add(singleNotification);
             
         } catch (Exception e) {
@@ -93,17 +89,21 @@ public class VoiceHandler extends OutputHandler
     }
 
     public void completeCall(String token, boolean gotConfirmation) {
-        Call call = _callPool.getCall(token);
-        if (gotConfirmation) {
-            call.changeState(new Confirmed());
-        } else {
-            call.changeState(new Unconfirmed());
+        try {
+            Call call = _callPool.getCall(token);
+            if (gotConfirmation) {
+                call.changeState(new Confirmed());
+            } else {
+                call.changeState(new Unconfirmed());
+            }
+        } catch (Exception e) {
+            CTILogger.warn("Unable to complete call (token=" + token + ", confiration=" + gotConfirmation + ")", e);
         }
     }
 
-    public Object getCallData(String token) {
+    public Document getCallData(String token) throws CallPoolException {
         Call call = _callPool.getCall(token);
-        return call.getMessage();
+        return (Document)call.getMessage();
     }
     
 }
