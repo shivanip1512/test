@@ -9,6 +9,8 @@ import com.cannontech.common.concurrent.PropertyChangeMulticaster;
 import com.cannontech.notif.outputs.ContactPhone;
 import com.cannontech.notif.voice.callstates.*;
 
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
+
 /**
  *  
  */
@@ -17,7 +19,7 @@ public class Call {
     PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
     private Object _message;
     private PhoneNumber _number;
-    static private int nextToken = 1;
+    static private AtomicInteger nextToken = new AtomicInteger(1);
     final String _token;
     public static final String CALL_STATE = "state";
     private TreeMap _parameterMap;
@@ -34,7 +36,7 @@ public class Call {
         _number = contactPhone.getPhoneNumber();
         
         _message = message;
-        _token = "CALLID" + nextToken++;
+        _token = "CALLID" + nextToken.incrementAndGet();
 
         _parameterMap = new TreeMap();
         _parameterMap.put("token", _token);
@@ -100,8 +102,7 @@ public class Call {
     public boolean equals(Object obj) {
         if (obj instanceof Call) {
             Call that = (Call)obj;
-            return that.getNumber().equals(getNumber()) 
-              && that.getMessage().equals(getMessage());
+            return that.getToken().equals(getToken());
         }
         return false;
     }
@@ -116,6 +117,10 @@ public class Call {
     
     public Map getCallParameters() {
         return _parameterMap;
+    }
+    
+    public int hashCode() {
+        return _token.hashCode();
     }
 
 }
