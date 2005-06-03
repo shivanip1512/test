@@ -22,10 +22,10 @@ public class CallPool implements PropertyChangeListener {
 
     private static final int MAX_SHUTDOWN_WAIT = 120; // in seconds
     final protected ThreadPoolExecutor _threadPool;
-    final protected Map _pendingCalls = new HashMap();
+    final protected Map _pendingCalls;
     final Timer _timer = new Timer();
     private Dialer _dialer;
-    private HashMap _timerTasks = new HashMap();
+    final private Map _timerTasks;
     private static AtomicInteger _callThreadId = new AtomicInteger(1);
     private final int _callTimeoutSeconds;
     private boolean _shutdown = false;
@@ -33,6 +33,9 @@ public class CallPool implements PropertyChangeListener {
     public CallPool(Dialer dialer, int numberOfChannels, int callTimeoutSeconds) {
         _dialer = dialer;
         _callTimeoutSeconds = callTimeoutSeconds;
+        
+        _timerTasks = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
+        _pendingCalls = new ConcurrentHashMap(30, .75f, numberOfChannels + 1);
         
         final ThreadGroup threadGroup = new ThreadGroup("Threads for " + dialer);
         ThreadFactory threadFactory = new ThreadFactory() {
@@ -105,9 +108,15 @@ public class CallPool implements PropertyChangeListener {
      * system when the call is dialed.
      * @param token The unique identifier of the call
      * @return The Call object matching the token
+     * @throws CallPoolException 
      */
-    public Call getCall(String token) {
-        return (Call) _pendingCalls.get(token);
+    public Call getCall(String token) throws CallPoolException {
+        Object call = _pendingCalls.get(token);
+        if (call == null) {
+            throw new CallPoolException("Unable to retreive call for token " + token);
+        } else {
+            return (Call)call;
+        }
     }
 
     public void shutdown() throws InterruptedException {
@@ -133,6 +142,16 @@ public class CallPool implements PropertyChangeListener {
             Call pendingCall = (Call) iter.next();
             pendingCall.removePropertyChangeListener(this);
             pendingCall.changeState(new Unconfirmed("Server shutdown"));
+        }
+    }
+    
+    public class CallPoolException extends Exception {
+        public CallPoolException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public CallPoolException(String message) {
+            super(message);
         }
     }
 }
