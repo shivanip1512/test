@@ -13,12 +13,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer customerTypeID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private String timeZone = "";
+	private String customerNumber = CtiUtilities.STRING_NONE;
 
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"PrimaryContactID", "CustomerTypeID", "TimeZone"
+		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
@@ -40,7 +41,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		Object addValues[] = 
 		{ 
 			getCustomerID(), getPrimaryContactID(),
-			getCustomerTypeID(), getTimeZone()
+			getCustomerTypeID(), getTimeZone(),
+			getCustomerNumber()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -112,6 +114,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			setPrimaryContactID( (Integer) results[0] );
 			setCustomerTypeID( (Integer) results[1] );
 			setTimeZone( (String) results[2] );
+			setCustomerNumber( (String) results[3] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -126,7 +129,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		Object setValues[] =
 		{ 
 			getPrimaryContactID(),
-			getCustomerTypeID(), getTimeZone()
+			getCustomerTypeID(), getTimeZone(),
+			getCustomerNumber()
 		};
 	
 		Object constraintValues[] = { getCustomerID() };
@@ -195,6 +199,22 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	 */
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setCustomerNumber(String string)
+	{
+		customerNumber = string;
 	}
 
 }

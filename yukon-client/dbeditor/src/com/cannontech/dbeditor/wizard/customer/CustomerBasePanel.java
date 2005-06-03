@@ -4,7 +4,12 @@ package com.cannontech.dbeditor.wizard.customer;
  */
 import java.util.List;
 
+import javax.swing.JTextField;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.unchanging.StringRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
@@ -16,7 +21,7 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 
-public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, DataInputPanelListener 
+public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, DataInputPanelListener, CaretListener 
 {
 	private javax.swing.JButton ivjJButtonNewContact = null;
 	private javax.swing.JComboBox ivjJComboBoxPrimaryContact = null;
@@ -25,6 +30,10 @@ public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputP
 	private javax.swing.JComboBox ivjJComboBoxTimeZone = null;
 	private javax.swing.JPanel ivjJPanelCustomerInfo = null;
 	private CICustomerBasePanel ivjCICustomerPanel = null;
+
+	//manually added GUI components
+	private javax.swing.JTextField jTextFieldCustomerNumber = null;
+	private javax.swing.JLabel jLabelCustNumber = null;
 
 /**
  * Constructor
@@ -311,8 +320,8 @@ private javax.swing.JPanel getJPanelCustomerInfo() {
 			constraintsJComboBoxPrimaryContact.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxPrimaryContact.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJComboBoxPrimaryContact.weightx = 1.0;
-			constraintsJComboBoxPrimaryContact.ipadx = 21;
-			constraintsJComboBoxPrimaryContact.insets = new java.awt.Insets(1, 1, 2, 4);
+			//constraintsJComboBoxPrimaryContact.insets = new java.awt.Insets(1, 1, 2, 4);
+			constraintsJComboBoxPrimaryContact.insets = new java.awt.Insets(0, 4, 0, 0);
 			getJPanelCustomerInfo().add(getJComboBoxPrimaryContact(), constraintsJComboBoxPrimaryContact);
 
 			java.awt.GridBagConstraints constraintsJButtonNewContact = new java.awt.GridBagConstraints();
@@ -337,10 +346,28 @@ private javax.swing.JPanel getJPanelCustomerInfo() {
 			constraintsJTextFieldTimeZone.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJTextFieldTimeZone.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJTextFieldTimeZone.weightx = 1.0;
-			constraintsJTextFieldTimeZone.ipadx = 186;
-			constraintsJTextFieldTimeZone.insets = new java.awt.Insets(2, 4, 7, 118);
+			constraintsJTextFieldTimeZone.insets = new java.awt.Insets(0, 4, 0, 0);
 			getJPanelCustomerInfo().add(getJComboBoxTimeZone(), constraintsJTextFieldTimeZone);
 			// user code begin {1}
+			
+			
+			java.awt.GridBagConstraints constraintsJLabelCustNumber = new java.awt.GridBagConstraints();
+			constraintsJLabelCustNumber.gridx = 1; constraintsJLabelCustNumber.gridy = 3;
+			constraintsJLabelCustNumber.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelCustNumber.ipadx = 8;
+			constraintsJLabelCustNumber.ipady = -2;
+			constraintsJLabelCustNumber.insets = new java.awt.Insets(4, 8, 8, 3);
+			getJPanelCustomerInfo().add(getJLabelCustomerNumber(), constraintsJLabelCustNumber);
+
+			java.awt.GridBagConstraints constraintsJTextFieldCustNumber = new java.awt.GridBagConstraints();
+			constraintsJTextFieldCustNumber.gridx = 2; constraintsJTextFieldCustNumber.gridy = 3;
+			constraintsJTextFieldCustNumber.gridwidth = 3;
+			constraintsJTextFieldCustNumber.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJTextFieldCustNumber.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJTextFieldCustNumber.weightx = 1.0;
+			constraintsJTextFieldCustNumber.insets = new java.awt.Insets(0, 4, 0, 0);
+			getJPanelCustomerInfo().add(getJTextFieldCustomerNumber(), constraintsJTextFieldCustNumber);
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -363,8 +390,12 @@ private javax.swing.JComboBox getJComboBoxTimeZone() {
 			ivjJComboBoxTimeZone.setName("JTextFieldTimeZone");
 			// user code begin {1}
 
-			//ivjJComboBoxTimeZone.setDocument( 
-			//		new com.cannontech.common.gui.unchanging.StringRangeDocument(40) );
+			//this may change some day in a new release of Java
+			if( ivjJComboBoxTimeZone.getEditor().getEditorComponent() instanceof JTextField )
+			{			
+				((JTextField)ivjJComboBoxTimeZone.getEditor().getEditorComponent()).setDocument( 
+					new com.cannontech.common.gui.unchanging.StringRangeDocument(40) );
+			}
 
 			ivjJComboBoxTimeZone.setEditable( true );
 			
@@ -382,6 +413,28 @@ private javax.swing.JComboBox getJComboBoxTimeZone() {
 	return ivjJComboBoxTimeZone;
 }
 
+private javax.swing.JTextField getJTextFieldCustomerNumber() {
+	if (jTextFieldCustomerNumber == null) {
+		jTextFieldCustomerNumber = new javax.swing.JTextField();
+		jTextFieldCustomerNumber.setName("jTextFieldCustomerNumber");
+		
+		jTextFieldCustomerNumber.setDocument( new StringRangeDocument(64) );
+		jTextFieldCustomerNumber.setText( CtiUtilities.STRING_NONE );
+
+	}
+	return jTextFieldCustomerNumber;
+}
+
+private javax.swing.JLabel getJLabelCustomerNumber() {
+	if (jLabelCustNumber== null) {
+		jLabelCustNumber = new javax.swing.JLabel();
+		jLabelCustNumber.setName("jLabelCustNumber");
+		jLabelCustNumber.setToolTipText("A mapping number assigned to the customer");
+		jLabelCustNumber.setFont(new java.awt.Font("dialog", 0, 14));
+		jLabelCustNumber.setText("Customer Number:");
+	}
+	return jLabelCustNumber;
+}
 
 /**
  * getValue method comment.
@@ -409,10 +462,15 @@ public Object getValue(Object o)
 		customer.getCustomer().setTimeZone( getJComboBoxTimeZone().getSelectedItem().toString() );
 	}
 
-
 	//only get the set values for the CICustomer if it is one
 	if( customer instanceof CICustomerBase )
 		customer = (CICustomerBase)getCICustomerPanel().getValue( customer );
+
+	if( getJTextFieldCustomerNumber().getText() != null
+		 && getJTextFieldCustomerNumber().getText().length() > 0 )
+	{
+		customer.getCustomer().setCustomerNumber( getJTextFieldCustomerNumber().getText() );
+	}
 
 
 /*FIXFIX
@@ -456,6 +514,7 @@ private void initConnections() throws java.lang.Exception {
 	
 	getCICustomerPanel().addDataInputPanelListener( this );
 	getJComboBoxTimeZone().addActionListener(this);
+	getJTextFieldCustomerNumber().addCaretListener(this);
 
 	// user code end
 	getJComboBoxPrimaryContact().addActionListener(this);
@@ -673,7 +732,7 @@ public void setValue(Object o)
 		}
 	}
 
-	//try to find out timezone in the combo box
+	//try to find our timezone in the combo box
 	getJComboBoxTimeZone().setSelectedIndex(-1);
 	for( int i = 0; i < getJComboBoxTimeZone().getItemCount(); i++ ) {
 		if( customer.getCustomer().getTimeZone().equalsIgnoreCase(
@@ -690,7 +749,8 @@ public void setValue(Object o)
 		getJComboBoxTimeZone().setSelectedItem( customer.getCustomer().getTimeZone() );
 	}
 	
-
+	getJTextFieldCustomerNumber().setText(
+		customer.getCustomer().getCustomerNumber() );
 
 /*FIXFIX
 	String home = customer.getCustomerWebSettings().getHomeURL();
@@ -704,4 +764,11 @@ public void setValue(Object o)
 
 	getCICustomerPanel().setVisible( customer instanceof CICustomerBase );
 }
+
+public void caretUpdate( CaretEvent e )
+{
+	if( e.getSource() == getJTextFieldCustomerNumber() )
+		fireInputUpdate();
+}
+
 }
