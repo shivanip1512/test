@@ -29,6 +29,14 @@ public class LoadManagementMessageHandler extends NotifHandler {
 
     public void handleMessage(Message msg_) {
         final NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
+        
+        long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();
+        long durationMinutes = durationMillis / 1000 / 60;
+        long durationHours = durationMinutes / 60;
+        long remainingMinutes = durationMinutes % 60;
+        final String durationMinutesStr = Long.toString(durationMinutes);
+        final String durationHoursStr = Long.toString(durationHours);
+        final String remainingMinutesStr = Long.toString(remainingMinutes);
 
         NotificationBuilder notifFormatter = new NotificationBuilder() {
             public Notification buildNotification(Contactable contact) {
@@ -45,6 +53,10 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.put("stoptime", _timeFormater.format(msg.stopTime));
                 notif.put("stopdate", _dateFormater.format(msg.stopTime));
                 
+                notif.put("durationminutes", durationMinutesStr);
+                notif.put("durationhours", durationHoursStr);
+                notif.put("remainingminutes", remainingMinutesStr);
+
                 return notif;
             }
         };
