@@ -41,11 +41,13 @@ public interface LoginController {
 	public static final String ACTION = "ACTION";
 	public static final String REDIRECT = ServletUtil.ATT_REDIRECT;
 	public static final String SAVE_CURRENT_USER = "SAVE_CURRENT_USER";
+	public static final String TOKEN = "TOKEN";
 	
 	/* Possible Action Values */
 	public static final String LOGIN = "LOGIN";
 	public static final String CLIENT_LOGIN = "CLIENTLOGIN";
 	public static final String LOGOUT = "LOGOUT";
+	public static final String VOICE_LOGIN = "VOICELOGIN";
 	
 	public static final String YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";
