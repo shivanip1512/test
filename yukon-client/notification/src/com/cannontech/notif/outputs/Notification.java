@@ -43,10 +43,24 @@ public class Notification {
     }
     
     public String toString() {
-        
-        //TODO this is too much!
+        return _messageType + " notification";
+    }
+    
+    public int hashCode() {
+        return _doc.hashCode();
+    }
+    
+    public boolean equals(Object obj) {
+        if (obj instanceof Notification) {
+            Notification that = (Notification) obj;
+            return this._doc.equals(that._doc);
+        }
+        return false;
+    }
+    
+    public String getXmlString() {
         XMLOutputter out = new XMLOutputter(Format.getCompactFormat());
         return out.outputString(_root);
-        //return _doc.toString();
     }
+    
 }
