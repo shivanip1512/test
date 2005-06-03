@@ -419,8 +419,6 @@ private javax.swing.JTextField getJTextFieldCustomerNumber() {
 		jTextFieldCustomerNumber.setName("jTextFieldCustomerNumber");
 		
 		jTextFieldCustomerNumber.setDocument( new StringRangeDocument(64) );
-		jTextFieldCustomerNumber.setText( CtiUtilities.STRING_NONE );
-
 	}
 	return jTextFieldCustomerNumber;
 }
@@ -466,11 +464,14 @@ public Object getValue(Object o)
 	if( customer instanceof CICustomerBase )
 		customer = (CICustomerBase)getCICustomerPanel().getValue( customer );
 
-	if( getJTextFieldCustomerNumber().getText() != null
-		 && getJTextFieldCustomerNumber().getText().length() > 0 )
+	if( getJTextFieldCustomerNumber().getText() == null
+		 || getJTextFieldCustomerNumber().getText().length() <= 0 )
 	{
-		customer.getCustomer().setCustomerNumber( getJTextFieldCustomerNumber().getText() );
+		customer.getCustomer().setCustomerNumber( CtiUtilities.STRING_NONE );
 	}
+	else
+		customer.getCustomer().setCustomerNumber( getJTextFieldCustomerNumber().getText() );
+
 
 
 /*FIXFIX
@@ -749,8 +750,11 @@ public void setValue(Object o)
 		getJComboBoxTimeZone().setSelectedItem( customer.getCustomer().getTimeZone() );
 	}
 	
-	getJTextFieldCustomerNumber().setText(
-		customer.getCustomer().getCustomerNumber() );
+	if( CtiUtilities.STRING_NONE.equals(customer.getCustomer().getCustomerNumber()) )
+		getJTextFieldCustomerNumber().setText("");
+	else
+		getJTextFieldCustomerNumber().setText(
+			customer.getCustomer().getCustomerNumber() );
 
 /*FIXFIX
 	String home = customer.getCustomerWebSettings().getHomeURL();
