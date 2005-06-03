@@ -84,6 +84,45 @@ insert into YukonGroupRole values(-75,-1,-5,-1405,'(none)');
 update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
 update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
 
+alter table LMProgramDirect rename column NotifyOffset to NotifyActiveOffset;
+
+alter table LMProgramDirect add NotifyInactiveOffset number;
+update LMProgramDirect set NotifyInactiveOffset = 0;
+alter table LMProgramDirect alter column NotifyInactiveOffset number not null;
+
+alter table DynamicLMProgramDirect rename column NotifyTime to NotifyActiveTime;
+
+alter table DynamicLMProgramDirect add NotifyInactiveTime date;
+update DynamicLMProgramDirect set NotifyInactiveTime = '01-JAN-1990';
+alter table DynamicLMProgramDirect modify NotifyInactiveTime date not null;
+
+create table CICUSTOMERPOINTDATA  (
+   CustomerID           NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   Type                 VARCHAR2(16)                    not null,
+   OptionalLabel        VARCHAR2(32)                    not null
+);
+alter table CICUSTOMERPOINTDATA
+   add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, PointID);
+alter table CICUSTOMERPOINTDATA
+   add constraint FK_CICstPtD_CICst foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+alter table CICUSTOMERPOINTDATA
+   add constraint FK_CICUSTOM_REF_CICST_POINT foreign key (PointID)
+      references POINT (POINTID);
+
+alter table Customer add CustomerNumber varchar2(64);
+update Customer set CustomerNumber = '(none)';
+alter table Customer modify CustomerNumber varchar2(64) not null;
+go
+
+
+
+
+
+
+
+
 
 
 
