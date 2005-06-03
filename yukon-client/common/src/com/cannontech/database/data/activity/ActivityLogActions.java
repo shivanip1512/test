@@ -18,6 +18,8 @@ public interface ActivityLogActions
 	/* Please add all new action Strings to appropriate "group" below */
 	public static final String LOGIN_WEB_ACTIVITY_ACTION = "LOG IN (WEB)";
 	public static final String LOGIN_CLIENT_ACTIVITY_ACTION = "LOG IN (CLIENT)";
+	public static final String LOGIN_VOICE_ACTIVITY_ACTION = "LOG IN (VOICE)";
+	
 	public static final String LOGOUT_ACTIVITY_LOG = "LOG OUT";
 	public static final String LOGIN_FAILED_ACTIVITY_LOG = "LOGIN FAILED";
 	
