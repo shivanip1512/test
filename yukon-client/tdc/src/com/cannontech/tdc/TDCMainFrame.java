@@ -2598,7 +2598,7 @@ private javax.swing.JMenuItem getJMenuItemEndSession()
 			jMenuItemEndSession.setBackground(java.awt.SystemColor.control);
 			jMenuItemEndSession.setForeground(java.awt.SystemColor.controlText);
 			jMenuItemEndSession.setFont(new java.awt.Font("dialog", 0, 12));
-			jMenuItemEndSession.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_O, java.awt.Event.CTRL_MASK));
+			jMenuItemEndSession.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_Z, java.awt.Event.CTRL_MASK));
 		}
 		catch (java.lang.Throwable ivjExc)
 		{
