@@ -1,12 +1,12 @@
 package com.cannontech.database.data.customer;
 
 /**
- * Insert the type's description here.
- * Creation date: (12/6/00 3:54:11 PM)
- * @author: 
+ * Mapping table to putting points with labels onto CICustomers
+ * 
  */
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.Address;
+import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.customer.CustomerBaseLinePoint;
 import com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList;
 import com.cannontech.database.db.web.EnergyCompanyCustomerList;
@@ -21,6 +21,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	//currently, 1 customer may only belong to 1 EnergyCompany. This is null
 	// if the customer is not owned by an EnergyCompany
 	private EnergyCompany energyCompany = null;
+
+	// 0..Many
+	private CICustomerPointData[] ciCustomerPointData = new CICustomerPointData[0];
 	
 	/**
 	 * CICustomerBase constructor comment.
@@ -132,6 +135,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 			// showing that this customer belongs to the EnergyCompany
 			add("EnergyCompanyCustomerList", addValues);		
 		}
+		
+		for( int i = 0; i < getCiCustomerPointData().length; i++ )
+			getCiCustomerPointData()[i].add();
 	}
 	
 	/**
@@ -165,6 +171,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
 			
 		getCustomerBaseLinePoint().delete();
+
+		for( int i = 0; i < getCiCustomerPointData().length; i++ )
+			getCiCustomerPointData()[i].delete();
 
 		
 		//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
@@ -236,7 +245,10 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		getCiCustomerBase().retrieve();
 
 		getCustomerBaseLinePoint().retrieve();
-	
+
+		setCiCustomerPointData(
+			CICustomerPointData.getAllCICustomerPointData(getCustomerID().intValue()) );
+
 		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
 		getAddress().retrieve();
 	
@@ -295,6 +307,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		super.setCustomerID( custID );
 		getCiCustomerBase().setCustomerID( custID );
 		getCustomerBaseLinePoint().setCustomerID( custID );
+
+		for( int i = 0; i < getCiCustomerPointData().length; i++ )
+			getCiCustomerPointData()[i].setCustomerID( custID );
 	}
 	
 	/**
@@ -311,6 +326,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 
 		if( getEnergyCompany() != null )
 			getEnergyCompany().setDbConnection( conn );
+
+		for( int i = 0; i < getCiCustomerPointData().length; i++ )
+			getCiCustomerPointData()[i].setDbConnection( conn );
 	}
 
 	/**
@@ -327,6 +345,8 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	 */
 	public void update() throws java.sql.SQLException 
 	{
+		setCustomerID( getCustomerID() );
+
 		getAddress().setAddressID(getCiCustomerBase().getMainAddressID());
 		getAddress().update();
 		
@@ -335,7 +355,12 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	
 		if( getCustomerBaseLinePoint().getPointID() != null )
 			getCustomerBaseLinePoint().update();
-	
+
+		//just delete all the CICustomerPointData entries and re-add them
+		delete( CICustomerPointData.TABLE_NAME, "CustomerID", getCustomerID() );
+		for( int i = 0; i < getCiCustomerPointData().length; i++ )
+			getCiCustomerPointData()[i].add();
+
 		//just delete the bridge value to the EnergyCompanyCustomerList table
 		delete(EnergyCompanyCustomerList.tableName, "CustomerID", getCustomerID() );
 	
@@ -364,4 +389,23 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 	{
 		return getCiCustomerBase().getCompanyName();
 	}
+	/**
+	 * @return
+	 */
+	public CICustomerPointData[] getCiCustomerPointData()
+	{
+		return ciCustomerPointData;
+	}
+
+	/**
+	 * @param datas
+	 */
+	public void setCiCustomerPointData(CICustomerPointData[] datas)
+	{
+		if( datas == null )
+			datas = new CICustomerPointData[0];
+
+		ciCustomerPointData = datas;
+	}
+
 }

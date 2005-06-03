@@ -21,6 +21,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 	//contains ints of ContactIDs
 	private int[] customerContactIDs = new int[0];
+
 	
 	/**
 	 * Customer constructor comment.
