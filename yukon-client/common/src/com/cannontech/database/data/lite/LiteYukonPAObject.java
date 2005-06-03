@@ -14,12 +14,23 @@ import com.cannontech.database.db.device.DeviceRoutes;
  */
 public class LiteYukonPAObject extends LiteBase
 {
+	// a place holder for a LiteYukonPAObject used to show a dummy element
+	public static final LiteYukonPAObject LITEPAOBJECT_SYSTEM = new LiteYukonPAObject
+	(
+		0,
+		"System Device",
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		PAOGroups.INVALID,
+		CtiUtilities.STRING_NONE
+	);
+	
 	// a place holder for a LiteYukonPAObject, mostly used in option lists
 	// that allow the user not to choose a LitYukonPAObject
 	public static final LiteYukonPAObject LITEPAOBJECT_NONE = new LiteYukonPAObject
 	(
 		0,
-		"System Device",
+		CtiUtilities.STRING_NONE,
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
 		PAOGroups.INVALID,
