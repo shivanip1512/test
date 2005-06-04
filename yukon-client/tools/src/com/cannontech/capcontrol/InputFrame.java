@@ -29,6 +29,7 @@ import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -82,11 +83,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private static DecimalFormat SERIAL_FORM = new DecimalFormat("000000000");
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
 	private BufferedReader input;
-	
-
+	private boolean command = false;
 
 	public InputFrame()
 	{
+		command = false;
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
 		try
@@ -98,57 +99,104 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		}
 	}
 	
-	public InputFrame(String command)
+	public InputFrame(String[] paramvars)
 	{
-		clInit();
+		
+		
+		clInit(paramvars);
+		
 	}
 	
-	private void clInit()
+	private void clInit(String [] paramvars)
 	{
-		input = new BufferedReader(new InputStreamReader(System.in));
+		command = true;
+		CommandLineParser clp = new CommandLineParser(paramvars);
+
+		String[] params = clp.parseArgs(paramvars);
+
+		for(int i = 0; i < params.length; i++)
+		{
+			System.out.println(params[i]);
+		}
+
+		int to = new Integer(params[0]).intValue();
+		int from = new Integer(params[1]).intValue();
+		String route = params[2];
+		String conType = params[3];
+		String banksize = params[4];
+		String manufacturer = params[5];
+		String switchType = params[6];
+		InputValidater validater = new InputValidater(this, command, to, from, route, conType, banksize, manufacturer, switchType);
+		boolean validated = commandLineValidate(validater);
+		if( validated )
+		{
+			writeToDB(validater);
+		}
+	}
+	
+	private boolean commandLineValidate(InputValidater val)
+	{
 		try
 		{
-			System.out.println("Enter nine digit starting serial number.( series 7000 CBC's require a s/n starting with '7')");
-			System.out.println("");
-			System.out.print("Serial Range From: ");
-			String from = input.readLine();
-			System.out.print("Serial Range To: ");
-			String to = input.readLine();
-			System.out.print("Route: ");
-			String route = input.readLine();
-			System.out.println("");
-			System.out.println("CBC Types: " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] + ", " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0] + ", " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0] + ", " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0] + ", " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
-				
-			System.out.print("CBC Type: ");
-			String capcntrlType = input.readLine();
-			System.out.print("Bank Size: ");
-			String banksize = input.readLine();
-			System.out.println("");
-			System.out.println("Manufacturers: " + com.cannontech.common.util.CtiUtilities.STRING_NONE + ", " +
-				CapBank.SWITCHMAN_WESTING + ", " +
-				CapBank.SWITCHMAN_ABB + ", " +
-				CapBank.SWITCHMAN_COOPER + ", " +
-				CapBank.SWITCHMAN_SIEMENS + ", " +
-				CapBank.SWITCHMAN_TRINETICS);
-				
-				
-			System.out.print("Switch Manufacturer: ");
-			String switchMan = input.readLine();
-			System.out.print("Type of Switch:  Vacuum or Oil: ");
-			String switchType = input.readLine();
-			val = new InputValidater(this, new Integer(from).intValue(), new Integer(to).intValue(), route, banksize, switchMan, switchType, capcntrlType);
-			
-		}catch(Exception e)
+			while (true)
+			{
+				// this is all meaningless except for checkRange, maybe needed later.
+				boolean rangeOK = val.checkRange();
+				if (rangeOK)
+				{
+					
+				} else
+				{
+					
+					return false;
+				}
+				boolean routeOK = val.checkRoute();
+				if (routeOK)
+				{
+					
+				} else
+				{
+					return false;
+				}
+				boolean bankOK = val.checkBankSize();
+				if (bankOK)
+				{
+					
+				} else
+				{
+					return false;
+				}
+				boolean switchManOK = val.checkManufacturer();
+				if (switchManOK)
+				{
+					
+				} else
+				{
+					return false;
+				}
+				boolean switchTypeOK = val.checkSwitchType();
+				if (switchTypeOK)
+				{
+					
+				} else
+				{
+					return false;
+				}
+				boolean switchConTypeOK = val.checkConType();
+				if (switchConTypeOK)
+				{
+					break;
+				} else
+				{
+					return false;
+				}
+			}
+		} catch (Exception e)
 		{
-			
+			CTILogger.info("error while validating");
+			e.printStackTrace(System.out);
 		}
-		
-		
+		return true;
 	}
 
 	private void init()
@@ -172,6 +220,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		routeCB.setBounds(new Rectangle(70, 40, 120, 20));
 		bankSizeLabel.setBounds(new Rectangle(10, 160, 90, 20));
 		bankSizeCB.setBounds(new Rectangle(110, 160, 120, 20));
+		bankSizeCB.setEditable(true);
 		switchManLabel.setBounds(new Rectangle(10, 100, 110, 20));
 		switchManCB.setBounds(new Rectangle(130, 100, 120, 20));
 		switchTypeLabel.setBounds(new Rectangle(10, 130, 90, 20));
@@ -303,7 +352,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					String type = (String) switchTypeCB.getSelectedItem();
 					String conType = (String) conTypeCB.getSelectedItem();
 					timer.start();
-					val = new InputValidater(this, from.intValue(), to.intValue(), route, banksize, manufacturer, type, conType);
+					val = new InputValidater(this, command, from.intValue(), to.intValue(), route, conType, banksize, manufacturer, type);
 					progressThread = new Thread(this, "Progress Thread");
 					progressThread.start();
 				}
@@ -416,17 +465,15 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			float updateSize = 100.0f / val.getCBCCount();
 			
 			for(int i = val.getFrom(); i <= val.getTo();i++){
+				
 				// create devices
 				CapBank capBank = (CapBank)DeviceFactory.createDevice(PAOGroups.CAPBANK);
 				capBank.setPAOName( "CapBank " + SERIAL_FORM.format(i) );
-				//String capbankMan = switchManCB.getSelectedItem().toString();
 				String capbankMan = val.getSwitchMan();
 				capBank.getCapBank().setSwitchManufacture(capbankMan);
-				//String typeOfSwitch = switchTypeCB.getSelectedItem().toString();
 				String typeOfSwitch = val.getSwitchType();
 				capBank.getCapBank().setTypeOfSwitch(typeOfSwitch);
 				capBank.getCapBank().setOperationalState( CapBank.UNINSTALLED_OPSTATE );
-				//capBank.getCapBank().setBankSize(new Integer(bankSizeCB.getSelectedItem().toString()));
 				capBank.getCapBank().setBankSize(new Integer(val.getBankSize()));
 				
 				SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
@@ -473,6 +520,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					ICapBankController cntrler = (ICapBankController)newCBC;
 					cntrler.assignAddress( new Integer(SERIAL_FORM.format(i)) );
 					Integer comID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
+					
 					routeCB.getSelectedItem()).getYukonID());
 					cntrler.setCommID( comID );
 				}
@@ -542,6 +590,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			return true;
 		}catch (Exception e)
 		{
+			JOptionPane.showMessageDialog(this.getParent(),e.getMessage() ,"Database Write Failed" , JOptionPane.WARNING_MESSAGE);
 			CTILogger.info("error writing to database");
 			e.printStackTrace(System.out);
 			return false;
@@ -599,6 +648,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
+			JOptionPane.showMessageDialog(this, "Database write was successful.", "All Finished", JOptionPane.INFORMATION_MESSAGE);
 			CTILogger.info("dbwrite success");
 			progress = 100;
 			bar.setValue(100);
@@ -610,5 +660,4 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			timer.stop();
 		}
 	}
-
 }

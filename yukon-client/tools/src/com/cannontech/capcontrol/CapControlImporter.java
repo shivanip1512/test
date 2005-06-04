@@ -60,16 +60,13 @@ public class CapControlImporter
 			e.printStackTrace();
 		}
 		
-		if("c".equalsIgnoreCase(args[0]))
-		{
-			
-			new InputFrame(args[0]);
-			
-		}else
-		{
-			
+//		if (null == args)
+//		{
 			new CapControlImporter();
-			
-		}
+//		}else
+//		{
+//			new InputFrame(args);
+//		}
+		
 	}
 }

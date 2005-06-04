@@ -30,10 +30,12 @@ public class InputValidater
 	private final String TABLE_NAME = "DeviceCBC";
 	public int getCBCCount = 0;
 	public JFrame parent;
+	public boolean command = false;
 	
-	public InputValidater(JFrame parentvar, int fromvar, int tovar, String routevar, String banksizevar, String manufacturervar, String switchTypevar, String conTypevar)
+	public InputValidater(JFrame parentvar, boolean debug, int fromvar, int tovar, String routevar,String conTypevar, String banksizevar, String manufacturervar, String switchTypevar)
 	{
 		parent = parentvar;
+		command = debug;
 		from = fromvar;
 		to = tovar;
 		route = routevar;
@@ -86,7 +88,13 @@ public class InputValidater
 		
 		if( devices.size() > 0 )
 		{
-			JOptionPane.showMessageDialog(this.getParent(), "Some of the numbers in the specified serial range are used.", "Serial Range Conflict", JOptionPane.WARNING_MESSAGE);
+			if(command)
+			{
+				CTILogger.error("Some of the numbers in the specified serial range are used.");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Some of the numbers in the specified serial range are used.", "Serial Range Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}			
 			return false;
 		}
 		else if( conType.equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]) )
@@ -94,13 +102,19 @@ public class InputValidater
 				
 			if(new Integer(from).toString().length() != 9 || !new Integer(from).toString().startsWith("7", 0))
 			{
-				JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+				if(command)
+				{
+					CTILogger.error("A 7000 series CBC needs a nine digit serial number that begins with a 7");
+				}else
+				{
+					JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Serial Range Validation Failed", JOptionPane.WARNING_MESSAGE);
+				}
 	
 				return false;
 			}
 			if(new Integer(to).toString().length() != 9 || !new Integer(to).toString().startsWith("7", 0))
 			{
-				JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Finish settings first", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this.getParent(), "A 7000 series CBC needs a nine digit serial number that begins with a 7", "Serial Range Validation Failed", JOptionPane.WARNING_MESSAGE);
 	
 				return false;
 			}
@@ -111,31 +125,107 @@ public class InputValidater
 	
 	public JFrame getParent(){
 		return parent;
+		
 	}
 	
 	public boolean checkRoute()
 	{
-		return true;
+		if(true)
+		{
+			return true;
+		}else
+		{
+			if(command)
+			{
+				CTILogger.error("Route Validatoin Failed");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Route Validatoin Failed", "Route Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			return false;
+		}
+		
 	}
 	
 	public boolean checkBankSize()
 	{
-		return true;
+		if(true)
+		{
+			return true;
+		}else
+		{
+			if(command)
+			{
+				CTILogger.error("Bank Size Validatoin Failed");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Bank Size Validatoin Failed", "Bank Size Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			return false;
+		}
+		
 	}
 	
 	public boolean checkManufacturer()
 	{
-		return true;
+		if(true)
+		{
+			return true;
+		}else
+		{
+			if(command)
+			{
+				CTILogger.error("Manufacturer Validatoin Failed");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Manufacturer Validatoin Failed", "Manufacturer Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			return false;
+		}
+		
 	}
 	
 	public boolean checkSwitchType()
 	{
-		return true;
+		if(true)
+		{
+			return true;
+		}else
+		{
+			if(command)
+			{
+				CTILogger.error("Switch Type Validatoin Failed");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Switch Type Validatoin Failed", "Switch Type Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			return false;
+		}
+		
 	}
 	
 	public boolean checkConType()
 	{
-		return true;
+		if(true)
+		{
+			return true;
+		}else
+		{
+			if(command)
+			{
+				CTILogger.error("Controller Type Validatoin Failed");
+			}else
+			{
+				JOptionPane.showMessageDialog(this.getParent(), "Controller Type Validatoin Failed", "Controller Type Validation Failed", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			return false;
+		}
+		
 	}
 	
 	public int getFrom(){
