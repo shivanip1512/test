@@ -1,14 +1,12 @@
 package com.cannontech.dbeditor.editor.contact;
-/**
- * This type was created in VisualAge.
- */
+
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.cannontech.clientutils.CTILogger;
@@ -94,10 +92,38 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	if( e.getSource() == getJComboDeviceSettl() )
 		jComboBoxDevice_ActionPerformed( getJComboDeviceSettl(), getJComboBoxPointSettl() );
+
+	if( e.getSource() == getJComboBoxDmdPoint() )
+		jComboBoxPoint_ActionPerformed( getJComboBoxDmdPoint() );
+
+	if( e.getSource() == getJComboBoxPointBase() )
+		jComboBoxPoint_ActionPerformed( getJComboBoxPointBase() );
+
+	if( e.getSource() == getJComboBoxPointCurt() )
+		jComboBoxPoint_ActionPerformed( getJComboBoxPointCurt() );
+
+	if( e.getSource() == getJComboBoxPointSettl() )
+		jComboBoxPoint_ActionPerformed( getJComboBoxPointSettl() );
+
 	
 	
 	fireInputUpdate();
 	// user code end
+}
+
+
+
+public void jComboBoxPoint_ActionPerformed( JComboBox pointCombo )
+{
+	if( pointCombo == null ) return;
+
+	LitePoint litePoint = (LitePoint)pointCombo.getSelectedItem();
+	if( litePoint != null )
+	{
+		//ConnPool.getInstance().getD   
+
+	}
+
 }
 
 /**
@@ -164,7 +190,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 }
 
 
-private CICustomerPointData createPointData( JPanel panel, JComboBox pointCombo, JTextField labelField, String type )
+private CICustomerPointData createPointData( JComboBox pointCombo, JTextField labelField, String type )
 {
 	CICustomerPointData ciPtData = new CICustomerPointData();
 	
@@ -449,6 +475,9 @@ private javax.swing.JLabel getJLabelActualValueBase() {
 			ivjJLabelActualValueBase.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 			ivjJLabelActualValueBase.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
+			
+			ivjJLabelActualValueBase.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -475,6 +504,9 @@ private javax.swing.JLabel getJLabelActualValueCurt() {
 			ivjJLabelActualValueCurt.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 			ivjJLabelActualValueCurt.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
+			
+			ivjJLabelActualValueCurt.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -501,6 +533,9 @@ private javax.swing.JLabel getJLabelActualValueDmd() {
 			ivjJLabelActualValueDmd.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 			ivjJLabelActualValueDmd.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
+			
+			ivjJLabelActualValueDmd.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -527,6 +562,9 @@ private javax.swing.JLabel getJLabelActualValueSettl() {
 			ivjJLabelActualValueSettl.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 			ivjJLabelActualValueSettl.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
+			
+			ivjJLabelActualValueSettl.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -839,6 +877,9 @@ private javax.swing.JLabel getJLabelTxtValueBase() {
 			ivjJLabelTxtValueBase.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTxtValueBase.setText("Value:");
 			// user code begin {1}
+			
+			ivjJLabelTxtValueBase.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -863,6 +904,9 @@ private javax.swing.JLabel getJLabelTxtValueCurt() {
 			ivjJLabelTxtValueCurt.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTxtValueCurt.setText("Value:");
 			// user code begin {1}
+			
+			ivjJLabelTxtValueCurt.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -887,6 +931,9 @@ private javax.swing.JLabel getJLabelTxtValueDmd() {
 			ivjJLabelTxtValueDmd.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTxtValueDmd.setText("Value:");
 			// user code begin {1}
+			
+			ivjJLabelTxtValueDmd.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -911,6 +958,9 @@ private javax.swing.JLabel getJLabelTxtValueSettl() {
 			ivjJLabelTxtValueSettl.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelTxtValueSettl.setText("Value:");
 			// user code begin {1}
+			
+			ivjJLabelTxtValueSettl.setVisible( false );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1473,16 +1523,16 @@ public Object getValue(Object o)
 	Vector tempVect = new Vector(8);		
 	
 	if( getJComboBoxDmdPoint().isEnabled() )
-		tempVect.add( createPointData( getJPanelDmd(), getJComboBoxDmdPoint(), getJTextFieldDmndLabel(), CICustomerPointData.TYPE_DEMAND ) );
+		tempVect.add( createPointData( getJComboBoxDmdPoint(), getJTextFieldDmndLabel(), CICustomerPointData.TYPE_DEMAND ) );
 
 	if( getJComboBoxPointBase().isEnabled() )
-		tempVect.add( createPointData( getJPanelBaseline(), getJComboBoxPointBase(), getJTextFieldBaseLabel(), CICustomerPointData.TYPE_BASELINE ) );
+		tempVect.add( createPointData( getJComboBoxPointBase(), getJTextFieldBaseLabel(), CICustomerPointData.TYPE_BASELINE ) );
 
 	if( getJComboBoxPointCurt().isEnabled() )
-		tempVect.add( createPointData( getJPanelDmd(), getJComboBoxPointCurt(), getJTextFieldCurtLabel(), CICustomerPointData.TYPE_CURTAILABLE ) );
+		tempVect.add( createPointData( getJComboBoxPointCurt(), getJTextFieldCurtLabel(), CICustomerPointData.TYPE_CURTAILABLE ) );
 
 	if( getJComboBoxPointSettl().isEnabled() )
-		tempVect.add( createPointData( getJPanelSettlement(), getJComboBoxPointSettl(), getJTextFieldSettlLabel(), CICustomerPointData.TYPE_SETTLEMENT ) );
+		tempVect.add( createPointData( getJComboBoxPointSettl(), getJTextFieldSettlLabel(), CICustomerPointData.TYPE_SETTLEMENT ) );
 
 	CICustomerPointData[] ciCustPointDatas = new CICustomerPointData[ tempVect.size() ];
 	ciCust.setCiCustomerPointData(
