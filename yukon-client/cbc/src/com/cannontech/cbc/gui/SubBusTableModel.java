@@ -4,6 +4,7 @@ package com.cannontech.cbc.gui;
  * This type was created in VisualAge.
  */
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
@@ -480,8 +481,7 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
         //only add the subs we are allowed to see
 		SubBus[] allBuses = new SubBus[busesMsg.getNumberOfBuses()];
 		for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
-		    allBuses[i] = busesMsg.getSubBusAt(i);
-
+			allBuses[i] = busesMsg.getSubBusAt(i);
 
 		updateSubBuses( allBuses );
 	}
@@ -515,6 +515,9 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 {
 	boolean changeSize = false;
 
+	//be sure that this new list of SubBuses is sorted
+	Arrays.sort( newBuses, CBCUtils.SUB_AREA_COMPARATOR );
+
 	for( int i = 0; i < newBuses.length; i++ )
 	{
 		SubBus newBus = newBuses[i];
@@ -532,6 +535,7 @@ private synchronized void updateSubBuses(SubBus[] newBuses)
 
 				getAllSubBuses().setElementAt( newBus, j );
 				found = true;
+				break;
 			}
 		}
 
