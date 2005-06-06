@@ -1,57 +1,10 @@
 //////////////////////////////////////////////////////////////
-//Set this for the minimum JRE version that Cannon requires on a customer's machine
-//Version should be listed with NO MORE than FOUR version digits.
-#define MINIMUMJAVAVERSION "1.4.2_05"
-//As long as the JRE installer is in one of setup file directories, just put in the name.
-#define JDKINSTALLFILE "j2sdk-1_4_2_05-windows-i586-p.exe"
-//////////////////////////////////////////////////////////////
 //These are constants required for Windows API broadcast calls
 #define WM_SETTINGCHANGE 0x001A 
 //////////////////////////////////////////////////////////////
 
-STRING uiServer;
-STRING uiClient;
 BOOL setupIsNeeded;
 
-///////////////////////////////////////////////////////////////////////////////
-//  EVENT:      Installing event is sent just before files for the component:
-//              Yukon Client are transferred.
-///////////////////////////////////////////////////////////////////////////////
-
-//A sloppy way to make sure that server and client apps get their
-//separate directories, etc.  The main components call their respective
-//change function.
-
-export prototype YukonClient_Installing();
-function YukonClient_Installing()
-number dirSearch;
-STRING szPath, szDir, szClientTarget;
-string szSrcFile , szTargetFile;
-string szAppPath;
-number nvResult;
-
-begin
-szClientTarget = TARGETDIR ^ "\\Client";
-// SprintfBox(INFORMATION,"Clients will be installed to ","%s",szClientTarget);
-uiClient = " Client";
-
-//backs up the user's old configuration files, just in case
-szPath = szClientTarget ^ "\\Config";
-dirSearch = ExistsDir ( szPath );
-if(dirSearch = 0) then
-    szSrcFile = szPath ^ "\\config.properties";
-    szTargetFile = szPath ^ "\\OldConfig.properties";
-    DeleteFile ( szTargetFile );
-    // RenameFile ( szSrcFile , szTargetFile );
-    CopyFile ( szSrcFile , szTargetFile );
-    szSrcFile = szPath ^ "\\db.properties";
-    szTargetFile = szPath ^ "\\OldDb.properties";
-    DeleteFile ( szTargetFile );
-    CopyFile( szSrcFile , szTargetFile ); 
-    // RenameFile ( szSrcFile , szTargetFile );
-endif;
-
-end;
 ///////////////////////////////////////////////////////////////////////////////
 //  EVENT:      Installing event is sent just before files for the component:
 //              Yukon Server are transferred.
@@ -60,19 +13,13 @@ end;
 export prototype YukonServer_Installing();
 function YukonServer_Installing()
 number dirSearch;
-string szPath, szServerTarget;
+string szPath;
 string szSrcFile , szTargetFile;
-string szKiller, szCmdLine, szPathAndFile;
-number exeCounter;
-////////////////////////
-STRING exeArray(8);
-////////////////////////
+string szCmdLine;
 
 begin
-szServerTarget = TARGETDIR ^ "\\Server";
-uiServer = " Server";
 
-szPath = szServerTarget ^ "\\Config";
+szPath = TARGETDIR ^ "\\Server\\Config";
 
 dirSearch = ExistsDir ( szPath );
 if(dirSearch = 0) then
@@ -82,36 +29,6 @@ if(dirSearch = 0) then
     CopyFile ( szSrcFile , szTargetFile );
     // RenameFile ( szSrcFile , szTargetFile );
 endif;
-
-//The following kills yukon server apps
-szKiller = TARGETDIR ^ "\\server\\bin\\kill.exe";
-/////////////////////////////////////////////////////
-//Modify if additional services are wanted
-exeArray(0) = "capcontrol.exe";
-exeArray(1) = "dispatch.exe";
-exeArray(2) = "fdr.exe";
-exeArray(3) = "loadmanagement.exe";
-exeArray(4) = "porter.exe";
-exeArray(5) = "scanner.exe";
-exeArray(6) = "macs.exe";
-exeArray(7) = "calc_logic.exe";
-    
-//kill all running servers for the good of the install
-for exeCounter = 0 to SizeOf(exeArray) step 1
-   	LaunchAppAndWait ( szKiller , exeArray(exeCounter), WAIT );
-endfor;
-
-//stop the Yukon Service Manager
-//has to do this because previous installers didn't
-//worry about removing Yukon Service Manager...it wasn't
-//a true component then...
-szCmdLine = 'stop "Yukon Service Manager"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
-Delay(2);
-//remove the Yukon Service Manager
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-r appserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
 
 end;
 
@@ -124,10 +41,7 @@ export prototype YukonServer_Installed();
 function YukonServer_Installed()
 string szCmdLine, szServPath;
 string szAppPath;
-number nvResult, serviceCounter;
-////////////////////////
-STRING serviceArray(8);
-////////////////////////
+number nvResult;
 
 begin
     Disable(STATUSEX);
@@ -151,84 +65,7 @@ begin
         MessageBox("Call to RegDBSetKeyValueEx failed", SEVERE);
     endif;
 
-    //The following sets up the server apps as NT services
-    szServPath = TARGETDIR ^ "\\server\\bin\\";
-    szCmdLine = "-install";
-    /////////////////////////////////////////////////////
-    //Modify if additional services are wanted
-    serviceArray(0) = "capcontrol.exe";
-    serviceArray(1) = "dispatch.exe";
-    serviceArray(2) = "fdr.exe";
-    serviceArray(3) = "loadmanagement.exe";
-    serviceArray(4) = "porter.exe";
-    serviceArray(5) = "scanner.exe";
-    serviceArray(6) = "macs.exe";
-    serviceArray(7) = "calc_logic.exe";
-
-    nvResult = AskYesNo ( "Would you like to install all server applications as services?" , NO );
-    if(nvResult = 1) then
-        /////////////////////////////////////////////////////
-        for serviceCounter = 0 to SizeOf(serviceArray) step 1
-            LaunchAppAndWait ( szServPath ^ serviceArray(serviceCounter) , szCmdLine, WAIT );
-        endfor;
-    endif;
-
     return 0;
-end;
-///////////////////////////////////////////////////////////////////////////////
-//  EVENT:      Uninstalling event is sent just before files for the component:
-//              Yukon Server are removed during uninstallation.
-///////////////////////////////////////////////////////////////////////////////
-
-export prototype YukonServer_UnInstalling();
-function YukonServer_UnInstalling()
-number serviceCounter;
-string szCmdLine, szServPath, szCmdLine2, szPathAndFile;
-////////////////////////
-STRING serviceArray(16);
-////////////////////////
-begin
-    //The following removes the server apps as NT services
-    szServPath = TARGETDIR ^ "\\server\\bin\\";
-    szCmdLine = "-remove";
-    /////////////////////////////////////////////////////
-    //Modify if additional services are wanted
-    serviceArray(0) = '"Yukon Cap Control Service"';
-    serviceArray(1) = "capcontrol.exe";
-    serviceArray(2) = '"Yukon Dispatch Service"';
-    serviceArray(3) = "dispatch.exe";
-    serviceArray(4) = '"Yukon Foreign Data Service"';
-    serviceArray(5) = "fdr.exe";
-    serviceArray(6) = '"Yukon Load Management Service"';
-    serviceArray(7) = "loadmanagement.exe";
-    serviceArray(8) = '"Yukon Port Control Service"';
-    serviceArray(9) = "porter.exe";
-    serviceArray(10) = '"Yukon Real-Time Scan Service"';
-    serviceArray(11) = "scanner.exe";
-    serviceArray(12) = '"Yukon MAC Scheduler Service"';
-    serviceArray(13) = "macs.exe";
-    serviceArray(14) = '"Yukon Calc-Logic Service"';
-    serviceArray(15) = "calc_logic.exe";
-    /////////////////////////////////////////////////////
-    for serviceCounter = 0 to SizeOf(serviceArray) step 2
-        szCmdLine2 = 'stop ' + serviceArray(serviceCounter);
-        //LaunchAppAndWait ("net.exe" , szCmdLine2, WAIT ); 
-        //tired of leaving it up to Windows Service Manager...just kill 'em
-        LaunchAppAndWait ( szServPath ^ "kill.exe", serviceArray(serviceCounter + 1), WAIT);
-        LaunchAppAndWait ( szServPath ^ serviceArray(serviceCounter + 1) , szCmdLine, WAIT );
-    endfor;
-    
-    //stop the Yukon Service Manager
-    //has to do this because previous installers didn't
-    //worry about removing Yukon Service Manager...it wasn't
-    //a true component then...
-	szCmdLine = 'stop "Yukon Service Manager"';
-	LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
-	Delay(2);
-	//remove the Yukon Service Manager
-	szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-	szCmdLine = "-r appserver.conf";
-	LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
 end;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -246,47 +83,30 @@ number fileExists;
 begin
 
 //stop the Tomcat service if it is present and running
-//use kill.exe if it is there, just to be safe
-//otherwise, just stop the service the Windows way.
 szCmdLine = 'stop "Yukon Web Applications Service"';
-fileExists = Is(FILE_EXISTS, TARGETDIR + "\\Server\\bin\\kill.exe");
-if(fileExists = 1) then
-	LaunchAppAndWait (TARGETDIR + "\\Server\\bin\\kill.exe", "tomcat.exe", WAIT );
-else
-	LaunchAppAndWait ("net.exe" , szCmdLine, WAIT ); 
-endif;
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT ); 
 
-Delay(1);
+Delay(4);
 
 //remove the Tomcat service
 szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
 szCmdLine = '-uninstall "Yukon Web Applications Service"';
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
 
-Delay(2);
-
-//backs up the user's old configuration files, just in case
-szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon\\WEB-INF\\classes";
-dirSearch = ExistsDir ( szPath );
-if(dirSearch = 0) then
-    szSrcFile = szPath ^ "\\config.properties";
-    szTargetFile = szPath ^ "\\OldConfig.properties";
-    DeleteFile ( szTargetFile );
-    // RenameFile ( szSrcFile , szTargetFile );
-    CopyFile ( szSrcFile , szTargetFile );
-    szSrcFile = szPath ^ "\\db.properties";
-    szTargetFile = szPath ^ "\\OldDb.properties";
-    DeleteFile ( szTargetFile );
-    CopyFile( szSrcFile , szTargetFile ); 
-    // RenameFile ( szSrcFile , szTargetFile );
-endif;
 
 //make sure any legacy .jars are gone so that Tomcat avoids confusion
-szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon\\WEB-INF\\lib";
+szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon";
 dirSearch =  ExistsDir (szPath);
 if(dirSearch = 0) then
    	DeleteDir ( szPath , ALLCONTENTS );
 endif;
+
+//set a system environment variable JAVA_HOME for use by the Tomcat service
+szName = "JAVA_HOME";         
+RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TARGETDIR + "\\Runtime" , -1 );
+//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
 end;
 ///////////////////////////////////////////////////////////////////////////////
@@ -298,14 +118,15 @@ export prototype Tomcat_Installed();
 function Tomcat_Installed()
 STRING szCmdLine, szCmdLine2, szCmdLine3, szCmdLine4, szCmdLine5, szCmdLine6, szCmdLine7;
 string szCmdLine8, szCmdLine9, szCmdLine10, szCmdLine11, szCmdLine12, szCmdLine13;
-string szServPath, szPath, TomcatPath;
-string szAppPath, szName, java_home, szKey, szEnv, szTargetFile, szSrcFile;
+string szServPath, szPath, TomcatPath, JavaPath;
+string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile;
 number nvResult, nvType, nvSize, foundVal, dirSearch;
 pointer pEnv;
 
 begin
 
 TomcatPath = TARGETDIR ^ "\\Server\\web";
+JavaPath = TARGETDIR ^ "\\Runtime";
 
 //make sure that Tomcat will be aware of any new environment variables
 szEnv = "Environment";
@@ -313,23 +134,16 @@ pEnv = &szEnv;
 SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 //set a system environment variable CATALINA_HOME for use by the Tomcat service
-if(foundVal = 0) then
-	szName = "CATALINA_HOME";         
-	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-	szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 );
-	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
-endif;
-
-//grab the path of the java install in order to unpack the jar
-szName = "JavaHome";
+szName = "CATALINA_HOME";         
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" ^ MINIMUMJAVAVERSION;
-foundVal = RegDBGetKeyValueEx ( szKey, szName, nvType, java_home, nvSize ); 
+szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 );
+//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+
 //unpack the war file
-ChangeDirectory(TomcatPath + "\\webapps\\yukon");
-szCmdLine = "-xfv yukon-web.war"  ;
-LaunchAppAndWait (java_home + "\\bin\\jar.exe" , szCmdLine, WAIT );
+foundVal = ChangeDirectory(TARGETDIR + "\\webapps\\yukon");
+szCmdLine = "-xfv " + TomcatPath + "\\webapps\\yukon\\yukon-web.war"  ;
+LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT );
 DeleteFile(TomcatPath + "\\webapps\\yukon\\yukon-web.war");
 
 //make sure that Tomcat will be aware of the presence of the new environment variables
@@ -339,7 +153,7 @@ SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
 
 //install Tomcat as a service (behold this lumbering behemoth of a command line)
 szServPath = TomcatPath ^ "\\bin\\";
-szCmdLine = '-install "Yukon Web Applications Service" "' + java_home + '\\jre\\bin\\server\\jvm.dll" -Djava.class.path="'+ TomcatPath + '\\bin\\bootstrap.jar;' + java_home + '\\lib\\tools.jar" -Dcatalina.home="'+ TomcatPath + '" '; 
+szCmdLine = '-install "Yukon Web Applications Service" "' + JavaPath + '\\jre\\bin\\server\\jvm.dll" -Djava.class.path="'+ TomcatPath + '\\bin\\bootstrap.jar;' + JavaPath + '\\lib\\tools.jar" -Dcatalina.home="'+ TomcatPath + '" '; 
 szCmdLine2 = '-Dyukon.base=%YUKON_BASE% -Dyukon.logdir="%YUKON_BASE%\\server\\log" -Djava.endorsed.dirs="'+ TomcatPath + '\\common\\endorsed" -Xms128M -Xmx256M -start org.apache.catalina.startup.BootstrapService ';                                                          
 szCmdLine3 = '-params start -stop org.apache.catalina.startup.BootstrapService -params stop -out "'+ TomcatPath + '\\logs\\yukon_out.log" -err "'+ TomcatPath + '\\logs\\yukon_err.log"';
 /*nvResult = AskYesNo ( "Would you like to install Tomcat as a service?" , NO );
@@ -373,17 +187,28 @@ export prototype Tomcat_UnInstalling();
 function Tomcat_UnInstalling()
 string szCmdLine, szServPath;
 string szAppPath;
-number nvResult;
+number nvResult, dirSearch;
 
 begin
 
 //stop the Tomcat service
 szCmdLine = 'stop "Yukon Web Applications Service"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
+LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
+
+Delay(4);
+     
 //remove the Tomcat service
 szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
 szCmdLine = '-uninstall "Yukon Web Applications Service"';
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
+
+//make sure any legacy .jars are gone so that Tomcat avoids confusion
+szAppPath = TARGETDIR + "\\Server\\web\\webapps\\yukon\\";
+dirSearch =  ExistsDir (szAppPath);
+if(dirSearch = 0) then
+   	DeleteDir ( szAppPath , ALLCONTENTS );
+endif;
+
 
 end;
 

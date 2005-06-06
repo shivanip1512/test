@@ -19,14 +19,14 @@ BEGIN
 	LTEXT		"",1450,135,104,310,8,ES_AUTOHSCROLL | SS_NOPREFIX
 	LTEXT		"",1400,135,89,310,8,ES_AUTOHSCROLL | SS_NOPREFIX
 	LTEXT		"Setup Status",50,10,3,220,8,0,WS_EX_TRANSPARENT
-	LTEXT		"",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
-	LTEXT		"",7,2,182,40,10,NOT WS_VISIBLE
-	PUSHBUTTON	"Cancel",2,400,285,50,14
-	LTEXT		"Estimated time left:",17809,135,143,78,12,NOT WS_VISIBLE
+	CONTROL		"Progress2",1500,"msctls_progress32",WS_BORDER,135,118,310,12,WS_EX_TRANSPARENT
 	LTEXT		"Transfer rate: ",17810,135,161,78,12,NOT WS_VISIBLE
+	LTEXT		"Estimated time left:",17809,135,143,78,12,NOT WS_VISIBLE
 	LTEXT		"",17811,218,143,78,11,NOT WS_VISIBLE
 	LTEXT		"",17812,218,161,78,12,NOT WS_VISIBLE
-	CONTROL		"Progress2",1500,"msctls_progress32",WS_BORDER,135,118,310,12,WS_EX_TRANSPARENT
+	PUSHBUTTON	"Cancel",2,400,285,50,14
+	LTEXT		"",7,2,182,40,10,NOT WS_VISIBLE
+	LTEXT		"",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
 END
 
 
@@ -44,8 +44,8 @@ BEGIN
 	LTEXT		"Setup will install Yukon in the following folder.\n\nTo install to this folder, click Next. To install to a different folder, click Browse and select another folder.",718,135,49,310,80,ES_AUTOHSCROLL | SS_NOPREFIX
 	LTEXT		"c:\\path\\company\\product\\suite\\version",715,141,235,240,8,ES_AUTOHSCROLL | SS_NOPREFIX
 	LTEXT		"Choose Destination Location",50,10,3,220,8,0,WS_EX_TRANSPARENT
-	LTEXT		"Select folder where setup will install files.",51,16,15,213,19,0,WS_EX_TRANSPARENT
 	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+	LTEXT		"Select folder where setup will install files.",51,16,15,213,19,0,WS_EX_TRANSPARENT
 	GROUPBOX	"Destination Folder",-1,135,219,310,32,NOT WS_TABSTOP | 0x40000000
 END
 
@@ -63,6 +63,24 @@ BEGIN
 	LTEXT		"This program will install the Yukon software on your machine. ",710,135,147,310,40,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
 	LTEXT		"Welcome to the Cannon Technologies Setup Program for Yukon.",50,135,116,310,27,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
 	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+END
+
+
+12032 DIALOGEX 0,0,460,305
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "InstallShield Wizard" 
+
+FONT 8,"MS Sans Serif",0,0,0x1
+BEGIN
+	LTEXT		"@10550,10551;1;0;;0,128,128   ",1200,0,35,120,240,NOT WS_VISIBLE
+	CONTROL		"Yes, I want to view the ReadMe file.",501,"Button",BS_AUTOCHECKBOX | WS_TABSTOP | WS_GROUP,135,123,310,12
+	CONTROL		"Yes, I want to launch %p now.",502,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,140,310,16
+	LTEXT		"",712,135,162,310,56,ES_AUTOHSCROLL | SS_NOPREFIX
+	PUSHBUTTON	"< &Back",12,195,285,50,14,WS_GROUP
+	DEFPUSHBUTTON	"Finish",1,250,285,50,14
+	PUSHBUTTON	"Cancel",9,400,285,50,14,WS_DISABLED
+	LTEXT		"Setup has successfully installed Yukon.  Click Finish to exit the wizard.",711,136,74,310,48,ES_AUTOHSCROLL | SS_NOPREFIX
+	LTEXT		"InstallShield Wizard Complete",50,135,49,310,16,0,WS_EX_TRANSPARENT
 END
 
 
@@ -87,8 +105,8 @@ BEGIN
 	PUSHBUTTON	"Cancel",9,400,285,50,14
 	PUSHBUTTON	"< &Back",12,195,285,50,14
 	LTEXT		"Welcome",50,10,3,220,8,0,WS_EX_TRANSPARENT
-	LTEXT		"Modify, repair, or remove the program.",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
 	PUSHBUTTON	"C",2,0,291,50,14,NOT WS_TABSTOP | NOT WS_VISIBLE | WS_GROUP
+	LTEXT		"Modify, repair, or remove the program.",51,16,15,213,19,ES_AUTOHSCROLL | SS_NOPREFIX,WS_EX_TRANSPARENT
 END
 
 
@@ -98,6 +116,6 @@ END
 //
 // Icon
 //
-10002		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10002.ico"
-10003		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10003.ico"
-10004		ICON	"C:\\Mine\\Cannon Installer Projects\\Yukon X upgraded\\IconId_10004.ico"
+10002		ICON	"J:\\Installer backups\\June05\\IconId_10002.ico"
+10003		ICON	"J:\\Installer backups\\June05\\IconId_10003.ico"
+10004		ICON	"J:\\Installer backups\\June05\\IconId_10004.ico"

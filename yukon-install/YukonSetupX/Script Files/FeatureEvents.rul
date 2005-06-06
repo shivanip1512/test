@@ -1,3 +1,9 @@
+#define JAVAVERSION "1.4.2_05"
+//As long as the JRE installer is in one of setup file directories, just put in the name.
+#define JDKINSTALLFILE "j2sdk-1_4_2_05-windows-i586-p.exe"
+
+BOOL uninstallJavaFirst;
+BOOL installJava;
  
 //---------------------------------------------------------------------------
 // The Installing event is sent just before the feature 
@@ -14,7 +20,9 @@ begin
 //stop the Yukon Service Manager
 szCmdLine = 'stop "Yukon Service Manager"';
 LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
-Delay(2);
+
+Delay(3);
+
 //remove the Yukon Service Manager
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-r appserver.conf";
@@ -38,6 +46,7 @@ szCmdLine = "-i appserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
 
 end;
+
 //---------------------------------------------------------------------------
 // The UnInstalling event is sent just before the feature 
 // Yukon Server\Yukon Service Manager is uninstalled.
@@ -52,10 +61,61 @@ begin
 //stop the Yukon Service Manager
 szCmdLine = 'stop "Yukon Service Manager"';
 LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
-Delay(2);
+
+Delay(4);   
+
 //remove the Yukon Service Manager
 szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
 szCmdLine = "-r appserver.conf";
 LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
 
 end;
+//---------------------------------------------------------------------------
+// The Installing event is sent just before the feature 
+// Yukon Runtime (Java) is installed.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonRuntime_Installing();
+function YukonRuntime_Installing()
+string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
+number dirSearch, foundVal, moveNext;
+BOOL bvCheckCont, bvCheckIg; 
+
+begin
+    szMsgWait = 'Yukon is installing JDK'+JAVAVERSION+'.  This may take awhile, depending on the speed of the system...';
+    if(installJava) then
+    	SdShowMsg ( szMsgWait, TRUE );
+    	if(uninstallJavaFirst) then
+    		szCmdLine = '/s /v/"qn /x /norestart"';
+    		LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
+    		Delay(5);
+    	endif;
+    	
+    	szCmdLine = '/s /v/"qn INSTALLDIR='+TARGETDIR+'\\Runtime"';
+    	LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
+    	SdShowMsg ( szMsgWait, FALSE );
+ 	endif;
+end;
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Runtime (Java) is uninstalled.
+//---------------------------------------------------------------------------
+ 
+export prototype YukonRuntime_UnInstalling();
+function YukonRuntime_UnInstalling()
+
+string szMsgWait, szCmdLine;
+
+begin
+	szMsgWait = 'Yukon is uninstalling JDK'+JAVAVERSION+'.  This may take awhile, depending on the speed of the system...';
+    SdShowMsg ( szMsgWait, TRUE );
+    szCmdLine = '/s /v/"qn /x /norestart"';
+    LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
+    Delay(5);
+    SdShowMsg ( szMsgWait, FALSE );
+end;
+
+
+
+
+

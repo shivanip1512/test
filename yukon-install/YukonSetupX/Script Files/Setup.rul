@@ -16,7 +16,7 @@
 
 #include "ifx.h"
 #include "ComponentEvents.rul"
-#include "FeatureEvents.rul"
+#include "featureevents.rul"
 
 ////////////////////// string defines ////////////////////////////
 
@@ -50,7 +50,6 @@ STRING svSetupType;
 ///////////////////////////////////////////////////////////////////////////////
 function OnFirstUIBefore()
     number  nResult, nSetupType;
-    string  szTitle, szMsg;
     string  szDir;
     string  szfolder;
     string  szComponents, szTargetdir;
@@ -58,14 +57,17 @@ function OnFirstUIBefore()
     LIST    listStartCopy;
     string  szTargetPath;
     number  nvSize;
-
-number nvSize2, nvType, nvResult, foundVal, backupVer, stSize, verCon, dirSearch, dirCreate;
-string szKey, szName, keyValue, minVersion, szDeleteDir;
+   	
+number nvSize2, nvType, nvResult, backupVer, stSize, verCon, dirCreate;
+string szName, keyValue, minVersion, szDeleteDir;
 STRING szTitle2, szFormat, szString, java_home;
 
 string szKey2, szName2, szEnv; 
-number foundVal2;
-pointer pEnv; 
+pointer pEnv;
+
+string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
+number dirSearch, foundVal, moveNext;
+BOOL bvCheckCont, bvCheckIg; 
  
 begin
     
@@ -96,56 +98,24 @@ Dlg_SdAskDestPath:
 RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
 
 Dlg_SetupType:
-    szTitle = "Yukon Install Options";
-    szMsg = "Select between server/client install options.";
-    nResult = SdSetupTypeEx ( szTitle , szMsg , "" , svSetupType , 0 );
-    if (nResult = BACK) then
-        goto Dlg_Start;
-    else
-        if (svSetupType != "Custom Install") then
-           szTargetPath = TARGETDIR;
-           nvSize = 0;
-           FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
-           if (nvSize != 0) then
-                   MessageBox( szSdStr_NotEnoughSpace, WARNING );
-               goto Dlg_SetupType;
-            endif;
-        endif;
-    endif;
-
-//The magic happy Java check
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + MINIMUMJAVAVERSION;
-foundVal = RegDBKeyExist ( szKey );
-
-if(foundVal < 0 ) then
-    szTitle  = "JDK installation required.";
-    szFormat = "This Yukon install requires Java Development Kit version %s or higher, which is not detected on this machine. The JDK will be installed before continuing with Yukon installation.";
-    SprintfBox(INFORMATION, szTitle, szFormat, MINIMUMJAVAVERSION);
-    LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE , "", WAIT);
-    endif;
     
-//grab the path of the java install in order to set Tomcat JAVA_HOME variable
-szName = "JavaHome";
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" ^ MINIMUMJAVAVERSION;
-foundVal = RegDBGetKeyValueEx ( szKey, szName, nvType, java_home, nvSize ); 
-//set the system environment variable JAVA_HOME for Yukon
-if(foundVal = 0) then
-	szName = "JAVA_HOME";         
-	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-	szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , java_home , -1 );
-	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+szTargetPath = TARGETDIR;
+nvSize = 0;
+FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
+if (nvSize != 0) then
+  	MessageBox( szSdStr_NotEnoughSpace, WARNING );
+    goto Dlg_SetupType;
 endif;
+
+//we don't bother with install types anymore, always go custom
+nSetupType = CUSTOM;
+svSetupType = "Custom Install";
 
 //set the system environment variable YUKON_BASE for the good of all
-if(foundVal2 = 0) then
-	szName2 = "YUKON_BASE";         
-	szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal2 = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
-	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
-endif;
+szName2 = "YUKON_BASE";         
+szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
+//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
 //make sure that the system will be aware of the presence of the new Java path
 szEnv = "Environment";
@@ -165,38 +135,46 @@ Dlg_SdComponentTree:
             nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
             if (nResult = BACK) goto Dlg_SdAskDestPath;
     endif;
+    
+HAPPYFUNTIME:
+	uninstallJavaFirst = FALSE;
+	installJava = FALSE;
 
-Dlg_ObjDialogs:
-    nResult = ShowObjWizardPages(nResult);
-    if (nResult = BACK) goto Dlg_SdComponentTree;
-
-Dlg_SdStartCopy:
-    szTitle = "Yukon " + svSetupType + "er";
-    szMsg   = "";
-    listStartCopy = ListCreate( STRINGLIST );
-    //The following is an example of how to add a string(szName) to a list(listStartCopy).
-    //eg. ListAddString(listStartCopy,szName,AFTER);
-    ListAddString(listStartCopy, svSetupType, BEFORE);
-    ListAddString(listStartCopy, "", AFTER);
-    if(svSetupType = "Full Install" || svSetupType = "Client Install") then
-    	ListAddString(listStartCopy, "Client Applications will install to " + TARGETDIR + "\\client" , AFTER);
-    endif;
-    if(svSetupType = "Full Install" || svSetupType = "Server Install") then
-    	ListAddString(listStartCopy, "Server Applications will install to " + TARGETDIR + "\\server" , AFTER);
-    endif; 
-    nResult = SdStartCopy( szTitle, szMsg, listStartCopy );
-    ListDestroy(listStartCopy);
-    if (nResult = BACK) goto Dlg_ObjDialogs;
-
-    // setup default status
+	SetDialogTitle(DLG_ASK_OPTIONS, 'Yukon: Java required to proceed');
+    
+	szPath = TARGETDIR + "\\Runtime\\bin";
+	dirSearch =  ExistsDir (szPath);
+	if(dirSearch < 0) then 		   
+   		//The magic happy Java check
+		RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+		szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
+		foundVal = RegDBKeyExist ( szKey );
+    	if(foundVal = 1) then
+    		szMsg = 'Yukon needs to install Java Development Kit version ' +JAVAVERSION+', which has been detected in another location.  Please click CONTINUE to allow Yukon to move JDK '+JAVAVERSION+'.';
+    		bvCheckCont = TRUE;
+    		bvCheckIg = FALSE;
+    		moveNext = NEXT;
+    		szTextCont = 'Continue';
+    		szTextIg = 'Ignore (NOT RECOMMENDED)';
+    		moveNext = AskOptions(EXCLUSIVE, szMsg, szTextCont, bvCheckCont, szTextIg, bvCheckIg);
+    		if(moveNext = NEXT && bvCheckCont) then 
+    			uninstallJavaFirst = TRUE;
+				installJava = TRUE;
+	  		else 
+ 		    	if(moveNext = BACK) then goto Dlg_SdComponentTree;
+				endif;
+ 			endif;    
+		else
+			installJava = TRUE;
+			//SprintfBox(INFORMATION, 'One true', '%s', 'One true');
+		endif;    
+ 	endif;
+    
+	// setup default status
     SetStatusWindow(0, "");
     Enable(STATUSEX);
-    StatusUpdate(ON, 50);
-    
-    SetStatusWindow(50, "");
-    Enable(STATUSEX);
     StatusUpdate(ON, 100);
-
+    
     return 0;
 end;
 
@@ -238,13 +216,17 @@ end;
 //
 ///////////////////////////////////////////////////////////////////////////////
 function OnMaintUIBefore()
-    NUMBER nResult, nType, regSearch, dirSearch, dirSearch2;
-    STRING szTitle, szMsg, svDir, svResult, szCaption, szPath, szPath2;
+    NUMBER nResult, nType, regSearch, dirSearch2;
+    STRING svDir, svResult, szCaption, szPath2;
     string szSrcFile , szTargetFile;
     
-    string szPathFile, szName, szKey, java_home, szEnv; 
-	number fileCounter, foundVal, nvType, nvSize;
+    string szPathFile, szName, java_home, szEnv; 
+	number fileCounter, nvType, nvSize;
 	pointer pEnv;
+	
+	string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
+	number dirSearch, foundVal, moveNext;
+	BOOL bvCheckCont, bvCheckIg; 
 	
 begin
     // TO DO: if you want to enable background, window title, and caption bar title
@@ -268,25 +250,6 @@ Dlg_Start:
 
     nResult = NEXT;
 
-//grab the path of the java install in order to set Tomcat JAVA_HOME variable
-szName = "JavaHome";
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" ^ MINIMUMJAVAVERSION;
-foundVal = RegDBGetKeyValueEx ( szKey, szName, nvType, java_home, nvSize ); 
-//set the system environment variable JAVA_HOME for Yukon
-if(foundVal = 0) then
-	szName = "JAVA_HOME";         
-	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-	szKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , java_home , -1 );
-	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
-endif;
-
-//make sure that the system will be aware of the presence of the new Java path
-szEnv = "Environment";
-pEnv = &szEnv;
-SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv );
-
 Dlg_SdComponentTree:
     if (nType = MODIFY) then
         szTitle = "";
@@ -294,6 +257,39 @@ Dlg_SdComponentTree:
         nResult = SdFeatureTree(szTitle, szMsg, TARGETDIR, "", 2);
         if (nResult = BACK) goto Dlg_Start;
     endif;
+    
+HAPPYFUNTIME:
+	uninstallJavaFirst = FALSE;
+	installJava = FALSE;
+
+	SetDialogTitle(DLG_ASK_OPTIONS, 'Yukon: Java required to proceed');
+    
+	szPath = TARGETDIR + "\\Runtime\\bin";
+	dirSearch =  ExistsDir (szPath);
+	if(dirSearch < 0 && (nType = REPAIR || nType = MODIFY)) then 		   
+   		//The magic happy Java check
+		RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+		szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
+		foundVal = RegDBKeyExist ( szKey );
+    	if(foundVal = 1) then
+    		szMsg = 'Yukon needs to install Java Development Kit version ' +JAVAVERSION+', which has been detected in another location.  Please click CONTINUE to allow Yukon to move JDK '+JAVAVERSION+'.';
+    		bvCheckCont = TRUE;
+    		bvCheckIg = FALSE;
+    		moveNext = NEXT;
+    		szTextCont = 'Continue';
+    		szTextIg = 'Ignore (NOT RECOMMENDED)';
+    		moveNext = AskOptions(EXCLUSIVE, szMsg, szTextCont, bvCheckCont, szTextIg, bvCheckIg);
+    		if(moveNext = NEXT && bvCheckCont) then 
+    			uninstallJavaFirst = TRUE;
+				installJava = TRUE;	
+	  		else 
+ 		    	if(moveNext = BACK) then goto Dlg_SdComponentTree;
+				endif;
+ 			endif;    
+		else
+			installJava = TRUE;
+		endif;    
+ 	endif;
 
 Dlg_ObjDialogs:
     nResult = ShowObjWizardPages(nResult);
@@ -312,80 +308,105 @@ Dlg_ObjDialogs:
 end;
 
 
-///////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------
+// OnFileLocked
 //
-//  FUNCTION:   OnFirstUIAfter
+// The OnFileLocked event is called when a file that is in use by another
+// application needs to be installed or uninstalled (unless the files are
+// in a file group which is marked as as potentially locked or shared in
+// this case the file will be installed or uninstalled after reboot.
 //
-//  EVENT:      FirstUIAfter event is sent after file transfer, when installation
-//              is run for the first time on given machine. In this event handler
-//              installation usually displays UI that will inform end user that
-//              installation has been completed successfully.
+// szFile will contain the full path of the file that is locked when the
+// event is called.
 //
-///////////////////////////////////////////////////////////////////////////////
-function OnFirstUIAfter()
-    STRING szTitle, szMsg1, szMsg2, szOption1, szOption2, szMsg;
-    NUMBER bOpt1, bOpt2, nvResult;
+// The event should return one of the following values:
+//
+// ERR_IGNORE - The setup should skip installing or uninstalling the file
+//				that is locked and continue the file transfer.
+//
+// ERR_RETRY  - The setup should try to install or uninstall the file again.
+//
+// ERR_ABORT  - The setup should be aborted.
+//
+// ERR_PERFORM_AFTER_REBOOT - The file should be installed or uninstalled
+//							  after the system is rebooted.
+//---------------------------------------------------------------------------
+function OnFileLocked(szFile)
 begin
-    Disable(STATUSEX);
-
-    if(svSetupType = "Client Install") then
-        uninstallName = "Yukon" + uiClient + " Applications";
-    endif;
-    if(svSetupType = "Server Install") then
-        uninstallName = "Yukon" + uiServer + " Applications";
-    endif;
-    if(svSetupType = "Full Install") then
-        uninstallName = "Yukon" + uiClient + " and" + uiServer + " Applications";
-    endif;
-    if(svSetupType = "Custom Install") then
-        uninstallName = "Yukon" + uiClient + uiServer + " Applications";
-    endif;
-
-    RegDBSetItem ( REGDB_UNINSTALL_NAME , uninstallName );
+	// TODO: Enable this code if you want to show a confirmation dialog box.	
+	return SdExceptions(LOCKED, szFile);
+	
+	// Return ERR_PERFORM_AFTER_REBOOT so that the file will be updated
+	// w/o confirmation.
+	//return ERR_PERFORM_AFTER_REBOOT;
+end;
+//---------------------------------------------------------------------------
+// OnFirstUIAfter
+//
+// First Install UI Sequence - After Move Data
+//
+// The OnFirstUIAfter event called by OnShowUI after the file transfer
+// of the setup when the setup is running in first install mode. By default
+// this event displays UI that informs the end user that the setup has been
+// completed successfully.
+//
+// Note: This event will not be called automatically in a
+// program...endprogram style setup.
+//---------------------------------------------------------------------------
+function OnFirstUIAfter()
+    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2, szMsg;
+    NUMBER bvOpt1, bvOpt2;
+	NUMBER bShowUpdateServiceDlg;
+begin
 
     ShowObjWizardPages(NEXT);
-     
-    bOpt1  = FALSE;
-    bOpt2  = FALSE;
-    szMsg1 = SdLoadString(IFX_SDFINISH_MSG1);
-    BATCH_INSTALL = FALSE; 
-    SdFinishEx(szTitle, szMsg1, szMsg2, szOption1, szOption2, bOpt1, bOpt2);
+    
+    szTitle = "";
+    szMsg1 = ""; 
+    szMsg2 = "";
+    szOpt1 = "";
+    szOpt2 = "";
+	bvOpt1   = FALSE;
+    bvOpt2   = FALSE;    
+
+	// Set this to true if you have the update service enabled, and if you want to check for updates.
+	// Note: the ISUS Starter Edition does not support checking for updates programatically.  So, 
+	// only set this to true if you have at least the ISUS Professional Edition.
+	bShowUpdateServiceDlg = FALSE;
+    
+    //{{IS_SCRIPT_TAG(Dlg_SdDinishEx)	
+    
+    //we don't take kindly to lawdogs around here
+    BATCH_INSTALL = FALSE;
+    if ( BATCH_INSTALL ) then
+    	SdFinishReboot ( szTitle , szMsg1 , SYS_BOOTMACHINE , szMsg2 , 0 );
+    else
+		
+		// If the update service is enabled, show finish dialog that includes
+		// update check option.
+		if( bShowUpdateServiceDlg && ( ENABLED_ISERVICES & SERVICE_ISUPDATE ) ) then
+
+			if( SdFinishUpdateEx( szTitle, szMsg1, szMsg2, szOpt1, szOpt2, TRUE ) ) then
+
+				// Don't check for updates in silent mode.
+				if( MODE != SILENTMODE ) then
+					UpdateServiceCheckForUpdates( "", FALSE );
+				endif;
+
+			endif;
+
+		else
+			SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bvOpt1 , bvOpt2 );
+		endif;
+
+    endif;
+    //}}IS_SCRIPT_TAG(Dlg_SdDinishEx)
     
     if(setupIsNeeded) then
     	szMsg = "To configure Yukon for the first time, please follow the Yukon Setup shortcut on your desktop.";
     	MessageBox ( szMsg , INFORMATION );
     endif;
+ 
     	
 end;
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  FUNCTION:   OnMaintUIAfter
-//
-//  EVENT:      MaintUIAfter event is sent after file transfer, when end user runs
-//              installation that has already been installed on the machine. Usually
-//              this happens through Add/Remove Programs applet.
-//              In the handler installation usually displays UI that will inform
-//              end user that maintenance/uninstallation has been completed successfully.
-//
-///////////////////////////////////////////////////////////////////////////////
-function OnMaintUIAfter()
-    STRING szTitle, szMsg1, szMsg2, szOption1, szOption2, szMsg;
-    NUMBER bOpt1, bOpt2;
-    string szPathFile, svResult; 
-	number dirSearch, fileCounter;
-begin
-	
-	Disable(STATUSEX);
-
-    ShowObjWizardPages(NEXT);
-    
-    bOpt1   = FALSE;
-    bOpt2   = FALSE;
-    szMsg1  = SdLoadString(IFX_SDFINISH_MAINT_MSG1);
-    szTitle = SdLoadString(IFX_SDFINISH_MAINT_TITLE); 
-    BATCH_INSTALL = FALSE;
-    SdFinishEx(szTitle, szMsg1, szMsg2, szOption1, szOption2, bOpt1, bOpt2);
-
- end;
  
