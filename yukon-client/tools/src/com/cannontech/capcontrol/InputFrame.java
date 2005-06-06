@@ -127,10 +127,15 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				throw new Exception("to many parameters");
 			}
 			InputValidater validater = new InputValidater(this, command, from, to, route, conType, banksize, manufacturer, switchType);
+			CTILogger.info("validating...");
 			boolean validated = commandLineValidate(validater);
 			if( validated )
 			{
+				CTILogger.info("writing to database...");
 				writeToDB(validater);
+			}else
+			{
+				CTILogger.error("validation failed");
 			}
 		}catch(Exception e)
 		{

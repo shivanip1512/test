@@ -31,6 +31,7 @@ public class InputValidater
 	public int getCBCCount = 0;
 	public JFrame parent;
 	public boolean command = false;
+	public java.util.List list;
 	
 	public InputValidater(JFrame parentvar, boolean debug, int fromvar, int tovar, String routevar,String conTypevar, String banksizevar, String manufacturervar, String switchTypevar)
 	{
@@ -123,109 +124,104 @@ public class InputValidater
 		return true;
 	}
 	
-	public JFrame getParent(){
-		return parent;
-		
-	}
-	
 	public boolean checkRoute()
 	{
-		if(true)
-		{
-			return true;
-		}else
+		if("".equalsIgnoreCase(route))
 		{
 			if(command)
 			{
-				CTILogger.error("Route Validatoin Failed");
+				CTILogger.error("Route Validatoin Failed: route cannot be null.");
 			}else
 			{
-				JOptionPane.showMessageDialog(this.getParent(), "Route Validatoin Failed", "Route Validation Failed", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this.getParent(), "Route Validatoin Failed: route cannot be null.", "Route Validation Failed", JOptionPane.WARNING_MESSAGE);
 			}
-			
+
 			return false;
+			
 		}
 		
+		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		synchronized(cache)
+		{         
+
+			list = cache.getAllRoutes();
+
+			for( int j = 0; j < list.size(); j++ ){
+				com.cannontech.database.data.lite.LiteYukonPAObject pao = (com.cannontech.database.data.lite.LiteYukonPAObject)list.get(j);
+				if (pao.getPaoName().equalsIgnoreCase(route))
+				{
+					return true;
+				}
+			}
+		}
+		CTILogger.error("route \"" + route + "\" not found in database.");
+		return false;
 	}
 	
 	public boolean checkBankSize()
 	{
-		if(true)
+		
+		if(command)
 		{
-			return true;
-		}else
-		{
-			if(command)
+			if("".equalsIgnoreCase(banksize))
 			{
-				CTILogger.error("Bank Size Validatoin Failed");
-			}else
+				CTILogger.error("Bank Size Validatoin Failed: bank size cannot be null.");
+				return false;
+			}
+			try
 			{
-				JOptionPane.showMessageDialog(this.getParent(), "Bank Size Validatoin Failed", "Bank Size Validation Failed", JOptionPane.WARNING_MESSAGE);
+				Integer newint = new Integer(banksize);
+			}catch(Exception e)
+			{
+				CTILogger.error("Bank Size Validation Failed: bank size must be an integer.");
+				return false;
 			}
 			
-			return false;
 		}
-		
+		return true;
 	}
 	
 	public boolean checkManufacturer()
 	{
-		if(true)
-		{
-			return true;
-		}else
-		{
-			if(command)
-			{
-				CTILogger.error("Manufacturer Validatoin Failed");
-			}else
-			{
-				JOptionPane.showMessageDialog(this.getParent(), "Manufacturer Validatoin Failed", "Manufacturer Validation Failed", JOptionPane.WARNING_MESSAGE);
-			}
-			
-			return false;
-		}
 		
+		if(command)
+		{
+			if("".equalsIgnoreCase(manufacturer))
+			{
+				CTILogger.error("Manufacturer Validation Failed: manufacturer cannot be null.");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean checkSwitchType()
 	{
-		if(true)
-		{
-			return true;
-		}else
-		{
-			if(command)
-			{
-				CTILogger.error("Switch Type Validatoin Failed");
-			}else
-			{
-				JOptionPane.showMessageDialog(this.getParent(), "Switch Type Validatoin Failed", "Switch Type Validation Failed", JOptionPane.WARNING_MESSAGE);
-			}
-			
-			return false;
-		}
 		
+		if(command)
+		{
+			if("".equalsIgnoreCase(switchType))
+			{
+				CTILogger.error("Switch Type Validatoin Failed: switchtype cannot be null");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean checkConType()
 	{
-		if(true)
+		
+		if(command)
 		{
-			return true;
-		}else
-		{
-			if(command)
+			if("".equalsIgnoreCase(conType))
 			{
-				CTILogger.error("Controller Type Validatoin Failed");
-			}else
-			{
-				JOptionPane.showMessageDialog(this.getParent(), "Controller Type Validatoin Failed", "Controller Type Validation Failed", JOptionPane.WARNING_MESSAGE);
+				CTILogger.error("Controller Type Validatoin Failed: contype cannot be null");
+				return false;
 			}
 			
-			return false;
 		}
-		
+		return true;
 	}
 	
 	public int getFrom(){
@@ -258,5 +254,9 @@ public class InputValidater
 	
 	public int getCBCCount(){
 		return ((to - from)+1);
+	}
+	
+	public JFrame getParent(){
+		return parent;
 	}
 }
