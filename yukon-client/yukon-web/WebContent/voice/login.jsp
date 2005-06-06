@@ -12,7 +12,6 @@ String token = request.getParameter("TOKEN");
   <var name='ACTION' expr="'VOICELOGIN'"/>
   <var name='USERNAME' expr="'<%=contactid%>'"/>
   <var name='TOKEN' expr="'<%=token%>'"/>
-  <var name='REDIRECT' expr="'messages.jsp'"/>
 
   <block>
   An important message from your energy provider
@@ -25,8 +24,8 @@ String token = request.getParameter("TOKEN");
     <noinput count="3">goodbye<exit/></noinput>
   </field>
 
-  <filled namelist="ACTION USERNAME TOKEN PASSWORD REDIRECT">
-	    <submit next="/servlet/LoginController" method="post" namelist="ACTION USERNAME TOKEN PASSWORD REDIRECT" fetchtimeout="300s" fetchhint="safe"/>
+  <filled namelist="ACTION USERNAME TOKEN PASSWORD">
+	    <submit next="/servlet/LoginController" method="post" namelist="ACTION USERNAME TOKEN PASSWORD" fetchtimeout="300s" fetchhint="safe"/>
   </filled>				
  </form>     
 	
