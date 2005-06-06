@@ -8,6 +8,10 @@
 
 #define NOTIF_EMAIL_MSG_ID                702
 #define NOTIF_EMAIL_ATTCH_MSG_ID          703
+#define NOTIF_VOICE_MSG_ID                704
+#define NOTIF_ALARM_MSG_ID                706
+#define NOTIF_LMCONTROL_MSG_ID            707
+
 
 #define MSG_BASE                          1500
 #define MSG_NULL                          (MSG_BASE)

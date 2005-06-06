@@ -2,6 +2,7 @@
 #define __RWUTIL_H__
 
 #include <set>
+#include <vector>
 #include <string>
 #include <rw/cstring.h>
 #include <rw/vstream.h>
@@ -15,6 +16,7 @@
 #include "dlldefs.h"
 
 using std::set;
+using std::vector;
 using std::string;
 
 /*
@@ -41,5 +43,35 @@ IM_EX_CTIBASE RWDBReader   &operator>>(RWDBReader   &rdr,       string &s);
  */
 IM_EX_CTIBASE RWDBInserter &operator<<(RWDBInserter &ins, const ptime &p);
 IM_EX_CTIBASE RWDBReader   &operator>>(RWDBReader   &rdr,       ptime &p);
+
+/*
+ * RW stream operators.  serialize stl containers
+ */
+template <class T>
+RWvostream& operator<<(RWvostream &strm, vector<T> vec)
+{
+    strm << vec.size();
+    for(vector<T>::const_iterator i = vec.begin();
+	i != vec.end();
+	i++)
+    {
+	strm << *i;
+    }
+    return strm;
+}
+
+template <class T>
+RWvistream& operator>>(RWvistream &strm, vector<T> vec)
+{
+    int num_elements;
+    T elem;
+    strm >> num_elements;
+    for(int i = 0; i < num_elements; i++)
+    {
+	strm >> elem;
+	vec.push_back(elem);
+    }
+    return strm;
+}
 
 #endif

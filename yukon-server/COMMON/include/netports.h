@@ -4,9 +4,8 @@
 
 #define  NEXUSBASE                                          1500
 #define  PORTCONTROLNEXUS                                   (NEXUSBASE + 0  )
-#define  PORTGUINEXUS                                       (NEXUSBASE + 1  )
 #define  VANGOGHNEXUS                                       (NEXUSBASE + 10 )
-#define  TELEGRAPHNEXUS                                     (NEXUSBASE + 15 )
+#define  NOTIFICATIONNEXUS                                  (NEXUSBASE + 15 )
 
 #define  PROCLOGNEXUS                                       (NEXUSBASE + 20)
 #define  PORTERINTERFACENEXUS                               (NEXUSBASE + 40)
