@@ -22,7 +22,7 @@ String token = request.getParameter("token");
 	<prompt count="1" timeout="5s">Please enter your pin followed by the pound sign</prompt>
     <noinput count="1">Please enter your pin using your phone key pad</noinput>
     <noinput count="2">Please enter your pin</noinput>
-    <noinput count="3">goodbye<disconnect/></noinput>
+    <noinput count="3">goodbye<exit/></noinput>
   </field>
 
   <filled namelist="ACTION USERNAME TOKEN PASSWORD REDIRECT">
