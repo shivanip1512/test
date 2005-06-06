@@ -27,6 +27,7 @@
 #include "types.h"
 #include "observe.h"
 #include "lmprogrambase.h"
+#include "lmcontrolareatrigger.h"
 #include "msg_pcrequest.h"
 
 class CtiLMControlArea : public CtiMemDBObject, public RWCollectable
@@ -67,6 +68,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     LONG getCurrentDailyStartTime() const;
     LONG getCurrentDailyStopTime() const;
     RWOrdered& getLMControlAreaTriggers();
+    CtiLMControlAreaTrigger* getThresholdTrigger() const;
     RWOrdered& getLMPrograms();
 
     CtiLMControlArea& setPAOId(LONG id);
@@ -96,7 +98,9 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL isControlStillNeeded();
     BOOL isPastMinResponseTime(ULONG secondsFrom1901);
     BOOL isManualControlReceived();
-    BOOL isThresholdTriggerTripped();
+    BOOL isThresholdTriggerTripped(CtiLMProgramBase* program = 0);
+    BOOL hasThresholdTrigger();
+    
     DOUBLE calculateLoadReductionNeeded();
     double calculateExpectedLoadIncrease(int stop_priority);
     bool shouldReduceControl();
@@ -104,11 +108,12 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     DOUBLE reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     void reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    BOOL stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL examinedControlAreaForControlNeededFlag);
     BOOL stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
     void handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     void handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    void handleNotification(ULONG secondsFrom1901, CtiMultiMsg* multiNotifMsg);
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
     

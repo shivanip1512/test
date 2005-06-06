@@ -1,5 +1,4 @@
 #include "yukon.h"
-
 #include "lmconstraint.h"
 
 #include <algorithm>
@@ -326,7 +325,7 @@ bool CtiLMConstraintChecker::checkMinActivateTime(const CtiLMProgramDirect& lm_p
     ULONG run_time = proposed_stop_from_1901 - proposed_start_from_1901;
     if(!(run_time >= lm_program.getMinActivateTime()))
     {
-        string result = "The program cannot run for less than its minimum activate time, which is " + CtiNumStr(lm_program.getMinActivateTime()/60.0/60.0) + " hours.";
+        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(lm_program.getMinActivateTime()/60.0/60.0) + " hours.";
         if(results != 0)
         {
             results->push_back(result);
@@ -346,21 +345,19 @@ bool CtiLMConstraintChecker::checkMinRestartTime(const CtiLMProgramDirect& lm_pr
         return true;
     }
 
+    bool found_violation = false;
     CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
         if(lm_group->getControlCompleteTime().seconds() + lm_program.getMinRestartTime() > proposed_start_from_1901)
         {
-            string result = "The program cannot control again until its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours, has elapsed since control last completed.";
-            if(results != 0)
-            {
-                results->push_back(result);
-            }
-            return false;
+	    string result = "Load group: " + lm_group->getPAOName() + " might violate its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours.";
+            results->push_back(result);
+	    found_violation = true;
         }
     }
-    return true;
+    return !found_violation;
 }
 
 /*
@@ -373,17 +370,21 @@ bool CtiLMConstraintChecker::checkMaxDailyOps(const CtiLMProgramDirect& lm_progr
         return true;
     }
 
-    if(((CtiLMProgramDirect&)lm_program).getDailyOps() >= lm_program.getMaxDailyOps())
+    bool found_violation = false;
+    CtiLMGroupVec groups  = ((CtiLMProgramDirect&)lm_program).getLMProgramDirectGroups(); //cast away const, oooh
+    for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
-        string result = "The program has reached its maximum daily operations, which is " + CtiNumStr(lm_program.getMaxDailyOps());
-        if(results != 0)
-        {
-            results->push_back(result);
-        }
-        return false;
+        CtiLMGroupPtr lm_group  = *i;
+	if(lm_group->getDailyOps() >= lm_program.getMaxDailyOps())
+	{
+	    string result = "Load group: " +
+		lm_group->getPAOName() +
+		" has reached its maximum daily operations which is " + CtiNumStr(lm_program.getMaxDailyOps());
+	    results->push_back(result);
+	    found_violation = true;
+	}
     }
-    
-    return true;
+    return !found_violation;
 }
 
 /*
@@ -399,7 +400,7 @@ bool CtiLMConstraintChecker::checkMaxActivateTime(const CtiLMProgramDirect& lm_p
     ULONG run_time = proposed_stop_from_1901 - proposed_start_from_1901;
     if(!(run_time <= lm_program.getMaxActivateTime()))
     {
-        string result = "The program cannot run for more than its maximum activate time, which is " + CtiNumStr((double)lm_program.getMaxActivateTime()/60.0/60.0) + " hours.";
+        string result = "Load groups might control longer than their maximum activate time, which is " + CtiNumStr((double)lm_program.getMaxActivateTime()/60.0/60.0) + " hours.";
         if(results != 0)
         {
             results->push_back(result);

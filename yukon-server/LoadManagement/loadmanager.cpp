@@ -13,7 +13,7 @@
   COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
   -----------------------------------------------------------------------------*/
 #include "yukon.h"
-
+#include "msg_notif_lmcontrol.h"
 #include "dbaccess.h"
 #include "connection.h"
 #include "message.h"
@@ -73,6 +73,7 @@ CtiLoadManager::CtiLoadManager()
 
     _dispatchConnection = NULL;
     _pilConnection = NULL;
+    _notificationConnection = NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -192,6 +193,7 @@ void CtiLoadManager::controlLoop()
     RWOrdered controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();    
 
     CtiMessage* msg = NULL;
     CtiLMExecutorFactory executorFactory;
@@ -201,6 +203,9 @@ void CtiLoadManager::controlLoop()
 
     loadControlLoopCParms();
 
+    // Fire up the notification server
+    getNotificationConnection();
+    
     while(TRUE)
     {
     long main_wait = control_loop_delay;
@@ -278,7 +283,7 @@ void CtiLoadManager::controlLoop()
 
                 try
                 {
-                    currentControlArea->handleNotification(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+                    currentControlArea->handleNotification(secondsFrom1901, multiNotifMsg);
 
                     if( currentControlArea->isManualControlReceived() )
                     {
@@ -328,15 +333,23 @@ void CtiLoadManager::controlLoop()
                                     dout << RWTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
                                 }
                             }
-                            //Can we let off some load? (increase/stop)
-                            if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
-                               currentControlArea->shouldReduceControl() &&
-                               currentControlArea->isPastMinResponseTime(secondsFrom1901))
-                            {
-                                currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg);
-                            }
 
-
+			    // See if we can restore some load
+			    // The idea here is to stop some control
+			    // First, if any programs are below their program restore offset take them first
+			    // Second, if none of the programs stopped because of their restore offsets, go by stop priorities
+			    if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
+			       currentControlArea->isPastMinResponseTime(secondsFrom1901) )
+			    {
+				if(currentControlArea->stopProgramsBelowThreshold(secondsFrom1901, multiPilMsg, multiDispatchMsg))
+				{
+				    //don't have to do anything, just don't take any stop priorities
+				}
+				else if(currentControlArea->shouldReduceControl())
+				{
+				    currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+				}
+			    }
 
                             if( currentControlArea->getControlInterval() == 0 )
                             {
@@ -423,12 +436,28 @@ void CtiLoadManager::controlLoop()
             dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
+	try
+        {
+            if( multiNotifMsg->getCount() > 0 )
+            {
+                multiNotifMsg->setMessagePriority(13);
+                multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
+                getNotificationConnection()->WriteConnQue(multiNotifMsg);
+                multiNotifMsg = new CtiMultiMsg();
+            }
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+
         try
         {
 	    // Only send control area changes so often to avoid overwhelming the system
 	    // if we just received a client message then do it anyways however for good response
 	    time_t now = time(NULL);
-	    if(received_message || now > (last_ca_msg_sent + control_loop_outmsg_delay))
+	    if(received_message || now > (last_ca_msg_sent + (control_loop_outmsg_delay/1000.0))) /* delay is in millis */
 	    {
 		for(LONG i=0;i<controlAreas.entries();i++)
 		{
@@ -639,6 +668,52 @@ CtiConnection* CtiLoadManager::getPILConnection()
         }
 
         return _pilConnection;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+
+        return NULL;
+    }
+}
+
+/*---------------------------------------------------------------------------
+  getNotificationConnection
+
+  Returns a connection to the Notification Server
+  ---------------------------------------------------------------------------*/
+CtiConnection* CtiLoadManager::getNotificationConnection()
+{
+    try
+    {
+        if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) )
+        {
+            //Set up the defaults
+            string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
+	    int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
+
+	    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	    {
+		CtiLockGuard<CtiLogger> logger_guard(dout);
+		dout << RWTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl;
+		dout << RWTime() << " - NOTIFICATION_PORT: " << notification_port << endl;
+	    }
+
+            if( _notificationConnection != NULL && _notificationConnection->verifyConnection() )
+            {
+                delete _notificationConnection;
+                _notificationConnection = NULL;
+            }
+
+            if( _notificationConnection == NULL )
+            {
+                //Connect to Pil
+                _notificationConnection  = new CtiConnection( notification_port, notification_host.data() );
+            }
+        } 
+
+        return _notificationConnection;
     }
     catch(...)
     {
@@ -982,7 +1057,12 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         text += tempchar;
                     }
                 }
-                currentTrigger->setPointValue(value);
+
+		if(currentTrigger->getPointValue() != value)
+		{
+		    currentTrigger->setPointValue(value);
+		    currentControlArea->setUpdatedFlag(TRUE);
+		}
 
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 if( (currentTrigger->getProjectionType().compareTo(CtiLMControlAreaTrigger::NoneProjectionType,RWCString::ignoreCase) && currentTrigger->getProjectionType().compareTo("(none)",RWCString::ignoreCase))/*"(none)" is a hack*/ &&
@@ -1273,6 +1353,26 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
         getPILConnection()->WriteConnQue(message);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
+
+/*---------------------------------------------------------------------------
+  sendMessageToNotification
+
+  Sends a cti message to the notification server
+  ---------------------------------------------------------------------------*/
+void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    try
+    {
+        message->resetTime();                       // CGP 5/21/04 Update its time to current time.
+        getNotificationConnection()->WriteConnQue(message);
     }
     catch(...)
     {

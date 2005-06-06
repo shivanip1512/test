@@ -36,7 +36,8 @@ CtiLMGroupBase::CtiLMGroupBase()
     : _next_control_time(gInvalidRWDBDateTime),
       _controlstarttime(gInvalidRWDBDateTime),
       _controlcompletetime(gInvalidRWDBDateTime),
-      _insertDynamicDataFlag(TRUE)    
+      _daily_ops(0),      
+      _insertDynamicDataFlag(TRUE)
 {
 #ifdef _DEBUG_MEMORY    
         numberOfReferences++;
@@ -49,7 +50,11 @@ CtiLMGroupBase::CtiLMGroupBase()
 }
 
 CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
-    : _next_control_time(gInvalidRWDBDateTime), _insertDynamicDataFlag(TRUE)
+    : _next_control_time(gInvalidRWDBDateTime),
+      _controlstarttime(gInvalidRWDBDateTime),
+      _controlcompletetime(gInvalidRWDBDateTime),
+      _daily_ops(0),
+      _insertDynamicDataFlag(TRUE)
 {
 #ifdef _DEBUG_MEMORY    
         numberOfReferences++;
@@ -315,6 +320,27 @@ const RWDBDateTime& CtiLMGroupBase::getNextControlTime() const
     return _next_control_time;
 }
 
+/*-----------------------------------------------------------------------------
+  getDynamicTimestamp
+
+  Returns the dynamic info timestamp
+-----------------------------------------------------------------------------*/
+const RWDBDateTime& CtiLMGroupBase::getDynamicTimestamp() const
+{
+    return _dynamic_timestamp;
+}
+
+/*---------------------------------------------------------------------------
+    getDailyOps
+
+    Returns the number of times this program has operated today
+ ---------------------------------------------------------------------------*/
+LONG CtiLMGroupBase::getDailyOps() 
+{
+    updateDailyOps();
+    return _daily_ops; //TODO: check if this is the value for today!
+}
+
 /*----------------------------------------------------------------------------
   getIsRampingIn
 
@@ -333,6 +359,18 @@ bool CtiLMGroupBase::getIsRampingIn() const
 bool CtiLMGroupBase::getIsRampingOut() const
 {
     return _internalState & GROUP_RAMPING_OUT;
+}
+
+/*----------------------------------------------------------------------------
+  getCurrentControlDuration
+
+  Returns the amount of time in seconds that we have been controlling.
+  If the group is inactive this will be zero.
+-----------------------------------------------------------------------------*/  
+ULONG CtiLMGroupBase::getCurrentControlDuration() const
+{
+    return (getGroupControlState() == ActiveState ?
+	    RWTime::now().seconds() - getControlStartTime().seconds() : 0);
 }
 
 /*---------------------------------------------------------------------------
@@ -677,6 +715,44 @@ CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const RWDBDateTime& controlti
     return *this;
 }
 
+/*-----------------------------------------------------------------------------
+  setDynamicTimestamp
+
+  Sets the dynamic info timestamp
+-----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const RWDBDateTime& timestamp)
+{
+    if(_dynamic_timestamp != timestamp)
+    {
+	_dynamic_timestamp = timestamp;
+	setDirty(true);
+    }
+    return *this;
+}
+
+/*-----------------------------------------------------------------------------
+  incrementDailyOps
+-----------------------------------------------------------------------------*/  
+CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
+{
+    updateDailyOps();
+    _daily_ops++;
+    setDirty(true);
+    return *this;
+}
+
+/*-----------------------------------------------------------------------------
+  resetDailyOps
+  This only exists so the controlareastore can set the dailyops when
+  it reads it from the database.  usually you won't call this directly. 
+-----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::resetDailyOps(int ops)
+{
+    _daily_ops = ops;
+    setDirty(true);
+    return *this;
+}
+
 void CtiLMGroupBase::setInternalState(unsigned state)
 {
     _internalState = state;
@@ -848,7 +924,8 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
           >> tempTime2
           >> tempTime3
           >> tempTime4
-          >> _internalState;
+          >> _internalState
+	  >> _daily_ops;
 
     _lastcontrolsent = RWDBDateTime(tempTime1);
     _controlstarttime = RWDBDateTime(tempTime2);
@@ -886,7 +963,8 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
           << _controlstarttime.rwtime()
           << _controlcompletetime.rwtime()
           << _next_control_time.rwtime()
-          << _internalState;
+          << _internalState
+	  << _daily_ops;
 
     return;
 }
@@ -928,6 +1006,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _controlstatuspointid = right._controlstatuspointid;
         _lastcontrolstring = right._lastcontrolstring;
         _internalState = right._internalState;
+	_daily_ops = right._daily_ops;
     }
 
     return *this;
@@ -1095,6 +1174,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setControlStartTime(gInvalidRWDBDateTime);
         setControlCompleteTime(gInvalidRWDBDateTime);
         setNextControlTime(gInvalidRWDBDateTime);
+	resetDailyOps(0);
         _internalState = 0;
         
         _insertDynamicDataFlag = TRUE;
@@ -1184,7 +1264,8 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                         << dynamicLMGroupTable["controlstarttime"].assign( getControlStartTime() )
                         << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() )
                         << dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
-                        << dynamicLMGroupTable["internalstate"].assign( _internalState );
+                        << dynamicLMGroupTable["internalstate"].assign( _internalState )
+			<< dynamicLMGroupTable["dailyops"].assign( _daily_ops );
                 
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
@@ -1196,6 +1277,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 }
 
                 updater.execute( conn );
+		_dynamic_timestamp = currentDateTime;
                 setDirty(false);
             }
             else
@@ -1218,7 +1300,8 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                          << getControlStartTime()
                          << getControlCompleteTime()
                          << getNextControlTime()
-                         << _internalState;
+                         << _internalState
+			 << _daily_ops;;
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -1229,6 +1312,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 _insertDynamicDataFlag = FALSE;
 
                 inserter.execute( conn );
+		_dynamic_timestamp = currentDateTime;
                 setDirty(false);
             }
         }
@@ -1281,6 +1365,21 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
         setDirty(true);
     }
     return *this;
+}
+
+/*-----------------------------------------------------------------------------
+  updateDailyOps
+
+  Resets the daily ops if necessary based on the dynamic timestamp
+-----------------------------------------------------------------------------*/
+void CtiLMGroupBase::updateDailyOps()
+{
+    // If we haven't written out dynamic data today
+    RWDate today;
+    if(today > _dynamic_timestamp.rwdate())
+    {
+        resetDailyOps();
+    }
 }
 
 // Static Members

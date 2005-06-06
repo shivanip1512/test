@@ -588,7 +588,8 @@ void CtiLMControlAreaStore::reset()
                          << dynamicLMGroupTable["controlstarttime"]
                          << dynamicLMGroupTable["controlcompletetime"]
                          << dynamicLMGroupTable["nextcontroltime"]
-                         << dynamicLMGroupTable["internalstate"];
+                         << dynamicLMGroupTable["internalstate"]
+			 << dynamicLMGroupTable["dailyops"];
                 selector.from(dynamicLMGroupTable);
 
                 RWDBReader rdr = selector.reader(conn);
@@ -606,6 +607,7 @@ void CtiLMControlAreaStore::reset()
                     RWDBDateTime control_complete_time;
                     RWDBDateTime next_control_time;
                     long internal_state;
+		    long daily_ops;
 
                     rdr["groupid"] >> group_id;
                     rdr["groupcontrolstate"] >> group_control_state;
@@ -619,6 +621,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["controlcompletetime"] >> control_complete_time;
                     rdr["nextcontroltime"] >> next_control_time;
                     rdr["internalstate"] >> internal_state;
+		    rdr["dailyops"] >> daily_ops;
 
                     CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
                     lm_group->setGroupControlState(group_control_state);
@@ -627,11 +630,13 @@ void CtiLMControlAreaStore::reset()
                     lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
                     lm_group->setCurrentHoursAnnually(cur_hours_annually);
                     lm_group->setLastControlSent(last_control_sent);
-                    //timestamp?
+                    lm_group->setDynamicTimestamp(timestamp);
                     lm_group->setControlStartTime(control_start_time);
                     lm_group->setControlCompleteTime(control_complete_time);
                     lm_group->setNextControlTime(next_control_time);
                     lm_group->setInternalState(internal_state);
+		    lm_group->resetDailyOps(daily_ops);
+		    
                     lm_group->setDirty(false);
                     lm_group->_insertDynamicDataFlag = FALSE;
                 }
@@ -815,7 +820,10 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramDirectTable["heading"]
                                  << lmProgramDirectTable["messageheader"]
                                  << lmProgramDirectTable["messagefooter"]
-                                 << lmProgramDirectTable["notifyoffset"]
+				 << lmProgramDirectTable["notifyactiveoffset"]
+                                 << lmProgramDirectTable["notifyinactiveoffset"]
+                                 << lmProgramDirectTable["triggeroffset"]
+                                 << lmProgramDirectTable["restoreoffset"]			    
                                  << dynamicLMProgramTable["programstate"]
                                  << dynamicLMProgramTable["reductiontotal"]
                                  << dynamicLMProgramTable["startedcontrolling"]
@@ -826,8 +834,9 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramDirectTable["starttime"]
                                  << dynamicLMProgramDirectTable["stoptime"]
                                  << dynamicLMProgramDirectTable["timestamp"]
-                                 << dynamicLMProgramDirectTable["dailyops"]
-                                 << dynamicLMProgramDirectTable["notifytime"]
+//                                 << dynamicLMProgramDirectTable["dailyops"]
+				 << dynamicLMProgramDirectTable["notifyactivetime"]
+                                 << dynamicLMProgramDirectTable["notifyinactivetime"]
                                  << dynamicLMProgramDirectTable["startedrampingout"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
@@ -1816,7 +1825,8 @@ void CtiLMControlAreaStore::reset()
                         RWDBTable dynamicLMControlAreaTriggerTable = db.table("dynamiclmcontrolareatrigger");
 
                         RWDBSelector selector = db.selector();
-                        selector << lmControlAreaTriggerTable["deviceid"]
+                        selector << lmControlAreaTriggerTable["triggerid"]
+				 << lmControlAreaTriggerTable["deviceid"]
                                  << lmControlAreaTriggerTable["triggernumber"]
                                  << lmControlAreaTriggerTable["triggertype"]
                                  << lmControlAreaTriggerTable["pointid"]

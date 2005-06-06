@@ -15,18 +15,37 @@
 #ifndef CTILMCONNECTION_H
 #define CTILMCONNECTION_H
 
+#include <vector>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+
 #include <rw/pstream.h>
 
-#include <rw/toolpro/portal.h>
+#include <rw/toolpro/portal.h> 
 #include <rw/toolpro/portstrm.h>
  
 #include <rw/thr/countptr.h> 
 #include <rw/thr/thrfunc.h> 
 
 #include "ctdpcptrq.h"
-    
+
+using std::vector;
+using boost::shared_ptr;
+using boost::weak_ptr;
+
+class CtiLMConnection;
+
+typedef shared_ptr<CtiLMConnection> CtiLMConnectionPtr;
+typedef vector<CtiLMConnectionPtr> CtiLMConnectionVec;
+typedef CtiLMConnectionVec::iterator CtiLMConnectionIter;
+
+typedef weak_ptr<CtiLMConnection> CtiLMConnectionWeakPtr;
+
 class CtiLMConnection
 {
+    friend class CtiLMClientListener;
+    
 public:
     CtiLMConnection(RWPortal portal);
     virtual ~CtiLMConnection();
@@ -43,7 +62,12 @@ protected:
     void _sendthr();
     void _recvthr();
 
-private:    
+private:
+
+    // Keep this around so we can give out
+    // copies to all our incoming messages
+    CtiLMConnectionWeakPtr _weak_this_ptr;
+    
     RWMutexLock _sendmutex;
     RWMutexLock _recvmutex;
 
@@ -60,6 +84,8 @@ private:
 
     unsigned _max_out_queue_size;
 };
+
+
 
 #endif
 

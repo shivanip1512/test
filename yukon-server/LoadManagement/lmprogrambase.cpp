@@ -698,7 +698,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
     if(_reductiontotal != reduction)
     {
         _reductiontotal = reduction;
-        setDirty(false);
+        setDirty(true);
     }
     return *this;
 }

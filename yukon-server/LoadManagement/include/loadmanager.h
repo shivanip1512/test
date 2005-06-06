@@ -60,6 +60,7 @@ public:
     
     void sendMessageToDispatch(CtiMessage* message);
     void sendMessageToPIL(CtiMessage* message);
+    void sendMessageToNotification(CtiMessage* message);
     void sendMessageToClients(CtiMessage* message);
     
 private:
@@ -71,6 +72,8 @@ private:
 
     CtiConnection* getPILConnection();
     CtiConnection* getDispatchConnection();
+    CtiConnection* getNotificationConnection();
+	
     void checkDispatch(ULONG secondsFrom1901);
     void checkPIL(ULONG secondsFrom1901);
     void registerForPoints(const RWOrdered& controlAreas);
@@ -88,7 +91,8 @@ private:
     
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;
-
+    CtiConnection* _notificationConnection;
+    
     int control_loop_delay;
     int control_loop_inmsg_delay;
     int control_loop_outmsg_delay;

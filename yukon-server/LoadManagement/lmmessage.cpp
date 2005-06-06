@@ -36,7 +36,18 @@ const RWCString& CtiLMMessage::getMessage() const
     return _message;
 }
 
+/*-----------------------------------------------------------------------------
+  getConnection
 
+  Returns a shared pointer to the connecition that produced this message.
+  It is possible for the shared_ptr that is returned to be invalid and it
+  must be tested against NULL or 0 before used!
+-----------------------------------------------------------------------------*/  
+CtiLMConnectionPtr CtiLMMessage::getConnection()
+{
+    return _connection.lock();
+}
+    
 /*---------------------------------------------------------------------------
     restoreGuts
     

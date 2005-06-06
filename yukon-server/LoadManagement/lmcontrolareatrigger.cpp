@@ -53,9 +53,19 @@ CtiLMControlAreaTrigger::~CtiLMControlAreaTrigger()
 }
 
 /*---------------------------------------------------------------------------
-    getPAOId
+    getTriggerId
 
     Returns the unique id of the trigger
+---------------------------------------------------------------------------*/
+LONG CtiLMControlAreaTrigger::getTriggerId() const
+{
+    return _trigger_id;
+}
+
+/*---------------------------------------------------------------------------
+    getPAOId
+
+    Returns the unique id the control area this trigger is attached to
 ---------------------------------------------------------------------------*/
 LONG CtiLMControlAreaTrigger::getPAOId() const
 {
@@ -250,6 +260,16 @@ RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
     return _projectionpointentriesqueue;
 }
 
+/*---------------------------------------------------------------------------
+    setTriggerId
+
+    Sets the id of the trigger - know why you are calling this
+---------------------------------------------------------------------------*/
+CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setTriggerId(LONG id)
+{
+    _trigger_id = id;
+    return *this;
+}
 
 /*---------------------------------------------------------------------------
     setPAOId
@@ -258,7 +278,6 @@ RWTValDlist<CtiLMProjectionPointEntry>& CtiLMControlAreaTrigger::getProjectionPo
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::setPAOId(LONG id)
 {
-
     _paoid = id;
     //do not notify observers of this !
     return *this;
@@ -579,6 +598,17 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
     }
 }
 
+/*-----------------------------------------------------------------------------
+  hasReceviedPointData
+
+  Returns true if at some point after creation we have received some point
+  data.  
+-----------------------------------------------------------------------------*/  
+bool CtiLMControlAreaTrigger::hasReceivedPointData() const
+{
+    return _lastpointvaluetimestamp > gInvalidRWDBDateTime;
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -586,9 +616,6 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 --------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     RWTime tempTime1;
@@ -623,9 +650,6 @@ void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
 {
-
-
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -654,10 +678,9 @@ void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::operator=(const CtiLMControlAreaTrigger& right)
 {
-
-
     if( this != &right )
     {
+        _trigger_id = right._trigger_id;
         _paoid = right._paoid;
         _triggernumber = right._triggernumber;
         _triggertype = right._triggertype;
@@ -685,8 +708,7 @@ CtiLMControlAreaTrigger& CtiLMControlAreaTrigger::operator=(const CtiLMControlAr
 ---------------------------------------------------------------------------*/
 int CtiLMControlAreaTrigger::operator==(const CtiLMControlAreaTrigger& right) const
 {
-
-    return getPAOId() == right.getPAOId();
+    return getTriggerId() == right.getTriggerId();
 }
 
 /*---------------------------------------------------------------------------
@@ -694,8 +716,7 @@ int CtiLMControlAreaTrigger::operator==(const CtiLMControlAreaTrigger& right) co
 ---------------------------------------------------------------------------*/
 int CtiLMControlAreaTrigger::operator!=(const CtiLMControlAreaTrigger& right) const
 {
-
-    return getPAOId() != right.getPAOId();
+    return !operator==(right);
 }
 
 /*---------------------------------------------------------------------------
@@ -719,6 +740,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
     RWDBNullIndicator isNull;
     _insertDynamicDataFlag = FALSE;
 
+    rdr["triggerid"] >> _trigger_id;
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["triggernumber"] >> _triggernumber;
     rdr["triggertype"] >> _triggertype;
@@ -785,8 +807,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             << dynamicLMControlAreaTriggerTable["peakpointvalue"].assign(getPeakPointValue())
             << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign((RWDBDateTime)getLastPeakPointValueTimestamp());
 
-            updater.where( dynamicLMControlAreaTriggerTable["deviceid"]==getPAOId() &&//will be paobjectid
-                           dynamicLMControlAreaTriggerTable["triggernumber"]==getTriggerNumber() );
+            updater.where( dynamicLMControlAreaTriggerTable["triggerid"] == getTriggerId() );
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
@@ -806,11 +827,12 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
             RWDBInserter inserter = dynamicLMControlAreaTriggerTable.inserter();
 
             inserter << getPAOId()
-            << getTriggerNumber()
-            << getPointValue()
-            << getLastPointValueTimestamp()
-            << getPeakPointValue()
-            << getLastPeakPointValueTimestamp();
+                     << getTriggerNumber()
+                     << getPointValue()
+                     << getLastPointValueTimestamp()
+                     << getPeakPointValue()
+                     << getLastPeakPointValueTimestamp()
+                     << getTriggerId();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
@@ -831,7 +853,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, RWDBDateTime
 const RWCString CtiLMControlAreaTrigger::ThresholdTriggerType = "Threshold";
 const RWCString CtiLMControlAreaTrigger::StatusTriggerType = "Status";
 
-const RWCString CtiLMControlAreaTrigger::NoneProjectionType = "None";
+const RWCString CtiLMControlAreaTrigger::NoneProjectionType = "(none)";
 const RWCString CtiLMControlAreaTrigger::LSFProjectionType = "LSF";
 
 

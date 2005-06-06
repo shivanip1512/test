@@ -63,6 +63,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
     virtual ~CtiLMControlAreaTrigger();
 
+    LONG getTriggerId() const;
     LONG getPAOId() const;
     LONG getTriggerNumber() const;
     const RWCString& getTriggerType() const;
@@ -82,6 +83,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     DOUBLE getProjectedPointValue() const;
     RWTValDlist<CtiLMProjectionPointEntry>& getProjectionPointEntriesQueue();
 
+    CtiLMControlAreaTrigger& setTriggerId(LONG trigger_id);
     CtiLMControlAreaTrigger& setPAOId(LONG paoid);
     CtiLMControlAreaTrigger& setTriggerNumber(LONG trignum);
     CtiLMControlAreaTrigger& setTriggerType(const RWCString& trigtype);
@@ -105,7 +107,9 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void calculateProjectedValue();
-
+    
+    bool hasReceivedPointData() const;
+    
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -125,7 +129,8 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     static const RWCString LSFProjectionType;
 
 private:
-    
+
+    LONG _trigger_id;
     LONG _paoid;
     LONG _triggernumber;
     RWCString _triggertype;

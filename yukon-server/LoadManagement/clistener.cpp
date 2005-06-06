@@ -127,15 +127,15 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 
     try
     {
-	//Make a copy of msg for all the clients except the first
+        //Make a copy of msg for all the clients except the first
 
-	if( _LM_DEBUG & LM_DEBUG_CLIENT )
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " Broadcasting message to " << _connections.entries() << " clients" << endl;
-	}
-	
-        for( int i = 1; i < _connections.entries(); i++ )
+        if( _LM_DEBUG & LM_DEBUG_CLIENT )
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " Broadcasting message to " << _connections.size() << " clients" << endl;
+        }
+        
+        for( int i = 1; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
             if( _connections[i]->isValid() )
@@ -144,15 +144,15 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
                 _connections[i]->write(replicated_msg);
             }
         }
-	//Use up the original on the first client, no waste
-	if(_connections.entries() > 0)
-	{
-	    if( _connections[0]->isValid())
-	    {
-		_connections[0]->write(msg);
-		msg = 0;
-	    }
-	}
+        //Use up the original on the first client, no waste
+        if(_connections.size() > 0)
+        {
+            if( _connections[0]->isValid())
+            {
+                _connections[0]->write(msg);
+                msg = 0;
+            }
+        }
     }
     catch(...)
     {
@@ -187,36 +187,12 @@ void CtiLMClientListener::_listen()
             {
                 {
                     RWPortal portal = (*_socketListener)();
-    
-                    CtiLMConnection* conn = new CtiLMConnection(portal);
+                    CtiLMConnectionPtr conn(new CtiLMConnection(portal));
     
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-    
-                        _connections.insert(conn);
-                    }
-                    CtiLMExecutorFactory f;
-                    CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-                    {
-                        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-			if( _LM_DEBUG & LM_DEBUG_CLIENT )
-			{
-			    CtiLockGuard<CtiLogger> dout_guard(dout);
-			    dout << RWTime() << "New connection, broadcasting control areas" << endl;
-			}
-			
-                        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds())));
-                        try
-                        {
-                            executor->Execute();
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                        delete executor;
+			conn->_weak_this_ptr = CtiLMConnectionWeakPtr(conn);
+                        _connections.push_back(conn);
                     }
                 }
             }
@@ -275,20 +251,19 @@ void CtiLMClientListener::_check()
             {
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        
-                    for ( int i = 0; i < _connections.entries(); i++ )
+
+                    // Remove any invalid connections from our list
+                    CtiLMConnectionIter i = _connections.begin();
+                    while(i != _connections.end())
                     {
-                        if ( !_connections[i]->isValid() )
+                        CtiLMConnectionPtr conn = *i;
+                        if(!conn->isValid())
                         {
-                            /*{    
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime()  << " - CtiLMClientListener::check - deleting connection addr:  " << _connections[i] << endl;
-                            }*/
-        
-                            //Remove the connection from the server observer list
-                            CtiLMConnection* toDelete = _connections.removeAt(i);
-                            delete toDelete;
-                            break;
+                            i = _connections.erase(i);
+                        }
+                        else
+                        {
+                            i++;
                         }
                     }
                 }   //Release mutex
@@ -310,7 +285,7 @@ void CtiLMClientListener::_check()
             }*/
     
             //Before we exit try to close all the connections
-            _connections.clearAndDestroy();
+            _connections.clear();
         }
     
     

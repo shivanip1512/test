@@ -22,6 +22,7 @@
 #include <rw/vstream.h>
 #include <rw/rwtime.h>
 
+#include "clientconn.h"
 #include "message.h"
 #include "lmcontrolarea.h"
 
@@ -30,6 +31,7 @@
 class CtiLMMessage : public CtiMessage
 {
 RWDECLARE_COLLECTABLE( CtiLMMessage )
+    friend class CtiLMConnection;
 
 public:
     CtiLMMessage() { };
@@ -38,11 +40,14 @@ public:
     virtual ~CtiLMMessage() { };
 
     const RWCString& getMessage() const;
-
+    CtiLMConnectionPtr getConnection();
+    
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
 private:
+    // The connection that received/produced this message
+    CtiLMConnectionWeakPtr _connection;
     RWCString _message;
 };
 
@@ -284,6 +289,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
     CtiLMControlAreaMsg(RWOrdered& contAreas, ULONG bitMask = 0);
+    
     CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg);
 
     virtual ~CtiLMControlAreaMsg();

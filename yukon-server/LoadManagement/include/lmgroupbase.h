@@ -68,9 +68,13 @@ public:
     virtual const RWDBDateTime& getControlStartTime() const;
     virtual const RWDBDateTime& getControlCompleteTime() const;
     virtual const RWDBDateTime& getNextControlTime() const; //FIXME
-
+    virtual const RWDBDateTime& getDynamicTimestamp() const;
+    virtual LONG getDailyOps();
+    
     virtual bool getIsRampingIn() const;
     virtual bool getIsRampingOut() const;
+
+    virtual ULONG getCurrentControlDuration() const;
     
     virtual LONG getHoursDailyPointId() const;
     virtual LONG getHoursMonthlyPointId() const;
@@ -100,6 +104,9 @@ public:
     virtual CtiLMGroupBase& setControlStartTime(const RWDBDateTime& start);
     virtual CtiLMGroupBase& setControlCompleteTime(const RWDBDateTime& complete);
     virtual CtiLMGroupBase& setNextControlTime(const RWDBDateTime& controltime);
+    virtual CtiLMGroupBase& setDynamicTimestamp(const RWDBDateTime& timestamp);
+    virtual CtiLMGroupBase& incrementDailyOps();
+    virtual CtiLMGroupBase& resetDailyOps(int ops = 0);
     virtual void setInternalState(unsigned state);
 
     virtual CtiLMGroupBase& setIsRampingIn(bool in);
@@ -163,6 +170,8 @@ protected:
 
 private:
 
+    void updateDailyOps();
+    
     LONG _paoid;
     RWCString _paocategory;
     RWCString _paoclass;
@@ -186,6 +195,10 @@ private:
     RWDBDateTime _controlcompletetime;
 //FIXME    
     RWDBDateTime _next_control_time;
+    LONG _daily_ops;
+    
+    RWDBDateTime _dynamic_timestamp;
+    
     unsigned  _internalState;
 
     LONG _hoursdailypointid;

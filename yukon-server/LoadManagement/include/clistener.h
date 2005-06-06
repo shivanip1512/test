@@ -44,7 +44,7 @@ private:
     RWThread _listenerthr;
     RWThread _checkthr;
 
-    RWTPtrSlist<CtiLMConnection> _connections;
+    CtiLMConnectionVec _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
 
     static CtiLMClientListener* _instance;

@@ -47,17 +47,21 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     virtual ~CtiLMProgramDirect();
 
-    LONG getNotifyOffset() const;
+    LONG getNotifyActiveOffset() const;
+    LONG getNotifyInactiveOffset() const;
     const string& getMessageSubject() const;
     const string& getMessageHeader() const;
     const string& getMessageFooter() const;
-    
+    LONG getTriggerOffset() const;
+    LONG getTriggerRestoreOffset() const;
+	
     LONG getCurrentGearNumber() const;
     LONG getLastGroupControlled() const;
-    LONG getDailyOps();
+//    LONG getDailyOps();
     const RWDBDateTime& getDirectStartTime() const;
     const RWDBDateTime& getDirectStopTime() const;
-    const RWDBDateTime& getNotifyTime() const;
+    const RWDBDateTime& getNotifyActiveTime() const;
+    const RWDBDateTime& getNotifyInactiveTime() const;
     const RWDBDateTime& getStartedRampingOutTime() const;
     
     bool getIsRampingIn();
@@ -74,14 +78,17 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setMessageSubject(const string& subject);
     CtiLMProgramDirect& setMessageHeader(const string& header);
     CtiLMProgramDirect& setMessageFooter(const string& footer);
+    CtiLMProgramDirect& setTriggerOffset(LONG trigger_offst);
+    CtiLMProgramDirect& setTriggerRestoreOffset(LONG restore_offst);
     
     CtiLMProgramDirect& setCurrentGearNumber(LONG currentgear);
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
-    CtiLMProgramDirect& incrementDailyOps();
-    CtiLMProgramDirect& resetDailyOps();
+//    CtiLMProgramDirect& incrementDailyOps();
+//    CtiLMProgramDirect& resetDailyOps();
     CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
-    CtiLMProgramDirect& setNotifyTime(const RWDBDateTime& notify);
+    CtiLMProgramDirect& setNotifyActiveTime(const RWDBDateTime& notify);    
+    CtiLMProgramDirect& setNotifyInactiveTime(const RWDBDateTime& notify);
     CtiLMProgramDirect& setStartedRampingOutTime(const RWDBDateTime& started);
     
     void dumpDynamicData();
@@ -98,6 +105,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     DOUBLE manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     BOOL doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
+    BOOL hasGroupExceededMaxDailyOps(CtiLMGroupPtr& lm_group) const;
     LONG calculateGroupControlTimeLeft(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
     BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupPtr& currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
@@ -105,7 +113,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     bool updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
 
-    BOOL notifyGroupsOfStart(CtiMultiMsg* multiDispatchMsg);
+    BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
+    BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
 
     virtual CtiLMProgramBase* replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
@@ -134,19 +143,26 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     static int defaultLMStartPriority;
     static int defaultLMRefreshPriority;
 
-private: 
-    LONG _notifyoffset;
+private:
+
+    bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
+    
+    LONG _notify_active_offset;
+    LONG _notify_inactive_offset;
 
     string _message_subject;
     string _message_header;
     string _message_footer;
-    
+    LONG _trigger_offset;
+    LONG _trigger_restore_offset;
+	
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
-    LONG _dailyops;
+//    LONG _dailyops;
     RWDBDateTime _directstarttime;
     RWDBDateTime _directstoptime;
-    RWDBDateTime _notifytime;
+    RWDBDateTime _notify_active_time;
+    RWDBDateTime _notify_inactive_time;
     RWDBDateTime _startedrampingout;
 
     //When the dynamic data was last saved

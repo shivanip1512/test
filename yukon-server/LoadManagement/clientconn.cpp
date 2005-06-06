@@ -34,8 +34,8 @@ CtiLMConnection::CtiLMConnection(RWPortal portal) : _valid(TRUE), _portal(new RW
 
     try
     {
-	_max_out_queue_size = gConfigParms.getValueAsInt("LOAD_MANAGEMENT_MAX_OUT_QUEUE", 0);
-	
+        _max_out_queue_size = gConfigParms.getValueAsInt("LOAD_MANAGEMENT_MAX_OUT_QUEUE", 0);
+        
         sinbuf  = new RWPortalStreambuf(*_portal);
         soubuf  = new RWPortalStreambuf(*_portal);
         oStream = new RWpostream(soubuf);
@@ -149,23 +149,24 @@ void CtiLMConnection::write(RWCollectable* msg)
 {
     if( _queue.isOpen() )
     {
-	if(_max_out_queue_size != 0 &&
-	   _queue.entries() >= _max_out_queue_size)
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
-	    delete msg;
-	}
-	else
-	{
+        if(_max_out_queue_size != 0 &&
+           _queue.entries() >= _max_out_queue_size &&
+	   msg->isA() != MSG_SERVER_RESPONSE)  //never throw away server responses!!!
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << RWTime() << " Client connection to " << ((RWSocketPortal*)_portal)->socket().getpeername() << " has reached its maximum queue size of " << _max_out_queue_size << " entries!!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+            delete msg;
+        }
+        else
+        {
 
-	    if( _LM_DEBUG & LM_DEBUG_CLIENT )	    
-	    {
-		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
-	    }
-	    _queue.write( (RWCollectable*) msg );
-	}
+            if( _LM_DEBUG & LM_DEBUG_CLIENT )       
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << "Queueing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << msg->classIsA() << endl;
+            }
+            _queue.write( (RWCollectable*) msg );
+        }
     }
 }
 
@@ -193,11 +194,11 @@ void CtiLMConnection::_sendthr()
                 {
                     if( out->isA()!=__RWCOLLECTABLE )
                     {
-			if( _LM_DEBUG & LM_DEBUG_CLIENT )	    
-			{
-			    CtiLockGuard<CtiLogger> dout_guard(dout);
-			    dout << RWTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;	
-			}			
+                        if( _LM_DEBUG & LM_DEBUG_CLIENT )           
+                        {
+                            CtiLockGuard<CtiLogger> dout_guard(dout);
+                            dout << RWTime() << "Writing msg to: " << ((RWSocketPortal*)_portal)->socket().getpeername() << " rwid: " << out->classIsA() << endl;       
+                        }                       
                         *oStream << out;
                         oStream->vflush();
                     }
@@ -263,7 +264,18 @@ void CtiLMConnection::_recvthr()
 
             if ( current != NULL )
             {
-                CtiLoadManager::getInstance()->handleMessage((CtiMessage*)current);
+                // Give the message a weak pointer to this and pass it on for processing
+                // This is ugly, but the only message loadmanagement accepts that is not
+                // a CTILMMessage is a CtiLMServerRequest, which is a CtiMessage and
+		// a CtiMultiMsg
+                // if that changes you better add that as a test here
+                if(current->isA() != MSG_SERVER_REQUEST &&
+		   current->isA() != MSG_MULTI ) // TODO attach a connection to the msgs inside this
+                {
+                    CtiLMMessage* msg = (CtiLMMessage*) current;
+                    msg->_connection = _weak_this_ptr; // we're a friend class to CTILMMessage, its all good
+                }
+                CtiLoadManager::getInstance()->handleMessage((CtiMessage*) current);
             }
             else
             {

@@ -90,9 +90,9 @@ void CtiLMCommandExecutor::Execute()
             break;
 
         case CtiLMCommand::EMERGENCY_DISABLE_PROGRAM:
-	    DisableProgram(true);
-	    break;
-	
+            DisableProgram(true);
+            break;
+        
         case CtiLMCommand::REQUEST_ALL_CONTROL_AREAS:
             SendAllControlAreas();
             break;
@@ -122,8 +122,8 @@ void CtiLMCommandExecutor::Execute()
             ConfirmGroup();
             break;
          case CtiLMCommand::RESET_PEAK_POINT_VALUE:
-	    ResetPeakPointValue();
-	    break;
+            ResetPeakPointValue();
+            break;
         default:
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -420,12 +420,12 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                     char tempchar[80];
                     RWCString text = RWCString("Disabling Program: ");
                     text += currentLMProgramBase->getPAOName();
-		    if(emergency)
-		       text += " (emergency)";
+                    if(emergency)
+                       text += " (emergency)";
                     RWCString additional = RWCString("PAO Id: ");
                     _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                     additional += tempchar;
-		    
+                    
 
                     CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
@@ -441,25 +441,25 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                         currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
                     }
 
-		    if(emergency)
-		    {
-			//No manual stop please, just set the program inactive immediately
-			currentLMProgramBase->setManualControlReceivedFlag(FALSE);
-			currentLMProgramBase->setProgramState(CtiLMProgramBase::InactiveState);
-		    }
-		    else
-		    {   // Next main loop we want to do a manual stop
-			// I guess the fact that we disabled the program and set the
-			// manual controll received flag means stop the program (!)
-			currentLMProgramBase->setManualControlReceivedFlag(TRUE);
-		    }
+                    if(emergency)
+                    {
+                        //No manual stop please, just set the program inactive immediately
+                        currentLMProgramBase->setManualControlReceivedFlag(FALSE);
+                        currentLMProgramBase->setProgramState(CtiLMProgramBase::InactiveState);
+                    }
+                    else
+                    {   // Next main loop we want to do a manual stop
+                        // I guess the fact that we disabled the program and set the
+                        // manual controll received flag means stop the program (!)
+                        currentLMProgramBase->setManualControlReceivedFlag(TRUE);
+                    }
 
-     		    {   // let them know
+                    {   // let them know
                         char tempchar[80];
                         RWCString text = RWCString("Stopping Control Program: ");
                         text += currentLMProgramBase->getPAOName();
-			if(emergency)
-			    text += " (emergency)";			
+                        if(emergency)
+                            text += " (emergency)";                     
                         RWCString additional = RWCString("Reason: Program Disabled");
                         additional += " PAO Id: ";
                         _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
@@ -492,16 +492,17 @@ void CtiLMCommandExecutor::SendAllControlAreas()
     CtiLMExecutorFactory f;
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds()),CtiLMControlAreaMsg::AllControlAreasSent));
-    try
+
+    CtiLMControlAreaMsg* msg = new CtiLMControlAreaMsg(*store->getControlAreas(RWDBDateTime().seconds()),CtiLMControlAreaMsg::AllControlAreasSent);
+
+    CtiLMConnectionPtr connection = _command->getConnection();
+    if(connection)
     {
-        executor->Execute();
-        delete executor;
+        connection->write(msg);
     }
-    catch(...)
+    else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CtiLoadManager::getInstance()->sendMessageToClients(msg);
     }
 }
 
@@ -650,9 +651,10 @@ void CtiLMCommandExecutor::ShedGroup()
 
                         if( requestMsg != NULL )
                         {
+                            RWDBDateTime now;
                             currentLMGroup->setLastControlString(requestMsg->CommandString());
                             CtiLoadManager::getInstance()->sendMessageToPIL(requestMsg);
-                            currentLMGroup->setLastControlSent(RWDBDateTime());
+                            currentLMGroup->setLastControlSent(now);
                             currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
                             ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
                         }
@@ -1096,7 +1098,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers[j];
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
                 {
-		    currentLMControlAreaTrigger->setPeakPointValue(0.0);
+                    currentLMControlAreaTrigger->setPeakPointValue(0.0);
                     CtiLMControlAreaStore::getInstance()->UpdateTriggerInDB(currentLMControlArea, currentLMControlAreaTrigger);
                     currentLMControlArea->setUpdatedFlag(TRUE);
                     {
@@ -1113,7 +1115,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
                     break;
                 }
             }
-            currentLMControlArea->setUpdatedFlag(TRUE);	    
+            currentLMControlArea->setUpdatedFlag(TRUE);     
             break;
         }
     }
@@ -1121,7 +1123,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " - " << "Received user peak point value reset for control area id: " << commandPAOID << " trigger: " << triggerNumber << endl;
-	dout << RWTime() << " but couldn't locate the correct trigger." << endl;
+        dout << RWTime() << " but couldn't locate the correct trigger." << endl;
     }
 }
 
@@ -1187,20 +1189,20 @@ void CtiLMManualControlRequestExecutor::Execute()
     {
 
     case CtiLMManualControlRequest::SCHEDULED_START:
-	if(startTime <= _controlMsg->getStartTime())
-	{
-	    startTime = _controlMsg->getStartTime();
-	}
+        if(startTime <= _controlMsg->getStartTime())
+        {
+            startTime = _controlMsg->getStartTime();
+        }
         
     case CtiLMManualControlRequest::START_NOW:
-//	startTime = RWDBDateTime();
+//      startTime = RWDBDateTime();
         stopTime = _controlMsg->getStopTime();
 
-	if( _controlMsg->getCoerceStartStopTime() )
-	{
-	    CoerceStartStopTime(program, startTime, stopTime);
-	}
-	
+        if( _controlMsg->getCoerceStartStopTime() )
+        {
+            CoerceStartStopTime(program, startTime, stopTime);
+        }
+        
         if( !_controlMsg->getOverrideConstraints() &&
             (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
         {
@@ -1221,13 +1223,13 @@ void CtiLMManualControlRequestExecutor::Execute()
     case CtiLMManualControlRequest::STOP_NOW:
         stopTime = _controlMsg->getStopTime();
 
-	if( _controlMsg->getCoerceStartStopTime() &&
+        if( _controlMsg->getCoerceStartStopTime() &&
             (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
-	{
-	    startTime = ((const CtiLMProgramDirect*) program)->getDirectStartTime();
-	    CoerceStartStopTime(program, startTime, stopTime);
-	}
-	
+        {
+            startTime = ((const CtiLMProgramDirect*) program)->getDirectStartTime();
+            CoerceStartStopTime(program, startTime, stopTime);
+        }
+        
         passed_check = true; //check constraints on stop?
         StopProgram(program, controlArea, stopTime);
         break;
@@ -1244,6 +1246,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     if(_request != NULL)
     {
         CtiServerResponseMsg* resp = new CtiServerResponseMsg();
+	resp->setMessagePriority(1);	
         CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
         lmResp->setPAOId(_controlMsg->getPAOId());
         lmResp->setConstraintViolations(result_vec);
@@ -1262,12 +1265,20 @@ void CtiLMManualControlRequestExecutor::Execute()
         }
 
         //Send the response to all the clients
-        CtiLoadManager::getInstance()->sendMessageToClients(resp);
+        CtiLMConnectionPtr connection = _controlMsg->getConnection();
+        if(connection)
+        {
+            connection->write(resp);
+        }
+        else
+        {
+            CtiLoadManager::getInstance()->sendMessageToClients(resp);
+        }
     }
 }
 
 void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBase* program, CtiLMControlArea* controlArea,
-						     const RWDBDateTime& start, const RWDBDateTime& stop)
+                                                     const RWDBDateTime& start, const RWDBDateTime& stop)
 {
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
@@ -1409,20 +1420,20 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBase* program, C
 }
 
 void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* lmProgramDirect, CtiLMControlArea* controlArea,
-							   const RWDBDateTime& start, const RWDBDateTime& stop)
+                                                           const RWDBDateTime& start, const RWDBDateTime& stop)
 {
     RWDBDateTime startTime = start;
 
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
     lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
 
-    lmProgramDirect->incrementDailyOps(); 
+//    lmProgramDirect->incrementDailyOps(); 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
     
     RWDBDateTime notifyTime(startTime);
-    notifyTime.addSeconds(-1*lmProgramDirect->getNotifyOffset());
-    lmProgramDirect->setNotifyTime(RWDBDateTime(notifyTime));
+    notifyTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
+    lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyTime));
 
 
 {//kill this
@@ -1465,7 +1476,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setDirectStartTime(gInvalidRWDBDateTime);
         lmProgramDirect->setDirectStopTime(gInvalidRWDBDateTime);
-        lmProgramDirect->setNotifyTime(gInvalidRWDBDateTime);
+        lmProgramDirect->setNotifyActiveTime(gInvalidRWDBDateTime);
         lmProgramDirect->setProgramState(CtiLMProgramBase::InactiveState);
         controlArea->setUpdatedFlag(TRUE);
     }
@@ -1480,7 +1491,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
 }
 
 void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea,
-								const RWDBDateTime& start, const RWDBDateTime& stop)
+                                                                const RWDBDateTime& start, const RWDBDateTime& stop)
 {
     RWDBDateTime startTime = start;
     RWDBDateTime notificationTime;
@@ -1511,7 +1522,7 @@ void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurt
 }
 
 void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurtailment* lmProgramCurtailment, CtiLMControlArea* controlArea,
-							       const RWDBDateTime& stop)
+                                                               const RWDBDateTime& stop)
 {
     RWDBDateTime stopTime;
     if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
@@ -1550,38 +1561,38 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBase* pr
     RWOrdered& control_windows = program->getLMProgramControlWindows();
     if(control_windows.entries() == 0)
     {   // no control windows, nothing to do
-	return;
+        return;
     }
 
     bool found_cw = false;
     for(int i = 0; i < control_windows.entries() && !found_cw; i++)
     {
         // Do the start, stop times fit into this control window?  if not maybe the next one 
-	CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
-	if(startSecondsFromBeginningOfDay <= cw->getAvailableStopTime())
-	{
-	    //Lets pick this control window, figure out the start and stop
-	    if(startSecondsFromBeginningOfDay <= cw->getAvailableStartTime())
-	    {   // start is before beginning of control window, set the start time to the
-		// beginning of this control window
-		start.addSeconds(cw->getAvailableStartTime() - startSecondsFromBeginningOfDay);
-		found_cw = true;
-	    }
-	    else
-	    {  
-		// start is inside this control window, no need to change it
-		found_cw = true;		
-	    }
+        CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
+        if(startSecondsFromBeginningOfDay <= cw->getAvailableStopTime())
+        {
+            //Lets pick this control window, figure out the start and stop
+            if(startSecondsFromBeginningOfDay <= cw->getAvailableStartTime())
+            {   // start is before beginning of control window, set the start time to the
+                // beginning of this control window
+                start.addSeconds(cw->getAvailableStartTime() - startSecondsFromBeginningOfDay);
+                found_cw = true;
+            }
+            else
+            {  
+                // start is inside this control window, no need to change it
+                found_cw = true;                
+            }
 
-	    if(stopSecondsFromBeginningOfDay >= cw->getAvailableStopTime())
-	    {  // stop time is outside this control window, shorten it up
-		stop.addSeconds(-1*(stopSecondsFromBeginningOfDay - cw->getAvailableStopTime()));
-	    }
-	    else
-	    {
-		// stop is inside this controlw window, no need to change it
-	    }
-	}
+            if(stopSecondsFromBeginningOfDay >= cw->getAvailableStopTime())
+            {  // stop time is outside this control window, shorten it up
+                stop.addSeconds(-1*(stopSecondsFromBeginningOfDay - cw->getAvailableStopTime()));
+            }
+            else
+            {
+                // stop is inside this controlw window, no need to change it
+            }
+        }
     }
 
         {
