@@ -10,7 +10,7 @@ String token = request.getParameter("token");
  <form id="welcome">
 
   <var name='ACTION' expr="'VOICELOGIN'"/>
-  <var name='USERNAME' expr="<%=contactid%>"/>
+  <var name='USERNAME' expr="'<%=contactid%>'"/>
   <var name='TOKEN' expr="'<%=token%>'"/>
   <var name='REDIRECT' expr="'messages.jsp'"/>
 
