@@ -22,6 +22,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
@@ -297,10 +298,11 @@ private void doVoiceLogin( HttpServletRequest req, HttpServletResponse resp, Str
 	LiteContact lContact = ContactFuncs.getContact( contactid ); //store this for logging purposes only
 	LiteYukonUser user = AuthFuncs.voiceLogin( contactid, password );
 
-	String voice_home_url = null;
+	String voice_home_url = "/voice/messages.jsp"; //null;
 		
 	if( user != null 
-		/*&&  (voice_home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ ) {
+		/*&& (voice_home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ )
+	{
 		HttpSession session = req.getSession();
 			
 		try {
