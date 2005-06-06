@@ -3,9 +3,9 @@
 
 
 <%
-String contactid = request.getParameter("contactid");
+String contactid = request.getParameter("CONTACTID");
 
-String token = request.getParameter("token");
+String token = request.getParameter("TOKEN");
 %>
  <form id="welcome">
 
