@@ -229,7 +229,7 @@ public final class ContactFuncs
 	 * PIN entries are found, we return a zero length String array.
 	 * 
 	 */
-	public static String[] getAllPINs( int contactID_ )
+	public static LiteContactNotification[] getAllPINNotifDestinations( int contactID_ )
 	{
 		LiteContact contact = getContact( contactID_ );
 		ArrayList strList = new ArrayList(16);
@@ -241,11 +241,11 @@ public final class ContactFuncs
 					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
 					
 			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN )
-				strList.add( ltCntNotif.getNotification() );
+				strList.add( ltCntNotif );
 		}
 
-		String[] pins = new String[ strList.size() ];
-		return (String[])strList.toArray( pins );
+		LiteContactNotification[] pins = new LiteContactNotification[ strList.size() ];
+		return (LiteContactNotification[])strList.toArray( pins );
 	}
 
     /**

@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -383,15 +384,27 @@ public class AuthFuncs {
 			CTILogger.info("Attempting a VOICE login with the following Contact info: " + lContact.toString());
 			
 			LiteYukonUser lYukUser = YukonUserFuncs.getLiteYukonUser( lContact.getLoginID() );
-			
 			if( lYukUser != null ) {
-				String[] pins = ContactFuncs.getAllPINs( lContact.getContactID() );
-				for( int i = 0; i < pins.length; i++ ) {
-					if( pins[i].equals(pin) )
-						return lYukUser; //success
+				if( lYukUser.getUserID() == UserUtils.USER_DEFAULT_ID )
+					CTILogger.info("  Failed VOICE login because the YukonUser found was the (none) userid, Contact: " + lContact.toString());
+				else if( UserUtils.isUserDisabled(lYukUser) )
+					CTILogger.info("  Failed VOICE login because the YukonUser found is DISABLED, Contact: " + lContact.toString());			
+				else {
+					LiteContactNotification[] pins = ContactFuncs.getAllPINNotifDestinations( lContact.getContactID() );
+					for( int i = 0; i < pins.length; i++ ) {
+						LiteContactNotification pinNotif = pins[i];
+						if( pinNotif.getNotification().equals(pin) ) {
+							if( pinNotif.isDisabled() ) {
+								CTILogger.info("  Failed VOICE login because the matching PIN found is DISABLED, Contact: " + lContact.toString());
+								break;
+							}
+							else
+								return lYukUser; //success
+						}
+					}
+	
+					CTILogger.info("  Failed VOICE login because an invalid PIN was entered, Contact: " + lContact.toString());
 				}
-
-				CTILogger.info("  Failed VOICE login because an inavlid PIN was entered, Contact: " + lContact.toString());
 			}
 			else
 				CTILogger.info("  Failed VOICE login because no YukonUser was found for the Contact: " + lContact.toString());
