@@ -1,5 +1,8 @@
 package com.cannontech.user;
 
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 /**
  * @author rneuharth
  *
@@ -46,6 +49,17 @@ public final class UserUtils
 		}
 		
 		return false;
+	}
+
+	/**
+	 * Checks to see if the given YukonUser is disabled
+	 */
+	public static synchronized boolean isUserDisabled( LiteYukonUser liteYukonUser )
+	{
+		if( liteYukonUser == null )
+			return true;
+		else
+			return STATUS_DISABLED.equalsIgnoreCase(liteYukonUser.getStatus());
 	}
 
 }
