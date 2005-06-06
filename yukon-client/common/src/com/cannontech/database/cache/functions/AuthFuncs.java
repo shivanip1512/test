@@ -372,7 +372,8 @@ public class AuthFuncs {
 	 * Attempts to log a voice user into the system using the
 	 * given ContactID and pin. If the PIN is matched to any PIN 
 	 * the contact hast, then we are logged in. Returns null if
-	 * we are not logged in. This method is CASE SENSITIVE
+	 * we are not logged in. This method is CASE SENSITIVE for the
+	 * PIN (however, most of the time the PIN will be numeric only!)
 	 * 
 	 */
 	public static LiteYukonUser voiceLogin(int contactid, String pin) {
@@ -402,15 +403,15 @@ public class AuthFuncs {
 								return lYukUser; //success
 						}
 					}
-	
-					CTILogger.info("  Failed VOICE login because an invalid PIN was entered, Contact: " + lContact.toString());
+
+					CTILogger.info("  Failed VOICE login because an invalid PIN was entered or no PIN was found, Contact: " + lContact.toString());
 				}
 			}
 			else
 				CTILogger.info("  Failed VOICE login because no YukonUser was found for the Contact: " + lContact.toString());
 		}
 		else
-			CTILogger.info("Failed VOICE login since no Contact exists with a Contactid = " + contactid);
+			CTILogger.info("  Failed VOICE login since no Contact exists with a Contactid = " + contactid);
 
 
 		return null;  //failure
