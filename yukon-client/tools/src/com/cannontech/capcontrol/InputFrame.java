@@ -84,6 +84,8 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private static DecimalFormat DBL_FORM = new DecimalFormat("#.00");
 	private BufferedReader input;
 	private boolean command = false;
+	private com.cannontech.database.cache.DefaultDatabaseCache cache;
+	private java.util.List list;
 
 	public InputFrame()
 	{
@@ -101,36 +103,47 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	
 	public InputFrame(String[] paramvars)
 	{
-		
-		
 		clInit(paramvars);
-		
 	}
 	
 	private void clInit(String [] paramvars)
 	{
-		command = true;
-		CommandLineParser clp = new CommandLineParser(paramvars);
-
-		String[] params = clp.parseArgs(paramvars);
-
-		for(int i = 0; i < params.length; i++)
+		try
 		{
-			System.out.println(params[i]);
-		}
-
-		int to = new Integer(params[0]).intValue();
-		int from = new Integer(params[1]).intValue();
-		String route = params[2];
-		String conType = params[3];
-		String banksize = params[4];
-		String manufacturer = params[5];
-		String switchType = params[6];
-		InputValidater validater = new InputValidater(this, command, to, from, route, conType, banksize, manufacturer, switchType);
-		boolean validated = commandLineValidate(validater);
-		if( validated )
+			command = true;
+			CommandLineParser clp = new CommandLineParser(paramvars);
+	
+			String[] params = clp.parseArgs(paramvars);
+	
+			int from = new Integer(params[0]).intValue();
+			int to = new Integer(params[1]).intValue();
+			String route = params[2];
+			String conType = params[3];
+			String banksize = params[4];
+			String manufacturer = params[5];
+			String switchType = params[6];
+			if( params.length > 7 )
+			{
+				throw new Exception("to many parameters");
+			}
+			InputValidater validater = new InputValidater(this, command, from, to, route, conType, banksize, manufacturer, switchType);
+			boolean validated = commandLineValidate(validater);
+			if( validated )
+			{
+				writeToDB(validater);
+			}
+		}catch(Exception e)
 		{
-			writeToDB(validater);
+			CTILogger.error(e.getMessage());
+			if(e.toString().startsWith("java.lang.ArrayIndexOutOfBoundsException"))
+			{
+				CTILogger.error("not enough parameters");
+				CTILogger.error("Correct Syntax: from=000000001 to=000000050 route=\"route1\" contype=\"CBC FP-2800\" banksize=1200 manufacturer=\"Westinghouse\" switchtype=\"oil\"");
+			}else
+			{
+				CTILogger.error("Correct Syntax: from=000000001 to=000000050 route=\"route1\" contype=\"CBC FP-2800\" banksize=1200 manufacturer=\"Westinghouse\" switchtype=\"oil\"");
+			}
+			e.printStackTrace();
 		}
 	}
 	
@@ -191,6 +204,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					return false;
 				}
 			}
+			CTILogger.info("validation successful");
 		} catch (Exception e)
 		{
 			CTILogger.info("error while validating");
@@ -267,11 +281,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		bankSizeCB.addItem(new Integer(1200));
 
 		routeCB.removeAllItems();
-		com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		synchronized(cache)
 		{         
 
-			java.util.List list = cache.getAllRoutes();
+			list = cache.getAllRoutes();
 
 			for( int i = 0; i < list.size(); i++ )
 				routeCB.addItem( list.get(i) );
@@ -457,7 +471,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	{
 		try
 		{
-			timer.start();
+			if(!command)
+			{
+				timer.start();
+			}
+			
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
 			
 			int index = 0;
@@ -519,9 +537,32 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					ICapBankController cntrler = (ICapBankController)newCBC;
 					cntrler.assignAddress( new Integer(SERIAL_FORM.format(i)) );
-					Integer comID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
 					
-					routeCB.getSelectedItem()).getYukonID());
+					Integer comID = null;
+					if(command)
+					{
+						
+						cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+						synchronized(cache)
+						{         
+				
+							list = cache.getAllRoutes();
+				
+							for( int j = 0; j < list.size(); j++ ){
+								com.cannontech.database.data.lite.LiteYukonPAObject pao = (com.cannontech.database.data.lite.LiteYukonPAObject)list.get(j);
+								if (pao.getPaoName().equalsIgnoreCase(val.getRoute()))
+								{
+									comID = new Integer(pao.getYukonID());
+								}
+							}
+						}
+						
+					}else
+					{
+						comID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
+											routeCB.getSelectedItem()).getYukonID());
+					}
+					
 					cntrler.setCommID( comID );
 				}
 				else
@@ -587,11 +628,16 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				}
 				
 			}
+			CTILogger.info("db write successful");
 			return true;
 		}catch (Exception e)
 		{
-			JOptionPane.showMessageDialog(this.getParent(),e.getMessage() ,"Database Write Failed" , JOptionPane.WARNING_MESSAGE);
-			CTILogger.info("error writing to database");
+			if(!command)
+			{
+				JOptionPane.showMessageDialog(this.getParent(),e.getMessage() ,"Database Write Failed" , JOptionPane.WARNING_MESSAGE);
+			}
+			
+			CTILogger.info("error writing to database: "+ e.getMessage());
 			e.printStackTrace(System.out);
 			return false;
 		}

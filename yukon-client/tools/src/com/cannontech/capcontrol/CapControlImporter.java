@@ -52,6 +52,7 @@ public class CapControlImporter
 	
 	public static void main(String[] args)
 	{
+		
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -60,13 +61,13 @@ public class CapControlImporter
 			e.printStackTrace();
 		}
 		
-//		if (null == args)
-//		{
+		if (args.length == 0)
+		{
 			new CapControlImporter();
-//		}else
-//		{
-//			new InputFrame(args);
-//		}
+		}else
+		{
+			new InputFrame(args);
+		}
 		
 	}
 }
