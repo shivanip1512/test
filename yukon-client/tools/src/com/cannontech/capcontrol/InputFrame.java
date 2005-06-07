@@ -108,6 +108,14 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	
 	private void clInit(String [] paramvars)
 	{
+		timer = new Timer(ONE_SECOND, new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				System.out.print(".");
+			}
+		});
+		
 		try
 		{
 			command = true;
@@ -137,6 +145,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			{
 				CTILogger.error("validation failed");
 			}
+			
+			
+			
 		}catch(Exception e)
 		{
 			CTILogger.error(e.getMessage());
@@ -259,7 +270,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
-		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+		//conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
 
 		switchManCB.addItem(com.cannontech.common.util.CtiUtilities.STRING_NONE);
 		switchManCB.addItem(CapBank.SWITCHMAN_WESTING);
@@ -476,11 +487,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	{
 		try
 		{
-			if(!command)
-			{
-				timer.start();
-			}
 			
+			timer.start();
+						
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
 			
 			int index = 0;
@@ -633,6 +642,12 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				}
 				
 			}
+			
+			if(command)
+			{
+				timer.stop();
+			}
+			System.out.println();
 			CTILogger.info("db write successful");
 			return true;
 		}catch (Exception e)
@@ -641,7 +656,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			{
 				JOptionPane.showMessageDialog(this.getParent(),e.getMessage() ,"Database Write Failed" , JOptionPane.WARNING_MESSAGE);
 			}
-			
+			System.out.println();
 			CTILogger.info("error writing to database: "+ e.getMessage());
 			e.printStackTrace(System.out);
 			return false;
@@ -700,15 +715,16 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
 			JOptionPane.showMessageDialog(this, "Database write was successful.", "All Finished", JOptionPane.INFORMATION_MESSAGE);
+			timer.stop();
 			CTILogger.info("dbwrite success");
 			progress = 100;
 			bar.setValue(100);
-			timer.stop();
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_FAILURE)
 		{
-			CTILogger.info("dbwrite failure");
 			timer.stop();
+			CTILogger.info("dbwrite failure");
+			
 		}
 	}
 }

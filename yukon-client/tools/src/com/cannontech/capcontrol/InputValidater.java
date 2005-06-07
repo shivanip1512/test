@@ -91,10 +91,10 @@ public class InputValidater
 		{
 			if(command)
 			{
-				CTILogger.error("Some of the numbers in the specified serial range are used.");
+				CTILogger.error(devices.size()+" numbers in the specified serial range are used.");
 			}else
 			{
-				JOptionPane.showMessageDialog(this.getParent(), "Some of the numbers in the specified serial range are used.", "Serial Range Validation Failed", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this.getParent(), devices.size()+" numbers in the specified serial range are used.", "Serial Range Validation Failed", JOptionPane.WARNING_MESSAGE);
 			}			
 			return false;
 		}
