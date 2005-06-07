@@ -7,6 +7,8 @@ package com.cannontech.dbeditor.wizard.contact;
  */
 import java.util.Vector;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
 
@@ -128,7 +130,7 @@ public Object getValueAt(int row, int col)
 
 		 	case COLUMN_TYPE:
 				return YukonListFuncs.getYukonListEntry(
-						cntNotif.getNotificationCatID().intValue()).getEntryText();
+						cntNotif.getNotificationCatID().intValue());
 
 		 	case COLUMN_DISABLED:
 				return cntNotif.getDisableFlag();
@@ -149,7 +151,7 @@ public Object getValueAt(int row, int col)
  */
 public boolean isCellEditable(int row, int column) 
 {
-	return false;
+	return true;
 }
 /**
  * Insert the method's description here.
@@ -197,4 +199,34 @@ public void setRowValue(int rowNumber, ContactNotification cntNotif)
 		fireTableDataChanged();
 	}
 }
+
+public void setValueAt(Object value, int row, int col) 
+{
+	if( row <= getRows().size() && col < getColumnCount() )
+	{
+		ContactNotification cntNotif = getContactNotificationRow(row);
+				
+		switch( col )
+		{
+			case COLUMN_NOTIFICATION:
+				cntNotif.setNotification( value.toString() );
+				break;
+				
+			case COLUMN_TYPE:
+				cntNotif.setNotificationCatID(
+					new Integer(((YukonListEntry)value).getEntryID()) );
+//					YukonListFuncs.getYukonListEntry(
+//						cntNotif.getNotificationCatID().intValue()).getEntryText();
+				break;
+					
+			case COLUMN_DISABLED:
+				cntNotif.setDisableFlag( value.toString() );
+				break;
+				
+			default:
+				CTILogger.info(this.getClass() + " tried to set value for an invalid column, column number " + col );
+		}
+	}
+}
+
 }

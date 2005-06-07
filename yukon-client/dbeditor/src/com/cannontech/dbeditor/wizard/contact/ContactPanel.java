@@ -6,8 +6,15 @@ package com.cannontech.dbeditor.wizard.contact;
  */
 import java.util.Vector;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.table.TableColumn;
+
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -690,6 +697,69 @@ private javax.swing.JTable getJTableEmail() {
 			
 			ivjJTableEmail.setModel( getTableModel() );
 			
+			//Do any column specific initialization here, with the exception of the gear column.
+			TableColumn notifColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_NOTIFICATION);
+			TableColumn typeColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_TYPE);
+			TableColumn disabledColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_DISABLED);
+				
+			notifColumn.setPreferredWidth(120);
+			typeColumn.setPreferredWidth(60);
+			disabledColumn.setPreferredWidth(50);disabledColumn.setMaxWidth(50);
+
+			//set up the renderer and editor for the notifcation column
+			JTextField txtFieldEditor = new JTextField();
+			txtFieldEditor.addKeyListener(new java.awt.event.KeyAdapter() {
+				public void keyTyped(java.awt.event.KeyEvent e) {
+					fireInputUpdate();
+				};
+			});
+			txtFieldEditor.setHorizontalAlignment( JTextField.LEFT );
+			DefaultCellEditor notifEd = new DefaultCellEditor(txtFieldEditor);
+			notifEd.setClickCountToStart(1);
+			
+			JComboBox typeCombo = new JComboBox();
+			ComboBoxTableRenderer typeRenderer = new ComboBoxTableRenderer();
+			for( int i = 0; i < getJComboBoxNotifyType().getItemCount(); i++ )
+			{
+				typeCombo.addItem( getJComboBoxNotifyType().getItemAt(i) );
+				typeRenderer.addItem( getJComboBoxNotifyType().getItemAt(i) );
+			}
+
+			//set up the renderer and editor for the Disabled column
+			JComboBox disabledCombo = new JComboBox();
+			ComboBoxTableRenderer disabledRenderer = new ComboBoxTableRenderer();			
+			if( disabledCombo.getRenderer() instanceof JLabel )
+				((JLabel)disabledCombo.getRenderer()).setHorizontalAlignment( JTextField.CENTER );
+			if( disabledRenderer.getRenderer() instanceof JLabel )
+				((JLabel)disabledRenderer.getRenderer()).setHorizontalAlignment( JTextField.CENTER );
+			
+			disabledCombo.addItem( CtiUtilities.trueChar.toString() );
+			disabledCombo.addItem( CtiUtilities.falseChar.toString() );
+			disabledRenderer.addItem( CtiUtilities.trueChar.toString() );
+			disabledRenderer.addItem( CtiUtilities.falseChar.toString() );
+
+			//add listeners to each combobox so we know when the values change
+			typeCombo.addActionListener( new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					fireInputUpdate();
+				}
+			});
+
+			disabledCombo.addActionListener( new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					fireInputUpdate();
+				}
+			});
+
+
+			//Set all renderer and editor components for each column
+			notifColumn.setCellEditor( notifEd );
+
+			typeColumn.setCellRenderer( typeRenderer );
+			typeColumn.setCellEditor( new DefaultCellEditor(typeCombo) );
+
+			disabledColumn.setCellRenderer( disabledRenderer  );			
+			disabledColumn.setCellEditor( new DefaultCellEditor(disabledCombo) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -802,7 +872,10 @@ public Object getValue(Object val)
 		cnt = new Contact();
 	else
 		cnt = (Contact)val;
-		
+
+	//make sure cells get saved even though they might be currently being edited
+	if( getJTableEmail().isEditing() ) getJTableEmail().getCellEditor().stopCellEditing();
+
 	//HAVE THE ADD() METHOD GET THE NEW CONTACT_ID!!!!		
 	//cn.getContact().setContactID( recID );
 	cnt.getContact().setContFirstName( getJTextFieldFirstName().getText() );
@@ -984,6 +1057,16 @@ public boolean isInputValid()
 		setErrorString("The Last Name text field must be filled in");
 		return false;
 	}
+	
+	//make sure cells get saved even though they might be currently being edited
+	if( getJTableEmail().isEditing() ) getJTableEmail().getCellEditor().stopCellEditing();
+
+	String retVal = null;
+	if( (retVal = isAllEntryFieldsValid()) != null )
+	{
+		setErrorString("The row inside the table with the value of '" + retVal + "'is invalid");
+		return false;
+	}
 
 	return true;
 }
@@ -1092,6 +1175,34 @@ private void checkEntry()
 } 
 
 /**
+ * Returns null if the EntryFields are good, else the first Notifcation string
+ * that violates validity is returned.
+ * 
+ */
+private String isAllEntryFieldsValid()
+{
+	for( int i = 0; i < getTableModel().getRowCount(); i++ )
+	{
+		ContactNotification notif =
+			getTableModel().getContactNotificationRow(i);
+		
+		YukonListEntry listEntry = (YukonListEntry)
+			getTableModel().getValueAt( i, ContactNotificationTableModel.COLUMN_TYPE );
+
+		//is there a good input into the text field?
+		if( !YukonListFuncs.isListEntryValid(
+						listEntry.getYukonDefID(),
+						notif.getNotification()) )
+		{
+			return notif.getNotification();  //failure
+		}
+	}
+	
+	return null;  //success
+} 
+
+
+/**
  * Comment
  */
 public void jTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) 
@@ -1174,6 +1285,7 @@ public void setValue(Object val)
 
 		getTableModel().addRowValue( cntNotif );
 	}
+	getTableModel().fireTableDataChanged();
 
 }
 

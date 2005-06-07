@@ -1,6 +1,8 @@
 package com.cannontech.database.db.contact;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
@@ -122,9 +124,10 @@ public class ContactNotification extends NestedDBPersistent
 	 * @return com.cannontech.database.db.point.State[]
 	 * @param stateGroup java.lang.Integer
 	 */
-	public static final ContactNotification[] getAllContactNotifications( java.sql.Connection conn ) throws java.sql.SQLException 
+	public static final ContactNotification[] getAllContactNotifications() throws java.sql.SQLException 
 	{
 		java.util.ArrayList tmpList = new java.util.ArrayList(50);
+		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 		
@@ -135,32 +138,25 @@ public class ContactNotification extends NestedDBPersistent
 	
 		try
 		{		
-			if( conn == null )
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() )
 			{
-				throw new IllegalStateException("Error getting database connection.");
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				
-				rset = pstmt.executeQuery();							
-		
-				while( rset.next() )
-				{
-					tmpList.add( new ContactNotification( 
-								new Integer(rset.getInt(1)),
-								new Integer(rset.getInt(2)),
-								new Integer(rset.getInt(3)),
-								rset.getString(4),
-								rset.getString(5),
-								new Integer(rset.getInt(6)) ) );
-				}
-						
-			}		
+				tmpList.add( new ContactNotification( 
+							new Integer(rset.getInt(1)),
+							new Integer(rset.getInt(2)),
+							new Integer(rset.getInt(3)),
+							rset.getString(4),
+							rset.getString(5),
+							new Integer(rset.getInt(6)) ) );
+			}						
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -171,7 +167,7 @@ public class ContactNotification extends NestedDBPersistent
 			} 
 			catch( java.sql.SQLException e2 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+				CTILogger.error( e2.getMessage(), e2 );//something is up
 			}	
 		}
 	
@@ -227,7 +223,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -237,7 +233,7 @@ public class ContactNotification extends NestedDBPersistent
 			} 
 			catch( java.sql.SQLException e2 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+				CTILogger.error( e2.getMessage(), e2 );//something is up
 			}	
 		}
 	
@@ -287,7 +283,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -297,7 +293,7 @@ public class ContactNotification extends NestedDBPersistent
 			} 
 			catch( java.sql.SQLException e2 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+				CTILogger.error( e2.getMessage(), e2 );//something is up
 			}	
 		}
 	
@@ -342,7 +338,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{

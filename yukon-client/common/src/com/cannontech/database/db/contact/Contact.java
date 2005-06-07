@@ -30,9 +30,9 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 
 	public static final String TABLE_NAME = "Contact";
 
-	private static final String GET_CUSTOMER_CONTACT_SQL =
-		"SELECT ContactID,ContFirstName,ContLastName,LoginID,AddressID " + 
-		"FROM " + TABLE_NAME + " WHERE LoginID=?";
+//	private static final String GET_CUSTOMER_CONTACT_SQL =
+//		"SELECT ContactID,ContFirstName,ContLastName,LoginID,AddressID " + 
+//		"FROM " + TABLE_NAME + " WHERE LoginID=?";
 	
 
 	/**
@@ -83,9 +83,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 				throw new IllegalStateException("Database connection should not be null.");
 	
 			// get all the soon to be deleted contacts
-			Contact[] contacts = getAllCustomerContacts(customerID, conn );
-	
-				
+			//Contact[] contacts = getAllCustomerContacts(customerID, conn );
 			//delete the references between the contacts and customer
 			java.sql.Statement stat = conn.createStatement();	
 			stat.execute(
@@ -115,7 +113,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 				}
 	
 				//delete the contacts
-	com.cannontech.clientutils.CTILogger.info( "		CNTACTDELETESTRING = " + contactString.toString() );
+	CTILogger.info( "		CNTACTDELETESTRING = " + contactString.toString() );
 				stmt = conn.createStatement();
 				stmt.execute( contactString.toString() );
 				
@@ -126,7 +124,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		}
 		catch(Exception e)
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 			return false;
 		}
 	
@@ -183,7 +181,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			CTILogger.error( e.getMessage(), e );
 		}
 		finally
 		{
@@ -194,7 +192,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 			} 
 			catch( java.sql.SQLException e2 )
 			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+				CTILogger.error( e2.getMessage(), e2 );//something is up
 			}	
 		}
 	
@@ -319,12 +317,14 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	
 		NativeIntVector intVect = new NativeIntVector(32);
 
+		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
 		
 		try 
-		{		
-			stmt = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() ).createStatement();
+		{
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+			stmt = conn.createStatement();
 			rset = stmt.executeQuery( sql );	
 				
 			while( rset.next() )
@@ -338,8 +338,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		{
 			try 
 			{
-				if( rset != null ) rset.close();
 				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
 			}
 			catch (java.sql.SQLException e2) 
 			{
