@@ -270,7 +270,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
-		//conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
 
 		switchManCB.addItem(com.cannontech.common.util.CtiUtilities.STRING_NONE);
 		switchManCB.addItem(CapBank.SWITCHMAN_WESTING);
