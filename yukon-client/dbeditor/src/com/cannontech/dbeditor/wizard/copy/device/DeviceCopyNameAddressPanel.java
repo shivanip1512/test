@@ -576,7 +576,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			if (val instanceof IDLCBase)
 				((IDLCBase) val).getDeviceIDLCRemote().setAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof DNPBase)
-				((DNPBase) val).getDeviceAddress().setMasterAddress(new Integer(getAddressTextField().getText()));
+				((DNPBase) val).getDeviceAddress().setSlaveAddress(new Integer(getAddressTextField().getText()));
 			else if (val instanceof CarrierBase)
 			{
 				 Integer addressHolder = new Integer(getAddressTextField().getText());
@@ -596,8 +596,6 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			}
 			else if (val instanceof ICapBankController )
 				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
-			else if (val instanceof Ion7700)
-				 ((Ion7700) val).getDeviceAddress().setSlaveAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Series5Base)
 				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );			
 			else if (val instanceof RTCBase)
@@ -906,7 +904,6 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 	      setDeviceType( com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() ) );
 	   }
 
-	
 		//handle all device Address fields
 		boolean showAddress = 
 				(val instanceof IEDBase)
@@ -953,17 +950,17 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
       Integer addressHolder;
       
       if( val instanceof CarrierBase )
-         {
-          	addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
-            if(val instanceof Repeater900 )
-         		addressHolder = new Integer(addressHolder.intValue() - 4190000);
-          	getAddressTextField().setText( addressHolder.toString() );
-         }
+      {
+      	 addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
+         if(val instanceof Repeater900 )
+         	addressHolder = new Integer(addressHolder.intValue() - 4190000);
+         getAddressTextField().setText( addressHolder.toString() );
+      }
       if( val instanceof IDLCBase )
          getAddressTextField().setText( ((IDLCBase)val).getDeviceIDLCRemote().getAddress().toString() );
    
    	  if( val instanceof DNPBase )
-   	  	 getAddressTextField().setText( ((DNPBase)val).getDeviceAddress().getMasterAddress().toString() );
+   	  	 getAddressTextField().setText( ((DNPBase)val).getDeviceAddress().getSlaveAddress().toString() );
    
       if( val instanceof MCTBase )
          getJTextFieldMeterNumber().setText( ((MCTBase)val).getDeviceMeterGroup().getMeterNumber().toString() );

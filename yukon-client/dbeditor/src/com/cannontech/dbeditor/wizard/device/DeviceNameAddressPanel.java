@@ -470,7 +470,7 @@ public Object getValue(Object val)
    }
    else if( val instanceof DNPBase )
    {
-      ((DNPBase)val).getDeviceAddress().setMasterAddress( address );
+      ((DNPBase)val).getDeviceAddress().setSlaveAddress( address );
    }
    else if( val instanceof RTCBase )
    {

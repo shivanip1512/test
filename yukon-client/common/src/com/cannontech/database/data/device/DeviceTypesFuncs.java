@@ -50,7 +50,6 @@ public final static boolean hasMasterAddress(int intType)
 
    switch( intType )
    {
-      case RTU_DNP:
       case RTU_DART:
          return true;
       default:
@@ -71,6 +70,7 @@ public final static boolean hasSlaveAddress(int intType)
       case ION_7700:
       case ION_7330:
       case ION_8300:
+      case RTU_DNP:
          return true;
       default:
          return false;
