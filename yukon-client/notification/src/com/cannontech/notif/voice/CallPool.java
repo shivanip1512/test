@@ -93,7 +93,7 @@ public class CallPool implements PropertyChangeListener {
                     }
                 };
                 _timerTasks.put(call, task);
-                _timer.schedule(task, _callTimeoutSeconds);
+                _timer.schedule(task, _callTimeoutSeconds * 1000);
             } else if (oldState instanceof Connecting) {
                 TimerTask task = (TimerTask) _timerTasks.get(call);
                 task.cancel();
@@ -108,12 +108,12 @@ public class CallPool implements PropertyChangeListener {
      * system when the call is dialed.
      * @param token The unique identifier of the call
      * @return The Call object matching the token
-     * @throws CallPoolException 
+     * @throws UnknownCallTokenException 
      */
-    public Call getCall(String token) throws CallPoolException {
+    public Call getCall(String token) throws UnknownCallTokenException {
         Object call = _pendingCalls.get(token);
         if (call == null) {
-            throw new CallPoolException("Unable to retreive call for token " + token);
+            throw new UnknownCallTokenException(token);
         } else {
             return (Call)call;
         }
@@ -128,7 +128,7 @@ public class CallPool implements PropertyChangeListener {
         // the JVM from exiting... so it is probably best just to do a 
         // threadPool.shutdownAfterProcessingCurrentlyQueuedTasks so that
         // we can monitor the process...
-        _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT,TimeUnit.SECONDS);
+        _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT, TimeUnit.SECONDS);
         if (!_threadPool.isTerminated()) {
             CTILogger.error("Unable to cleanly shutdown notification call pool. Forcing shutdown.");
             _threadPool.shutdownNow();
@@ -145,13 +145,9 @@ public class CallPool implements PropertyChangeListener {
         }
     }
     
-    public class CallPoolException extends Exception {
-        public CallPoolException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public CallPoolException(String message) {
-            super(message);
+    public class UnknownCallTokenException extends Exception {
+        public UnknownCallTokenException(String token) {
+            super("Unable to retreive call for token " + token);
         }
     }
 }
