@@ -1,7 +1,7 @@
 package com.cannontech.notif.handler;
 
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.message.NotifCompletedMsg;
+import com.cannontech.message.notif.NotifCompletedMsg;
 import com.cannontech.notif.outputs.VoiceHandler;
 
 public class CompletedMessageHandler extends MessageHandler {

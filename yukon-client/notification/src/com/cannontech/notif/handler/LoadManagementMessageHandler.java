@@ -8,7 +8,7 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.message.NotifLMControlMsg;
+import com.cannontech.message.notif.NotifLMControlMsg;
 import com.cannontech.notif.outputs.*;
 
 /**

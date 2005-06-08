@@ -1,4 +1,4 @@
-package com.cannontech.notif.message;
+package com.cannontech.message.notif;
 
 import java.io.IOException;
 import java.util.Date;

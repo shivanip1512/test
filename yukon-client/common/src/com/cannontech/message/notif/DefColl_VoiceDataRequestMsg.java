@@ -1,4 +1,4 @@
-package com.cannontech.notif.message;
+package com.cannontech.message.notif;
 
 import java.io.IOException;
 
@@ -7,12 +7,12 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
+public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
     //RogueWave classId
-    public static final int MSG_ID = 709;
+    public static final int MSG_ID = 708;
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new VoiceDataResponseMsg();
+        return new VoiceDataRequestMsg();
     }
 
     public Comparator getComparator() {
@@ -31,29 +31,26 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
         return MSG_ID;
     }
 
-    public String getCxxStringId() //TODO this is the same as base class, is it needed?
-    {
+    public String getCxxStringId() {
         return DefineCollectable.NO_STRINGID;
     }
 
     public Class getJavaClass() {
-        return DefColl_VoiceDataResponseMsg.class;
+        return DefColl_VoiceDataRequestMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
+        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
         msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
-        msg.xmlData = (String) vstr.restoreObject(SimpleMappings.CString);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
+        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
         vstr.saveObject(msg.token, SimpleMappings.CString);
-        vstr.saveObject(msg.xmlData, SimpleMappings.CString);
 
     }
 

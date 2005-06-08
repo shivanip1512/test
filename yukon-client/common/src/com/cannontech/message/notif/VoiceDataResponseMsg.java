@@ -1,4 +1,4 @@
-package com.cannontech.notif.message;
+package com.cannontech.message.notif;
 
 
 public class VoiceDataResponseMsg {

@@ -1,4 +1,4 @@
-package com.cannontech.notif.message;
+package com.cannontech.message.notif;
 
 import java.io.IOException;
 
@@ -7,12 +7,12 @@ import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
-public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
-    // RogueWave classId
-    public static final int MSG_ID = 705;
+public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
+    //RogueWave classId
+    public static final int MSG_ID = 709;
 
-    public Object create(VirtualInputStream vstr) throws IOException {
-        return new NotifCompletedMsg();
+    public Object create(VirtualInputStream vstr) throws java.io.IOException {
+        return new VoiceDataResponseMsg();
     }
 
     public Comparator getComparator() {
@@ -31,31 +31,29 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
         return MSG_ID;
     }
 
-    public String getCxxStringId() {
+    public String getCxxStringId() //TODO this is the same as base class, is it needed?
+    {
         return DefineCollectable.NO_STRINGID;
     }
 
     public Class getJavaClass() {
-        return DefColl_NotifCompletedMsg.class;
+        return DefColl_VoiceDataResponseMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        super.restoreGuts(obj, vstr, polystr);
-        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
+        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
         msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
-        msg.gotConfirmation = 
-            vstr.restoreObject(SimpleMappings.CString).equals("y");
+        msg.xmlData = (String) vstr.restoreObject(SimpleMappings.CString);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        super.saveGuts(obj, vstr, polystr);
-        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
+        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
         vstr.saveObject(msg.token, SimpleMappings.CString);
-        vstr.saveObject(msg.gotConfirmation ? "y" : "n", SimpleMappings.CString);
+        vstr.saveObject(msg.xmlData, SimpleMappings.CString);
 
     }
 

@@ -3,7 +3,7 @@ package com.cannontech.notif.handler;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.message.NotifAlarmMsg;
+import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.notif.outputs.*;
 
 public class AlarmMessageHandler extends NotifHandler {

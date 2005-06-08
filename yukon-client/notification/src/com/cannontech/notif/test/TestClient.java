@@ -4,7 +4,7 @@ package com.cannontech.notif.test;
 import com.cannontech.message.dispatch.message.DefineCollectableMulti;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.ClientConnection;
-import com.cannontech.notif.message.*;
+import com.cannontech.message.notif.*;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.streamer.CollectableMappings;
 

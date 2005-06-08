@@ -9,8 +9,8 @@ import org.jdom.output.XMLOutputter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.message.VoiceDataRequestMsg;
-import com.cannontech.notif.message.VoiceDataResponseMsg;
+import com.cannontech.message.notif.VoiceDataRequestMsg;
+import com.cannontech.message.notif.VoiceDataResponseMsg;
 import com.cannontech.notif.outputs.VoiceHandler;
 
 public class VoiceDataRequestMessageHandler extends MessageHandler {

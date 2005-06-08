@@ -1,4 +1,4 @@
-package com.cannontech.notif.message;
+package com.cannontech.message.notif;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.util.Message;
