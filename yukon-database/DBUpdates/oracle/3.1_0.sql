@@ -815,6 +815,9 @@ insert into YukonRoleProperty values(-1015,-1,'voice_host','127.0.0.1','Name or 
 insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
 insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
 
+/* Fix added after build */
+delete from YukonGroupRole where grouproleid = -17 or grouproleid = -18;
+
 insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
 insert into YukonGroupRole values(-17,-1,-1,-1016,'(none)');
 insert into YukonGroupRole values(-18,-1,-1,-1017,'(none)');
