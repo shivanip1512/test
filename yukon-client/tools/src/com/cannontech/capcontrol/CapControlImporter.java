@@ -68,6 +68,7 @@ public class CapControlImporter
 			System.out.println();
 			log("Argument Syntax:");
 			System.out.println();
+			log("commandline arguments should be enclosed in quote marks.");
 			log("For command line: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			System.out.println();
 			log("For gui: gui");
