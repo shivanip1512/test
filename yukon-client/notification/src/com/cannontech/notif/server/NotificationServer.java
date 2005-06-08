@@ -7,8 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.notif.handler.AlarmMessageHandler;
-import com.cannontech.notif.handler.LoadManagementMessageHandler;
+import com.cannontech.notif.handler.*;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.roles.yukon.SystemRole;
 
@@ -138,6 +137,10 @@ public class NotificationServer implements Runnable
         // create confirmation handler
         CompletedMessageHandler completedMsgHandler = new CompletedMessageHandler(_voiceHandler);
         _msgHandler.registerHandler(completedMsgHandler);
+        
+        // create data request handler
+        VoiceDataRequestMessageHandler dataRequestMsgHandler = new VoiceDataRequestMessageHandler(_voiceHandler);
+        _msgHandler.registerHandler(dataRequestMsgHandler);
 
         acceptThread = new Thread(this, "NotifListener");
         acceptThread.start();
