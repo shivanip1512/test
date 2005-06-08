@@ -44,6 +44,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.tools.gui.CTIProgressBar;
 
 /**
  * @author ASolberg
@@ -72,11 +73,10 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private JComboBox switchManCB = new JComboBox();
 	private JComboBox switchTypeCB = new JComboBox();
 	private JComboBox conTypeCB = new JComboBox();
-	private JProgressBar bar;
+	private CTIProgressBar bar;
 	private InputValidater val;
 	private volatile Thread progressThread;
 	private Timer timer;
-	private double progress = 0;
 	private final int ONE_SECOND = 1000;
 	private boolean validating = false;
 	private ActionNotifier notifier = new ActionNotifier(this);
@@ -86,6 +86,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private boolean command = false;
 	private com.cannontech.database.cache.DefaultDatabaseCache cache;
 	private java.util.List list;
+	
 
 	public InputFrame()
 	{
@@ -122,6 +123,10 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			CommandLineParser clp = new CommandLineParser(paramvars);
 
 			String[] params = clp.parseArgs(paramvars);
+			for( int i = 0; i <  params.length; i++ )
+			{
+				System.out.println(params[i]);
+			}
 
 			int from = new Integer(params[0]).intValue();
 			int to = new Integer(params[1]).intValue();
@@ -161,29 +166,29 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			}
 			
 			InputValidater validater = new InputValidater(this, command, from, to, route, conType, banksize, manufacturer, switchType);
-			CTILogger.info("validating...");
+			log("validating...");
 			boolean validated = commandLineValidate(validater);
 			if( validated )
 			{
-				CTILogger.info("writing to database...");
+				log("writing to database...");
 				writeToDB(validater);
 			}else
 			{
-				CTILogger.error("validation failed");
+				log("validation failed");
 			}
 			
 			
 			
 		}catch(Exception e)
 		{
-			CTILogger.error(e.getMessage());
+			log(e.getMessage());
 			if(e.toString().startsWith("java.lang.ArrayIndexOutOfBoundsException"))
 			{
-				CTILogger.error("not enough parameters");
-				CTILogger.error("Correct Syntax: from=000000001 to=000000050 route=\"route1\" contype=\"CBC FP-2800\" banksize=1200 manufacturer=\"Westinghouse\" switchtype=\"oil\"");
+				log("not enough parameters");
+				log("Correct Syntax: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			}else
 			{
-				CTILogger.error("Correct Syntax: from=000000001 to=000000050 route=\"route1\" contype=\"CBC FP-2800\" banksize=1200 manufacturer=\"Westinghouse\" switchtype=\"oil\"");
+				log("Correct Syntax: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			}
 			e.printStackTrace();
 		}
@@ -246,10 +251,10 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					return false;
 				}
 			}
-			CTILogger.info("validation successful");
+			log("validation successful");
 		} catch (Exception e)
 		{
-			CTILogger.info("error while validating");
+			log("error while validating");
 			e.printStackTrace(System.out);
 		}
 		return true;
@@ -285,11 +290,13 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		conTypeCB.setBounds(new Rectangle(110, 70, 120, 20));
 		submitButton.setBounds(new Rectangle(100, 190, 70, 25));
 		requiredLabel.setBounds(new Rectangle(60, 255, 130, 20));
-		bar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
+		//bar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
+		bar = new CTIProgressBar();
 		bar.setValue(0);
 		bar.setStringPainted(true);
 		bar.setBounds(new Rectangle(35, 225, 200, 20));
 		bar.setVisible(false);
+
 		submitButton.addActionListener(this);
 
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
@@ -352,23 +359,23 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		contentPane.add(bar);
 
 		//Create a timer.
-		timer = new Timer(ONE_SECOND, new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				Double newDouble = new Double(progress);
-				int newInt = newDouble.intValue();
-				bar.setValue(newInt);
-
-				if (progress == 100)
-				{
-					Toolkit.getDefaultToolkit().beep();
-					timer.stop();
-
-					//bar.setValue(bar.getMinimum());
-				}
-			}
-		});
+//		timer = new Timer(ONE_SECOND, new ActionListener()
+//		{
+//			public void actionPerformed(ActionEvent evt)
+//			{
+//				Double newDouble = new Double(progress);
+//				int newInt = newDouble.intValue();
+//				bar.setValue(newInt);
+//
+//				if (progress == 100)
+//				{
+//					Toolkit.getDefaultToolkit().beep();
+//					timer.stop();
+//
+//					//bar.setValue(bar.getMinimum());
+//				}
+//			}
+//		});
 		
 		this.listenForActions(this);
 	}
@@ -396,7 +403,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				{
 					validating = true;
 					bar.setVisible(true);
-					progress = 0;
+					bar.setProgress(0);
 					bar.setValue(bar.getMinimum());
 					String fromS = serialFromTF.getText();
 					Integer from = new Integer(fromS);
@@ -407,7 +414,8 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					String manufacturer = (String) switchManCB.getSelectedItem();
 					String type = (String) switchTypeCB.getSelectedItem();
 					String conType = (String) conTypeCB.getSelectedItem();
-					timer.start();
+					//timer.start();
+					bar.start();
 					val = new InputValidater(this, command, from.intValue(), to.intValue(), route, conType, banksize, manufacturer, type);
 					progressThread = new Thread(this, "Progress Thread");
 					progressThread.start();
@@ -433,69 +441,75 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				boolean rangeOK = val.checkRange();
 				if (rangeOK)
 				{
-					progress += 17;
+					bar.addProgress(17);
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
 				boolean routeOK = val.checkRoute();
 				if (routeOK)
 				{
-					progress += 17;
+					bar.addProgress(17);
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
 				boolean bankOK = val.checkBankSize();
 				if (bankOK)
 				{
-					progress += 17;
+					bar.addProgress(17);
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
 				boolean switchManOK = val.checkManufacturer();
 				if (switchManOK)
 				{
-					progress += 17;
+					bar.addProgress(17);
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
 				boolean switchTypeOK = val.checkSwitchType();
 				if (switchTypeOK)
 				{
-					progress += 17;
+					bar.addProgress(17);
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
 				boolean switchConTypeOK = val.checkConType();
 				if (switchConTypeOK)
 				{
-					progress += 100;
+					bar.setProgress(100);
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_SUCCESSFUL);
 					validating = false;
 					break;
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					timer.stop();
+					//timer.stop();
+					bar.stop();
 					validating = false;
 					break;
 				}
@@ -503,7 +517,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			}
 		} catch (Exception e)
 		{
-			CTILogger.info("error while validating");
+			log("error while validating");
 			e.printStackTrace(System.out);
 		}
 		
@@ -514,7 +528,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		try
 		{
 			
-			timer.start();
+			bar.start();
 						
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
 			
@@ -655,16 +669,16 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				}
 				catch( com.cannontech.database.TransactionException t )
 				{
-					CTILogger.error( t.getMessage(), t );
+					log( t.getMessage());
 					
 					return false;
 				}
 				
 				
 				// update progress bar
-				progress += updateSize;
-				if(progress > 100){
-					progress = 100;
+				bar.addProgress(updateSize);
+				if(bar.getProgress() > 100){
+					bar.setProgress(100);
 				}
 				
 			}
@@ -673,8 +687,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			{
 				timer.stop();
 			}
-			System.out.println();
-			CTILogger.info("db write successful");
+			
 			return true;
 		}catch (Exception e)
 		{
@@ -683,7 +696,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				JOptionPane.showMessageDialog(this.getParent(),e.getMessage() ,"Database Write Failed" , JOptionPane.WARNING_MESSAGE);
 			}
 			System.out.println();
-			CTILogger.info("error writing to database: "+ e.getMessage());
+			log("error writing to database: "+ e.getMessage());
 			e.printStackTrace(System.out);
 			return false;
 		}
@@ -718,9 +731,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 
 		if (os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_SUCCESSFUL)
 		{
-			progress = 0;
+			bar.setProgress(0);
 			bar.setValue(0);
-			CTILogger.info("validation success");
+			log("validation success");
 			validating = false;
 			boolean success = writeToDB(val);
 			if(success){
@@ -732,25 +745,30 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			}
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_VALIDATION_FAILURE)
 		{
-			progress = 0;
+			bar.setProgress(0);
 			validating = false;
 			bar.setValue(0);
-			CTILogger.info(" validation failure");
+			log(" validation failure");
 			
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
 		{
 			JOptionPane.showMessageDialog(this, "Database write was successful.", "All Finished", JOptionPane.INFORMATION_MESSAGE);
-			timer.stop();
-			CTILogger.info("dbwrite success");
-			progress = 100;
+			bar.stop();
+			log("database write success");
+			bar.setProgress(100);
 			bar.setValue(100);
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_FAILURE)
 		{
-			timer.stop();
-			CTILogger.info("dbwrite failure");
+			bar.stop();
+			log("database write failure");
 			
 		}
+	}
+	
+	private void log(String msg)
+	{
+		System.out.println(msg);
 	}
 }
