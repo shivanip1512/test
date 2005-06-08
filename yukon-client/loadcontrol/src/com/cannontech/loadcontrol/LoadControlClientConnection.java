@@ -314,10 +314,6 @@ public synchronized void messageReceived( MessageEvent e )
 	else if( obj instanceof ServerResponseMsg ) {
 //		CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
 	}
-	else
-	{
-		CTILogger.info("Received an unknown message of type:  " + obj.getClass() );
-	}
 
 }
 
