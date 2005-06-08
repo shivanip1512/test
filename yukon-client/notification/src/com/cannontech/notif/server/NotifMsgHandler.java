@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.*;
 import com.cannontech.notif.handler.MessageHandler;
-import com.cannontech.notif.handler.NotifHandler;
 
 /**
  * Handles messages for the Notifcation Server.
