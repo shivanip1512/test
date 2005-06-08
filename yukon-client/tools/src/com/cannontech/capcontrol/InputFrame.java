@@ -83,7 +83,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	private boolean command = false;
 	private com.cannontech.database.cache.DefaultDatabaseCache cache;
 	private java.util.List list;
-	
 
 	public InputFrame()
 	{
@@ -173,8 +172,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			{
 				log("validation failed");
 			}
-			
-			
 			
 		}catch(Exception e)
 		{
@@ -412,7 +409,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	 */
 	public void run()
 	{
-		
 		try
 		{
 			while (true)
@@ -494,7 +490,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			log("error while validating");
 			e.printStackTrace(System.out);
 		}
-		
 	}
 	
 	private boolean writeToDB(InputValidater val)
@@ -741,7 +736,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		{
 			bar.stop();
 			log("database write failure");
-			
 		}
 	}
 	
