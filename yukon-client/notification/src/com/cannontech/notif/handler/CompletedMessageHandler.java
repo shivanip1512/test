@@ -1,7 +1,6 @@
-package com.cannontech.notif.server;
+package com.cannontech.notif.handler;
 
 import com.cannontech.message.util.Message;
-import com.cannontech.notif.handler.MessageHandler;
 import com.cannontech.notif.message.NotifCompletedMsg;
 import com.cannontech.notif.outputs.VoiceHandler;
 
