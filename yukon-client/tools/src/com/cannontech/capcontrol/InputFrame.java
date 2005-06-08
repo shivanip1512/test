@@ -721,7 +721,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			bar.setProgress(0);
 			validating = false;
 			bar.setValue(0);
-			log(" validation failure");
+			log("validation failure");
 			
 			
 		}else if(os.getAction() == com.cannontech.capcontrol.ActionNotifier.ACTION_DBWRITE_SUCCESSFUL)
