@@ -661,6 +661,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			
 			if(command)
 			{
+				System.out.println("database write successful");
 				timer.stop();
 			}
 			
