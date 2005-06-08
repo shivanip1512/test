@@ -143,7 +143,9 @@ alter table CICUSTOMERPOINTDATA
 go
 
 alter table Customer add CustomerNumber varchar(64);
+go
 update Customer set CustomerNumber = '(none)';
+go
 alter table Customer alter column CustomerNumber varchar(64) not null;
 go
 
