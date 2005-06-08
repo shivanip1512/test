@@ -37,7 +37,6 @@ public class ClientSession {
 	private int port;
 	
 	private boolean localLogin = true;
-	private String errMsg;
 	
 	private Timer refreshTimer; 
 	
@@ -221,8 +220,11 @@ public class ClientSession {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		int userID = prefs.getCurrentUserID();
 		if(userID != INVALID_CURRENT_USERID) {
-			//already 'logged in' so just try to use it
-			LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+			//already 'logged in' so we try to re-establish the login
+			// with the existing credentials
+			String oldUserName = prefs.getDefaultUsername();
+			String oldPassword = prefs.getDefaultPassword();
+			LiteYukonUser u = AuthFuncs.login(oldUserName, oldPassword);			
 			if(u != null) {
 				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);		
 				return true;
@@ -278,7 +280,12 @@ public class ClientSession {
 					PoolManager.setDBProperties(props);
                     CTILogManager.setLogProperties(props);
                     
-					LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+					//LiteYukonUser u = YukonUserFuncs.getLiteYukonUser(userID);
+					//already 'logged in' so we try to re-establish the login
+					// with the existing credentials
+					String oldUserName = prefs.getDefaultUsername();
+					String oldPassword = prefs.getDefaultPassword();
+					LiteYukonUser u = AuthFuncs.login(oldUserName, oldPassword);					
 					if(u != null) {
 						//score! we found them
 						setSessionInfo(u, sessionID, host, port);
