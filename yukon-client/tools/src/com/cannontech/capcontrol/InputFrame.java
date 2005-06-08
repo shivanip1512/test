@@ -120,20 +120,46 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		{
 			command = true;
 			CommandLineParser clp = new CommandLineParser(paramvars);
-	
+
 			String[] params = clp.parseArgs(paramvars);
-	
+
 			int from = new Integer(params[0]).intValue();
 			int to = new Integer(params[1]).intValue();
 			String route = params[2];
 			String conType = params[3];
-			String banksize = params[4];
-			String manufacturer = params[5];
-			String switchType = params[6];
+			String banksize = null;
+			String manufacturer = null;
+			String switchType = null;
+			
+			if(params.length == 5)
+			{
+				banksize = params[4];
+				manufacturer = "Westinghouse";
+				switchType = "oil";
+				
+			}else if(params.length == 6)
+			{
+				banksize = params[4];
+				manufacturer = params[5];
+				switchType = "oil";
+				
+			}else if(params.length == 7)
+			{
+				banksize = params[4];
+				manufacturer = params[5];
+				switchType = params[6];
+			}else 
+			{
+				banksize = "50";
+				manufacturer = "Westinghouse";
+				switchType = "oil";
+			}
+
 			if( params.length > 7 )
 			{
 				throw new Exception("to many parameters");
 			}
+			
 			InputValidater validater = new InputValidater(this, command, from, to, route, conType, banksize, manufacturer, switchType);
 			CTILogger.info("validating...");
 			boolean validated = commandLineValidate(validater);

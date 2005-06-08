@@ -8,6 +8,8 @@ package com.cannontech.capcontrol;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.capcontrol.CapBank;
 /**
  * @author ASolberg
  *
@@ -63,11 +65,45 @@ public class CapControlImporter
 		
 		if (args.length == 0)
 		{
-			new CapControlImporter();
-		}else
+			System.out.println();
+			CTILogger.info("Argument Syntax:");
+			System.out.println();
+			CTILogger.info("For command line: from=000000001 to=000000050 route=\"route1\" contype=\"CBC FP-2800\" banksize=1200 manufacturer=\"Westinghouse\" switchtype=\"oil\"");
+			System.out.println();
+			CTILogger.info("For gui: gui");
+			System.out.println();
+			CTILogger.info("Controller Types: " + com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] + ", " + 
+				com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0] + ", " +
+				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
+			System.out.println();
+			CTILogger.info("Manufacturers: " + CapBank.SWITCHMAN_WESTING + ", " +
+				CapBank.SWITCHMAN_ABB + ", " +
+				CapBank.SWITCHMAN_COOPER + ", " +
+				CapBank.SWITCHMAN_SIEMENS + ", " +
+				CapBank.SWITCHMAN_TRINETICS);
+			System.out.println();
+			CTILogger.info("Switch Types: " + CapBank.SWITCHTYPE_OIL + ", " +
+				CapBank.SWITCHTYPE_VACUUM);
+			System.out.println();
+			
+		}else 
 		{
-			new InputFrame(args);
+			boolean command = true;
+			for(int i = 0; i < args.length; i++)
+			{
+				if(args[i].equalsIgnoreCase("gui"))
+				{
+					command = false;
+				}
+			}
+			
+			if(command)
+			{
+				new InputFrame(args);
+			}else new CapControlImporter();
+			
 		}
-		
 	}
 }

@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 
 
 /**
@@ -27,7 +28,7 @@ public class InputValidater
 	public String manufacturer;
 	public String switchType;
 	public String conType;
-	private final String TABLE_NAME = "DeviceCBC";
+	private final String TABLE_NAME = DeviceCBC.TABLE_NAME;
 	public int getCBCCount = 0;
 	public JFrame parent;
 	public boolean command = false;
