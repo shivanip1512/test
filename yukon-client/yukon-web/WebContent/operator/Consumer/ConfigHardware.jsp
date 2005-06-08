@@ -118,7 +118,9 @@ function changeProgSelection(chkBox) {
 			
 			for (int k = 0; k < programs.getStarsLMProgramCount(); k++) {
 				if (programs.getStarsLMProgram(k).getProgramID() == program.getProgramID()) {
-					assigned = true;
+					//this was causing problems since this assumes that there is only one receiver per account
+					//therefore one selection pattern was being used for ALL receivers on this account
+					//assigned = true;
 					groupID = programs.getStarsLMProgram(k).getGroupID();
 					break;
 				}
@@ -127,6 +129,9 @@ function changeProgSelection(chkBox) {
 			for (int k = 0; k < appliances.getStarsApplianceCount(); k++) {
 				StarsAppliance app = appliances.getStarsAppliance(k);
 				if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() == program.getProgramID()) {
+					//this was moved to make sure that this is the proper program
+					//if there is more than one receiver connected to this account
+					assigned = true;
 					loadNo = app.getLoadNumber();
 					break;
 				}
