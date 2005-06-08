@@ -8,14 +8,13 @@ package com.cannontech.capcontrol;
 import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
-import java.io.*;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,12 +22,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -290,7 +287,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		conTypeCB.setBounds(new Rectangle(110, 70, 120, 20));
 		submitButton.setBounds(new Rectangle(100, 190, 70, 25));
 		requiredLabel.setBounds(new Rectangle(60, 255, 130, 20));
-		//bar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
+		
 		bar = new CTIProgressBar();
 		bar.setValue(0);
 		bar.setStringPainted(true);
@@ -358,25 +355,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		contentPane.add(requiredLabel);
 		contentPane.add(bar);
 
-		//Create a timer.
-//		timer = new Timer(ONE_SECOND, new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent evt)
-//			{
-//				Double newDouble = new Double(progress);
-//				int newInt = newDouble.intValue();
-//				bar.setValue(newInt);
-//
-//				if (progress == 100)
-//				{
-//					Toolkit.getDefaultToolkit().beep();
-//					timer.stop();
-//
-//					//bar.setValue(bar.getMinimum());
-//				}
-//			}
-//		});
-		
 		this.listenForActions(this);
 	}
 
@@ -414,7 +392,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					String manufacturer = (String) switchManCB.getSelectedItem();
 					String type = (String) switchTypeCB.getSelectedItem();
 					String conType = (String) conTypeCB.getSelectedItem();
-					//timer.start();
+					
 					bar.start();
 					val = new InputValidater(this, command, from.intValue(), to.intValue(), route, conType, banksize, manufacturer, type);
 					progressThread = new Thread(this, "Progress Thread");
@@ -445,7 +423,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -457,7 +434,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -469,7 +445,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -481,7 +456,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -493,7 +467,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -508,7 +481,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				} else
 				{
 					notifier.setActionCode(ActionNotifier.ACTION_VALIDATION_FAILURE);
-					//timer.stop();
 					bar.stop();
 					validating = false;
 					break;
@@ -527,9 +499,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 	{
 		try
 		{
+			if(command)
+			{
+				timer.start();
+			}else bar.start();
 			
-			bar.start();
-						
 			int[] ids = com.cannontech.database.db.pao.YukonPAObject.getNextYukonPAObjectIDs((val.getTo()-val.getFrom()+1)*2);
 			
 			int index = 0;
@@ -674,13 +648,15 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 					return false;
 				}
 				
-				
-				// update progress bar
-				bar.addProgress(updateSize);
-				if(bar.getProgress() > 100){
-					bar.setProgress(100);
+				if(!command)
+				{
+					// update progress bar
+					bar.addProgress(updateSize);
+					if(bar.getProgress() > 100)
+					{
+						bar.setProgress(100);
+					}
 				}
-				
 			}
 			
 			if(command)
@@ -767,6 +743,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		}
 	}
 	
+	// just use System.out for now.
 	private void log(String msg)
 	{
 		System.out.println(msg);
