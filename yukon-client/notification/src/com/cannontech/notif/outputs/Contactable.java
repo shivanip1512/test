@@ -23,8 +23,8 @@ public class Contactable implements Callable, Emailable {
     public static final String VOICE = "voice";
     private List _contactPhoneNumberList = new LinkedList();
     private List _emailList = new LinkedList();
-    private String _label;
-    private TimeZone _timeZone;
+    private String _label = "";
+    private TimeZone _timeZone = TimeZone.getDefault();
 
     /**
      * Create a Contactable object from a CustomerNotifGroupMap.
@@ -48,11 +48,6 @@ public class Contactable implements Callable, Emailable {
         _label = "Customer " + customerGroupMap.getCustomerID();
     }
 
-    private void configureTimeZone(LiteCustomer liteCustomer) {
-        String tzString = liteCustomer.getTimeZone();
-        _timeZone = TimeZone.getTimeZone(tzString);
-    }
-
     /**
      * Create a Contactable object from a ContactNotifGroupMap.
      * @param notifGroupMap
@@ -67,7 +62,12 @@ public class Contactable implements Callable, Emailable {
         }
         
         LiteCICustomer customer = ContactFuncs.getCICustomer(notifGroupMap.getContactID());
-        configureTimeZone(customer);
+        if (customer != null) {
+            configureTimeZone(customer);
+        } else {
+            CTILogger.warn("Unable to set timezone for Contact '" 
+                           + contact + "' because associated customer could not be found.");
+        }
         
         _label = "Contact " + contact.toString();
     }
@@ -87,7 +87,12 @@ public class Contactable implements Callable, Emailable {
         }
         
         LiteCICustomer customer = ContactFuncs.getCICustomer(notification.getContactID());
-        configureTimeZone(customer);
+        if (customer != null) {
+            configureTimeZone(customer);
+        } else {
+            CTILogger.warn("Unable to set timezone for ContactNotification (contactid=" 
+                           + notification.getContactID() + ") because associated customer could not be found.");
+        }
         
         _label = notification.getNotification();
     }
@@ -166,6 +171,11 @@ public class Contactable implements Callable, Emailable {
         return _label;
     }
     
+    private void configureTimeZone(LiteCustomer liteCustomer) {
+        String tzString = liteCustomer.getTimeZone();
+        _timeZone = TimeZone.getTimeZone(tzString);
+    }
+
     public TimeZone getTimeZone() {
         return _timeZone;
     }
