@@ -136,14 +136,14 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			if(params.length == 5)
 			{
 				banksize = params[4];
-				manufacturer = "Westinghouse";
-				switchType = "oil";
+				manufacturer = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+				switchType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 				
 			}else if(params.length == 6)
 			{
 				banksize = params[4];
 				manufacturer = params[5];
-				switchType = "oil";
+				switchType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 				
 			}else if(params.length == 7)
 			{
@@ -153,8 +153,8 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			}else 
 			{
 				banksize = "50";
-				manufacturer = "Westinghouse";
-				switchType = "oil";
+				manufacturer = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+				switchType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 			}
 
 			if( params.length > 7 )
