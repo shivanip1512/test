@@ -18,7 +18,9 @@ import javax.swing.Timer;
  * @author ASolberg
  *
  * Simple class to construct a JProgress bar that checks progress every second and updates the bar accordingly.
- * 
+ * Uses a timer that is started when a job is started and stoped when a job is done.
+ * Uses a float for progress: 100 should be devided by the jobs iterations giving you the amount to add to the
+ * over all progress with the addProgress method after each job section or iteration finishes.
  */
 public class CTIProgressBar extends JProgressBar
 {
@@ -47,12 +49,9 @@ public class CTIProgressBar extends JProgressBar
 				{
 					Toolkit.getDefaultToolkit().beep();
 					timer.stop();
-
-					//bar.setValue(bar.getMinimum());
 				}
 			}
 		});
-		
 	}
 	
 	public void start()
