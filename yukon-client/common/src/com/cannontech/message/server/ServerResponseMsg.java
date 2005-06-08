@@ -42,9 +42,13 @@ public class ServerResponseMsg extends Message {
         setMessage( message );
     }
     
-    protected ServerResponseMsg()
+    public ServerResponseMsg(int id)
     {
-        super();
+        _id = id;
+    }
+    
+    public ServerResponseMsg() {
+        
     }
 
     public static ServerResponseMsg createTimeoutResp()

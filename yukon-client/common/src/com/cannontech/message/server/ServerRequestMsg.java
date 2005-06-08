@@ -45,4 +45,10 @@ public class ServerRequestMsg extends Message {
 	public void setPayload(Object object) {
 		_payload = object;
 	}
+    
+    public ServerResponseMsg createResponseMsg(Object payload) {
+        ServerResponseMsg responseMsg = new ServerResponseMsg(getId());
+        responseMsg.setPayload(payload);
+        return responseMsg;
+    }
 }
