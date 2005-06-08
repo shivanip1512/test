@@ -5,7 +5,7 @@ import org.jdom.Document;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.notif.voice.*;
-import com.cannontech.notif.voice.CallPool.CallPoolException;
+import com.cannontech.notif.voice.CallPool.UnknownCallTokenException;
 import com.cannontech.notif.voice.callstates.Confirmed;
 import com.cannontech.notif.voice.callstates.Unconfirmed;
 import com.cannontech.roles.yukon.SystemRole;
@@ -101,7 +101,7 @@ public class VoiceHandler extends OutputHandler
         }
     }
 
-    public Document getCallData(String token) throws CallPoolException {
+    public Document getCallData(String token) throws UnknownCallTokenException {
         Call call = _callPool.getCall(token);
         return (Document)call.getMessage();
     }
