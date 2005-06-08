@@ -61,6 +61,7 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.stars.web.action.MultiAction;
 
 
 /**
@@ -185,7 +186,10 @@ public class InventoryManager extends HttpServlet {
 		
 		if (liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {
 			String referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER2 );
-			if (referer.indexOf("Wizard") < 0) {
+			//quick fix for the Xcel demo...need to find a more stable wizard check solution for the long term
+			MultiAction wizardly = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+			//if (referer.indexOf("Wizard") < 0) {
+			if (wizardly == null) {
 				// If we're trying to create/update a hardware and it's not in the wizard,
 				// create/update the hardware immediately after this step. Let the user
 				// update the hardware information later.
@@ -290,7 +294,9 @@ public class InventoryManager extends HttpServlet {
 		
 		if (liteInv == null || liteInv.getAccountID() == CtiUtilities.NONE_ZERO_ID) {
 			String referer = (String) session.getAttribute( ServletUtils.ATT_REFERRER2 );
-			if (referer.indexOf("Wizard") < 0) {
+			//quick fix for the Xcel demo...need to find a more stable wizard check solution for the long term
+			MultiAction wizardly = (MultiAction) session.getAttribute( ServletUtils.ATT_NEW_ACCOUNT_WIZARD );
+			if (wizardly == null) {
 				StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
 						session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
