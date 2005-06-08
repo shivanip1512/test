@@ -182,9 +182,11 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 			if(e.toString().startsWith("java.lang.ArrayIndexOutOfBoundsException"))
 			{
 				log("not enough parameters");
+				log("Commandline arguments should be enclosed in quote marks.");
 				log("Correct Syntax: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			}else
 			{
+				log("Commandline arguments should be enclosed in quotemarks.");
 				log("Correct Syntax: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			}
 			e.printStackTrace();
@@ -639,7 +641,6 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 						//handle the DBChangeMsg locally
 						LiteBase lBase = DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[j]);
 					}
- 	
 				}
 				catch( com.cannontech.database.TransactionException t )
 				{
