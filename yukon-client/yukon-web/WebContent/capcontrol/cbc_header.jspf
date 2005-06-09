@@ -1,8 +1,11 @@
 <!-- START Static Page Header Include -->
 <%@taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
+<script type="text/JavaScript" src="../JavaScript/minmax.js"></script>
+
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="96">
 <tr> 
@@ -101,5 +104,4 @@
 </td>
 </tr>
 </table>
-
 <!-- END Static Page Header Include -->

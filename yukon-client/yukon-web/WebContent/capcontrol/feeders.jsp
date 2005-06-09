@@ -497,7 +497,7 @@ for( int i = 0; i < capBanks.length; i++ )
           	<a href="#" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
 				onclick="showPopUp('tempmove.jsp?bankid='+intCapBankID);"
-				>Temp Move</a>
+				>Temp Move...</a>
 		  </td></tr>
 
           <tr><td>

@@ -23,7 +23,6 @@
 %>
 
 
-
   <table id="chartTable" width="505px" border="0" cellspacing="0" cellpadding="0">
     <tr> 
       <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
@@ -34,7 +33,7 @@
       <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
       <td>
       
-      <div class="scrollSmall">
+      <div class="scrollHuge">
         <table id="innerTable" width="100%" border="1" cellspacing="0" cellpadding="0">
 <%
 	if( chartParam.length == 0 ) {
