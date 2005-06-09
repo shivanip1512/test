@@ -43,14 +43,14 @@ public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
             CollectableStreamer polystr) throws IOException {
         VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
-        msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
-        vstr.saveObject(msg.token, SimpleMappings.CString);
+        vstr.saveObject(msg.callToken, SimpleMappings.CString);
 
     }
 

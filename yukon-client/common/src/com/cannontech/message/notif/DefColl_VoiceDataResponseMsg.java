@@ -44,7 +44,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
             CollectableStreamer polystr) throws IOException {
         VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
-        msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
         msg.xmlData = (String) vstr.restoreObject(SimpleMappings.CString);
     }
 
@@ -52,7 +52,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
             CollectableStreamer polystr) throws IOException {
         VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
-        vstr.saveObject(msg.token, SimpleMappings.CString);
+        vstr.saveObject(msg.callToken, SimpleMappings.CString);
         vstr.saveObject(msg.xmlData, SimpleMappings.CString);
 
     }
