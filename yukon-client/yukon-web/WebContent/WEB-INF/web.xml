@@ -80,10 +80,10 @@
 		<servlet-class>com.cannontech.servlet.DBPropertiesServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>MACSConnectionServlet</servlet-name>
-		<display-name>MACSConnectionServlet</display-name>
-		<description>Maintains a connection to MACS</description>
-		<servlet-class>com.cannontech.servlet.MACSConnectionServlet</servlet-class>
+		<servlet-name>ConnServlet</servlet-name>
+		<display-name>ConnServlet</display-name>
+		<description>Contains connection objects to various servers</description>
+		<servlet-class>com.cannontech.servlet.ConnServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>

@@ -58,8 +58,8 @@ public ScheduleController() {
 private com.cannontech.message.macs.message.Schedule findSchedule(long id) {
 	com.cannontech.message.macs.message.Schedule retVal = null;
 
-	MACSConnectionServlet connContainer = (MACSConnectionServlet)
-		getServletContext().getAttribute(MACSConnectionServlet.SERVLET_CONTEXT_ID);
+	ConnServlet connContainer = (ConnServlet)
+		getServletContext().getAttribute(ConnServlet.SERVLETS_CONTEXT_ID);
 
 	if( connContainer != null )
 	{
@@ -160,8 +160,8 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 
 	
 	com.cannontech.message.macs.message.Schedule sched = findSchedule(Integer.parseInt(scheduleIDStr));
-	MACSConnectionServlet connContainer = (MACSConnectionServlet)
-			getServletContext().getAttribute(MACSConnectionServlet.SERVLET_CONTEXT_ID);
+	ConnServlet connContainer = (ConnServlet)
+			getServletContext().getAttribute(ConnServlet.SERVLETS_CONTEXT_ID);
 			
 	if( sched != null && connContainer != null )
 	{			

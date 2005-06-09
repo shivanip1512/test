@@ -67,9 +67,9 @@
     	"and up.userid=" + user.getUserID() +
     	"ORDER BY up.paoid", types2 );
     
-    com.cannontech.servlet.MACSConnectionServlet connContainer = (com.cannontech.servlet.MACSConnectionServlet)
-        application.getAttribute(com.cannontech.servlet.MACSConnectionServlet.SERVLET_CONTEXT_ID);
-				
+    com.cannontech.servlet.ConnServlet connContainer = (com.cannontech.servlet.ConnServlet)
+        application.getAttribute(com.cannontech.servlet.ConnServlet.SERVLETS_CONTEXT_ID);
+
 	IMACSConnection conn = connContainer.getIMACSConnection();
 	
     if( connContainer != null )

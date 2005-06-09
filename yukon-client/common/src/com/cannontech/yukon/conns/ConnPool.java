@@ -33,7 +33,8 @@ public class ConnPool
 	public static final String DISPATCH_CONN = "DISPATCH";
 	public static final String MACS_CONN = "MACS";
 	public static final String CAPCONTROL_CONN = "CAPCONTROL";
-
+	public static final String NOTIFCATION_CONN = "NOTIFCATION";
+	
 
 	// Map<String, IServerConnection>
 	private Hashtable _allConns = null;
@@ -41,7 +42,7 @@ public class ConnPool
 
 	/**
 	 * Returns the singleton instance of this class
-	 * @return
+	 *
 	 */
 	public static synchronized ConnPool getInstance()
 	{
@@ -66,8 +67,6 @@ public class ConnPool
      * Gets a connection from the pool. If the connName is not found, then a new
      * connection is made.
      * 
-     * @param connName
-     * @return
      */
     public synchronized IServerConnection getConn( String connName )
 	{
@@ -111,7 +110,6 @@ public class ConnPool
     /**
      * Creates a new Porter connection.
      * 
-     * @return
      */
 	private IServerConnection createPorterConn()
 	{		
@@ -129,7 +127,6 @@ public class ConnPool
      * If not found, we create a default connection that tries connecting
      * right away.
      * 
-     * @return
      */
     public IServerConnection getDefPorterConn()
     {
@@ -178,7 +175,7 @@ public class ConnPool
 
     /**
      * Gets the default Macs connection that is available to all users.
-     * @return
+     *
      */
     public IServerConnection getDefMacsConn()
     {
@@ -199,7 +196,6 @@ public class ConnPool
     /**
      * Creates a new MACS connection.
      * 
-     * @return
      */
     private IMACSConnection createMacsConn()
     {       
@@ -210,7 +206,7 @@ public class ConnPool
 
     /**
      * Gets the default CapControl connection that is available to all users.
-     * @return
+     *
      */
     public IServerConnection getDefCapControlConn()
     {
@@ -240,10 +236,38 @@ public class ConnPool
         return cbcConn;
     }
 
+	/**
+	 * Gets the default NotifcationClient connection that is available to all users.
+	 *
+	 */
+	public IServerConnection getDefNotificationConn()
+	{
+		//check our master Map of existing connections
+		NotifClientConnection notifConn =
+			(NotifClientConnection)getAllConns().get(NOTIFCATION_CONN);
+
+		if( notifConn == null )
+		{		
+			notifConn = (NotifClientConnection)createNotificationConn();
+
+			try
+			{
+				notifConn.connectWithoutWait();
+			}
+			catch( java.io.IOException ex )
+			{
+				CTILogger.error( ex );
+			}
+			
+			getAllConns().put( NOTIFCATION_CONN, notifConn );
+		}
+        
+		return notifConn;
+	}
+
     /**
      * Creates a new CapControl connection.
      * 
-     * @return
      */
     private IServerConnection createCapControlConn()
     {       
@@ -251,4 +275,16 @@ public class ConnPool
 
         return cbcConn;
     }
+    
+	/**
+	 * Creates a new NotifServer connection.
+	 * 
+	 */
+	private IServerConnection createNotificationConn()
+	{       
+		NotifClientConnection notifConn = new NotifClientConnection();
+
+		return notifConn;
+	}
+
 }
