@@ -1,6 +1,9 @@
 // minmax.js: make IE5+/Win support CSS min/max-width/height
 // version 1.0, 08-Aug-2003
 // written by Andrew Clover <and@doxdesk.com>, use freely
+//
+//  Modified by RWN of CTI
+//
 
 /*@cc_on
 @if (@_win32 && @_jscript_version>4)
@@ -82,10 +85,14 @@ function minmax_stopdelaying() {
 }
 
 function minmax_layout() {
+
   window.setTimeout(minmax_stopdelaying, 100);
   var i, el, st, cs, optimal, inrange;
   for (i= minmax_elements.length; i-->0;) {
     el= minmax_elements[i]; st= el.style; cs= el.currentStyle;
+
+	//this line added to ensure we are dealing with valid items -- RWN
+	if(cs == null || st == null) continue;
 
     // horizontal size bounding
     st.width= st.minmaxWidth; optimal= el.offsetWidth;
@@ -94,11 +101,13 @@ function minmax_layout() {
       st.width= cs.minWidth;
       inrange= (el.offsetWidth<optimal);
     }
+
     if (inrange && cs.maxWidth && cs.maxWidth!='none' && cs.maxWidth!='auto' && cs.maxWidth!='') {
       st.width= cs.maxWidth;
       inrange= (el.offsetWidth>optimal);
     }
     if (inrange) st.width= st.minmaxWidth;
+
 
     // vertical size bounding
     st.height= st.minmaxHeight; optimal= el.offsetHeight;
@@ -113,6 +122,8 @@ function minmax_layout() {
     }
     if (inrange) st.height= st.minmaxHeight;
   }
+
+  
 }
 
 // Scanning. Check document every so often until it has finished loading. Do
@@ -129,12 +140,13 @@ function minmax_scan() {
       el.minmax_bound= true;
       minmax_bind(el);
   } }
+
 }
 
 var minmax_scanner;
 function minmax_stop() {
   window.clearInterval(minmax_scanner);
-  minmax_scan();
+  minmax_scan();  
 }
 
 minmax_scan();
