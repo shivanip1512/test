@@ -65,6 +65,9 @@ public final static FileFormatBase createFileFormat(int type)
 */
 	    case FileFormatTypes.NISC_TOU_KVARH:
 	        return new NISC_TOU_kVarHFormat();
+	    
+	    case FileFormatTypes.SEDC_yyyyMMdd:
+	        return new SEDCFormat_yyyyMMdd();
 		
 		default: //this is bad
 			throw new Error("FileFormatFactory::createFileFormat - Unrecognized file format type");

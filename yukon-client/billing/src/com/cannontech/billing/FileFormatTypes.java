@@ -33,6 +33,7 @@ public final class FileFormatTypes {
 	public static final int NISC_NCDC = 14;
 	public static final int NCDC_HANDHELD = 15;
 	public static final int NISC_TOU_KVARH = 16;
+	public static final int SEDC_yyyyMMdd = 17;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -49,7 +50,8 @@ public final class FileFormatTypes {
 	public static final String NISC_NCDC_STRING = "NISC-NCDC";
 	public static final String NCDC_HANDHELD_STRING = "NCDC-Handheld";
 	public static final String NISC_TOU_KVARH_STRING = "NISC TOU (kVarH)";
-
+	public static final String SEDC_yyyyMMdd_STRING = "SEDC (yyyyMMdd)";
+	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;
 
