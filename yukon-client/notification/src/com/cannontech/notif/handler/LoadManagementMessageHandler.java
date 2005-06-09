@@ -7,9 +7,10 @@ import com.cannontech.database.cache.functions.NotificationGroupFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.util.Message;
 import com.cannontech.message.notif.NotifLMControlMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
+import com.cannontech.notif.server.NotifServerConnection;
 
 /**
  * 
@@ -27,7 +28,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
         return msg instanceof NotifLMControlMsg;
     }
 
-    public void handleMessage(Message msg_) {
+    public void handleMessage(NotifServerConnection connection,  Message msg_) {
         final NotifLMControlMsg msg = (NotifLMControlMsg) msg_;
         
         long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();

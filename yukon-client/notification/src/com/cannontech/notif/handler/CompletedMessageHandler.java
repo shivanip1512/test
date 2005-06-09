@@ -1,8 +1,9 @@
 package com.cannontech.notif.handler;
 
-import com.cannontech.message.util.Message;
 import com.cannontech.message.notif.NotifCompletedMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.VoiceHandler;
+import com.cannontech.notif.server.NotifServerConnection;
 
 public class CompletedMessageHandler extends MessageHandler {
 
@@ -16,7 +17,7 @@ public class CompletedMessageHandler extends MessageHandler {
         return msg instanceof NotifCompletedMsg;
     }
 
-    public void handleMessage(Message msg_) {
+    public void handleMessage(NotifServerConnection connection,  Message msg_) {
         NotifCompletedMsg msg = (NotifCompletedMsg) msg_;
         
         _voiceHandler.completeCall(msg.token, msg.gotConfirmation);

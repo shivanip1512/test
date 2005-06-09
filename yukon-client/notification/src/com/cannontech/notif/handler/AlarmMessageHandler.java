@@ -2,9 +2,10 @@ package com.cannontech.notif.handler;
 
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.*;
-import com.cannontech.message.util.Message;
 import com.cannontech.message.notif.NotifAlarmMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
+import com.cannontech.notif.server.NotifServerConnection;
 
 public class AlarmMessageHandler extends NotifHandler {
 
@@ -16,7 +17,7 @@ public class AlarmMessageHandler extends NotifHandler {
         return false;
     }
 
-    public void handleMessage(Message msg_) {
+    public void handleMessage(NotifServerConnection connection,  Message msg_) {
         NotifAlarmMsg msg = (NotifAlarmMsg) msg_;
         
         // building the Notification object is the main work of 
