@@ -72,7 +72,7 @@ public class NotifClientConnection extends ClientConnection
 
 
 	/**
-	 * Reuests the String message from the server using the
+	 * Requests the String message from the server using the
 	 * given token.
 	 * 
 	 */
@@ -84,7 +84,7 @@ public class NotifClientConnection extends ClientConnection
 
 		ServerResponseMsg responseMsg = null;
 		VoiceDataRequestMsg vdReqMsg = new VoiceDataRequestMsg();
-		vdReqMsg.token = token;
+		vdReqMsg.callToken = token;
 		ServerRequest srvrReq =
 			ServerRequest.makeServerRequest( this, vdReqMsg );
 
@@ -105,7 +105,7 @@ public class NotifClientConnection extends ClientConnection
 		else {
 			retStr = "Unable to get the requested voice " + 
 					"message, responseCode= " +  responseMsg.getStatus() +
-					", token= " + vdReqMsg.token;
+					", token= " + vdReqMsg.callToken;
 			CTILogger.info(retStr);
 			throw new NotifRequestException(retStr);
 		}
@@ -113,4 +113,16 @@ public class NotifClientConnection extends ClientConnection
 		return retStr;
 	}
 
+    /**
+     * Send a confirmation message to the notification server
+     * @param token the call token
+     * @param success true if the person called was likely to have heard the notification
+     */
+    public synchronized void sendConfirmation(String token, boolean success) {
+        NotifCompletedMsg msg = new NotifCompletedMsg();
+        msg.token = token;
+        msg.gotConfirmation = success;
+        
+        write(msg);
+    }
 }
