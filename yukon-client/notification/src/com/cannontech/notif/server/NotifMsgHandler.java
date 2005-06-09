@@ -22,7 +22,7 @@ public class NotifMsgHandler implements MessageListener
 	public void messageReceived( MessageEvent e )
 	{
 		//do the stuff here
-		handleMessage( e.getMessage() );
+		handleMessage( (NotifServerConnection)e.getSource(), e.getMessage() );
         
 	}
     
@@ -30,14 +30,14 @@ public class NotifMsgHandler implements MessageListener
        _handlers.add(handler);
     }
 
-	private void handleMessage( Message msg_ )
+	private void handleMessage( NotifServerConnection connection, Message msg_ )
 	{
 		if( msg_ instanceof Multi )
 		{
             Multi multiMsg = (Multi)msg_;
 			for( int i = 0; i < ((Multi)msg_).getVector().size(); i++ )
 			{
-				handleMessage( (Message)multiMsg.getVector().get(i) );
+				handleMessage( connection, (Message)multiMsg.getVector().get(i) );
 			}
 		}
 		else 
@@ -45,7 +45,7 @@ public class NotifMsgHandler implements MessageListener
             for (Iterator iter = _handlers.iterator(); iter.hasNext();) {
                 MessageHandler handler = (MessageHandler) iter.next();
                 if (handler.canHandle(msg_)) {
-                    handler.handleMessage(msg_);
+                    handler.handleMessage(connection, msg_);
                 }
             }
 		}
