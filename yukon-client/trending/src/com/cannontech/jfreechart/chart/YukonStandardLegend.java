@@ -1,55 +1,84 @@
-/* ======================================
- * JFreeChart : a free Java chart library
- * ======================================
+/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2005, by Object Refinery Limited and Contributors.
  *
  * Project Info:  http://www.jfree.org/jfreechart/index.html
- * Project Lead:  David Gilbert (david.gilbert@object-refinery.com);
  *
- * (C) Copyright 2000-2003, by Simba Management Limited and Contributors.
+ * This library is free software; you can redistribute it and/or modify it 
+ * under the terms of the GNU Lesser General Public License as published by 
+ * the Free Software Foundation; either version 2.1 of the License, or 
+ * (at your option) any later version.
  *
- * This library is free software; you can redistribute it and/or modify it under the terms
- * of the GNU Lesser General Public License as published by the Free Software Foundation;
- * either version 2.1 of the License, or (at your option) any later version.
+ * This library is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public 
+ * License for more details.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this library; if not, write to the Free Software Foundation, 
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * [Java is a trademark or registered trademark of Sun Microsystems, Inc. 
+ * in the United States and other countries.]
  *
- * -------------------
- * StandardLegend.java
- * -------------------
- * (C) Copyright 2000-2003, by Simba Management Limited and Contributors.
+ * ---------------------
+ * DefaultOldLegend.java
+ * ---------------------
+ * (C) Copyright 2000-2005, by Object Refinery Limited and Contributors.
  *
- * Original Author:  David Gilbert (for Simba Management Limited);
+ * Original Author:  David Gilbert (for Object Refinery Limited);
  * Contributor(s):   Andrzej Porebski;
+ *                   Luke Quinane;
+ *                   Barak Naveh;
  *
- * $Id: StandardLegend.java,v 1.1 2003/04/23 09:02:00 mungady Exp $
+ * $Id: DefaultOldLegend.java,v 1.5 2005/05/19 15:40:56 mungady Exp $
  *
  * Changes (from 20-Jun-2001)
  * --------------------------
- * 20-Jun-2001 : Modifications submitted by Andrzej Porebski for legend placement;
+ * 20-Jun-2001 : Modifications submitted by Andrzej Porebski for legend 
+ *               placement;
  * 18-Sep-2001 : Updated header and fixed DOS encoding problem (DG);
  * 16-Oct-2001 : Moved data source classes to com.jrefinery.data.* (DG);
- * 19-Oct-2001 : Moved some methods [getSeriesPaint(...) etc.] from JFreeChart to Plot (DG);
+ * 19-Oct-2001 : Moved some methods [getSeriesPaint() etc.] from JFreeChart to 
+ *               Plot (DG);
  * 22-Jan-2002 : Fixed bug correlating legend labels with pie data (DG);
  * 06-Feb-2002 : Bug fix for legends in small areas (DG);
- * 23-Apr-2002 : Legend item labels are now obtained from the plot, not the chart (DG);
- * 20-Jun-2002 : Added outline paint and stroke attributes for the key boxes (DG);
+ * 23-Apr-2002 : Legend item labels are now obtained from the plot, not the 
+ *               chart (DG);
+ * 20-Jun-2002 : Added outline paint and stroke attributes for the key 
+ *               boxes (DG);
  * 18-Sep-2002 : Fixed errors reported by Checkstyle (DG);
  * 23-Sep-2002 : Changed the name of LegendItem --> DrawableLegendItem (DG);
  * 02-Oct-2002 : Fixed errors reported by Checkstyle (DG);
  * 16-Oct-2002 : Adjusted vertical text position in legend item (DG);
- * 17-Oct-2002 : Fixed bug where legend items are not using the font that has been set (DG);
- * 11-Feb-2003 : Added title code by Donald Mitchell, removed unnecessary constructor (DG);
+ * 17-Oct-2002 : Fixed bug where legend items are not using the font that has 
+ *               been set (DG);
+ * 11-Feb-2003 : Added title code by Donald Mitchell, removed unnecessary 
+ *               constructor (DG);
  * 26-Mar-2003 : Implemented Serializable (DG);
- * 
- * 05-MAY-2005 : LINE 167 is the only line altered by CANNON.  This alteration requires reimplementing all this 
- * 					other junk since none of the members are protected for extension.  The change allows each legend
- * 					item to be printed on its own line.  The constructor also has Yukon's defaults.  SN - cti 
+ * 22-Sep-2003 : Added nullpointer checks (TM);
+ * 23-Sep-2003 : Fixed bug in equals() method (DG);
+ * 08-Oct-2003 : Applied patch for displaying series line style, contributed 
+ *               by Luke Quinane (DG);
+ * 23-Dec-2003 : Added scale factors (x and y) for shapes displayed in 
+ *               legend (DG);
+ * 26-Mar-2004 : Added option to control item order, contributed by Angel (DG);
+ * 26-Mar-2004 : Added support for 8 more anchor points (BN);
+ * 27-Mar-2004 : Added support for round corners of bounding box (BN);
+ * 07-Apr-2004 : Changed text bounds calculation (DG);
+ * 21-Apr-2004 : Barak Naveh has contributed word-wrapping for legend 
+ *               items (BN);
+ * 25-Nov-2004 : Small update due to changes in LegendItem class (DG);
+ * 11-Jan-2005 : Removed deprecated code in preparation for 1.0.0 release (DG);
+ * 27-Jan-2005 : Legend now picks up more info from the renderer of each 
+ *               series (DG);
+ * 22-Feb-2005 : Renamed outerGap --> margin (DG);
+ * 28-Mar-2005 : Renamed StandardLegend --> DefaultOldLegend (DG);
+ * 20-Apr-2005 : Updated for changes in LegendItem (DG);
+ * 26-Apr-2005 : Removed LOGGER (DG);
+ *
  */
 
 package com.cannontech.jfreechart.chart;
@@ -71,37 +100,27 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.DefaultOldLegend;
 import org.jfree.chart.DrawableLegendItem;
-import org.jfree.chart.Legend;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.LegendRenderingOrder;
-import org.jfree.chart.StandardLegend;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.LegendItemEntity;
 import org.jfree.text.TextUtilities;
 import org.jfree.ui.TextAnchor;
 
-import com.cannontech.clientutils.CTILogger;
-
 /**
  * A chart legend shows the names and visual representations of the series
- * that are plotted in a chart.
- *
- * @author David Gilbert
+ * that are plotted in a chart.  If possible, use 
+ * {@link org.jfree.chart.title.LegendTitle} rather than this class.
  */
-public class YukonStandardLegend extends StandardLegend implements Serializable {
-
+public class YukonStandardLegend extends DefaultOldLegend implements Serializable {
 	/**
 	 * Constructs a new legend with default settings.
-	 *
-	 * @param chart  the chart that the legend belongs to.
 	 */
 	public YukonStandardLegend() {
-
 		super();
-		setAnchor(Legend.SOUTH);
-		setItemFont(new java.awt.Font("dialog", java.awt.Font.BOLD, 10));
 	}
 
 	/**
@@ -109,17 +128,19 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 	 *
 	 * @param g2  the graphics device.
 	 * @param available  the area available for drawing the chart.
-	 * @param horizontal  a flag indicating whether the legend items are laid out horizontally.
+	 * @param horizontal  a flag indicating whether the legend items are laid 
+	 *                    out horizontally.
 	 * @param inverted ???
+	 * @param info  collects rendering info (optional).
 	 *
-	 * @return the remaining available drawing area.
+	 * @return The remaining available drawing area.
 	 */
 	protected Rectangle2D draw(Graphics2D g2, Rectangle2D available,
-								  boolean horizontal, boolean inverted,
-								  ChartRenderingInfo info) {
+							   boolean horizontal, boolean inverted,
+							   ChartRenderingInfo info) {
 
-
-		LegendItemCollection legendItems = getChart().getPlot().getLegendItems();
+		LegendItemCollection legendItems 
+			= getChart().getPlot().getLegendItems();
 
 		if (legendItems == null || legendItems.getItemCount() == 0) {
 			return available; 
@@ -131,7 +152,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 
 		if (getTitle() != null && !getTitle().equals("")) {
 			titleItem = new LegendItem(
-				getTitle(), getTitle(), (Shape) null, Color.black
+				getTitle(), getTitle(), null, null, (Shape) null, Color.black
 			);
 		}
 
@@ -143,8 +164,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 		// Create buffer for individual items within the legend
 		List items = new ArrayList();
 
-		// Compute individual rectangles in the legend, translation point as well
-		// as the bounding box for the legend.
+		// Compute individual rectangles in the legend, translation point as 
+		// well as the bounding box for the legend.
 		if (horizontal) {
 			double xstart = available.getX() 
 							+ getMargin().calculateLeftOutset(availableWidth);
@@ -182,12 +203,13 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 				}
 				else if (getRenderingOrder() == LegendRenderingOrder.REVERSE) {
 					item = createDrawableLegendItem(
-						g2, legendItems.get(legendItems.getItemCount() - i - 1), xoffset, 
-						totalHeight
+						g2, legendItems.get(legendItems.getItemCount() - i - 1),
+						xoffset, totalHeight
 					);                        
 				}
 				else {
-					// we're not supposed to get here, will cause NullPointerException
+					// we're not supposed to get here, will cause 
+					// NullPointerException
 					item = null;
 				}
 
@@ -197,7 +219,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 					xoffset = 0;
 					totalHeight += rowHeight;
 					i--; // redo this item in the next row
-					// if item to big to fit, we dont want to attempt wrapping endlessly. 
+					// if item to big to fit, we dont want to attempt wrapping 
+					// endlessly. 
 					// we therefore disable wrapping for at least one item.
 					wrappingAllowed = false;  
 				}
@@ -205,7 +228,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 					// continue current row
 					rowHeight = Math.max(rowHeight, item.getHeight());
 					xoffset += item.getWidth();
-					// we placed an item in this row, re-allow wrapping for next item.
+					// we placed an item in this row, re-allow wrapping for 
+					// next item.
 					wrappingAllowed = true; 
 					items.add(item);
 				}
@@ -216,7 +240,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 
 			// Create the bounding box
 			legendArea = new RoundRectangle2D.Double(
-				0, 0, maxRowWidth, totalHeight, getBoundingBoxArcWidth(), getBoundingBoxArcHeight()
+				0, 0, maxRowWidth, totalHeight, getBoundingBoxArcWidth(), 
+				getBoundingBoxArcHeight()
 			);
 
 			translation = createTranslationPointForHorizontalDraw(
@@ -225,12 +250,15 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 		}
 		else {  // vertical...
 			double totalHeight = 0;
-			double maxWidth = (getPreferredWidth() == NO_PREFERRED_WIDTH) ? 0 : getPreferredWidth();
+			double maxWidth = (getPreferredWidth() == NO_PREFERRED_WIDTH) 
+				? 0 : getPreferredWidth();
             
 			if (titleItem != null) {
 				g2.setFont(getTitleFont());
 
-				legendTitle = createDrawableLegendItem(g2, titleItem, 0, totalHeight);
+				legendTitle = createDrawableLegendItem(
+					g2, titleItem, 0, totalHeight
+				);
 
 				totalHeight += legendTitle.getHeight();
 				maxWidth = Math.max(maxWidth, legendTitle.getWidth());
@@ -248,11 +276,13 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 				}
 				else if (getRenderingOrder() == LegendRenderingOrder.REVERSE) {
 					drawableParts = createAllDrawableLinesForItem(
-						g2, legendItems.get(legendItemsLength - i - 1), 0, totalHeight, maxWidth
+						g2, legendItems.get(legendItemsLength - i - 1), 0, 
+						totalHeight, maxWidth
 					);
 				}
 				else {
-					// we're not supposed to get here, will cause NullPointerException
+					// we're not supposed to get here, will cause 
+					// NullPointerException
 					drawableParts = null;
 				}
                 
@@ -279,8 +309,6 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 
 		// Move the origin of the drawing to the appropriate location
 		g2.translate(translation.getX(), translation.getY());
-
-		CTILogger.debug("legendArea = " + legendArea.getWidth() + ", " + legendArea.getHeight());
 		drawLegendBox(g2, legendArea);
 		drawLegendTitle(g2, legendTitle);
 		drawSeriesElements(g2, items, translation, info);
@@ -288,94 +316,11 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 		// translate the origin back to what it was prior to drawing the legend
 		g2.translate(-translation.getX(), -translation.getY());
 
-		return calcRemainingDrawingArea(available, horizontal, inverted, legendArea);
-        
+		return calcRemainingDrawingArea(
+			available, horizontal, inverted, legendArea
+		);
 	}
 
-	/**
-	 * Creates a drawable legend item.
-	 * <P>
-	 * The marker box for each entry will be positioned next to the name of the
-	 * specified series within the legend area.  The marker box will be square
-	 * and 70% of the height of current font.
-	 *
-	 * @param graphics  the graphics context (supplies font metrics etc.).
-	 * @param legendItem  the legend item.
-	 * @param x  the upper left x coordinate for the bounding box.
-	 * @param y  the upper left y coordinate for the bounding box.
-	 *
-	 * @return A legend item encapsulating all necessary info for drawing.
-	 */
-	private DrawableLegendItem createDrawableLegendItem(Graphics2D graphics,
-														LegendItem legendItem,
-														double x, double y) {
-
-		CTILogger.debug("In createDrawableLegendItem(x = " + x + ", y = " + y);
-		int insideGap = 2;
-		FontMetrics fm = graphics.getFontMetrics();
-		LineMetrics lm = fm.getLineMetrics(legendItem.getLabel(), graphics);
-		float textAscent = lm.getAscent();
-		float lineHeight = textAscent + lm.getDescent() + lm.getLeading();
-
-		DrawableLegendItem item = new DrawableLegendItem(legendItem);
-
-		float xLabelLoc = (float) (x + insideGap + 1.15f * lineHeight);
-		float yLabelLoc = (float) (y + insideGap + 0.5f * lineHeight);
-
-		item.setLabelPosition(new Point2D.Float(xLabelLoc, yLabelLoc));
-
-		float width = (float) (item.getLabelPosition().getX() - x
-			+ fm.stringWidth(legendItem.getLabel()) + 0.5 * textAscent);
-
-		float height = (2 * insideGap + lineHeight);
-		item.setBounds(x, y, width, height);
-		float boxDim = lineHeight * 0.70f;
-		float xloc = (float) (x + insideGap + 0.15f * lineHeight);
-		float yloc = (float) (y + insideGap + 0.15f * lineHeight);
-		if (legendItem.isLineVisible()) {
-			Line2D line = new Line2D.Float(
-				xloc, yloc + boxDim / 2, xloc + boxDim * 3, yloc + boxDim / 2
-			);
-			item.setLine(line);
-			// lengthen the bounds to accomodate the longer item
-			item.setBounds(
-				item.getX(), item.getY(), item.getWidth() + boxDim * 2, item.getHeight()
-			);
-			item.setLabelPosition(new Point2D.Float(xLabelLoc + boxDim * 2, yLabelLoc));
-			if (item.getItem().isShapeVisible()) {
-				Shape marker = legendItem.getShape();
-				AffineTransform t1 = AffineTransform.getScaleInstance(
-					getShapeScaleX(), getShapeScaleY()
-				);
-				Shape s1 = t1.createTransformedShape(marker);
-				AffineTransform transformer = AffineTransform.getTranslateInstance(
-					xloc + (boxDim * 1.5), yloc + boxDim / 2);
-				Shape s2 = transformer.createTransformedShape(s1);
-				item.setMarker(s2);
-		   }
-
-		} 
-		else {
-			if (item.getItem().isShapeVisible()) {
-				Shape marker = legendItem.getShape();
-				AffineTransform t1 = AffineTransform.getScaleInstance(
-						getShapeScaleX(), getShapeScaleY()
-				);
-				Shape s1 = t1.createTransformedShape(marker);
-				AffineTransform transformer = AffineTransform.getTranslateInstance(
-					xloc + boxDim / 2, yloc + boxDim / 2);
-				Shape s2 = transformer.createTransformedShape(s1);
-				item.setMarker(s2);
-			}
-			else {
-				item.setMarker(new Rectangle2D.Float(xloc, yloc, boxDim, boxDim));
-			}
-		}
-		return item;
-
-	}
-
-	
 	/**
 	 * ???
 	 * 
@@ -386,8 +331,9 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 	 * 
 	 * @return The translation point.
 	 */
-	private Point2D createTranslationPointForHorizontalDraw(Rectangle2D available, 
-			boolean inverted, double maxRowWidth, double totalHeight) {
+	private Point2D createTranslationPointForHorizontalDraw(
+			Rectangle2D available, boolean inverted, double maxRowWidth, 
+			double totalHeight) {
 		// The yloc point is the variable part of the translation point
 		// for horizontal legends xloc can be: left, center or right.
 		double yloc = (inverted)
@@ -401,153 +347,21 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 				   + getMargin().calculateLeftOutset(available.getWidth());
 		}
 		else if (isAnchoredToCenter()) {
-			xloc = available.getX() + available.getWidth() / 2 - maxRowWidth / 2;
+			xloc = available.getX() + available.getWidth() / 2 
+				   - maxRowWidth / 2;
 		}
 		else if (isAnchoredToRight()) {
 			xloc = available.getX() + available.getWidth()
-				   - maxRowWidth - getChart().getPlot().getInsets().left;
+				   - maxRowWidth - getChart().getPlot().getInsets().getLeft();
 		}
 		else {
-			throw new IllegalStateException("UNEXPECTED_LEGEND_ANCHOR");
+			throw new IllegalStateException("Unexpected Legend Anchor");
 		}
         
 		// Create the translation point
 		return new Point2D.Double(xloc, yloc);
 	}
-    
-	/**
-	 * Returns a list of drawable legend items for the specified legend item.
-	 * Word-wrapping is applied to the specified legend item and it is broken
-	 * into a few lines in order to fit into the specified 
-	 * <code>wordWrapWidth</code>.
-	 *
-	 * @param g2 the graphics context.
-	 * @param legendItem  the legend item.
-	 * @param x  the upper left x coordinate for the bounding box.
-	 * @param y  the upper left y coordinate for the bounding box.
-	 * @param wordWrapWidth  the word wrap width.
-	 *
-	 * @return A list of drawable legend items for the specified legend item.
-	 * 
-	 * @see #setPreferredWidth(double)
-	 */
-	private List createAllDrawableLinesForItem(Graphics2D g2,
-			LegendItem legendItem, double x, double y, double wordWrapWidth) {
-        
-		List drawableParts = new ArrayList();
 
-		DrawableLegendItem line = createDrawableLegendItem(g2, legendItem, x, y);
-
-		if (line.getWidth() < wordWrapWidth) {
-			// we don't need word-wrapping, return just a single line.
-			drawableParts.add(line);
-			return drawableParts;
-		}
-        
-		// we need word-wrapping. start laying out the lines. add words to 
-		// every line until it's full.
-        
-		boolean firstLine = true;
-		double totalHeight = y;
-		String prefix = "";
-		String suffix = legendItem.getLabel().trim();
-        
-		LegendItem tmpItem = new LegendItem(
-			prefix.trim(), 
-			legendItem.getLabel(), 
-			legendItem.isShapeVisible(),
-			legendItem.getShape(),
-			legendItem.isShapeFilled(), 
-			legendItem.getFillPaint(),
-			legendItem.isShapeOutlineVisible(),
-			legendItem.getOutlinePaint(), 
-			legendItem.getOutlineStroke(),
-			legendItem.isLineVisible(),
-			legendItem.getLine(),
-			legendItem.getLineStroke(),
-			legendItem.getLinePaint()
-		);
-
-		line = createDrawableLegendItem(g2, tmpItem, x, totalHeight);
-        
-		DrawableLegendItem goodLine = null; // no good known line yet.
-
-		do {
-			// save the suffix, we might need to restore it.
-			String prevSuffix = suffix; 
-
-			// try to extend the prefix.
-			int spacePos = suffix.indexOf(" ");
-			if (spacePos < 0) {
-				// no space found, append all the suffix to the prefix.
-				prefix += suffix;
-				suffix = "";
-			}
-			else {
-				// move a word from suffix to prefix.
-				prefix += suffix.substring(0, spacePos + 1);
-				suffix = suffix.substring(spacePos + 1);
-			}
-            
-			// Create a temporary legend item for the extended prefix.
-			// If first line, make its marker visible.
-			tmpItem = new LegendItem(
-				prefix.trim(),
-				legendItem.getLabel(), 
-				firstLine && legendItem.isShapeVisible(),
-				legendItem.getShape(),
-				firstLine && legendItem.isShapeFilled(), 
-				legendItem.getFillPaint(),
-				firstLine && legendItem.isShapeOutlineVisible(), 
-				legendItem.getOutlinePaint(),
-				legendItem.getOutlineStroke(),
-				firstLine && legendItem.isLineVisible(), 
-				legendItem.getLine(),
-				legendItem.getLineStroke(),
-				legendItem.getLinePaint()
-			);
-            
-			// and create a line for it as well.
-			line = createDrawableLegendItem(g2, tmpItem, x, totalHeight);
-
-			// now check if line fits in width.
-			if (line.getWidth() < wordWrapWidth) {
-				// fits! save it as the last good known line.
-				goodLine = line;
-			}
-			else {
-				// doesn't fit. do we have a saved good line? 
-				if (goodLine == null) {
-					// nope. this means we will have to add it anyway and exceed 
-					// the desired wordWrapWidth. life is tough sometimes...
-					drawableParts.add(line);
-					totalHeight += line.getHeight();
-				}
-				else {
-					// yep, we have a saved good line, and we intend to use it...
-					drawableParts.add(goodLine);
-					totalHeight += goodLine.getHeight();
-					// restore previous suffix.
-					suffix = prevSuffix;
-				}
-				// prepare to start a new line.
-				firstLine = false;
-				prefix = "";
-				suffix = suffix.trim();
-				line = null; // mark as used to avoid using twice.
-				goodLine = null; // mark as used to avoid using twice.
-			}
-		} 
-		while (!suffix.equals(""));
-        
-		// make sure not to forget last line.
-		if (line != null) {
-			drawableParts.add(line);
-		}
-        
-		return drawableParts;
-	}
-    
 	/**
 	 * ???
 	 * 
@@ -558,7 +372,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 	 * 
 	 * @return The translation point.
 	 */
-	private Point2D createTranslationPointForVerticalDraw(Rectangle2D available, 
+	private Point2D createTranslationPointForVerticalDraw(Rectangle2D available,
 			boolean inverted, double totalHeight, double maxWidth) {
 		// The xloc point is the variable part of the translation point
 		// for vertical legends yloc can be: top, middle or bottom.
@@ -569,17 +383,18 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 			  + getMargin().calculateLeftOutset(available.getWidth());
 		double yloc;
 		if (isAnchoredToTop()) {
-			yloc = available.getY() + getChart().getPlot().getInsets().top;
+			yloc = available.getY() + getChart().getPlot().getInsets().getTop();
 		}
 		else if (isAnchoredToMiddle()) {
-			yloc = available.getY() + (available.getHeight() / 2) - (totalHeight / 2);
+			yloc = available.getY() + (available.getHeight() / 2) 
+				   - (totalHeight / 2);
 		}
 		else if (isAnchoredToBottom()) {
 			yloc = available.getY() + available.getHeight() 
-				   - getChart().getPlot().getInsets().bottom - totalHeight;
+				   - getChart().getPlot().getInsets().getBottom() - totalHeight;
 		}
 		else {
-			throw new IllegalStateException("UNEXPECTED_LEGEND_ANCHOR");
+			throw new IllegalStateException("Unexpected Legend Anchor");
 		}
 		// Create the translation point
 		return new Point2D.Double(xloc, yloc);
@@ -589,10 +404,11 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 	 * Draws the legend title.
 	 * 
 	 * @param g2  the graphics device (<code>null</code> not permitted).
-	 * @param legendTitle  the title (<code>null</code> permitted, in which case the method 
-	 *                     does nothing).
+	 * @param legendTitle  the title (<code>null</code> permitted, in which 
+	 *                     case the method does nothing).
 	 */
-	private void drawLegendTitle(Graphics2D g2, DrawableLegendItem legendTitle) {
+	private void drawLegendTitle(Graphics2D g2, 
+								 DrawableLegendItem legendTitle) {
 		if (legendTitle != null) {
 			// XXX dsm - make title bold?
 			g2.setPaint(legendTitle.getItem().getFillPaint());
@@ -601,10 +417,9 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 			TextUtilities.drawAlignedString(
 				legendTitle.getItem().getLabel(), g2,
 				(float) legendTitle.getLabelPosition().getX(),
-				(float) legendTitle.getLabelPosition().getY(), TextAnchor.CENTER_LEFT
+				(float) legendTitle.getLabelPosition().getY(), 
+				TextAnchor.CENTER_LEFT
 			);
-			CTILogger.debug("Title x = " + legendTitle.getLabelPosition().getX());
-			CTILogger.debug("Title y = " + legendTitle.getLabelPosition().getY());
 		}
 	}
 
@@ -622,7 +437,7 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 		g2.setStroke(getOutlineStroke());
 		g2.draw(legendArea);
 	}
-    
+
 	/**
 	 * Draws the series elements.
 	 * 
@@ -631,7 +446,8 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 	 * @param translation  the translation point.
 	 * @param info  optional carrier for rendering info.
 	 */
-	private void drawSeriesElements(Graphics2D g2, List items, Point2D translation, 
+	private void drawSeriesElements(Graphics2D g2, List items, 
+									Point2D translation, 
 									ChartRenderingInfo info) {
 		EntityCollection entities = null;
 		if (info != null) {
@@ -669,11 +485,10 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 			g2.setFont(getItemFont());
 			TextUtilities.drawAlignedString(
 				item.getItem().getLabel(), g2,
-				(float) item.getLabelPosition().getX(), (float) item.getLabelPosition().getY(),
+				(float) item.getLabelPosition().getX(), 
+				(float) item.getLabelPosition().getY(),
 				TextAnchor.CENTER_LEFT
 			);
-			CTILogger.debug("Item x = " + item.getLabelPosition().getX());
-			CTILogger.debug("Item y = " + item.getLabelPosition().getY());
 
 			if (entities != null) {
 				Rectangle2D area = new Rectangle2D.Double(
@@ -743,5 +558,234 @@ public class YukonStandardLegend extends StandardLegend implements Serializable 
 				available.getHeight()
 			);
 		}
+	}
+
+	/**
+	 * Returns a list of drawable legend items for the specified legend item.
+	 * Word-wrapping is applied to the specified legend item and it is broken
+	 * into a few lines in order to fit into the specified 
+	 * <code>wordWrapWidth</code>.
+	 *
+	 * @param g2 the graphics context.
+	 * @param legendItem  the legend item.
+	 * @param x  the upper left x coordinate for the bounding box.
+	 * @param y  the upper left y coordinate for the bounding box.
+	 * @param wordWrapWidth  the word wrap width.
+	 *
+	 * @return A list of drawable legend items for the specified legend item.
+	 * 
+	 * @see #setPreferredWidth(double)
+	 */
+	private List createAllDrawableLinesForItem(Graphics2D g2,
+			LegendItem legendItem, double x, double y, double wordWrapWidth) {
+        
+		List drawableParts = new ArrayList();
+
+		DrawableLegendItem line 
+			= createDrawableLegendItem(g2, legendItem, x, y);
+
+		if (line.getWidth() < wordWrapWidth) {
+			// we don't need word-wrapping, return just a single line.
+			drawableParts.add(line);
+			return drawableParts;
+		}
+        
+		// we need word-wrapping. start laying out the lines. add words to 
+		// every line until it's full.
+        
+		boolean firstLine = true;
+		double totalHeight = y;
+		String prefix = "";
+		String suffix = legendItem.getLabel().trim();
+        
+		LegendItem tmpItem = new LegendItem(
+			prefix.trim(), 
+			legendItem.getLabel(),
+			legendItem.getToolTipText(),
+			legendItem.getURLText(),
+			legendItem.isShapeVisible(),
+			legendItem.getShape(),
+			legendItem.isShapeFilled(), 
+			legendItem.getFillPaint(),
+			legendItem.isShapeOutlineVisible(),
+			legendItem.getOutlinePaint(), 
+			legendItem.getOutlineStroke(),
+			legendItem.isLineVisible(),
+			legendItem.getLine(),
+			legendItem.getLineStroke(),
+			legendItem.getLinePaint()
+		);
+
+		line = createDrawableLegendItem(g2, tmpItem, x, totalHeight);
+        
+		DrawableLegendItem goodLine = null; // no good known line yet.
+
+		do {
+			// save the suffix, we might need to restore it.
+			String prevSuffix = suffix; 
+
+			// try to extend the prefix.
+			int spacePos = suffix.indexOf(" ");
+			if (spacePos < 0) {
+				// no space found, append all the suffix to the prefix.
+				prefix += suffix;
+				suffix = "";
+			}
+			else {
+				// move a word from suffix to prefix.
+				prefix += suffix.substring(0, spacePos + 1);
+				suffix = suffix.substring(spacePos + 1);
+			}
+            
+			// Create a temporary legend item for the extended prefix.
+			// If first line, make its marker visible.
+			tmpItem = new LegendItem(
+				prefix.trim(),
+				legendItem.getLabel(), 
+				legendItem.getToolTipText(),
+				legendItem.getURLText(),
+				firstLine && legendItem.isShapeVisible(),
+				legendItem.getShape(),
+				firstLine && legendItem.isShapeFilled(), 
+				legendItem.getFillPaint(),
+				firstLine && legendItem.isShapeOutlineVisible(), 
+				legendItem.getOutlinePaint(),
+				legendItem.getOutlineStroke(),
+				firstLine && legendItem.isLineVisible(), 
+				legendItem.getLine(),
+				legendItem.getLineStroke(),
+				legendItem.getLinePaint()
+			);
+            
+			// and create a line for it as well.
+			line = createDrawableLegendItem(g2, tmpItem, x, totalHeight);
+
+			// now check if line fits in width.
+			if (line.getWidth() < wordWrapWidth) {
+				// fits! save it as the last good known line.
+				goodLine = line;
+			}
+			else {
+				// doesn't fit. do we have a saved good line? 
+				if (goodLine == null) {
+					// nope. this means we will have to add it anyway and exceed
+					// the desired wordWrapWidth. life is tough sometimes...
+					drawableParts.add(line);
+					totalHeight += line.getHeight();
+				}
+				else {
+					// yep, we have a saved good line, and we intend to use it.
+					drawableParts.add(goodLine);
+					totalHeight += goodLine.getHeight();
+					// restore previous suffix.
+					suffix = prevSuffix;
+				}
+				// prepare to start a new line.
+				firstLine = false;
+				prefix = "";
+				suffix = suffix.trim();
+				line = null; // mark as used to avoid using twice.
+				goodLine = null; // mark as used to avoid using twice.
+			}
+		} 
+		while (!suffix.equals(""));
+        
+		// make sure not to forget last line.
+		if (line != null) {
+			drawableParts.add(line);
+		}
+        
+		return drawableParts;
+	}
+    
+	/**
+	 * Creates a drawable legend item.
+	 * <P>
+	 * The marker box for each entry will be positioned next to the name of the
+	 * specified series within the legend area.  The marker box will be square
+	 * and 70% of the height of current font.
+	 *
+	 * @param graphics  the graphics context (supplies font metrics etc.).
+	 * @param legendItem  the legend item.
+	 * @param x  the upper left x coordinate for the bounding box.
+	 * @param y  the upper left y coordinate for the bounding box.
+	 *
+	 * @return A legend item encapsulating all necessary info for drawing.
+	 */
+	private DrawableLegendItem createDrawableLegendItem(Graphics2D graphics,
+														LegendItem legendItem,
+														double x, double y) {
+
+		int insideGap = 2;
+		FontMetrics fm = graphics.getFontMetrics();
+		LineMetrics lm = fm.getLineMetrics(legendItem.getLabel(), graphics);
+		float textAscent = lm.getAscent();
+		float lineHeight = textAscent + lm.getDescent() + lm.getLeading();
+
+		DrawableLegendItem item = new DrawableLegendItem(legendItem);
+
+		float xLabelLoc = (float) (x + insideGap + 1.15f * lineHeight);
+		float yLabelLoc = (float) (y + insideGap + 0.5f * lineHeight);
+
+		item.setLabelPosition(new Point2D.Float(xLabelLoc, yLabelLoc));
+
+		float width = (float) (item.getLabelPosition().getX() - x
+			+ fm.stringWidth(legendItem.getLabel()) + 0.5 * textAscent);
+
+		float height = (2 * insideGap + lineHeight);
+		item.setBounds(x, y, width, height);
+		float boxDim = lineHeight * 0.70f;
+		float xloc = (float) (x + insideGap + 0.15f * lineHeight);
+		float yloc = (float) (y + insideGap + 0.15f * lineHeight);
+		if (legendItem.isLineVisible()) {
+			Line2D line = new Line2D.Float(
+				xloc, yloc + boxDim / 2, xloc + boxDim * 3, yloc + boxDim / 2
+			);
+			item.setLine(line);
+			// lengthen the bounds to accomodate the longer item
+			item.setBounds(
+				item.getX(), item.getY(), item.getWidth() + boxDim * 2, 
+				item.getHeight()
+			);
+			item.setLabelPosition(
+				new Point2D.Float(xLabelLoc + boxDim * 2, yLabelLoc)
+			);
+			if (item.getItem().isShapeVisible()) {
+				Shape marker = legendItem.getShape();
+				AffineTransform t1 = AffineTransform.getScaleInstance(
+					getShapeScaleX(), getShapeScaleY()
+				);
+				Shape s1 = t1.createTransformedShape(marker);
+				AffineTransform transformer 
+					= AffineTransform.getTranslateInstance(
+						xloc + (boxDim * 1.5), yloc + boxDim / 2
+					);
+				Shape s2 = transformer.createTransformedShape(s1);
+				item.setMarker(s2);
+		   }
+
+		} 
+		else {
+			if (item.getItem().isShapeVisible()) {
+				Shape marker = legendItem.getShape();
+				AffineTransform t1 = AffineTransform.getScaleInstance(
+						getShapeScaleX(), getShapeScaleY()
+				);
+				Shape s1 = t1.createTransformedShape(marker);
+				AffineTransform transformer 
+					= AffineTransform.getTranslateInstance(
+						xloc + boxDim / 2, yloc + boxDim / 2
+					);
+				Shape s2 = transformer.createTransformedShape(s1);
+				item.setMarker(s2);
+			}
+			else {
+				item.setMarker(
+					new Rectangle2D.Float(xloc, yloc, boxDim, boxDim)
+				);
+			}
+		}
+		return item;
+
 	}
 }

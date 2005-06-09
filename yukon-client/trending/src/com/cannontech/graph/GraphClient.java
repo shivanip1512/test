@@ -1087,8 +1087,8 @@ private YukonChartPanel getFreeChartPanel()
 	}
 
 	// turn all zoom on
-	freeChartPanel.setHorizontalZoom(true);
-	freeChartPanel.setVerticalZoom(true);
+	freeChartPanel.setDomainZoomable(true);
+	freeChartPanel.setRangeZoomable(true);
 	
 	return freeChartPanel;
 }

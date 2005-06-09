@@ -1,6 +1,5 @@
 package com.cannontech.graph.model;
 
-import java.awt.Color;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,9 +17,9 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberAxis3D;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.StandardCategoryLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
-import org.jfree.chart.labels.StandardXYLabelGenerator;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Marker;
@@ -73,12 +72,12 @@ import com.cannontech.jfreechart.chart.YukonStandardLegend;
 
 public class TrendModel implements com.cannontech.graph.GraphDefines 
 {
-    private TreeMap treeMap = null;
-    private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
+	private TreeMap treeMap = null;
+	private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
 	private java.text.SimpleDateFormat LEGEND_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMM dd, yyyy");
 	private java.text.SimpleDateFormat TRANSLATE_DATE= new java.text.SimpleDateFormat("HHmmss");
-    private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
-    private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
+	private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
+	private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
 	
 	private TrendProperties trendProps;
 	
@@ -86,14 +85,14 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
 	// Left and Right (Primary and Secondary respectively) yAxis datasets.
 	private AbstractDataset [] dataset = null;
 	private TrendSerie trendSeries[] = null;
-    private java.util.Date startDate = null;
-    private java.util.Date	stopDate = null;
+	private java.util.Date startDate = null;
+	private java.util.Date	stopDate = null;
     
-    private YukonStandardLegend legend = null;
-    private String chartName = "Yukon Trending";
+	private YukonStandardLegend legend = null;
+	private String chartName = "Yukon Trending";
     
 	//Used for load duration to determine which point to reference all others by.  null is valid.
-    private Integer primaryGDSPointID = null;
+	private Integer primaryGDSPointID = null;
 
 	// Multiple axis setup - default 2 dimension (0 = left, 1 = right)
 	private Character [] autoScale = new Character[]{
@@ -211,7 +210,7 @@ public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, Strin
 public TrendModel(java.util.Date newStartDate, java.util.Date newStopDate, String newChartName, int[] ptID_, String[] ptNames_ )
 {
 	if( ptID_ == null || ptNames_ == null 
-	    || (ptID_.length != ptNames_.length) )
+		|| (ptID_.length != ptNames_.length) )
 		return;
 
 	// Inititialize chart properties
@@ -261,56 +260,9 @@ public String getChartName()
 	return chartName;
 }
 
-private void addRangeMarkers(Plot plot)
-{
-	XYItemRenderer rend = null;
-	int rendCount = 0;	//A count for number of renderers actually created.
-	for (int a = 0; a < 2; a++)
-	{
-		for( int i = 0; i < getTrendSeries().length; i++)
-		{
-			TrendSerie serie = getTrendSeries()[i];
-			if( GDSTypesFuncs.isThresholdType(serie.getTypeMask()))
-			{
-				if( serie.getAxis().equals(axisChars[a]))
-				{
-					Marker threshold = new ValueMarker(serie.getMultiplier().doubleValue());//, serie.getColor());
-					threshold.setPaint(serie.getColor());					
-					threshold.setLabelPaint(serie.getColor());
-					threshold.setLabel(serie.getMultiplier().toString());
-
-					if( plot instanceof XYPlot)
-					{
-						((XYPlot)plot).getRangeAxis(a).setVisible(true);
-						((XYPlot)plot).addRangeMarker(a, threshold, Layer.BACKGROUND);
-					}
-					else if( plot instanceof CategoryPlot)
-					{
-						((CategoryPlot)plot).getRangeAxis(a).setVisible(true);
-						((CategoryPlot)plot).addRangeMarker(a, threshold, Layer.BACKGROUND);
-					}							
-					if( a == PRIMARY_AXIS)
-					{
-						threshold.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-						threshold.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
-					}
-					else
-					{
-						threshold.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-						threshold.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
-					}
-						
-					rendCount++;
-				}
-			}
-		}
-	}
-}
-
-
 private Dataset_MinMaxValues[] getDataset_MinMaxValues(int index)
 {
-    Vector minMaxValues = new Vector();
+	Vector minMaxValues = new Vector();
 	int count =0;
 	if( getTrendSeries() != null)
 	{
@@ -450,10 +402,10 @@ private Integer getPrimaryGDSPointId()
 private YukonStandardLegend getLegend()
 {
 	//Legend setup
-    if( legend == null)
-    {
-        legend = new YukonStandardLegend();
-    }
+	if( legend == null)
+	{
+		legend = new YukonStandardLegend();
+	}
 /*
 	java.util.Vector stats = null;
 
@@ -538,8 +490,8 @@ private java.util.ArrayList getSubtitles()
 	//Chart Titles
 	java.util.ArrayList subtitleList = new java.util.ArrayList();
 	TextTitle chartTitle = new TextTitle(TITLE_DATE_FORMAT.format(getStartDate()) + " - " + TITLE_DATE_FORMAT.format(getStopDate()));	
-    subtitleList.add(chartTitle);
-    return subtitleList;
+	subtitleList.add(chartTitle);
+	return subtitleList;
 }
 
 private TextTitle getTitle()
@@ -556,7 +508,7 @@ public TrendSerie[] getTrendSeries()
 
 //left side axis
 
-private NumberAxis getRangeAxis(int axisIndex)	//LEFT
+private NumberAxis getRangeAxis(int axisIndex)
 {
 	NumberAxis rangeAxis = null;
 	if( getViewType() == GraphRenderers.BAR_3D)
@@ -1213,132 +1165,167 @@ public Dataset getDataset(int index)
  */
 public JFreeChart refresh()
 {
-	//Need to check that at least one of the trendSeries is GraphType, otherwise return null
-	for(int i = 0; i < getTrendSeries().length; i++)
-	{
-		TrendSerie serie = getTrendSeries()[i];
-		if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
-			break;
-		if(i == getTrendSeries().length - 1)	//last iteration and we are still here
-			return null;
-	} 
-		
 	//Plot setup
 	Plot plot = null;
 	
 	dataset = YukonDataSetFactory.createDataset( getTrendSeries(), getOptionsMaskSettings(), getViewType());
 	int datasetCount = 0;
-	if( getViewType() == GraphRenderers.LINE|| getViewType() == GraphRenderers.LINE_SHAPES || getViewType()== GraphRenderers.LINE_AREA || getViewType()== GraphRenderers.LINE_AREA_SHAPES| 
-		getViewType() == GraphRenderers.STEP || getViewType()== GraphRenderers.STEP_SHAPES || getViewType()== GraphRenderers.STEP_AREA || getViewType()== GraphRenderers.STEP_AREA_SHAPES)
+	if( GraphRenderers.useXYPlot(getViewType()))
 	{
-//		  com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm mavg = new com.jrefinery.chart.data.MovingAveragePlotFitAlgorithm();
-//		  mavg.setPeriod(30);
-//		  com.jrefinery.chart.data.PlotFit pf = new com.jrefinery.chart.data.PlotFit((com.jrefinery.data.XYDataset)dataset, mavg);
-//		  dataset = (com.jrefinery.data.AbstractSeriesDataset)pf.getFit();
-
-		XYItemRenderer rend = null;
-		plot = new XYPlot(null, (ValueAxis)getDomainAxis(), null, null);
-
+		// Create a new XYPlot, set the domain axis and a default renderer (renderer will be overridden based on trendSerie value)
+		plot = new XYPlot(null, (ValueAxis)getDomainAxis(), null, new XYAreaRenderer(XYAreaRenderer.LINES));
+		
 		//Weaken the alpha if this is an area type renderer, so we can see "through" it
 		if ( GraphRenderers.isAreaGraph(getViewType()))
 			plot.setForegroundAlpha(0.75f);
-			
+
+		XYItemRenderer rend = null;
 		///Currently we create (at most 2 renderers), one for each axis (L or R) 
 		for (int d = 0; d < 2; d++)
 		{
-		    if( getDataset(d) != null)
-		    {
-				//Add the range axis, even if we aren't necessarily using it, this helps when adding Markers (thresholds)
-				((XYPlot)plot).setRangeAxis(datasetCount, getRangeAxis(d));
-				if( d == PRIMARY_AXIS)
-					((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.BOTTOM_OR_LEFT);
-				else if (d == SECONDARY_AXIS)
-					((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.TOP_OR_RIGHT);
-				
-				rend = (XYItemRenderer)getRenderer(d);
-				if( rend != null)
+			for(int i = 0, index = 0; i < getTrendSeries().length; i++)
+			{
+				TrendSerie serie = getTrendSeries()[i];
+				if( serie.getAxis().equals(axisChars[d]))	//Serie is on the current axis d
 				{
-					//TODO find out what urlGenerator does again.
-					TimeSeriesURLGenerator urlg = new TimeSeriesURLGenerator(dateFormat, "user_trending.jsp", "gdefid", "startdate");
-					rend.setURLGenerator(urlg);
-					rend.setBaseLabelGenerator(new StandardXYLabelGenerator("", extendedTimeFormat, valueFormat));
-					rend.setBaseToolTipGenerator(StandardXYToolTipGenerator.getTimeSeriesInstance());
-					
-					for(int i = 0, index = 0; i < getTrendSeries().length; i++)
+					if( serie != null && 
+							(GDSTypesFuncs.isGraphType(serie.getTypeMask()) ||
+							 GDSTypesFuncs.isThresholdType(serie.getTypeMask()) ) )	//A valid "graph" serie is found
 					{
-						TrendSerie serie = getTrendSeries()[i];
-						if( serie.getAxis().equals(axisChars[d]))
-						{					
-							if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
+						if (rend == null)	//We have the first valid serie to add, setup the plot.
+						{
+							((XYPlot)plot).setRangeAxis(datasetCount, getRangeAxis(d));
+							if( d == PRIMARY_AXIS)
+								((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.BOTTOM_OR_LEFT);
+							else if (d == SECONDARY_AXIS)
+								((XYPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.TOP_OR_RIGHT);
+							rend = (XYItemRenderer)getRenderer(d);
+						}
+
+						if( GDSTypesFuncs.isThresholdType(serie.getTypeMask()))	//setup the threshold type
+						{
+							Marker threshold = new ValueMarker(serie.getMultiplier().doubleValue());//, serie.getColor());
+							threshold.setPaint(serie.getColor());					
+							threshold.setLabelPaint(serie.getColor());
+							threshold.setLabel(serie.getMultiplier().toString());
+							((XYPlot)plot).addRangeMarker(datasetCount, threshold, Layer.BACKGROUND);
+							if( d == PRIMARY_AXIS)
 							{
-									rend.setSeriesPaint(index++, serie.getColor());
+								threshold.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+								threshold.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
+							}
+							else
+							{
+								threshold.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+								threshold.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 							}
 						}
+
+						rend.setSeriesPaint(index++, serie.getColor());
 					}
-					((XYPlot)plot).setRenderer(datasetCount, rend);
-					
-					if( getDataset(d) != null)
-					{
-						((XYPlot)plot).setDataset(datasetCount, (XYDataset)getDataset(d));
-						((XYPlot)plot).mapDatasetToRangeAxis(datasetCount, datasetCount);
-					}
-					else
-					{
-						((XYPlot)plot).getRangeAxis(datasetCount).setVisible(false);
-					}
+				}
+				
+			}
+			if ( rend != null)
+			{
+				//TODO find out what urlGenerator does again.
+				TimeSeriesURLGenerator urlg = new TimeSeriesURLGenerator(dateFormat, "user_trending.jsp", "gdefid", "startdate");
+				rend.setURLGenerator(urlg);
+				rend.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator("", extendedTimeFormat, valueFormat));
+				rend.setBaseToolTipGenerator(StandardXYToolTipGenerator.getTimeSeriesInstance());
+
+				((XYPlot)plot).setRenderer(datasetCount, rend);
+				if( getDataset(d) != null)
+				{
+					((XYPlot)plot).setDataset(datasetCount, (XYDataset)getDataset(d));
+					((XYPlot)plot).mapDatasetToRangeAxis(datasetCount, datasetCount);
 					datasetCount++;
 				}
-		    }
+			}					
+			rend = null;	//clean it out, so we can check if it exists during the next loop through
+		}
+
+		if( ((XYPlot)plot).getRangeAxis() == null)	//lets create one by default so we can draw an "empty" trend at least
+		{
+			((XYPlot)plot).setRangeAxis(0, getRangeAxis(0));	//give it a default range axis too!
+			((XYPlot)plot).getRangeAxis().setVisible(false);	//hide the axis
+			((XYPlot)plot).getDomainAxis().setVisible(false);	//hide the axis
 		}
 	}
-	else if( getViewType()  == GraphRenderers.BAR || getViewType() == GraphRenderers.BAR_3D)
+	else if( GraphRenderers.useCategoryPlot(getViewType()))	
 	{
+		// Create a new CategoryPlot, set the domain axis and a default renderer (renderer will be overridden based on trendSerie value)
+		plot = new CategoryPlot( null, (HorizontalSkipLabelsCategoryAxis)getDomainAxis(), null, new BarRenderer());
+
 		CategoryItemRenderer rend = null;
-		plot = new CategoryPlot();//( null, (HorizontalSkipLabelsCategoryAxis)getDomainAxis(), null, null);
-		((CategoryPlot)plot).setDomainAxis((HorizontalSkipLabelsCategoryAxis)getDomainAxis());
-					
 		///Currently we create (at most 2 renderers), one for each axis (L or R) 
 		for (int a = 0; a < 2; a++)
 		{
-			//Add the range axis, even if we aren't necessarily using it, this helps when adding Markers (thresholds)
-			((CategoryPlot)plot).setRangeAxis(a, getRangeAxis(a));
-			if( a == PRIMARY_AXIS)
-				((CategoryPlot)plot).setRangeAxisLocation( a, AxisLocation.BOTTOM_OR_LEFT);
-			else if (a == SECONDARY_AXIS)
-				((CategoryPlot)plot).setRangeAxisLocation( a, AxisLocation.TOP_OR_RIGHT);
-			
-			rend = (CategoryItemRenderer)getRenderer(a);
-			if( rend != null)
+			for(int i = 0, index = 0; i < getTrendSeries().length; i++)
 			{
-				//TODO find out what urlGenerator does again.
-				rend.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
-				rend.setBaseLabelGenerator(new StandardCategoryLabelGenerator());
-				rend.setItemURLGenerator(new StandardCategoryURLGenerator());
-				
-				for(int i = 0, index = 0; i < getTrendSeries().length; i++)
-				{
-					TrendSerie serie = getTrendSeries()[i];
-					if( serie.getAxis().equals(axisChars[a]))
-					{					
-						if( serie != null && (GDSTypesFuncs.isGraphType(serie.getTypeMask())))
+				TrendSerie serie = getTrendSeries()[i];
+				if( serie.getAxis().equals(axisChars[a]))
+				{					
+					if( serie != null && 
+							(GDSTypesFuncs.isGraphType(serie.getTypeMask()) ||
+							 GDSTypesFuncs.isThresholdType(serie.getTypeMask()) ) )	//A valid "graph" serie is found
+					{
+						if (rend == null)	//We have the first valid serie to add, setup the plot.
 						{
-								rend.setSeriesPaint(index++, serie.getColor());
+							((CategoryPlot)plot).setRangeAxis(datasetCount, getRangeAxis(a));
+							if( a == PRIMARY_AXIS)
+								((CategoryPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.BOTTOM_OR_LEFT);
+							else if (a == SECONDARY_AXIS)
+								((CategoryPlot)plot).setRangeAxisLocation( datasetCount, AxisLocation.TOP_OR_RIGHT);
+							rend = (CategoryItemRenderer)getRenderer(a);
 						}
-					}
-				}
-				((CategoryPlot)plot).setRenderer(a, rend);
-				
-				if( getDataset(a) != null)
-				{
-					((CategoryPlot)plot).setDataset(a, (DefaultCategoryDataset)getDataset(a));
-					((CategoryPlot)plot).mapDatasetToRangeAxis(a, a);
-				}
-				else
-				{
-					((CategoryPlot)plot).getRangeAxis(a).setVisible(false);
+
+						if( GDSTypesFuncs.isThresholdType(serie.getTypeMask()))	//setup the threshold type
+						{
+							Marker threshold = new ValueMarker(serie.getMultiplier().doubleValue());//, serie.getColor());
+							threshold.setPaint(serie.getColor());					
+							threshold.setLabelPaint(serie.getColor());
+							threshold.setLabel(serie.getMultiplier().toString());
+							((CategoryPlot)plot).addRangeMarker(datasetCount, threshold, Layer.BACKGROUND);								
+							if( a == PRIMARY_AXIS)
+							{
+								threshold.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+								threshold.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
+							}
+							else
+							{
+								threshold.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+								threshold.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+							}
+						}
+
+						rend.setSeriesPaint(index++, serie.getColor());
+					}					    
 				}
 			}
+			if ( rend != null)
+			{
+				rend.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
+				rend.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+				rend.setItemURLGenerator(new StandardCategoryURLGenerator());
+
+				((CategoryPlot)plot).setRenderer(datasetCount, rend);
+				if( getDataset(a) != null)
+				{
+					((CategoryPlot)plot).setDataset(datasetCount, (DefaultCategoryDataset)getDataset(a));
+					((CategoryPlot)plot).mapDatasetToRangeAxis(datasetCount, datasetCount);
+					datasetCount++;
+				}
+			}					
+			rend = null;	//clean it out, so we can check if it exists during the next loop through
 		}
+
+		if( ((CategoryPlot)plot).getRangeAxis() == null)	//lets create one by default so we can draw an "empty" trend at least
+		{
+			((CategoryPlot)plot).setRangeAxis(0, getRangeAxis(0));	//give it a default range axis too!
+			((CategoryPlot)plot).getRangeAxis().setVisible(false);	//hide the axis
+			((CategoryPlot)plot).getDomainAxis().setVisible(false);	//hide the axis
+		}				
 	}	
 
 	else if( getViewType() == GraphRenderers.TABULAR)
@@ -1350,11 +1337,9 @@ public JFreeChart refresh()
 		return null;
 	}
 
-	addRangeMarkers(plot);
-
 	JFreeChart fChart = null;
 	fChart = new JFreeChart(plot);
-	fChart.setLegend( getLegend() );
+	fChart.setOldLegend( getLegend() );
 	fChart.setTitle(getTitle());
 	fChart.setSubtitles(getSubtitles());
 	fChart.setBackgroundPaint(java.awt.Color.white);    
@@ -1381,6 +1366,7 @@ public JFreeChart refresh()
 				}
 				else
 					rend = new XYAreaRenderer(XYAreaRenderer.LINES);
+				
 				break;
 			}
 			case GraphRenderers.LINE_SHAPES:

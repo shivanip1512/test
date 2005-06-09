@@ -12,15 +12,15 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.SeriesException;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -51,8 +51,8 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 		}		
 	}
 	
-    private static String updateSeriesNames(TrendSerie serie)
-    {
+	private static String updateSeriesNames(TrendSerie serie)
+	{
 		String stat = "";					
 		if(GDSTypesFuncs.isGraphType(serie.getTypeMask()))
 		{
@@ -94,7 +94,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 			stat += "     " + serie.getAxis();
 		}
 		return stat;
-    }    	
+	}    	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/2/2001 10:46:02 AM)
@@ -114,19 +114,19 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				{
 					if( serie.getDataItemsMap() != null)
 					{
-				 		long[] timeStamp = serie.getPeriodsArray();
-				 		double[] values = serie.getValuesArray();
-				 		for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
-				 		{
-					 		Long d = new Long(timeStamp[j]);
-					 		Double[] objectValues = (Double[]) tree.get(d);
-					 		if( objectValues == null )
-					 		{	
-						 		//objectValues is not in the key already
-						 		objectValues = new Double[ length ];
-						 		tree.put(d,objectValues);
-					 		}
-					 		objectValues[validIndex] = new Double(values[j]);
+						long[] timeStamp = serie.getPeriodsArray();
+						double[] values = serie.getValuesArray();
+						for( int j = 0; timeStamp != null && values != null &&  j < timeStamp.length && j < values.length; j++ )
+						{
+							Long d = new Long(timeStamp[j]);
+							Double[] objectValues = (Double[]) tree.get(d);
+							if( objectValues == null )
+							{	
+								//objectValues is not in the key already
+								objectValues = new Double[ length ];
+								tree.put(d,objectValues);
+							}
+							objectValues[validIndex] = new Double(values[j]);
 						}
 						validIndex++;
 					}
@@ -158,7 +158,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					{
 						if( serie.getAxis().equals(axisChars[datasetIndex]))
 						{	
-						    TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Millisecond.class);
+							TimeSeries timeSeries = new TimeSeries(serie.getLabel(), Millisecond.class);
 
 							if( serie.getDataItemsMap() != null)
 							{
@@ -199,7 +199,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 							}
 							//Update the serie's name for legend display.
 							//FIND A BETTER WAY TO UPDATE THE NAME!!! (FOR LEGEND PURPOSES)
-							timeSeries.setName(timeSeries.getName() + updateSeriesNames(serie));
+							timeSeries.setKey(timeSeries.getKey().toString() + updateSeriesNames(serie));
 							dSet[datasetIndex].addSeries(timeSeries);
 						}
 					}
@@ -326,7 +326,7 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 							}
 							allIndex++;
 						}
-						xySeries.setName(xySeries.getName() + updateSeriesNames(serie));
+						xySeries.setKey(xySeries.getKey().toString() + updateSeriesNames(serie));
 						dataset[datasetIndex].addSeries(xySeries);
 					}
 				}
@@ -362,9 +362,9 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 					{
 						count++;
 						if( tSeries[i].resolution == 1000)
-						    catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss;
+							catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm_ss;
 						else if (tSeries[i].resolution > 1000)
-						    catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm;
+							catFormat = CATEGORY_FORMAT_MMM_dd_HH_mm;
 					}
 				}
 			}
