@@ -92,18 +92,38 @@ public final class GraphRenderers
 				return LINE_STRING;
 		}
 	}
+	/**
+	 * Return the String value for the viewID
+	 * @param viewID
+	 * @return
+	 */
 	public final static String getViewString(int viewID)
 	{
 		return getRendererString(viewID);
 	}
+
+	/**
+	 * Return true when the viewType is an Area type view
+	 * @param viewID
+	 * @return
+	 */
 	public final static boolean isAreaGraph(int viewID)
 	{
-		if( viewID == LINE_AREA || viewID == LINE_AREA_SHAPES ||
-			viewID == STEP_AREA || viewID == STEP_AREA_SHAPES)
-			return true;
+	    switch (viewID)
+        {
+	        case LINE_AREA:
+	        case LINE_AREA_SHAPES:
+	        case STEP_AREA:
+	        case STEP_AREA_SHAPES:
+	            return true;
+        }
 		return false;
 	}
 	
+	/**
+	 * @param rendString
+	 * @return Return the veiw ID from the rendString value
+	 */
 	public final static int getRendererID(String rendString)
 	{
 		int returnInt = DONT_CHANGE;
@@ -142,10 +162,49 @@ public final class GraphRenderers
 		
 		return returnInt;
 	}
-	
+
+	/**
+	 * Return the view ID from the viewString value
+	 * Same as getRendererID(rendString)
+	 * @param viewString
+	 * @return
+	 */
 	public final static int getViewID(String viewString)
 	{	
 		return getRendererID(viewString);
+	}
+	
+	/**
+	 * Utility method for determining if a view type will generate a XY type Plot
+	 */
+	public final static boolean useXYPlot(int viewID)
+	{
+	    switch (viewID)
+        {
+	        case LINE:
+	        case LINE_SHAPES:
+	        case LINE_AREA:
+	        case LINE_AREA_SHAPES:
+            case STEP:
+            case STEP_SHAPES:
+            case STEP_AREA:
+            case STEP_AREA_SHAPES:
+	            return true;
+        }
+		return false;
+	}
+	/**
+	 * Utility method for determining if a view type will generate a Category type Plot
+	 */
+	public final static boolean useCategoryPlot(int viewID)
+	{
+	    switch (viewID)
+        {
+	        case BAR:
+	        case BAR_3D:
+	            return true;
+        }
+		return false;
 	}
 }
 
