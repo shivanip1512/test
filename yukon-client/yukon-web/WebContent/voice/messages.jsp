@@ -24,6 +24,8 @@ catch( NotifRequestException nre )
 	
 }
 
+connContainer.getNotifcationConn().sendConfirmation(token, true);
+
 %>
 
 <form id="message">
@@ -31,6 +33,8 @@ catch( NotifRequestException nre )
 	<block>
 	Welcome too message box <%=username%>, here is your token <%=token%>.  Good by.
 	</block>
+	<%=resultStr%>
+	
 	<disconnect/>
 </form>
 
