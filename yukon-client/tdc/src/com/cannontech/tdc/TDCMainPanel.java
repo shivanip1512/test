@@ -2425,8 +2425,8 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 	freeChartPanel.setPopupMenu(null);
 	freeChartPanel.setVisible(true);
 	// turn all zoom on
-	freeChartPanel.setHorizontalZoom(true);
-	freeChartPanel.setVerticalZoom(true);
+	freeChartPanel.setDomainZoomable(true);
+	freeChartPanel.setRangeZoomable(true);
 	
 	TrendModel model = new TrendModel(
 			prev30.getTime(),
