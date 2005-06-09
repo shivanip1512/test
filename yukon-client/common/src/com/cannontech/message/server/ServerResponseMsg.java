@@ -124,14 +124,14 @@ public class ServerResponseMsg extends Message {
 	/**
 	 * @param object
 	 */
-	protected void setPayload(Object object) {
+	public void setPayload(Object object) {
 		_payload = object;
 	}
 
 	/**
 	 * @param i
 	 */
-	protected void setStatus(int i) {
+	public void setStatus(int i) {
 		_status = i;
 	}
 
