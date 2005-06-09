@@ -2,6 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 
+
 /**
  * Insert the type's description here.
  * Creation date: (3/15/00 3:57:58 PM)
@@ -45,12 +46,12 @@ public void run()
 			String testCollGrp = rset.getString(4).trim();
 			String billGrp = rset.getString(5).trim();
 			
-
-			if(meterNumber.compareToIgnoreCase("default") != 0)
-			{
+			//20050602 - SN - removed this check, we want all of them in the cache
+//			if(meterNumber.compareToIgnoreCase("default") != 0)
+//			{
 				LiteDeviceMeterNumber liteDevMetNum = new LiteDeviceMeterNumber(deviceID, meterNumber, collGrp, testCollGrp, billGrp);
 				devMetNumList.add(liteDevMetNum);
-			}
+//			}
 		}
 	}
 	catch (java.sql.SQLException e)
