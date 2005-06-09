@@ -7,6 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IMACSConnection;
+import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
@@ -240,7 +241,7 @@ public class ConnPool
 	 * Gets the default NotifcationClient connection that is available to all users.
 	 *
 	 */
-	public IServerConnection getDefNotificationConn()
+	public INotifConnection getDefNotificationConn()
 	{
 		//check our master Map of existing connections
 		NotifClientConnection notifConn =

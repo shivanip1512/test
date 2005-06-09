@@ -8,11 +8,12 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.notif.*;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.INotifConnection;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.CollectableMappings;
 
-public class NotifClientConnection extends ClientConnection
+public class NotifClientConnection extends ClientConnection implements INotifConnection
 {
 	//the rwav messages we listen for
 	public static final DefineCollectable[] DEFAULT_MAPPINGS =
@@ -125,4 +126,5 @@ public class NotifClientConnection extends ClientConnection
         
         write(msg);
     }
+
 }

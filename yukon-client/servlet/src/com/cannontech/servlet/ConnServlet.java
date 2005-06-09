@@ -6,7 +6,7 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.yukon.IMACSConnection;
-import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class ConnServlet extends javax.servlet.http.HttpServlet
@@ -31,9 +31,9 @@ public IMACSConnection getIMACSConnection()
  * Creation date: (8/8/00 1:54:34 PM)
  * @return IMACSConnection
  */
-public IServerConnection getNotifcationConn() 
+public INotifConnection getNotifcationConn() 
 {
-	return (IServerConnection)ConnPool.getInstance().getDefNotificationConn();
+	return (INotifConnection)ConnPool.getInstance().getDefNotificationConn();
 }
 	
 /**

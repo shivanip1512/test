@@ -11,4 +11,6 @@ public interface INotifConnection extends IServerConnection
 	
 	public String requestMessage( String token ) throws NotifRequestException;
 
+	public void sendConfirmation(String token, boolean success);
+
 }
