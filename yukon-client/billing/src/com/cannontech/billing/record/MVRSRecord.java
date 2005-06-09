@@ -126,16 +126,17 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
     {
         deviceNameToRPHMap = new HashMap();
         
-		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, PAO.PAONAME " + 
-		        		" FROM RAWPOINTHISTORY RPH1, POINT P, YUKONPAOBJECT PAO " + 
+		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, DCS.ADDRESS " + 
+		        		" FROM RAWPOINTHISTORY RPH1, POINT P, DEVICECARRIERSETTINGS DCS " + 
 		        		" WHERE RPH1.TIMESTAMP = ( " + 
 		        		" SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2, POINT P2 " + 
 		        		" WHERE RPH2.POINTID = RPH1.POINTID " + 
 		        		" AND RPH2.POINTID = P2.POINTID " + 
-		        		" AND P2.POINTOFFSET = 1 " + 
+		        		" AND (P2.POINTOFFSET = 1 " +
+		        		" OR P2.POINTOFFSET = 2) " + 	//Added WRTCFT (water in cubic feet) offset for Estes Park, per JeffW.
 		        		" AND P2.POINTTYPE = 'PulseAccumulator' ) " + 
 		        		" AND P.POINTID = RPH1.POINTID " +
-		        		" AND P.PAOBJECTID = PAO.PAOBJECTID";
+		        		" AND P.PAOBJECTID = DCS.DEVICEID";
 		        
 	//	        "SELECT TO_CHAR(TIMESTAMP, 'MMDDYYYY') FROM RAWPOINTHISTORY WHERE POINTID = "+
 	//					"(SELECT POINTID FROM POINT WHERE PAOBJECTID = (SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE "+
@@ -180,6 +181,7 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 					String name = rset.getString(7);	//key value
 					RawPointHistory dummyRPH = new RawPointHistory(new Integer(changeID), new Integer(pointID), tsCal, new Integer(quality), new Double(value));
 					deviceNameToRPHMap.put(name, dummyRPH);
+					CTILogger.info("Added Address to RPH: " + name);
 				}
 			}
 		}
@@ -444,7 +446,9 @@ public final String processReadingRecord(String buffer) {
 	RawPointHistory dummyRPH = null;
 	try
 	{
-		dummyRPH = (RawPointHistory)getDeviceNameToRPHMap().get(meterRecord.meterNumber);
+		dummyRPH = (RawPointHistory)getDeviceNameToRPHMap().get(meterRecord.meterNumber.toString());
+		CTILogger.info("METERNUMBER LOOKUP: " + meterRecord.meterNumber + "  " + 
+		        (dummyRPH == null ? " NOT FOUND - " : dummyRPH.getValue() + " @ " + DATE_FORMAT.format(dummyRPH.getTimeStamp().getTime()) + " " + TIME_FORMAT.format(dummyRPH.getTimeStamp().getTime())));
 	}
 	catch (SQLException e1)	{ }
 	if( dummyRPH != null)
