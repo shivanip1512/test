@@ -35,18 +35,9 @@
     }
     
 %>
-
 <html>
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="Calendar1-82.js"></SCRIPT>
-
-
-<head>
-<title>Graph Settings</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<script langauge = "Javascript" src = "updateGraph.js"></script>
-<script langauge = "Javascript" src = "refresh.js"></script>
-</head>
-<body bgcolor="#000000" text="#000000"><form id="MForm" name="MForm">    
+<body bgcolor="#000000" text="#000000">
+<form id="MForm" name="MForm">    
   <table width="100%" border="0" cellspacing="0" cellpadding="9" >
     <tr>
     <td>
@@ -59,7 +50,7 @@
         	<td>
         		<table>
                     <tr>
-        				<td>
+     				<td>
         					<font face="Arial, Helvetica, sans-serif" size="2">Start Date:</font>
         				</td>
         				<td>
@@ -70,12 +61,13 @@
         					 <a href="javascript:show_calendar('MForm.start')"
 									onMouseOver="window.status='Pop Calendar';return true;"
                                     onMouseOut="window.status='';return true;">
+
                     		  <IMG SRC="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" BORDER="0">
                   			</a>
                   		</td>
         				<td>
         					<font face="Arial, Helvetica, sans-serif" size="2">(mm/dd/yy)</font>
-        				</td>
+        				</td> 
         			</tr>
 
         		    <tr>
@@ -99,9 +91,16 @@
                         <td>
                             <select name="view">
                                 <option value="0" <% if(view==0) { out.print(" selected"); } %>>Line
-                                <option value="3" <% if(view==3) { out.print(" selected"); } %>>Step Line
-                                <option value="1" <% if(view==1) { out.print(" selected"); } %>>Bar
-                                <option value="2" <% if(view==2) { out.print(" selected"); } %>>3D Bar
+                                <option value="1" <% if(view==1) { out.print(" selected"); } %>>Line/Shapes
+                                <option value="2" <% if(view==2) { out.print(" selected"); } %>>Line/Area                                
+                                <option value="3" <% if(view==3) { out.print(" selected"); } %>>Line/Area/Shapes
+                                <option value="4" <% if(view==4) { out.print(" selected"); } %>>Step
+                                <option value="5" <% if(view==5) { out.print(" selected"); } %>>Step/Shapes
+                                <option value="6" <% if(view==6) { out.print(" selected"); } %>>Step/Area
+                                <option value="7" <% if(view==7) { out.print(" selected"); } %>>Step/Area/Shapes
+                                <option value="8" <% if(view==8) { out.print(" selected"); } %>>Bar
+                                <option value="9" <% if(view==9) { out.print(" selected"); } %>>3D Bar
+
                             </select>
                         </td>
                     </tr>
@@ -113,8 +112,9 @@
   </tr>
   <tr>
     <td align = "center" valign = "bottom">
-      <input type="submit" name="Submit2" value="Update Graph" onclick = "update()">
-      <input type="submit" name="Submit" value="Cancel" onclick = "Javascript:window.close()">
+      <input type="submit" name="Submit2" value="Update Graph" onclick ="updateGraphSettings(document.MForm.start.value,
+						document.MForm.period.value,
+						document.MForm.view.value); return false;">
     </td>
   </tr>
 </table></form>

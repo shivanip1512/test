@@ -1,18 +1,38 @@
-var timePeriod = 0;
-var startDay;
-var view;
-var w;
-var timer;
-var parentWin;
+/**
+ * updateGraph.js
+ *
+ * The purpose of this script is to handle updating esub svg graphs.
+ * The entry point is updateGraphChange in response to a click on a graph.
+ */
+ 
+//The graph whose settings are currently being edited
 var svgElement;
-var svgDoc;
-var dataRequest;
 
+// The location of the mouse when it clicked on the graph
+// Use this to position the graph settings popup
+var graphx;
+var graphy;
+var graphw;
+var graphh;
+
+/**
+ * Will display a graph settings pop up, pass in the 
+ * click event.  
+ */
 function updateGraphChange(evt) {
+
+	// Get a reference to the graph that was clicked on
     svgElement = findParentGraph(evt.getTarget());
-    svgDoc = svgElement.getOwnerDocument();
-    parentWin = window.parent;
     
+    // Store the location and dimensions of the graph
+    // so we can position the pop up
+    graphx = parseInt(svgElement.getAttribute('x'));
+    graphy = parseInt(svgElement.getAttribute('y'));
+    graphw = parseInt(svgElement.getAttribute('width'));
+    graphh = parseInt(svgElement.getAttribute('height'));
+    
+    // Build up the graphsetting.jsp url, then
+    // we'll hit the server
     var view = svgElement.getAttribute('view');
     var period = svgElement.getAttribute('period');
     var start = svgElement.getAttribute('start'); 
@@ -21,109 +41,64 @@ function updateGraphChange(evt) {
     		  	"&period=" + period +
     		  	"&start=" + start;
     
-    var width = 300;
-	var height = 240;
-	var winl = (screen.width - width) / 2; 
-	var wint = (screen.height - height) / 2; 
-			  	
-    if (evt) {
-        w = parentWin.open(url, 'GraphSettings', 'width='+width+',height='+height+',top='+wint+',left='+winl+',resizable=yes');
-        window.setTimeout("chckSubmit()", 250);
-    }
-
+    getURL(url, handleGraphSettingsReq);
 } //end updateGraphChange
 
-function chckSubmit() {
-    if (w.closed) { 
-        if(parentWin.dataRequest != null) {	
-                               
-	        var data = parentWin.dataRequest.split(":");
+/**
+ * Callback from call to getURL
+ * Display a popup window with the results from hitting the server
+ */
+function handleGraphSettingsReq(obj) {
+	graphSettingsPopup = new PopupWindow("graphsettings");
+	graphSettingsPopup.offsetX= graphx + (graphw/2) - 150;
+	graphSettingsPopup.offsetY= graphy + (graphh/2) - 88;
 
-            var view = data[0];
-            var period = data[1];
-            var start = data[2];
-		
-            svgElement.setAttributeNS(null,'view',view);
-            svgElement.setAttributeNS(null,'period',period);
-			svgElement.setAttributeNS(null,'start',start);
-			
-            updateAllGraphs();
-        }
-    } 
-    else {
-    	//reschedule this function to be called again
-        window.setTimeout("chckSubmit()", 250);
-    }
-} // end chckSubmit
+	graphSettingsPopup.autoHide();
+	graphSettingsPopup.populate(obj.content);
 
-function updateGraph2(node, url, v, p) {
-    url = url + "gdefid=" + node.getAttribute('gdefid') +
-		  "&view=" + v +
-          "&period=" + p +
-          "&width=" + node.getAttribute('width') +
-          "&height=" + node.getAttribute('height') +
-          "&format=" + node.getAttribute('format') +
-          "&start=" + node.getAttribute('start') + 
-    	  "&period=" + node.getAttribute('period') +
-          "&db=" + node.getAttribute('db') +
-          "&tab=graph" +
-          "&loadfactor=" + node.getAttribute('loadfactor') +
-          getURL(url, fn2);
-    
-    
-    function fn2(obj) {
-        var Newnode = parseXML(obj.content, SVGDoc);
-        var gdefid = node.getAttribute('gdefid');
- 		var view = v;
-        var period = p;
-        var width = node.getAttribute('width');
-        var height = node.getAttribute('height');
-        var format = node.getAttribute('format');
-        var start = node.getAttribute('start');
-        var period = node.getAttribute('period');
-        var loadfactor = node.getAttribute('loadfactor');
-        var db = node.getAttribute('db');
-        var x = node.getAttribute('x');
-        var y = node.getAttribute('y');
+    // A flag to tell the popup checker that the popup is showing
+    // TODO Should be moved into the popup code?
+	graphSettingsPopup.isShowing = true;
+	graphSettingsPopup.showPopup("popupanchor");
+	
+	// Store the popup in the window.parent so the dynamically
+	// popped up jsp/html can communicate with us
+	window.parent.graphSettingsPopup = graphSettingsPopup;
+	
+	// Fire up the popup checker
+	window.setTimeout('checkPopup()', 250);
+}
 
-        svgDoc.documentElement.removeChild(node);
-        svgDoc.documentElement.appendChild(Newnode);
+/**
+ * Checks to see if the popup is still showing, when it isn't
+ * it is time to update the graph with whatever the user selected.
+ */
+function checkPopup() {
+	if(graphSettingsPopup.isShowing != null &&
+	   graphSettingsPopup.isShowing != true) {
+		svgElement.setAttributeNS(null,'view',window.parent.graphSettingsPopup.graphType);
+		svgElement.setAttributeNS(null,'period',window.parent.graphSettingsPopup.period);
+		svgElement.setAttributeNS(null,'start',window.parent.graphSettingsPopup.startDate);	
+		updateAllGraphs();		
+	}
+	else {
+	    // Not time yet, check again later
+		window.setTimeout('checkPopup()', 250);
+	}
+}
 
-        var svgElements = Newnode.getOwnerDocument().documentElement.getElementsByTagName('svg');
-
-        for (j = 0; j<svgElements.getLength(); j++) {
-            var svgElem = svgElements.item(j);
-            if (svgElem.getAttribute('gdefid') == gdefid) {               
-				svgElem.setAttributeNS(null, 'view', view);
-                svgElem.setAttributeNS(null, 'period', period);
-                svgElem.setAttributeNS(null, 'width', width);
-                svgElem.setAttributeNS(null, 'height', height);
-                svgElem.setAttributeNS(null, 'format', format);
-                svgElem.setAttributeNS(null, 'start', start);
-                svgElem.setAttributeNS(null, 'period', period);
-                svgElem.setAttributeNS(null, 'db', db);
-                svgElem.setAttributeNS(null, 'loadfactor', loadfactor);
-                svgElem.setAttributeNS(null, 'x', x);
-                svgElem.setAttributeNS(null, 'y', y);
-                svgElem.setAttributeNS(null, 'object', 'graph');
-                svgElem.setAttributeNS(null, 'onclick', 'updateGraph2Change(evt)');                
-            }
-            else {
-                continue;                
-            } 
-        }
-    } //end fn2
-} // end updateGraph2
-
-function update() {
-    var view = document.MForm.view.value;
-    var period = document.MForm.period.value;
-	var start = document.MForm.start.value;
-
-    opener.dataRequest =  view + ":" + period + ":" + start;
-    self.close();
-
-} //end update
+/**
+ * This is called from graphsettings.jsp
+ * Note that this runs in a different context which is why
+ * we are communicating through window.parent
+ */
+function updateGraphSettings(startDate, period, graphType ) {
+    window.parent.graphSettingsPopup.startDate = startDate;
+    window.parent.graphSettingsPopup.period = period;
+    window.parent.graphSettingsPopup.graphType = graphType;
+	window.parent.graphSettingsPopup.hidePopup();
+	window.parent.graphSettingsPopup.isShowing = false;
+}
 
 /* Recursively attempt to find the root graph element */
 function findParentGraph(elem) {

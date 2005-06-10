@@ -4,7 +4,6 @@
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
 
-
 	<filter>
 		<filter-name>timerFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
@@ -27,6 +26,10 @@
 	<filter>
 		<filter-name>imageFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.ImageFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>htmlFilter</filter-name>
+		<filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
 	</filter>
 	
 	<filter-mapping>
@@ -56,7 +59,10 @@
 		<filter-name>imageFilter</filter-name>
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
-	
+	<filter-mapping>
+		<filter-name>htmlFilter</filter-name>
+		<url-pattern>/esub/*</url-pattern>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>jsFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
@@ -65,8 +71,11 @@
 		<filter-name>imageFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>
-
-
+	<filter-mapping>
+		<filter-name>htmlFilter</filter-name>
+		<url-pattern>/capcontrol/oneline/*</url-pattern>
+	</filter-mapping>	
+	
 	<servlet>
 		<servlet-name>LoginController</servlet-name>
 		<display-name>LoginController</display-name>

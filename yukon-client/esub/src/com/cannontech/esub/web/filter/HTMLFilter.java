@@ -1,5 +1,6 @@
 package com.cannontech.esub.web.filter;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -17,6 +18,8 @@ import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
+import com.cannontech.esub.util.HTMLGenerator;
+import com.cannontech.esub.util.HTMLOptions;
 
 /**
  * Forwards all request for any file that matches this filter to
@@ -27,12 +30,14 @@ import com.cannontech.esub.Drawing;
 public class HTMLFilter implements Filter {
 
 	private FilterConfig config;
+	private HTMLGenerator htmlGenerator = new HTMLGenerator();
 	
 	/**
 	 * @see javax.servlet.Filter#init(FilterConfig)
 	 */
 	public void init(FilterConfig fc) throws ServletException {
 		config = fc;
+		htmlGenerator.getGenOptions().setStaticHTML(false);
 	}
 
 	/**
@@ -49,9 +54,16 @@ public class HTMLFilter implements Filter {
 		HttpServletRequest hreq = (HttpServletRequest)req;
 		HttpServletResponse hres = (HttpServletResponse)resp;
 
-		resp.setContentType("image/svg+xml");
+		resp.setContentType("text/html");
 				
 		String uri = hreq.getRequestURI();
+		
+		// Do nothing if this isn't an html request
+		if(!(uri.endsWith(".html"))) {
+			chain.doFilter(req,resp);
+			return;
+		}
+		
 		String conPath = hreq.getContextPath();
 
 		String jlxPath= uri.replaceFirst(conPath, "");
@@ -68,7 +80,7 @@ public class HTMLFilter implements Filter {
 			//Check if this user has access to this drawing!	
 			LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
 			if( AuthFuncs.checkRole(user, d.getMetaElement().getRoleID()) != null) {
-				chain.doFilter(req,resp);				
+				htmlGenerator.generate(hres.getWriter(), d);
 			}
 		}
 		catch(Exception e ) {

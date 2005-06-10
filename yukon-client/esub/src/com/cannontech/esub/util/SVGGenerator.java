@@ -109,21 +109,26 @@ public class SVGGenerator {
 			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "refresh.js");
 			svgRoot.appendChild(scriptElem);
 			
-			Element scriptElem2 = doc.createElementNS(null, "script");
-			scriptElem2.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem2.setAttributeNS(xlinkNS, "xlink:href", "updateGraph.js");
-			svgRoot.appendChild(scriptElem2);
+			scriptElem = doc.createElementNS(null, "script");
+			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "updateGraph.js");
+			svgRoot.appendChild(scriptElem);
 			
-			Element scriptElem3 = doc.createElementNS(null, "script");	
-			scriptElem3.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem3.setAttributeNS(xlinkNS, "xlink:href", "action.js");
-			svgRoot.appendChild(scriptElem3);
+			scriptElem = doc.createElementNS(null, "script");	
+			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "action.js");
+			svgRoot.appendChild(scriptElem);
 			
+		/*	scriptElem = doc.createElementNS(null, "script");	
+			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "ol/overlib_mini.js");
+			svgRoot.appendChild(scriptElem);
+			*/			
 			if(genOptions.isControlEnabled()) {
-				Element scriptElem4 = doc.createElementNS(null, "script");	
-				scriptElem4.setAttributeNS(null, "type", "text/ecmascript");
-				scriptElem4.setAttributeNS(xlinkNS, "xlink:href", "control.js");
-				svgRoot.appendChild(scriptElem4);
+				scriptElem = doc.createElementNS(null, "script");	
+				scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+				scriptElem.setAttributeNS(xlinkNS, "xlink:href", "point.js");
+				svgRoot.appendChild(scriptElem);
 			}
 		}
 		
@@ -252,13 +257,11 @@ public class SVGGenerator {
 		textElem.setAttributeNS(null, "style", "fill:rgb(" + fillColor.getRed() + "," + fillColor.getGreen() + "," + fillColor.getBlue() + ");font-family:'" + text.getFont().getFontName() + "';font-style:" + fontStyleStr + ";font-weight:" + fontWeightStr + ";font-size:" + text.getFont().getSize() + ";opacity:" + opacity + ";");
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
-			//UpdateUtil assumes a live system!
-			if(genOptions.isControlEnabled() && Util.isStatusPoint(text.getPointID())) /*&& UpdateUtil.isControllable(text.getPointID())*/ { 
-				textElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
-			}
-			else
 			if(genOptions.isEditEnabled() && text.isEditable()) {
 				textElem.setAttributeNS(null, "onclick", "editValue(evt)");	
+			} 
+			else {
+				textElem.setAttributeNS(null, "onclick", "showPointDetails(evt)");
 			}
 		}
 		
@@ -391,10 +394,7 @@ public class SVGGenerator {
 		imgElem.setAttributeNS(null, "height", Integer.toString(height));
 		
 		if(!genOptions.isStaticSVG() && genOptions.isScriptingEnabled()) {
-			//Update Util requires a live system!
-			if(genOptions.isControlEnabled() /*&& UpdateUtil.isControllable(img.getPoint().getPointID())*/) {
-				imgElem.setAttributeNS(null, "onclick", "controlPoint(evt)");	
-			}
+			imgElem.setAttributeNS(null, "onclick", "showPointDetails(evt)");
 		}
 		return imgElem;		
 	}	

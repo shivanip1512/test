@@ -1,6 +1,9 @@
 var svgNS    = "http://www.w3.org/2000/svg";
 var xlinkNS  = "http://www.w3.org/1999/xlink";
 
+/* If true we'll do updates */
+var doUpdates = true;
+
 var dynamicTextID = 'dynamicText';
 var stateImageID = 'stateImage';
 var dynamicGraphID = 'dynamicGraph';
@@ -19,6 +22,15 @@ var allDynamicGraphElem = new Array();
 
 /* rectangle to indicate an image is a link */
 var selectedRect = null;
+
+/*
+ * If set to true, dynamic elements will update
+ * otherwise not.  Do this if you want to keep
+ * the dom from moving while you wait for in put for example
+ */
+function setEnableUpdate(b) {
+	doUpdates = b;
+}
 
 /* refresh needs to be called once and it will set up
    periodic updates */   
@@ -53,9 +65,9 @@ function refresh(evt) {
 		}		
 	}
 	
-	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
-	setTimeout('updateAllGraphs()', graphRefreshRate); 
-	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
+	setInterval('updateAllPoints()', pointRefreshRate);
+	setInterval('updateAllGraphs()', graphRefreshRate); 
+	setInterval('updateAllTables()', tableRefreshRate);
 } //end refresh
 
 function updateAllPoints() {
@@ -71,16 +83,18 @@ function updateAllPoints() {
 	for(i = 0; i < allStateImageElem.length; i++) {
 		updateImage(allStateImageElem[i]);
 	}
-	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
+//	setTimeout('updateAllPoints()', pointRefreshRate, pointRefreshRate);
 } //end updatePoints
 
 function updateAllGraphs() {
 	var i;
+ //jalert("doing it");
 	for(i = 0; i < allDynamicGraphElem.length; i++) {
+
 		updateGraph(allDynamicGraphElem[i]);
 	}
 	
-	setTimeout('updateAllGraphs()', graphRefreshRate); 
+//	setTimeout('updateAllGraphs()', graphRefreshRate); 
 } //end updateGraphs
 
 function updateAllTables() {
@@ -95,7 +109,7 @@ function updateAllTables() {
 			continue;
 		}
 	}
-	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
+//	setTimeout('updateAllTables()', tableRefreshRate, tableRefreshRate);
 } //end updateTables
 
 
@@ -114,10 +128,13 @@ function updateGraph(node) {
 			"&db=" + node.getAttribute('db') +
 			"&option=" + node.getAttribute('option') +
 			"&loadfactor=" + node.getAttribute('loadfactor') +
-			"&action=EncodeGraph";	
+			"&action=EncodeGraph" +
+			"&rand=" + Math.random();  //The only reason this is here
+			                      //is because unless the url changes
+			                      //the plugin won't actually hit the server
 
 	node.setAttributeNS(xlinkNS, 'xlink\:href', url);
-	
+//alert("just set url");	
 } //end updateGraph
 
 /* update an individual table */
@@ -189,6 +206,7 @@ function updateAlarmText(node) {
 		}
 	}
 }
+
 
 
 function suppressErrors() {

@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteState" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
+<%@ page import="com.cannontech.message.dispatch.message.PointData" %>
 
 <%@ page import="com.cannontech.tags.TagManager" %>
 <%@ page import="com.cannontech.tags.Tag" %>
@@ -129,7 +130,7 @@
  http-equiv="content-type">
   <link rel="stylesheet" href="CannonStyle.css" type="text/css">
   <title><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></title>
-  <script langauge = "Javascript" src= "control.js"></script>
+  <script langauge = "Javascript" src= "point.js"></script>
   <script type="text/javascript">
 
 
@@ -142,7 +143,7 @@ location="control.jsp?pointid=" + id + "&state=" + state + "&action=CONTROLCONFI
 }
 
 function executeControl(id, state) {
-submitControl(id,state); // in control.js
+submitControl(id,state); // in point.js
 }
 
 function cancelControl() {

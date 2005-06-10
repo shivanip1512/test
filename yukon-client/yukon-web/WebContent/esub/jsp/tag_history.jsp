@@ -34,7 +34,7 @@
  http-equiv="content-type">
 <link rel="stylesheet" href="CannonStyle.css" type="text/css">
 <title>Tag History</title>
-<script langauge = "Javascript" src= "control.js"></script>
+<script langauge = "Javascript" src= "point.js"></script>
 <script type="text/javascript">
 
 function goBack(id) {
