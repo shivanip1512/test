@@ -89,6 +89,10 @@ public final class YukonGroupRoleLoader implements Runnable
       			
       			// Check to see if we should use the properties default 
       			if(CtiUtilities.STRING_NONE.equalsIgnoreCase(value)) {
+					//we will print a warning and let the exception propogate
+					if( roleProperty == null )
+						CTILogger.warn("Unable to find the RoleProperty entry with a rolePropertyID = " + rolePropertyID + " and roleID = " + roleID );
+
       				value = roleProperty.getDefaultValue();
       			}
       			
