@@ -37,7 +37,7 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_NotifLMControlMsg.class;
+        return NotifLMControlMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,

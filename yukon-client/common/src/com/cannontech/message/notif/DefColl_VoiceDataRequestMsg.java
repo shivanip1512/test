@@ -36,7 +36,7 @@ public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_VoiceDataRequestMsg.class;
+        return VoiceDataRequestMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,

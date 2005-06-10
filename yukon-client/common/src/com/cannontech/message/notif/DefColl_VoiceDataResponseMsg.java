@@ -37,11 +37,12 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_VoiceDataResponseMsg.class;
+        return VoiceDataResponseMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
+        super.restoreGuts(obj, vstr, polystr);
         VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
         msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
@@ -50,6 +51,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
+        super.saveGuts(obj, vstr, polystr);
         VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
         vstr.saveObject(msg.callToken, SimpleMappings.CString);

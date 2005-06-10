@@ -36,7 +36,7 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_NotifCompletedMsg.class;
+        return NotifCompletedMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,

@@ -36,7 +36,7 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return DefColl_NotifAlarmMsg.class;
+        return NotifAlarmMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,

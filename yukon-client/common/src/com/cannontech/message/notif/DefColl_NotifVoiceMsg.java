@@ -55,7 +55,7 @@ public class DefColl_NotifVoiceMsg extends com.cannontech.message.util.DefineCol
 	 * getJavaClass method comment.
 	 */
 	public Class getJavaClass() {
-		return DefColl_NotifVoiceMsg.class;
+		return NotifVoiceMsg.class;
 	}
 	/**
 	 * restoreGuts method comment.
