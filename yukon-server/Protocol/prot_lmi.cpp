@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/03/18 20:40:37 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/06/10 19:53:03 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -259,9 +259,10 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     }
 
     _transmitter_id = OutMessage->DeviceID;
-    _transactionComplete = false;
+    _transaction_complete = false;
     _first_comm = true;
     _untransmitted_codes = false;
+    _status_reset_count = 0;
     _status.c = 0;
     _in_count = 0;
     _in_total = 0;
@@ -390,7 +391,7 @@ bool CtiProtocolLMI::isTransactionComplete( void )
     }
     else
     {
-        retval = _transactionComplete;
+        retval = _transaction_complete;
     }
 
     return retval;  //  this is rather naive - maybe it should check state instead
@@ -438,10 +439,24 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
         if( _status.c )
         {
-            _outbound.length  = 2;
-            _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
-            _outbound.data[0] = _status.c;
-            _outbound.data[1] = 0;
+            if( ++_status_reset_count < MaxStatusResets )
+            {
+                _outbound.length  = 2;
+                _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
+                _outbound.data[0] = _status.c;
+                _outbound.data[1] = 0;
+            }
+            else
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - status reset loop when communicating with LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _transaction_complete = true;
+
+                retval = NOTNORMAL;
+            }
         }
         else
         {
@@ -766,13 +781,13 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //    (this should be FIX 'd to make the transactioncomplete stuff more robust, ick)
                                 if( _codes.empty() )
                                 {
-                                    _transactionComplete = true;
+                                    _transaction_complete = true;
                                 }
 
                                 //  also, if we're out of time, stop loading codes
                                 if( _transmitting_until >= _completion_time )
                                 {
-                                    _transactionComplete = true;
+                                    _transaction_complete = true;
                                 }
 
                                 break;
@@ -788,7 +803,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //  final block of codes, so we're done
                                 if( !(_inbound.data[offset++] & 0x80) )
                                 {
-                                    _transactionComplete = true;
+                                    _transaction_complete = true;
                                 }
 
                                 while( offset < (_inbound.length - 1) )
@@ -821,7 +836,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //  shouldn't be possible
                                 if( _num_codes_retrieved > 0xff )
                                 {
-                                    _transactionComplete = true;
+                                    _transaction_complete = true;
 
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -854,7 +869,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                     if( _command != Command_ScanAccumulator )
                                     {
-                                        _transactionComplete = _seriesv.isTransactionComplete();
+                                        _transaction_complete = _seriesv.isTransactionComplete();
                                     }
                                 }
                                 else
@@ -866,7 +881,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                         _transmitter_power_time = RWTime::now().seconds();
 
-                                        _transactionComplete = true;
+                                        _transaction_complete = true;
                                     }
                                     else
                                     {
@@ -883,7 +898,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             case Command_Timesync:
                             default:
                             {
-                                _transactionComplete = true;
+                                _transaction_complete = true;
                             }
                         }
                     }
@@ -927,17 +942,17 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
             if( _codes.empty() )
             {
-                _transactionComplete = true;
+                _transaction_complete = true;
             }
 
             if( _transmitting_until >= _completion_time )
             {
-                _transactionComplete = true;
+                _transaction_complete = true;
             }
         }
         else
         {
-            _transactionComplete = true;
+            _transaction_complete = true;
         }
 
         retval = NoError;
@@ -945,7 +960,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     else if( status )
     {
         //  retries go here eventually...  or something like that
-        _transactionComplete = true;
+        _transaction_complete = true;
     }
 
     return retval;

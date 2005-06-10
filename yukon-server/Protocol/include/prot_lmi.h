@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/03/10 19:22:50 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/06/10 19:53:03 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,8 @@ private:
                   _control_parameter;
 
     unsigned char _address;
-    bool          _deadbandsSent,
-                  _transactionComplete;
+    bool          _deadbands_sent,
+                  _transaction_complete;
 
     long          _transmitter_id;
 
@@ -89,7 +89,9 @@ private:
 
         LMIMaxCodesPerTransaction = 42,
 
-        LMITransmitterPowerPointOffset = 1000
+        LMITransmitterPowerPointOffset = 1000,
+
+        MaxStatusResets = 5
     };
 
 #pragma pack(push, 1)
@@ -151,6 +153,8 @@ private:
         lmi_status s;
         unsigned char c;
     } _status;
+
+    int _status_reset_count;
 
 #pragma pack(pop)
 
