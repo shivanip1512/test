@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/10/2005 3:48:43 PM                         */
+/* Created on:     6/10/2005 4:33:34 PM                         */
 /*==============================================================*/
 
 
@@ -6048,11 +6048,8 @@ insert into YukonUserRole values(-121,-1,-101,-10101,'(none)');
 insert into YukonUserRole values(-122,-1,-101,-10102,'(none)');
 insert into YukonUserRole values(-123,-1,-101,-10103,'(none)');
 insert into YukonUserRole values(-124,-1,-101,-10104,'(none)');
-insert into YukonUserRole values(-125,-1,-101,-10105,'(none)');
-insert into YukonUserRole values(-126,-1,-101,-10106,'(none)');
 insert into YukonUserRole values(-127,-1,-101,-10107,'(none)');
 insert into YukonUserRole values(-128,-1,-101,-10108,'(none)');
-insert into YukonUserRole values(-129,-1,-101,-10109,'(none)');
 insert into YukonUserRole values(-130,-1,-101,-10111,'(none)');
 
 
