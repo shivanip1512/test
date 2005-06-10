@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
-/* DBMS name:      ORACLE Version 9i2                           */
-/* Created on:     5/17/2005 11:18:11 AM                        */
+/* DBMS name:      ORACLE Version 9i                            */
+/* Created on:     6/10/2005 3:48:43 PM                         */
 /*==============================================================*/
 
 
@@ -58,6 +58,8 @@ drop index Indx_FdrTrnsIntTypDir;
 drop index Indx_GrpDSerPtID;
 
 drop index Indx_HolSchName;
+
+drop index INDX_UNQ_LMCNTRTR_TRID;
 
 drop index Indx_Start;
 
@@ -117,6 +119,8 @@ drop table CCFeederBankList cascade constraints;
 
 drop table CCFeederSubAssignment cascade constraints;
 
+drop table CICUSTOMERPOINTDATA cascade constraints;
+
 drop table CICustomerBase cascade constraints;
 
 drop table COLUMNTYPE cascade constraints;
@@ -137,6 +141,8 @@ drop table Command cascade constraints;
 
 drop table Contact cascade constraints;
 
+drop table ContactNotifGroupMap cascade constraints;
+
 drop table ContactNotification cascade constraints;
 
 drop table Customer cascade constraints;
@@ -146,6 +152,8 @@ drop table CustomerAdditionalContact cascade constraints;
 drop table CustomerBaseLinePoint cascade constraints;
 
 drop table CustomerLoginSerialGroup cascade constraints;
+
+drop table CustomerNotifGroupMap cascade constraints;
 
 drop table DEVICE cascade constraints;
 
@@ -361,6 +369,10 @@ drop table OperatorLoginGraphList cascade constraints;
 
 drop table PAOExclusion cascade constraints;
 
+drop table PAOScheduleAssignmentTable cascade constraints;
+
+drop table PAOScheduleTable cascade constraints;
+
 drop table PAOowner cascade constraints;
 
 drop table POINT cascade constraints;
@@ -558,20 +570,21 @@ create table BillingFileFormats  (
 );
 
 insert into billingfileformats values( -11, 'MV_90 DATA Import');
-insert into BillingFileFormats values(-1,'INVALID');
-insert into BillingFileFormats values(0,'SEDC');
-insert into BillingFileFormats values(1,'CADP');
-insert into BillingFileFormats values(2,'CADPXL2');
-insert into BillingFileFormats values(3,'WLT-40');
-insert into BillingFileFormats values(4,'CTI-CSV');
-insert into BillingFileFormats values(5,'OPU');
-insert into BillingFileFormats values(6,'DAFRON');
-insert into BillingFileFormats values(7,'NCDC');
-insert into billingFileformats values (9, 'CTI2');
+insert into BillingFileFormats values( -1,'INVALID');
+insert into BillingFileFormats values( 0,'SEDC');
+insert into BillingFileFormats values( 1,'CADP');
+insert into BillingFileFormats values( 2,'CADPXL2');
+insert into BillingFileFormats values( 3,'WLT-40');
+insert into BillingFileFormats values( 4,'CTI-CSV');
+insert into BillingFileFormats values( 5,'OPU');
+insert into BillingFileFormats values( 6,'DAFRON');
+insert into BillingFileFormats values( 7,'NCDC');
+insert into billingFileformats values( 9, 'CTI2');
 insert into billingfileformats values( 12, 'SEDC 5.4');
 insert into billingfileformats values( 13, 'NISC-Turtle');
 insert into billingfileformats values( 14, 'NISC-NCDC');
-
+insert into billingfileformats values( 15, 'NCDC-Handheld');
+insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key (FormatID);
 
@@ -622,7 +635,7 @@ create index Indx_CalcCmpCmpType on CALCCOMPONENT (
 /*==============================================================*/
 create table CAPBANK  (
    DEVICEID             NUMBER                          not null,
-   OPERATIONALSTATE     VARCHAR2(8)                     not null,
+   OPERATIONALSTATE     VARCHAR2(16)                    not null,
    ControllerType       VARCHAR2(20)                    not null,
    CONTROLDEVICEID      NUMBER                          not null,
    CONTROLPOINTID       NUMBER                          not null,
@@ -696,6 +709,19 @@ create table CCFeederSubAssignment  (
 
 alter table CCFeederSubAssignment
    add constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID);
+
+/*==============================================================*/
+/* Table: CICUSTOMERPOINTDATA                                   */
+/*==============================================================*/
+create table CICUSTOMERPOINTDATA  (
+   CustomerID           NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   Type                 VARCHAR2(16)                    not null,
+   OptionalLabel        VARCHAR2(32)                    not null
+);
+
+alter table CICUSTOMERPOINTDATA
+   add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, PointID);
 
 /*==============================================================*/
 /* Table: CICustomerBase                                        */
@@ -916,7 +942,7 @@ insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, te
 /* insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs'); */
 /* Repeater-BASE */
 insert into command values(-52, 'getconfig role 1', 'Read Roles', 'All Repeaters');
-insert into command values(-53, 'getconfig emetcon install', 'Download All Roles', 'All Repeaters');
+insert into command values(-53, 'putconfig emetcon install', 'Download All Roles', 'All Repeaters');
 insert into command values(-54, 'loop locate', 'Locate Device', 'All Repeaters');
 /* ION-BASE */
 insert into command values(-55, 'scan general', 'Scan Status Points', 'All ION Meters');
@@ -982,7 +1008,7 @@ create table Contact  (
    AddressID            NUMBER                          not null
 );
 
-insert into contact values ( 0, '(none)', '(none)', -1, 0 );
+insert into contact values ( 0, '(none)', '(none)', -9999, 0 );
 alter table Contact
    add constraint PK_CONTACT primary key (ContactID);
 
@@ -994,6 +1020,18 @@ create index Indx_ContLstName on Contact (
 );
 
 /*==============================================================*/
+/* Table: ContactNotifGroupMap                                  */
+/*==============================================================*/
+create table ContactNotifGroupMap  (
+   ContactID            NUMBER                          not null,
+   NotificationGroupID  NUMBER                          not null,
+   Attribs              CHAR(16)                        not null
+);
+
+alter table ContactNotifGroupMap
+   add constraint PK_CONTACTNOTIFGROUPMAP primary key (ContactID, NotificationGroupID);
+
+/*==============================================================*/
 /* Table: ContactNotification                                   */
 /*==============================================================*/
 create table ContactNotification  (
@@ -1001,10 +1039,11 @@ create table ContactNotification  (
    ContactID            NUMBER                          not null,
    NotificationCategoryID NUMBER                          not null,
    DisableFlag          CHAR(1)                         not null,
-   Notification         VARCHAR2(130)                   not null
+   Notification         VARCHAR2(130)                   not null,
+   Ordering             NUMBER                          not null
 );
 
-insert into ContactNotification values( 0, 0, 0, 'N', '(none)' );
+insert into ContactNotification values( 0, 0, 0, 'N', '(none)', 0 );
 
 alter table ContactNotification
    add constraint PK_CONTACTNOTIFICATION primary key (ContactNotifID);
@@ -1016,10 +1055,11 @@ create table Customer  (
    CustomerID           NUMBER                          not null,
    PrimaryContactID     NUMBER                          not null,
    CustomerTypeID       NUMBER                          not null,
-   TimeZone             VARCHAR2(40)                    not null
+   TimeZone             VARCHAR2(40)                    not null,
+   CustomerNumber       VARCHAR2(64)                    not null
 );
 
-INSERT INTO Customer VALUES (-1,0,0,'(none)');
+INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)' );
 alter table Customer
    add constraint PK_CUSTOMER primary key (CustomerID);
 
@@ -1028,7 +1068,8 @@ alter table Customer
 /*==============================================================*/
 create table CustomerAdditionalContact  (
    CustomerID           NUMBER                          not null,
-   ContactID            NUMBER                          not null
+   ContactID            NUMBER                          not null,
+   Ordering             NUMBER                          not null
 );
 
 alter table CustomerAdditionalContact
@@ -1055,6 +1096,18 @@ create table CustomerLoginSerialGroup  (
 
 alter table CustomerLoginSerialGroup
    add constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID);
+
+/*==============================================================*/
+/* Table: CustomerNotifGroupMap                                 */
+/*==============================================================*/
+create table CustomerNotifGroupMap  (
+   CustomerID           NUMBER                          not null,
+   NotificationGroupID  NUMBER                          not null,
+   Attribs              CHAR(16)                        not null
+);
+
+alter table CustomerNotifGroupMap
+   add constraint PK_CUSTOMERNOTIFGROUPMAP primary key (CustomerID, NotificationGroupID);
 
 /*==============================================================*/
 /* Table: DEVICE                                                */
@@ -2245,7 +2298,8 @@ create table DynamicLMControlAreaTrigger  (
    PointValue           FLOAT                           not null,
    LastPointValueTimeStamp DATE                            not null,
    PeakPointValue       FLOAT                           not null,
-   LastPeakPointValueTimeStamp DATE                            not null
+   LastPeakPointValueTimeStamp DATE                            not null,
+   TriggerID            NUMBER                          not null
 );
 
 alter table DynamicLMControlAreaTrigger
@@ -2746,11 +2800,19 @@ create table LMCONTROLAREATRIGGER  (
    PROJECTAHEADDURATION NUMBER                          not null,
    THRESHOLDKICKPERCENT NUMBER                          not null,
    MINRESTOREOFFSET     FLOAT                           not null,
-   PEAKPOINTID          NUMBER                          not null
+   PEAKPOINTID          NUMBER                          not null,
+   TriggerID            NUMBER                          not null
 );
 
 alter table LMCONTROLAREATRIGGER
    add constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER);
+
+/*==============================================================*/
+/* Index: INDX_UNQ_LMCNTRTR_TRID                                */
+/*==============================================================*/
+create unique index INDX_UNQ_LMCNTRTR_TRID on LMCONTROLAREATRIGGER (
+   TriggerID ASC
+);
 
 /*==============================================================*/
 /* Table: LMControlArea                                         */
@@ -3456,13 +3518,13 @@ alter table MCTConfigMapping
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination  (
-   DestinationOrder     NUMBER                          not null,
    NotificationGroupID  NUMBER                          not null,
-   RecipientID          NUMBER                          not null
+   RecipientID          NUMBER                          not null,
+   Attribs              CHAR(16)                        not null
 );
 
 alter table NotificationDestination
-   add constraint PKey_NotDestID primary key (NotificationGroupID, DestinationOrder);
+   add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID);
 
 /*==============================================================*/
 /* Table: NotificationGroup                                     */
@@ -3470,14 +3532,10 @@ alter table NotificationDestination
 create table NotificationGroup  (
    NotificationGroupID  NUMBER                          not null,
    GroupName            VARCHAR2(40)                    not null,
-   EmailSubject         VARCHAR2(60)                    not null,
-   EmailFromAddress     VARCHAR2(100)                   not null,
-   EmailMessage         VARCHAR2(160)                   not null,
-   NumericPagerMessage  VARCHAR2(14)                    not null,
    DisableFlag          CHAR(1)                         not null
 );
 
-insert into notificationgroup values(1,'(none)','(none)','(none)','(none)','(none)','N');
+insert into notificationgroup values( 1, '(none)', 'N' );
 alter table NotificationGroup
    add constraint PK_NOTIFICATIONGROUP primary key (NotificationGroupID);
 
@@ -3524,6 +3582,32 @@ create unique index Indx_PAOExclus on PAOExclusion (
    PaoID ASC,
    ExcludedPaoID ASC
 );
+
+/*==============================================================*/
+/* Table: PAOScheduleAssignmentTable                            */
+/*==============================================================*/
+create table PAOScheduleAssignmentTable  (
+   EventID              NUMBER                          not null,
+   ScheduleID           NUMBER                          not null,
+   PaoID                NUMBER                          not null,
+   Command              VARCHAR2(128)                   not null
+);
+
+alter table PAOScheduleAssignmentTable
+   add constraint PK_PAOSCHEDULEASSIGNMENTTABLE primary key (EventID, ScheduleID);
+
+/*==============================================================*/
+/* Table: PAOScheduleTable                                      */
+/*==============================================================*/
+create table PAOScheduleTable  (
+   ScheduleID           NUMBER                          not null,
+   NextRunTime          DATE                            not null,
+   LastRunTime          DATE                            not null,
+   IntervalRate         NUMBER                          not null
+);
+
+alter table PAOScheduleTable
+   add constraint PK_PAOSCHEDULETABLE primary key (ScheduleID);
 
 /*==============================================================*/
 /* Table: PAOowner                                              */
@@ -4912,6 +4996,7 @@ insert into YukonListEntry values( 3, 1, 0, 'Pager Number', 2 );
 insert into YukonListEntry values( 4, 1, 0, 'Fax Number', 2 );
 insert into YukonListEntry values( 5, 1, 0, 'Home Phone', 2 );
 insert into YukonListEntry values( 6, 1, 0, 'Work Phone', 2 );
+insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
 
 
 insert into YukonListEntry values (1001,1001,0,'Program',1001);
@@ -5903,15 +5988,14 @@ create table YukonUser  (
    UserID               NUMBER                          not null,
    UserName             VARCHAR2(64)                    not null,
    Password             VARCHAR2(64)                    not null,
-   LoginCount           NUMBER                          not null,
-   LastLogin            DATE                            not null,
    Status               VARCHAR2(20)                    not null
 );
 
-insert into YukonUser values(-1,'admin','admin',0,'01-JAN-00','Enabled');
-insert into YukonUser values(-2,'yukon','yukon',0,'01-JAN-00','Enabled');
-insert into YukonUser values(-100,'DefaultCTI','$cti_default',0,'01-JAN-00','Enabled');
-insert into YukonUser values(-9999,'(none)','(none)',0,'01-JAN-00','Disabled');
+insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled' );
+insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled' );
+insert into yukonuser values ( -3, 'weboper', 'weboper', 'Enabled' );
+insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled' );
+insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled' );
 alter table YukonUser
    add constraint PK_YUKONUSER primary key (UserID);
 
@@ -6143,6 +6227,7 @@ insert into YukonUserRole values (-1006, -100, -108, -10806, '(none)');
 insert into YukonUserRole values (-1010, -100, -200, -20000, '(none)');
 insert into YukonUserRole values (-1011, -100, -200, -20001, 'true');
 insert into YukonUserRole values (-1013, -100, -200, -20003, '(none)');
+
 alter table YukonUserRole
    add constraint PK_YKONUSRROLE primary key (UserRoleID);
 
@@ -6344,6 +6429,14 @@ alter table CCFeederSubAssignment
    add constraint FK_CCSub_CCFeed foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
 
+alter table CICUSTOMERPOINTDATA
+   add constraint FK_CICstPtD_CICst foreign key (CustomerID)
+      references CICustomerBase (CustomerID);
+
+alter table CICUSTOMERPOINTDATA
+   add constraint FK_CICUSTOM_REF_CICST_POINT foreign key (PointID)
+      references POINT (POINTID);
+
 alter table CICustomerBase
    add constraint FK_CICstBas_CstAddrs foreign key (MainAddressID)
       references Address (AddressID);
@@ -6384,6 +6477,14 @@ alter table Contact
    add constraint FK_CONTACT_REF_CNT_A_ADDRESS foreign key (AddressID)
       references Address (AddressID);
 
+alter table ContactNotifGroupMap
+   add constraint FK_CNTNOFGM foreign key (ContactID)
+      references Contact (ContactID);
+
+alter table ContactNotifGroupMap
+   add constraint FK_CNTNOFGM_NTFG foreign key (NotificationGroupID)
+      references NotificationGroup (NotificationGroupID);
+
 alter table ContactNotification
    add constraint FK_CntNot_YkLs foreign key (NotificationCategoryID)
       references YukonListEntry (EntryID);
@@ -6419,6 +6520,14 @@ alter table CustomerLoginSerialGroup
 alter table CustomerLoginSerialGroup
    add constraint FK_CsLgSG_LMG foreign key (LMGroupID)
       references LMGroup (DeviceID);
+
+alter table CustomerNotifGroupMap
+   add constraint FK_CST_CSTNOFGM foreign key (CustomerID)
+      references Customer (CustomerID);
+
+alter table CustomerNotifGroupMap
+   add constraint FK_NTFG_CSTNOFGM foreign key (NotificationGroupID)
+      references NotificationGroup (NotificationGroupID);
 
 alter table DEVICE
    add constraint FK_Dev_YukPAO foreign key (DEVICEID)
@@ -7009,6 +7118,14 @@ alter table PAOExclusion
 
 alter table PAOExclusion
    add constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO foreign key (ExcludedPaoID)
+      references YukonPAObject (PAObjectID);
+
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
+      references PAOScheduleTable (ScheduleID);
+
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSch_YukPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
 alter table PAOowner
