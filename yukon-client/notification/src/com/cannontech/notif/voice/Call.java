@@ -39,8 +39,8 @@ public class Call {
         _token = "CALLID" + nextToken.incrementAndGet();
 
         _parameterMap = new TreeMap();
-        _parameterMap.put("token", _token);
-        _parameterMap.put("contactid", new Integer(getContactId()));
+        _parameterMap.put("TOKEN", _token);
+        _parameterMap.put("CONTACTID", new Integer(getContactId()));
     }
 
     /**
