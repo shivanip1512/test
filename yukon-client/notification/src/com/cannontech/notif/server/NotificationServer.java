@@ -7,6 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.handler.*;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.roles.yukon.SystemRole;
@@ -245,5 +246,9 @@ public class NotificationServer implements Runnable
 		}
 
 	}
+
+    public void testInjectMessage(Message msg) {
+        _msgHandler.testHanldeMessage(msg);
+    }
 
 }

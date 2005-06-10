@@ -50,4 +50,8 @@ public class NotifMsgHandler implements MessageListener
             }
 		}
 	}
+
+    public void testHanldeMessage(Message msg) {
+        handleMessage(null, msg);
+    }
 }
