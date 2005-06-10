@@ -70,9 +70,8 @@ public class HorizontalSkipLabelsCategoryAxis extends CategoryAxis
 			while (iterator.hasNext()) {
                 
 				CategoryTick tick = (CategoryTick) iterator.next();
-				if (mod > 5 )
-					mod = ticks.size()/ 5;	//CTI 
-					{
+				if (i++%mod==0)
+				{   
 					g2.setPaint(getTickLabelPaint());
 	
 					CategoryLabelPosition position 
