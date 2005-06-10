@@ -49,7 +49,8 @@ public class VocomoDialer extends Dialer {
                 break;
 
             default:
-                CTILogger.error("An unknown error code (" + rInt + ") was received while making call " + call);
+                CTILogger.error("An unknown error code (" + rInt 
+                                + "[" + decodeStatus(rInt) + "]) was received while making call " + call);
                 // We'll leave the call state alone. If it happens to go 
                 // through, great; otherwise, it will just timeout.
                 break;
