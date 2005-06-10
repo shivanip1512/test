@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/06/10 21:10:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,8 +253,10 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
             CtiPointStatus *control = NULL;
 
             Protocol::DNP::BinaryOutputControl::ControlCode controltype;
-            Protocol::DNP::BinaryOutputControl::TripClose   trip_close;
-            int offset, on_time, off_time;
+            Protocol::DNP::BinaryOutputControl::TripClose   trip_close = Protocol::DNP::BinaryOutputControl::NUL;
+            int offset   = 0,
+                on_time  = 0,
+                off_time = 0;
             bool valid_control = true;
 
             if( parse.getiValue("point") > 0 )
@@ -309,9 +311,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                         }
 
                         offset      = control->getPointStatus().getControlOffset();
-                        trip_close  = Protocol::DNP::BinaryOutputControl::NUL;
-                        on_time     = 0;
-                        off_time    = 0;
                     }
                     else  //  assume pulsed
                     {
@@ -339,7 +338,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
                         controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
                         offset      = control->getPointStatus().getControlOffset();
-                        off_time    = 0;
                     }
 
                     //  set up the pseudo data to be sent from Porter-side
@@ -372,9 +370,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                 {
                     controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
                 }
-
-                on_time  = 0;
-                off_time = 0;
 
                 p_i.is_pseudo = false;
             }
