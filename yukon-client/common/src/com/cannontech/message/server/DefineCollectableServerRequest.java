@@ -69,7 +69,10 @@ public class DefineCollectableServerRequest extends DefineCollectableMessage {
 	 * @see com.roguewave.vsj.DefineCollectable#restoreGuts(java.lang.Object, com.roguewave.vsj.VirtualInputStream, com.roguewave.vsj.CollectableStreamer)
 	 */
 	public void restoreGuts(Object o, VirtualInputStream vistr, CollectableStreamer strmr) throws IOException {
-		throw new RuntimeException(getClass() + " restoreGuts() not implemented");
+		super.restoreGuts(o, vistr, strmr);
+        ServerRequestMsg msg = (ServerRequestMsg)o;
+        msg.setId(vistr.extractInt());
+        msg.setPayload(vistr.restoreObject(strmr));
 	}
 
 	/* (non-Javadoc)

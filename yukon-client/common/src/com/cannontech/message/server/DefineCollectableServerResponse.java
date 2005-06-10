@@ -83,8 +83,18 @@ public class DefineCollectableServerResponse extends DefineCollectableMessage {
 	 * @see com.roguewave.vsj.DefineCollectable#saveGuts(java.lang.Object, com.roguewave.vsj.VirtualOutputStream, com.roguewave.vsj.CollectableStreamer)
 	 */
 	public void saveGuts(Object o, VirtualOutputStream vostr, CollectableStreamer strmr) throws IOException {
-		throw new RuntimeException(getClass() + "::saveGuts() not implemented");
-		
+		super.saveGuts(o, vostr, strmr);
+        ServerResponseMsg msg = (ServerResponseMsg) o;
+        
+        vostr.insertInt(msg.getId());
+        vostr.insertInt(msg.getStatus());
+        vostr.saveObject(msg.getMessage(), SimpleMappings.CString);
+        if (msg.getPayload() != null) {
+            vostr.insertInt(1); // flag to indicate payload follows
+            vostr.saveObject(msg.getPayload(), strmr);
+        } else {
+            vostr.insertInt(0);
+        }
 	}
 
 }
