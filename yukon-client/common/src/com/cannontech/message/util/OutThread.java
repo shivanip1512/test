@@ -4,6 +4,7 @@ package com.cannontech.message.util;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.clientutils.CTILogger;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualOutputStream;
 
@@ -62,11 +63,11 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		com.cannontech.clientutils.CTILogger.debug("  IOException in outThread : " + e.getMessage());
+		CTILogger.error("IOException in outThread", e);
 	}
 	catch( InterruptedException ie )
 	{
-		com.cannontech.clientutils.CTILogger.debug("  InterruptedException in outThread : " + ie.getMessage());
+		CTILogger.error("InterruptedException in outThread", ie);
 	}
 
 	//com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
