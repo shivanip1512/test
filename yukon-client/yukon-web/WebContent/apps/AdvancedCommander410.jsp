@@ -655,7 +655,7 @@ function enableFields(form)
                   <tr> 
                     <td>&nbsp;</td>
                   </tr>
-n                </table>
+                </table>
                 <br>
               </div>
           </form>
