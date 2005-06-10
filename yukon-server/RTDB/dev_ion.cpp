@@ -299,17 +299,21 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
         OutMessage->Sequence     = _ion.getCommand();
         OutMessage->MessageFlags = _ion.commandRequiresRequeueOnFail(_ion.getCommand()) ? MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL : 0;
 
-        retList.insert(CTIDBG_new CtiReturnMsg(getID(),
-                                               RWCString(OutMessage->Request.CommandStr),
-                                               getName() + " / command submitted",
-                                               nRet,
-                                               OutMessage->Request.RouteID,
-                                               OutMessage->Request.MacroOffset,
-                                               OutMessage->Request.Attempt,
-                                               OutMessage->Request.TrxID,
-                                               OutMessage->Request.UserID,
-                                               OutMessage->Request.SOE,
-                                               RWOrdered()));
+        CtiReturnMsg *retmsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                       RWCString(OutMessage->Request.CommandStr),
+                                                       getName() + " / command submitted",
+                                                       nRet,
+                                                       OutMessage->Request.RouteID,
+                                                       OutMessage->Request.MacroOffset,
+                                                       OutMessage->Request.Attempt,
+                                                       OutMessage->Request.TrxID,
+                                                       OutMessage->Request.UserID,
+                                                       OutMessage->Request.SOE,
+                                                       RWOrdered());
+
+        retmsg->setExpectMore(true);
+
+        retList.insert(retmsg);
 
         //  fills in OutMessage with eventlog position and current command,
         //    then appends to outlist, consuming the outmessage
