@@ -436,20 +436,6 @@ public class Editor extends JPanel {
 		
 //		fire up the db change listener
 		DefaultDatabaseCache.getInstance().addDBChangeListener(new DBChangeCaptain());	
-		
-while(true) {
-try {
-	Thread.sleep(5000);
-} catch (InterruptedException e1) {
-	// TODO Auto-generated catch block
-	e1.printStackTrace();
-}
-		CTILogger.debug("TEST DEBUG MESSAGE FROM ESUB");
-		CTILogger.info("TEST INFO MESSAGE FROM ESUB");
-		CTILogger.warn("TEST WARN MESSAGE FROM ESUB");
-		CTILogger.error("TEST ERROR MESSAGE FROM ESUB");
-		CTILogger.fatal("TEST FATAL MESSAGE FROM ESUB");
-}
 	}
 	/**
 	 * Creation date: (12/12/2001 3:29:49 PM)
