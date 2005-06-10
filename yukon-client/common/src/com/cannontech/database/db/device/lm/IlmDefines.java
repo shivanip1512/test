@@ -33,7 +33,7 @@ public interface IlmDefines
 	public static final String CONTROL_ROTATION = "Rotation";
 	public static final String CONTROL_LATCHING = "Latching";
 	public static final String CONTROL_TRUE_CYCLE = "TrueCycle";
-	public static final String THERMOSTAT_SETBACK = "ThermostatRamping";
+	public static final String THERMOSTAT_SETBACK = "ThermostatSetback";
 	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
 	public static final String NO_CONTROL = "NoControl";
 
