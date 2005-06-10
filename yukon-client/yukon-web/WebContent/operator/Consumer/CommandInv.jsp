@@ -7,9 +7,29 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
+<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
+<%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
+<jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+	PointData pointData = null;
+	
+	boolean manual = false;
+	if( request.getParameter("manual") != null)
+	{	//Force going to the Commander page instead of a page based on the DeviceType
+		manual = true;
+	}
+	boolean lp = false;
+	if( request.getParameter("lp") != null)
+	{	//Force going to the Load Profile
+		lp = true;
+	}
+
+	String cmd = request.getParameter("command");
+	if (cmd != null)
+		YC_BEAN.setCommandString("");
+		
 	int invNo = -1;
 	int deviceID = -1;
 	if( request.getParameter("InvNo") != null)
@@ -32,6 +52,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/Base.css" type="text/css">
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -53,13 +74,19 @@
           <td  valign="top" width="101"> 
           	<%--"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the InvNo--%>
             <% String redirect = request.getRequestURI()+ "?InvNo=" + invNo;%>
+            <%if( manual) redirect = redirect + "&manual";%>
+            <%if( lp) redirect = redirect + "&lp";%>
             <% String referrer = request.getRequestURI()+ "?InvNo=" + invNo;%>
             <% String pageName = "CommandInv.jsp?InvNo=" + invNo;%>
             <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
 <%
-			if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL)
+			if( lp )
+			{%>
+				<%@ include file="../../apps/AdvancedCommander410.jsp"%>
+			<%}
+			else if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
 			{
 				%>
 				<%@ include file="../../apps/Commander410.jsp"%>

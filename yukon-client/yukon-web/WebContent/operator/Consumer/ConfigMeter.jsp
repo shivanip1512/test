@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes"%>
 <%@ page import="com.cannontech.device.range.*"%>
+<jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } 
 	int invNo = Integer.parseInt(request.getParameter("InvNo"));
@@ -129,7 +130,7 @@ if (request.getParameter("Submit") != null)
 
 	//Update the database when change is true.
 	if( updateYukonPAO )
-		DBPersistentFuncs.performDBChange(yukonPao, ycBean.getClientConnection(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE);
+		DBPersistentFuncs.performDBChange(yukonPao, YC_BEAN.getClientConnection(), com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE);
 }%>	
 
 
