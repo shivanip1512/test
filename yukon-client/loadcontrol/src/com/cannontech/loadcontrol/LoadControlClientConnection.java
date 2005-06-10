@@ -16,7 +16,6 @@ import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener
 {
@@ -252,18 +251,7 @@ public boolean needInitConn()
 	//return true if there hasn't been any Observers set to watch this connection
 	return (countObservers() <= 0);
 }
-/**
- * This method was created in VisualAge.
- * @param streamer CollectableStreamer
- */
-public void registerMappings(CollectableStreamer streamer ) {
-	super.registerMappings( streamer );
 
-	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
-
-	for( int i = 0; i < mappings.length; i++ )
-		streamer.register( mappings[i] );
-}
 /**
  * Insert the method's description here.
  * Creation date: (7/27/2001 2:49:33 PM)
