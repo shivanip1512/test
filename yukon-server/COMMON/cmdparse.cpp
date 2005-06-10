@@ -1169,6 +1169,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     RWCRExpr    rolenum("role *[0-9][0-9]?");
     RWCRExpr    rawcmd("raw +(func(tion)? +)?start=0x[0-9a-f]+( +[0-9]+)?");
     RWCRExpr    interval("interval(s| +(lp|li))");  //  match "intervals", "interval lp", and "interval li"
+    RWCRExpr    time("time( |$)");  //  only match "time" as a single word
     RWCRExpr    multiplier("mult.* *(kyz *[123])?");
     RWCRExpr    address("address (group|uniq)");
 
@@ -1266,10 +1267,13 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
 
         if(!(CmdStr.match("time")).isNull())
         {
-            _cmd["time"] = CtiParseValue("TRUE");
+            if(!(token = CmdStr.match(time)).isNull())
+            {
+                _cmd["time"] = CtiParseValue("TRUE");
 
-            if(!(CmdStr.match("sync")).isNull())
-                _cmd["sync"] = CtiParseValue("TRUE");
+                if(!(CmdStr.match("sync")).isNull())
+                    _cmd["sync"] = CtiParseValue("TRUE");
+            }
         }
 
         if(!(CmdStr.match("ied")).isNull())
