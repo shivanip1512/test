@@ -2,11 +2,10 @@ package com.cannontech.yukon.conns;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.message.dispatch.message.DefineCollectableMulti;
+import com.cannontech.message.notif.*;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.ServerRequest;
-import com.cannontech.message.notif.*;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.INotifConnection;
 import com.roguewave.vsj.CollectableStreamer;
@@ -20,11 +19,6 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
 	{
 		CollectableMappings.OrderedVector,
 		
-		//new DefColl_NotifEmailAttchMsg(),
-		//new DefColl_NotifEmailMsg(),
-		//new DefColl_NotifVoiceMsg()
-		new DefineCollectableMulti(),
-        
         new DefColl_NotifAlarmMsg(),
         new DefColl_NotifLMControlMsg(),
         new DefColl_VoiceDataRequestMsg(),
