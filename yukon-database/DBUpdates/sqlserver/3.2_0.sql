@@ -150,6 +150,44 @@ alter table Customer alter column CustomerNumber varchar(64) not null;
 go
 
 
+create table PAOScheduleTable (
+   ScheduleID           numeric              not null,
+   NextRunTime          datetime             not null,
+   LastRunTime          datetime             not null,
+   IntervalRate         numeric              not null
+);
+go
+alter table PAOScheduleTable
+   add constraint PK_PAOSCHEDULETABLE primary key  (ScheduleID);
+go
+
+create table PAOScheduleAssignmentTable (
+   EventID              numeric              not null,
+   ScheduleID           numeric              not null,
+   PaoID                numeric              not null,
+   Command              varchar(128)         not null
+);
+go
+alter table PAOScheduleAssignmentTable
+   add constraint PK_PAOSCHEDULEASSIGNMENTTABLE primary key  (EventID, ScheduleID);
+go
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
+      references PAOScheduleTable (ScheduleID);
+go
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSch_YukPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+go
+
+alter table dynamicccsubstationbus add AdditionalFlags varchar(20);
+go
+update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+go
+alter table dynamicccsubstationbus add AdditionalFlags varchar(20) not null;
+go
+
+
 
 
 

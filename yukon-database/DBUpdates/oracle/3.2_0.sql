@@ -115,10 +115,33 @@ alter table Customer add CustomerNumber varchar2(64);
 update Customer set CustomerNumber = '(none)';
 alter table Customer modify CustomerNumber varchar2(64) not null;
 
+create table PAOScheduleTable  (
+   ScheduleID           NUMBER                          not null,
+   NextRunTime          DATE                            not null,
+   LastRunTime          DATE                            not null,
+   IntervalRate         NUMBER                          not null
+);
+alter table PAOScheduleTable
+   add constraint PK_PAOSCHEDULETABLE primary key (ScheduleID);
 
+create table PAOScheduleAssignmentTable  (
+   EventID              NUMBER                          not null,
+   ScheduleID           NUMBER                          not null,
+   PaoID                NUMBER                          not null,
+   Command              VARCHAR2(128)                   not null
+);
+alter table PAOScheduleAssignmentTable
+   add constraint PK_PAOSCHEDULEASSIGNMENTTABLE primary key (EventID, ScheduleID);
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
+      references PAOScheduleTable (ScheduleID);
+alter table PAOScheduleAssignmentTable
+   add constraint FK_PAOSch_YukPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
 
-
-
+alter table dynamicccsubstationbus add AdditionalFlags varchar2(20);
+update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamicccsubstationbus modify AdditionalFlags varchar2(20) not null;
 
 
 
