@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/05/24 00:40:04 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/06/13 19:07:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ _lmControlHistID(lmchid), _paoID(paoid), _startDateTime(start), _soeTag(soe),
 _controlDuration(dur), _controlType(type), _currentDailyTime(daily), _currentMonthlyTime(month),
 _currentSeasonalTime(season), _currentAnnualTime(annual), _defaultActiveRestore(restore),
 _reductionValue(reduce), _reductionRatio(100), _prevLogTime(start), _prevStopReportTime(start),
-_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL), _activeRestore("U")
+_isNewControl(true), _loadedActiveRestore(LMAR_NEWCONTROL), _activeRestore(LMAR_MANUAL_RESTORE)
 {
 }
 
@@ -846,8 +846,6 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
     _defaultActiveRestore   = RWCString(LMAR_TIMED_RESTORE);        // Assume this is a timed in control since it had a stop time in the log???
     _prevLogTime            = _stopDateTime < now ? _stopDateTime : now;
     _prevStopReportTime     = _stopDateTime < now ? _stopDateTime : now;
-
-    // dump();
 
     return;
 }

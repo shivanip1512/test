@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2005/05/27 02:34:18 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2005/06/13 19:07:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2335,8 +2335,12 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->getControl().setReductionValue(pMsg->getReductionValue());
                 pendingControlLMMsg->getControl().setReductionRatio(pMsg->getReductionRatio());
                 pendingControlLMMsg->getControl().setStartTime(pMsg->getStartDateTime());
-                pendingControlLMMsg->getControl().setStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
-                pendingControlLMMsg->getControl().setControlCompleteTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
+
+                RWTime cntrlStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
+                if(pMsg->getControlDuration() < 0) cntrlStopTime = pMsg->getStartDateTime();
+
+                pendingControlLMMsg->getControl().setStopTime(cntrlStopTime);
+                pendingControlLMMsg->getControl().setControlCompleteTime(cntrlStopTime);
                 QueryPerformanceCounter(&t3Time);
                 pendingControlLMMsg->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
                 QueryPerformanceCounter(&t4Time);

@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/24 00:39:51 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/06/13 19:07:48 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.17  2005/06/13 19:07:48  cplender
+* LM Control History would get off a bit on RESTORE operations.
+*
 * Revision 1.16  2005/05/24 00:39:51  cplender
 * Added additional try catch on the DB writing threads which use transactions.
 * Improved the use of the thread monitor.
@@ -381,14 +384,14 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                         else if( ppo.getControl().getControlDuration() >= 0 && now.seconds() >= ppo.getControl().getControlCompleteTime())
                         {
                             /*  CONTROL IS COMPLETE!  Time it in. */
-                            updateControlHistory( ppo, CtiPendingPointOperations::datachange, now );    // This will write a 'T' row!
+                            updateControlHistory( ppo, CtiPendingPointOperations::datachange, ppo.getControl().getControlCompleteTime() );    // This will write a 'T' row!
                             it = _pendingControls.erase(it);
                             continue;   // iterator has been repositioned!
                         }
                         else if(ppo.getControl().getControlDuration() < 0)
                         {
                             /*  This is a restore command.  */
-                            updateControlHistory( ppo, CtiPendingPointOperations::datachange, now );    // This will write a 'M' or slight possibility of a 'T' row!
+                            updateControlHistory( ppo, CtiPendingPointOperations::datachange, ppo.getControl().getStartTime() );    // This will write a 'M' or slight possibility of a 'T' row!
                             it = _pendingControls.erase(it);
                             continue;   // iterator has been repositioned!
                         }
