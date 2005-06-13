@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/17 23:34:00 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/06/13 19:07:01 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,8 @@ public:
                 RWCString actn = parse.getActionItems()[offset];
                 RWCString desc = getDescription(parse);
 
-                _lastCommand += actn + " / ";
+                if(offset > 0) _lastCommand += " / ";
+                _lastCommand += actn;
 
                 // Check if this is a repeat of a previous control.  We should suppress repeats.
                 if( !reducelogs || now.seconds() > _lastCommandExpiration || !prevLastAction.contains(actn) )
