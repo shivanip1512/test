@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.141 $
-* DATE         :  $Date: 2005/05/27 02:29:12 $
+* REVISION     :  $Revision: 1.142 $
+* DATE         :  $Date: 2005/06/13 13:51:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,6 +77,7 @@ using namespace std;
 #include "device.h"
 #include "dev_lcu.h"
 #include "dev_tap.h"
+#include "dev_snpp.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
 #include "dev_wctp.h"
@@ -1203,6 +1204,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_SERIESVRTU:
                 case TYPE_SERIESVLMIRTU:
                 case TYPE_RTM:
+                case TYPE_SNPP:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int protocolStatus = NoError;
@@ -1211,6 +1213,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             if( !(status = ds->recvCommRequest(OutMessage)) )
                             {
+                                if(Device->getType() == TYPE_SNPP)
+                                { 
+                                    Port->close(0);//Close the port so it re-opens every time!
+                                }
+
                                 while( !ds->isTransactionComplete() )
                                 {
                                     if( !(status = ds->generate(trx)) )
@@ -2043,6 +2050,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
+                    case TYPE_SNPP:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:
@@ -3079,7 +3087,8 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
       Device->getType() != TYPE_ALPHA_A3 &&
       Device->getType() != TYPE_SENTINEL &&
       Device->getType() != TYPE_ALPHA_A1 &&
-      Device->getType() != TYPE_TDMARKV
+      Device->getType() != TYPE_TDMARKV &&
+      Device->getType() != TYPE_SNPP
       )
     {
         /* Check if this device is on a VTU and if so get it's record */
