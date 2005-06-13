@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/05/27 02:29:12 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/06/13 13:57:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,7 @@
 #include "dev_carrier.h"
 #include "dev_rtm.h"
 #include "dev_tap.h"
+#include "dev_snpp.h"
 #include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
@@ -293,6 +294,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_SIXNET:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSixnet;
+            break;
+        }
+    case TYPE_SNPP:
+        {
+            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSnppPagingTerminal;
             break;
         }
     case TYPE_TAPTERM:

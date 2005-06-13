@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/05/13 16:13:21 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/06/13 13:57:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,7 @@ using namespace std;
 #include "ctibase.h"
 #include "dev_remote.h"
 #include "dev_tap.h"
+#include "dev_snpp.h"
 #include "dev_lcu.h"
 #include "dev_wctp.h"
 #include "msg_pcrequest.h"
@@ -224,6 +225,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
 
             switch(_transmitterDevice->getType())
             {
+            case TYPE_SNPP:
             case TYPE_WCTP:
             case TYPE_TAPTERM:
                 {
@@ -591,6 +593,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
         switch(_transmitterDevice->getType())
         {
+        case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
             {
