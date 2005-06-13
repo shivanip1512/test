@@ -192,11 +192,11 @@ clean:
 calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h calccomponent.h \
 		pointstore.h hashkey.h rtdb.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h pointdefs.h \
-		logger.h thread.h numstr.h
+		logger.h thread.h numstr.h utility.h
 calccomponent.obj:	yukon.h precompiled.h ctidbgmem.h calccomponent.h \
 		pointstore.h hashkey.h rtdb.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h pointdefs.h \
-		logger.h thread.h calc.h
+		logger.h thread.h calc.h utility.h
 calclogicsvc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h ctinexus.h id_build.h message.h \

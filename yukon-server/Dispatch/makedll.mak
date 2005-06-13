@@ -163,9 +163,10 @@ ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		cmdparse.h parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
 		rte_base.h tbl_pao.h tbl_rtcomm.h tbl_base.h tbl_2way.h \
 		tbl_stats.h tbl_scanrate.h queues.h tbl_dyn_ptalarming.h \
-		tbl_ptdispatch.h tbl_pt_alarm.h mgr_ptclients.h mgr_point.h \
-		slctpnt.h ptconnect.h pt_dyn_dispatch.h numstr.h device.h \
-		devicetypes.h dllvg.h dllyukon.h
+		tbl_ptdispatch.h tbl_pt_alarm.h thread_monitor.h \
+		thread_register_data.h boost_time.h mgr_ptclients.h \
+		mgr_point.h slctpnt.h ptconnect.h pt_dyn_dispatch.h numstr.h \
+		device.h devicetypes.h dllvg.h dllyukon.h
 dispmain.obj:	yukon.h precompiled.h ctidbgmem.h dispsvc.h cservice.h \
 		dlldefs.h dllvg.h CServiceConfig.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h ctibase.h \
@@ -275,8 +276,8 @@ pendingopthread.obj:	yukon.h precompiled.h ctidbgmem.h counter.h \
 		tbl_rawpthistory.h utility.h msg_cmd.h pendingopthread.h \
 		pendable.h pending_info.h tbl_lm_controlhist.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h
-pending_info.obj:	yukon.h precompiled.h ctidbgmem.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h pending_info.h msg_pdata.h \
+pending_info.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h pending_info.h msg_pdata.h \
 		pointdefs.h message.h collectable.h msg_signal.h \
 		tbl_lm_controlhist.h dbmemobject.h dbaccess.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h sema.h utility.h

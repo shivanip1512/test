@@ -158,7 +158,7 @@ tbl_direct.obj:	yukon.h precompiled.h ctidbgmem.h tbl_direct.h \
 		cticalls.h dsm2.h mutex.h guard.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h logger.h thread.h
 tbl_dv_address.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_address.h \
-		types.h logger.h thread.h mutex.h dlldefs.h guard.h dllbase.h \
+		types.h logger.h dlldefs.h thread.h mutex.h guard.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
 tbl_dv_cbc.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_cbc.h \
@@ -173,13 +173,13 @@ tbl_dv_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_emetcon.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h logger.h thread.h
 tbl_dv_expresscom.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h resolvers.h types.h \
+		dlldefs.h thread.h mutex.h guard.h resolvers.h types.h \
 		pointtypes.h db_entry_defines.h tbl_dv_expresscom.h \
 		vcomdefs.h dbmemobject.h dllbase.h os2_2w32.h cticalls.h \
 		dsm2.h dbaccess.h sema.h
 tbl_dv_idlcremote.obj:	yukon.h precompiled.h ctidbgmem.h \
-		tbl_dv_idlcremote.h types.h logger.h thread.h mutex.h \
-		dlldefs.h guard.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
+		tbl_dv_idlcremote.h types.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
 		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h
 tbl_dv_ied.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_ied.h \
@@ -190,7 +190,7 @@ tbl_dv_lmgmct.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_lmgmct.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h logger.h thread.h
 tbl_dv_lmg_ripple.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h tbl_dv_lmg_ripple.h \
+		dlldefs.h thread.h mutex.h guard.h tbl_dv_lmg_ripple.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h dbmemobject.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h
 tbl_dv_lmvcserial.obj:	yukon.h precompiled.h ctidbgmem.h \
@@ -224,6 +224,11 @@ tbl_dv_wnd.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_wnd.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h
+tbl_dyn_paoinfo.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h sema.h rwutil.h boost_time.h logger.h \
+		thread.h numstr.h tbl_dyn_paoinfo.h ctibase.h ctinexus.h \
+		dbmemobject.h pointdefs.h
 tbl_dyn_ptalarming.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h numstr.h \
@@ -243,16 +248,17 @@ tbl_lmg_golay.obj:	yukon.h precompiled.h ctidbgmem.h tbl_lmg_golay.h \
 		dlldefs.h dbmemobject.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h
-tbl_lmg_sa205105.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h tbl_lmg_sa205105.h \
+tbl_lmg_sa205105.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
+		dlldefs.h logger.h thread.h mutex.h guard.h \
+		tbl_lmg_sa205105.h dbmemobject.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		db_entry_defines.h
+tbl_lmg_sa305.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h tbl_lmg_sa305.h \
 		dbmemobject.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h
-tbl_lmg_sa305.obj:	yukon.h precompiled.h ctidbgmem.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h tbl_lmg_sa305.h dbmemobject.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h dbaccess.h \
-		sema.h resolvers.h pointtypes.h db_entry_defines.h
 tbl_lmg_sasimple.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h tbl_lmg_sasimple.h \
+		dlldefs.h thread.h mutex.h guard.h tbl_lmg_sasimple.h \
 		dbmemobject.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h
 tbl_lm_controlhist.obj:	yukon.h precompiled.h ctidbgmem.h \
@@ -264,8 +270,8 @@ tbl_loadprofile.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h logger.h thread.h
-tbl_metergrp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h tbl_metergrp.h vcomdefs.h \
+tbl_metergrp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h tbl_metergrp.h vcomdefs.h \
 		dbmemobject.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h
 tbl_pao.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
@@ -331,8 +337,8 @@ tbl_pt_analog.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pt_analog.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h
-tbl_pt_base.obj:	yukon.h precompiled.h ctidbgmem.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h resolvers.h types.h pointtypes.h \
+tbl_pt_base.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h resolvers.h types.h pointtypes.h \
 		db_entry_defines.h tbl_pt_base.h dllbase.h os2_2w32.h \
 		cticalls.h dsm2.h dbmemobject.h dbaccess.h sema.h desolvers.h \
 		pointdefs.h
