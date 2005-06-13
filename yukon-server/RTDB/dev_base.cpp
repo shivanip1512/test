@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/03/01 14:06:45 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/06/13 13:53:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -820,7 +820,8 @@ bool CtiDeviceBase::isTAP() const
     if(getType() == TYPE_TAPTERM ||
        getType() == TYPE_WCTP ||
        getType() == TYPE_TAPTERM_EMAIL ||
-       getType() == TYPE_TAPTERM_TESCOM)
+       getType() == TYPE_TAPTERM_TESCOM || 
+       getType() == TYPE_SNPP )
     {
         bret = true;
     }
