@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/03/14 01:31:34 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/06/13 19:06:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -965,14 +965,14 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
     CtiPointDataMsg *pData = NULL;
 
     CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                             RWCString(InMessage->Return.CommandStr),
-                                             RWCString("LCU status request complete"),
-                                             InMessage->EventCode & 0x7fff,
-                                             InMessage->Return.RouteID,
-                                             InMessage->Return.MacroOffset,
-                                             InMessage->Return.Attempt,
-                                             InMessage->Return.TrxID,
-                                             InMessage->Return.UserID);
+                                                    RWCString(InMessage->Return.CommandStr),
+                                                    RWCString("LCU status request complete"),
+                                                    InMessage->EventCode & 0x7fff,
+                                                    InMessage->Return.RouteID,
+                                                    InMessage->Return.MacroOffset,
+                                                    InMessage->Return.Attempt,
+                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.UserID);
 
     switch(getLCUType())
     {
@@ -1092,14 +1092,14 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
     else if(isScanFrozen())
     {
         pPIL  = CTIDBG_new CtiReturnMsg(getID(),
-                                 RWCString(InMessage->Return.CommandStr),
-                                 RWCString("LCU accumulator request complete"),
-                                 InMessage->EventCode & 0x7fff,
-                                 InMessage->Return.RouteID,
-                                 InMessage->Return.MacroOffset,
-                                 InMessage->Return.Attempt,
-                                 InMessage->Return.TrxID,
-                                 InMessage->Return.UserID);
+                                        RWCString(InMessage->Return.CommandStr),
+                                        RWCString("LCU accumulator request complete"),
+                                        InMessage->EventCode & 0x7fff,
+                                        InMessage->Return.RouteID,
+                                        InMessage->Return.MacroOffset,
+                                        InMessage->Return.Attempt,
+                                        InMessage->Return.TrxID,
+                                        InMessage->Return.UserID);
 
         USHORT Value = MAKEUSHORT(InMessage->Buffer.InMessage[7], InMessage->Buffer.InMessage[8]);
 
@@ -1111,12 +1111,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
                 FLOAT PartHour = (FLOAT)(getLastFreezeTime().seconds() - getPrevFreezeTime().seconds());
                 PartHour /= (3600.0);
 
-                #if 0
+#if 0
                 /* to convert to units */
                 PValue /= PartHour;
                 //  apply multiplier and offset
                 PValue = pAccumPoint->computeValueForUOM(PValue);
-                #else
+#else
 
                 PValue = (FLOAT) Value * pAccumPoint->getMultiplier();
                 /* to convert to units */
@@ -1129,12 +1129,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
                     dout << "  Demand accumulators are not computed correctly " << endl;
                 }
 
-                #endif
+#endif
 
                 pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(),
-                                            PValue, NormalQuality,
-                                            DemandAccumulatorPointType,
-                                            RWCString( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
+                                                   PValue, NormalQuality,
+                                                   DemandAccumulatorPointType,
+                                                   RWCString( getName() + " point " + pAccumPoint->getName() + " " + CtiNumStr(PValue) ));
 
                 if(pData != NULL)
                 {
@@ -1231,12 +1231,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
 
                     resultString = getName() + " / " + PointRecord->getName() + " = " + CtiNumStr(PValue);
 
-                    #if 0
+#if 0
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << resultString << endl;
                     }
-                    #endif
+#endif
 
                     pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
                     if(pData != NULL)
@@ -1523,8 +1523,8 @@ CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
 
     if(pOutMessage)
     {
-    _lastControlMessage = CTIDBG_new OUTMESS( *pOutMessage );
-    _lastCommand = RWCString( _lastControlMessage->Request.CommandStr );
+        _lastControlMessage = CTIDBG_new OUTMESS( *pOutMessage );
+        _lastCommand = RWCString( _lastControlMessage->Request.CommandStr );
     }
 
     return *this;
@@ -1728,6 +1728,10 @@ CtiDeviceLCU::CtiLCUType_t   CtiDeviceLCU::getLCUType() const
     return _lcuType;
 }
 
+/*
+ *  This method could stand some attention.  The behavior should be what was, but was that ever correct?  Will lockout happen on an inhibit?
+ *  Does the database care about lockout?
+ */
 void CtiDeviceLCU::verifyControlLockoutState(INMESS *InMessage)
 {
     if(_lcuType == LCU_LANDG || _lcuType == LCU_STANDARD)
@@ -1870,20 +1874,6 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                             {
                                 if(getLastControlMessage() != NULL)             /* Check if this was sent just to us ... */
                                 {
-                                    #if 0
-                                    deleteLastControlMessage();                  // Blast the memory..
-
-                                    if( !(isFlagSet(LCUWASTRANSMITTING)) )
-                                    {
-                                        setNextCommandTime( rwEpoch );            // Mark him as a non-player.. Not TXing.
-                                    }
-                                    resetFlags( LCUTRANSMITSENT | LCUWASTRANSMITTING );
-                                    #else
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
-                                    #endif
                                     resultCode = eLCULockedOutSpecificControl;     // Let us inform the peasants
                                 }
                                 else  // It is quite possible that the LCU decode was a result of a global control...
@@ -1920,7 +1910,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                                  *  If we get to this point we must assume that this LCU completed his control command
                                  */
 
-                                    resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
+                                resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
                                 resultCode = eLCUDeviceControlComplete;
                             }
                             else if(getLastControlMessage() != NULL)
@@ -1952,10 +1942,6 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
                                 /* Peculiar */
                                 resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
                                 deleteLastControlMessage();
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
                             }
                         }
                     }
@@ -1980,7 +1966,7 @@ INT CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, INMESS *InMessage, Cti
 
 bool CtiDeviceLCU::isLCULockedOut( ) const
 {
-    return _lockedOut;
+    return (_lockedOut || getControlInhibit());
 }
 
 bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
@@ -2016,7 +2002,7 @@ bool CtiDeviceLCU::isLCULockedOut( INMESS *InMessage )
         }
     }
 
-    return _lockedOut;
+    return (_lockedOut || getControlInhibit());
 }
 
 void CtiDeviceLCU::lcuResetFlagsAndTags()
@@ -2343,10 +2329,10 @@ CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
         pData->setQuality( NormalQuality );
         pData->setValue( 1 );
 
-        {
+        /* {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Sending **** " << pPoint->getPointID() << endl;
-        }
+            dout << RWTime() << " **** Sending SET **** " << pPoint->getName() << endl;
+        } */
 
     }
 
@@ -2369,10 +2355,10 @@ CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
         pData->setQuality( NormalQuality );
         pData->setValue( 0 );
 
-        {
+        /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Sending **** " << pPoint->getPointID() << endl;
-        }
+            dout << RWTime() << " **** Sending CLEAR **** " << pPoint->getName() << endl;
+        }*/
 
     }
 

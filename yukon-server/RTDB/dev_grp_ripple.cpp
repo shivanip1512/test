@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/06/13 19:06:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,7 +226,15 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, RWTPtrSlist< CtiMessage >  &vgL
 
         if(_isShed == CONTROLLED || _isShed == UNCONTROLLED)
         {
-            reportControlStart( _isShed, getRippleTable().getShedTime(), 100, vgList, getLastCommand() );
+            LONG shedtime = getRippleTable().getShedTime();
+            int controlpercent = 100;
+            if(_isShed == UNCONTROLLED)
+            {
+                shedtime = RESTORE_DURATION;
+                controlpercent = 0;
+            }
+
+            reportControlStart( _isShed, shedtime, controlpercent, vgList, getLastCommand() );
             setShed( INVALID );   // This keeps me from sending this multiple times for a single control.
         }
         else if( erdb )
@@ -360,7 +368,7 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
             if(bstatus)
             {
                 RWTPtrSlist< CtiMessage > vgList;
-                otherGroup->reportControlStart( false, 0, 100, vgList, "control restore" );
+                otherGroup->reportControlStart( false, RESTORE_DURATION, 0, vgList, "control restore" );
 
                 if(vgList.entries())
                 {

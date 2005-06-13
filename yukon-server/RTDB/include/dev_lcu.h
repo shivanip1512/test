@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/12/31 17:04:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/06/13 19:06:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,7 @@ using namespace std;
 #include "dev_idlc.h"
 #include "mgr_point.h"
 
-#define COMPLETE    1000
+#define SEQUENCE_ACTIVE    1000
 #define MISSED      1001
 
 class IM_EX_DEVDB CtiDeviceLCU : public CtiDeviceIDLC

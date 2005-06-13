@@ -6,12 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/03/14 01:31:11 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/06/13 19:06:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
+#pragma warning (disable : 4786)
 
 
 #pragma title ( "Ripple Routines" )
@@ -158,6 +158,45 @@ bool findExclusionBlockage(const long key, CtiDeviceSPtr Dev, void* ptr)
     return bStatus;
 }
 
+static void applySetActive(const long key, CtiDeviceSPtr Dev, void* vplcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU*)vplcu;
+
+    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
+    {
+        MPCPointSet( SEQUENCE_ACTIVE, Dev.get(), true);
+    }
+}
+
+static void applyClearActive(const long key, CtiDeviceSPtr Dev, void* vplcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU*)vplcu;
+
+    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
+    {
+        MPCPointSet( SEQUENCE_ACTIVE, Dev.get(), false);
+    }
+}
+
+static void applySetMissed(const long key, CtiDeviceSPtr Dev, void* vplcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU*)vplcu;
+
+    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
+    {
+        MPCPointSet( MISSED, Dev.get(), true);
+    }
+}
+
+static void applyClearMissed(const long key, CtiDeviceSPtr Dev, void* vplcu)
+{
+    CtiDeviceLCU *lcu = (CtiDeviceLCU*)vplcu;
+
+    if( isLCU(Dev->getType()) && Dev->getPortID() == lcu->getPortID() )
+    {
+        MPCPointSet( MISSED, Dev.get(), false);
+    }
+}
 
 void ApplyPortXResetOnTimeout(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 {
@@ -173,8 +212,10 @@ void ApplyPortXResetOnTimeout(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
         {
             if(pOtherLCU->getLastControlMessage() != NULL)
             {
-                Send4PartToDispatch("Rsc", (char*)Dev->getName().data(), "Sequence Complete", "Timeout");
-                MPCPointSet( COMPLETE, Dev.get(), true );
+                Send4PartToDispatch ("Rsc", (char*)Dev->getName().data(), "Sequence Complete", "Timeout");
+
+                MPCPointSet( SEQUENCE_ACTIVE, Dev.get(), false );
+                MPCPointSet( MISSED, Dev.get(), true );
             }
 
             pOtherLCU->lcuResetFlagsAndTags();
@@ -201,8 +242,7 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 
     if( isLCU(Dev->getType()) &&
         !Dev->isInhibited() &&
-        Dev->getPortID() == lcu->getPortID() &&
-        Dev->getAddress() != LCUGLOBAL )            // CGP 12202004 Added on a whim.  Be very alert here...
+        Dev->getPortID() == lcu->getPortID() ) // && Dev->getAddress() != LCUGLOBAL )            // CGP 12202004 Added on a whim.  Be very alert here...
     {
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
@@ -221,12 +261,13 @@ void ApplyPortXLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << pOtherLCU->getName() << " should transmit on this port due to BROADCAST control" << endl;
                 }
+                MPCPointSet( SEQUENCE_ACTIVE, pOtherLCU, true );
                 pOtherLCU->setFlags( LCUTRANSMITSENT );    // Global address will make this LCU squawk
             }
         }
         else if( lcu->getAddress() != pOtherLCU->getAddress() ) // It isn't me...
         {
-            pOtherLCU->lcuResetFlagsAndTags();                            // Make sure nothing is in there!
+            pOtherLCU->lcuResetFlagsAndTags();                  // Make sure nothing is in there!
         }
 
         if(pOtherLCU->getAddress() != LCUGLOBAL)
@@ -344,118 +385,132 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
     CtiDeviceLCU  *GlobalLCUDev   = (CtiDeviceLCU*)(DeviceManager.RemoteGetPortRemoteEqual(lcu->getPortID(), LCUGLOBAL)).get();
     BOOL NoneStarted = TRUE;
 
+
+    if(OutMessage->EventCode & STAGE)
     {
-        if(OutMessage->EventCode & STAGE)
+        if(!(Result))
         {
-            if(!(Result))
+            lcu->setStageTime( RWTime() );                     // Device was successfully staged at this time!
+        }
+        else
+        {
+            lcu->setStageTime( rwEpoch );   // Device failed to stage
+        }
+
+        lcu->setNextCommandTime( RWTime() + TIMETOSTAGE );
+
+        if(lcu->getAddress() == LCUGLOBAL && !Result)
+        {
+            DeviceManager.apply( ApplyStageTime, (void*)lcu );
+        }
+    }
+
+    if(OutMessage->EventCode & RIPPLE)        // Indicates a control was sent...
+    {
+        /* Send the commands to the logger */
+        SendBitPatternToLogger (lcu->getName().data(), OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, OutMessage->OutLength - MASTERLENGTH);
+        SendDOToLogger (lcu->getName().data(), OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
+        MPCPointSet( SEQUENCE_ACTIVE, lcu, true );
+
+        /* Clear the block flag */
+        Block = FALSE;
+        OverRetry = FALSE;
+
+        /* get how long this command will take */
+        lcu->setNextCommandTime( RWTime() + CtiDeviceLCU::lcuTime(OutMessage, lcu->getLCUType()) );
+        lcu->setFlags( LCUTRANSMITSENT );            // This LCU is TXSENT...
+        lcu->setLastControlMessage( OutMessage );    // Creates a copy based upon this guy.
+        lcu->setNumberStarted( 0 );                  // Reset the number started count..
+
+        DeviceManager.apply(ApplyPortXLCUSet, (void*)lcu ); // Mark all other affected LCUs out or as transmitting.
+
+        if( lcu->getNumberStarted() > 0 )
+        {
+            if(CtiDeviceLCU::excludeALL())
             {
-                lcu->setStageTime( RWTime() );                     // Device was successfully staged at this time!
+                CTISleep( CtiDeviceLCU::getSlowScanDelay() );
+            }
+            QueueForScan( lcu, Result ? true : mayqueuescans );     // Make porter do a fast scan!
+            status = RETRY_SUBMITTED;                               // Keep the decode from happening on this stupid thing.
+        }
+        else if( lcu->getNumberStarted() == 0 )
+        {
+            DeviceManager.apply(ApplyPortXLCUReset, (void*)lcu );   /* Clear out the times and the command save */
+            Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "ALL LCU Lockout");
+            MPCPointSet( SEQUENCE_ACTIVE, Dev.get(), false );
+        }
+
+        if(lcu->getAddress() == LCUGLOBAL)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " LCUGLOBAL is transmitting on the port! " << endl;
+            }
+            // 20050307 CGP Removed. // ReportCompletionStateToLMGroup(lcu);
+        }
+    }
+
+    if( lcu->getAddress() != LCUGLOBAL )  /* Check if this decode is the result of a scan */
+    {
+        if( Result == NORMAL )            // Successful communication
+        {
+            RWTPtrSlist< CtiMessage >       vgList;
+            CtiDeviceLCU::CtiLCUResult_t    resultCode = CtiDeviceLCU::eLCUInvalid;
+
+            lcu->lcuFastScanDecode(OutMessage, InMessage, resultCode, (GlobalLCUDev != NULL), vgList); // Note: resultCode is modified here!!!
+            SubmitDataToDispatch(vgList);
+            LCUProcessResultCode(lcu, GlobalLCUDev, OutMessage, resultCode );
+        }
+        else if(lcu->isFlagSet(LCUTRANSMITSENT))      /* Bad return message & we had a TX indication. */
+        {
+            if((lcu->getNextCommandTime() > RWTime()) )
+            {
+                if(mayqueuescans)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Queueing " << lcu->getName() << " for fast scan " << endl;
+                }
+                QueueForScan( lcu, mayqueuescans );    // Make porter do a fast scan!
             }
             else
             {
-                lcu->setStageTime( rwEpoch );   // Device failed to stage
-            }
-
-            lcu->setNextCommandTime( RWTime() + TIMETOSTAGE );
-
-            if(lcu->getAddress() == LCUGLOBAL && !Result)
-            {
-                DeviceManager.apply( ApplyStageTime, (void*)lcu );
-            }
-        }
-
-        if(OutMessage->EventCode & RIPPLE)        // Indicates a control was sent...
-        {
-            /* Send the commands to the logger */
-            SendBitPatternToLogger (lcu->getName().data(), OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, OutMessage->OutLength - MASTERLENGTH);
-            SendDOToLogger (lcu->getName().data(), OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-//            SendTelegraphStatusToMPC (TELEGRAPHSENT, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-            SendTelegraphStatusToMPC (TELEGRAPHSENT, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, Dev.get() );
-
-            /* Clear the block flag */
-            Block = FALSE;
-            OverRetry = FALSE;
-
-            /* get how long this command will take */
-            lcu->setNextCommandTime( RWTime() + CtiDeviceLCU::lcuTime(OutMessage, lcu->getLCUType()) );
-            lcu->setFlags( LCUTRANSMITSENT );            // This LCU is TXSENT...
-            lcu->setLastControlMessage( OutMessage );    // Creates a copy based upon this guy.
-            lcu->setNumberStarted( 0 );                  // Reset the number started count..
-
-            DeviceManager.apply(ApplyPortXLCUSet, (void*)lcu );
-
-            if( lcu->getNumberStarted() > 0 )
-            {
-                if(CtiDeviceLCU::excludeALL())
+                // We need to requeue this guy if possible.
+                if( RequeueLCUCommand(lcu) == RETRY_SUBMITTED )
                 {
-                    CTISleep( CtiDeviceLCU::getSlowScanDelay() );
-                }
-                QueueForScan( lcu, Result ? true : mayqueuescans );     // Make porter do a fast scan!
-                status = RETRY_SUBMITTED;               // Keep the decode from happening on this stupid thing.
-            }
-            else if( lcu->getNumberStarted() == 0 )
-            {
-                /* Clear out the times and the command save */
-                DeviceManager.apply(ApplyPortXLCUReset, (void*)lcu );
+                    status = RETRY_SUBMITTED;
 
-                Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "ALL LCU Lockout");
-//                SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, Dev.get() );
-                MPCPointSet( COMPLETE, Dev.get(), true );
-            }
-
-            if(lcu->getAddress() == LCUGLOBAL)
-            {
-                // 20050307 CGP Removed. // ReportCompletionStateToLMGroup(lcu);
-            }
-        }
-
-        if( lcu->getAddress() != LCUGLOBAL )  /* Check if this decode is the result of a scan */
-        {
-            if( Result == NORMAL )            // Successful communication
-            {
-                RWTPtrSlist< CtiMessage >       vgList;
-                CtiDeviceLCU::CtiLCUResult_t    resultCode;
-
-                lcu->lcuFastScanDecode(OutMessage, InMessage, resultCode, (GlobalLCUDev != NULL), vgList); // Note: resultCode is modified here!!!
-                SubmitDataToDispatch(vgList);
-                LCUProcessResultCode(lcu, GlobalLCUDev, OutMessage, resultCode );
-            }
-            else if(lcu->isFlagSet(LCUTRANSMITSENT))      /* Bad return message & we had a TX indication. */
-            {
-                if((lcu->getNextCommandTime() > RWTime()) && (lcu->getAddress() != LCUGLOBAL) )
-                {
-                    if(mayqueuescans)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Queueing " << lcu->getName() << " for fast scan " << endl;
-                    }
-                    QueueForScan( lcu, mayqueuescans );    // Make porter do a fast scan!
+                    Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmited", "Missed Comm");
+                    MPCPointSet ( MISSED, lcu, true );
                 }
                 else
                 {
-                    // We need to requeue this guy if possible.
-                    if( RequeueLCUCommand(lcu) == RETRY_SUBMITTED )
-                    {
-                        status = RETRY_SUBMITTED;
-
-                        Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmited", "Missed Comm");
-//                        SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                        SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, Dev.get() );
-                        MPCPointSet ( MISSED, Dev.get(), true );
-                    }
-
-                    /* Check if we made it... */
-                    if( LCUsAreDoneTransmitting( lcu ))
-                    {
-                        Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Missed Comm 1");
-                        /* Everybody is done... */
-//                        SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                        SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, Dev.get() );
-                        MPCPointSet( COMPLETE, Dev.get(), true );
-                        ResetLCUsForControl(lcu->getPortID());
-                    }
+                    // The command is OLD.  Lets do the cleanup on this device!
+                    Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Timeout");
+                    MPCPointSet( SEQUENCE_ACTIVE, lcu, false );
+                    MPCPointSet ( MISSED, lcu, true );
+                    lcu->lcuResetFlagsAndTags();
                 }
+
+                /* Check if we made it... */
+                if( LCUsAreDoneTransmitting( lcu ) )
+                {
+                    if(GlobalLCUDev != NULL && GlobalLCUDev->getLastControlMessage() != NULL)
+                    {
+                        MPCPointSet ( MISSED, GlobalLCUDev, true );
+                    }
+
+                    Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Missed Comm 1");
+                    /* Everybody is done... */
+                    MPCPointSet ( MISSED, lcu, true );
+                    ResetLCUsForControl(lcu->getPortID());
+                }
+            }
+        }
+        else
+        {
+            if( lcu->getNextCommandTime() > RWTime() )
+            {
+                lcu->lcuResetFlagsAndTags();
             }
         }
     }
@@ -722,46 +777,35 @@ SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 }
 
 
-static CTINEXUS TelegraphSentNexus;
-static CHAR saveTelegraph[7] = {0,0,0,0,0,0,0};
-
-//SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph)
-int SendTelegraphStatusToMPC (ULONG Function, const BYTE *MyTelegraph, CtiDeviceBase *dev )
-{
-    //ecs 12/20/2004
-    MPCPointSet( MISSED, dev, false );
-    MPCPointSet( COMPLETE, dev, false );
-
-    /* That's all the initialization needed */
-    return(NORMAL);
-}
-
-
-
-
 /* Routine to set $_MPC related status points */
 //MPCPointSet( int status, CtiDeviceBase *dev )
 MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
 {
     CtiPointDataMsg *pData = NULL;
-    CtiDeviceLCU *lcu = ( CtiDeviceLCU *)dev;
-    RWTPtrSlist< CtiMessage >  vgList;
 
-    if( setter )
-        pData = lcu->getPointSet( status );
-    else
-        pData = lcu->getPointClear( status );
-
-    if( pData )
+    if(isLCU(dev->getType()))
     {
-        vgList.insert( pData );
-        SubmitDataToDispatch( vgList );
+        CtiDeviceLCU *lcu = ( CtiDeviceLCU *)dev;
+        RWTPtrSlist< CtiMessage >  vgList;
+
+        if( setter )
+            pData = lcu->getPointSet( status );
+        else
+            pData = lcu->getPointClear( status );
+
+        if( pData )
+        {
+            vgList.insert( pData );
+            SubmitDataToDispatch( vgList );
+        }
     }
 
-    return( NORMAL );
+    return(NORMAL);
 }
 
-
+/*
+ *  Returns true if the lcu is on ptrlcu's port and is set as LCUTRANSMITSENT.
+ */
 static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
 {
     bool found = false;
@@ -777,7 +821,7 @@ static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
         CtiDeviceLCU *pOtherLCU = (CtiDeviceLCU*)Dev.get();
 
         /* LCUTRANSMITSENT is set... Someone is still at it! */
-        if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))
+        if(pOtherLCU->isFlagSet(LCUTRANSMITSENT))                                   // && pOtherLCU->getNextCommandTime() > RWTime() )
         {
             found = true;
         }
@@ -787,7 +831,7 @@ static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
 }
 
 /*
- *  Returns TRUE if all LCU's on the same port are NOT marked as LCUTRANSMITSENT
+ *  Returns TRUE if all LCU's on the same port are NOT marked as LCUTRANSMITSENT.  Realy just flips the sense of a findWorkingLCU
  */
 BOOL LCUsAreDoneTransmitting(CtiDeviceLCU *lcu)
 {
@@ -801,6 +845,9 @@ BOOL LCUsAreDoneTransmitting(CtiDeviceLCU *lcu)
     return LCUsFinished;
 }
 
+/*
+ *  Returns true if any LCU reported BUSY.
+ */
 static bool findWasTrxLCU(const long unusedid, CtiDeviceSPtr Dev, void *lprtid)
 {
     bool WasTrx = false;
@@ -809,13 +856,7 @@ static bool findWasTrxLCU(const long unusedid, CtiDeviceSPtr Dev, void *lprtid)
     if(isLCU(Dev->getType()) && Dev->getPortID() == PortID )
     {
         CtiDeviceLCU   *lcu = (CtiDeviceLCU*)Dev.get();
-
-        if((lcu->isFlagSet(LCUWASTRANSMITTING)))
-        {
-            WasTrx = true;
-        }
-
-        lcu->lcuResetFlagsAndTags();
+        WasTrx = lcu->isFlagSet(LCUWASTRANSMITTING);
     }
 
     return WasTrx;
@@ -829,6 +870,7 @@ static void applyResetLCUsOnPort(const long unusedid, CtiDeviceSPtr Dev, void *l
     {
         CtiDeviceLCU   *lcu = (CtiDeviceLCU*)Dev.get();
         lcu->lcuResetFlagsAndTags();
+        MPCPointSet( SEQUENCE_ACTIVE, lcu, false );
     }
 }
 
@@ -838,17 +880,13 @@ static void applyResetLCUsOnPort(const long unusedid, CtiDeviceSPtr Dev, void *l
  */
 bool ResetLCUsForControl(LONG PortID)
 {
-    bool           WasTrx = false;
+    bool WasTrx = false;
 
     CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
     CtiDeviceManager::spiterator itr_dev;
 
     /* Scan through all of them looking for one still transmitting */
-    if( DeviceManager.find(findWasTrxLCU, (void*)PortID) )
-    {
-        WasTrx = TRUE;
-    }
-
+    WasTrx = DeviceManager.find(findWasTrxLCU, (void*)PortID);
     DeviceManager.apply(applyResetLCUsOnPort, (void*)PortID);
 
     return WasTrx;
@@ -880,8 +918,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             /* This means we did not complete so log it */
             Send4PartToDispatch ("Rab", (char*)lcu->getName().data(), "Command Aborted", "LCU Lockout");
             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "LCU Lockout");
-//            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
             ResetLCUsForControl(lcu->getPortID());
             break;
         }
@@ -891,7 +927,8 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             if(GlobalLCUDev != NULL && GlobalLCUDev->getLastControlMessage() != NULL)
             {
                 if( LCUsAreDoneTransmitting( lcu ) )
-                {  // Do this iff LCUTRANSMITSENT _NOT_ set for any LCU on this port
+                {
+                    // Do this iff LCUTRANSMITSENT _NOT_ set for any LCU on this port
                     wasTransmitting = ResetLCUsForControl(lcu->getPortID());    // OK, is someone taking an awefully long time here!
 
                     if( !(wasTransmitting) )      // No one was transmitting
@@ -904,8 +941,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                     }
 
                     Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "LCU Lockout");
-//                    SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                    SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                 }
                 else  // All LCUs have not finished the transmit.
                 {
@@ -924,22 +959,18 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
         }
     case CtiDeviceLCU::eLCURequeueDeviceControl:
         {
+            MPCPointSet ( MISSED, lcu, true );
             if( RequeueLCUCommand( lcu ) == RETRY_SUBMITTED )
             {
                 /* This means we did not complete the message so log it */
                 Send4PartToDispatch ("Rre", (char*)lcu->getName().data(), "Command Resubmitted", "Injector Error");
-//                SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                MPCPointSet ( MISSED, lcu, true );
             }
             else
             {
                 /* This means that we have exceeded the number of times we can send a message */
                 lcu->lcuResetFlagsAndTags();
                 Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Injector Error");
-//                SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                MPCPointSet (COMPLETE, lcu, true );
+                MPCPointSet (SEQUENCE_ACTIVE, lcu, false );
             }
             break;
         }
@@ -947,21 +978,18 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
         {
             if(GlobalLCUDev!= NULL && GlobalLCUDev->getLastControlMessage()->Sequence)
             {
+                DeviceManager.apply(applySetMissed, (void*)GlobalLCUDev); // Does MPCPointSet ( MISSED, GlobalLCUDev, true ) on all LCUs
+
                 if( RequeueLCUCommand(GlobalLCUDev) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rlc", (char*)GlobalLCUDev->getName().data(), "Command Resubmitted", "Injector Error");
-//                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                    MPCPointSet ( MISSED, lcu, true );
                 }
                 else
                 {
                     /* This means that we have exceeded the number of times we can send a message */
                     GlobalLCUDev->lcuResetFlagsAndTags();
-                    Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Injector Error");
-//                    SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                    SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                    MPCPointSet (COMPLETE, lcu, true );
+                    Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Injector Error");
+                    DeviceManager.apply(applyClearActive, (void*)GlobalLCUDev);  // Does MPCPointSet (SEQUENCE_ACTIVE, GlobalLCUDev, false) on all LCUs;
                 }
             }
             else
@@ -978,7 +1006,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                 if(GlobalLCUDev != NULL && GlobalLCUDev->getFlags() & LCUTRANSMITSENT)
                 {
                     Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Injector Error");
-                    MPCPointSet (COMPLETE, lcu, true );
                 }
                 else
                 {
@@ -986,8 +1013,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                     MPCPointSet ( MISSED, lcu, true );
                 }
 
-//                SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                 ResetLCUsForControl(lcu->getPortID());
             }
             break;
@@ -1004,21 +1029,23 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "LCU Lockout");
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
                         {
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Retry Error");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                         }
                         else
                         {
                             ReportCompletionStateToLMGroup(GlobalLCUDev);
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Normal");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
+
+                            // Adjust the status points for both the global and the LCU that got us here.
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
+                            MPCPointSet( MISSED, lcu, false );
+
+                            MPCPointSet (SEQUENCE_ACTIVE, GlobalLCUDev, false);
+                            MPCPointSet( MISSED, GlobalLCUDev, false );
                         }
                     }
                     else
@@ -1034,15 +1061,11 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "LCU Lockout");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Retry Error");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                         }
                         else
                         {
@@ -1051,8 +1074,10 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                              */
                             ReportCompletionStateToLMGroup(lcu);
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Normal");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
+
+                            // CGP
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
+                            MPCPointSet( MISSED, lcu, false );
                         }
                     }
                     else
@@ -1073,6 +1098,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
 
                 Send4PartToDispatch ("Inf", (char*)lcu->getName().data(), "Command Complete", "Normal");    // 20041220 CGP Added.
                 lcu->lcuResetFlagsAndTags();
+                MPCPointSet(MISSED, lcu, false);
             }
 
 
@@ -1094,7 +1120,7 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " " << lcu->getName() << " getNextCommandTime() < now " << endl;
                 }
             }
 
@@ -1107,8 +1133,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                 if( (status = RequeueLCUCommand(GlobalLCUDev)) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rmc", (char *)GlobalLCUDev->getName().data(), "Command Resubmitted", "Missed Comm 2");
-//                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                     MPCPointSet ( MISSED, lcu, true );
                 }
             }
@@ -1117,8 +1141,6 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                 if( (status = RequeueLCUCommand(lcu)) == RETRY_SUBMITTED )
                 {
                     Send4PartToDispatch ("Rmc", (char *)lcu->getName().data(), "Command Resubmitted", "Missed Comm 3");
-//                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                    SendTelegraphStatusToMPC (TELEGRAPHEND_ERROR, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                     MPCPointSet ( MISSED, lcu, true );
                 }
             }
@@ -1137,28 +1159,26 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete",  "Missed Comm 4");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
                         {
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Missed Comm 5");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                         }
                         else
                         {
                             ReportCompletionStateToLMGroup(GlobalLCUDev);
                             Send4PartToDispatch ("Rsc", (char*)GlobalLCUDev->getName().data(), "Sequence Complete", "Normal");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
+
+                            // CGP
+                            MPCPointSet (SEQUENCE_ACTIVE, GlobalLCUDev, false);
+                            MPCPointSet( MISSED, GlobalLCUDev, false );
                         }
                     }
                     else
                     {
                         Send4PartToDispatch ("Rrs", (char*)GlobalLCUDev->getName().data(), "Sequence Continues", "Resubmitted");
-                        MPCPointSet (COMPLETE, lcu, true);
+                        MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                     }
                 }
                 else if(lcu != NULL && lcu->getFlags() & LCUTRANSMITSENT)
@@ -1168,54 +1188,46 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete",  "Missed Comm 6");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Missed Comm 7");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                         }
                         else
                         {
                             ReportCompletionStateToLMGroup(lcu);
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Normal");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_NORMAL, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
+
+                            MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
+                            MPCPointSet( MISSED, lcu, false );
                         }
 
                     }
                     else
                     {
                         Send4PartToDispatch ("Rrs", (char*)lcu->getName().data(), "Sequence Continues", "Resubmitted");
-                        MPCPointSet (COMPLETE, lcu, true);
+                        MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
                     }
                 }
                 else
                 {
                     if(lcu->getLastControlMessage() != NULL)
                     {
+                        MPCPointSet (SEQUENCE_ACTIVE, lcu, false);
+                        MPCPointSet (MISSED, lcu, true);
+
                         if(Block)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(),  "Sequence Complete", "Missed Comm (block)");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
                         }
                         else if(OverRetry)
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Missed Comm (overretry)");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
                         }
                         else
                         {
                             Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Missed Comm 8");
-//                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH);
-                            SendTelegraphStatusToMPC (TELEGRAPHEND_BLOCK, OutMessage->Buffer.OutMessage + PREIDLEN + MASTERLENGTH, lcu);
-                            MPCPointSet (COMPLETE, lcu, true);
                         }
                     }
                 }
@@ -1239,6 +1251,21 @@ INT LCUProcessResultCode(CtiDeviceLCU *lcu, CtiDeviceLCU *GlobalLCUDev, OUTMESS 
 
             break;
         }
+    default:
+        {
+            if(lcu->getNextCommandTime() > rwEpoch && RWTime() > lcu->getNextCommandTime() )
+            {
+                if(lcu->getLastControlMessage() != NULL)
+                {
+                    Send4PartToDispatch ("Rsc", (char*)lcu->getName().data(), "Sequence Complete", "Timeout");
+                    MPCPointSet( MISSED, lcu, true );
+                }
+
+                lcu->lcuResetFlagsAndTags();
+            }
+
+            break;
+        }
     }
 
 
@@ -1255,7 +1282,8 @@ INT RequeueLCUCommand( CtiDeviceLCU *lcu )
     if(OutMessage != NULL)
     {
         /*
-         *  check if Retries for this LCU is still turned on AND we are not tried out on this message
+         *  check if Retries for this LCU is still turned on AND we are not tried out on this message.
+         *  lcus use the Sequence variable to control the number of retries.  This is a bit odd, and is left over from the original architect.
          */
 
         if( !(lcu->isFlagSet(LCUNEVERRETRY)) && OutMessage->Sequence > 0)
@@ -1289,6 +1317,10 @@ INT RequeueLCUCommand( CtiDeviceLCU *lcu )
         else
         {
             lcu->setFlags( LCUNEVERRETRY );     // failed on all retries.. so set flag
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << lcu->getName() << " has been marked as LCUNEVERRETRY" << endl;
+            }
 
             if(OutMessage != NULL)
             {
@@ -1702,7 +1734,7 @@ INT QueueAllForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
     return NORMAL;
 }
 
-void SubmitDataToDispatch( RWTPtrSlist< CtiMessage >  &vgList )
+void SubmitDataToDispatch  ( RWTPtrSlist< CtiMessage >  &vgList )
 {
     extern CtiConnection VanGoghConnection;
 
