@@ -87,7 +87,7 @@ deps:
 
 #UPDATE#
 decodetextcmdfile.obj:	yukon.h precompiled.h ctidbgmem.h \
-		decodeTextCmdFile.h logger.h thread.h mutex.h dlldefs.h \
+		decodeTextCmdFile.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h types.h
 mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		dlldefs.h message.h collectable.h msg_pcreturn.h msg_multi.h \
@@ -99,15 +99,15 @@ mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		numstr.h mgr_holiday.h dsm2err.h wpsc.h xcel.h \
 		decodetextcmdfile.h
 mcs8100test.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h types.h
-mcsh.obj:	yukon.h precompiled.h ctidbgmem.h mcsh.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h mccmd.h msg_pcrequest.h message.h \
+		dlldefs.h thread.h mutex.h guard.h types.h
+mcsh.obj:	yukon.h precompiled.h ctidbgmem.h mcsh.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h mccmd.h msg_pcrequest.h message.h \
 		collectable.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h msg_signal.h ctdpcptrq.h dllBase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
-wpsc.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h types.h numstr.h
-xcel.obj:	yukon.h precompiled.h ctidbgmem.h xcel.h logger.h thread.h \
-		mutex.h dlldefs.h guard.h types.h
+wpsc.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h types.h numstr.h
+xcel.obj:	yukon.h precompiled.h ctidbgmem.h xcel.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h types.h
 #ENDUPDATE#

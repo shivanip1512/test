@@ -127,15 +127,15 @@ allclean:   clean all
                $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 #UPDATE#
 clientconn.obj:	yukon.h precompiled.h ctidbgmem.h clientconn.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h observe.h types.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h observe.h types.h \
 		ctibase.h ctinexus.h dllbase.h os2_2w32.h cticalls.h dsm2.h
 clistener.obj:	yukon.h precompiled.h ctidbgmem.h clistener.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h clientconn.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h clientconn.h \
 		observe.h types.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h message.h msg_signal.h queue.h dllbase.h \
 		os2_2w32.h cticalls.h dsm2.h
 mc_dbthr.obj:	yukon.h precompiled.h ctidbgmem.h mc_dbthr.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h mgr_mcsched.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h mgr_mcsched.h \
 		rtdb.h hashkey.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h message.h collectable.h
@@ -160,19 +160,19 @@ mc_msg.obj:	yukon.h precompiled.h ctidbgmem.h mc_msg.h message.h \
 		mutex.h guard.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h
 mc_sched.obj:	yukon.h precompiled.h ctidbgmem.h mc_sched.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h dbmemobject.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h dbmemobject.h \
 		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h message.h \
 		collectable.h
 mc_scheduler.obj:	yukon.h precompiled.h ctidbgmem.h mc_scheduler.h \
-		mc.h logger.h thread.h mutex.h dlldefs.h guard.h mc_sched.h \
+		mc.h logger.h dlldefs.h thread.h mutex.h guard.h mc_sched.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		message.h collectable.h mgr_mcsched.h rtdb.h hashkey.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mgr_holiday.h
 mc_script.obj:	yukon.h precompiled.h ctidbgmem.h mc_script.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h message.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h message.h \
 		collectable.h
 mc_server.obj:	yukon.h precompiled.h ctidbgmem.h mc_server.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h CParms.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h CParms.h \
 		message.h collectable.h queue.h mgr_mcsched.h rtdb.h \
 		hashkey.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
@@ -192,7 +192,7 @@ mc_svc.obj:	yukon.h precompiled.h ctidbgmem.h mc_svc.h cservice.h \
 		mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
 		mc_fileint.h fileint.h
 mgr_mcsched.obj:	yukon.h precompiled.h ctidbgmem.h mgr_mcsched.h mc.h \
-		logger.h thread.h mutex.h dlldefs.h guard.h rtdb.h hashkey.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h rtdb.h hashkey.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mc_sched.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		message.h collectable.h dbaccess.h sema.h utility.h

@@ -275,6 +275,27 @@ portdialback.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h \
 		con_mgr.h cmdopts.h critical_Section.h msg_pcrequest.h \
 		mgr_route.h repeaterrole.h portglob.h tcpsup.h porter.h \
 		dsm2err.h devicetypes.h statistics.h
+portdnpudp.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		dllyukon.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h mgr_device.h rtdb.h hashkey.h dev_base.h \
+		cmdparse.h parsevalue.h counter.h dev_exclusion.h \
+		tbl_paoexclusion.h rte_base.h dbmemobject.h ctibase.h \
+		ctinexus.h message.h collectable.h tbl_pao.h tbl_rtcomm.h \
+		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h logger.h thread.h tbl_base.h tbl_2way.h \
+		tbl_stats.h tbl_scanrate.h queues.h utility.h slctdev.h \
+		smartmap.h dev_dnp.h dev_remote.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h msg_signal.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		prot_base.h xfer.h dialup.h tbl_dialup.h tbl_direct.h \
+		prot_dnp.h dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h mgr_port.h \
+		port_base.h tbl_port_base.h tbl_port_statistics.h slctprt.h \
+		pt_base.h pt_dyn_base.h tbl_pt_base.h mgr_route.h \
+		repeaterrole.h numstr.h portdecl.h dsm2err.h porter.h \
+		devicetypes.h portglob.h tcpsup.h statistics.h
 portentry.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h cparms.h connection.h exchange.h dllbase.h \
 		dsm2.h mutex.h guard.h logger.h thread.h message.h \
@@ -352,27 +373,29 @@ portfield.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_dv_idlcremote.h trx_info.h porter.h trx_711.h mgr_point.h \
 		rtdb.h hashkey.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
 		slctpnt.h dev_tap.h tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h \
-		dev_rtc.h tbl_dv_rtc.h dev_rtm.h verification_objects.h \
-		boost_time.h dev_wctp.h routes.h master.h portdecl.h \
-		port_base.h tbl_port_base.h tbl_port_statistics.h tcpsup.h \
-		perform.h tapterm.h porttcp.h portglob.h statistics.h \
-		prot_sa3rdparty.h protocol_sa.h portverify.h \
-		c_port_interface.h group.h elogger.h alarmlog.h mgr_port.h \
-		smartmap.h slctprt.h mgr_device.h slctdev.h dev_cbc6510.h \
-		dev_dnp.h prot_dnp.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h dev_schlum.h \
-		dev_meter.h tbl_metergrp.h vcomdefs.h dev_kv2.h \
-		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
-		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
-		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
-		std_ansi_tbl_zero_eight.h std_ansi_tbl_one_zero.h \
-		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
-		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
-		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
-		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_two_seven.h \
-		std_ansi_tbl_two_eight.h std_ansi_tbl_five_one.h \
+		dev_snpp.h dev_rtc.h tbl_dv_rtc.h dev_rtm.h \
+		verification_objects.h boost_time.h dev_wctp.h routes.h \
+		master.h portdecl.h port_base.h tbl_port_base.h \
+		tbl_port_statistics.h tcpsup.h perform.h tapterm.h porttcp.h \
+		portglob.h statistics.h prot_sa3rdparty.h protocol_sa.h \
+		portverify.h c_port_interface.h group.h elogger.h alarmlog.h \
+		mgr_port.h smartmap.h slctprt.h mgr_device.h slctdev.h \
+		dev_cbc6510.h dev_dnp.h prot_dnp.h dnp_application.h \
+		dnp_objects.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h dev_schlum.h dev_meter.h tbl_metergrp.h \
+		vcomdefs.h dev_kv2.h prot_ansi_kv2.h prot_ansi.h \
+		ansi_application.h ansi_datalink.h ansi_billing_table.h \
+		std_ansi_tbl_base.h std_ansi_tbl_zero_zero.h \
+		std_ansi_tbl_zero_one.h std_ansi_tbl_zero_eight.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_two_seven.h std_ansi_tbl_two_eight.h \
+		std_ansi_tbl_three_one.h std_ansi_tbl_three_two.h \
+		std_ansi_tbl_three_three.h std_ansi_tbl_five_one.h \
 		std_ansi_tbl_five_two.h std_ansi_tbl_six_one.h \
 		std_ansi_tbl_six_two.h std_ansi_tbl_six_three.h \
 		std_ansi_tbl_six_four.h ansi_kv2_mtable_zero.h \
@@ -404,8 +427,8 @@ portfill.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		prot_base.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
 		trx_info.h trx_711.h mgr_point.h slctpnt.h dev_tap.h \
-		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_wctp.h \
-		prot_versacom.h expresscom.h
+		tbl_dv_tappaging.h dev_ied.h tbl_dv_ied.h dev_snpp.h \
+		dev_wctp.h prot_versacom.h expresscom.h
 portglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h dsm2err.h \
 		device.h devicetypes.h routes.h porter.h das08.h tcpsup.h \
