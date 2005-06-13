@@ -319,14 +319,14 @@ void CtiCalcLogicService::Run( )
                     }
                 }
 
+                if(calcThread)
                 {
-                    if(calcThread)
-                    {
-                        delete calcThread;
-                        calcThread = 0;
-                    }
-                    calcThread = tempCalcThread;
+                    delete calcThread;
+                    calcThread = 0;
+                }
+                calcThread = tempCalcThread;
 
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
                 }
@@ -1060,6 +1060,7 @@ void CtiCalcLogicService::dropDispatchConnection(  )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ").  Error deleting connection to dispatch." << endl;
         }
+        _conxion = 0;
     }
 
 
