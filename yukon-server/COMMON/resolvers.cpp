@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2005/05/27 02:29:12 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2005/06/13 13:45:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -546,6 +546,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_TAPTERM;
     }
+    else if(rwsTemp == "snpp terminal")
+    {
+        nRet = TYPE_SNPP;
+    }
     else if(rwsTemp == "wctp terminal")
     {
         nRet = TYPE_WCTP;
@@ -1042,6 +1046,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LCU415ER:
     case TYPE_LCUT3026:
     case TYPE_TAPTERM:
+    case TYPE_SNPP:
     case TYPE_WCTP:
     case TYPE_TCU5000:
     case TYPE_TCU5500:
@@ -1621,6 +1626,7 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_ION7700:
     case TYPE_ION8300:
     case TYPE_TDMARKV:
+    case TYPE_SNPP:
         {
             slaveAddress = -1;
             break;
