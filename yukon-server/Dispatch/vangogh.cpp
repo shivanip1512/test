@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/06/13 19:08:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,6 +84,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
                        size_t nSize, int nBlockUse, long lRequest,
                        const unsigned char * szFileName, int nLine )
 {
+    #if 0
     static ULONG lastAlloc = 0;
     static ULONG prevLastAlloc = 0;
     static ULONG pprevLastAlloc = 0;
@@ -148,6 +149,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
             twnetyfourcnt++;
         }
     }
+    #endif
 
 #ifdef IGNORE_CRT_ALLOC
     if(_BLOCK_TYPE(nBlockUse) == _CRT_BLOCK)  // Ignore internal C runtime library allocations
