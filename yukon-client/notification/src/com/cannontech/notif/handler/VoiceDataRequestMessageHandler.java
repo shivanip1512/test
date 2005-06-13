@@ -39,6 +39,7 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
         VoiceDataRequestMsg reqMsg = (VoiceDataRequestMsg) req.getPayload();
         ServerResponseMsg responseMsg = req.createResponseMsg();
         
+        
         try {
             Document xmlDoc = _voiceHandler.getCallData(reqMsg.callToken);
 
@@ -47,6 +48,7 @@ public class VoiceDataRequestMessageHandler extends MessageHandler {
             out.output(xmlDoc.getRootElement(), stringWriter);
             
             VoiceDataResponseMsg rspPayload = new VoiceDataResponseMsg();
+            rspPayload.callToken = reqMsg.callToken;
             rspPayload.xmlData = stringWriter.toString();
             
             responseMsg.setPayload(rspPayload);
