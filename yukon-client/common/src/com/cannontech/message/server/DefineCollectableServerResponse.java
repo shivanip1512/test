@@ -88,7 +88,8 @@ public class DefineCollectableServerResponse extends DefineCollectableMessage {
         
         vostr.insertInt(msg.getId());
         vostr.insertInt(msg.getStatus());
-        vostr.saveObject(msg.getMessage(), SimpleMappings.CString);
+        String someMessage = msg.getMessage() == null ? "" : msg.getMessage();
+        vostr.saveObject(someMessage, SimpleMappings.CString);
         if (msg.getPayload() != null) {
             vostr.insertInt(1); // flag to indicate payload follows
             vostr.saveObject(msg.getPayload(), strmr);
