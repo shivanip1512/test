@@ -22,6 +22,8 @@ public class NotificationQueue {
      * Once a SingleNotification object is added to the queue, it
      * will be managed internally to re-add it to the back of the queue
      * as necessary when one of the notification's calls fails.
+     * Note: this is no longer actually implememnted with a queue,
+     * but that's how it acts.
      * @param notification
      */
     public synchronized void add(final SingleNotification notification) {
