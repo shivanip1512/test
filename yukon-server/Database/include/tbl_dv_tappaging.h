@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_tappaging.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/06/13 13:47:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,10 @@ protected:
    LONG           _deviceID;
    RWCString      _pagerNumber;                    // a.k.a. CAPCODE
 
+   RWCString    _senderID;
+   RWCString    _securityCode;
+   RWCString    _postPath;
+
 private:
 
 public:
@@ -57,6 +61,11 @@ public:
    RWCString                  getPagerNumber() const;
    RWCString&                 getPagerNumber();
    CtiTableDeviceTapPaging&   setPagerNumber(const RWCString &aStr);
+
+   RWCString                  getSenderID() const;
+   RWCString                  getSecurityCode() const;
+   RWCString                  getPOSTPath() const;
+
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 

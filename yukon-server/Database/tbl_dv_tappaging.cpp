@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tappaging.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/13 13:46:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,9 @@ CtiTableDeviceTapPaging& CtiTableDeviceTapPaging::operator=(const CtiTableDevice
     {
         _deviceID    = aRef.getDeviceID();
         _pagerNumber = aRef.getPagerNumber();
+        _senderID = aRef.getSenderID();
+        _securityCode = aRef.getSecurityCode();
+        _postPath = aRef.getPOSTPath();
     }
     return *this;
 }
@@ -67,7 +70,10 @@ void CtiTableDeviceTapPaging::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
 {
     RWDBTable devTbl = db.table(getTableName() );
 
-    selector << devTbl["pagernumber"];
+    selector << devTbl["pagernumber"]
+        << devTbl["sender"]
+        << devTbl["securitycode"]
+        << devTbl["postpath"];
 
     selector.from(devTbl);
 
@@ -76,8 +82,6 @@ void CtiTableDeviceTapPaging::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
 
 void CtiTableDeviceTapPaging::DecodeDatabaseReader(RWDBReader &rdr)
 {
-
-
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -85,6 +89,13 @@ void CtiTableDeviceTapPaging::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["deviceid"] >> _deviceID;
     rdr["pagernumber"] >> _pagerNumber;
+    rdr["sender"] >> _senderID;
+    rdr["securitycode"] >> _securityCode;
+    rdr["postpath"] >> _postPath;
+    if( _securityCode.contains("none") || !_securityCode.compareTo("0") )
+    {
+        _securityCode = RWCString();    // Make it NULL.
+    }
 }
 
 RWCString CtiTableDeviceTapPaging::getTableName()
@@ -197,4 +208,20 @@ RWDBStatus CtiTableDeviceTapPaging::Delete()
     deleter.execute( conn );
     return deleter.status();
 }
+
+
+RWCString CtiTableDeviceTapPaging::getSenderID() const
+{
+    return _senderID;
+}
+
+RWCString CtiTableDeviceTapPaging::getSecurityCode() const
+{
+    return _securityCode;
+}
+RWCString CtiTableDeviceTapPaging::getPOSTPath() const
+{
+    return _postPath;
+}
+
 
