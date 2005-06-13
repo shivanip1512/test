@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/06/13 13:50:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,6 +75,7 @@ using namespace std;
 #include "mutex.h"
 #include "dev_tcu.h"
 #include "dev_tap.h"
+#include "dev_snpp.h"
 #include "dev_wctp.h"
 #include "prot_versacom.h"
 #include "expresscom.h"
@@ -226,6 +227,12 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                 {
                     switch(TransmitterDevice->getType())
                     {
+                    case TYPE_SNPP:
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " SNPP filler. PORTFILL.CPP" << endl;
+                        }
+                        break;
                     case TYPE_WCTP:
                         {
                             CtiDeviceWctpTerminal *tapTRX = (CtiDeviceWctpTerminal *)TransmitterDevice.get();
