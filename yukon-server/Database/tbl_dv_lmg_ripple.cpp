@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_lmg_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/13 19:08:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,7 @@ LONG CtiTableRippleLoadGroup::getDeviceID() const
 LONG CtiTableRippleLoadGroup::getShedTime() const
 {
 
-    return _shedTime;
+    return _shedTime > 0 ? _shedTime : (31536000);       // Continuous Latch devices (0 == _shedtime) will control for 1 year.
 }
 
 CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setDeviceID( const LONG deviceID)
