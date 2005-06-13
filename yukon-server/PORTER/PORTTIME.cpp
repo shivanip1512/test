@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/05/16 20:37:13 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/06/13 19:07:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -460,7 +460,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 
         //  make sure the route's transmitting device is on this port...  and make sure this is a default route
         if( RemoteRecord &&
-            (RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU711) &&
+            (RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU710 || RemoteRecord->getType() == TYPE_CCU711) &&
             (RemoteRecord->getPortID() == portid) && pRoute->isDefaultRoute() )
         {
             unsigned long time   = RWTime::now().seconds() - rwEpoch;
