@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/05/31 21:05:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/06/13 19:10:21 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.15  2005/06/13 19:10:21  cplender
+* Working to get the correct messages sent for control history to work right.
+*
 * Revision 1.14  2005/05/31 21:05:55  cplender
 * the cycle "count" is now one based to match versacom and expresscom parse syntax.
 * Control history was off by one repeat prior to this checkin.
@@ -188,6 +191,11 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * (repeat+1));
+    }
+    else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) & (CMD_FLAG_CTL_RESTORE | CMD_FLAG_CTL_TERMINATE))
+    {
+        parse.setValue("control_reduction", 0 );
+        parse.setValue("control_interval", 0);
     }
 
 

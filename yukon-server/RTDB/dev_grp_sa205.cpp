@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/05/31 21:05:55 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/06/13 19:10:21 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,6 +215,10 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     if(gracefulrestore)
     {
+        parse.setValue("control_interval", 0);
+        parse.setValue("control_reduction", 0 );
+        parse.setValue("cycle_count", 0);
+
         resultString = RWTime().asString() + " " + getName() + " is within the  graceful restore period.  No action is required to terminate the cycling. Use \"abrupt\" to force command.";
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
@@ -230,22 +234,25 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
 
+        reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 0), vgList, getLastCommand() );
         return nRet;
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_RESTORE)
     {
+        parse.setValue("control_interval", 0);
+        parse.setValue("control_reduction", 0 );
         if(func == 1 && gConfigParms.getValueAsString("PROTOCOL_SA_RESTORE123").contains("true", RWCString::ignoreCase))
         {
             // restores on Function 1 (Relay 3) must be handled with a 7.5m shed!
             parse.setValue("sa_restore", TRUE);
-            parse.setValue("control_interval", 450);
-            parse.setValue("control_reduction", 100 );
         }
 
         parse.setValue("cycle_count", 0);
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_TERMINATE)
     {
+        parse.setValue("control_interval", 0);
+        parse.setValue("control_reduction", 0 );
         parse.setValue("cycle_count", 0);
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)

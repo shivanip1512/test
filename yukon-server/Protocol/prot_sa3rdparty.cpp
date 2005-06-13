@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/05/31 21:05:55 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/06/13 19:10:21 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.30  2005/06/13 19:10:21  cplender
+* Working to get the correct messages sent for control history to work right.
+*
 * Revision 1.29  2005/05/31 21:05:55  cplender
 * the cycle "count" is now one based to match versacom and expresscom parse syntax.
 * Control history was off by one repeat prior to this checkin.
@@ -422,7 +425,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     {
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", 0);
-        parse.setValue("control_interval", 450);
+        parse.setValue("control_interval", 0);
 
         if(_sa._groupType != SA205 && _sa._groupType != SA105)
         {
@@ -450,7 +453,7 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     {
         INT delay = parse.getiValue("delaytime_sec", 0) / 60;
         parse.setValue("control_reduction", 0);
-        parse.setValue("control_interval", 450);
+        parse.setValue("control_interval", 0);
 
         if(parse.getCommandStr().contains(" abrupt", RWCString::ignoreCase))
         {
