@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/04/22 19:05:37 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/06/13 19:09:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -362,8 +362,7 @@ VOID ConnectionThread (VOID *Arg)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** INVALID OUTMESS **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " OUTMESS destroyed, client may become unstable!" << endl;
+                dout << RWTime() << " **** INVALID OUTMESS ****  Neither deviceid nor portid are defined in the OM request. Returning error to the requestor." << endl;
             }
 
             SendError (OutMessage, MISPARAM);      // Message has been consumed!
