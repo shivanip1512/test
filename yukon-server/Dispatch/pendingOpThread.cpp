@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/06/13 19:07:48 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/06/14 20:19:11 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.18  2005/06/14 20:19:11  cplender
+* Initial Control Condition should indicate that a control has completed.
+*
 * Revision 1.17  2005/06/13 19:07:48  cplender
 * LM Control History would get off a bit on RESTORE operations.
 *
@@ -1279,8 +1282,8 @@ void CtiPendingOpThread::resetICControlMap()
 
 bool CtiPendingOpThread::loadICControlMap()
 {
-    bool cleanShutdown = false;
-    bool allCompleted = true;
+    bool cleanShutdown = false;     // Set to true if there is at least one "S" in the table indicating that dispatch was shutdown.
+    bool allCompleted = true;       // Set to false if each and every control in the dyn table is either "T" or "M" complete.
 
     try
     {
@@ -1340,6 +1343,7 @@ bool CtiPendingOpThread::loadICControlMap()
                         // This control is active and should be added to the pendingControlList!
                         CtiPendingPointOperations ppc(pPt->getPointID());
                         ppc.setType(CtiPendingPointOperations::pendingControl);
+
                         ppc.setControlState( CtiPendingPointOperations::controlInProgress );
                         ppc.setTime( dynC.getStartTime() );
                         ppc.setControl(dynC);
@@ -1361,11 +1365,6 @@ bool CtiPendingOpThread::loadICControlMap()
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
                     LONG inc = now.seconds() - dynC.getStopTime().seconds();
                     dynC.setNotNewControl();
                     dynC.setControlCompleteTime(dynC.getStopTime());    // This is still in the future.  Not very likely.
@@ -1397,6 +1396,13 @@ bool CtiPendingOpThread::loadICControlMap()
                     allCompleted = false;       // All controls in the list were not completed.
                 }
             }
+
+            if( !dynC.getLoadedActiveRestore().compareTo(LMAR_MANUAL_RESTORE, RWCString::ignoreCase) ||
+                 !dynC.getLoadedActiveRestore().compareTo(LMAR_TIMED_RESTORE, RWCString::ignoreCase) )
+            {
+                dynC.setActiveRestore(dynC.getLoadedActiveRestore());       // This is a completed control!
+            }
+
 
             createOrUpdateICControl(paoid, dynC);
         }
