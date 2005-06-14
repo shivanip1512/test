@@ -16,6 +16,7 @@ import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener
 {
@@ -23,7 +24,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 	
 	private java.util.Vector controlAreas = null;
 /**
- * ClientConnection constructor comment.
+ * ClientConnection constructor commerent.
  * @param host java.lang.String
  * @param port int
  */
@@ -304,5 +305,15 @@ public synchronized void messageReceived( MessageEvent e )
 	}
 
 }
+
+public void registerMappings(CollectableStreamer streamer ) {
+	super.registerMappings( streamer );
+
+	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
+
+	for( int i = 0; i < mappings.length; i++ )
+		streamer.register( mappings[i] );
+}
+
 
 }
