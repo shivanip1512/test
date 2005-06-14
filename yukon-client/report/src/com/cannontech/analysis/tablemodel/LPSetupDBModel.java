@@ -146,8 +146,7 @@ public class LPSetupDBModel extends ReportModelBase
 			" WHERE PAO1.PAOBJECTID = DMG.DEVICEID "+
 			" AND PAO1.PAOBJECTID = DR.DEVICEID " + 
 			" AND PAO1.PAOBJECTID = DLP.DEVICEID " +
-			" AND PAO2.PAOBJECTID = DR.ROUTEID " +
-			" AND PAO1.PAOBJECTID = DCS.DEVICEID ");
+			" AND PAO2.PAOBJECTID = DR.ROUTEID ");
 
 			sql.append(" ORDER BY ");
 			if( getOrderBy() == ORDER_BY_DEVICE_NAME)
