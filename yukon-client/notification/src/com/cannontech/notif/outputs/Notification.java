@@ -8,32 +8,25 @@ import org.jdom.output.XMLOutputter;
 public class Notification {
     private String _messageType;
     private Document _doc;
-    private Element _root;
+    private Element _mainElement;
 
     public Notification(String messageType) {
         _messageType = messageType;
         _doc = new Document();
-        _root = new Element("notificationmessage");
-        _root.setAttribute("type", messageType);
-        _doc.setRootElement(_root);
+        Element root = new Element("notificationmessage");
+        _mainElement = new Element(messageType);
+        root.addContent(_mainElement);
+        _doc.setRootElement(root);
     }
 
-    public boolean containsKey(String key) {
-        return _root.getChild(key) != null;
-    }
-
-    public String get(String key) {
-        return _root.getChildTextTrim(key);
-    }
-
-    public void put(String key, String value) {
-        _root.addContent(new Element(key).setText(value));
-    }
-
-    public void remove(String key) {
-        _root.removeChild(key);
+    public void addData(String key, String value) {
+        _mainElement.addContent(new Element(key).setText(value));
     }
     
+    public void addAttribute(String key, String value) {
+        _mainElement.setAttribute(key, value);
+    }
+
     public Document getDocument() {
         return _doc;
     }
@@ -47,20 +40,20 @@ public class Notification {
     }
     
     public int hashCode() {
-        return _doc.hashCode();
+        return _doc.getContent().hashCode();
     }
     
     public boolean equals(Object obj) {
         if (obj instanceof Notification) {
             Notification that = (Notification) obj;
-            return this._doc.equals(that._doc);
+            return this._doc.getContent().equals(that._doc.getContent());
         }
         return false;
     }
     
     public String getXmlString() {
-        XMLOutputter out = new XMLOutputter(Format.getCompactFormat());
-        return out.outputString(_root);
+        XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
+        return out.outputString(_doc);
     }
     
 }

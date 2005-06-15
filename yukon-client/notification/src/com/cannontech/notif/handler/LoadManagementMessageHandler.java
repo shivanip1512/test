@@ -44,19 +44,19 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 Notification notif = new Notification("loadmanagement");
                 
                 LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
-                notif.put("programname", liteYukonPAO.getPaoName());
+                notif.addAttribute("programname", liteYukonPAO.getPaoName());
 
                 _timeFormater.setTimeZone(contact.getTimeZone());
                 _dateFormater.setTimeZone(contact.getTimeZone());
                 
-                notif.put("starttime", _timeFormater.format(msg.startTime));
-                notif.put("startdate", _dateFormater.format(msg.startTime));
-                notif.put("stoptime", _timeFormater.format(msg.stopTime));
-                notif.put("stopdate", _dateFormater.format(msg.stopTime));
+                notif.addData("starttime", _timeFormater.format(msg.startTime));
+                notif.addData("startdate", _dateFormater.format(msg.startTime));
+                notif.addData("stoptime", _timeFormater.format(msg.stopTime));
+                notif.addData("stopdate", _dateFormater.format(msg.stopTime));
                 
-                notif.put("durationminutes", durationMinutesStr);
-                notif.put("durationhours", durationHoursStr);
-                notif.put("remainingminutes", remainingMinutesStr);
+                notif.addData("durationminutes", durationMinutesStr);
+                notif.addData("durationhours", durationHoursStr);
+                notif.addData("remainingminutes", remainingMinutesStr);
 
                 return notif;
             }

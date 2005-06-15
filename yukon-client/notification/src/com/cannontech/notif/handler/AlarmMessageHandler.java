@@ -25,10 +25,10 @@ public class AlarmMessageHandler extends NotifHandler {
         final Notification notif = new Notification("alarm");
         
         LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
-        notif.put("pointname", point.getPointName());
-        notif.put("value", Double.toString(msg.value));
+        notif.addData("pointname", point.getPointName());
+        notif.addData("value", Double.toString(msg.value));
         LitePointUnit uOfM = PointFuncs.getPointUnit(msg.pointId);
-        notif.put("unitofmeasure", uOfM.toString()); //This won't work!
+        notif.addData("unitofmeasure", uOfM.toString()); //This won't work!
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
             public Notification buildNotification(Contactable contact) {
