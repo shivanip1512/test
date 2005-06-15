@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:24:01 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/06/15 19:24:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ void main(int argc, char** argv)
     if(argc > 1)
         cnt = atoi(argv[1]);
 
-    CtiDeviceManager     Manager;
+    CtiDeviceManager     Manager(Application_Invalid);
 
     dout.start();     // fire up the logger thread
     dout.setOutputPath("c:\\temp\\");
