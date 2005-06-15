@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.23 $
- * DATE         :  $Date: 2005/03/17 19:18:29 $
+ * REVISION     :  $Revision: 1.24 $
+ * DATE         :  $Date: 2005/06/15 19:21:16 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -50,8 +50,10 @@ private:
 
     int _dberrorcode;
 
-    coll_type    _smartMap;
-    coll_type    _exclusionMap;         // This is a map of the devices which HAVE exclusions.
+    CtiApplication_t _app_id;
+
+    coll_type        _smartMap;
+    coll_type        _exclusionMap;         // This is a map of the devices which HAVE exclusions.
 
 private:
 
@@ -73,11 +75,12 @@ private:
     void refreshDeviceProperties(LONG paoID = 0);
     void refreshMCTConfigs(LONG paoID = 0);
     void refreshMCT400Configs(LONG paoID = 0);
+    void refreshDynamicPaoInfo(LONG paoID = 0);
 
 
 public:
 
-    CtiDeviceManager();
+    CtiDeviceManager(CtiApplication_t app_id);
     virtual ~CtiDeviceManager();
 
     spiterator begin();
@@ -106,6 +109,7 @@ public:
     }
 
     void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, RWCString category = RWCString(""), RWCString devicetype = RWCString(""));
+    void writeDynamicPaoInfo(void);
 
     void dumpList(void);
     void deleteList(void);

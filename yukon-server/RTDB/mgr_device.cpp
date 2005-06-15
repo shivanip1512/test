@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2005/06/13 14:00:10 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2005/06/15 19:21:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,6 +158,8 @@ static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Devi
 
     return;
 }
+
+
 
 bool removeExclusionDevice(CtiDeviceSPtr &Device, void *lptrid)
 {
@@ -424,7 +426,8 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const RWCStri
     return p;
 }
 
-CtiDeviceManager::CtiDeviceManager() :
+CtiDeviceManager::CtiDeviceManager(CtiApplication_t app_id) :
+_app_id(app_id),
 _includeScanInfo(false),
 _removeFunc(NULL)
 {
@@ -690,25 +693,25 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
         CtiDeviceBase *pSp;
 
         {
-                if(paoID == 0)
-                {
-                    apply(applyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
-                }
-                else
-                {
-                    pTempCtiDevice = getEqual(paoID);
-                    if(pTempCtiDevice) pTempCtiDevice->resetUpdatedFlag();
-                }
+            if(paoID == 0)
+            {
+                apply(applyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
+            }
+            else
+            {
+                pTempCtiDevice = getEqual(paoID);
+                if(pTempCtiDevice) pTempCtiDevice->resetUpdatedFlag();
+            }
 
-                resetErrorCode();
+            resetErrorCode();
 
-                if(pTempCtiDevice)
-                {
-                    refreshDeviceByPao(pTempCtiDevice, paoID);
-                }
-                else
-                {
-                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            if(pTempCtiDevice)
+            {
+                refreshDeviceByPao(pTempCtiDevice, paoID);
+            }
+            else
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
                     start = start.now();
                     {
@@ -2267,6 +2270,75 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
 }
 
 
+void CtiDeviceManager::refreshDynamicPaoInfo(LONG paoID)
+{
+    CtiDeviceSPtr device;
+    long tmp_paobjectid, tmp_entryid;
+
+    CtiTableDynamicPaoInfo dynamic_paoinfo;
+
+    {
+        RWDBConnection conn   = getConnection();
+        RWDBDatabase db       = getDatabase();
+        RWDBSelector selector = db.selector();
+        RWDBTable keyTable;
+        RWDBReader rdr;
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Dynamic PAO Info" << endl;
+        }
+
+        CtiTableDynamicPaoInfo::getSQL(db, keyTable, selector, _app_id);
+
+        if(paoID)
+        {
+            selector.where( selector.where() && keyTable["paobjectid"] == paoID );
+        }
+
+        rdr = selector.reader(conn);
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
+
+        if(rdr.status().errorCode() == RWDBStatus::ok)
+        {
+            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            {
+                dynamic_paoinfo.DecodeDatabaseReader(rdr);
+
+                rdr["paobjectid"] >> tmp_paobjectid;
+                rdr["paobjectid"] >> tmp_entryid;
+
+                device = getEqual(tmp_paobjectid);
+
+                if( device )
+                {
+                    device->setDynamicInfo(dynamic_paoinfo);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - no parent found for dynamic PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading Dynamic PAO Info from database: " << rdr.status().errorCode() << endl;
+        }
+
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
+        }
+    }
+}
+
+
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // This method loads all the device properties/characteristics which must be appended to an already
@@ -2322,6 +2394,15 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT 400 Configs" << endl;
     }
 
+    start = start.now();
+    refreshDynamicPaoInfo(paoID);
+    stop = stop.now();
+    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Dynamic PAO Info" << endl;
+    }
+
 
     if(_includeScanInfo)
     {
@@ -2362,6 +2443,96 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         }
     }
 }
+
+
+void CtiDeviceManager::writeDynamicPaoInfo( void )
+{
+    static const char *sql          = "select max(entryid) from dynamicpaoinfo";
+    static const char *dynamic_info = "dynamicinfo";
+    static long max_entryid;
+
+    vector<CtiTableDynamicPaoInfo *> dirty_info;
+
+    for( spiterator dev_itr = begin(); dev_itr != end(); dev_itr++ )
+    {
+        //  passed by reference
+        dev_itr->second->getDirtyInfo(dirty_info);
+    }
+
+    try
+    {
+        RWDBConnection conn = getConnection();
+        RWDBReader rdr;
+        RWDBStatus status;
+
+        RWBoolean prev_autocommit = conn.autoCommit();
+
+        //  just in case two applications are writing at once - if we make this an atomic
+        //    operation, the select-maxid-before-write will be safe
+        conn.autoCommit(false);
+
+        conn.beginTransaction(dynamic_info);
+
+        rdr = ExecuteQuery(conn, sql);
+
+        if(rdr() && rdr.isValid())
+        {
+            rdr >> max_entryid;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** Checkpoint: invalid reader, unable to select max_entryid, attempting to use " << max_entryid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        vector<CtiTableDynamicPaoInfo *>::iterator itr;
+        for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
+        {
+            (*itr)->setOwner(_app_id);
+
+            if( (*itr)->hasRow() )
+            {
+                status = (*itr)->Update(conn);
+            }
+            else
+            {
+                (*itr)->setEntryID(max_entryid + 1);
+
+                status = (*itr)->Insert(conn).errorCode();
+
+                if( status.errorCode() == RWDBStatus::ok )
+                {
+                    max_entryid++;  //  increments the reference
+                }
+            }
+
+            if( status.errorCode() != RWDBStatus::ok )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - error (" << status.errorCode() << ") inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                (*itr)->dump();
+            }
+
+            delete *itr;
+        }
+
+        conn.commitTransaction(dynamic_info);
+
+        //  set autocommit back to whatever it was
+        conn.autoCommit(prev_autocommit);
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
 
 CtiDeviceManager::spiterator CtiDeviceManager::begin()
 {
