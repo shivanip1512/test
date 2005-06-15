@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/04/05 16:54:44 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/06/15 19:14:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,41 +55,44 @@
 #define RESTORE_DURATION -1
 
 
-typedef enum
+//  used by dev_manager and tbl_dyn_paoinfo
+enum CtiApplication_t
+{
+    Application_Dispatch = 100,  //  just so if we ever run into a case where it's initialized to 0,
+    Application_Porter,          //    there'll be no confusion - it'll be recognized as invalid
+    Application_Scanner,
+    Application_CapControl,
+    Application_LoadManagement,
+    Application_CalcLogic,
+
+    Application_Invalid  =  -1
+};
+
+
+enum CtiPaoCategory_t
 {
     PAO_CATEGORY_DEVICE = 0,
     PAO_CATEGORY_PORT,
     PAO_CATEGORY_ROUTE,
     PAO_CATEGORY_LOAD_MANAGEMENT,
     PAO_CATEGORY_CAP_CONTROL,
+};
 
-} CtiPaoCategory_t;
 
-
-typedef enum
+enum CtiCommState_t
 {
     CommState_Normal = 0,
     CommState_Failed,
     CommState_Disabled,
 
     CommState_Invalid
-
-} CtiCommState_t;
-
-
-enum
-{
-    PrimaryRoute = 0,
-    AlternateRoute1,
-    AlternateRoute2,
-    InvalidRoute
 };
 
 
 /*
  *   !!!! WARNING !!!!  This enum directly affects tbl_dv_scandata.cpp/h
  */
-enum
+enum CtiScanRate_t
 {
     ScanRateGeneral = 0,
     ScanRateAccum,
@@ -99,7 +102,7 @@ enum
     ScanRateInvalid
 };
 
-enum
+enum CtiDeviceWindow_t
 {
     DeviceWindowScan = 0,
     DeviceWindowPeak,
@@ -109,7 +112,7 @@ enum
 };
 
 
-enum
+enum CtiPAOClass_t
 {
     PAOClassPort,
     PAOClassRoute,
@@ -128,7 +131,7 @@ enum
     PAOClassInvalid
 };
 
-enum
+enum CtiDeviceState_t
 {
     DeviceStateNormal = 0,
     DeviceStateDisabled,
@@ -137,7 +140,7 @@ enum
     DeviceStateInvalid
 };
 
-enum
+enum CtiPortState_t
 {
     PortStateNormal = 0,
     PortStateDisabled,
@@ -146,7 +149,7 @@ enum
     PortStateInvalid
 };
 
-enum
+enum CtiStatisticsType_t
 {
     StatTypeHourly = 0,
     StatType24Hour,
@@ -155,17 +158,17 @@ enum
     StatTypeInvalid
 };
 
+
 // Alarm Classes
-typedef enum
+enum CtiSignalClass_t
 {
     SignalEvent = 1,       // Event - Not propagated to clients
     SignalAlarm0,           // Alarms span 2 to 255
 
     SignalInvalid = 256
+};
 
-} CtiSignalClass_t;
-
-typedef enum
+enum CtiLogTypeClass_t
 {
     GeneralLogType = 1,
     PtChangeLogType,
@@ -176,26 +179,25 @@ typedef enum
     AlarmCategoryLogType = 8,
 
     InvalidLogType
+};
 
-} CtiLogTypeClass_t;
 
 // Alarms
-typedef enum
+enum CtiAlarm_t
 {
     NoAlarm = 0,
-    NAKAlarm,         // Alarmed and Unacknowledged alarm (Not AcKnowledged)
-    ACKAlarm,         // Alarmed and ACKnowledged
+    NAKAlarm,       // Alarmed and Unacknowledged alarm (Not AcKnowledged)
+    ACKAlarm,       // Alarmed and ACKnowledged
 
     InvalidAlarm
+};
 
-} CtiAlarm_t;
-
-typedef enum
+enum YukonError_t
 {
     NoError = 0,
 
     // General Errors
-    YukonBaseError = 200,            // Account for the old DSM/2 Errors
+    YukonBaseError = 200,       //  Account for the old DSM/2 Errors
     MemoryError,
 
     // Device Errors
@@ -222,8 +224,8 @@ typedef enum
     NoConfigData,
 
     // Control Command Info
-    NoRouteGroupDevice,           // No route defined in a group device
-    NoRoutesInMacro,              // Route Macro contained no sub-routes.
+    NoRouteGroupDevice,         // No route defined in a group device
+    NoRoutesInMacro,            // Route Macro contained no sub-routes.
     RouteOffsetOutOfRange,
     SubRouteIsMacro,
     ControlInhibitedOnDevice,
@@ -277,62 +279,48 @@ typedef enum
     ErrorQueuePurged,           // Queue purged to clean memory.
 
     FinalError
-
-} YukonError_t;
-
+};
 
 
-/* Define protocol wraps */
-typedef enum
+enum CtiProtocolWrap_t
 {
     ProtocolWrapNone = 0,   // NOWRAP
     ProtocolWrapIDLC,       // IDLCWRAP,
 
     InvalidProtocol
+};
 
-} CtiProtocolWrap_t;
 
-#define IDLCWRAP_TXT "IDLC"
-
-typedef enum
+enum CtiPortDelay_t
 {
-    /* The prekey delay is from end of last complete sequence till start of next sequence */
-    PREKEY_DELAY=0,
-    PRE_RTS_DELAY=0,
-    /* The cold repeater key to data delay is used when the repeater in the system
-       has unkeyed (last transmission ended longer ago than the repeater tail)
-       so all elements of the radio system must come up to speed */
-    COLDKEYTODATA_DELAY = 1,
-    RTS_TO_DATA_OUT_DELAY = 1,
+    PREKEY_DELAY  = 0,  //  The prekey delay is from end of last complete sequence till start of next sequence
+    PRE_RTS_DELAY = 0,
 
-    /* The end of data to unkey delay is used to let the transmit buffer finish the
-       data output before unkeying the radio */
-    DATATOUNKEY_DELAY = 2,
-    DATA_OUT_TO_RTS_DOWN_DELAY=2,
+    COLDKEYTODATA_DELAY   = 1,  //  The cold repeater key to data delay is used when the repeater in the system
+    RTS_TO_DATA_OUT_DELAY = 1,  //    has unkeyed (last transmission ended longer ago than the repeater tail)
+                                //    so all elements of the radio system must come up to speed
 
-    /* The unkey to receive delay is used to allow the channel to switch directions
-       before flushing the receive buffer of any false characters generated by the
-       switch and starting to receive data */
-    UNKEYTODATA_DELAY = 3,
-    DATA_OUT_TO_INBUFFER_FLUSH_DELAY = 3,
+    DATATOUNKEY_DELAY          = 2,  //  The end of data to unkey delay is used to let the transmit buffer finish the
+    DATA_OUT_TO_RTS_DOWN_DELAY = 2,  //    data output before unkeying the radio
 
-    /* Post Communicatino Delay... */
+    UNKEYTODATA_DELAY                = 3,  //  The unkey to receive delay is used to allow the channel to switch
+    DATA_OUT_TO_INBUFFER_FLUSH_DELAY = 3,  //    directions before flushing the receive buffer of any false characters
+                                           //    generated by the switch and starting to receive data
 
-    POST_REMOTE_DELAY,
+    POST_REMOTE_DELAY,  //  post-communication delay
 
-    /* Additional time in seconds to allow the remote to respond. */
-    EXTRA_DELAY,
+    EXTRA_DELAY,        //  additional time in seconds to allow the remote to respond
 
-    /* A Place holder only! */
-    LAST_DELAY
+    LAST_DELAY          //  placeholder only!
 
-} CtiPortDelay_t;
+};
+
 
 /*
  *  The types below CANNOT EVER overlap the TYPE_ defines found in devicetypes.h
  *  BREAKAGE MAY OCCUR.  6000 to 6100 have been reserved by comment in that file.
  */
-typedef enum
+enum CtiPort_t
 {
     PortTypeLocalDirect = 6000,
     PortTypeLocalDialup,
@@ -343,10 +331,10 @@ typedef enum
     PortTypePoolDialout,
 
     PortTypeInvalid
+};
 
-} CtiPort_t;
 
-typedef enum
+enum CtiAmpUsage_t
 {
     RouteAmpUndefined = 0,
     RouteAmpAlternating,
@@ -356,29 +344,28 @@ typedef enum
     RouteAmpDefault1Fail2,
     RouteAmpDefault2Fail1,
     RouteAmpLastChoice
+};
 
-} CtiAmpUsage_t;
 
-typedef enum
+enum CtiRoute_t
 {
+    RouteTypeInvalid = 0,
+    RouteTypeCCU,
+    RouteTypeTCU,
+    RouteTypeMacro,
+    RouteTypeLCU,
+    RouteTypeRepeater,
+    RouteTypeVersacom,
+    RouteTypeTap,
+    RouteTypeWCTP,
+    RouteTypeRTC,
+    RouteTypeSeriesVLMI,
 
-    InvalidRouteType = 0,
-    CCURouteType,
-    TCURouteType,
-    MacroRouteType,
-    LCURouteType,
-    RepeaterRouteType,
-    VersacomRouteType,
-    TapRouteType,
-    WCTPRouteType,
-    RTCRouteType,
-    SeriesVLMIRouteType,
+    RouteTypeMax
+};
 
-    MaxRouteType
 
-} CtiRoute_t;
-
-typedef enum
+enum CtiEmetconRelay_t
 {
     Invalid_Relay = 0,
     Shed_A_Relay,
@@ -387,10 +374,10 @@ typedef enum
     Shed_D_Relay,
 
     Shed_Scram
+};
 
-} CtiEmetconRelay_t;
 
-typedef enum
+enum CtiDBChanged_t
 {
     ChangeInvalidDb = -1,
     ChangePAODb = 0,
@@ -414,17 +401,18 @@ typedef enum
     ChangeLMConstraintDb,
     Number19IsntCurrentlyUsed,
     ChangeSeasonScheduleDb
-} CtiDBChanged_t;
+};
 
-typedef enum
+
+enum CtiDBChangedType_t
 {
     ChangeTypeAdd = 0,
     ChangeTypeDelete,
     ChangeTypeUpdate
+};
 
-} CtiDBChangedType_t;
 
-typedef enum
+enum CtiProtocol_t
 {
     ProtocolVersacomType,
     ProtocolFisherPierceType,
@@ -436,11 +424,10 @@ typedef enum
     ProtocolEmetconType,
     ProtocolExpresscomType,
     ProtocolEnergyProType
+};
 
-} CtiProtocol_t;
 
-
-typedef enum
+enum CtiOutMessageFlags_t
 {
     MSGFLG_APPLY_EXCLUSION_LOGIC          = 0x00000001 << 0,
     MSGFLG_REQUEUE_CMD_ONCE_ON_FAIL       = 0x00000001 << 1,
@@ -448,8 +435,7 @@ typedef enum
     MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD  = 0x00000001 << 3,
     MSGFLG_EXPECT_MORE                    = 0x00000001 << 4,
     MSGFLG_QUEUED_TO_DEVICE               = 0x00000001 << 5
-
-} CtiOutMessageFlags_t;
+};
 
 
 #endif // __YUKON_H__
