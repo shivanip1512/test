@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/04/21 20:26:40 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/06/15 19:23:17 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -615,7 +615,7 @@ inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
 
     if(routeid > 0 && (Route = CtiDeviceBase::getRoute( routeid )) )    // This is "this's" route
     {
-        if(Route->getType() == MacroRouteType)
+        if(Route->getType() == RouteTypeMacro)
         {
             offset = 1;
         }

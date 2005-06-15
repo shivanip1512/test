@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtroute.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/15 19:15:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 CtiTableRoute::CtiTableRoute() :
 RouteID(-1),
-Type(InvalidRouteType)
+Type(RouteTypeInvalid)
 {}
 
 CtiTableRoute::CtiTableRoute(LONG &aRoute, RWCString aStr, INT aType) :

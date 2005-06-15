@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/06/13 13:45:21 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/06/15 19:22:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -588,43 +588,43 @@ RWCString desolveRouteType( INT aType )
 {
 RWCString Ret;
 
-    if(aType == CCURouteType)
+    if(aType == RouteTypeCCU)
     {
         Ret = "ccu";
     }
-    else if(aType == TCURouteType)
+    else if(aType == RouteTypeTCU)
     {
         Ret = "tcu";
     }
-    else if(aType == MacroRouteType)
+    else if(aType == RouteTypeMacro)
     {
         Ret = "macro";
     }
-    else if(aType == LCURouteType)
+    else if(aType == RouteTypeLCU)
     {
         Ret = "lcu";
     }
-    else if(aType == RepeaterRouteType)
+    else if(aType == RouteTypeRepeater)
     {
         Ret = "repeater";
     }
-    else if(aType == VersacomRouteType)
+    else if(aType == RouteTypeVersacom)
     {
         Ret = "versacom";
     }
-    else if(aType == TapRouteType)
+    else if(aType == RouteTypeTap)
     {
         Ret = "tap paging";
     }
-    else if(aType == WCTPRouteType)
+    else if(aType == RouteTypeWCTP)
     {
         Ret = "wctp paging";
     }
-    else if(aType == RTCRouteType)
+    else if(aType == RouteTypeRTC)
     {
         Ret = "rtc";
     }
-    else if(aType == SeriesVLMIRouteType)
+    else if(aType == RouteTypeSeriesVLMI)
     {
         Ret = "series 5 lmi";
     }

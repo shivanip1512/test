@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tabletest.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/06/15 19:16:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ void main()
     long this_is_silly = 5000L;
 
     {
-        CtiTableRoute t_route( this_is_silly, "testroute", CCURouteType );
+        CtiTableRoute t_route( this_is_silly, "testroute", RouteTypeCCU );
 
         t_route.DumpData();
 

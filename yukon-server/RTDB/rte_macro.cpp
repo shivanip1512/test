@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/27 14:04:06 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/06/15 19:17:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                 if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
                 {
-                    if(pRoute->getType() != MacroRouteType)
+                    if(pRoute->getType() != RouteTypeMacro)
                     {
                         OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
 

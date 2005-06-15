@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/03/14 01:27:54 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/06/15 19:19:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,12 +65,12 @@ void ApplyRouteResetUpdated(const long key, CtiRouteSPtr pRoute, void* d)
 {
     pRoute->resetUpdatedFlag();
 
-    if(pRoute->getType() == MacroRouteType)
+    if(pRoute->getType() == RouteTypeMacro)
     {
         CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
         pMacro->getRouteList().clear();   // We will refill this one as we go!
     }
-    if(pRoute->getType() == CCURouteType)
+    if(pRoute->getType() == RouteTypeCCU)
     {
         CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
         pCCU->getRepeaterList().clear();  //  ditto
@@ -81,7 +81,7 @@ void ApplyRouteResetUpdated(const long key, CtiRouteSPtr pRoute, void* d)
 
 void ApplyRepeaterSort(const long key, CtiRouteSPtr pRoute, void* d)
 {
-    if(pRoute->getType() == CCURouteType)  //  used to be RepeaterRouteType
+    if(pRoute->getType() == RouteTypeCCU)  //  used to be RouteTypeRepeater
     {
         CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
         pCCU->getRepeaterList().sort();
@@ -91,7 +91,7 @@ void ApplyRepeaterSort(const long key, CtiRouteSPtr pRoute, void* d)
 
 void ApplyMacroRouteSort(const long key, CtiRouteSPtr pRoute, void* d)
 {
-    if(pRoute->getType() == MacroRouteType)
+    if(pRoute->getType() == RouteTypeMacro)
     {
         CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
         pMacro->getRouteList().sort();
@@ -328,7 +328,7 @@ void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOO
 
         if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
         {
-            if(pTempCtiRoute->getType() == CCURouteType)  //  used to be RepeaterRouteType
+            if(pTempCtiRoute->getType() == RouteTypeCCU)  //  used to be RouteTypeRepeater
             {
                 /*
                  *  The route just returned from the rdr already was in my list.  We need to
@@ -358,7 +358,7 @@ void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (
 
         if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
         {
-            if(pTempCtiRoute->getType() == MacroRouteType)
+            if(pTempCtiRoute->getType() == RouteTypeMacro)
             {
                 /*
                  *  The route just returned from the rdr already was in my list.  We need to
@@ -388,7 +388,7 @@ void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOO
 
         if( !_smartMap.empty() && (pTempCtiRoute = _smartMap.find(lTemp)) )
         {
-            if(pTempCtiRoute->getType() == VersacomRouteType)
+            if(pTempCtiRoute->getType() == RouteTypeVersacom)
             {
                 /*
                  *  The route just returned from the rdr already was in my list.  We need to
@@ -515,7 +515,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, RWTPtrSlist<
 
         CtiRouteSPtr route = itr_rte->second;
 
-        if(route && route->getType() == CCURouteType)
+        if(route && route->getType() == RouteTypeCCU)
         {
             CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
 

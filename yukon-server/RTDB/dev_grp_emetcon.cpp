@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/06/15 19:23:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,7 +143,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.SOE,
                                                       RWOrdered());
 
-                if( Route->getType() == VersacomRouteType )
+                if( Route->getType() == RouteTypeVersacom )
                 {
                     OutMessage->EventCode    |= ENCODED;    // Set this so that versacom works
                 }

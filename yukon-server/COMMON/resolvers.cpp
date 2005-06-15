@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2005/06/13 13:45:21 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2005/06/15 19:17:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,47 +32,47 @@ INT resolveRouteType(RWCString rwsTemp)
 
     if(rwsTemp == "ccu")
     {
-        Ret = CCURouteType;
+        Ret = RouteTypeCCU;
     }
     else if(rwsTemp == "tcu")
     {
-        Ret = TCURouteType;
+        Ret = RouteTypeTCU;
     }
     else if(rwsTemp == "macro")
     {
-        Ret = MacroRouteType;
+        Ret = RouteTypeMacro;
     }
     else if(rwsTemp == "lcu")
     {
-        Ret = LCURouteType;
+        Ret = RouteTypeLCU;
     }
     else if(rwsTemp == "repeater")
     {
-        Ret = RepeaterRouteType;
+        Ret = RouteTypeRepeater;
     }
     else if(rwsTemp == "versacom")
     {
-        Ret = VersacomRouteType;
+        Ret = RouteTypeVersacom;
     }
     else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
     {
-        Ret = TapRouteType;
+        Ret = RouteTypeTap;
     }
     else if(rwsTemp == "wctp terminal")
     {
-        Ret = WCTPRouteType;
+        Ret = RouteTypeWCTP;
     }
     else if(rwsTemp == "rtc")
     {
-        Ret = RTCRouteType;
+        Ret = RouteTypeRTC;
     }
     else if(rwsTemp == "series 5 lmi")
     {
-        Ret = SeriesVLMIRouteType;
+        Ret = RouteTypeSeriesVLMI;
     }
     else
     {
-        Ret = InvalidRouteType;
+        Ret = RouteTypeInvalid;
     }
 
     return Ret;

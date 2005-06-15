@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/06/15 19:17:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,7 +76,7 @@ void CtiRouteVersacom::DecodeVersacomDatabaseReader(RWDBReader &rdr)
 {
     LONG                    RID;
 
-    if(getType() == VersacomRouteType)   // Just make darn sure.
+    if(getType() == RouteTypeVersacom)   // Just make darn sure.
     {
         if( getDebugLevel() & DEBUGLEVEL_DATABASE )
         {

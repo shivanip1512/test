@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/06/15 19:17:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -517,7 +517,7 @@ void CtiRouteCCU::DecodeRepeaterDatabaseReader(RWDBReader &rdr)
 {
     CtiTableRepeaterRoute   Rpt;
 
-    if(getType() == CCURouteType)   // Just make darn sure.  (used to be RepeaterRouteType)
+    if(getType() == RouteTypeCCU)   // Just make darn sure.  (used to be RouteTypeRepeater)
     {
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {

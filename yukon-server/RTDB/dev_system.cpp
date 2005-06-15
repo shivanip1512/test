@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/05/04 20:50:20 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/06/15 19:23:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -403,15 +403,15 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                         switch(Route->getType())
                         {
-                        case CCURouteType:         // These route types may be considered default routes
-                        case TCURouteType:
-                        case LCURouteType:
-                        case RepeaterRouteType:
-                        case VersacomRouteType:
-                        case TapRouteType:
-                        case WCTPRouteType:
-                        case RTCRouteType:
-                        case SeriesVLMIRouteType:
+                        case RouteTypeCCU:         // These route types may be considered default routes
+                        case RouteTypeTCU:
+                        case RouteTypeLCU:
+                        case RouteTypeRepeater:
+                        case RouteTypeVersacom:
+                        case RouteTypeTap:
+                        case RouteTypeWCTP:
+                        case RouteTypeRTC:
+                        case RouteTypeSeriesVLMI:
                             {
                                 if( Route->isDefaultRoute() )
                                 {
@@ -445,7 +445,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
 
                                 break;
                             }
-                        case MacroRouteType:
+                        case RouteTypeMacro:
                         default:
                             {
                                 break;

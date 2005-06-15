@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/06/13 13:57:26 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/06/15 19:16:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -454,33 +454,33 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
 
         switch(RteType)
         {
-        case CCURouteType:
+        case RouteTypeCCU:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteCCU;
                 break;
             }
-        case LCURouteType:
-        case TCURouteType:
-        case TapRouteType:
-        case WCTPRouteType:
-        case RTCRouteType:
-        case SeriesVLMIRouteType:
+        case RouteTypeLCU:
+        case RouteTypeTCU:
+        case RouteTypeTap:
+        case RouteTypeWCTP:
+        case RouteTypeRTC:
+        case RouteTypeSeriesVLMI:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;
                 break;
             }
-        case MacroRouteType:
+        case RouteTypeMacro:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteMacro;
                 break;
             }
-        case VersacomRouteType:
+        case RouteTypeVersacom:
             {
                 Route = (CtiRouteBase*) CTIDBG_new CtiRouteVersacom;
                 break;
             }
-        case RepeaterRouteType:
-        case InvalidRouteType:
+        case RouteTypeRepeater:
+        case RouteTypeInvalid:
         default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
