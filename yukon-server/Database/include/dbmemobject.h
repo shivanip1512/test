@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/dbmemobject.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:11 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/06/15 19:21:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,7 @@ protected:
 
 private:
 
-    public:
+public:
     CtiMemDBObject() :
     Flag(0)
     {}
