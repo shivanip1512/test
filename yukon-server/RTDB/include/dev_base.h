@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/04/05 16:52:52 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/06/15 19:22:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
+#include <set>
 using namespace std;
 
 #include "dsm2.h"
@@ -37,6 +38,7 @@ using namespace std;
 #include "tbl_scanrate.h"
 #include "tbl_pao.h"
 #include "tbl_paoexclusion.h"
+#include "tbl_dyn_paoinfo.h"
 #include "queues.h"
 #include "utility.h"
 
@@ -65,6 +67,44 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
  */
 class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
+private:
+
+    int _currTrxID;
+    int _responsesOnTrxID;
+    RWTime _lastReport;
+
+    CtiDeviceExclusion  _exclusion;
+
+protected:
+
+    CtiCounter          _submittal;
+    CtiCounter          _processed;
+    CtiCounter          _orphaned;
+
+    INT                  _commFailCount;          // Consecutive failures to this device.
+    INT                  _attemptCount;           // Cumulative. Attempts to communicate with the device
+    INT                  _attemptFailCount;       // Cumulative. Failed with no retries
+    INT                  _attemptRetryCount;      // Cumulative. Failed, but retries remain
+    INT                  _attemptSuccessCount;    // Cumulative. Comms successful.
+
+
+    CtiPointManager      *_pointMgr;              // Manages points associated with this Device (Device owned memory)
+    CtiRouteManager      *_routeMgr;              // Helps me find my Route.  (Memory managed elsewhere)
+
+    union
+    {
+        UINT     _clear;
+        struct
+        {
+            UINT  _logOnNeeded : 1;
+        };
+    };
+
+    bool _singleDevice;                           // This should be one for any device not a group.
+    CtiTableDeviceBase _deviceBase;               // This guy used to give us a LOT of members by being our parent!
+
+    set<CtiTableDynamicPaoInfo> _paoInfo;         // This is a list of miscellaneous data that is dynamically generated
+                                                  //   by Porter, Scanner, or whomever
 public:
 
     typedef CtiTblPAO Inherited;
@@ -191,6 +231,18 @@ public:
     bool isSingle() const;
     bool isGroup() const;
 
+
+    bool hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k);
+    bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long   &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double &value);
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long   &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const;
+
+    bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info);
+
     int getCurrentTrxID() const;
     int getResponsesOnTrxID() const;
     int incResponsesOnTrxID(int trxid);
@@ -252,42 +304,6 @@ public:
 
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
-
-protected:
-
-    CtiCounter          _submittal;
-    CtiCounter          _processed;
-    CtiCounter          _orphaned;
-
-    INT                  _commFailCount;                        // Consecutive failures to this device.
-    INT                  _attemptCount;                         // Cumulative. Attempts to communicate with the device
-    INT                  _attemptFailCount;                     // Cumulative. Failed with no retries
-    INT                  _attemptRetryCount;                    // Cumulative. Failed, but retries remain
-    INT                  _attemptSuccessCount;                  // Cumulative. Comms successful.
-
-
-    CtiPointManager      *_pointMgr;                            // Manages points associated with this Device (Device owned memory)
-    CtiRouteManager      *_routeMgr;                            // Helps me find my Route.  (Memory managed elsewhere)
-
-    union
-    {
-        UINT     _clear;
-        struct
-        {
-            UINT  _logOnNeeded : 1;
-        };
-    };
-
-    bool _singleDevice;                                         // This should be one for any device not a group.
-    CtiTableDeviceBase _deviceBase;                             // This guy used to give us a LOT of members by being our parent!
-
-private:
-
-    int _currTrxID;
-    int _responsesOnTrxID;
-    RWTime _lastReport;
-
-    CtiDeviceExclusion  _exclusion;
 };
 
 typedef CtiDeviceBase CtiDevice;
@@ -330,6 +346,7 @@ inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dq
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
 inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
 inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
+
 
 
 #if VSLICK_TAG_WORKAROUND

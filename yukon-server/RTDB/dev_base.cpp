@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/06/13 13:53:06 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/06/15 19:22:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -801,6 +801,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
     return status;
 }
 
+
 bool CtiDeviceBase::isGroup() const
 {
     bool bstatus = false;
@@ -820,7 +821,7 @@ bool CtiDeviceBase::isTAP() const
     if(getType() == TYPE_TAPTERM ||
        getType() == TYPE_WCTP ||
        getType() == TYPE_TAPTERM_EMAIL ||
-       getType() == TYPE_TAPTERM_TESCOM || 
+       getType() == TYPE_TAPTERM_TESCOM ||
        getType() == TYPE_SNPP )
     {
         bret = true;
@@ -828,6 +829,113 @@ bool CtiDeviceBase::isTAP() const
 
     return bret;
 }
+
+
+//  this dynamic stuff might need to move to tbl_pao - it is dynamicpaoinfo, after all
+bool CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k)
+{
+    return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
+}
+
+
+bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
+{
+    bool new_record = false;
+    set<CtiTableDynamicPaoInfo>::iterator itr;
+
+    itr = _paoInfo.find(info);
+
+    if( itr != _paoInfo.end() )
+    {
+        *itr = info;
+    }
+    else
+    {
+        _paoInfo.insert(info);
+        new_record = true;
+    }
+
+    return new_record;
+}
+
+
+//  helper function for overloads
+template <class T>
+bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::Keys k, const T &value)
+{
+    pair<set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
+    bool record_added = false;
+
+    set_result = s.insert(CtiTableDynamicPaoInfo(paoid, k));
+
+    set_result.first->setValue(value);
+
+    return set_result.second;
+}
+
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
+
+//  helper function for overloads
+template <class T>
+bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::Keys k, T &destination)
+{
+    bool success = false;
+
+    set<CtiTableDynamicPaoInfo>::const_iterator itr;
+
+    if( (itr = s.find(CtiTableDynamicPaoInfo(paoid, k))) != s.end() )
+    {
+        itr->getValue(destination);
+        success = true;
+    }
+
+    return success;
+}
+
+bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &destination) const
+{
+    return getInfo(_paoInfo, getID(), k, destination);
+}
+bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long &destination) const
+{
+    return getInfo(_paoInfo, getID(), k, destination);
+}
+bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const
+{
+    return getInfo(_paoInfo, getID(), k, destination);
+}
+
+bool CtiDeviceBase::getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info)
+{
+    bool retval = false;
+
+    set<CtiTableDynamicPaoInfo>::iterator itr;
+
+    for( itr = _paoInfo.begin(); itr != _paoInfo.end(); itr++ )
+    {
+        if( itr->isDirty() )
+        {
+            dirty_info.push_back(CTIDBG_new CtiTableDynamicPaoInfo(*itr));
+            itr->setDirty(false);
+
+            retval = true;
+        }
+    }
+
+    return retval;
+}
+
 
 bool CtiDeviceBase::hasExclusions() const
 {
