@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/06/13 19:07:41 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -457,9 +457,10 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 
 void CtiTableLMControlHistory::DecodeControlTimes(RWDBReader &rdr)
 {
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["stopdatetime"]        >> _prevLogTime;

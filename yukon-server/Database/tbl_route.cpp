@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_route.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,12 +69,12 @@ void CtiTableDeviceRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 
 void CtiTableDeviceRoute::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-
-   rdr["routeid"] >> RouteID;
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    rdr["routeid"] >> RouteID;
 }
 
 RWCString CtiTableDeviceRoute::getTableName()

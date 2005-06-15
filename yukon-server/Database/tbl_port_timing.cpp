@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_timing.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,20 +78,26 @@ void CtiTablePortTimings::DecodeDatabaseReader(RWDBReader &rdr)
 {
    ULONG    uTemp;
 
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
 
-      rdr["pretxwait"]        >> _delays[PRE_RTS_DELAY];
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " pre_rts_delay        : " << _delays[PRE_RTS_DELAY] << endl;
-      rdr["rtstotxwait"]      >> _delays[RTS_TO_DATA_OUT_DELAY];
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " rts_to_data_out_dly  : " << _delays[RTS_TO_DATA_OUT_DELAY] << endl;
-      rdr["posttxwait"]       >> _delays[DATA_OUT_TO_RTS_DOWN_DELAY];
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " data_out_to_rts_dwn  : " << _delays[DATA_OUT_TO_RTS_DOWN_DELAY] << endl;
-      rdr["receivedatawait"]  >> _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY];
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " data_out_inflush_dly : " << _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY] << endl;
-      rdr["extratimeout"]     >> _delays[EXTRA_DELAY];
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " extra_delay          : " << _delays[EXTRA_DELAY] << endl;
+   rdr["pretxwait"]        >> _delays[PRE_RTS_DELAY];
+   rdr["rtstotxwait"]      >> _delays[RTS_TO_DATA_OUT_DELAY];
+   rdr["posttxwait"]       >> _delays[DATA_OUT_TO_RTS_DOWN_DELAY];
+   rdr["receivedatawait"]  >> _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY];
+   rdr["extratimeout"]     >> _delays[EXTRA_DELAY];
+
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   {
+      CtiLockGuard<CtiLogger> logger_guard(dout);
+      dout << " pre_rts_delay        : " << _delays[PRE_RTS_DELAY] << endl;
+      dout << " rts_to_data_out_dly  : " << _delays[RTS_TO_DATA_OUT_DELAY] << endl;
+      dout << " data_out_to_rts_dwn  : " << _delays[DATA_OUT_TO_RTS_DOWN_DELAY] << endl;
+      dout << " data_out_inflush_dly : " << _delays[DATA_OUT_TO_INBUFFER_FLUSH_DELAY] << endl;
+      dout << " extra_delay          : " << _delays[EXTRA_DELAY] << endl;
    }
 }
 

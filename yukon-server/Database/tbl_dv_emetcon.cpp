@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,10 +171,10 @@ void CtiTableEmetconLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     RWCString rwsTemp;
 
 
-
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"] >> _deviceID;

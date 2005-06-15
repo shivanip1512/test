@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_settings.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,19 +142,23 @@ void CtiTablePortSettings::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 
 void CtiTablePortSettings::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   {
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
 
-      rdr["baudrate"]         >> _baudRate;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Baud Rate            = " << _baudRate << endl;
+    rdr["baudrate"]         >> _baudRate;
+    rdr["cdwait"]           >> _cdWait;
+    rdr["linesettings"]     >> _lineSettings;
 
-      rdr["cdwait"]           >> _cdWait;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " CD Wait Time         = " << _cdWait << endl;
-
-      rdr["linesettings"]     >> _lineSettings;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Line Parameters      = " << _lineSettings << endl;
-   }
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << " Baud Rate            = " << _baudRate << endl;
+        dout << " CD Wait Time         = " << _cdWait << endl;
+        dout << " Line Parameters      = " << _lineSettings << endl;
+    }
 }
 
 

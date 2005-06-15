@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_serial.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,12 +60,18 @@ void CtiTablePortLocalSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWD
 
 void CtiTablePortLocalSerial::DecodeDatabaseReader(RWDBReader &rdr)
 {
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
 
-      rdr["physicalport"] >> _physicalPort;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Physical Port Desc.  = " << _physicalPort << endl;
+   rdr["physicalport"] >> _physicalPort;
+
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   {
+      CtiLockGuard<CtiLogger> logger_guard(dout);
+      dout << " Physical Port Desc.  = " << _physicalPort << endl;
    }
 }
 

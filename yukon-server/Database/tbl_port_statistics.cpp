@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_statistics.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/06/15 23:56:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,22 +121,28 @@ void CtiTablePortStatistics::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDB
 
 void CtiTablePortStatistics::DecodeDatabaseReader(RWDBReader &rdr)
 {
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {
       CtiLockGuard<CtiLogger> logger_guard(dout);
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+   }
 
-      rdr["statistictype"]          >> _type;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Statistic Type       = " << _type << endl;
-      rdr["attempts"]               >> _attemptCount;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Attampts      = " << _attemptCount << endl;
-      rdr["dataerrors"]             >> _dataErrorCount;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Data Error    = " << _dataErrorCount << endl;
-      rdr["systemerrors"]           >> _systemErrorCount;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Sys. Errors   = " << _systemErrorCount << endl;
-      rdr["startdatetime"]          >> _startTime;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Start time    = " << _startTime << endl;
-      rdr["stopdatetime"]           >> _stopTime;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) dout << " Stats: Stop time     = " << _stopTime << endl;
+   rdr["statistictype"]          >> _type;
+   rdr["attempts"]               >> _attemptCount;
+   rdr["dataerrors"]             >> _dataErrorCount;
+   rdr["systemerrors"]           >> _systemErrorCount;
+   rdr["startdatetime"]          >> _startTime;
+   rdr["stopdatetime"]           >> _stopTime;
+
+   if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+   {
+      CtiLockGuard<CtiLogger> logger_guard(dout);
+      dout << " Statistic Type       = " << _type << endl;
+      dout << " Stats: Attampts      = " << _attemptCount << endl;
+      dout << " Stats: Data Error    = " << _dataErrorCount << endl;
+      dout << " Stats: Sys. Errors   = " << _systemErrorCount << endl;
+      dout << " Stats: Start time    = " << _startTime << endl;
+      dout << " Stats: Stop time     = " << _stopTime << endl;
    }
 }
 
