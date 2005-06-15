@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2005/06/15 23:57:21 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.7  2005/06/15 23:57:21  jrichter
+      Corrected DST issue with file that ran over Spring Ahead timeframe...
+
       Revision 1.6  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -292,12 +295,24 @@ RWTime CtiFDR_EnhancedLodeStar::ForeignToYukonTime (RWCString aTime, CHAR aDstFl
         }
         else
         {
+            RWTime beginDST = RWTime().beginDST(ts.tm_year, RWZone::local());
+            RWTime endDST = RWTime().endDST(ts.tm_year, RWZone::local());
+
+
             ts.tm_year -= 1900;
             ts.tm_mon--;
 
+            RWTime tempTime =  RWTime(&ts);
+            
             if (aDstFlag == 'Y' || aDstFlag == 'y')
-            {
-                ts.tm_isdst = TRUE;
+            {               
+               if ( tempTime.seconds() < endDST.seconds() &&
+                    tempTime.seconds() >= beginDST.seconds() )
+               {
+                   ts.tm_isdst = TRUE;
+               }
+               else
+                   ts.tm_isdst = FALSE;
             }
             else
             {
