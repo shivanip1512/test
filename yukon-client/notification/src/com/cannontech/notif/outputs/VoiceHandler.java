@@ -40,7 +40,7 @@ public class VoiceHandler extends OutputHandler
         _queue = new NotificationQueue(_callPool);
         
         String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.TEMPLATE_ROOT);
-        _transformer = new NotificationTransformer(xslRootDirectory);
+        _transformer = new NotificationTransformer(xslRootDirectory, getType());
     }
     
     public void handleNotification(NotificationBuilder notifBuilder, Contactable contact) {
@@ -54,7 +54,7 @@ public class VoiceHandler extends OutputHandler
         try {
             Notification notif = notifBuilder.buildNotification(contact);
             
-            Document voiceXml = _transformer.transform(notif, getType());
+            Document voiceXml = _transformer.transform(notif);
             
             SingleNotification singleNotification = 
                 new SingleNotification(contact, voiceXml);

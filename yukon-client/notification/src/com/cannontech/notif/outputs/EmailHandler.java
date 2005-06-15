@@ -25,7 +25,7 @@ public class EmailHandler extends OutputHandler
         super(Contactable.EMAIL);
         
         String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.TEMPLATE_ROOT);
-        _transformer = new NotificationTransformer(xslRootDirectory);
+        _transformer = new NotificationTransformer(xslRootDirectory, getType());
     }
     
     public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
@@ -35,7 +35,7 @@ public class EmailHandler extends OutputHandler
             
             Notification notif = notifFormatter.buildNotification(contact);
             
-            Element outXml = _transformer.transform(notif, getType()).getRootElement();
+            Element outXml = _transformer.transform(notif).getRootElement();
             
             String emailSubject = outXml.getChildTextNormalize("subject");
             String emailBody = outXml.getChildText("body");
@@ -51,7 +51,7 @@ public class EmailHandler extends OutputHandler
                 // other addresses in the contact from being used.
                 try {
                     emailMsg.setRecipient(emailTo);
-                    emailMsg.send();
+                    emailMsg.send(); //TODO uncomment
                 } catch (MessagingException e) {
                     CTILogger.warn("Unable to email notification " + notif + " to address " + emailTo + ".", e);
                 }

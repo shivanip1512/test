@@ -2,8 +2,6 @@ package com.cannontech.notif.outputs;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
 
 import org.jdom.Document;
 import org.jdom.transform.XSLTransformException;
@@ -23,38 +21,26 @@ import org.jdom.transform.XSLTransformer;
  */
 public class NotificationTransformer {
     /**
-     * This shall contain Notification -> (String -> Document) mapping.
+     * This shall contain Notification -> Document mapping.
      */
-    private WeakHashMap _cache = new WeakHashMap();
     private final String _rootDirectory;
+    private String _outputType;
 
-    public NotificationTransformer(String rootDirectory) {
+    public NotificationTransformer(String rootDirectory, String outputType) {
         _rootDirectory = rootDirectory;
-        
+        _outputType = outputType;
     }
     
-    public Document transform(Notification notif, String outputType) throws TransformException {
+    public Document transform(Notification notif) throws TransformException {
         try {
-            TreeMap outputMap;
-            if (!_cache.containsKey(notif)) {
-                outputMap = new TreeMap();
-                _cache.put(notif, outputMap);
-            } else {
-                outputMap = (TreeMap) _cache.get(notif);
-            }
             Document result;
-            if (outputMap.containsKey(outputType)) {
-                result = (Document) outputMap.get(outputType);
-            } else {
-                InputStream styleSheet = getStyleSheet(notif.getMessageType(),
-                                                       outputType);
-                XSLTransformer trans = new XSLTransformer(styleSheet);
-                result = trans.transform(notif.getDocument());
-                outputMap.put(outputType, result);
-            }
+            InputStream styleSheet = getStyleSheet(notif.getMessageType(),
+                                                   _outputType);
+            XSLTransformer trans = new XSLTransformer(styleSheet);
+            result = trans.transform(notif.getDocument());
             return result;
         } catch (XSLTransformException e) {
-            throw new TransformException("Unable to transform " + notif + " to " + outputType + ".",e);
+            throw new TransformException("Unable to transform " + notif + " to " + _outputType + ".",e);
         }
     }
 
