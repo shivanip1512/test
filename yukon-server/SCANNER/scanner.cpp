@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/05/04 20:28:01 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/06/15 19:17:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -133,7 +133,7 @@ void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(RWTPtrSlist< OUTMESS > &outList);
 
-CtiDeviceManager      ScannerDeviceManager;
+CtiDeviceManager      ScannerDeviceManager(Application_Scanner);
 
 static RWWinSockInfo  winsock;
 

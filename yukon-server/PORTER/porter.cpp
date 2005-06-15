@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2005/04/05 17:47:54 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2005/06/15 19:18:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -213,7 +213,7 @@ extern INT RunningInConsole;              // From portmain.cpp
 
 // Some Global Manager types to allow us some RTDB stuff.
 CtiPortManager     PortManager(PortThreadFactory);
-CtiDeviceManager   DeviceManager;
+CtiDeviceManager   DeviceManager(Application_Porter);
 CtiRouteManager    RouteManager;
 vector< CtiPortShare * > PortShareManager;
 
@@ -2177,57 +2177,57 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
     if( (nAllocType == _HOOK_ALLOC) || (nAllocType == _HOOK_REALLOC) )
     {
-    if(lRequest > 1000000 )
-    {
-        if( (nSize == 24) )
+        if(lRequest > 1000000 )
         {
-            if(lastAlloc == (lRequest - 1))
+            if( (nSize == 24) )
             {
+                if(lastAlloc == (lRequest - 1))
+                {
                     alloc_cnt++;
 
-                if(prevLastAlloc == (lRequest - 2))
-                {
+                    if(prevLastAlloc == (lRequest - 2))
+                    {
                         alloc_cnt++;
 
-                    if(pprevLastAlloc == (lRequest - 3))
-                    {
+                        if(pprevLastAlloc == (lRequest - 3))
+                        {
                             alloc_cnt++;
                         }
-                    pprevLastAlloc = prevLastAlloc;
+                        pprevLastAlloc = prevLastAlloc;
+                    }
+                    prevLastAlloc = lastAlloc;
                 }
-                prevLastAlloc = lastAlloc;
-            }
 
                 alloc_cnt++;
 
-            lastAlloc = lRequest;
-        }
-        if((nSize == 52) )
-        {
+                lastAlloc = lRequest;
+            }
+            if((nSize == 52) )
+            {
                 alloc_cnt++;
             }
-        else if((nSize == 1316) )
-        {
+            else if((nSize == 1316) )
+            {
                 alloc_cnt++;
             }
-        else if( (nSize == 68) )
-        {
+            else if( (nSize == 68) )
+            {
                 alloc_cnt++;
             }
-        else if( (nSize == 63) )
-        {
+            else if( (nSize == 63) )
+            {
                 alloc_cnt++;
             }
-        else if( (nSize == 416) )
-        {
+            else if( (nSize == 416) )
+            {
                 alloc_cnt++;
             }
-        else if( (nSize == 40) )
-        {
+            else if( (nSize == 40) )
+            {
                 alloc_cnt++;
             }
-        else if( (nSize == 164) )  // RWDBDatabase::RWDBDatabase() constructor.
-        {
+            else if( (nSize == 164) )  // RWDBDatabase::RWDBDatabase() constructor.
+            {
                 alloc_cnt++;
             }
         }

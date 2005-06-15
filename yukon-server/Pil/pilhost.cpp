@@ -24,7 +24,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 DLLIMPORT extern RWMutexLock coutMux;
 
 BOOL              bAllDone = FALSE;
-CtiDeviceManager  DevMgr;
+CtiDeviceManager  DevMgr(Application_Invalid);
 CtiRouteManager   RteMgr;
 
 void CleanupHost()
