@@ -63,11 +63,11 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		CTILogger.error("IOException in outThread", e);
+		CTILogger.info("IOException in outThread: " + e.getMessage());
 	}
 	catch( InterruptedException ie )
 	{
-		CTILogger.error("InterruptedException in outThread", ie);
+		CTILogger.info("InterruptedException in outThread");
 	}
 
 	//com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
