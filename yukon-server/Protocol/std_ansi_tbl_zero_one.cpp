@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/16 19:17:59 $
 *    History: 
       $Log: std_ansi_tbl_zero_one.cpp,v $
+      Revision 1.5  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.4  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -120,6 +123,12 @@ void CtiAnsiTableZeroOne::printResult(  )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   Model: " << string1 << " (" << string2 <<")" << endl;
+    }
+
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   FW Version: " << getFWVersionNumber() << endl;
+        dout << "   FW Revision: " << getFWRevisionNumber() << endl;
     }
 }
 
@@ -306,6 +315,16 @@ void CtiAnsiTableZeroOne::decodeResultPiece( BYTE **dataBlob )
        memcpy( (void *)&_mfg_serial_number, *dataBlob, sizeof( UINT64 ));
        *dataBlob += sizeof (UINT64);
     }
+}
+
+
+int CtiAnsiTableZeroOne::getFWVersionNumber()
+{
+    return (int)_fw_version_number;
+}
+int CtiAnsiTableZeroOne::getFWRevisionNumber()
+{
+    return (int) _fw_revision_number;
 }
 
 

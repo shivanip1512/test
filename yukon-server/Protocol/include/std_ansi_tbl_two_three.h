@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_three.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:21 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *    History: 
       $Log: std_ansi_tbl_two_three.h,v $
+      Revision 1.5  2005/06/16 19:18:00  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.4  2004/09/30 21:37:21  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -123,8 +126,9 @@ public:
    void retrieveCoincidentsRecord(BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset);
 
 
-double getDemandValue ( int index );
-double getSummationsValue ( int index );
+double getDemandValue ( int index, int dataBlock);
+double getSummationsValue ( int index, int dataBlock);
+double getDemandEventTime( int index, int dataBlock );
 
 };
 

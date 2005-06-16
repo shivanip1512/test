@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.142 $
-* DATE         :  $Date: 2005/06/13 13:51:08 $
+* REVISION     :  $Revision: 1.143 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1296,7 +1296,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " KV2 loop entered **********************************************" << endl;
+                                dout << RWTime() << " "<< kv2dev->getName() << " loop entered **********************************************" << endl;
                             }
 
                             while( !ansi.isTransactionComplete() )
@@ -1307,7 +1307,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " KV2 loop is A-B-N-O-R-M-A-L " << endl;
+                                    dout << RWTime() << " "<< kv2dev->getName() << " loop is A-B-N-O-R-M-A-L " << endl;
                                 }
                                 ansi.decode( trx, status );
 
@@ -1325,7 +1325,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
                                 //send dispatch lp data directly
-                                kv2dev->processDispatchReturnMessage( retMsg );
+                                kv2dev->processDispatchReturnMessage( retMsg, ansi.getParseFlags() );
                                 if( !retMsg->getData().isEmpty() )
                                 {
                                     VanGoghConnection.WriteConnQue( retMsg );
@@ -1341,13 +1341,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 Sleep(1000);
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
+                                    dout << RWTime() << " "<< kv2dev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
                                 InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " KV2 loop exited  **********************************************" << endl;
+                                dout << RWTime() << " "<< kv2dev->getName() << " loop exited  **********************************************" << endl;
                             }
                         }
                         // return value to tell us if we are successful or not
@@ -1378,7 +1378,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Sentinel loop entered **********************************************" << endl;
+                                dout << RWTime() << " "<< sentinelDev->getName() <<" loop entered **********************************************" << endl;
                             }
 
                             while( !ansi.isTransactionComplete() )
@@ -1389,7 +1389,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 if( status != NORMAL )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Sentinel loop is A-B-N-O-R-M-A-L " << endl;
+                                    dout << RWTime() << " "<< sentinelDev->getName()<<" loop is A-B-N-O-R-M-A-L " << endl;
                                 }
                                 ansi.decode( trx, status );
 
@@ -1406,7 +1406,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
 
                                 //send dispatch lp data directly
-                                sentinelDev->processDispatchReturnMessage( retMsg );
+                                sentinelDev->processDispatchReturnMessage( retMsg, ansi.getParseFlags() );
                                 if( !retMsg->getData().isEmpty() )
                                 {
                                     VanGoghConnection.WriteConnQue( retMsg );
@@ -1422,13 +1422,13 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 Sleep(1000);
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " ansi TransactionFailed.  ReadFailed. " << endl;
+                                    dout << RWTime() << " "<< sentinelDev->getName() << "'s ansi TransactionFailed.  ReadFailed. " << endl;
                                 }
                                 InMessage->EventCode = NOTNORMAL;
                             }
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " Sentinel loop exited  **********************************************" << endl;
+                                dout << RWTime() << " "<< sentinelDev->getName() <<" loop exited  **********************************************" << endl;
                             }
                         }
                         status = sentinelDev->sendCommResult( InMessage );

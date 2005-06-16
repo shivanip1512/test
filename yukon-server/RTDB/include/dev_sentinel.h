@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -29,6 +29,7 @@
 #include "types.h"
 #include "mgr_point.h"
 #include "device.h"
+#include "dllyukon.h"
 
 class IM_EX_DEVDB CtiDeviceSentinel : public CtiDeviceMeter
 {
@@ -74,7 +75,7 @@ public:
                        RWTPtrSlist< OUTMESS >     &outList );
 
    CtiProtocolANSI & getSentinelProtocol( void );
-   void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
+   void processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr);
    int buildCommanderTableRequest (BYTE *ptr);
    INT sendCommResult( INMESS *InMessage);
@@ -89,6 +90,11 @@ public:
 
 private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
+
+    UINT _parseFlags;
+    RWCString _result_string;
+
+    unsigned long _lastLPTime;
 };
 
 

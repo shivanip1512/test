@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2003/04/25 15:09:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *    History: 
       $Log: std_ansi_tbl_zero_one.h,v $
+      Revision 1.4  2005/06/16 19:18:00  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.3  2003/04/25 15:09:54  dsutton
       Standard ansi tables all inherit from a base table
 
@@ -81,6 +84,9 @@ public:
     void printResult( );
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
+
+    int getFWVersionNumber();
+    int getFWRevisionNumber();
 
 
 };

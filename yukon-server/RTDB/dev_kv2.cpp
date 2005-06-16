@@ -9,8 +9,8 @@
 * Author: Eric Schmit
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2005/05/12 18:33:12 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2005/06/16 19:17:59 $
 *
 *
 *    AUTHOR: David Sutton
@@ -21,6 +21,9 @@
 *
 *    History:
       $Log: dev_kv2.cpp,v $
+      Revision 1.14  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.13  2005/05/12 18:33:12  jrichter
       changed so it doesn't send additional last lp value to scanner.  Matt advised to do this and says now all lp values are sent to clients.
 
@@ -57,6 +60,9 @@
 #include "dev_kv2.h"
 #include "utility.h"
 #include "pt_analog.h"
+#include "pt_status.h"
+#include "cmdparse.h"
+#include "numstr.h"
 
 //=========================================================================================================================================
 
@@ -230,6 +236,8 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     BYTE scanOperation = 1; //1 = demand reset
 
+    _parseFlags = parse.getFlags();
+
     // put the stuff in the buffer
     memcpy( aMsg, &header, sizeof (header));
     memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
@@ -238,7 +246,10 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
             (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
             &scanOperation, sizeof(BYTE));
-    
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &_parseFlags, sizeof(UINT));
+
+
       outList.insert( OutMessage );
 
       OutMessage = 0;
@@ -263,6 +274,8 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
     int nRet = NoError;
     RWTPtrSlist< OUTMESS > tmpOutList;
 
+    _parseFlags = parse.getFlags();
+    
     switch( parse.getCommand( ) )
     {
 
@@ -410,19 +423,30 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
         if (useScanFlags())
         {
-            unsigned long *lastLpTime;
-            lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
-
-            setUseScanFlags(TRUE);
-            setLastLPTime(RWTime(*lastLpTime));
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if (InMessage->EventCode == NORMAL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "ResultDecode    getLastLPTime "<<getLastLPTime()<< endl;
+                unsigned long *lastLpTime;
+                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+
+                if (lastLpTime != NULL && *lastLpTime != 0)
+                {  
+                    setLastLPTime(RWTime(*lastLpTime));
+                }
+                if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                }
+            }
+            else
+            {
+                if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " ResultDecode for " << getName() <<" **SCAN FAILED**  lastLPTime: "<<getLastLPTime()<< endl;
+                }
             }
             resetScanPending();
-            setUseScanFlags(FALSE);
-
         }
         else
         {
@@ -431,7 +455,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 RWCString(InMessage->Return.CommandStr),
                                                 //RWCString(),
-                                                RWCString(getName() + " / general scan successful"),
+                                                 RWCString(getName() + " / general scan successful : \n" + _result_string.data()),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -457,13 +481,14 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     }
     if( retMsg != NULL )
     {
+        retMsg->setExpectMore(0);
         retList.insert(retMsg);
         retMsg = NULL;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << RWTime::now() << " ==============================================" << endl;
-        dout << RWTime::now() << " ==========The KV2 responded with data=========" << endl;
+        dout << RWTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
         dout << RWTime::now() << " ==============================================" << endl;
     }   
     return( 0 ); //just a val
@@ -502,13 +527,13 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 
             memcpy( InMessage->Buffer.InMessage, (void *)&lastLpTime, sizeof (unsigned long) );
             InMessage->InLength = sizeof (unsigned long);
-            InMessage->EventCode = NORMAL;
+            //InMessage->EventCode = NORMAL;
 
 
-            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+            if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << "sendCommResult    lastLPTime "<<getLastLPTime()<< endl;
+                dout << RWTime() << " sendCommResult for" << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
             }
         }
       //  else
@@ -569,20 +594,20 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
 
     // currently defaulted at billing data only
     header.lastLoadProfileTime = getLastLPTime().seconds();
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
+        dout << RWTime() << " " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
     }
 
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
     pswdTemp.toUpper();
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    /*if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
-    }
+    } */
     BYTE *temp;
     temp = (BYTE *)pswdTemp.data();
     struct CHexMap
@@ -654,9 +679,12 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
             (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof(ANSI_TABLE_WANTS))),
             &scanOperation, sizeof(BYTE));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &_parseFlags, sizeof(UINT));
+
 
     // keep the list on the scanner side for decode
-    getKV2Protocol().buildWantedTableList (aMsg);
+    //getKV2Protocol().buildWantedTableList (aMsg);
     return NORMAL;
 }
 
@@ -699,11 +727,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
     pswdTemp.toUpper();
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
-    }
+    
     BYTE *temp;
     temp = (BYTE *)pswdTemp.data();
     struct CHexMap
@@ -752,13 +776,8 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
     }
 
     // currently defaulted at billing data only
-    header.lastLoadProfileTime = getLastLPTime().seconds();
-    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
-    }
-
+    header.lastLoadProfileTime = 0;
+    
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
     for (int x=0; x < 100; x++)
@@ -788,11 +807,12 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
 
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
             &scanOperation, sizeof(BYTE));
-    
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &_parseFlags, sizeof(UINT));
 
 
     // keep the list on the scanner side for decode
-    getKV2Protocol().buildWantedTableList (aMsg);
+    //getKV2Protocol().buildWantedTableList (aMsg);
     return NORMAL;
 }
 
@@ -808,14 +828,16 @@ CtiProtocolANSI & CtiDeviceKV2::getKV2Protocol( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
+void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT archiveFlag )
 {
 
     CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg;
     CtiPointDataMsg                  *pData = NULL;
     //CtiPointBase                     *pPoint = NULL;
     CtiPointAnalog *pPoint = NULL;
+    CtiPointStatus *pStatusPoint = NULL;
     double value = 0;
+    double time = 0;
     double lpValue = 0;
     int    qual = 0;
     bool                             foundSomething = false;
@@ -823,6 +845,10 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
     bool gotLPValues = false;
     int x, y, z;
     RWTime lastLoadProfileTime;
+    RWCString resultString = "";
+
+    //RWCString 
+    _result_string = "";  
 
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -834,122 +860,127 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
     }
     else //general Scan
     {
-        setUseScanFlags(TRUE);
-        lastLoadProfileTime = getLastLPTime();
-        setUseScanFlags(FALSE);
+        if (useScanFlags())
+        {                 
+            lastLoadProfileTime = getLastLPTime();
+        }
 
         x =  OFFSET_TOTAL_KWH;
-        while (x <= OFFSET_DAYS_ON_BATTERY)  
+        while (x <= OFFSET_METER_TIME_STATUS)  
         {
             pPoint = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(x, AnalogPointType);
             if (pPoint != NULL) 
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Point Offset ==> " <<x<< endl;
-            }
-            foundSomething = true;
-
-            switch (x)
-            {
-                case OFFSET_TOTAL_KWH:
-                case OFFSET_RATE_A_KWH:
-                case OFFSET_RATE_B_KWH:
-                case OFFSET_RATE_C_KWH:
-                case OFFSET_RATE_D_KWH:
-                case OFFSET_RATE_E_KWH:
-
-                case OFFSET_TOTAL_KVARH:
-                case OFFSET_RATE_A_KVARH:
-                case OFFSET_RATE_B_KVARH:
-                case OFFSET_RATE_C_KVARH:
-                case OFFSET_RATE_D_KVARH:
-                case OFFSET_RATE_E_KVARH:
-
-                case OFFSET_TOTAL_KVAH:
-                case OFFSET_RATE_A_KVAH:
-                case OFFSET_RATE_B_KVAH:
-                case OFFSET_RATE_C_KVAH:
-                case OFFSET_RATE_D_KVAH:
-                case OFFSET_RATE_E_KVAH:
                 {
-                    gotValue = getKV2Protocol().retreiveSummation( x, &value );
-                    break;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Point Offset ==> " <<x<< endl;
                 }
-                case OFFSET_PEAK_KW_OR_RATE_A_KW:
-                case OFFSET_RATE_B_KW:
-                case OFFSET_RATE_C_KW:
-                case OFFSET_RATE_D_KW:
-                case OFFSET_RATE_E_KW:
-                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
+            
+                foundSomething = true;
 
-                case OFFSET_PEAK_KVAR_OR_RATE_A_KVAR:
-                case OFFSET_RATE_B_KVAR:
-                case OFFSET_RATE_C_KVAR:
-                case OFFSET_RATE_D_KVAR:
-                case OFFSET_RATE_E_KVAR:
-                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
+                switch (x)
+                {
+                    case OFFSET_TOTAL_KWH:
+                    case OFFSET_RATE_A_KWH:
+                    case OFFSET_RATE_B_KWH:
+                    case OFFSET_RATE_C_KWH:
+                    case OFFSET_RATE_D_KWH:
+                    case OFFSET_RATE_E_KWH:
 
-                case OFFSET_PEAK_KVA_OR_RATE_A_KVA:
-                case OFFSET_RATE_B_KVA:
-                case OFFSET_RATE_C_KVA:
-                case OFFSET_RATE_D_KVA:
-                case OFFSET_RATE_E_KVA:
-                case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
-                {
-                    gotValue = getKV2Protocol().retreiveDemand( x, &value );
-                    break;
-                }
-                case OFFSET_LOADPROFILE_KW:  
-                case OFFSET_LOADPROFILE_KVAR:
-                case OFFSET_LOADPROFILE_QUADRANT1_KVAR:
-                case OFFSET_LOADPROFILE_QUADRANT2_KVAR:
-                case OFFSET_LOADPROFILE_QUADRANT3_KVAR:
-                case OFFSET_LOADPROFILE_QUADRANT4_KVAR:
-                case OFFSET_LOADPROFILE_KVA:
-                case OFFSET_LOADPROFILE_QUADRANT1_KVA:
-                case OFFSET_LOADPROFILE_QUADRANT2_KVA:
-                case OFFSET_LOADPROFILE_QUADRANT3_KVA:
-                case OFFSET_LOADPROFILE_QUADRANT4_KVA:
-                {
+                    case OFFSET_TOTAL_KVARH:
+                    case OFFSET_RATE_A_KVARH:
+                    case OFFSET_RATE_B_KVARH:
+                    case OFFSET_RATE_C_KVARH:
+                    case OFFSET_RATE_D_KVARH:
+                    case OFFSET_RATE_E_KVARH:
 
-                    gotLPValues = getKV2Protocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
-                    break;  
-                }
-                case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:  
-                case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:  
-                case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
-                case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
-                case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_A_CURRENT:  
-                case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
-                case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
-                case OFFSET_LOADPROFILE_PHASE_C_CURRENT:  
-                case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
-                case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:  
-                {
-                    gotValue = getKV2Protocol().retreivePresentValue(x, &value);
-                    break;
-                }
-                case OFFSET_BATTERY_LIFE:
-                case OFFSET_DAYS_ON_BATTERY:
-                {
-                    gotValue = getKV2Protocol().retreiveBatteryLife(x, &value);
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    case OFFSET_TOTAL_KVAH:
+                    case OFFSET_RATE_A_KVAH:
+                    case OFFSET_RATE_B_KVAH:
+                    case OFFSET_RATE_C_KVAH:
+                    case OFFSET_RATE_D_KVAH:
+                    case OFFSET_RATE_E_KVAH:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " battery life value =  "<< value<< endl;
+                        gotValue = getKV2Protocol().retreiveSummation( x, &value );
+                        break;
                     }
-                    break;
+                    case OFFSET_PEAK_KW_OR_RATE_A_KW:
+                    case OFFSET_RATE_B_KW:
+                    case OFFSET_RATE_C_KW:
+                    case OFFSET_RATE_D_KW:
+                    case OFFSET_RATE_E_KW:
+                    case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
+
+                    case OFFSET_PEAK_KVAR_OR_RATE_A_KVAR:
+                    case OFFSET_RATE_B_KVAR:
+                    case OFFSET_RATE_C_KVAR:
+                    case OFFSET_RATE_D_KVAR:
+                    case OFFSET_RATE_E_KVAR:
+                    case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
+
+                    case OFFSET_PEAK_KVA_OR_RATE_A_KVA:
+                    case OFFSET_RATE_B_KVA:
+                    case OFFSET_RATE_C_KVA:
+                    case OFFSET_RATE_D_KVA:
+                    case OFFSET_RATE_E_KVA:
+                    case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
+                    {
+                        gotValue = getKV2Protocol().retreiveDemand( x, &value, &time );
+                        break;
+                    }
+                    case OFFSET_LOADPROFILE_KW:  
+                    case OFFSET_LOADPROFILE_KVAR:
+                    case OFFSET_LOADPROFILE_QUADRANT1_KVAR:
+                    case OFFSET_LOADPROFILE_QUADRANT2_KVAR:
+                    case OFFSET_LOADPROFILE_QUADRANT3_KVAR:
+                    case OFFSET_LOADPROFILE_QUADRANT4_KVAR:
+                    case OFFSET_LOADPROFILE_KVA:
+                    case OFFSET_LOADPROFILE_QUADRANT1_KVA:
+                    case OFFSET_LOADPROFILE_QUADRANT2_KVA:
+                    case OFFSET_LOADPROFILE_QUADRANT3_KVA:
+                    case OFFSET_LOADPROFILE_QUADRANT4_KVA:
+                    {
+
+                        gotLPValues = getKV2Protocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
+                        break;  
+                    }
+                    case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:  
+                    case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:  
+                    case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
+                    case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
+                    case OFFSET_LOADPROFILE_PHASE_A_CURRENT:  
+                    case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
+                    case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+                    case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
+                    case OFFSET_LOADPROFILE_PHASE_C_CURRENT:  
+                    case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
+                    case OFFSET_LOADPROFILE_NEUTRAL_CURRENT: 
+                    case OFFSET_POWER_FACTOR:
+                    {
+                        gotValue = getKV2Protocol().retreivePresentValue(x, &value);
+                        break;
+                    }
+                    case OFFSET_BATTERY_LIFE:
+                    case OFFSET_DAYS_ON_BATTERY:
+                    {
+                        gotValue = getKV2Protocol().retreiveBatteryLife(x, &value);
+                        if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " battery life value =  "<< value<< endl;
+                        }
+                        break;
+                    }
+                    default:
+                    {  
+                        gotValue = false;
+                        gotLPValues = false;
+                    }
                 }
-                default:
-                {  
-                    gotValue = false;
-                    gotLPValues = false;
-                }
-                 
+                     
                 if (gotValue) 
                 {
                     pData = CTIDBG_new CtiPointDataMsg();
@@ -963,15 +994,28 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                             value += pPoint->getDataOffset();
                         }
                     }
+                    resultString = getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+                    
                     pData->setValue( value );
                     qual = NormalQuality;
                     pData->setQuality( qual );
-                    //pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
-                    pData->setTime( RWTime() );
+                    //if (_parseFlags & CMD_FLAG_UPDATE)
+                    if (archiveFlag & CMD_FLAG_UPDATE)
+                    {
+                        pData->setTags(TAG_POINT_MUST_ARCHIVE);
+                    }
+                    if (time != 0)
+                    {
+                        pData->setTime(RWTime(time));
+                    }   
+                    else
+                    {
+                        pData->setTime( RWTime() );
+                    }
                     pData->setType( pPoint->getType() );
 
                     msgPtr->insert(pData); 
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " gotValue! "<< endl;
@@ -980,7 +1024,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                 }
                 else if (gotLPValues) 
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " gotLPValues! "<< endl;
@@ -991,7 +1035,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
 
                     qual = NormalQuality;
-                    
+
                     for (y = getKV2Protocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
                     {
                         if (getKV2Protocol().getLPTime(y) > lastLoadProfileTime.seconds())
@@ -1018,21 +1062,72 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
                             y = -1;
                         }
                     }
-                    setUseScanFlags(TRUE);
                     setLastLPTime(RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << "lastLPTime "<<RWTime(getKV2Protocol().getlastLoadProfileTime())<< endl;
                     }
+                    if (pData != NULL) 
+                    {
+                        delete []pData;
+                        pData = NULL;
+                    }
                 } 
-                if (pData != NULL) 
-                {
-                    delete []pData;
-                    pData = NULL;
-                } 
+                pPoint = NULL;
             }
-            pPoint = NULL;
+
+            else //try pPoint as a StatusPoint
+            {
+                pStatusPoint = (CtiPointStatus*)getDevicePointOffsetTypeEqual(x, StatusPointType);
+                if (pStatusPoint != NULL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Point Offset ==> " <<x<< endl;
+                    }
+                    foundSomething = true;
+                    if (x == OFFSET_METER_TIME_STATUS)
+                    {
+                        gotValue = getKV2Protocol().retreiveMeterTimeDiffStatus(x, &value);
+                        if (gotValue) 
+                        {
+                            pData = CTIDBG_new CtiPointDataMsg();
+                            pData->setId( pStatusPoint->getID() );
+
+                            pData->setValue( value );
+                            qual = NormalQuality;
+                            pData->setQuality( qual );
+                            //if (_parseFlags & CMD_FLAG_UPDATE)
+                            if (archiveFlag & CMD_FLAG_UPDATE)
+                            {
+                                pData->setTags(TAG_POINT_MUST_ARCHIVE);
+                            }
+                            pData->setTime( RWTime() );
+                            pData->setType( pStatusPoint->getType() );
+
+                            msgPtr->insert(pData); 
+                            if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " gotValue! "<< endl;
+                            }
+
+                            resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(((CtiPointStatus *)pStatusPoint)->getStateGroupID(), value);
+                            pData = NULL;
+                        }
+                    }
+                    pStatusPoint = NULL;
+                }
+            }
+            if (resultString != "")
+            {
+                _result_string += resultString;
+                _result_string += "\n";
+            }
+            resultString = "";
+            value = 0;
+            time = 0;
             gotValue = false;
             gotLPValues = false;
             x++;

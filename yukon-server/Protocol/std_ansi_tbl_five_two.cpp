@@ -11,11 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_two.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/06/16 19:17:59 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_two.cpp,v $
+      Revision 1.7  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.6  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -52,8 +55,17 @@ CtiAnsiTableFiveTwo::CtiAnsiTableFiveTwo( BYTE *dataBlob, int timefmat )
     bytes = toUint32LTime( dataBlob, clock_table.clock_calendar, _timefmt );
     dataBlob += bytes;
     
-    memcpy( (void *)&clock_table.time_date_qual, dataBlob, sizeof( TIME_DATE_QUAL_BFLD ));
-    dataBlob +=  sizeof( TIME_DATE_QUAL_BFLD );
+    memcpy( (void *)&clock_table.time_date_qual, dataBlob, sizeof( unsigned char ));
+    dataBlob +=  sizeof( unsigned char);
+
+    if ((bool)clock_table.time_date_qual.dst_applied_flag && (bool)clock_table.time_date_qual.dst_flag)
+    {
+        clock_table.clock_calendar -= 3600;
+    }
+
+
+    ULONG timeNow = RWTime().seconds();
+    _meterServerTimeDifference = abs(timeNow - RWTime(clock_table.clock_calendar).seconds());
 
 }
 
@@ -176,5 +188,16 @@ int CtiAnsiTableFiveTwo::getClkCldrSec()
     return (int)RWTime(clock_table.clock_calendar).second();
 }
 
+ULONG CtiAnsiTableFiveTwo::getMeterServerTimeDifference()
+{
+    return _meterServerTimeDifference;
+}
 
+bool CtiAnsiTableFiveTwo::adjustTimeForDST()
+{
+    if ((bool)clock_table.time_date_qual.dst_applied_flag && (bool)clock_table.time_date_qual.dst_flag)
+        return true;
+    else
+        return false;
+}
 

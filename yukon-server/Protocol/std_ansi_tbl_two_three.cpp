@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/06/16 19:17:59 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.9  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.8  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -703,7 +706,7 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
           }
           for( cnt = 0; cnt < _ocNums; cnt++ )
           {
-             timeString = RWTime( _tot_data_block.demands[index].event_time[cnt]).asString();
+             timeString = RWTime( data_block.demands[index].event_time[cnt]).asString();
              {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout << "  "<<timeString;
@@ -776,13 +779,93 @@ void CtiAnsiTableTwoThree::printCoincidents( DATA_BLK_RCD data_block )
 }
 
 
-double CtiAnsiTableTwoThree::getDemandValue ( int index )
+double CtiAnsiTableTwoThree::getDemandValue ( int index, int dataBlock )
 {
+    switch (dataBlock)
+    {
+        case 0:
+        {
+            return  *(_tot_data_block.demands[index].demand);
+            break;
+        }
+        case 1:
+        {
+            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            break;
+        }
+        case 2:
+        {
+            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            break;
+        }
+        case 3:
+        {
+            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            break;
+        }
+        case 4:
+        {
+            return  *(_tier_data_block[dataBlock -1].demands[index].demand);
+            break;
+        }
+        default:
+            return  *(_tot_data_block.demands[index].demand);
+            break; 
+    }
     return *(_tot_data_block.demands[index].demand);
 }
-double CtiAnsiTableTwoThree::getSummationsValue ( int index )
+double CtiAnsiTableTwoThree::getSummationsValue ( int index, int dataBlock )
 {
+
+    switch (dataBlock)
+    {
+        case 0:
+        {
+            return  _tot_data_block.summations[index];
+            break;
+        }
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        {
+            return  _tier_data_block[dataBlock -1].summations[index];
+            break;
+        }
+        default:
+            return  _tot_data_block.summations[index];
+            break; 
+    }
+
     return _tot_data_block.summations[index];
+}
+
+double CtiAnsiTableTwoThree::getDemandEventTime( int index, int dataBlock )
+{
+    if( _time == true )
+    {
+        switch (dataBlock)
+        {
+            case 0:
+            {
+                return (double)_tot_data_block.demands[index].event_time[0];
+                break;
+            }
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            {
+                return  (double)_tier_data_block[dataBlock -1].demands[index].event_time[0];
+                break;
+            }
+        default:
+            return (double)_tot_data_block.demands[index].event_time[0];
+            break;
+
+        }
+    }
+    return RWTime().seconds();
 }
 
 

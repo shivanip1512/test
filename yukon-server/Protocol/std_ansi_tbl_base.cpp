@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/06/16 19:17:59 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.9  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.8  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -700,6 +703,8 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
                + ((int)*(source + 2)* 0x10000) 
                + ((int)*(source + 3)* 0x1000000);
            temp = (temp * 60) + ((int)*(source + 4));
+
+           offset = 5;
            
            result = RWTime(temp + RWTime(RWDate(1,1,1970)).seconds() /*- 3600*/).seconds();
            

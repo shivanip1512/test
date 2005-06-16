@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_two.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *    History: 
       $Log: std_ansi_tbl_five_two.h,v $
+      Revision 1.5  2005/06/16 19:18:00  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.4  2004/09/30 21:37:20  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -104,6 +107,8 @@ protected:
 private:
 
     int _timefmt;
+
+    ULONG _meterServerTimeDifference;
 public:
 
    CtiAnsiTableFiveTwo(int timefmat  );
@@ -122,8 +127,9 @@ public:
    int getClkCldrHour();
    int getClkCldrMin();
    int getClkCldrSec();
-   
 
+   ULONG getMeterServerTimeDifference();
+   bool adjustTimeForDST();
 
 };
 #endif // #ifndef __STD_ANSI_TBL_FIVE_TWO_H__

@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.11  2005/06/16 19:18:00  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.10  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -183,10 +186,15 @@ class IM_EX_PROT CtiANSIApplication
     void setPassword( BYTE *password);
     void setAnsiDeviceType(BYTE devType);
     BYTE getAnsiDeviceType();
-
-
-
+    void setFWVersionNumber(BYTE fwVersionNumber);
+    BYTE getFWVersionNumber();
+    RWCString getMeterTypeString();
+    
     int encryptDataMethod();
+
+
+    static const CHAR * ANSI_DEBUGLEVEL;
+    bool getANSIDebugLevel(int mask);
 
    protected:
 
@@ -239,10 +247,16 @@ class IM_EX_PROT CtiANSIApplication
        BYTE _securityPassword[20];   
        int _negotiateRetry;
        ANSI_DEVICE_TYPE _ansiDeviceType;
+       BYTE _fwVersionNumber;
 
        BYTEUSHORT _maxPktSize;
        BYTE _maxNbrPkts;
        BYTE _negBaudRate;
+
+       static const RWCString KVmeter;
+       static const RWCString KV2meter;
+       static const RWCString SENTINELmeter;
+
 };
 
 #endif // #ifndef __ANSI_APPLICATION_H__

@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/06/16 19:18:00 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.10  2005/06/16 19:18:00  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.9  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -45,6 +48,7 @@
 #include "types.h"
 #include "mgr_point.h"
 #include "device.h"
+#include "dllyukon.h"
 
 class IM_EX_DEVDB CtiDeviceKV2 : public CtiDeviceMeter
 {
@@ -90,7 +94,7 @@ public:
 
 
    CtiProtocolANSI & getKV2Protocol( void );
-   void processDispatchReturnMessage( CtiReturnMsg *msgPtr );
+   void processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr);
    int buildCommanderTableRequest (BYTE *aMsg);
    INT sendCommResult( INMESS *InMessage);
@@ -105,6 +109,9 @@ public:
 
 private:
     CtiProtocolANSI_kv2   _ansiProtocol;
+
+    UINT _parseFlags;
+    RWCString _result_string;
 };
 
 

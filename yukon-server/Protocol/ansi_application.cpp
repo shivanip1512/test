@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/06/16 19:17:59 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.12  2005/06/16 19:17:59  jrichter
+      Sync ANSI code with 3.1 branch!
+
       Revision 1.11  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -45,8 +48,11 @@
 
 #include "guard.h"
 #include "logger.h"
+#include "configparms.h"
 #include "ansi_application.h"
 
+
+const CHAR * CtiANSIApplication::ANSI_DEBUGLEVEL = "ANSI_DEBUGLEVEL";
 //=========================================================================================================================================
 //=========================================================================================================================================
 
@@ -82,6 +88,7 @@ void CtiANSIApplication::init( void )
     {
         getDatalinkLayer().setIdentityByte(0x40);
     }
+    _fwVersionNumber = 1;
     //else nothing
 
 }
@@ -156,6 +163,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case identified:
         {
            getDatalinkLayer().buildIdentify( ident, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -174,7 +182,9 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 getDatalinkLayer().buildNegotiate(negotiate_no_baud, xfer );
             else
                 getDatalinkLayer().buildNegotiate(negotiate1, xfer );
-            {
+
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
+           {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
               dout << RWTime::now() << " **Negotiate**" << endl;
@@ -189,6 +199,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case timingSet:
         {
            getDatalinkLayer().buildTiming(timing_setup, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -204,6 +215,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case loggedOn:
         {
            getDatalinkLayer().buildLogOn(logon, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -219,6 +231,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case secured:
         {
            getDatalinkLayer().buildSecure(security, xfer, _securityPassword );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -234,6 +247,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case authenticated:
         {
            getDatalinkLayer().buildAuthenticate(authenticate, xfer, _iniAuthVector );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -253,6 +267,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // make this generic
                 //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, _maxPktSize.sh, _maxNbrPkts );
+                if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
@@ -270,7 +285,9 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // sentinel likes full reads, kv2 likes partial read offsets
                 if  ((int)_ansiDeviceType == sentinel) 
                 { 
-                    if (_currentBytesExpected < _maxPktSize.sh || _currentTableID == 23)
+                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == 23 && (int)getFWVersionNumber() < 3)) //FW Version 5 
+
+                        //_currentTableID == 28)  */
                         operation =  full_read;
                     else
                         operation = pread_offset;
@@ -288,13 +305,14 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                     pktSize = _maxPktSize.sh;
                 }
 
-                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << RWTime::now() << " ** _ansiDeviceType == " <<(int)_ansiDeviceType<< endl;
                    dout << RWTime::now() << " ** pktSize == " <<(int)pktSize<< endl;
                 }
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, operation, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
+                if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
@@ -307,6 +325,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
             else
             {
                 getDatalinkLayer().buildWriteRequest( xfer, _wrDataSize, _currentTableID, full_write, _currentProcBfld, _parmPtr, _wrSeqNbr );
+                if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << endl;
@@ -322,6 +341,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case waitState:
          {
              getDatalinkLayer().buildWaitRequest( xfer);
+             if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
              {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << endl;
@@ -336,6 +356,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case loggedOff:
         {
            getDatalinkLayer().buildLogOff(logoff, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -351,6 +372,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case terminated:
         {
            getDatalinkLayer().buildTerminate(term, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -366,6 +388,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
      case disconnected:
         {
            getDatalinkLayer().buildDisconnect(discon, xfer );
+           if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
            {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << endl;
@@ -690,7 +713,7 @@ bool CtiANSIApplication::analyzePacket()
     {
         {
            CtiLockGuard< CtiLogger > doubt_guard( dout );
-           dout << RWTime::now() << " " << _requestedState << " response is not ok " << endl;
+           dout << RWTime::now() << " " << (int)getDatalinkLayer().getCurrentPacket()[6] << " response is not ok " << endl;
         }
         retFlag = false;
     }
@@ -748,12 +771,11 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       break;
 
    case err:
-      {
-         CtiLockGuard< CtiLogger > doubt_guard( dout );
-         dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Service Request Rejected" << endl;
-
-         msg = err;
+      {  
+          CtiLockGuard< CtiLogger > doubt_guard( dout );
+          dout << endl;
+          dout << RWTime::now() <<"The " << getMeterTypeString() << " responded: Service Request Rejected"<< endl;
+          msg = err;
       }
       break;
 
@@ -761,7 +783,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Service Not Supported" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Service Not Supported" << endl;
 
          msg = sns;
       }
@@ -771,7 +793,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Insufficent Security Clearance" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Insufficent Security Clearance" << endl;
 
          msg = isc;
       }
@@ -781,7 +803,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Operation Not Possible" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Operation Not Possible" << endl;
 
          msg = onp;
       }
@@ -791,7 +813,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Inappropriate Action Requested" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Inappropriate Action Requested" << endl;
 
          msg = iar;
       }
@@ -801,7 +823,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Device Busy" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Device Busy" << endl;
 
          msg = bsy;
       }
@@ -811,7 +833,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Data Not Ready" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Data Not Ready" << endl;
 
          msg = dnr;
       }
@@ -821,7 +843,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Data Locked" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Data Locked" << endl;
 
          msg = dlk;
       }
@@ -831,7 +853,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Renegotiate Request" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Renegotiate Request" << endl;
 
          msg = rno;
       }
@@ -841,13 +863,14 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       {
          CtiLockGuard< CtiLogger > doubt_guard( dout );
          dout << endl;
-         dout << RWTime::now() << " The KV2 responded: Invalid Service Sequence State" << endl;
+         dout << RWTime::now() << " The " << getMeterTypeString() << " responded: Invalid Service Sequence State" << endl;
 
          msg = isss;
       }
       break;
    }
    return proceed;
+
 }
 
 void CtiANSIApplication::identificationData( BYTE *aPacket)
@@ -1129,6 +1152,46 @@ BYTE CtiANSIApplication::getAnsiDeviceType()
     return _ansiDeviceType;
 }
 
+void CtiANSIApplication::setFWVersionNumber(BYTE fwVersionNumber)
+{
+    _fwVersionNumber = fwVersionNumber;
+}
+
+BYTE CtiANSIApplication::getFWVersionNumber()
+{ 
+    return _fwVersionNumber;
+}
+
+
+RWCString CtiANSIApplication::getMeterTypeString()
+{
+    RWCString meterTypeString = "";
+
+    switch (getAnsiDeviceType())
+    {
+       case 0:
+       {
+           meterTypeString = KVmeter;
+           break;
+       }
+       case 1:
+       {
+           meterTypeString = KV2meter;
+           break;
+       }
+       case 2:
+       {
+           meterTypeString = SENTINELmeter;
+           break;
+       }
+       default:
+       {
+           meterTypeString = RWCString("Unknown ANSI DeviceType");
+           break;
+       }
+   }
+   return meterTypeString;
+}
 
 /*****************************************************************************************
 *   
@@ -1350,5 +1413,30 @@ int CtiANSIApplication::encryptDataMethod()
 }
 
 
+bool CtiANSIApplication::getANSIDebugLevel(int mask)
+{
+    static time_t lastaccess;
+    static int ansi_debuglevel;
+    char *eptr;
+
+    RWCString   str;
+    if( lastaccess + 300 < time(0) )
+    {
+        if( !(str = gConfigParms.getValueAsString(ANSI_DEBUGLEVEL)).isNull() )
+        {
+            ansi_debuglevel = strtoul(str.data(), &eptr, 16);
+        }
+        else
+            ansi_debuglevel = 0;
+        lastaccess = time(0);
+    }
+
+    return mask & ansi_debuglevel;
+}
+
+
+const RWCString CtiANSIApplication::KVmeter = "kv";
+const RWCString CtiANSIApplication::KV2meter = "kv2";
+const RWCString CtiANSIApplication::SENTINELmeter = "Sentinel";
 
 
