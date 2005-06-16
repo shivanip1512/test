@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.143 $
-* DATE         :  $Date: 2005/06/16 19:18:00 $
+* REVISION     :  $Revision: 1.144 $
+* DATE         :  $Date: 2005/06/16 21:25:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1214,7 +1214,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if( !(status = ds->recvCommRequest(OutMessage)) )
                             {
                                 if(Device->getType() == TYPE_SNPP)
-                                { 
+                                {
                                     Port->close(0);//Close the port so it re-opens every time!
                                 }
 
@@ -1960,34 +1960,27 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                     case TYPE_RTC:
                         {
-                            if(trx.doTrace(status))
+                            if(OutMessage->InLength)
                             {
-                                Port->traceXfer(trx, traceList, Device, status);
-                            }
-                            break;
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " " << Device->getName() << " results pending." << endl;
+                                }
 
-                        }
-                    //case TYPE_RTM:
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                                trx.setInBuffer(InMessage->Buffer.InMessage);
+                                trx.setInCountExpected(OutMessage->InLength);
+                                trx.setInCountActual(&InMessage->InLength);
+                                trx.setInTimeout(OutMessage->TimeOut);
+                                trx.setMessageStart();                          // This is the first "in" of this message
+                                trx.setMessageComplete();                       // This is the last "in" of this message
 
-                            /* get the returned message from the remote */
-                            trx.setInBuffer(InMessage->Buffer.InMessage);
-                            trx.setInCountExpected(4 );                     // OutMessage->InLength);
-                            trx.setInCountActual(&InMessage->InLength);
-                            trx.setInTimeout(2);                            // OutMessage->TimeOut);
-                            trx.setMessageStart();                          // This is the first "in" of this message
-                            trx.setMessageComplete();                       // This is the last "in" of this message
+                                status = Port->inMess(trx, Device, traceList);
 
-                            status = Port->inMess(trx, Device, traceList);
-
-                            // Prepare for tracing
-                            if(trx.doTrace(status))
-                            {
-                                Port->traceXfer(trx, traceList, Device, status);
+                                // Prepare for tracing
+                                if(trx.doTrace(status))
+                                {
+                                    Port->traceXfer(trx, traceList, Device, status);
+                                }
                             }
 
                             break;

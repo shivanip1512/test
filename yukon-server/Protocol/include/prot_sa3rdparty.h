@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/05/16 20:37:24 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/06/16 21:25:14 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.13  2005/06/16 21:25:14  cplender
+* Adding the RTC scan command and decode. Must be trested with a device.
+*
 * Revision 1.12  2005/05/16 20:37:24  cplender
 * Altered the terminate syntax to send a 0 count cycle if we are before the last period or nothing if beyond that point.
 *
@@ -151,6 +154,7 @@ public:
 
     void getBuffer(BYTE *dest, ULONG &len) const;
     void appendVariableLengthTimeSlot(int transmitter,BYTE *dest,ULONG &len, BYTE dlyToTx = 0, BYTE maxTx = 0, BYTE lbtMode = 0);
+    void statusScan(int transmitter, BYTE *dest, ULONG &len);
 
     INT getSABufferLen() const;
     CtiSAData getSAData() const;

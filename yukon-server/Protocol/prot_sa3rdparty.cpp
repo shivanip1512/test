@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/06/13 19:10:21 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/06/16 21:25:14 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.31  2005/06/16 21:25:14  cplender
+* Adding the RTC scan command and decode. Must be trested with a device.
+*
 * Revision 1.30  2005/06/13 19:10:21  cplender
 * Working to get the correct messages sent for control history to work right.
 *
@@ -1440,6 +1443,36 @@ void CtiProtocolSA3rdParty::appendVariableLengthTimeSlot(int transmitter,
     dest[i] = (_sa._maxTxTime & 0x3f);                    // 6 bits seconds max of transmission time.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
     dest[i] = (0x07 & _sa._lbt);                          // LBT Mode.
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+
+    dest[i++] = crc;
+
+    len = i;
+
+    return;
+}
+
+/*
+ * Perform a status scan on the RTC.
+ */
+void CtiProtocolSA3rdParty::statusScan(int transmitter, BYTE *dest, ULONG &len)
+{
+    int i = len;
+    BYTE crc = 0;
+
+    _sa._transmitterAddress = transmitter;
+
+    dest[i] = 0xa0 | (_sa._transmitterAddress & 0x0f);
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+    dest[i] = 0x23;                                       // Fixed identifier.
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+    dest[i] = 0x00;                                       // Fixed identifier.
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+    dest[i] = 0x00;                                       // Fixed identifier.
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+    dest[i] = 0x00;                                       // Fixed identifier.
+    crc ^= dest[i++];                                     // Compute CRC and advance i.
+    dest[i] = 0x00;                                       // Fixed identifier.
     crc ^= dest[i++];                                     // Compute CRC and advance i.
 
     dest[i++] = crc;

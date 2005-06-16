@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/05/24 00:38:38 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/06/16 21:25:14 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.29  2005/06/16 21:25:14  cplender
+* Adding the RTC scan command and decode. Must be trested with a device.
+*
 * Revision 1.28  2005/05/24 00:38:38  cplender
 * Prevent verification objects if they are not valid.
 *
@@ -110,6 +113,7 @@
 
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
+#include "porter.h"
 #include "protocol_sa.h"
 #include "prot_sa305.h"
 #include "prot_sa3rdparty.h"
@@ -223,8 +227,25 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
      *   That method prepares an outmessage for submission to the internals..
      */
 
+    OutMessage->Buffer.SASt._commandType = parse.getCommand();
+
     switch(parse.getCommand())
     {
+    case LoopbackRequest:
+    case ScanRequest:
+        {
+            OutMessage->DeviceID = getID();
+            OutMessage->Port = getPortID();
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " " << getName() << " Status scan request" << endl;
+            }
+
+            outList.insert(OutMessage);
+            OutMessage = 0;
+            break;
+        }
     case ControlRequest:
         {
             {
@@ -233,7 +254,6 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             }
         }
     case GetStatusRequest:
-    case LoopbackRequest:
     case GetValueRequest:
     case PutValueRequest:
     case PutStatusRequest:
@@ -278,6 +298,33 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     if( !ErrReturn )
     {
+        if(InMessage->InLength >= 7 && InMessage->Buffer.InMessage[1] == 0x23)  // This is the STATUS POLL RESPONSE.
+        {
+            BYTE relayStatus = InMessage->Buffer.InMessage[2] & 0x3f;           // Bit 0 is relay 1 Bit 5 is relay 6.
+            BYTE statusInput = (InMessage->Buffer.InMessage[3] & 0x0c) >> 2;    // Bit 0 is input 1, Bit 1 is input 2.
+            BYTE latchedStatusInput = (InMessage->Buffer.InMessage[3] & 0x03);  // Bit 0 is input 1, Bit 1 is input 2.
+            bool timeSlotAbort = (InMessage->Buffer.InMessage[3] & 0x10);       // true if the key-up aborted due to LBT.  Cleared by successful keyup.
+            BYTE statusChanged = (InMessage->Buffer.InMessage[3] & 0x60) >> 5;  // Bit 0 is input 1, Bit 1 is input 2.
+
+        }
+        else if(InMessage->InLength == 2 && ((InMessage->Buffer.InMessage[0] & 0x0f) == getAddress()))
+        {
+            // This is quite likely a MESSAGE ACKNOWLEGEMENT.
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** MESSAGE ACKNOWLEGDED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Unknown response type. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+
+
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
                                                        getName() + " / operation complete",
@@ -597,178 +644,189 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
     try
     {
-        char codestr[256];  //  needs to be able to hold -2000000000
-
-        switch(OutMessage->Buffer.SASt._groupType)
+        if(OutMessage->Buffer.SASt._commandType == ControlRequest)
         {
-        case SA305:
+            char codestr[256];  //  needs to be able to hold -2000000000
+
+            switch(OutMessage->Buffer.SASt._groupType)
             {
-                CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
-                prot.setTransmitterType(getType());
+            case SA305:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(slog);
-                    slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                }
-                break;
-            }
-        default:
-            {
-                CtiProtocolSA3rdParty prot;
-
-                prot.setSAData( OutMessage->Buffer.SASt );
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(slog);
-                    slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                }
-                break;
-            }
-        }
-
-        // Any repeats that are generated here should be sent out in the next cycle, or 5 minutes from now!
-        setRepeatTime( getExclusion().getNextTimeSlotOpen() );
-
-        if(OutMessage->Retry-- > 0)
-        {
-            // This OM needs to be plopped on the retry queue!
-            CtiOutMessage *omcopy = new CtiOutMessage(*OutMessage);
-            queueRepeatToDevice(omcopy, NULL);
-        }
-
-        msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
-
-        if( !OutMessage->VerificationSequence )
-        {
-            OutMessage->VerificationSequence = VerificationSequenceGen();
-        }
-
-        CtiVerificationWork *work = 0;
-        if( OutMessage->Buffer.SASt._code305[0] != '\0' )
-        {
-            memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
-            codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
-        }
-        else if( OutMessage->Buffer.SASt._code205 )
-        {
-            strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
-            codestr[12] = 0;
-            work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, codestr, seconds(60));
-        }
-        else
-        {
-            strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
-            codestr[6] = 0;
-            work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
-        }
-
-        if(work) _verification_objects.push(work);
-
-        while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
-        {
-            if( OutMessage->OutLength + 10 + rtcOutMessage->OutLength <= sizeof(OutMessage->Buffer.OutMessage) )     // 10 is for the time slot message.
-            {
-                if( !rtcOutMessage->VerificationSequence )
-                {
-                    rtcOutMessage->VerificationSequence = VerificationSequenceGen();
-                }
-
-                if( rtcOutMessage->Buffer.SASt._code305[0] != '\0' )
-                {
-                    strncpy(codestr, rtcOutMessage->Buffer.SASt._code305, rtcOutMessage->Buffer.SASt._bufferLen);
-                    codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
-                }
-                else if( rtcOutMessage->Buffer.SASt._code205 )
-                {
-                    strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 255);
-                    codestr[12] = 0;
-                }
-                else
-                {
-                    strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
-                    codestr[6] = 0;
-                }
-
-                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, codestr, seconds(60));
-                _verification_objects.push(work);
-
-                now = now.now();
-                codecount++;
-                memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);
-                OutMessage->OutLength += rtcOutMessage->OutLength;
-
-                msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
-
-                switch(rtcOutMessage->Buffer.SASt._groupType)
-                {
-                case SA305:
+                    CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
+                    prot.setTransmitterType(getType());
                     {
-                        CtiProtocolSA305 prot( rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->Buffer.SASt._bufferLen );
-                        prot.setTransmitterType(getType());
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                        }
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
                     }
-                default:
+                    break;
+                }
+            default:
+                {
+                    CtiProtocolSA3rdParty prot;
+
+                    prot.setSAData( OutMessage->Buffer.SASt );
                     {
-                        CtiProtocolSA3rdParty prot;
-
-                        prot.setSAData( rtcOutMessage->Buffer.SASt );
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
-                        }
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(slog);
+                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
                     }
+                    break;
                 }
+            }
 
-                if(rtcOutMessage->Retry-- > 0)
-                {
-                    // This OM needs to be plopped on the retry queue!
-                    queueRepeatToDevice(rtcOutMessage, NULL);
-                    if(rtcOutMessage) delete rtcOutMessage;
-                }
-                else
-                {
-                    delete rtcOutMessage;
-                }
+            // Any repeats that are generated here should be sent out in the next cycle, or 5 minutes from now!
+            setRepeatTime( getExclusion().getNextTimeSlotOpen() );
 
-                rtcOutMessage = 0;
+            if(OutMessage->Retry-- > 0)
+            {
+                // This OM needs to be plopped on the retry queue!
+                CtiOutMessage *omcopy = new CtiOutMessage(*OutMessage);
+                queueRepeatToDevice(omcopy, NULL);
+            }
+
+            msgMillis += messageDuration(OutMessage->Buffer.SASt._groupType);
+
+            if( !OutMessage->VerificationSequence )
+            {
+                OutMessage->VerificationSequence = VerificationSequenceGen();
+            }
+
+            CtiVerificationWork *work = 0;
+            if( OutMessage->Buffer.SASt._code305[0] != '\0' )
+            {
+                memcpy((void*)codestr, (void*)(OutMessage->Buffer.SASt._code305), OutMessage->Buffer.SASt._bufferLen);
+                codestr[OutMessage->Buffer.SASt._bufferLen + 1] = 0;
+            }
+            else if( OutMessage->Buffer.SASt._code205 )
+            {
+                strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
+                codestr[12] = 0;
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, codestr, seconds(60));
             }
             else
+            {
+                strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
+                codestr[6] = 0;
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
+            }
+
+            if(work) _verification_objects.push(work);
+
+            while( codecount <= gConfigParms.getValueAsULong("PORTER_SA_RTC_MAXCODES",35) && ((now + (msgMillis / 1000) + 1) < getExclusion().getExecutingUntil()) && getOutMessage(rtcOutMessage) )
+            {
+                if( OutMessage->OutLength + 10 + rtcOutMessage->OutLength <= sizeof(OutMessage->Buffer.OutMessage) )     // 10 is for the time slot message.
+                {
+                    if( !rtcOutMessage->VerificationSequence )
+                    {
+                        rtcOutMessage->VerificationSequence = VerificationSequenceGen();
+                    }
+
+                    if( rtcOutMessage->Buffer.SASt._code305[0] != '\0' )
+                    {
+                        strncpy(codestr, rtcOutMessage->Buffer.SASt._code305, rtcOutMessage->Buffer.SASt._bufferLen);
+                        codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
+                    }
+                    else if( rtcOutMessage->Buffer.SASt._code205 )
+                    {
+                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 255);
+                        codestr[12] = 0;
+                    }
+                    else
+                    {
+                        strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
+                        codestr[6] = 0;
+                    }
+
+                    CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, codestr, seconds(60));
+                    _verification_objects.push(work);
+
+                    now = now.now();
+                    codecount++;
+                    memcpy((char*)(&OutMessage->Buffer.OutMessage[OutMessage->OutLength]), (char*)rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->OutLength);
+                    OutMessage->OutLength += rtcOutMessage->OutLength;
+
+                    msgMillis += messageDuration(rtcOutMessage->Buffer.SASt._groupType);
+
+                    switch(rtcOutMessage->Buffer.SASt._groupType)
+                    {
+                    case SA305:
+                        {
+                            CtiProtocolSA305 prot( rtcOutMessage->Buffer.SASt._buffer, rtcOutMessage->Buffer.SASt._bufferLen );
+                            prot.setTransmitterType(getType());
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            CtiProtocolSA3rdParty prot;
+
+                            prot.setSAData( rtcOutMessage->Buffer.SASt );
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                            }
+                            break;
+                        }
+                    }
+
+                    if(rtcOutMessage->Retry-- > 0)
+                    {
+                        // This OM needs to be plopped on the retry queue!
+                        queueRepeatToDevice(rtcOutMessage, NULL);
+                        if(rtcOutMessage) delete rtcOutMessage;
+                    }
+                    else
+                    {
+                        delete rtcOutMessage;
+                    }
+
+                    rtcOutMessage = 0;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    _workQueue.putQueue(rtcOutMessage); // Put it back, the OutMessage buffer is FULL.
+                    rtcOutMessage = 0;
+
+                    break;
+                }
+            }
+
+            if(rtcOutMessage)   // This means we be leaking.
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-
-                _workQueue.putQueue(rtcOutMessage); // Put it back, the OutMessage buffer is FULL.
-                rtcOutMessage = 0;
-
-                break;
             }
-        }
 
-        if(rtcOutMessage)   // This means we be leaking.
-        {
+            CtiProtocolSA3rdParty().appendVariableLengthTimeSlot(getAddress(),
+                                                                 OutMessage->Buffer.OutMessage,
+                                                                 OutMessage->OutLength,
+                                                                 OutMessage->Buffer.SASt._delayToTx,
+                                                                 OutMessage->Buffer.SASt._maxTxTime,
+                                                                 OutMessage->Buffer.SASt._lbt);
+
+            getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << RWTime() << " " << getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
             }
         }
-
-        CtiProtocolSA3rdParty().appendVariableLengthTimeSlot(getAddress(),
-                                                             OutMessage->Buffer.OutMessage,
-                                                             OutMessage->OutLength,
-                                                             OutMessage->Buffer.SASt._delayToTx,
-                                                             OutMessage->Buffer.SASt._maxTxTime,
-                                                             OutMessage->Buffer.SASt._lbt);
-
-        getExclusion().setEvaluateNextAt((now + (msgMillis / 1000) + 1));
+        else if(OutMessage->Buffer.SASt._commandType == ScanRequest || OutMessage->Buffer.SASt._commandType == LoopbackRequest)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << RWTime() << " " << getName() << " transmitting " << msgMillis << " \"RF\" milliseconds of codes.  Completes at " << (now + (msgMillis / 1000) + 1) << " < " << getExclusion().getExecutingUntil() << endl;
+            CtiProtocolSA3rdParty().statusScan(getAddress(), OutMessage->Buffer.OutMessage, OutMessage->OutLength);
+            OutMessage->InLength = 7;
+            OutMessage->EventCode |= RESULT | WAIT;
+            OutMessage->TimeOut = 2;
         }
+
     }
     catch(...)
     {
