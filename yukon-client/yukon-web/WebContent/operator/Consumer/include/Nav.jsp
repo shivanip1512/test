@@ -233,7 +233,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_HARDWARES %>" defaultvalue="Hardwares"/></span><br>
+	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_HARDWARES %>" defaultvalue="Hardware"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
 <%
