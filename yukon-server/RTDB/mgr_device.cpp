@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2005/06/15 19:21:16 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2005/06/17 15:36:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2393,7 +2393,7 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT 400 Configs" << endl;
     }
-
+/*
     start = start.now();
     refreshDynamicPaoInfo(paoID);
     stop = stop.now();
@@ -2402,7 +2402,7 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Dynamic PAO Info" << endl;
     }
-
+*/
 
     if(_includeScanInfo)
     {
