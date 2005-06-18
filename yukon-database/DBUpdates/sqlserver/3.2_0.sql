@@ -184,7 +184,7 @@ alter table dynamicccsubstationbus add AdditionalFlags varchar(20);
 go
 update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
 go
-alter table dynamicccsubstationbus add AdditionalFlags varchar(20) not null;
+alter table dynamicccsubstationbus alter column AdditionalFlags varchar(20) not null;
 go
 
 
