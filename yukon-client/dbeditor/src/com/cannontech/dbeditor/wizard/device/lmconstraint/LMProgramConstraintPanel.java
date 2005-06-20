@@ -296,8 +296,8 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 				for( int i = 0; i < holidaySch.size(); i++ )
 					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
 			}
-			getJComboBoxHoliday().addItem(CtiUtilities.STRING_NONE);
-			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
+			
+			getJComboBoxHoliday().setSelectedItem("Empty Holiday Schedule");
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -317,7 +317,7 @@ private javax.swing.JComboBox getJComboBoxSeasonSchedule() {
 		try {
 			ivjJComboBoxSeasonSchedule = new javax.swing.JComboBox();
 			ivjJComboBoxSeasonSchedule.setName("JComboBoxSeasonSchedule");
-			ivjJComboBoxSeasonSchedule.setToolTipText("Holiday schedule used to exclude control");
+			ivjJComboBoxSeasonSchedule.setToolTipText("Season schedule used to exclude control");
 			ivjJComboBoxSeasonSchedule.setPreferredSize(new java.awt.Dimension(155, 23));
 			// user code begin {1}
 			com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -1227,7 +1227,7 @@ public Object getValue(Object o)
 	con.setMaxDailyOps( new Integer( ((Number)getJCSpinFieldMaxDailyOps().getValue()).intValue() ) );
 	
 	String dayString = getJCheckBoxDayChooser().getSelectedDays7Chars();
-	if( getJComboBoxHoliday().getSelectedItem() != CtiUtilities.STRING_NONE )
+	if( getJComboBoxHoliday().getSelectedItem() != "Empty Holiday Schedule" )
 	{
 		con.setHolidayScheduleID( new Integer(((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() ));
 		if(getJRadioButtonForce().isSelected())
@@ -1504,7 +1504,7 @@ public void setValue(Object o)
 		getJCSpinFieldMaxActivateTime().setValue( con.getMaxActivateTime() );
 		getJCSpinFieldMaxDailyOps().setValue( con.getMaxDailyOps() );
 	
-		getJComboBoxHoliday().removeItem(CtiUtilities.STRING_NONE);
+		
 		for( int i = 0; i < getJComboBoxHoliday().getItemCount(); i++ )
 			if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getItemAt(i)).getHolidayScheduleID()
 				== con.getHolidayScheduleID().intValue() )
@@ -1512,11 +1512,7 @@ public void setValue(Object o)
 				getJComboBoxHoliday().setSelectedIndex(i);
 				break;
 			}
-		getJComboBoxHoliday().addItem(CtiUtilities.STRING_NONE);
-		if(con.getHolidayScheduleID().compareTo(new Integer(0)) == 0)
-		{
-			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
-		}
+		
 		String holidayInfo = con.getAvailableWeekdays();
 		enableHolidayUsage(true);
 		if(holidayInfo.charAt(7) == 'E')
@@ -1530,7 +1526,7 @@ public void setValue(Object o)
 		else
 		{
 			enableHolidayUsage(false);
-			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
+			getJComboBoxHoliday().setSelectedItem("Empty Holiday Schedule");
 		}
 		
 		getJComboBoxSeasonSchedule().removeItem(CtiUtilities.STRING_NONE);
