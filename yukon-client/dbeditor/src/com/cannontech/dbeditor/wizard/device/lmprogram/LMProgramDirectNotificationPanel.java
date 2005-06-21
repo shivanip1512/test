@@ -17,11 +17,14 @@ public class LMProgramDirectNotificationPanel extends com.cannontech.common.gui.
 	private javax.swing.JTextField ivjJTextFieldSubject = null;
 	private javax.swing.JTextPane ivjJTextPaneMsgFooter = null;
 	private javax.swing.JTextPane ivjJTextPaneMsgHeader = null;
-	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldMinNotifyTime = null;
 	private javax.swing.JLabel ivjJLabelMinNotifyTime = null;
 	private javax.swing.JLabel ivjJLabelMinutesMNT = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 
+	private javax.swing.JLabel JLabelNotifyInactiveOffset = null;
+	private javax.swing.JLabel JLabelStopMinutesMNT = null;
+	private javax.swing.JTextField jTextFieldNotifyActiveOffset = null;
+	private javax.swing.JTextField jTextFieldNotifyInactiveOffset = null;
 class IvjEventHandler implements javax.swing.event.CaretListener {
 		public void caretUpdate(javax.swing.event.CaretEvent e) {
 			if (e.getSource() == LMProgramDirectNotificationPanel.this.getJTextFieldSubject()) 
@@ -30,6 +33,10 @@ class IvjEventHandler implements javax.swing.event.CaretListener {
 				connEtoC2(e);
 			if (e.getSource() == LMProgramDirectNotificationPanel.this.getJTextPaneMsgFooter()) 
 				connEtoC3(e);
+			if (e.getSource() == LMProgramDirectNotificationPanel.this.getJTextFieldNotifyActiveOffset())
+				fireInputUpdate();
+			if (e.getSource() == LMProgramDirectNotificationPanel.this.getJTextFieldNotifyInactiveOffset())
+				fireInputUpdate();
 		};
 	};
 /**
@@ -140,36 +147,6 @@ private static void getBuilderData() {
 **end of data**/
 }
 /**
- * Return the JCSpinFieldMinNotifyTime property value.
- * @return com.klg.jclass.field.JCSpinField
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.klg.jclass.field.JCSpinField getJCSpinFieldMinNotifyTime() {
-	if (ivjJCSpinFieldMinNotifyTime == null) {
-		try {
-			ivjJCSpinFieldMinNotifyTime = new com.klg.jclass.field.JCSpinField();
-			ivjJCSpinFieldMinNotifyTime.setName("JCSpinFieldMinNotifyTime");
-			ivjJCSpinFieldMinNotifyTime.setToolTipText("Minutes ahead of curtailment a customer must be notified");
-			// user code begin {1}
-			ivjJCSpinFieldMinNotifyTime.setDataProperties(
-								new com.klg.jclass.field.DataProperties(
-									new com.klg.jclass.field.validate.JCIntegerValidator(
-									null, new Integer(1), new Integer(99999), null, true, 
-									null, new Integer(1), "#,##0.###;-#,##0.###", false, 
-									false, false, null, new Integer(120)), 
-									new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
-									new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, 
-									new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJCSpinFieldMinNotifyTime;
-}
-/**
  * Return the JLabelMinNotifyTime property value.
  * @return javax.swing.JLabel
  */
@@ -180,8 +157,11 @@ private javax.swing.JLabel getJLabelMinNotifyTime() {
 			ivjJLabelMinNotifyTime = new javax.swing.JLabel();
 			ivjJLabelMinNotifyTime.setName("JLabelMinNotifyTime");
 			ivjJLabelMinNotifyTime.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelMinNotifyTime.setText("Notify to Action Interval:");
+			ivjJLabelMinNotifyTime.setText("Program Start:");
 			// user code begin {1}
+			ivjJLabelMinNotifyTime.setPreferredSize(new java.awt.Dimension(105,19));
+			ivjJLabelMinNotifyTime.setMaximumSize(new java.awt.Dimension(105,19));
+			ivjJLabelMinNotifyTime.setMinimumSize(new java.awt.Dimension(105,19));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -307,7 +287,6 @@ private javax.swing.JPanel getJPanelMessage() {
 			getJPanelMessage().add(getJLabelMsgHeader(), getJLabelMsgHeader().getName());
 			getJPanelMessage().add(getJLabelMsgFooter(), getJLabelMsgFooter().getName());
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -455,7 +434,8 @@ public Object getValue(Object o)
 	else
 		program.getDirectProgram().setMessageFooter( getJTextPaneMsgFooter().getText() );
 
-	program.getDirectProgram().setNotifyActiveOffset( new Integer( ((Number)getJCSpinFieldMinNotifyTime().getValue()).intValue() * 60 ) );
+	program.getDirectProgram().setNotifyActiveOffset( new Integer( new Integer(getJTextFieldNotifyActiveOffset().getText()).intValue() * 60 ) );
+	program.getDirectProgram().setNotifyInactiveOffset( new Integer( new Integer(getJTextFieldNotifyInactiveOffset().getText()).intValue() * 60 ) );
 
 	return o;
 }
@@ -476,11 +456,12 @@ private void handleException(java.lang.Throwable exception) {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
-	getJCSpinFieldMinNotifyTime().addValueListener( this );
 	// user code end
 	getJTextFieldSubject().addCaretListener(ivjEventHandler);
 	getJTextPaneMsgHeader().addCaretListener(ivjEventHandler);
 	getJTextPaneMsgFooter().addCaretListener(ivjEventHandler);
+	getJTextFieldNotifyActiveOffset().addCaretListener(ivjEventHandler);
+	getJTextFieldNotifyInactiveOffset().addCaretListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -492,38 +473,52 @@ private void initialize() {
 		// user code end
 		setName("LMProgramDirectNotificationPanel");
 		setPreferredSize(new java.awt.Dimension(350, 360));
+		java.awt.GridBagConstraints consGridBagConstraints15 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints16 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints17 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints18 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints20 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints19 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints21 = new java.awt.GridBagConstraints();
+		consGridBagConstraints20.insets = new java.awt.Insets(9,4,7,5);
+		consGridBagConstraints20.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		consGridBagConstraints20.weightx = 1.0;
+		consGridBagConstraints20.gridy = 1;
+		consGridBagConstraints20.gridx = 1;
+		consGridBagConstraints19.insets = new java.awt.Insets(11,5,67,179);
+		consGridBagConstraints19.gridy = 2;
+		consGridBagConstraints19.gridx = 2;
+		consGridBagConstraints15.insets = new java.awt.Insets(2,3,8,66);
+		consGridBagConstraints15.ipady = -88;
+		consGridBagConstraints15.gridwidth = 3;
+		consGridBagConstraints15.gridy = 0;
+		consGridBagConstraints15.gridx = 0;
+		consGridBagConstraints18.insets = new java.awt.Insets(8,25,67,4);
+		consGridBagConstraints18.gridy = 2;
+		consGridBagConstraints18.gridx = 0;
+		consGridBagConstraints16.insets = new java.awt.Insets(9,5,11,179);
+		consGridBagConstraints16.gridy = 1;
+		consGridBagConstraints16.gridx = 2;
+		consGridBagConstraints21.insets = new java.awt.Insets(8,4,66,5);
+		consGridBagConstraints21.ipadx = 49;
+		consGridBagConstraints21.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		consGridBagConstraints21.weightx = 1.0;
+		consGridBagConstraints21.gridy = 2;
+		consGridBagConstraints21.gridx = 1;
+		consGridBagConstraints17.insets = new java.awt.Insets(9,25,8,4);
+		consGridBagConstraints17.gridy = 1;
+		consGridBagConstraints17.gridx = 0;
 		setLayout(new java.awt.GridBagLayout());
+		this.add(getJPanelMessage(), consGridBagConstraints15);
+		this.add(getJLabelMinutesMNT(), consGridBagConstraints16);
+		this.add(getJLabelMinNotifyTime(), consGridBagConstraints17);
+		this.add(getJLabelNotifyInactiveOffset(), consGridBagConstraints18);
+		this.add(getJLabelStopMinutesMNT(), consGridBagConstraints19);
+		this.add(getJTextFieldNotifyActiveOffset(), consGridBagConstraints20);
+		this.add(getJTextFieldNotifyInactiveOffset(), consGridBagConstraints21);
 		setSize(412, 360);
 		setMinimumSize(new java.awt.Dimension(350, 360));
 
-		java.awt.GridBagConstraints constraintsJPanelMessage = new java.awt.GridBagConstraints();
-		constraintsJPanelMessage.gridx = 1; constraintsJPanelMessage.gridy = 1;
-		constraintsJPanelMessage.gridwidth = 3;
-		constraintsJPanelMessage.fill = java.awt.GridBagConstraints.VERTICAL;
-		constraintsJPanelMessage.weightx = 1.0;
-		constraintsJPanelMessage.weighty = 1.0;
-		constraintsJPanelMessage.ipadx = 8;
-		constraintsJPanelMessage.ipady = -80;
-		constraintsJPanelMessage.insets = new java.awt.Insets(2, 3, 8, 66);
-		add(getJPanelMessage(), constraintsJPanelMessage);
-
-		java.awt.GridBagConstraints constraintsJCSpinFieldMinNotifyTime = new java.awt.GridBagConstraints();
-		constraintsJCSpinFieldMinNotifyTime.gridx = 2; constraintsJCSpinFieldMinNotifyTime.gridy = 2;
-		constraintsJCSpinFieldMinNotifyTime.ipadx = 39;
-		constraintsJCSpinFieldMinNotifyTime.ipady = 19;
-		constraintsJCSpinFieldMinNotifyTime.insets = new java.awt.Insets(8, 5, 102, 10);
-		add(getJCSpinFieldMinNotifyTime(), constraintsJCSpinFieldMinNotifyTime);
-
-		java.awt.GridBagConstraints constraintsJLabelMinutesMNT = new java.awt.GridBagConstraints();
-		constraintsJLabelMinutesMNT.gridx = 3; constraintsJLabelMinutesMNT.gridy = 2;
-		constraintsJLabelMinutesMNT.insets = new java.awt.Insets(11, 11, 103, 129);
-		add(getJLabelMinutesMNT(), constraintsJLabelMinutesMNT);
-
-		java.awt.GridBagConstraints constraintsJLabelMinNotifyTime = new java.awt.GridBagConstraints();
-		constraintsJLabelMinNotifyTime.gridx = 1; constraintsJLabelMinNotifyTime.gridy = 2;
-		constraintsJLabelMinNotifyTime.ipadx = 7;
-		constraintsJLabelMinNotifyTime.insets = new java.awt.Insets(9, 25, 102, 5);
-		add(getJLabelMinNotifyTime(), constraintsJLabelMinNotifyTime);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -577,7 +572,8 @@ public void setValue(Object o)
 	if(program.getDirectProgram().getMessageFooter().compareTo(CtiUtilities.STRING_NONE) != 0)
 		getJTextPaneMsgFooter().setText( program.getDirectProgram().getMessageFooter() );
 		
-	getJCSpinFieldMinNotifyTime().setValue( new Integer(program.getDirectProgram().getNotifyActiveOffset().intValue() / 60) );
+	getJTextFieldNotifyActiveOffset().setText( new Integer(program.getDirectProgram().getNotifyActiveOffset().intValue() / 60).toString() );
+	getJTextFieldNotifyInactiveOffset().setText( new Integer(program.getDirectProgram().getNotifyInactiveOffset().intValue() / 60).toString() );
 	
 }
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
@@ -592,4 +588,69 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }
-}
+	/**
+	 * This method initializes JLabelNotifyInactiveOffset
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabelNotifyInactiveOffset() {
+		if(JLabelNotifyInactiveOffset == null) {
+			JLabelNotifyInactiveOffset = new javax.swing.JLabel();
+			JLabelNotifyInactiveOffset.setText("Program Stop:");
+			JLabelNotifyInactiveOffset.setPreferredSize(new java.awt.Dimension(105,19));
+			JLabelNotifyInactiveOffset.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 14));
+			JLabelNotifyInactiveOffset.setMaximumSize(new java.awt.Dimension(105,19));
+			JLabelNotifyInactiveOffset.setMinimumSize(new java.awt.Dimension(105,19));
+			JLabelNotifyInactiveOffset.setName("JLabelNotifyInactiveOffset");
+		}
+		return JLabelNotifyInactiveOffset;
+	}
+	/**
+	 * This method initializes JLabelStopMinutesMNT
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabelStopMinutesMNT() {
+		if(JLabelStopMinutesMNT == null) {
+			JLabelStopMinutesMNT = new javax.swing.JLabel();
+			JLabelStopMinutesMNT.setText("(min.)");
+			JLabelStopMinutesMNT.setPreferredSize(new java.awt.Dimension(32,16));
+			JLabelStopMinutesMNT.setMinimumSize(new java.awt.Dimension(32,16));
+			JLabelStopMinutesMNT.setMaximumSize(new java.awt.Dimension(32,16));
+			JLabelStopMinutesMNT.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12));
+			JLabelStopMinutesMNT.setName("JLabelStopMinutesMNT");
+		}
+		return JLabelStopMinutesMNT;
+	}
+	/**
+	 * This method initializes jTextFieldNotifyActiveOffset
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private javax.swing.JTextField getJTextFieldNotifyActiveOffset() {
+		if(jTextFieldNotifyActiveOffset == null) {
+			jTextFieldNotifyActiveOffset = new javax.swing.JTextField();
+			jTextFieldNotifyActiveOffset.setMinimumSize(new java.awt.Dimension(53,20));
+			jTextFieldNotifyActiveOffset.setPreferredSize(new java.awt.Dimension(53,20));
+			jTextFieldNotifyActiveOffset.setMaximumSize(new java.awt.Dimension(53,20));
+			jTextFieldNotifyActiveOffset.setName("jTextFieldNotifyActiveOffset");
+			jTextFieldNotifyActiveOffset.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument( 0, 1440, 0 ) );
+		}
+		return jTextFieldNotifyActiveOffset;
+	}
+	/**
+	 * This method initializes jTextFieldNotifyInactiveOffset
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private javax.swing.JTextField getJTextFieldNotifyInactiveOffset() {
+		if(jTextFieldNotifyInactiveOffset == null) {
+			jTextFieldNotifyInactiveOffset = new javax.swing.JTextField();
+			jTextFieldNotifyInactiveOffset.setMaximumSize(new java.awt.Dimension(53,20));
+			jTextFieldNotifyInactiveOffset.setMinimumSize(new java.awt.Dimension(53,20));
+			jTextFieldNotifyInactiveOffset.setName("jTextFieldNotifyInactiveOffset");
+			jTextFieldNotifyInactiveOffset.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument( 0, 1440, 0 ) );
+		}
+		return jTextFieldNotifyInactiveOffset;
+	}
+}  //  @jve:visual-info  decl-index=0 visual-constraint="10,10"
