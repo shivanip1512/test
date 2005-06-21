@@ -73,7 +73,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     set<CtiLMProgramDirect*>& getMasterPrograms();
     set<CtiLMProgramDirect*>& getSubordinatePrograms();
     
-    set<int>&  getNotificationGroupIDs();
+    vector<int>&  getNotificationGroupIDs();
 
     CtiLMProgramDirect& setMessageSubject(const string& subject);
     CtiLMProgramDirect& setMessageHeader(const string& header);
@@ -174,7 +174,7 @@ private:
     set<CtiLMProgramDirect*> _master_programs;
     set<CtiLMProgramDirect*> _subordinate_programs;
                                      
-    set<int> _notificationgroupids;
+    vector<int> _notificationgroupids;
 
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;

@@ -20,6 +20,7 @@ CtiLMConstraintChecker::CtiLMConstraintChecker()
  */
 bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_program,
                                               ULONG proposed_gear,
+					      ULONG now,
                                               ULONG proposed_start_from_1901,
                                               ULONG proposed_stop_from_1901,
                                               vector<string>& results)
@@ -38,7 +39,8 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
     ret_val = (checkMaxActivateTime(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkControlWindows(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMasterActive(lm_program, &results) && ret_val);
-    
+    ret_val = (checkNotifyActiveOffset(lm_program, now, proposed_start_from_1901, &results) && ret_val);
+	       
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -487,6 +489,34 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
         dout << RWTime() << " **Checkpoint** " <<  " Shouldn't get here " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
     return false;
+}
+
+/*
+ * Check that the program is starting before the notify active offset.
+ * If the notify active offset is 60 minutes and the program is asked to start in 50 mintes we are violating this constraint
+ */
+bool CtiLMConstraintChecker::checkNotifyActiveOffset(const CtiLMProgramDirect& lm_program, ULONG now, ULONG proposed_start_from_1901, vector<string>* results)
+{
+    if((proposed_start_from_1901 - now) < lm_program.getNotifyActiveOffset())
+    {
+	string result = "The program cannot start at the proposed start time of ";
+        result += RWTime(proposed_start_from_1901).asString();
+	result += " because that is only ";
+	result += CtiNumStr((proposed_start_from_1901 - now)/60.0);
+	result += " minutes from now and the program's notification offset (notify active offset) is set to";
+	result += CtiNumStr(lm_program.getNotifyActiveOffset() / 60.0);
+	result += " minutes.";
+	if(results != 0)
+	{
+	    results->push_back(result);
+	}
+	return false;
+    }
+    else
+    {
+	return true;
+    }
+    
 }
 
 bool CtiLMConstraintChecker::checkMasterActive(const CtiLMProgramDirect& lm_program, vector<string>* results)

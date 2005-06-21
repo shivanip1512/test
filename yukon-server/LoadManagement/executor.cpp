@@ -1206,7 +1206,7 @@ void CtiLMManualControlRequestExecutor::Execute()
         if( !_controlMsg->getOverrideConstraints() &&
             (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
         {
-            if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds(), result_vec)))
+            if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, RWTime::now().seconds(), startTime.seconds(), stopTime.seconds(), result_vec)))
             {
                 StartProgram(program, controlArea, startTime, stopTime);
             }
@@ -1430,15 +1430,20 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
 //    lmProgramDirect->incrementDailyOps(); 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
-    
-    RWDBDateTime notifyTime(startTime);
-    notifyTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
-    lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyTime));
 
+    RWDBDateTime notifyStartTime(startTime);
+    notifyStartTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
+    lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyStartTime));
 
-{//kill this
+    RWDBDateTime notifyStopTime(stop);
+    notifyStopTime.addSeconds(-1*lmProgramDirect->getNotifyInactiveOffset());
+    lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << " going to notify @: " << notifyTime.asString() << endl;
+        dout << RWTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;
+        dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
     }
                                    
     if( stop.seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
@@ -1485,6 +1490,11 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setDirectStopTime(stopTime);
 
+	//Update the stop notifcation time
+	RWDBDateTime notifyStopTime(stopTime);
+	notifyStopTime.addSeconds(-1*lmProgramDirect->getNotifyInactiveOffset());
+	lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
+    
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }

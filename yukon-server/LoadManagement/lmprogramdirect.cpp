@@ -349,9 +349,9 @@ set<CtiLMProgramDirect*>& CtiLMProgramDirect::getSubordinatePrograms()
 /*----------------------------------------------------------------------------
   getNotificationGroups
 
-  Returns a set of notification group ids
+  Returns a vector of notification group ids
 ----------------------------------------------------------------------------*/
-set<int>& CtiLMProgramDirect::getNotificationGroupIDs() 
+vector<int>& CtiLMProgramDirect::getNotificationGroupIDs() 
 {
     return _notificationgroupids;
 }
@@ -3038,8 +3038,18 @@ BOOL CtiLMProgramDirect::notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg)
 	CtiLockGuard<CtiLogger> logger_guard(dout);
 	dout << RWTime() << " sending notification of direct program start. Program: " << getPAOName() << endl;
     }
-    
-    return notifyGroups(CtiNotifLMControlMsg::STARTING, multiNotifMsg);
+
+    // If the notify time is longer than say a month from now then we must never
+    // be stopping
+    RWDBDateTime now;
+    if(getNotifyActiveTime().seconds() > (now.seconds() + 60*60*24*30))
+    {
+	return notifyGroups(CtiNotifLMControlMsg::STARTING_NEVER_STOP, multiNotifMsg);	
+    }
+    else
+    {
+	return notifyGroups(CtiNotifLMControlMsg::STARTING, multiNotifMsg);
+    }
 }
 
 /*----------------------------------------------------------------------------
@@ -3056,7 +3066,7 @@ BOOL CtiLMProgramDirect::notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg)
 	dout << RWTime() << " sending notification of direct program stop. Program: " << getPAOName() << endl;
     }
 
-    return notifyGroups(CtiNotifLMControlMsg::FINISHING, multiNotifMsg);
+    return notifyGroups(CtiNotifLMControlMsg::FINISHING, multiNotifMsg);		
 }
 
 /*---------------------------------------------------------------------------
@@ -4242,7 +4252,7 @@ bool CtiLMProgramDirect::startTimedProgram(unsigned long secondsFrom1901, long s
 //            RWDBDateTime endTime(RWTime((unsigned long) secondsFrom1901 + (controlWindow->getAvailableStopTime() - controlWindow->getAvailableStartTime())));
             RWDBDateTime endTime(RWTime( ((unsigned long) secondsFrom1901 - (unsigned long) secondsFromBeginningOfDay)) + controlWindow->getAvailableStopTime());
             vector<string> cons_results;
-            if(!con_checker.checkConstraints(*this, getCurrentGearNumber(), startTime.seconds(), endTime.seconds(), cons_results))
+            if(!con_checker.checkConstraints(*this, getCurrentGearNumber(), secondsFrom1901, startTime.seconds(), endTime.seconds(), cons_results))
             {
                 if(!_announced_constraint_violation)
                 {
@@ -5057,8 +5067,8 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
 {
     vector<int> notif_groups;// = _notificationgroupids;
-    std::copy(_notificationgroupids.begin(), _notificationgroupids.end(), notif_groups.begin());
-    CtiNotifLMControlMsg* notif_msg = new CtiNotifLMControlMsg(notif_groups, type, getPAOId(), getDirectStartTime().rwtime(), getDirectStopTime().rwtime());
+//    std::copy(_notificationgroupids.begin(), _notificationgroupids.end(), notif_groups.begin());
+    CtiNotifLMControlMsg* notif_msg = new CtiNotifLMControlMsg(_notificationgroupids, type, getPAOId(), getDirectStartTime().rwtime(), getDirectStopTime().rwtime());
     multiNotifMsg->insert(notif_msg);
     return true;
 }

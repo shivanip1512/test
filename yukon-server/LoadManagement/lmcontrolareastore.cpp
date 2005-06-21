@@ -1088,7 +1088,7 @@ void CtiLMControlAreaStore::reset()
                         CtiLMProgramBase* program = NULL;
                         if( directProgramHashMap.findValue(program_id, program ) )
                         {
-                            ((CtiLMProgramDirect*)program)->getNotificationGroupIDs().insert(notif_grp_id);
+                            ((CtiLMProgramDirect*)program)->getNotificationGroupIDs().push_back(notif_grp_id);
                         }
                         else
                         {
