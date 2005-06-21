@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2005/05/12 19:58:46 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2005/06/21 18:01:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1490,6 +1490,20 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
                 }
             }
         }
+        else if( getType() == TYPEMCT410 )
+        {
+            //  if pulse input 3 isn't defined
+            if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
+            {
+                OutMessage->Buffer.BSt.Length -= 2;
+
+                //  if pulse input 2 isn't defined
+                if( !getDevicePointOffsetTypeEqual(2, DemandAccumulatorPointType ) )
+                {
+                    OutMessage->Buffer.BSt.Length -= 2;
+                }
+            }
+        }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK ||
              parse.getFlags() & CMD_FLAG_GV_MINMAX )
@@ -1534,33 +1548,33 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             function = Emetcon::GetValue_Default;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
+            int channels = 0;  //  so we'll bypass the point-cropping code if /channels/ doesn't get set by the following:
+
             if( getType() == TYPEMCT318 || getType() == TYPEMCT318L || getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
-                for( int i = CtiDeviceMCT31X::MCT31X_ChannelCount; i > 1; i-- )
-                {
-                    if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
-                    {
-                        OutMessage->Buffer.BSt.Length -= 3;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                channels = CtiDeviceMCT31X::MCT31X_ChannelCount;
             }
             else if( getType() == TYPEMCT470 )
             {
-                for( int i = CtiDeviceMCT470::MCT470_ChannelCount; i > 1; i-- )
+                channels = CtiDeviceMCT470::MCT470_ChannelCount;
+            }
+            else if( getType() == TYPEMCT410 )
+            {
+                channels = CtiDeviceMCT410::MCT410_ChannelCount;
+            }
+
+            for( int i = channels; i > 1; i-- )
+            {
+                if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
                 {
-                    if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
-                    {
-                        OutMessage->Buffer.BSt.Length -= 3;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    OutMessage->Buffer.BSt.Length -= 3;
                 }
+                else
+                {
+                    break;
+                }
+
+                channels--;
             }
         }
     }
@@ -2737,6 +2751,28 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
             ticper15sec  = (NowTime.minute() % 5) * 4;   //  4 tics per minute
             ticper15sec +=  NowTime.second() / 15;       //  1 tic every 15 seconds
 
+
+            /*
+            //  Figure out how many 15 second intervals left in this 5 minutes
+            EmetFTime = 20 - ((TimeSt.tm_min % 5) * 60 + TimeSt.tm_sec) / 15;
+
+            //  figure out how many AM/PM's left in the week
+            Hour = TimeSt.tm_hour;
+            EmetDay = (7 - TimeSt.tm_wday) * 2;
+            if(Hour > 11)
+            {
+                EmetDay--;
+                Hour -= 12;
+            }
+
+            //  figure out how many 5 minute periods left in this 12 hours
+            EmetHTime = 144 - ((Hour * 12) + (TimeSt.tm_min / 5));
+            */
+
+
+            //  this seems wrong - I need to be rippling the changes down...
+            //    the beginning of the week isn't 14*12 hours + 144*5 min + 20*15 sec...
+            //    the numbers should be 13 + 143 + 20...  ?
             //  invert the counters to be tics REMAINING, not PASSED
             OutMessage->Buffer.BSt.Message[0] =  20 - ticper15sec;
             OutMessage->Buffer.BSt.Message[1] = 144 - ticper5min;
