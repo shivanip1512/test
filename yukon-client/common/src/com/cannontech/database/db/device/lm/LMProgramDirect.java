@@ -164,6 +164,7 @@ public void retrieve() throws java.sql.SQLException
 		setMessageFooter( (String) results[3] );
 		setTriggerOffset( (Double) results[4] );
 		setRestoreOffset( (Double) results[5] );
+		setNotifyInactiveOffset( (Integer) results[6]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
