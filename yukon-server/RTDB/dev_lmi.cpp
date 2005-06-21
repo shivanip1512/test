@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/03/11 16:24:56 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/06/21 18:08:15 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,43 @@ int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
 void CtiDeviceLMI::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {
     _lmi.getVerificationObjects(work_queue);
+}
+
+
+void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
+{
+    CtiReturnMsg                *vgMsg;
+    CtiPointDataMsg             *pt_msg;
+    CtiPointBase                *point;
+    CtiPointNumeric             *pNumeric;
+    RWCString                    resultString;
+    RWTime                       Now;
+
+    Protocol::Interface::pointlist_t points;
+    Protocol::Interface::pointlist_t::iterator itr;
+
+    vgMsg  = CTIDBG_new CtiReturnMsg(getID());
+
+    //  eventually move all point retrieval here
+    _lmi.getStatuses(points);
+
+    //  then toss them into the return msg
+    for( itr = points.begin(); itr != points.end(); itr++ )
+    {
+        pt_msg = *itr;
+
+        if( pt_msg )
+        {
+            //  we might eventually send the pointdata as string results in the INMESS for Commander, but not yet
+            //_string_results.push_back(CTIDBG_new string(pt_msg->getString()));
+
+            vgMsg->PointData().append(pt_msg);
+        }
+    }
+
+    points.clear();
+
+    vg_connection.WriteConnQue(vgMsg);
 }
 
 
