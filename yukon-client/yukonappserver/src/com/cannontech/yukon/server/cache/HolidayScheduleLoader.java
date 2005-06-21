@@ -32,7 +32,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT HOLIDAYSCHEDULEID,HOLIDAYSCHEDULENAME FROM HOLIDAYSCHEDULE WHERE HOLIDAYSCHEDULEID >= 0";
+	String sqlString = "SELECT HOLIDAYSCHEDULEID,HOLIDAYSCHEDULENAME FROM HOLIDAYSCHEDULE WHERE HOLIDAYSCHEDULEID > 0";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
