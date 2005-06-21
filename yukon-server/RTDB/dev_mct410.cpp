@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/05/12 20:01:04 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/06/21 18:05:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,7 +153,7 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
                             (int)FuncRead_PeakDemandLen);
     s.insert(cs);
 
-    cs._cmd     = Emetcon::GetValue_FrozenKWH;
+    cs._cmd     = Emetcon::GetValue_FrozenPeakDemand;
     cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair((int)FuncRead_FrozenPos,
                             (int)FuncRead_FrozenLen);
@@ -1385,161 +1385,67 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        point_info_t pi = getData(DSt->Message, 3, ValueType_Accumulator);
-
-        if( InMessage->Sequence == Emetcon::GetValue_FrozenKWH )
+        for( int i = 0; i < CtiDeviceMCT410::MCT410_ChannelCount; i++ )
         {
-            pPoint = getDevicePointOffsetTypeEqual( 1 + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
+            point_info_t pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
 
-            //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
-            //    and the freeze counter (DSt->Message[3]) is what we expect
-            //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
-
-            //pointTime = time of freeze
-            //freeze_info_string = " @ " + pointTime;
-        }
-        else
-        {
-            pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
-
-            pointTime -= pointTime.seconds() % 300;
-        }
-
-        // handle accumulator data here
-        if( pPoint != NULL)
-        {
-            // 24 bit pulse value
-            pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
-
-            if( pi.quality != InvalidQuality )
+            if( InMessage->Sequence == Emetcon::GetValue_FrozenKWH )
             {
-                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+                pPoint = getDevicePointOffsetTypeEqual( 1 + i + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
 
-                pData = makePointDataMsg(pPoint, pi, resultString);
+                //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
+                //    and the freeze counter (DSt->Message[3]) is what we expect
+                //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
 
-                if(pData != NULL)
+                //pointTime = time of freeze
+                //freeze_info_string = " @ " + pointTime;
+            }
+            else
+            {
+                pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
+
+                pointTime -= pointTime.seconds() % 300;
+            }
+
+            // handle accumulator data here
+            if( pPoint != NULL)
+            {
+                // 24 bit pulse value
+                pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
+
+                if( pi.quality != InvalidQuality )
                 {
-                    pData->setTime( pointTime );
-                    ReturnMsg->PointData().insert(pData);
-                    pData = NULL;  // We just put it on the list...
+                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+
+                    pData = makePointDataMsg(pPoint, pi, resultString);
+
+                    if(pData != NULL)
+                    {
+                        pData->setTime( pointTime );
+                        ReturnMsg->PointData().insert(pData);
+                        pData = NULL;  // We just put it on the list...
+                    }
+                }
+                else
+                {
+                    resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
+
+                    ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
                 }
             }
-            else
+            else if( i == 0 )
             {
-                resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
-
-                ReturnMsg->setResultString(resultString);
-            }
-        }
-        else
-        {
-            if( pi.quality != InvalidQuality )
-            {
-                resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-            }
-            else
-            {
-                resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
-            }
-
-            ReturnMsg->setResultString(resultString);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
-
-INT CtiDeviceMCT410::decodeGetValueFrozen(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
-{
-    INT status = NORMAL;
-    ULONG i,x;
-    INT pid;
-    RWCString resultString;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    unsigned long pulses;
-    point_info_t  pi;
-
-    CtiPointBase         *pPoint = NULL;
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
-
-    if( getMCTDebugLevel(MCTDebug_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        pPoint = getDevicePointOffsetTypeEqual( 1 + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
-
-        pi = getData(DSt->Message, 3, ValueType_Accumulator);
-
-        // handle accumulator data here
-        if( pPoint != NULL)
-        {
-            // 24 bit pulse value
-            pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
-
-            RWTime pointTime;
-
-            if( pi.quality != InvalidQuality )
-            {
-                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-
-                pData = makePointDataMsg(pPoint, pi, resultString);
-
-                if(pData != NULL)
+                if( pi.quality != InvalidQuality )
                 {
-                    pointTime -= pointTime.seconds() % 300;
-                    pData->setTime( pointTime );
-                    ReturnMsg->PointData().insert(pData);
-                    pData = NULL;  // We just put it on the list...
+                    resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
                 }
-            }
-            else
-            {
-                resultString = getName() + " / " + pPoint->getName() + " = (invalid data)";
+                else
+                {
+                    resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
+                }
 
-                ReturnMsg->setResultString(resultString);
+                ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
             }
-        }
-        else
-        {
-            if( pi.quality != InvalidQuality )
-            {
-                resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
-            }
-            else
-            {
-                resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
-            }
-
-            ReturnMsg->setResultString(resultString);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -1587,38 +1493,43 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        pi = getData(DSt->Message, 2, ValueType_KW);
-
-        //  turn raw pulses into a demand reading
-        pi.value *= double(3600 / getDemandInterval());
-
-        // look for first defined DEMAND accumulator
-        if( pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType ) )
+        for( int i = 1; i <= 3; i++ )
         {
-            RWTime pointTime;
+            int offset = (i > 1)?(i * 2 + 4):(0);  //  0, 6, 8
 
-            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
+            pi = getData(DSt->Message + offset, 2, ValueType_KW);
 
-            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
-                                                                                    ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            //  turn raw pulses into a demand reading
+            pi.value *= double(3600 / getDemandInterval());
 
-            if(pData = makePointDataMsg(pPoint, pi, pointString))
+            // look for first defined DEMAND accumulator
+            if( pPoint = getDevicePointOffsetTypeEqual( i, DemandAccumulatorPointType ) )
             {
-                pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                RWTime pointTime;
+
+                pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
+
+                pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
+                                                                                        ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+                if(pData = makePointDataMsg(pPoint, pi, pointString))
+                {
+                    pointTime -= pointTime.seconds() % getDemandInterval();
+                    pData->setTime( pointTime );
+                    ReturnMsg->PointData().insert(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
             }
-        }
-        else
-        {
-            if( pi.quality != InvalidQuality )
+            else if( i == 1 )
             {
-                resultString += getName() + " / Demand = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
-            }
-            else
-            {
-                resultString += getName() + " / Demand = (invalid data) --  POINT UNDEFINED IN DB";
+                if( pi.quality != InvalidQuality )
+                {
+                    resultString += getName() + " / Demand = " + CtiNumStr(pi.value) +  "  --  POINT UNDEFINED IN DB";
+                }
+                else
+                {
+                    resultString += getName() + " / Demand = (invalid data) --  POINT UNDEFINED IN DB";
+                }
             }
         }
 
