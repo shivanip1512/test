@@ -216,12 +216,14 @@ function confirmDelete() {
 </cti:checkRole>
         </tr>
         <tr>
-<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
+
+<cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.THREE_TIER_DIRECT %>"> 
           <td width="25%" class = "MainText"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "../loadmgmt/controlareas.jsp" class = "Link1" style = "text-decoration:none;">3-Tier 
               Direct</a></div>
           </td>
-</cti:checkRole>
+</cti:isPropertyTrue>
+
           <td width="25%" class = "MainText">&nbsp;</td>
           <td width="25%" class = "MainText">&nbsp;</td>
           <td width="25%" class = "MainText">&nbsp;</td>
