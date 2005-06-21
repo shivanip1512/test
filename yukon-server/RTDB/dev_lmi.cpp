@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/06/21 18:08:15 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/06/21 18:45:47 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,12 +80,20 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
     {
         pt_msg = *itr;
 
-        if( pt_msg )
+        if( pt_msg && (point = getDevicePointOffsetTypeEqual(pt_msg->getId(), pt_msg->getType())) )
         {
+            pt_msg->setId(point->getID());
+
+            //  we don't need to calc the UOM on these status points - not yet, anyway
+
             //  we might eventually send the pointdata as string results in the INMESS for Commander, but not yet
             //_string_results.push_back(CTIDBG_new string(pt_msg->getString()));
 
             vgMsg->PointData().append(pt_msg);
+        }
+        else
+        {
+            delete pt_msg;
         }
     }
 
