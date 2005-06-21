@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/12 19:59:22 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/06/21 18:04:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,19 @@
 
 class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT
 {
+protected:
+
+    //  forward declaration
+    typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
+
+private:
+
+    static const DLCCommandSet _commandStore;
+
+    static QualityMap initErrorQualities( void );
+
+    typedef CtiDeviceMCT Inherited;
+
 protected:
 
     enum Commands
@@ -65,13 +78,13 @@ protected:
         FuncRead_OutageLen        =   13,
 
         FuncRead_MReadPos         = 0x90,
-        FuncRead_MReadLen         =    3,  //  this is for the 410 KWH Only;  will need to be increased later
+        FuncRead_MReadLen         =    9,
 
         FuncRead_FrozenMReadPos   = 0x91,
-        FuncRead_FrozenMReadLen   =    4,
+        FuncRead_FrozenMReadLen   =   10,
 
         FuncRead_DemandPos        = 0x92,
-        FuncRead_DemandLen        =    6,  //  brings back recent demand, avg. voltage, and blink counter
+        FuncRead_DemandLen        =   10,  //  brings back recent demand, avg. voltage, blink counter, and channels 2 and 3 (may be trimmed by executeRequest)
 
         FuncRead_PeakDemandPos    = 0x93,
         FuncRead_PeakDemandLen    =    9,  //  peak demand, time of peak, current meter reading
@@ -162,8 +175,6 @@ protected:
         //  this could hold a timestamp someday if i get really adventurous
     };
 
-    typedef map<unsigned long, pair<PointQuality_t, int> > QualityMap;  //  the int will hold ErrorClasses OR'd together
-
     unsigned char crc8(const unsigned char *buf, unsigned int len);
     point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
     static  const QualityMap _errorQualities;
@@ -196,18 +207,12 @@ protected:
 
     int _sspec, _rev;
 
-private:
-
-    static const DLCCommandSet _commandStore;
-
-    static        QualityMap initErrorQualities( void );
-
-    typedef CtiDeviceMCT Inherited;
-
 public:
 
     enum
     {
+        MCT410_ChannelCount = 3,
+
         UniversalAddress = 4194012,
 
         MCT4XX_Command_FreezeVoltageOne = 0x59,
@@ -258,8 +263,6 @@ public:
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
     INT decodeGetValueKWH                   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-    INT decodeGetValueFrozenKWH             ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-    INT decodeGetValueFrozen                ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueDemand                ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValuePeakDemand            ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueVoltage               ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
