@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/06/10 19:53:03 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/06/21 18:20:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,8 @@ private:
     queue< unsigned int > _retrieved_codes;
     queue< unsigned int > _returned_codes;
 
+    pointlist_t _lmi_statuses;
+
     unsigned int  _num_codes_retrieved;
     bool _verification_pending;
     bool _untransmitted_codes;
@@ -89,9 +91,14 @@ private:
 
         LMIMaxCodesPerTransaction = 42,
 
-        LMITransmitterPowerPointOffset = 1000,
+        LMIPointOffset_TransmitterPower = 1000,
 
-        MaxStatusResets = 5
+        LMIPointOffset_CodeVerification = 1001,
+        LMIPointOffset_LMIComm          = 1002,
+        LMIPointOffset_Transmitting     = 1003,
+        LMIPointOffset_PowerReset       = 1004,
+
+        MaxStatusReads = 5
     };
 
 #pragma pack(push, 1)
@@ -102,12 +109,6 @@ private:
 
         unsigned short control_offset;
         unsigned short control_parameter;  //  for controls, it's duration;  for setpoints, it's value
-    };
-
-    struct lmi_inmess_struct
-    {
-        unsigned short num_codes;
-        unsigned short seriesv_inmess_length;
     };
 
     struct lmi_pointdata
@@ -130,6 +131,12 @@ private:
         unsigned char reset                     : 1;
     };
 
+    struct lmi_inmess_struct
+    {
+        unsigned short num_codes;
+        unsigned short seriesv_inmess_length;
+    };
+
     struct lmi_body_header
     {
         unsigned char message_type : 7;
@@ -148,13 +155,14 @@ private:
         unsigned char data[300];
     } _outbound, _inbound;
 
-    union
+    union lmi_status_union
     {
         lmi_status s;
         unsigned char c;
     } _status;
 
-    int _status_reset_count;
+    bool _status_read;
+    int  _status_read_count;
 
 #pragma pack(pop)
 
@@ -218,6 +226,7 @@ public:
     int sendCommResult (INMESS  *InMessage);
 
     void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+    void getStatuses(pointlist_t &points);
 
     void   queueCode(CtiOutMessage *om);
     bool   hasQueuedCodes() const;
@@ -230,6 +239,8 @@ public:
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
+
+    void decodeStatuses(lmi_status statuses);
 };
 
 #endif // #ifndef __PROT_LMI_H__

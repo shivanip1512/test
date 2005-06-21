@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/06/10 19:53:03 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/06/21 18:20:57 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -198,7 +198,7 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
     if( _transmitter_power >= 0 )
     {
-        pdm = CTIDBG_new CtiPointDataMsg(LMITransmitterPowerPointOffset, _transmitter_power, NormalQuality, AnalogPointType);
+        pdm = CTIDBG_new CtiPointDataMsg(LMIPointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
         pdm->setTime(_transmitter_power_time);
 
         pointList.append(pdm);
@@ -262,6 +262,7 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     _transaction_complete = false;
     _first_comm = true;
     _untransmitted_codes = false;
+    _status_read = false;
     _status_reset_count = 0;
     _status.c = 0;
     _in_count = 0;
@@ -408,6 +409,16 @@ void CtiProtocolLMI::getVerificationObjects(queue< CtiVerificationBase * > &vq)
 }
 
 
+void CtiProtocolLMI::getStatuses(pointlist_t &points)
+{
+    pointlist_t::iterator itr;
+
+    points.insert(points.end(), _lmi_statuses.begin(), _lmi_statuses.end());
+
+    _lmi_statuses.clear();
+}
+
+
 int CtiProtocolLMI::generate( CtiXfer &xfer )
 {
     int retval = NoError;
@@ -437,260 +448,264 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         _outbound.src_sat_node = 0x01;
         _outbound.body_header.flush_codes  = 0;
 
-        if( _status.c )
+        //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
+        if( (!_status_read || _status.c) && (++_status_read_count < MaxStatusReads)) )
         {
-            if( ++_status_reset_count < MaxStatusResets )
-            {
-                _outbound.length  = 2;
-                _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
-                _outbound.data[0] = _status.c;
-                _outbound.data[1] = 0;
-            }
-            else
+            _status_read = true;  //  set here instead of the decode to prevent looping
+
+            _outbound.length  = 2;
+            _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
+            _outbound.data[0] = _status.c;
+            _outbound.data[1] = 0;
+        }
+        else
+        {
+            //  we can survive any other status (except maybe "lmi comm failure", but the RTU should still respond, even if it can't communicate with the transmitter)
+            if( _status.s.questionable_request )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - status reset loop when communicating with LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - persistent 'questionable request' respose from LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _transaction_complete = true;
 
                 retval = NOTNORMAL;
             }
-        }
-        else
-        {
-            switch( _command )
+            else
             {
-                case Command_SendQueuedCodes:
+                switch( _command )
                 {
-                    unsigned long transmit_time, waiting_codes, max_codes, num_codes, expired_codes;
-                    bool final_block = false;
-
-                    queue< CtiOutMessage * > viable_codes;
-                    CtiOutMessage *om;
-
-                    long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
-
-                    waiting_codes = _codes.size();
-
-                    if( _completion_time > _transmitting_until )
+                    case Command_SendQueuedCodes:
                     {
-                        transmit_time  = _completion_time.seconds() - _transmitting_until.seconds();
-                        transmit_time *= 1000;
+                        unsigned long transmit_time, waiting_codes, max_codes, num_codes, expired_codes;
+                        bool final_block = false;
 
-                        max_codes = transmit_time / percode;
-                    }
-                    else
-                    {
-                        max_codes = 0;
-                    }
+                        queue< CtiOutMessage * > viable_codes;
+                        CtiOutMessage *om;
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << max_codes << " (of " << waiting_codes << " potential) codes" << endl;
-                    }
+                        long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
-                    if( max_codes > LMIMaxCodesPerTransaction )
-                    {
-                        max_codes = LMIMaxCodesPerTransaction;
-                    }
-                    else
-                    {
-                        final_block = true;
-                    }
+                        waiting_codes = _codes.size();
 
-                    expired_codes = 0;
-                    while( !_codes.empty() && viable_codes.size() < max_codes )
-                    {
-                        om = _codes.front();
-                        _codes.pop();
-
-                        if( om )
+                        if( _completion_time > _transmitting_until )
                         {
-                            if( (om->ExpirationTime <= 0 || om->ExpirationTime >= NowTime.seconds()) )
+                            transmit_time  = _completion_time.seconds() - _transmitting_until.seconds();
+                            transmit_time *= 1000;
+
+                            max_codes = transmit_time / percode;
+                        }
+                        else
+                        {
+                            max_codes = 0;
+                        }
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(slog);
+                            slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << max_codes << " (of " << waiting_codes << " potential) codes" << endl;
+                        }
+
+                        if( max_codes > LMIMaxCodesPerTransaction )
+                        {
+                            max_codes = LMIMaxCodesPerTransaction;
+                        }
+                        else
+                        {
+                            final_block = true;
+                        }
+
+                        expired_codes = 0;
+                        while( !_codes.empty() && viable_codes.size() < max_codes )
+                        {
+                            om = _codes.front();
+                            _codes.pop();
+
+                            if( om )
                             {
-                                viable_codes.push(om);
+                                if( (om->ExpirationTime <= 0 || om->ExpirationTime >= NowTime.seconds()) )
+                                {
+                                    viable_codes.push(om);
+                                }
+                                else
+                                {
+                                    delete om;
+
+                                    expired_codes++;
+                                }
                             }
                             else
                             {
-                                delete om;
-
-                                expired_codes++;
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - null OM detected for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
-                        else
+
+                        if( viable_codes.size() < max_codes )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - null OM detected for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            final_block = true;
                         }
-                    }
 
-                    if( viable_codes.size() < max_codes )
-                    {
-                        final_block = true;
-                    }
-
-                    if( expired_codes )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" pruned " << expired_codes << " codes this pass" << endl;
-                    }
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << waiting_codes << " potential) codes this pass:" << endl;
-                    }
-
-                    if( _first_comm )
-                    {
+                        if( expired_codes )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" removing previously-transmitted codes" << endl;
+                            slog << RWTime() << " LMI device \"" << _name << "\" pruned " << expired_codes << " codes this pass" << endl;
                         }
-                    }
-
-                    _transmitting_until += (viable_codes.size() * percode) / 1000;
-                    _outbound.data[0]    =  viable_codes.size();
-                    _outbound.length     = (viable_codes.size() * 6) + 2;
-                    _outbound.body_header.message_type = Opcode_SendCodes;
-                    _outbound.body_header.flush_codes  = _first_comm;
-
-                    unsigned offset = 1;
-
-                    while( !viable_codes.empty() )
-                    {
-                        om = viable_codes.front();
-                        viable_codes.pop();
-
-                        _untransmitted_codes = true;
-
-                        om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
-                        char (&codestr)[7] = om->Buffer.SASt._codeSimple;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << om->Buffer.SASt._codeSimple << " ";
+                            slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << waiting_codes << " potential) codes this pass:" << endl;
                         }
 
-                        //  all offset by one because of the "num_codes" byte at the beginning
-                        _outbound.data[offset++] = codestr[0];
-                        _outbound.data[offset++] = codestr[1];
-                        _outbound.data[offset++] = codestr[2];
-                        _outbound.data[offset++] = codestr[3];
-                        _outbound.data[offset++] = codestr[4];
-                        _outbound.data[offset++] = codestr[5];
-
-                        //  new CtiVerificationWork message here
-                        if( !om->VerificationSequence )
+                        if( _first_comm )
                         {
-                            om->VerificationSequence = VerificationSequenceGen();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " LMI device \"" << _name << "\" removing previously-transmitted codes" << endl;
+                            }
                         }
 
-                        long id = om->DeviceID;
+                        _transmitting_until += (viable_codes.size() * percode) / 1000;
+                        _outbound.data[0]    =  viable_codes.size();
+                        _outbound.length     = (viable_codes.size() * 6) + 2;
+                        _outbound.body_header.message_type = Opcode_SendCodes;
+                        _outbound.body_header.flush_codes  = _first_comm;
 
-                        if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                        unsigned offset = 1;
+
+                        while( !viable_codes.empty() )
                         {
-                            ptime::time_duration_type expiration(seconds(60));
-                            CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+                            om = viable_codes.front();
+                            viable_codes.pop();
 
-                            _verification_objects.push(work);
+                            _untransmitted_codes = true;
+
+                            om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
+                            char (&codestr)[7] = om->Buffer.SASt._codeSimple;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << om->Buffer.SASt._codeSimple << " ";
+                            }
+
+                            //  all offset by one because of the "num_codes" byte at the beginning
+                            _outbound.data[offset++] = codestr[0];
+                            _outbound.data[offset++] = codestr[1];
+                            _outbound.data[offset++] = codestr[2];
+                            _outbound.data[offset++] = codestr[3];
+                            _outbound.data[offset++] = codestr[4];
+                            _outbound.data[offset++] = codestr[5];
+
+                            //  new CtiVerificationWork message here
+                            if( !om->VerificationSequence )
+                            {
+                                om->VerificationSequence = VerificationSequenceGen();
+                            }
+
+                            long id = om->DeviceID;
+
+                            if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
+                            {
+                                ptime::time_duration_type expiration(seconds(60));
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+
+                                _verification_objects.push(work);
+                            }
+
+                            //  this isn't very robust yet, as far as error-handling goes - one error, and all of these 40-something codes will go down the toilet
+                            //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice
+                            delete om;
                         }
-
-                        //  this isn't very robust yet, as far as error-handling goes - one error, and all of these 40-something codes will go down the toilet
-                        //    i need to move them to a pending list or something until i get to decode(), where i can then pop them with vigor and prejudice
-                        delete om;
-                    }
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << endl;
-                    }
-
-                    if( final_block )
-                    {
-                        _outbound.data[0] |= 0xc0;    //  last group of codes, send immediately
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" transmitting" << endl;
+                            slog << endl;
                         }
-                    }
 
-                    break;
-                }
-
-                case Command_ReadQueuedCodes:
-                case Command_ReadEchoedCodes:
-                {
-                    _outbound.length  = 2;
-
-                    if( _command == Command_ReadQueuedCodes )   _outbound.body_header.message_type = Opcode_GetOriginalCodes;
-                    if( _command == Command_ReadEchoedCodes )   _outbound.body_header.message_type = Opcode_GetEchoedCodes;
-
-                    _outbound.data[0] = _num_codes_retrieved + 1;  //  starts out at 0, incremented by every subsequent retrieval
-
-                    break;
-                }
-
-                case Command_Loopback:
-                {
-                    _outbound.length  = 2;
-                    _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
-                    _outbound.data[0] = 0;
-                    _outbound.data[1] = 0;
-
-                    break;
-                }
-
-                case Command_Timesync:
-                {
-                    _outbound.length  = 7;
-                    _outbound.body_header.message_type = Opcode_SetTime;
-                    _outbound.data[0] = NowDate.month();
-                    _outbound.data[1] = NowDate.dayOfMonth();
-                    _outbound.data[2] = NowDate.year() % 1900;
-                    _outbound.data[3] = NowTime.hour();
-                    _outbound.data[4] = NowTime.minute();
-                    _outbound.data[5] = NowTime.second();
-
-                    break;
-                }
-
-                case Command_ScanAccumulator:
-                case Command_ScanIntegrity:
-                case Command_ScanException:
-                case Command_Control:
-                case Command_AnalogSetpoint:
-                {
-                    if( !_seriesv.isTransactionComplete() )
-                    {
-                        _outbound.body_header.message_type = Opcode_SeriesVWrap;
-
-                        retval = _seriesv.generate(xfer);
-
-                        //  copy the packet into our outbound, without the CRC
-                        memcpy((unsigned char *)_outbound.data, xfer.getOutBuffer(), xfer.getOutCount() - 2);
-                        _outbound.length = 1 + xfer.getOutCount() - 2;
-
-                        //  reset the count - knock off the series V CRC
-                        _seriesv_inbuffer = xfer.getInBuffer();
-                    }
-                    else
-                    {
-                        //  make into a switch if any other commands need to perform commands after the Series V is done
-                        if( _command == Command_ScanAccumulator )
+                        if( final_block )
                         {
-                            _outbound.length = 1;
-                            _outbound.body_header.message_type = Opcode_GetTransmitterPower;
+                            _outbound.data[0] |= 0xc0;    //  last group of codes, send immediately
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " LMI device \"" << _name << "\" transmitting" << endl;
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case Command_ReadQueuedCodes:
+                    case Command_ReadEchoedCodes:
+                    {
+                        _outbound.length  = 2;
+
+                        if( _command == Command_ReadQueuedCodes )   _outbound.body_header.message_type = Opcode_GetOriginalCodes;
+                        if( _command == Command_ReadEchoedCodes )   _outbound.body_header.message_type = Opcode_GetEchoedCodes;
+
+                        _outbound.data[0] = _num_codes_retrieved + 1;  //  starts out at 0, incremented by every subsequent retrieval
+
+                        break;
+                    }
+
+                    case Command_Loopback:
+                    {
+                        _outbound.length  = 2;
+                        _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
+                        _outbound.data[0] = 0;
+                        _outbound.data[1] = 0;
+
+                        break;
+                    }
+
+                    case Command_Timesync:
+                    {
+                        _outbound.length  = 7;
+                        _outbound.body_header.message_type = Opcode_SetTime;
+                        _outbound.data[0] = NowDate.month();
+                        _outbound.data[1] = NowDate.dayOfMonth();
+                        _outbound.data[2] = NowDate.year() % 1900;
+                        _outbound.data[3] = NowTime.hour();
+                        _outbound.data[4] = NowTime.minute();
+                        _outbound.data[5] = NowTime.second();
+
+                        break;
+                    }
+
+                    case Command_ScanAccumulator:
+                    case Command_ScanIntegrity:
+                    case Command_ScanException:
+                    case Command_Control:
+                    case Command_AnalogSetpoint:
+                    {
+                        if( !_seriesv.isTransactionComplete() )
+                        {
+                            _outbound.body_header.message_type = Opcode_SeriesVWrap;
+
+                            retval = _seriesv.generate(xfer);
+
+                            //  copy the packet into our outbound, without the CRC
+                            memcpy((unsigned char *)_outbound.data, xfer.getOutBuffer(), xfer.getOutCount() - 2);
+                            _outbound.length = 1 + xfer.getOutCount() - 2;
+
+                            //  reset the count - knock off the series V CRC
+                            _seriesv_inbuffer = xfer.getInBuffer();
                         }
                         else
                         {
-                            retval = !NORMAL;
+                            //  make into a switch if any other commands need to perform commands after the Series V is done
+                            if( _command == Command_ScanAccumulator )
+                            {
+                                _outbound.length = 1;
+                                _outbound.body_header.message_type = Opcode_GetTransmitterPower;
+                            }
+                            else
+                            {
+                                retval = !NORMAL;
+                            }
                         }
-                    }
 
-                    break;
+                        break;
+                    }
                 }
             }
         }
@@ -763,6 +778,8 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                     if( _inbound.body_header.message_type == Opcode_ClearAndReadStatus )
                     {
                         _status.c = _inbound.data[0];
+
+                        decodeStatuses(_status.s);
                     }
                     else
                     {
@@ -966,4 +983,33 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     return retval;
 }
 
+
+void CtiProtocolLMI::decodeStatuses(lmi_status statuses)
+{
+    CtiPointDataMsg *pd_template = CTIDBG_new CtiPointDataMsg(), *pd;
+
+    pd_template->setType(StatusPointType);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(LMIPointOffset_CodeVerification);
+    pd->setValue(!statuses.loadshed_verify_state || statuses.loadshed_verify_complete);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(LMIPointOffset_LMIComm);
+    pd->setValue(statuses.comm_failure);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(LMIPointOffset_Transmitting);
+    pd->setValue(statuses.loadshed_codes_locked);
+    _lmi_statuses.push_back(pd);
+
+    pd = (CtiPointDataMsg *)pd_template->replicateMessage();
+    pd->setId(LMIPointOffset_PowerReset);
+    pd->setValue(statuses.reset);
+    _lmi_statuses.push_back(pd);
+
+    delete pd_template;
+}
 
