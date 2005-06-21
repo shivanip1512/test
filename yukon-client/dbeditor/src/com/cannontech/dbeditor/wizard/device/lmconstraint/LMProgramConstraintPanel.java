@@ -294,10 +294,17 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			{
 				java.util.List holidaySch = cache.getAllHolidaySchedules();
 				for( int i = 0; i < holidaySch.size(); i++ )
-					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
+				{
+					
+					if(holidaySch.get(i).toString().equalsIgnoreCase("Empty Holiday Schedule"))
+					{
+						// dont add it to drop down list
+					}else ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
+				}
+				
 			}
-			
-			getJComboBoxHoliday().setSelectedItem("Empty Holiday Schedule");
+			getJComboBoxHoliday().addItem(CtiUtilities.STRING_NONE);
+			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1227,7 +1234,7 @@ public Object getValue(Object o)
 	con.setMaxDailyOps( new Integer( ((Number)getJCSpinFieldMaxDailyOps().getValue()).intValue() ) );
 	
 	String dayString = getJCheckBoxDayChooser().getSelectedDays7Chars();
-	if( getJComboBoxHoliday().getSelectedItem() != "Empty Holiday Schedule" )
+	if( getJComboBoxHoliday().getSelectedItem() != CtiUtilities.STRING_NONE )
 	{
 		con.setHolidayScheduleID( new Integer(((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() ));
 		if(getJRadioButtonForce().isSelected())
@@ -1504,7 +1511,7 @@ public void setValue(Object o)
 		getJCSpinFieldMaxActivateTime().setValue( con.getMaxActivateTime() );
 		getJCSpinFieldMaxDailyOps().setValue( con.getMaxDailyOps() );
 	
-		
+		getJComboBoxHoliday().removeItem(CtiUtilities.STRING_NONE);
 		for( int i = 0; i < getJComboBoxHoliday().getItemCount(); i++ )
 			if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getItemAt(i)).getHolidayScheduleID()
 				== con.getHolidayScheduleID().intValue() )
@@ -1512,7 +1519,11 @@ public void setValue(Object o)
 				getJComboBoxHoliday().setSelectedIndex(i);
 				break;
 			}
-		
+		getJComboBoxHoliday().addItem(CtiUtilities.STRING_NONE);
+		if(con.getHolidayScheduleID().compareTo(new Integer(0)) == 0)
+		{
+			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
+		}
 		String holidayInfo = con.getAvailableWeekdays();
 		enableHolidayUsage(true);
 		if(holidayInfo.charAt(7) == 'E')
@@ -1526,7 +1537,7 @@ public void setValue(Object o)
 		else
 		{
 			enableHolidayUsage(false);
-			getJComboBoxHoliday().setSelectedItem("Empty Holiday Schedule");
+			getJComboBoxHoliday().setSelectedItem(CtiUtilities.STRING_NONE);
 		}
 		
 		getJComboBoxSeasonSchedule().removeItem(CtiUtilities.STRING_NONE);
