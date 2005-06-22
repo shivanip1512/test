@@ -18,7 +18,7 @@ public:
 
     RWDECLARE_COLLECTABLE( CtiNotifLMControlMsg );
 
-    enum NotificationType { STARTING = 1, UPDATING, FINISHING };
+    enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING };
     
     CtiNotifLMControlMsg();
     CtiNotifLMControlMsg(const vector<int>& group_ids, int notif_type, int program_id, const RWTime& start_time, const RWTime& stop_time);
