@@ -1,7 +1,7 @@
 @echo off
 if "%1" == "" goto usage
 
-java -Djava.class.path=.;%YUKON_BASE%/server/web;classes12.jar;tools.jar;common.jar;jtds.jar;SqlServer.jar;j2ee.jar;log4j-1.2.4.jar;yukonappserver.jar; com.cannontech.tools.custom.RevisionHFinder %1 %2 %3 %4
+%YUKON_BASE%\Runtime\bin\java -Djava.class.path=.;%YUKON_BASE%/server/web;classes12.jar;tools.jar;common.jar;jtds.jar;SqlServer.jar;j2ee.jar;log4j-1.2.4.jar;yukonappserver.jar; com.cannontech.tools.custom.RevisionHFinder %1 %2 %3 %4
 goto done
 
 :usage
