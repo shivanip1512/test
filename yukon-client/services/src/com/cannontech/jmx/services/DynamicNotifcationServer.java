@@ -45,7 +45,7 @@ public class DynamicNotifcationServer extends CTIBaseDynMBean
 		}
 		catch( IOException ie )
 		{
-			CTILogger.error( ie.getMessage(), ie );
+			CTILogger.error( "Could not start the Notification Server", ie );
 		}
 
 	}
