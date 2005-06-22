@@ -1,0 +1,1 @@
+set path=%YUKON_BASE%\Runtime\bin;%PATH%
