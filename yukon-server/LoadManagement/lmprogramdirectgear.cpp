@@ -774,4 +774,4 @@ const RWCString CtiLMProgramDirectGear::LeastControlTimeSelectionMethod = "Least
 const RWCString CtiLMProgramDirectGear::FixedCountMethodOptionType = "FixedCount";
 const RWCString CtiLMProgramDirectGear::CountDownMethodOptionType = "CountDown";
 const RWCString CtiLMProgramDirectGear::LimitedCountDownMethodOptionType = "LimitedCountDown";
-
+const RWCString CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType = "DynamicShedTime";

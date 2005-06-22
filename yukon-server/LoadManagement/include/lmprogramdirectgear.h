@@ -129,7 +129,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString FixedCountMethodOptionType;
     static const RWCString CountDownMethodOptionType;
     static const RWCString LimitedCountDownMethodOptionType;
-
+    static const RWCString DynamicShedTimeMethodOptionType;
+    
 protected:
     void restore(RWDBReader& rdr);
 

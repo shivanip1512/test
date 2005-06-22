@@ -621,7 +621,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         CtiLMGroupPtr& currentLMGroup = findGroupToTake(currentGearObject);
                         if( currentLMGroup.get() != NULL )
                         {
-                            if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::CountDownMethodOptionType,RWCString::ignoreCase) )
+                            if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType,RWCString::ignoreCase) )
                             {
                                 LONG estimatedControlTimeInSeconds = shedTime;
                                 if( !doesGroupHaveAmpleControlTime(currentLMGroup,estimatedControlTimeInSeconds) )
@@ -1048,7 +1048,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, Cti
                             !currentLMGroup->getControlInhibit() )//&&
 //			    !hasGroupExceededMaxDailyOps(currentLMGroup) )
                         {
-                            if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::CountDownMethodOptionType,RWCString::ignoreCase) )
+                            if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType,RWCString::ignoreCase) )
                             {
                                 if( maxRefreshShedTime > 0 )
                                 {
@@ -2218,7 +2218,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                         ( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState ||
                           !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ) )
                     {
-                        if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::CountDownMethodOptionType,RWCString::ignoreCase) )
+                        if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType,RWCString::ignoreCase) )
                         {
                             if( maxRefreshShedTime > 0 )
                             {
@@ -2304,7 +2304,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(LONG previousGearNu
                     CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
                     if( currentLMGroup.get() != NULL )
                     {
-                        if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::CountDownMethodOptionType,RWCString::ignoreCase) )
+                        if( !refreshCountDownType.compareTo(CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType,RWCString::ignoreCase) )
                         {
                             if( maxRefreshShedTime > 0 )
                             {
