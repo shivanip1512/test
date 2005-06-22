@@ -13,6 +13,7 @@ public final class PointTypes implements IPointOffsets
 	public static final int SYS_PID_DISPATCH		= -3;
 	public static final int SYS_PID_MACS	 		= -4;
 	public static final int SYS_PID_CAPCONTROL 		= -5;
+    public static final int SYS_PID_NOTIFCATION     = -6;
 	public static final int SYS_PID_LOADMANAGEMENT	= -10;
 	
 	//System point id constants - client
