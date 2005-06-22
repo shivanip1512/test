@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/06/21 18:20:57 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/06/22 21:37:19 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,7 +263,7 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     _first_comm = true;
     _untransmitted_codes = false;
     _status_read = false;
-    _status_reset_count = 0;
+    _status_read_count = 0;
     _status.c = 0;
     _in_count = 0;
     _in_total = 0;
@@ -449,7 +449,8 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         _outbound.body_header.flush_codes  = 0;
 
         //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
-        if( (!_status_read || _status.c) && (++_status_read_count < MaxStatusReads)) )
+        //    also make sure that we don't infinitely read the statuses
+        if( (!_status_read || _status.c) && (++_status_read_count < MaxStatusReads) )
         {
             _status_read = true;  //  set here instead of the decode to prevent looping
 
