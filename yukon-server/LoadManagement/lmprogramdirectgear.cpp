@@ -746,7 +746,7 @@ const RWCString CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
 const RWCString CtiLMProgramDirectGear::RotationMethod = "Rotation";
 const RWCString CtiLMProgramDirectGear::LatchingMethod = "Latching";
 const RWCString CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
-const RWCString CtiLMProgramDirectGear::ThermostatSetbackMethod = "ThermostatSetback";
+const RWCString CtiLMProgramDirectGear::ThermostatSetbackMethod = "ThermostatRamping";
 const RWCString CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types
