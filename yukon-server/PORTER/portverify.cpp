@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/03/17 18:51:57 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/06/23 15:48:06 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -196,6 +196,7 @@ void CtiPorterVerification::verificationThread( void )
 
                                 if( report )
                                 {
+                                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " **** Checkpoint - record not found for code \"" << report->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -209,6 +210,7 @@ void CtiPorterVerification::verificationThread( void )
                             }
                             else
                             {
+                                if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint - entry received for unknown receiver \"" << report->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -321,7 +323,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** Checkpoint - work/expectation mismatch **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -339,7 +341,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
 void CtiPorterVerification::push(CtiVerificationBase *entry)
 {
-    static bool whine = false;
+    static bool warning_printed = false;
 
     if( isRunning() )
     {
@@ -370,11 +372,14 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
     }
     else
     {
-        if(!whine)
+        if( !warning_printed )
         {
-            whine = true;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            warning_printed = true;
         }
 
         delete entry;
@@ -384,7 +389,7 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
 
 void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
 {
-    static bool whine = false;
+    static bool warning_printed = false;
 
     if( isRunning() )
     {
@@ -405,11 +410,14 @@ void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
     }
     else
     {
-        if(!whine)
+        if( !warning_printed )
         {
-            whine = true;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting " << entries.size() << " entries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting " << entries.size() << " entries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            warning_printed = true;
         }
 
         while( !entries.empty() )
@@ -609,6 +617,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
              << "Y"
              << cs;
 
+    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -636,11 +645,14 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     unsigned long earliest = ::time(0) - age.total_seconds();
 
-    deleter.where(table["timearrival"] < RWDBDateTime(RWTime(earliest + rwEpoch)));
+    RWDate prune_time(RWTime(earliest + rwEpoch));
+    RWDate prune_date(prune_time.day(), prune_time.year());
+
+    deleter.where(table["timearrival"] < RWDBDateTime(prune_date));
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Beginning to prune DynamicVerification. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << deleter.asString() << endl;
     }
     if( e = deleter.execute(conn).status().errorCode() )
