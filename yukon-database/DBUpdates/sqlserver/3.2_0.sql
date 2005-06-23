@@ -88,16 +88,6 @@ alter table NotificationGroup drop column numericpagermessage;
 go
 
 alter table CapBank alter column OperationalState varchar(16) not null;
-
-insert into YukonRoleProperty values(-1403,-5,'call_prefix','','Any number or numbers that must be dialed before a call can be placed.');
-insert into YukonGroupRole values(-73,-1,-5,-1403,'(none)');
-go
-insert into YukonRoleProperty values(-1404,-5,'number_of_channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonGroupRole values(-74,-1,-5,-1404,'(none)');
-go
-insert into YukonRoleProperty values(-1405,-5,'template_root','','A URL base where the notification templates will be stored (file: or http: are okay).');
-insert into YukonGroupRole values(-75,-1,-5,-1405,'(none)');
-go
  
 update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
 update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
@@ -185,6 +175,16 @@ go
 update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
 go
 alter table dynamicccsubstationbus alter column AdditionalFlags varchar(20) not null;
+go
+
+INSERT into point  values (-6, 'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6, 'None', 0);
+go
+
+insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
+go
+insert into YukonRoleProperty values(-80000,-800,'Call Prefix','','Any number or numbers that must be dialed before a call can be placed.');
+insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Template Root','','A URL base where the notification templates will be stored (file: or http: are okay).');
 go
 
 

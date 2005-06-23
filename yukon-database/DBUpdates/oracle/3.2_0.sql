@@ -72,15 +72,6 @@ alter table NotificationGroup drop column numericpagermessage;
 
 alter table CapBank modify OperationalState varchar2(16) not null;
 
-insert into YukonRoleProperty values(-1403,-5,'call_prefix','','Any number or numbers that must be dialed before a call can be placed.');
-insert into YukonGroupRole values(-73,-1,-5,-1403,'(none)');
-
-insert into YukonRoleProperty values(-1404,-5,'number_of_channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonGroupRole values(-74,-1,-5,-1404,'(none)');
-
-insert into YukonRoleProperty values(-1405,-5,'template_root','','A URL base where the notification templates will be stored (file: or http: are okay).');
-insert into YukonGroupRole values(-75,-1,-5,-1405,'(none)');
- 
 update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
 update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
 
@@ -142,6 +133,17 @@ alter table PAOScheduleAssignmentTable
 alter table dynamicccsubstationbus add AdditionalFlags varchar2(20);
 update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
 alter table dynamicccsubstationbus modify AdditionalFlags varchar2(20) not null;
+
+INSERT into point  values (-6, 'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6, 'None', 0);
+
+insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
+insert into YukonRoleProperty values(-80000,-800,'Call Prefix','','Any number or numbers that must be dialed before a call can be placed.');
+insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Template Root','','A URL base where the notification templates will be stored (file: or http: are okay).');
+
+
+
+
 
 
 
