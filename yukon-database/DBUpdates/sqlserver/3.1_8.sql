@@ -7,6 +7,26 @@ insert into yukongrouprole values (-777,-301,-203,-20302,'(none)');
 insert into YukonGroupRole values (-1277,-2,-203,-20302,'(none)');
 insert into YukonUserRole values (-777,-1,-203,-20302,'(none)');
 
+create table DynamicPAOInfo (
+   EntryID              numeric              not null,
+   PAObjectID           numeric              not null,
+   Owner                varchar(64)          not null,
+   Info                 varchar(128)         not null,
+   Value                varchar(128)         not null
+);
+go
+alter table DynamicPAOInfo
+   add constraint PK_DYNPAOINFO primary key  (EntryID);
+go
+alter table DynamicPAOInfo
+   add constraint AK_DYNPAO_OWNKYUQ unique  (EntryID, PAObjectID, Owner);
+go
+alter table DynamicPAOInfo
+   add constraint FK_DynPAOInfo_YukPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
+go
+
+
 
 
 
