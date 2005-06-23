@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/23 15:47:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,10 +87,18 @@ CtiOutMessage *CtiVerificationWork::getRetryOM() const
 {
     CtiOutMessage *retval = CTIDBG_new CtiOutMessage(_retry_om);
 
-    ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
+    //  only expire this message if the other one had an expiration time set...  this isn't quite foolproof,
+    //    since the expiration time might need to be longer than _patience, but it's a good starting place...
+    //    maybe we should make it an addtional constructor parameter, or have the constructor-submitted OM
+    //    keep a relative value until we resubmit it and make it an absolute time
+    if( _retry_om.ExpirationTime )
+    {
+        ptime::time_duration_type expiration = (second_clock::universal_time() - ptime(date(1970, 1, 1))) + _patience;
+
+        retval->ExpirationTime = expiration.total_seconds() + rwEpoch;  //  ExpirationTime is an RWTime.seconds()
+    }
 
     retval->Retry = 0;
-    retval->ExpirationTime = expiration.total_seconds() + rwEpoch;  //  ExpirationTime is an RWTime.seconds()
 
     return retval;
 }
