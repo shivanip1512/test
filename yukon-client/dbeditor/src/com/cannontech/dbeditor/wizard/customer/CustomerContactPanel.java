@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteContact;
 
@@ -17,6 +18,8 @@ public class CustomerContactPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjJLabelAssignedContacts = null;
 	private javax.swing.JComboBox ivjJComboBoxContacts = null;
 	private javax.swing.JLabel ivjJLabelAvaillContacts = null;
+	
+	private static final String STR_NONE_AVAIL = "  (none available)";
 
 /**
  * Constructor
@@ -179,19 +182,18 @@ private javax.swing.JComboBox getJComboBoxContacts() {
 		try {
 			ivjJComboBoxContacts = new javax.swing.JComboBox();
 			ivjJComboBoxContacts.setName("JComboBoxContacts");
-			ivjJComboBoxContacts.setToolTipText("Contact entry that is assigned to this customer");
 			// user code begin {1}
 
-			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized( cache )
-			{
-				List contacts = cache.getAllContacts();
-				for( int i = 0; i < contacts.size(); i++ )
-				{
-					ivjJComboBoxContacts.addItem( 
-						(LiteContact)contacts.get(i) );
-				}
+			ivjJComboBoxContacts.setToolTipText("Contacts that are not already assigned to an existing customer");
+
+			//only make the unassigned contacts available
+			LiteContact[] contacts = ContactFuncs.getUnassignedContacts();
+			for( int i = 0; i < contacts.length; i++ ) {
+				getJComboBoxContacts().addItem( contacts[i] );
 			}
+			
+			setEnableContactList();
+			
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -201,6 +203,21 @@ private javax.swing.JComboBox getJComboBoxContacts() {
 		}
 	}
 	return ivjJComboBoxContacts;
+}
+
+/**
+ * Toggles our list to enabled/disabled and inserts a description string
+ *
+ */
+private void setEnableContactList()
+{
+	boolean isEnabled = getJComboBoxContacts().getItemCount() > 0;
+	getJComboBoxContacts().setEnabled( isEnabled );
+
+	if( isEnabled )
+		getJComboBoxContacts().removeItem( STR_NONE_AVAIL );
+	else
+		getJComboBoxContacts().addItem( STR_NONE_AVAIL );
 }
 
 /**
@@ -479,8 +496,14 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
 	if( getJComboBoxContacts().getSelectedItem() instanceof LiteContact )
 	{
-		getJTableModel().addRow( 
-			(LiteContact)getJComboBoxContacts().getSelectedItem() ); 
+		LiteContact selCont = (LiteContact)getJComboBoxContacts().getSelectedItem();
+
+		//add the select Contact to our table
+		getJTableModel().addRow( selCont );
+		
+		//remove it from our list of available Contacts
+		getJComboBoxContacts().removeItem( selCont );
+		setEnableContactList();		
 	}
 	
 		
@@ -494,10 +517,17 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
  */
 public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	if( getJTableContact().getSelectedRow() >= 0 )
-	{
-		for( int i = (getJTableContact().getSelectedRows().length-1); i >= 0; i-- )
-			getJTableModel().removeRow( getJTableContact().getSelectedRows()[i] );
+	if( getJTableContact().getSelectedRow() >= 0 ) {				
+		for( int i = (getJTableContact().getSelectedRows().length-1); i >= 0; i-- ) {
+			
+			//add the row to our unassigned list of Contacts
+			int selRow = getJTableContact().getSelectedRows()[i];
+			getJComboBoxContacts().addItem( getJTableModel().getRowAt(selRow) );
+
+			//remove it from our table
+			getJTableModel().removeRow( selRow );
+			setEnableContactList();
+		}
 	}
 
 	getJTableContact().clearSelection();
