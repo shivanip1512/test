@@ -2,11 +2,7 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
-import java.util.List;
-
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
-import com.cannontech.database.cache.functions.CustomerFuncs;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteContact;
 
