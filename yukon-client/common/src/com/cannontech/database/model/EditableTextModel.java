@@ -51,9 +51,10 @@ public class EditableTextModel extends DBTreeModel
 	 * This method was created in VisualAge.
 	 * @return java.lang.String
 	 */
-	public String toString() {
-		return "LCR Serial #";
-	}
+	//Use the super's method
+//	public String toString() {
+//		return "LCR Serial #";
+//	}
 	/**
 	 * update method comment.
 	 */
