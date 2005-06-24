@@ -135,7 +135,7 @@ void CtiCalcLogicService::ParseArgs( DWORD argc, LPTSTR *argv )
 
 void CtiCalcLogicService::OnStop( )
 {
-    SetStatus(SERVICE_STOP_PENDING, 33, 5000 );
+    SetStatus(SERVICE_STOP_PENDING, 33, 60000 );
     UserQuit = true;
 }
 
