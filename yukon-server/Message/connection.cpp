@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/04/15 19:03:16 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/06/24 16:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,20 +40,31 @@ CtiConnection::~CtiConnection()
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " Error cleaning the connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
 
 void CtiConnection::cleanConnection()
 {
-    ShutdownConnection();
+    try
+    {
+        ShutdownConnection();
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
     if( _connectCalled && _localQueueAlloc && inQueue != NULL )
     {
         try
         {
             inQueue->clearAndDestroy();     // The queue is allocated by me.  I will be responsible for this memory!
+            delete inQueue;
         }
         catch(...)
         {
@@ -63,19 +74,30 @@ void CtiConnection::cleanConnection()
             }
         }
 
-        delete inQueue;
         inQueue = 0;
     }
 
-    if(_regMsg != NULL)
+    try
     {
-        delete _regMsg;
-        _regMsg = 0;
-    }
+        if(_regMsg != NULL)
+        {
+            delete _regMsg;
+            _regMsg = 0;
+        }
 
-    if(_ptRegMsg != NULL)
+        if(_ptRegMsg != NULL)
+        {
+            delete _ptRegMsg;
+            _ptRegMsg = 0;
+        }
+    }
+    catch(...)
     {
-        delete _ptRegMsg;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        _regMsg = 0;
         _ptRegMsg = 0;
     }
 
@@ -301,13 +323,35 @@ void CtiConnection::InThread()
                 {
                     if( c != NULL)
                     {
-                        MsgPtr = (CtiMessage*)c;
+                        try
+                        {
+                            MsgPtr = (CtiMessage*)c;
 
-                        MsgPtr->setConnectionHandle( (void*)this );   // Pee on this message to mark some teritory...
+                            MsgPtr->setConnectionHandle( (void*)this );   // Pee on this message to mark some teritory...
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
 
                         if(inQueue)
                         {
-                            if(inQueue->isFull())
+                            try
+                            {
+                                if(inQueue->isFull())
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
+                                    }
+                                }
+
+                                _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
+                            }
+                            catch(...)
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -696,7 +740,7 @@ INT CtiConnection::ConnectPortal()
 
 void CtiConnection::ShutdownConnection()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard< CtiMutex > guard(_mux, 60000);
     try
     {
         if(_connectCalled)
@@ -806,6 +850,7 @@ INT CtiConnection::verifyConnection()
 {
     INT ok = NORMAL;
     INT status;
+    bool exep = false;
 
     try
     {
@@ -869,17 +914,29 @@ INT CtiConnection::verifyConnection()
         }
         else
         {
-            TryLockGuard guard(monitor());
+            CtiLockGuard< CtiMutex > guard(_mux, 30000);
 
             if(guard.isAcquired() && _exchange != NULL)
             {
-                if( _exchange->In().bad() )
+                try
                 {
-                    ok = InboundSocketBad; // the stream indicates a bad condition.
+                    if( _exchange->In().bad() )
+                    {
+                        ok = InboundSocketBad; // the stream indicates a bad condition.
+                    }
+                    else if( _exchange->Out().bad() )
+                    {
+                        ok = OutboundSocketBad; // the stream indicates a bad condition.
+                    }
                 }
-                else if( _exchange->Out().bad() )
+                catch(...)
                 {
-                    ok = OutboundSocketBad; // the stream indicates a bad condition.
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    ok = InboundSocketBad;      // Mark it this wat to make sure we know it is bad.
+                    exep = true;
                 }
             }
         }
@@ -890,7 +947,11 @@ INT CtiConnection::verifyConnection()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
+
+        exep = true;
     }
+
+    if(exep) Sleep(5000);
 
     return ok;
 }
@@ -1073,7 +1134,7 @@ RWCString CtiConnection::who()
 {
     RWCString connectedto(_name);
 
-    TryLockGuard guard(monitor());
+    CtiLockGuard< CtiMutex > guard(_mux, 1000);
 
     if(_port == -2 && guard.isAcquired() && _exchange != NULL)
     {
@@ -1238,12 +1299,30 @@ UINT CtiConnection::valid() const
 
 void CtiConnection::cleanExchange()
 {
-    // LockGuard guard(monitor());
+    CtiLockGuard< CtiMutex > guard(_mux, 30000);
 
-    if(_exchange != NULL)
+    if( !guard.isAcquired() )
     {
-        _valid = FALSE;
-        delete _exchange;
-        _exchange = NULL;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** cleanExchange Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") TID " << _mux.lastAcquiredByTID() << endl;
+        }
     }
+
+    try
+    {
+        if(_exchange != NULL)
+        {
+            _valid = FALSE;
+            delete _exchange;
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    _exchange = NULL;
 }

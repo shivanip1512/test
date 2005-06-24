@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/20 03:58:04 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/06/24 16:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,9 +20,6 @@
 
 #include <limits.h>
 
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/mutex.h>
 #include <rw/thr/thrfunc.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
@@ -35,10 +32,11 @@
 #include "msg_multi.h"
 #include "msg_ptreg.h"
 #include "msg_reg.h"
+#include "mutex.h"
 #include "queue.h"
 
 
-class IM_EX_MSG CtiConnection : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_MSG CtiConnection
 {
 protected:
 
@@ -89,6 +87,8 @@ protected:
 private:
     void cleanConnection();
     void cleanExchange();
+
+    mutable CtiMutex _mux;
 
 
 public:
