@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/05/11 21:03:03 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/06/24 16:14:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1390,14 +1390,8 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
 
         /* Zero out the block counter */
         Offset = PREIDL;                  // First entry starts here.
-        for(i = 1; i <= Count; i++)
+        for(i = 1; i <= Count && !pInfo->GetStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
         {
-            /* For now limit to one Lgrpq per ccu on queue at a time */
-            if(pInfo->GetStatus(INLGRPQ))
-            {
-                return(NORMAL);
-            }
-
             /* get the client submitted entry from the queue */
             if(ReadQueue (pInfo->QueueHandle, &QueueResult, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
             {
@@ -1437,9 +1431,6 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->ReturnNexus    = NULL;                    // This message IS NOT reportable to the requesting client!
             }
 
-            /* save where to put the length of this entry */
-            SETLPos = Offset++;
-
             /* Find the first open entry in the QueTable */
             for(QueTabEnt = 0; QueTabEnt < MAXQUEENTRIES; QueTabEnt++)
             {
@@ -1458,150 +1449,168 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " We've fallen off the back of " << Dev->getName() << "'s QueTable." << endl;
-                    dout << RWTime() << "   This should never have ever happened." << endl;
+                    dout << RWTime() << "   This should not happen.  Requeuing the command for later execution." << endl;
+                }
+
+                // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
+                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->EventCode, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Unable to requeue OM to the CCU->QueueHandle* " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    delete MyOutMessage;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << Dev->getName() << " re-queued an OM to the CCU->QueueHandle. Count = " << Count << " iteration " << i << endl;
+                    }
                 }
             }
-
-            /* tick off free slots available */
-            pInfo->FreeSlots--;
-            pInfo->QueTable[QueTabEnt].InUse |= INUSE;
-            pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
-
-            /* and load the entry */
-            pInfo->QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
-            pInfo->QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
-            pInfo->QueTable[QueTabEnt].SaveNexus      = MyOutMessage->SaveNexus;
-            pInfo->QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
-            pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
-            pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
-            pInfo->QueTable[QueTabEnt].Request        = MyOutMessage->Request;
-            pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
-            pInfo->QueTable[QueTabEnt].QueueEntrySequence          = QueueEntrySequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
-
-#ifdef FOLLOW_THE_DSM2_PATH
-            OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueTabEnt) & 0x007f;
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt);
-#endif
-
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt) & 0x007f;
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (MyOutMessage->Sequence);
-
-            OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueueEntrySequence);
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueueEntrySequence);
-
-            /* Load the Priority */
-            OutMessage->Buffer.OutMessage[Offset++] = Priority;
-
-            /* Make sure the outmessage priority keeps up */
-            if(OutMessage->Priority < Priority)
-                OutMessage->Priority = Priority;
-
-            /* Load the Remote */
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (HIUSHORT (MyOutMessage->Buffer.BSt.Address));
-            OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
-            OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
-
-            /* Load the bus */
-            OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Feeder;
-
-            /* Load repeater control */
-            OutMessage->Buffer.OutMessage[Offset++] = (MyOutMessage->Buffer.BSt.DlcRoute.RepVar << 5) | (MyOutMessage->Buffer.BSt.DlcRoute.RepFixed & 0x001f);
-
-            /* Load number of repeaters */
-            OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
-
-            /* Load the number of functions that will be involved */
-            if(MyOutMessage->Buffer.BSt.IO & READ)
+            else
             {
-                /* we are going to ignore the arm request */
-                OutMessage->Buffer.OutMessage[Offset++] = 1;
+                /* save where to put the length of this entry */
+                SETLPos = Offset++;
 
-                /* Select B word, single transmit, & read */
-                if(Double)
-                    OutMessage->Buffer.OutMessage[Offset++] = 0xa8;
-                else
-                    OutMessage->Buffer.OutMessage[Offset++] = 0x88;
+                /* tick off free slots available */
+                pInfo->FreeSlots--;
+                pInfo->QueTable[QueTabEnt].InUse |= INUSE;
+                pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
 
-                /* Select the type of read */
-                if(MyOutMessage->Buffer.BSt.IO & 0x02)
-                    OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
+                /* and load the entry */
+                pInfo->QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
+                pInfo->QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
+                pInfo->QueTable[QueTabEnt].SaveNexus      = MyOutMessage->SaveNexus;
+                pInfo->QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
+                pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
+                pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
+                pInfo->QueTable[QueTabEnt].Request        = MyOutMessage->Request;
+                pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
+                pInfo->QueTable[QueTabEnt].QueueEntrySequence          = QueueEntrySequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
 
-                OutMessage->Buffer.OutMessage[Offset++] = 0;
+                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt) & 0x007f;
+                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (MyOutMessage->Sequence);
 
-                /* select the Remote */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
+                OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueueEntrySequence);
+                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueueEntrySequence);
 
-                /* Select the number of bytes to read */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
-                /* Save the number of bytes to be read */
-                pInfo->QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
-            }
-            else  /* this has to be a write or function so check if arm needed */
-            {
-                //  ARMC/ARML aren't actually handled here any more, they're handled right at
-                //    dev_dlcbase - Q_ARMC/Q_ARML should never be set at this level.
-                //  all ARM commands should be handled by dev_dlcbase, so that they're always
-                //    sent regardless of queued/nonqueued...  ARMS is the only one left now (2004-oct-22)
-                if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
-                    OutMessage->Buffer.OutMessage[Offset++] = 2;
-                else
+                /* Load the Priority */
+                OutMessage->Buffer.OutMessage[Offset++] = Priority;
+
+                /* Make sure the outmessage priority keeps up */
+                if(OutMessage->Priority < Priority)
+                    OutMessage->Priority = Priority;
+
+                /* Load the Remote */
+                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (HIUSHORT (MyOutMessage->Buffer.BSt.Address));
+                OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
+                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
+
+                /* Load the bus */
+                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Feeder;
+
+                /* Load repeater control */
+                OutMessage->Buffer.OutMessage[Offset++] = (MyOutMessage->Buffer.BSt.DlcRoute.RepVar << 5) | (MyOutMessage->Buffer.BSt.DlcRoute.RepFixed & 0x001f);
+
+                /* Load number of repeaters */
+                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
+
+                /* Load the number of functions that will be involved */
+                if(MyOutMessage->Buffer.BSt.IO & READ)
+                {
+                    /* we are going to ignore the arm request */
                     OutMessage->Buffer.OutMessage[Offset++] = 1;
 
-                if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
+                    /* Select B word, single transmit, & read */
+                    if(Double)
+                        OutMessage->Buffer.OutMessage[Offset++] = 0xa8;
+                    else
+                        OutMessage->Buffer.OutMessage[Offset++] = 0x88;
+
+                    /* Select the type of read */
+                    if(MyOutMessage->Buffer.BSt.IO & 0x02)
+                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
+
+                    OutMessage->Buffer.OutMessage[Offset++] = 0;
+
+                    /* select the Remote */
+                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
+
+                    /* Select the number of bytes to read */
+                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
+                    /* Save the number of bytes to be read */
+                    pInfo->QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
+                }
+                else  /* this has to be a write or function so check if arm needed */
                 {
-                    /* Select B word, single transmit, & write */
+                    //  ARMC/ARML aren't actually handled here any more, they're handled right at
+                    //    dev_dlcbase - Q_ARMC/Q_ARML should never be set at this level.
+                    //  all ARM commands should be handled by dev_dlcbase, so that they're always
+                    //    sent regardless of queued/nonqueued...  ARMS is the only one left now (2004-oct-22)
+                    if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
+                        OutMessage->Buffer.OutMessage[Offset++] = 2;
+                    else
+                        OutMessage->Buffer.OutMessage[Offset++] = 1;
+
+                    if(MyOutMessage->Buffer.BSt.IO & (Q_ARML | Q_ARMC | Q_ARMS))
+                    {
+                        /* Select B word, single transmit, & write */
+                        if(Double)
+                            OutMessage->Buffer.OutMessage[Offset++] = 0xa0;
+                        else
+                            OutMessage->Buffer.OutMessage[Offset++] = 0x80;
+                        OutMessage->Buffer.OutMessage[Offset++] = 0;
+
+                        /* select the function */
+                        if(MyOutMessage->Buffer.BSt.IO & Q_ARML)
+                            OutMessage->Buffer.OutMessage[Offset++] = ARML;
+                        else if(MyOutMessage->Buffer.BSt.IO & Q_ARMS)
+                            OutMessage->Buffer.OutMessage[Offset++] = ARMS;
+                        else
+                            OutMessage->Buffer.OutMessage[Offset++] = ARMC;
+
+                        /* this is a function so zero length */
+                        OutMessage->Buffer.OutMessage[Offset++] = 0;
+                    }
+
+                    /* Now load the real reason we came here */
+                    /* Select B word, single transmit & write */
                     if(Double)
                         OutMessage->Buffer.OutMessage[Offset++] = 0xa0;
                     else
                         OutMessage->Buffer.OutMessage[Offset++] = 0x80;
+
+                    /* Select the type of write */
+                    if(MyOutMessage->Buffer.BSt.IO & 0x02)
+                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
+
                     OutMessage->Buffer.OutMessage[Offset++] = 0;
 
-                    /* select the function */
-                    if(MyOutMessage->Buffer.BSt.IO & Q_ARML)
-                        OutMessage->Buffer.OutMessage[Offset++] = ARML;
-                    else if(MyOutMessage->Buffer.BSt.IO & Q_ARMS)
-                        OutMessage->Buffer.OutMessage[Offset++] = ARMS;
-                    else
-                        OutMessage->Buffer.OutMessage[Offset++] = ARMC;
+                    /* select the address / function */
+                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
 
-                    /* this is a function so zero length */
-                    OutMessage->Buffer.OutMessage[Offset++] = 0;
+                    /* select the length of the write */
+                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
+
+                    /* if this is a write copy message to buffer */
+                    if(MyOutMessage->Buffer.BSt.Length)
+                    {
+                        for(j = 0; j < MyOutMessage->Buffer.BSt.Length; j++)
+                            OutMessage->Buffer.OutMessage[Offset++] = MyOutMessage->Buffer.BSt.Message[j];
+                    }
+
+                    pInfo->QueTable[QueTabEnt].Length = 0;
                 }
 
-                /* Now load the real reason we came here */
-                /* Select B word, single transmit & write */
-                if(Double)
-                    OutMessage->Buffer.OutMessage[Offset++] = 0xa0;
-                else
-                    OutMessage->Buffer.OutMessage[Offset++] = 0x80;
+                /* we are done with the request message */
+                delete (MyOutMessage);
 
-                /* Select the type of write */
-                if(MyOutMessage->Buffer.BSt.IO & 0x02)
-                    OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
-
-                OutMessage->Buffer.OutMessage[Offset++] = 0;
-
-                /* select the address / function */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
-
-                /* select the length of the write */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
-
-                /* if this is a write copy message to buffer */
-                if(MyOutMessage->Buffer.BSt.Length)
-                {
-                    for(j = 0; j < MyOutMessage->Buffer.BSt.Length; j++)
-                        OutMessage->Buffer.OutMessage[Offset++] = MyOutMessage->Buffer.BSt.Message[j];
-                }
-
-                pInfo->QueTable[QueTabEnt].Length = 0;
+                /* Now load the setl length for this guy */
+                OutMessage->Buffer.OutMessage[SETLPos] = Offset - SETLPos;
             }
-
-            /* we are done with the request message */
-            delete (MyOutMessage);
-
-            /* Now load the setl length for this guy */
-            OutMessage->Buffer.OutMessage[SETLPos] = Offset - SETLPos;
 
             /* Check if this is the last one or buffer full */
             if(i == Count || Offset > (MaxOcts - MAXQUEENTLEN - 2))
@@ -1620,19 +1629,19 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << tempstr << endl;
                     }
-                    Offset = 0;
-
+                    delete OutMessage;                      // Starting over, so we'd better bop the OM.
+                    Offset = PREIDL;
                     continue;
                 }
                 else
                 {
                     /* Update the port entries count */
-                    pInfo->SetStatus(INLGRPQ);
+                    pInfo->SetStatus(INLGRPQ);              // This should break our for loop too.
                     pInfo->PortQueueEnts++;
                     pInfo->PortQueueConts++;
                 }
 
-                Offset = 0;
+                Offset = PREIDL;
             }
         }
     }
