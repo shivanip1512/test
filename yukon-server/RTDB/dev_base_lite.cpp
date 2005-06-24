@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/06/24 16:13:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 
 CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
 _deviceID(id),
+_portID(0),
 _disableFlag("N"),
 _controlInhibitFlag("N")
 {
@@ -39,6 +40,12 @@ LONG CtiDeviceBaseLite::getID() const
 {
     return _deviceID;
 }
+
+LONG CtiDeviceBaseLite::getPortID() const
+{
+    return _portID;
+}
+
 RWCString CtiDeviceBaseLite::getClass() const
 {
     return _class;
@@ -83,6 +90,11 @@ RWCString CtiDeviceBaseLite::getControlInhibitFlag() const
 CtiDeviceBaseLite& CtiDeviceBaseLite::setID( LONG id )
 {
     _deviceID = id;
+    return *this;
+}
+CtiDeviceBaseLite& CtiDeviceBaseLite::setPortID( LONG id )
+{
+    _portID = id;
     return *this;
 }
 CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const RWCString &str )
@@ -159,35 +171,35 @@ RWDBStatus CtiDeviceBaseLite::Restore()
 
     if(cg.isAcquired())
     {
-    RWDBConnection conn = getConnection();
+        RWDBConnection conn = getConnection();
 
         {
-        RWDBTable table = getDatabase().table( getTableName() );
-        RWDBTable devtable = getDatabase().table( "Device" );
+            RWDBTable table = getDatabase().table( getTableName() );
+            RWDBTable devtable = getDatabase().table( "Device" );
 
             selector = getDatabase().selector();
 
-        selector << table["paobjectid"];
-        selector << table["paoclass"];
-        selector << table["paoname"];
-        selector << table["type"];
-        selector << table["description"];
-        selector << table["disableflag"];
-        selector << devtable["controlinhibit"];
+            selector << table["paobjectid"];
+            selector << table["paoclass"];
+            selector << table["paoname"];
+            selector << table["type"];
+            selector << table["description"];
+            selector << table["disableflag"];
+            selector << devtable["controlinhibit"];
 
-        selector.from(table);
-        selector.from(devtable);
+            selector.from(table);
+            selector.from(devtable);
 
-        selector.where( table["paobjectid"] == getID() && devtable["deviceid"] == getID() );
+            selector.where( table["paobjectid"] == getID() && devtable["deviceid"] == getID() );
 
-        RWDBReader reader = selector.reader( conn );
-        dbstat = selector.status();
+            RWDBReader reader = selector.reader( conn );
+            dbstat = selector.status();
 
-        if( reader() )
-        {
-            DecodeDatabaseReader( reader );
+            if( reader() )
+            {
+                DecodeDatabaseReader( reader );
+            }
         }
-    }
     }
 
     return dbstat;
@@ -198,6 +210,7 @@ CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
     if(this != &aRef)
     {
         _deviceID = aRef.getID();
+        _portID = aRef.getPortID();
         _class = aRef.getClass();
         _name = aRef.getName();
         _objectType = aRef.getObjectType();
@@ -212,13 +225,13 @@ bool CtiDeviceBaseLite::isDisabled() const
 {
     RWCString str(getDisableFlag());
     str.toLower();
-    return (str == "y");
+    return(str == "y");
 }
 
 bool CtiDeviceBaseLite::isControlInhibited() const
 {
     RWCString str(getControlInhibitFlag());
     str.toLower();
-    return (str == "y");
+    return(str == "y");
 }
 
