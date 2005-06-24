@@ -8,6 +8,7 @@ import com.cannontech.notif.voice.*;
 import com.cannontech.notif.voice.CallPool.UnknownCallTokenException;
 import com.cannontech.notif.voice.callstates.Confirmed;
 import com.cannontech.notif.voice.callstates.Unconfirmed;
+import com.cannontech.roles.ivr.OutboundCallingRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.roles.yukon.VoiceServerRole;
 
@@ -30,16 +31,16 @@ public class VoiceHandler extends OutputHandler
         String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
         String voiceApp = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
         VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
+        dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.CALL_PREFIX));
         dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
         
         int callTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.NUMBER_OF_CHANNELS));
+        int numberOfChannels = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.NUMBER_OF_CHANNELS));
         _callPool = new CallPool(dialer, numberOfChannels, callTimeout);
         
         _queue = new NotificationQueue(_callPool);
         
-        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.TEMPLATE_ROOT);
+        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.TEMPLATE_ROOT);
         _transformer = new NotificationTransformer(xslRootDirectory, getType());
     }
     

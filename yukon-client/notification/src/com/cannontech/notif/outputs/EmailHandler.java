@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.roles.ivr.OutboundCallingRole;
 import com.cannontech.roles.yukon.VoiceServerRole;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
@@ -24,7 +25,7 @@ public class EmailHandler extends OutputHandler
     public EmailHandler() {
         super(Contactable.EMAIL);
         
-        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.TEMPLATE_ROOT);
+        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.TEMPLATE_ROOT);
         _transformer = new NotificationTransformer(xslRootDirectory, getType());
     }
     
