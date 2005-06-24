@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.user.UserUtils;
 
@@ -202,6 +203,58 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		
 		return retVal;
 	}
+	
+	/**
+	 * Returns an array of Contacts IDs that are not assigned to a customer
+	 * 
+	 */
+	public static final int[] getOrphanedContacts() throws java.sql.SQLException
+	{
+		NativeIntVector idVect = new NativeIntVector(32);
+		java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		String sql = 
+			"select cnt.contactid from " + TABLE_NAME + " cnt " +
+			"where cnt.contactid not in " +
+			"(select ca.contactid from CustomerAdditionalContact ca) " +
+			"and cnt.contactid not in " +
+			"(select cs.primarycontactid from " + Customer.TABLE_NAME + " cs)" +
+			"order by cnt.contfirstname, cnt.contlastname";
+
+		try
+		{		
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() )
+			{
+				idVect.add( rset.getInt(1) );
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( rset != null ) rset.close();
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 )
+			{
+				CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+	
+	
+		return idVect.toArray();
+	}
+
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (3/26/2001 3:07:17 PM)
