@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/26 22:31:17 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/06/24 16:15:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,8 +115,6 @@ int main(int argc, char* argv[] )
 
          CtiDispatchService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );
          service.RunInConsole(argc, argv );
-
-         //while( service.GetStatus() == SERVICE_STOPPED ) rwSleep(1000);
       }
    }
    else
