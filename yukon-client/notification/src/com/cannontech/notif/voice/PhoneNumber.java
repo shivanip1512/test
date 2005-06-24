@@ -14,7 +14,7 @@ public class PhoneNumber {
 	/**
 	 * Create a new PhoneNumber object with the given phone number.
      * The phone number will be stripped of any extraneous punctuation.
-	 * @param phoneNumber the phone numer to use
+	 * @param rawPhoneNumber the phone numer to use
 	 * @throws PhoneNumberException
 	 */
 	public PhoneNumber(String rawPhoneNumber) {

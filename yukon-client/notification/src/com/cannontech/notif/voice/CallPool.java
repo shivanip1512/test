@@ -121,13 +121,11 @@ public class CallPool implements PropertyChangeListener {
 
     public void shutdown() throws InterruptedException {
         _shutdown  = true;
+        
         _threadPool.shutdown();
         
-        // this is odd, even if we do a shutdownNow, the phone calls will still
-        // continue and a couple of threads will hang around which prevent
-        // the JVM from exiting... so it is probably best just to do a 
-        // threadPool.shutdownAfterProcessingCurrentlyQueuedTasks so that
-        // we can monitor the process...
+        // The voice server API doesn't respond to interrupts, so there
+        // really isn't any way to force an in-progress call to terminate
         _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT, TimeUnit.SECONDS);
         if (!_threadPool.isTerminated()) {
             CTILogger.error("Unable to cleanly shutdown notification call pool. Forcing shutdown.");
