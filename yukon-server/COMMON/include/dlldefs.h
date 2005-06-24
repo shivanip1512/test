@@ -451,6 +451,13 @@
 #else
    #define IM_EX_FDRDSM2FILEIN       __declspec(dllimport)
 #endif
+#ifdef _DLL_FDRBEPC
+   #define IM_EX_FDRBEPC       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRBEPC
+#else
+   #define IM_EX_FDRBEPC       __declspec(dllimport)
+#endif
 
 
 
