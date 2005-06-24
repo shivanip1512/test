@@ -1,7 +1,9 @@
 package com.cannontech.database.cache.functions;
 
+import java.sql.SQLException;
 import java.util.*;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -9,6 +11,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.contact.Contact;
 
 /**
  * Insert the type's description here.
@@ -195,6 +198,28 @@ public final class ContactFuncs
 		}
 	
 		return null;
+	}
+
+	/**
+	 * Returns all the LiteContacts that do not belong to a Customer.
+	 * 
+	 */
+	public static LiteContact[] getUnassignedContacts() {
+
+		int[] contIDs = new int[0];
+		try {
+			contIDs = Contact.getOrphanedContacts();
+		} catch( SQLException se ) {
+			CTILogger.error( "Unable to get the Unassigned Contacts from the database", se );
+		}
+
+		ArrayList contList = new ArrayList(32);
+
+		for( int i = 0; i < contIDs.length; i++ ) {
+			contList.add( getContact(contIDs[i]) );
+		}
+
+		return (LiteContact[])contList.toArray( new LiteContact[contList.size()] );
 	}
 
 	/**
