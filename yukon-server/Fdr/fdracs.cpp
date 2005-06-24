@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2005/06/24 20:10:34 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.10  2005/06/24 20:10:34  dsutton
+      When an unknown point arrives in Yukon, FDR logs that information to the
+      system log.  At one site there were 270 items arriving once every ten
+      seconds so the system log was unusable for any other events.  The log
+      is now wrapped in a debug level so it is available if necessary
+
       Revision 1.9  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -706,20 +712,22 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for analog point ";
-                dout << " Remote: " << ntohs(data->Value.RemoteNumber);
-                dout << " Category: " << data->Value.CategoryCode;
-                dout << " Point: " << ntohs(data->Value.PointNumber);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
-            }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Translation for analog point ";
+                    dout << " Remote: " << ntohs(data->Value.RemoteNumber);
+                    dout << " Category: " << data->Value.CategoryCode;
+                    dout << " Point: " << ntohs(data->Value.PointNumber);
+                    dout << " from " << getInterfaceName() << " was not found" << endl;
+                }
 
-            desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Value.RemoteNumber), 
-                      data->Value.CategoryCode,
-                      ntohs(data->Value.PointNumber));
-            logEvent (desc,RWCString (action));
+                desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
+                          ntohs(data->Value.RemoteNumber), 
+                          data->Value.CategoryCode,
+                          ntohs(data->Value.PointNumber));
+                logEvent (desc,RWCString (action));
+            }
         }
         else
         {      
@@ -857,21 +865,21 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for status point " ;
-                dout << " Remote: " << ntohs(data->Status.RemoteNumber);
-                dout << " Category: " << data->Status.CategoryCode;
-                dout << " Point: " << ntohs(data->Status.PointNumber);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Translation for status point " ;
+                    dout << " Remote: " << ntohs(data->Status.RemoteNumber);
+                    dout << " Category: " << data->Status.CategoryCode;
+                    dout << " Point: " << ntohs(data->Status.PointNumber);
+                    dout << " from " << getInterfaceName() << " was not found" << endl;
+                }
+                desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
+                          ntohs(data->Status.RemoteNumber), 
+                          data->Status.CategoryCode,
+                          ntohs(data->Status.PointNumber));
+                logEvent (desc,RWCString (action));
             }
-
-            desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Status.RemoteNumber), 
-                      data->Status.CategoryCode,
-                      ntohs(data->Status.PointNumber));
-            logEvent (desc,RWCString (action));
-
         }
         else
         {
@@ -984,20 +992,23 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Translation for control point " ;
-                dout << " Remote: " << ntohs(data->Control.RemoteNumber);
-                dout << " Category: " << data->Control.CategoryCode;
-                dout << " Point: " << ntohs(data->Control.PointNumber);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Translation for control point " ;
+                    dout << " Remote: " << ntohs(data->Control.RemoteNumber);
+                    dout << " Category: " << data->Control.CategoryCode;
+                    dout << " Point: " << ntohs(data->Control.PointNumber);
+                    dout << " from " << getInterfaceName() << " was not found" << endl;
+                }
+
+                desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
+                _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
+                          ntohs(data->Control.RemoteNumber), 
+                          data->Control.CategoryCode,
+                          ntohs(data->Control.PointNumber));
+                logEvent (desc,RWCString (action));
             }
 
-            desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
-            _snprintf(action,60,"Remote:%d Category:%c Point:%d", 
-                      ntohs(data->Control.RemoteNumber), 
-                      data->Control.CategoryCode,
-                      ntohs(data->Control.PointNumber));
-            logEvent (desc,RWCString (action));
         }
         else if (!point.isControllable())
         {
