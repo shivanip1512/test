@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/06/24 16:13:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1708,16 +1708,6 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
 
         if( isConfig63Valid(sn) && (sec || cls || div) )
         {
-            if( isGroupConfig && uid )
-            {  // We have a utility id to configure
-                primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
-
-                memset(config, 0, 6);      // Blank the bytes
-                config[0] = (BYTE)uid;
-                if(VersacomConfigCommand( VCONFIG_UTILID, config ))
-                    removeLastVStruct();
-            }
-
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
             memset(config, 0, 6);      // Blank the bytes
