@@ -57,6 +57,7 @@
 #define TAG_DISABLE_POINT_BY_POINT           0x00000001        // point/device out of service.
 #define TAG_DISABLE_ALARM_BY_POINT           0x00000002        // point/device will not cause alarms.
 #define TAG_DISABLE_CONTROL_BY_POINT         0x00000004        // point/device cannot be controled.
+#define TAG_DISABLE_BY_PORT_ROUTE            0x00000008        // point/device cannot be scanned OR controlled.
 
 #define TAG_DISABLE_DEVICE_BY_DEVICE         0x00000010        // point/device out of service.
 #define TAG_DISABLE_ALARM_BY_DEVICE          0x00000020        // point/device will not cause alarms.
@@ -91,12 +92,12 @@
 #define MASK_ANY_ALARM                       0xC0000000        // Get any alarm
 #define MASK_ANY_CONTROL                     0x000C0000
 
-#define MASK_ANY_DISABLE                     0x00000077
-#define MASK_ANY_POINT_DISABLE               0x00000007
-#define MASK_ANY_DEVICE_DISABLE              0x00000070
-#define MASK_ANY_SERVICE_DISABLE             0x00000011
+#define MASK_ANY_DISABLE                     0x0000007f
+#define MASK_ANY_POINT_DISABLE               0x0000000f
+#define MASK_ANY_DEVICE_DISABLE              0x00000078
+#define MASK_ANY_SERVICE_DISABLE             0x00000019
 #define MASK_ANY_ALARM_DISABLE               0x00000022
-#define MASK_ANY_CONTROL_DISABLE             0x00000044
+#define MASK_ANY_CONTROL_DISABLE             0x0000004c
 
 /***************************
 * point offsets for electronic metering
