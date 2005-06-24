@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/02/10 23:23:50 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/06/24 20:08:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.6  2005/06/24 20:08:47  dsutton
+      Added support for DSM2's function 2
+
       Revision 1.5  2005/02/10 23:23:50  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -274,13 +277,16 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                     {
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Translation for point " << translationName;
-                            dout << " from " << getFileName() << " was not found" << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Translation for point " << translationName;
+                                dout << " from " << getFileName() << " was not found" << endl;
+                            }
+                        
+                            desc = getFileName() + RWCString ("'s point ") + translationName + RWCString( " is not listed in the translation table");
+                            _snprintf(action,60,"%s", translationName);
+                            logEvent (desc,RWCString (action));
                         }
-                        desc = getFileName() + RWCString ("'s point ") + translationName + RWCString( " is not listed in the translation table");
-                        _snprintf(action,60,"%s", translationName);
-                        logEvent (desc,RWCString (action));
                     }
 
                     break;
@@ -306,6 +312,118 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                     linetimestamp=linetimestamp + " " + tempString1;
 
                     if (useSystemTime())
+                    {
+                        pointtimestamp=RWTime();
+                    }
+                    else
+                    {
+                        pointtimestamp = ForeignToYukonTime (linetimestamp);
+                        if (pointtimestamp == rwEpoch)
+                        {
+                            pointValidFlag = false;
+                        }
+                    }
+                    break;
+                }
+            default:
+                break;
+        }
+        fieldNumber++;
+    }
+
+    if (pointValidFlag)
+    {
+        retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
+    }
+    return retCode;
+}
+
+
+bool CtiFDR_Dsm2Filein::processFunctionTwo (RWCString &aLine, CtiMessage **aRetMsg)
+{
+	bool retCode = false;
+    bool pointValidFlag=true;
+    RWCString tempString1;                // Will receive each token
+    RWCTokenizer cmdLine(aLine);           // Tokenize the string a
+    CtiFDRPoint         point;
+    int fieldNumber=1,quality;
+    double value;
+    CHAR   action[60];
+    RWCString linetimestamp,translationName,desc,lookupName;
+    RWTime pointtimestamp;
+
+
+    /****************************
+    * function 1 is of the following format
+    * function,id,value,quality,timestamp,daylight savings flag
+    *****************************
+    */
+    while (!(tempString1 = cmdLine(",\r\n")).isNull() && pointValidFlag)
+    {
+        switch (fieldNumber)
+        {
+            case 1:
+                {
+                    // this the function number so we do nothing with this
+                    break;
+                }
+            case 2:
+                {
+                    // throw on the function header for the translation name
+                    translationName=tempString1 + ":";
+                    lookupName="2-----" + tempString1 + ":";
+                    break;
+                }
+            case 3:
+                {
+                    translationName+=tempString1;
+                    lookupName+=tempString1;
+
+                    // lock the list while we're returning the point
+                    {
+                        CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+                        pointValidFlag = findTranslationNameInList (lookupName, getReceiveFromList(), point);
+                    }
+
+                    if (pointValidFlag != true)
+                    {
+                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Translation for point " << translationName;
+                                dout << " from " << getFileName() << " was not found" << endl;
+                            }
+
+                            desc = getFileName() + RWCString ("'s point ") + translationName + RWCString( " is not listed in the translation table");
+                            _snprintf(action,60,"%s", translationName);
+                            logEvent (desc,RWCString (action));
+                        }
+                    }
+
+                    break;
+                }
+            case 4:
+                {
+                    value = atof(tempString1);
+                    break;
+                }
+            case 5:
+                {
+                    quality = ForeignToYukonQuality(tempString1);
+                    break;
+                }
+
+            case 6:
+                {
+                    linetimestamp=tempString1;
+                    break;
+                }
+            case 7:
+                {
+                    linetimestamp=linetimestamp + " " + tempString1;
+
+                    if (useSystemTime()) 
                     {
                         pointtimestamp=RWTime();
                     }
@@ -451,11 +569,12 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Status point " << aTranslationName;
-                    dout << " received an invalid state " << (int)aValue;
-                    dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
-
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Status point " << aTranslationName;
+                        dout << " received an invalid state " << (int)aValue;
+                        dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
+                    }
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);
@@ -501,9 +620,22 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (RWCString &aLine, CtiMessage **aR
                 retCode=processFunctionOne (aLine,aRetMsg);
                 break;
             }
-            default:
+            case 2:
+            {
+                /****************************
+                * function 2 is of the following format
+                * devicename,pointname,value,quality,timestamp,daylight savings flag
+                *****************************
+                */
+                retCode=processFunctionTwo (aLine,aRetMsg);
                 break;
-
+            }
+            default:
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Unknown function number from import file" << endl;
+                break;
+            }
         }
     }
 
@@ -694,7 +826,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                             tempString2 = nextTempToken(";");
                             tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
 
-                            // now we have a point id
+                            // this is the function number
                             if ( !tempString2.isNull() )
                             {
                                 translation_name = tempString2 + "-----";
@@ -702,6 +834,9 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 
                                 if (!(tempString1 = nextTranslate(";")).isNull())
                                 {
+                                    // now we have a point id
+                                    // this could be a unique id or a combination of device name and point name separated
+                                    // by a colon
                                     RWCTokenizer nextTempToken(tempString1);
 
                                     // do not care about the first part
@@ -709,10 +844,11 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 
                                     tempString2 = nextTempToken(";");
                                     tempString2(0,tempString2.length()) = tempString2 (1,(tempString2.length()-1));
-                                    if (!tempString2.isNull())
+                                    if (!tempString2.isNull()) 
                                     {
                                         translation_name+=tempString2;
                                         translationPoint->getDestinationList()[x].setTranslation (translation_name);
+                                        // we end up with a translation of function #-----id
                                         successful = true;
                                     }
 

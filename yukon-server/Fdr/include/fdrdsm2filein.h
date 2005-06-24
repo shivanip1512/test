@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrdsm2fileint.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2004/03/24 22:38:51 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/06/24 20:08:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrdsm2filein.h,v $
+      Revision 1.3  2005/06/24 20:08:47  dsutton
+      Added support for DSM2's function 2
+
       Revision 1.2  2004/03/24 22:38:51  dsutton
       Added a text file interface to FDR to allow Yukon users to import data formated
       for DSM2's filein format.  Revision 1.0
@@ -65,6 +68,7 @@ public:
     RWTime ForeignToYukonTime (RWCString aTime);
 
     bool processFunctionOne (RWCString &aLine, CtiMessage **aRetMsg);
+    bool processFunctionTwo (RWCString &aLine, CtiMessage **aRetMsg);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_Dsm2Filein &setDeleteFileAfterImport (bool aFlag);
