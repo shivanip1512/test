@@ -1,6 +1,6 @@
 #define JAVAVERSION "1.4.2_05"
 //As long as the JRE installer is in one of setup file directories, just put in the name.
-#define JDKINSTALLFILE "j2sdk-1_4_2_05-windows-i586-p.exe"
+#define JDKINSTALLFILE '"Java 2 SDK, SE v1.4.2_05.msi"'
 
 BOOL uninstallJavaFirst;
 BOOL installJava;
@@ -82,18 +82,19 @@ number dirSearch, foundVal, moveNext;
 BOOL bvCheckCont, bvCheckIg; 
 
 begin
-    szMsgWait = 'Yukon is installing JDK'+JAVAVERSION+'.  This may take awhile, depending on the speed of the system...';
+    szMsgWait = 'Yukon is installing Java SDK'+JAVAVERSION+'.  Depending on the speed of your system, this could take several minutes.';
     if(installJava) then
+    	ChangeDirectory(SUPPORTDIR);
     	SdShowMsg ( szMsgWait, TRUE );
     	if(uninstallJavaFirst) then
-    		szCmdLine = '/s /v/"qn /x /norestart"';
-    		LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
+    		szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn /norestart';
+    		LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     		Delay(5);
     	endif;
-    	
-    	szCmdLine = '/s /v/"qn INSTALLDIR='+TARGETDIR+'\\Runtime"';
-    	LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
+    	szCmdLine = '/I ' + JDKINSTALLFILE + ' /qn /norestart INSTALLDIR='+TARGETDIR+'\\Runtime';
+    	LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     	SdShowMsg ( szMsgWait, FALSE );
+    	ChangeDirectory(TARGETDIR);
  	endif;
 end;
 //---------------------------------------------------------------------------
@@ -107,15 +108,44 @@ function YukonRuntime_UnInstalling()
 string szMsgWait, szCmdLine;
 
 begin
-	szMsgWait = 'Yukon is uninstalling JDK'+JAVAVERSION+'.  This may take awhile, depending on the speed of the system...';
+	ChangeDirectory(SUPPORTDIR);
+	szMsgWait = 'Yukon is attempting to uninstall Java SDK'+JAVAVERSION+'.  Depending on the speed of your system, this could take several minutes.';
     SdShowMsg ( szMsgWait, TRUE );
-    szCmdLine = '/s /v/"qn /x /norestart"';
-    LaunchAppAndWait ( SUPPORTDIR ^ JDKINSTALLFILE, szCmdLine, WAIT );
-    Delay(5);
-    SdShowMsg ( szMsgWait, FALSE );
+    szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn /norestart';
+    LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
+    Delay(3);
+    SdShowMsg ( szMsgWait, FALSE ); 
+    ChangeDirectory(TARGETDIR);
 end;
 
+//-----------------------------------------------------------
+//This is to remove shortcuts that were placed on the system
+//by previous versions of the installer that are no longer
+//used or recognized.
+//-----------------------------------------------------------
+export prototype removeLegacyShortcuts();
+function removeLegacyShortcuts()
 
+string szShortPath, szShortPath2, szShortPath3, szShortPath4;
 
-
-
+begin
+	//XP
+	szShortPath = 'C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Yukon Clients\\*Reports.lnk';
+	szShortPath2 = 'C:\\Documents and Settings\\All Users\\Desktop\\Yukon Setup.url';
+	//Win2000
+	szShortPath3 = 'C:\\Documents and Settings\\All Users.WINNT\\Start Menu\\Programs\\Yukon Clients\\*Reports.lnk';
+	szShortPath4 = 'C:\\Documents and Settings\\All Users.WINNT\\Desktop\\Yukon Setup.url';
+	
+	/*LongPathToQuote(szShortPath, TRUE);
+	LongPathToQuote(szShortPath2, TRUE);
+	LongPathToQuote(szShortPath3, TRUE);
+	LongPathToQuote(szShortPath4, TRUE); */
+	
+	DeleteFile(szShortPath);
+    DeleteFile(szShortPath2);
+    DeleteFile(szShortPath3);
+    DeleteFile(szShortPath4);
+    
+    
+    
+end;

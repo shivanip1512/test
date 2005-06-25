@@ -84,6 +84,8 @@ begin
 
 Dlg_Start:
 
+	removeLegacyShortcuts();
+
 Dlg_SdWelcome:
     nResult = SdWelcome("", "");
     if (nResult = BACK) goto Dlg_Start;
@@ -99,30 +101,31 @@ RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
 
 Dlg_SetupType:
     
-szTargetPath = TARGETDIR;
-nvSize = 0;
-FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
-if (nvSize != 0) then
-  	MessageBox( szSdStr_NotEnoughSpace, WARNING );
-    goto Dlg_SetupType;
-endif;
+	szTargetPath = TARGETDIR;
+	nvSize = 0;
+	FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
+	if (nvSize != 0) then
+  		MessageBox( szSdStr_NotEnoughSpace, WARNING );
+    	goto Dlg_SetupType;
+	endif;
 
-//we don't bother with install types anymore, always go custom
-nSetupType = CUSTOM;
-svSetupType = "Custom Install";
+	//we don't bother with install types anymore, always go custom
+	nSetupType = CUSTOM;
+	svSetupType = "Custom Install";
+	//FeatureSetupTypeSet ( szFeatureSource, szSetupType ); 
 
-//set the system environment variable YUKON_BASE for the good of all
-szName2 = "YUKON_BASE";         
-szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
-//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
+    //set the system environment variable YUKON_BASE for the good of all
+	szName2 = "YUKON_BASE";         
+	szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , '"' + TARGETDIR + '"', -1 );
+	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
-//make sure that the system will be aware of the presence of the new Java path
-szEnv = "Environment";
-pEnv = &szEnv;
-SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv ); 
+	//make sure that the system will be aware of the presence of the new Java path
+	szEnv = "Environment";
+	pEnv = &szEnv;
+	SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv ); 
  
-RegDBSetDefaultRoot ( HKEY_CLASSES_ROOT );
+	RegDBSetDefaultRoot ( HKEY_CLASSES_ROOT );
 
 Dlg_SdComponentTree:
     if ((nResult = BACK) && (nSetupType != CUSTOM)) goto Dlg_SdAskDestPath;
@@ -130,11 +133,14 @@ Dlg_SdComponentTree:
     szMsg      = "";
     szTargetdir = TARGETDIR;
     szComponents = "";
-    nLevel = 2;
+    FeatureSelectItem(MEDIA, "Yukon Client\\ESubstation Editor", FALSE);
+    FeatureSelectItem(MEDIA, "Yukon Server\\Client Service Manager", FALSE);  
+   
+   	nLevel = 2;
     if (svSetupType = "Custom Install") then
             nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
             if (nResult = BACK) goto Dlg_SdAskDestPath;
-    endif;
+    endif; 
     
 HAPPYFUNTIME:
 	uninstallJavaFirst = FALSE;
@@ -237,6 +243,8 @@ begin
     // Enable( BACKGROUND );
 
 Dlg_Start:
+    removeLegacyShortcuts();
+    
     Disable(BACKBUTTON);
     nType = SdWelcomeMaint(szTitle, szMsg, REPAIR);
     Enable(BACKBUTTON);
@@ -304,7 +312,7 @@ Dlg_ObjDialogs:
     // setup default status
     SetStatusWindow(0, "");
     Enable(STATUSEX);
-    StatusUpdate(ON, 75);
+    StatusUpdate(ON, 100);
 end;
 
 

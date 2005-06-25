@@ -118,11 +118,11 @@ export prototype Tomcat_Installed();
 function Tomcat_Installed()
 STRING szCmdLine, szCmdLine2, szCmdLine3, szCmdLine4, szCmdLine5, szCmdLine6, szCmdLine7;
 string szCmdLine8, szCmdLine9, szCmdLine10, szCmdLine11, szCmdLine12, szCmdLine13;
-string szServPath, szPath, TomcatPath, JavaPath;
+string szServPath, szPath, TomcatPath, JavaPath, WarPath;
 string szAppPath, szName, szKey, szEnv, szTargetFile, szSrcFile;
 number nvResult, nvType, nvSize, foundVal, dirSearch;
 pointer pEnv;
-
+        
 begin
 
 TomcatPath = TARGETDIR ^ "\\Server\\web";
@@ -141,9 +141,10 @@ foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 
 //SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
 
 //unpack the war file
-foundVal = ChangeDirectory(TARGETDIR + "\\webapps\\yukon");
-szCmdLine = "-xfv " + TomcatPath + "\\webapps\\yukon\\yukon-web.war"  ;
-LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT );
+foundVal = ChangeDirectory(TomcatPath + "\\webapps\\yukon");
+WarPath = TomcatPath + '\\webapps\\yukon\\yukon-web.war';
+szCmdLine = '-xfv ' + WarPath;
+LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT | LAAW_OPTION_NO_CHANGEDIRECTORY);
 DeleteFile(TomcatPath + "\\webapps\\yukon\\yukon-web.war");
 
 //make sure that Tomcat will be aware of the presence of the new environment variables

@@ -68,7 +68,7 @@ END
 
 12032 DIALOGEX 0,0,460,305
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
-CAPTION "InstallShield Wizard" 
+CAPTION "Yukon Setup" 
 
 FONT 8,"MS Sans Serif",0,0,0x1
 BEGIN
@@ -116,6 +116,6 @@ END
 //
 // Icon
 //
-10002		ICON	"J:\\Installer backups\\June05\\IconId_10002.ico"
-10003		ICON	"J:\\Installer backups\\June05\\IconId_10003.ico"
-10004		ICON	"J:\\Installer backups\\June05\\IconId_10004.ico"
+10002		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10002.ico"
+10003		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10003.ico"
+10004		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10004.ico"

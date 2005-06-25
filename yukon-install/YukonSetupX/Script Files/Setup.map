@@ -643,7 +643,8 @@
 642  __ISRTUnInit                                       isrt.obl(ISRTInit.obs)
 643  __LoadIScriptString                                isrt.obl(LoadStr.obs)
 644  program                                            ifx.obl(EventsSetupPriv.obs)
-645  sfc.SRSetRestorePoint                              Setup.obs
+645  removeLegacyShortcuts                              Setup.obs
+646  sfc.SRSetRestorePoint                              Setup.obs
 
 
 ***** External Variables *****

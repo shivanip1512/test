@@ -128,7 +128,6 @@
 		<row><td>Tomcat</td><td>{1916AD56-3897-4C43-B9FB-855DDF10DD54}</td><td>WEB</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Trending</td><td>{80517A6D-166D-4D3F-AD25-9574C367F38F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Yukon Commander</td><td>{2AEBAB6E-C8E8-49DB-BCDA-2BC6A9A5675A}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Yukon Reports</td><td>{E1DF69F9-A7A4-4003-9326-491351EE5781}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Control">
@@ -274,35 +273,34 @@
 		<col def="S255">ISComments</col>
 		<col def="S255">ISFeatureCabName</col>
 		<col def="S255">ISProFeatureName</col>
-		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>LoadManagementService</td></row>
+		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td>##ID_STRING11##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>LoadManagementService</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING2##</td><td/><td>22</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Client Service Manager</td></row>
-		<row><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Cap Control Server</td><td/><td>10</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Cap Control</td></row>
+		<row><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Cap Control</td><td/><td>10</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Cap Control</td></row>
 		<row><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Foreign Data Router</td><td/><td>12</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Foreign Data Router</td></row>
-		<row><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Load Management Server</td><td/><td>16</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Load Management</td></row>
-		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>FDRService</td></row>
-		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CapControlService</td></row>
+		<row><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Load Management</td><td/><td>16</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Load Management</td></row>
+		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td>##ID_STRING13##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>FDRService</td></row>
+		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td>##ID_STRING14##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CapControlService</td></row>
 		<row><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Trending</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Trending</td></row>
 		<row><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Scanner</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Scanner</td></row>
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Calculation Server</td><td/><td>14</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Calculation Server</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td>Yukon Server</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Server</td></row>
-		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Metering and Control Server</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACS</td></row>
+		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>MACS</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACS</td></row>
 		<row><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Test Applications</td><td/><td>18</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Test Applications</td></row>
-		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Yukon Web</td><td/><td>20</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Web Server</td></row>
-		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>New NT Services 1</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>DispatchService</td></row>
+		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Web Server</td><td/><td>20</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Web Server</td></row>
+		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>##ID_STRING16##</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>DispatchService</td></row>
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Help Files</td><td>This component provides online help for all client applications</td><td>10</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Help Files</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td>##ID_STRING8##</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Runtime (Java)</td></row>
-		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACSService</td></row>
-		<row><td>{8CA8BF62-5976-4781-A942-1DF5B0FAFBFB}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##ID_STRING1##</td><td/><td>16</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Reports</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>New NT Services 1</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>PorterService</td></row>
-		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Porter Control Server</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Porter</td></row>
+		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>##ID_STRING15##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>MACSService</td></row>
+		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>##ID_STRING18##</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>PorterService</td></row>
+		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Porter</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Porter</td></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Message Dispatcher</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Dispatcher</td></row>
-		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>New NT Services 1</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CalculationService</td></row>
+		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>##ID_STRING12##</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>CalcService</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Database Editor</td><td/><td>8</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Database Editor</td></row>
-		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Yukon Commander</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
+		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Commander</td><td/><td>2</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>Yukon Client</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Alarm Monitor</td><td/><td>14</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
-		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>New NT Services 1</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ScannerService</td></row>
-		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Esubstation Editor</td><td/><td>12</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ESubstation Editor</td></row>
+		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td>##ID_STRING17##</td><td/><td>6</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ScannerService</td></row>
+		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>ESubstation Editor</td><td/><td>12</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>ESubstation Editor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Tabular Data Console</td><td/><td>4</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tabular Data Console</td></row>
 	</table>
 
@@ -340,7 +338,6 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Database Properties</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>Help</td></row>
-		<row><td>{8CA8BF62-5976-4781-A942-1DF5B0FAFBFB}</td><td>Yukon Reports</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Directories</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Dlls</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Initial Server Config</td></row>
@@ -734,7 +731,6 @@
 		<row><td>remotehostvalve.jsp</td><td>Tomcat</td><td>remoteHostValve.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\valve\remoteHostValve.jsp</td><td>1</td><td>NewSubFolder27</td></row>
 		<row><td>remotehostvalveform.class</td><td>Tomcat</td><td>RemoteHostValveForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\valve\RemoteHostValveForm.class</td><td>1</td><td>NewSubFolder46</td></row>
 		<row><td>report.jar</td><td>Common Bin</td><td>report.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\report.jar</td><td>1</td><td>NewSubFolder85</td></row>
-		<row><td>report.jar1</td><td>Yukon Reports</td><td>report.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\report.jar</td><td>1</td><td>NewSubFolder91</td></row>
 		<row><td>reportingicon.gif</td><td>Common Bin</td><td>ReportingIcon.gif</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.gif</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>reportingicon.ico</td><td>Common Bin</td><td>ReportingIcon.ico</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\ReportingIcon.ico</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>requestdumpervalve.jsp</td><td>Tomcat</td><td>requestDumperValve.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\valve\requestDumperValve.jsp</td><td>1</td><td>NewSubFolder27</td></row>
@@ -963,7 +959,6 @@
 		<row><td>Tomcat</td><td>0</td><td/><td>_ACE6A785_AC16_421A_B47E_17326DAEFEFB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Trending</td><td>0</td><td/><td>_50D94099_1A69_4897_A090_198AF9997FDF_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Yukon Commander</td><td>0</td><td/><td>_A03A7FEB_6DF3_44C0_BB54_F687122C9235_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Yukon Reports</td><td/><td/><td>_D1233436_EA53_409C_BA3F_CFC66EEA9430_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISComponentSubFolder">
@@ -1060,7 +1055,6 @@
 		<row><td>NewSubFolder89</td><td>Yukon Commander</td><td/><td>Bin</td></row>
 		<row><td>NewSubFolder9</td><td>Tomcat</td><td/><td>conf</td></row>
 		<row><td>NewSubFolder90</td><td>Tabular Data Console</td><td/><td>Bin</td></row>
-		<row><td>NewSubFolder91</td><td>Yukon Reports</td><td/><td>Bin</td></row>
 	</table>
 
 	<table name="ISDependency">
@@ -1114,9 +1108,8 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat_Installing</td><td>Tomcat_Installed</td><td>Tomcat_UnInstalling</td><td>Tomcat_UnInstalled</td><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk10:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
-		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>YukonRuntime_Installing</td><td>YukonRuntime_Installed</td><td>YukonRuntime_UnInstalling</td><td/><td/><td/><td/><td/><td>38</td><td/><td/><td/></row>
+		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>YukonRuntime_Installing</td><td>YukonRuntime_Installed</td><td>YukonRuntime_UnInstalling</td><td/><td/><td/><td/><td/><td>37</td><td/><td/><td/></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk10:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
-		<row><td>{8CA8BF62-5976-4781-A942-1DF5B0FAFBFB}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk10:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>36</td><td/><td/><td/></row>
@@ -1270,7 +1263,7 @@
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\loadmanagement.exe"</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>Description</td><td>""</td></row>
-		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DisplayName</td><td>"Yukon Load Management Service"</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DomainUserName</td><td>""</td></row>
@@ -1289,7 +1282,7 @@
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\fdr.exe"</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>Description</td><td>""</td></row>
-		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DisplayName</td><td>"Yukon Foreign Data Service"</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DomainUserName</td><td>""</td></row>
@@ -1308,7 +1301,7 @@
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\capcontrol.exe"</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>Description</td><td>""</td></row>
-		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DisplayName</td><td>"Yukon Cap Control Service"</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DomainUserName</td><td>""</td></row>
@@ -1327,7 +1320,7 @@
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\dispatch "</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>Description</td><td>""</td></row>
-		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DisplayName</td><td>"Yukon Dispatch Service"</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DomainUserName</td><td>""</td></row>
@@ -1346,7 +1339,7 @@
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\macs.exe"</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>Description</td><td>""</td></row>
-		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DisplayName</td><td>"Yukon MAC Scheduler Service"</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DomainUserName</td><td>""</td></row>
@@ -1365,7 +1358,7 @@
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\porter.exe"</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Description</td><td>""</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DisplayName</td><td>"Yukon Port Control Service"</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DomainUserName</td><td>""</td></row>
@@ -1384,7 +1377,7 @@
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\calc_logic.exe"</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>Description</td><td>""</td></row>
-		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DisplayName</td><td>"Yukon Calc-Logic Service"</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DomainUserName</td><td>""</td></row>
@@ -1403,7 +1396,7 @@
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>BinaryPathName</td><td>"&lt;TARGETDIR&gt;\\Server\\bin\\scanner"</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DEPENDENCIES</td><td>""</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>Description</td><td>""</td></row>
-		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DesiredAccess</td><td>48,Long</td></row>
+		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DesiredAccess</td><td>983088,Long</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>Desktop</td><td>0,Bool</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DisplayName</td><td>"Yukon Real-Time Scan Service"</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DomainUserName</td><td>""</td></row>
@@ -1543,7 +1536,6 @@
 		<col key="yes" def="s38">RequiredFeature</col>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
-		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{8CA8BF62-5976-4781-A942-1DF5B0FAFBFB}</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td></row>
 		<row><td>{0BD2D28A-4ECB-44C1-9DA4-A23A6FFEBE72}</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
@@ -1647,7 +1639,7 @@
 		<col def="S50">Language</col>
 		<col def="I2">Splash</col>
 		<col def="S0">Path</col>
-		<row><td>SetupFile1</td><td>j2sdk-1_4_2_05-windows-i586-p.exe</td><td/><td>0</td><td>0</td><td>&lt;PATH_TO_JDK_FILES&gt;\j2sdk-1_4_2_05-windows-i586-p.exe</td></row>
+		<row><td>SetupFile1</td><td>Java 2 SDK, SE v1.4.2_05.msi</td><td/><td>0</td><td>0</td><td>&lt;PATH_TO_JDK_FILES&gt;\Java 2 SDK, SE v1.4.2_05.msi</td></row>
 	</table>
 
 	<table name="ISSetupPrerequisites">
@@ -1668,34 +1660,6 @@
 	<table name="ISSetupTypeFeatures">
 		<col key="yes" def="s38">ISSetupType_</col>
 		<col key="yes" def="s38">Feature_</col>
-		<row><td>Cannon Custom Install</td><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td></row>
-		<row><td>Cannon Custom Install</td><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td></row>
-		<row><td>Cannon Custom Install</td><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td></row>
-		<row><td>Cannon Custom Install</td><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td></row>
-		<row><td>Cannon Custom Install</td><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td></row>
-		<row><td>Cannon Custom Install</td><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td></row>
-		<row><td>Cannon Custom Install</td><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td></row>
-		<row><td>Cannon Custom Install</td><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td></row>
-		<row><td>Cannon Custom Install</td><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td></row>
-		<row><td>Cannon Custom Install</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td></row>
-		<row><td>Cannon Custom Install</td><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td></row>
-		<row><td>Cannon Custom Install</td><td>{52095A08-45B8-4DDD-AF60-1CAEDAA000DA}</td></row>
-		<row><td>Cannon Custom Install</td><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td></row>
-		<row><td>Cannon Custom Install</td><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td></row>
-		<row><td>Cannon Custom Install</td><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td></row>
-		<row><td>Cannon Custom Install</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
-		<row><td>Cannon Custom Install</td><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td></row>
-		<row><td>Cannon Custom Install</td><td>{8CA8BF62-5976-4781-A942-1DF5B0FAFBFB}</td></row>
-		<row><td>Cannon Custom Install</td><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td></row>
-		<row><td>Cannon Custom Install</td><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td></row>
-		<row><td>Cannon Custom Install</td><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td></row>
-		<row><td>Cannon Custom Install</td><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td></row>
-		<row><td>Cannon Custom Install</td><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td></row>
-		<row><td>Cannon Custom Install</td><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td></row>
-		<row><td>Cannon Custom Install</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
-		<row><td>Cannon Custom Install</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
-		<row><td>Cannon Custom Install</td><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td></row>
-		<row><td>Cannon Custom Install</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
 	</table>
 
 	<table name="ISShortcutComponents">
@@ -1829,7 +1793,7 @@
 		<row><td>IDS__DialogId_12030_ControlId_701</td><td>1033</td><td>Current Settings:</td><td>0</td><td/><td>-761715725</td></row>
 		<row><td>IDS__DialogId_12030_ControlId_711</td><td>1033</td><td>Setup has enough information to start copying the program files.  If you want to review or change any settings, click Back.  If you are satisfied with the settings, click Next to begin copying files.</td><td>0</td><td/><td>-761715725</td></row>
 		<row><td>IDS__DialogId_12030_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>-761715725</td></row>
-		<row><td>IDS__DialogId_12032</td><td>1033</td><td>InstallShield Wizard</td><td>0</td><td/><td>-1986451762</td></row>
+		<row><td>IDS__DialogId_12032</td><td>1033</td><td>Yukon Setup</td><td>0</td><td/><td>857279154</td></row>
 		<row><td>IDS__DialogId_12032_ControlId_1</td><td>1033</td><td>Finish</td><td>0</td><td/><td>-1986451762</td></row>
 		<row><td>IDS__DialogId_12032_ControlId_12</td><td>1033</td><td>&lt; &amp;Back</td><td>0</td><td/><td>-1986451762</td></row>
 		<row><td>IDS__DialogId_12032_ControlId_1200</td><td>1033</td><td>@10550,10551;1;0;;0,128,128   </td><td>0</td><td/><td>-1986451762</td></row>
@@ -1838,6 +1802,20 @@
 		<row><td>IDS__DialogId_12032_ControlId_502</td><td>1033</td><td>Yes, I want to launch %p now.</td><td>0</td><td/><td>-1986451762</td></row>
 		<row><td>IDS__DialogId_12032_ControlId_711</td><td>1033</td><td>Setup has successfully installed Yukon.  Click Finish to exit the wizard.</td><td>0</td><td/><td>-1986425138</td></row>
 		<row><td>IDS__DialogId_12032_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>-1986451762</td></row>
+		<row><td>IDS__DialogId_12052</td><td>1033</td><td>InstallShield Wizard</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_1</td><td>1033</td><td>&amp;Next &gt;</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_1000</td><td>1033</td><td>Tree1</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_12</td><td>1033</td><td>&lt; &amp;Back</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_1200</td><td>1033</td><td>@10550,10551;1;0;;0,128,128</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_2</td><td>1033</td><td>C</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_50</td><td>1033</td><td>Select Features</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_51</td><td>1033</td><td>Select the features setup will install.</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_711</td><td>1033</td><td>Select the features you want to install, and deselect the features you do not want to install.</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_712</td><td>1033</td><td>Text</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_722</td><td>1033</td><td>%s of space required on the %s drive</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_723</td><td>1033</td><td>%s of space available on the %s drive</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>857337522</td></row>
+		<row><td>IDS__DialogId_12052_ControlId_Negative1_1</td><td>1033</td><td>Description</td><td>0</td><td/><td>857337522</td></row>
 		<row><td>IDS__DialogId_12053</td><td>1033</td><td>Yukon Setup</td><td>0</td><td/><td>-2003200946</td></row>
 		<row><td>IDS__DialogId_12053_ControlId_1</td><td>1033</td><td>&amp;Next &gt;</td><td>0</td><td/><td>1754905904</td></row>
 		<row><td>IDS__DialogId_12053_ControlId_12</td><td>1033</td><td>&lt; &amp;Back</td><td>0</td><td/><td>1754905904</td></row>
@@ -1863,7 +1841,15 @@
 		<row><td>IDS__NewDialog_ControlId_9</td><td>1033</td><td>Cancel</td><td>0</td><td/><td>278302730</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td>Yukon Reports</td><td>0</td><td/><td>1486479692</td></row>
 		<row><td>ID_STRING10</td><td>1033</td><td>Cannon Custom Install</td><td>0</td><td/><td>-1164367503</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>Yukon Service Manager</td><td>0</td><td/><td>1486428524</td></row>
+		<row><td>ID_STRING11</td><td>1033</td><td>LoadManagementService</td><td>0</td><td/><td>857292979</td></row>
+		<row><td>ID_STRING12</td><td>1033</td><td>CalcService</td><td>0</td><td/><td>857301171</td></row>
+		<row><td>ID_STRING13</td><td>1033</td><td>FDRService</td><td>0</td><td/><td>857309363</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>CapControlService</td><td>0</td><td/><td>857313459</td></row>
+		<row><td>ID_STRING15</td><td>1033</td><td>MACSService</td><td>0</td><td/><td>857325747</td></row>
+		<row><td>ID_STRING16</td><td>1033</td><td>DispatchService</td><td>0</td><td/><td>857329843</td></row>
+		<row><td>ID_STRING17</td><td>1033</td><td>ScannerService</td><td>0</td><td/><td>857333939</td></row>
+		<row><td>ID_STRING18</td><td>1033</td><td>PorterService</td><td>0</td><td/><td>857276627</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>Client Service Manager</td><td>0</td><td/><td>857287090</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td/><td>0</td><td/><td>1754871247</td></row>
@@ -2032,7 +2018,7 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>ProObjWizard</td><td>_stock_</td><td/></row>
 		<row><td>ProductCode</td><td>64356C2D-E7B6-4CD7-8F64-DD65A3F1C66C</td><td/></row>
 		<row><td>ProductName</td><td>Yukon Application Suite</td><td/></row>
-		<row><td>ProductVersion</td><td>3.2</td><td/></row>
+		<row><td>ProductVersion</td><td>3.1</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.1</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.2</td><td>Yes, I want to launch %p now.</td><td/></row>
