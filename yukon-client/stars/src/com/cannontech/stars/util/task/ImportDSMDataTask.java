@@ -266,15 +266,22 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 			importLog.println("Start time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
 			importLog.println();
 			
+			memberLogs = new HashMap();
+			memberLogs.put(new Integer(-1), new PrintWriter(new FileWriter(new File(importDir, "_NO_MEMBER.log"), true), true));
+			
 			if (resumeFile <= RESUME_FILE_COOP) {
 				progressMsg = "Converting member coops...";
-				importCoop();
+				importCoop(false);
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
 					throw new WebClientException();
 				}
+				else
+					importCoop(true);
 			}
+			else
+				importCoop(true);
 			
 			if (resumeFile <= RESUME_FILE_SUBSTATION) {
 				progressMsg = "Converting substations...";
@@ -776,7 +783,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	 * 3 test_primary_transmitter	char(8)
 	 * Primary key: coop_id
 	 */
-	private void importCoop() throws Exception {
+	private void importCoop(boolean logOnly) throws Exception {
 		File file = new File(importDir, "coop.out");
 		if (!file.exists()) {
 			errorMsg = "File \"coop.out\" not found!";
@@ -784,8 +791,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		}
 		
 		Hashtable coopMap = getCoopMap();
-		memberLogs = new HashMap();
-		
+				
 		File mapFile = new File(importDir, "_coop.map");
 		PrintWriter fw = null;
 		BufferedReader fr = null;
@@ -814,6 +820,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				importLog.println("Attempting to initialize log file for " + coopName);
 				memberLogs.put(coopID, new PrintWriter(new FileWriter(new File(importDir, "_member"+coopName +".log"), true), true));
 				
+				if(logOnly)
+				{
+					continue;
+					
+				}
+								
 				// Create operator groups
 				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 				String operGroupIDs = "";	// IDs of newly created groups
@@ -885,7 +897,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				coopMap.put( coopID, member.getEnergyCompanyID() );
 				fw.println( coopID + "," + member.getEnergyCompanyID() );
 				importLog.println("Also writing to log file for " + coopName);
-				((PrintWriter)memberLogs.get(coopID)).println(coopName + "was imported as a valid member coop.");
+				((PrintWriter)memberLogs.get(coopID)).println(coopName + " was imported as a valid member coop.");
 			}
 		}
 		finally {
@@ -1001,6 +1013,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		DecimalFormat acctNoFormat = new DecimalFormat("00000000");
 		long initAcctNo = getInitAccountNo();
 		
+		String customerError = null;
+		String changingError = null;
+		
 		try {
 			fw = new PrintWriter(new FileWriter(mapFile, true), true);
 			fr = new BufferedReader(new FileReader(file));
@@ -1043,18 +1058,29 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				Integer coopID = Integer.valueOf( fields[3].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
+				
+				/*
+				 * New member error logging: Account Number, Last Name, Mappage, MapSection, MapID, Errorlocation, Reason 
+				 */
+				String accountNo = (fields[10].trim().length() > 0)? fields[10].trim() : acctNoFormat.format(initAcctNo++);
+				
+				customerError = accountNo + "," + fields[5].trim() + "," + fields[0].trim() + "," + fields[1].trim() + "," + fields[2].trim() + "," + errorLocation;
+				changingError = ",invalid member coop id \"" + coopID + "\" account number \"" + accountNo + "\" has been ignored.";
+				
 				if (memberID == null) {
 					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", record ignored.");
+					((PrintWriter)memberLogs.get(new Integer(-1))).println(customerError + changingError);
 					continue;
 				}
 				
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
 				
-				String accountNo = (fields[10].trim().length() > 0)? fields[10].trim() : acctNoFormat.format(initAcctNo++);
-				if (member.searchAccountByAccountNo(accountNo) != null) {
+				//MAPID SNAFFU
+				changingError = ",Account number \"" + accountNo + "\" already exists but MapID may be different.";
+				if (member.searchAccountByAccountNo(accountNo) != null ) {
 					importLog.println(errorLocation + ": account number \"" + accountNo + "\" already exists, record ignored.");
 					importLog.println("member log write attempt...");
-					((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": account number \"" + accountNo + "\" already exists, record ignored.");
+					((PrintWriter)memberLogs.get(memberID)).println(customerError + changingError);
 					continue;
 				}
 				
@@ -1214,6 +1240,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				errorLocation = "\"receiver.out\" line #" + lineNo;
 				resumeLocation = "receiver.out " + lineNo;
+				String receiverError = null;
+				String changingError = null;
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -1225,19 +1253,28 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				Integer coopID = Integer.valueOf( fields[6].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
+				receiverError = fields[0].trim() + "," + fields[18].trim() +"--"+ fields[7].trim()+ "," + fields[3].trim()+ "," + fields[4].trim()+ "," + fields[5].trim() + "," + errorLocation;
+				changingError = ",invalid member coop id \"" + coopID + "\" receiver record was ignored.";
+				
 				if (memberID == null) {
 					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", receiver record ignored.");
+					((PrintWriter)memberLogs.get(new Integer(-1))).println(receiverError + changingError);
 					continue;
 				}
 				
+				/*
+				 * New member logging: serial number, receiver type + receiver model, mappage, mapsection, mapid, errorlocation, reason
+				 */
+				ReceiverType rt = new ReceiverType( fields[18].trim(), fields[7].trim(), fields[23].trim() );
+				changingError = ",Cannot find a matching device type for \"" + rt.toString() + "\" receiver record was ignored.";
+				
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( memberID.intValue() );
 				
-				ReceiverType rt = new ReceiverType( fields[18].trim(), fields[7].trim(), fields[23].trim() );
 				Integer deviceTypeID = (Integer) getReceiverTypeMap().get( rt );
 				if (deviceTypeID == null) {
 					importLog.println(errorLocation + ": cannot find a matching device type for \"" + rt.toString() + "\", receiver record ignored.");
 					importLog.println("member log write attempt...");
-					((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": cannot find a matching device type for \"" + rt.toString() + "\", receiver record ignored.");
+					((PrintWriter)memberLogs.get(memberID)).println(receiverError + changingError);
 					continue;
 				}
 				
@@ -1256,6 +1293,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				LiteStarsCustAccountInformation liteAcctInfo = null;
 				CustomerPK pk = new CustomerPK( fields[3].trim(), fields[4].trim(), fields[5].trim(), coopID.intValue() );
+				changingError = ",Unable to find customer account \"" + pk.toString() + "\" so added it to inventory not to an account.";
 				if (!(pk.mapid.equalsIgnoreCase("STOCK") || pk.mappage.equalsIgnoreCase("STOCK") || pk.mapsection.equalsIgnoreCase("STOCK"))) {
 					Integer acctID = (Integer) getCustomerMap().get(pk);
 					if (acctID != null)
@@ -1264,7 +1302,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					{
 						importLog.println(errorLocation + ": unable to find customer record for \"" + pk.toString() + "\", add receiver to the warehouse.");
 						importLog.println("member log write attempt...");
-						((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": unable to find customer record for \"" + pk.toString() + "\", add receiver to the warehouse.");
+						((PrintWriter)memberLogs.get(memberID)).println(receiverError + changingError);
 					}
 				}
 				
@@ -1545,6 +1583,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				errorLocation = "\"controlledload.out\" line #" + lineNo;
 				resumeLocation = "controlledload.out " + lineNo;
+				String controlledLoadError = null;
+				String changingError = null;
 				
 				if (isCanceled) {
 					status = STATUS_CANCELED;
@@ -1558,8 +1598,16 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				Integer coopID = Integer.valueOf( fields[5].trim() );
 				Integer memberID = (Integer) getCoopMap().get( coopID );
+				
+				/*
+				 * New member logging: serial number, Control type, mappage, mapsection, mapid, errorlocation, reason
+				 */
+				controlledLoadError = fields[0].trim() + "," + fields[16].trim() + "," + fields[2].trim()+ "," + fields[3].trim()+ "," + fields[4].trim() + "," + errorLocation;
+				changingError = ",invalid member coop id \"" + coopID + "\" load record was ignored.";
+								
 				if (memberID == null) {
 					importLog.println(errorLocation + ": invalid member coop id \"" + coopID + "\", load record ignored.");
+					((PrintWriter)memberLogs.get(new Integer(-1))).println(controlledLoadError + changingError);
 					continue;
 				}
 				
@@ -1567,10 +1615,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				
 				CustomerPK pk = new CustomerPK( fields[2].trim(), fields[3].trim(), fields[4].trim(), coopID.intValue() );
 				Integer acctID = (Integer) getCustomerMap().get(pk);
+				changingError = ",unable to find customer record \"" + pk + "\" so load record was ignored.";
 				if (acctID == null) {
 					importLog.println(errorLocation + ": unable to find customer record \"" + pk + "\", load record ignored.");
 					importLog.println("member log write attempt...");
-					((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": unable to find customer record \"" + pk + "\", load record ignored.");
+					((PrintWriter)memberLogs.get(memberID)).println(controlledLoadError + changingError);
 					continue;
 				}
 				
@@ -1705,11 +1754,12 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					
 					if (loadTypeInfo == null) {
 						String msg = "unknown load type \"" + fields[1].trim() + "\" under receiver \"" + fields[0].trim() + "\"";
+						changingError = "," +msg + " so load record was ignored.";
 						if (receiverInfo != null)
 							msg += ", code \"" + receiverInfo[1] + "\"";
-						importLog.println(errorLocation + ": " + msg + ", load record ignored.");
+						importLog.println(errorLocation + "," + msg + ", load record ignored.");
 						importLog.println("member log write attempt...");
-						((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": " + msg + ", load record ignored.");
+						((PrintWriter)memberLogs.get(memberID)).println(controlledLoadError + changingError);
 						continue;
 					}
 					
@@ -1734,9 +1784,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 							app.setLoadNumber( programInfo[1] );
 						}
 						else {
+							changingError = ": load type \"" + loadType + "\" doesn't match any function found for receiver code \"" + receiverInfo[1] + "\" so program enrollment was skipped.";
 							importLog.println(errorLocation + ": load type \"" + loadType + "\" doesn't match any function under code \"" + receiverInfo[1] + "\", program enrollment skipped.");
 							importLog.println("member log write attempt...");
-							((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": load type \"" + loadType + "\" doesn't match any function under code \"" + receiverInfo[1] + "\", program enrollment skipped.");
+							((PrintWriter)memberLogs.get(memberID)).println(controlledLoadError + changingError);
 						}
 					}
 					catch (WebClientException e) {
@@ -1744,9 +1795,10 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					}
 				}
 				else {
+					changingError = ",Unable to find receiver \"" + fields[0].trim() + "\" so program enrollment was skipped.";
 					importLog.println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
 					importLog.println("member log write attempt...");
-					((PrintWriter)memberLogs.get(memberID)).println(errorLocation + ": unable to find receiver \"" + fields[0].trim() + "\", program enrollment skipped.");
+					((PrintWriter)memberLogs.get(memberID)).println(controlledLoadError + changingError);
 				}
 				
 				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
