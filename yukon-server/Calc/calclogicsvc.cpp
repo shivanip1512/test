@@ -193,6 +193,7 @@ void CtiCalcLogicService::Run( )
             {
                 if( _conxion == NULL || (_conxion != NULL && _conxion->verifyConnection()) )
                 {
+                    _dispatchPingedFailed = RWTime(YUKONEOT);
                     if(_conxion) dropDispatchConnection();
 
                     _restart = false;                      // make sure our flag is reset
@@ -399,6 +400,7 @@ void CtiCalcLogicService::Run( )
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " Error in the connection to dispatch.  Will attempt to restart it. " << endl;
                                 }
+                                _dispatchPingedFailed = RWTime(YUKONEOT);
                                 break;
                             }
                             else if(rwnow > pingTime)
@@ -481,6 +483,7 @@ void CtiCalcLogicService::Run( )
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << __FILE__ << " (" << __LINE__ << ") Run()." << endl;
                 }
+                _dispatchPingedFailed = RWTime(YUKONEOT);
                 dropDispatchConnection();
                 calcThreadFunc.requestInterrupt( );
                 calcThreadFunc.releaseInterrupt( );
