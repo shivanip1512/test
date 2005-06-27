@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
 /**
@@ -315,7 +316,7 @@ private void initComboBoxes()
 	synchronized(cache)
 	{
 		java.util.List devices = cache.getAllYukonPAObjects();
-		java.util.Collections.sort(devices);
+		java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
 
 		int deviceID;
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
