@@ -54,17 +54,17 @@ public class NotifMap implements java.io.Serializable
 	/**
 	 * @return
 	 */
-	public void setSendOutboundCalls( boolean t )
+	public void setSendEmails( boolean t )
 	{
-		setChars( 1, (t ? 'Y' : 'N') );
+		setChars( 0, (t ? 'Y' : 'N') );
 	}
 
 	/**
 	 * @return
 	 */
-	public void setSendEmails( boolean t )
+	public void setSendOutboundCalls( boolean t )
 	{
-		setChars( 2, (t ? 'Y' : 'N') ); //TODO I Think this, and the above, are wrong should be 0 and 1
+		setChars( 1, (t ? 'Y' : 'N') );
 	}
 	
 	private void setChars( int indx, char theChar )
