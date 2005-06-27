@@ -13,6 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * @author: alauinger 
  */
 public final class EnergyCompanyFuncs {
+    // the following is a duplicate of StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID
+    public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 
 private EnergyCompanyFuncs() {
 	super();

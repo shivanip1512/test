@@ -21,7 +21,9 @@ public abstract class OutputHandler {
     }
     
     public void startup() {};
-    public void shutdown() {};
+    public void shutdown() {}
+
+    public abstract int getNotificationMethod();
     
     
 

@@ -39,12 +39,27 @@ public class LoadManagementMessageHandler extends NotifHandler {
         final String durationHoursStr = Long.toString(durationHours);
         final String remainingMinutesStr = Long.toString(remainingMinutes);
 
-        NotificationBuilder notifFormatter = new NotificationBuilder() {
+        final String actionString;
+        switch(msg.notifType) {
+        case NotifLMControlMsg.STARTING_CONTROL_NOTIFICATION:
+            actionString = "starting";
+            break;
+        case NotifLMControlMsg.ADJUSTING_CONTROL_NOTIFICATION:
+            actionString = "adjusting";
+            break;
+        case NotifLMControlMsg.FINISHING_CONTROL_NOTIFICATION:
+            actionString = "finishing";
+            break;
+        default:
+            actionString = "unknown";
+        }
+       NotificationBuilder notifFormatter = new NotificationBuilder() {
             public Notification buildNotification(Contactable contact) {
                 Notification notif = new Notification("loadmanagement");
                 
                 LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
-                notif.addAttribute("programname", liteYukonPAO.getPaoName());
+                notif.addData("programname", liteYukonPAO.getPaoName());
+                notif.addData("contactname", contact.toString());
 
                 _timeFormater.setTimeZone(contact.getTimeZone());
                 _dateFormater.setTimeZone(contact.getTimeZone());
@@ -57,6 +72,9 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.addData("durationminutes", durationMinutesStr);
                 notif.addData("durationhours", durationHoursStr);
                 notif.addData("remainingminutes", remainingMinutesStr);
+                
+                notif.addData("action", actionString);
+
 
                 return notif;
             }

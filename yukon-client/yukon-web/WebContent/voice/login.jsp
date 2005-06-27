@@ -6,27 +6,34 @@
 String contactid = request.getParameter("CONTACTID");
 
 String tries =request.getParameter("TRIES");
+if (tries == null) {
+  tries = "0";
+}
 
 String token = request.getParameter("TOKEN");
+
+String noConfirmUrl = "/voice/confirm.jsp?TOKEN=" + token;
 %>
  <form id="welcome">
 
-  <var name='TRIES' expr = "'<%=tries%>'"/>
+  <var name='TRIES' expr = "<%=tries%>"/>
   <var name='USERNAME' expr="'<%=contactid%>'"/>
+  <var name='ACTION' expr="'VOICELOGIN'"/>
   <var name='TOKEN' expr="'<%=token%>'"/>
   <var name='REDIRECT'/>
   <var name='INTRO'/>
 
   <block>
    <assign name="INTRO" expr="'Login failed'"/>
-   <if cond ="TRIES == 'null'">
-    <assign name="TRIES" expr="0"/>
+   <if cond ="TRIES == 0">
     <assign name="INTRO" expr="'An important message from you energy provider'"/>
    </if>
 
    <if cond ="TRIES == 3">
-    Your login attempts have exceeded the allotted amount of retries, goodbye <disconnect/>
-    </if> 
+    Your login attempts have exceeded the allotted amount of retries, goodbye 
+    <goto fetchint="safe" next="<%=noConfirmUrl%>"/>
+    <disconnect/>
+   </if> 
    </block>
    <block>
      <value expr="INTRO"/>
@@ -39,12 +46,12 @@ String token = request.getParameter("TOKEN");
      </field>
    <block>
    <assign name='TRIES' expr="TRIES + 1"/>
-   <assign name="REDIRECT" expr="'CONTACTID=' + USERNAME +'&amp;TOKEN=' + TOKEN + '&amp;TRIES=' + TRIES"/>
+   <assign name="REDIRECT" expr="'/voice/login.jsp?CONTACTID=' + USERNAME + '&amp;TOKEN=' + TOKEN + '&amp;TRIES=' + TRIES"/>
    
     
-  <filled namelist="TOKEN USERNAME PASSWORD REDIRECT">   
+  <filled namelist="TOKEN USERNAME ACTION PASSWORD REDIRECT">   
     
-     <submit next="/servlet/loginController" method="post" namelist="TOKEN USERNAME REDIRECT PASSWORD" fetchtimeout="300s" fetchhint="safe"/>	
+     <submit next="/servlet/LoginController" method="post" namelist="TOKEN USERNAME ACTION REDIRECT PASSWORD" fetchtimeout="300s" fetchhint="safe"/>	
        
   </filled>	   
 

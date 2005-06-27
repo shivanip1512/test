@@ -12,6 +12,9 @@ public class TestServer {
     /**
      * @param args
      */
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         
         NotificationServer serv = new NotificationServer();
@@ -26,11 +29,14 @@ public class TestServer {
             dateTimeInstance.setTimeZone(TimeZone.getTimeZone("US/Central"));
             msg.startTime = dateTimeInstance.parse("6/1/05 11:45 am");
             msg.stopTime = dateTimeInstance.parse("6/2/05 1:05 am");
-            int times = 3;
+            int times = 1;
             while (times-- > 0) {
                 serv.testInjectMessage(msg);
                 Thread.sleep(3000);
             }
+            
+            System.in.read();
+            
             serv.stop();
 
             

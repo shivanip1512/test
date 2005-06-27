@@ -7,6 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.GenericDBCacheHandler;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.handler.*;
 import com.cannontech.notif.outputs.*;
@@ -113,10 +114,13 @@ public class NotificationServer implements Runnable
 
         dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
         DefaultDatabaseCache.getInstance().addDBChangeListener(dbCacheHandler);
+        
+        ClientConnection dispatchConnection = ClientConnection.createDefaultConnection();
+        dispatchConnection.connectWithoutWait();
 
         _outputHelper = new OutputHandlerHelper();
         // create voice handler, add to output helper
-        VoiceHandler _voiceHandler = new VoiceHandler();
+        VoiceHandler _voiceHandler = new VoiceHandler(dispatchConnection);
         _outputHelper.addOutputHandler(_voiceHandler);
 
         // create email handler, add to output helper
@@ -176,11 +180,6 @@ public class NotificationServer implements Runnable
 	public boolean isRunning()
 	{
 		return server != null;
-	}
-
-	private long getConnsMade()
-	{
-		return connsMade;
 	}
 
 	/** 

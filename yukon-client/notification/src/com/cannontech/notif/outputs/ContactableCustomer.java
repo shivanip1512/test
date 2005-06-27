@@ -1,0 +1,41 @@
+package com.cannontech.notif.outputs;
+
+import java.util.*;
+
+import com.cannontech.database.cache.functions.CustomerFuncs;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
+
+public class ContactableCustomer extends ContactableBase {
+    private List _contactList = new LinkedList();
+    private final LiteCustomer _liteCustomer;
+    
+    /**
+     * Create a Contactable object from a CustomerNotifGroupMap.
+     * @param customer
+     */
+    public ContactableCustomer(LiteCustomer customer) {
+        _liteCustomer = customer;
+        List contacts = CustomerFuncs.getAllContacts(customer.getCustomerID());
+        for (Iterator iter = contacts.iterator(); iter.hasNext();) {
+            LiteContact contact = (LiteContact) iter.next();
+            _contactList.add(new ContactableContact(contact));
+        }        
+    }
+    
+    public List getNotifications(Set notifTypes) {
+        List result = new LinkedList();
+        for (Iterator iter = _contactList.iterator(); iter.hasNext();) {
+            ContactableBase contactable = (ContactableBase) iter.next();
+            result.addAll(contactable.getNotifications(notifTypes));
+        }
+        return result;
+    }
+
+
+    public LiteCustomer getContactableCustomer() {
+        return _liteCustomer;
+    }
+    
+
+}

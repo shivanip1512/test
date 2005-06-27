@@ -1,16 +1,18 @@
 package com.cannontech.notif.outputs;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.jdom.Document;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.notification.NotifMap;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.notif.voice.*;
-import com.cannontech.notif.voice.CallPool.UnknownCallTokenException;
 import com.cannontech.notif.voice.callstates.Confirmed;
 import com.cannontech.notif.voice.callstates.Unconfirmed;
-import com.cannontech.roles.ivr.OutboundCallingRole;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
 
 /**
  * @author rneuharth
@@ -21,27 +23,16 @@ import com.cannontech.roles.yukon.VoiceServerRole;
 public class VoiceHandler extends OutputHandler
 {
     private NotificationQueue _queue;
-    private CallPool _callPool;
     private boolean _acceptNewNotifications = false;
     private NotificationTransformer _transformer;
+    private final SystemLogHelper _systemLogHelper;
     
-    public VoiceHandler() {
-        super(Contactable.VOICE);
+    public VoiceHandler(ClientConnection dispatchConnection) {
+        super("voice");
+        _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_NOTIFCATION, dispatchConnection);
+                
+        _queue = new NotificationQueue();
         
-        String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceApp = RoleFuncs.getGlobalPropertyValue(VoiceServerRole.VOICE_APP);
-        VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.CALL_PREFIX));
-        dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
-        
-        int callTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.NUMBER_OF_CHANNELS));
-        _callPool = new CallPool(dialer, numberOfChannels, callTimeout);
-        
-        _queue = new NotificationQueue(_callPool);
-        
-        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.TEMPLATE_ROOT);
-        _transformer = new NotificationTransformer(xslRootDirectory, getType());
     }
     
     public void handleNotification(NotificationBuilder notifBuilder, Contactable contact) {
@@ -55,10 +46,29 @@ public class VoiceHandler extends OutputHandler
         try {
             Notification notif = notifBuilder.buildNotification(contact);
             
+            _transformer = new NotificationTransformer(contact.getEnergyCompany(), getType());
             Document voiceXml = _transformer.transform(notif);
             
             SingleNotification singleNotification = 
                 new SingleNotification(contact, voiceXml);
+            
+            // Add a listener to do system logging.
+            singleNotification.addPropertyChangeListener(new PropertyChangeListener() {
+               public void propertyChange(PropertyChangeEvent evt) {
+                   String newState = (String) evt.getNewValue();
+                   if (newState.equals(SingleNotification.STATE_COMPLETE)) {
+                       _systemLogHelper.log(this + "was succesfull", 
+                                            "description");
+
+                   } else if (newState.equals(SingleNotification.STATE_FAILED)) {
+                       _systemLogHelper.log(this + "was not succesfull", 
+                                            "description");
+
+                   }
+                } 
+            });
+            
+            // Add the notification to the queue.
             _queue.add(singleNotification);
             
         } catch (Exception e) {
@@ -71,27 +81,18 @@ public class VoiceHandler extends OutputHandler
     }
 
     public void shutdown() {
-        try {
-            // First, stop accepting new notifications. 
-            _acceptNewNotifications  = false;
+        // First, stop accepting new notifications. 
+        _acceptNewNotifications  = false;
+        
+        // Finally, shutdown the call pool. This call will block until
+        // all calls have completed.
+        _queue.shutdown();
             
-            // Finally, shutdown the call pool. This call will block until
-            // all calls have completed.
-            _callPool.shutdown();
-            
-
-        } catch (InterruptedException e) {
-            CTILogger.warn("Got interrupted while trying to shutdown.", e);
-        }
     }
     
-    public CallPool getCallPool() {
-        return _callPool;
-    }
-
     public void completeCall(String token, boolean gotConfirmation) {
         try {
-            Call call = _callPool.getCall(token);
+            Call call = _queue.getCall(token);
             if (gotConfirmation) {
                 call.changeState(new Confirmed());
             } else {
@@ -103,8 +104,12 @@ public class VoiceHandler extends OutputHandler
     }
 
     public Document getCallData(String token) throws UnknownCallTokenException {
-        Call call = _callPool.getCall(token);
+        Call call = _queue.getCall(token);
         return (Document)call.getMessage();
+    }
+
+    public int getNotificationMethod() {
+        return NotifMap.METHOD_VOICE;
     }
     
 }

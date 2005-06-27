@@ -2,12 +2,14 @@ package com.cannontech.notif.voice;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
+import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
-import com.cannontech.notif.outputs.Callable;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.ContactPhone;
+import com.cannontech.notif.outputs.Contactable;
 import com.cannontech.notif.voice.callstates.*;
 
 /**
@@ -20,23 +22,33 @@ public class SingleNotification implements PropertyChangeListener {
     public static final String STATE_FAILED = "failed";
     public static final String NOTIFICATION_STATE = "state";
     
+    public static final Set VOICE_NOTIFICATION_TYPES = new HashSet(3);
+    static {
+        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE));
+        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+    }
+    
 	PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
 	String _state = STATE_READY;
 	private Iterator _phoneIterator;
 	private Object _message;
-    private Callable _customer;
+    private Contactable _contactable;
+    private Call _nextCall;
 	
-	public SingleNotification(Callable customer, Object message) {
-		_customer = customer;
-        _phoneIterator = customer.getContactPhoneNumberList().iterator();
+	public SingleNotification(Contactable contactable, Object message) {
+		_contactable = contactable;
+        _phoneIterator = contactable.getNotifications(VOICE_NOTIFICATION_TYPES).iterator();
 		_message = message;
 	}
 	
 	public Call createNewCall() {
-		ContactPhone contactPhone = (ContactPhone)_phoneIterator.next();
-		Call nextCall = new Call(contactPhone, _message);
-		nextCall.addPropertyChangeListener(this);
-		return nextCall;
+        LiteContactNotification contactNotif = (LiteContactNotification)_phoneIterator.next();
+        PhoneNumber phoneNumber = new PhoneNumber(contactNotif.getNotification());
+        ContactPhone contactPhone = new ContactPhone(phoneNumber, contactNotif.getContactID());
+		_nextCall = new Call(contactPhone, _message);
+        _nextCall.addPropertyChangeListener(this);
+		return _nextCall;
 	}
 	
     public void propertyChange(PropertyChangeEvent evt) {
@@ -89,7 +101,7 @@ public class SingleNotification implements PropertyChangeListener {
 		String oldState = assignState(state);
         if (!oldState.equals(state)) {
     		_listeners.firePropertyChange(NOTIFICATION_STATE, oldState, state);
-            CTILogger.info("Notification '" + this + "' changing from " + oldState + " to " + state);
+            CTILogger.info("'" + this + "' changing from " + oldState + " to " + state);
         }
         return oldState;
 	}
@@ -97,7 +109,16 @@ public class SingleNotification implements PropertyChangeListener {
     public Object getMessage() {
         return _message;
     }
+    
     public String toString() {
-        return "Message " + getMessage() + " for " + _customer;
+        return "Notification for " + _contactable;
+    }
+    
+    public Call getLastCall() {
+        return _nextCall;
+    }
+
+    public Contactable getContactable() {
+        return _contactable;
     }
 }

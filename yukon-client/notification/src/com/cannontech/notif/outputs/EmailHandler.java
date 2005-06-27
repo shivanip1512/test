@@ -1,16 +1,15 @@
 package com.cannontech.notif.outputs;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.mail.MessagingException;
 
 import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
-import com.cannontech.roles.ivr.OutboundCallingRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.notification.NotifMap;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
 
@@ -20,23 +19,25 @@ import com.cannontech.tools.email.SimpleEmailMessage;
 public class EmailHandler extends OutputHandler
 {
 
-    private NotificationTransformer _transformer;
+    public static final Set EMAIL_NOTIFICATION_TYPES = new HashSet(1);
+    
+    static {
+        EMAIL_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL));
+    }
 
     public EmailHandler() {
-        super(Contactable.EMAIL);
-        
-        String xslRootDirectory = RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.TEMPLATE_ROOT);
-        _transformer = new NotificationTransformer(xslRootDirectory, getType());
+        super("email");
     }
     
     public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
-        try
-        {
-            List emailList = contact.getEmailList();
+        try {
+            List emailList = contact.getNotifications(EMAIL_NOTIFICATION_TYPES);
             
             Notification notif = notifFormatter.buildNotification(contact);
             
-            Element outXml = _transformer.transform(notif).getRootElement();
+            NotificationTransformer transformer = 
+                new NotificationTransformer(contact.getEnergyCompany(), getType());
+            Element outXml = transformer.transform(notif).getRootElement();
             
             String emailSubject = outXml.getChildTextNormalize("subject");
             String emailBody = outXml.getChildText("body");
@@ -46,23 +47,26 @@ public class EmailHandler extends OutputHandler
             emailMsg.setBody(emailBody);
             
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
-                String emailTo = (String) iter.next();
+                LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
+                String emailTo = emailNotif.getNotification();
                 // Send the recipient of the email message and attempt to send.
                 // The try/catch here prevents a single bad address from preventing
                 // other addresses in the contact from being used.
                 try {
                     emailMsg.setRecipient(emailTo);
-                    emailMsg.send(); //TODO uncomment
+                    emailMsg.send();
                 } catch (MessagingException e) {
                     CTILogger.warn("Unable to email notification " + notif + " to address " + emailTo + ".", e);
                 }
             }
             
-        }
-        catch( Exception e )
-        {
+        } catch( Exception e ) {
             CTILogger.error("Unable to email notification " + notifFormatter + " to " + contact + ".", e );
         }
+    }
+
+    public int getNotificationMethod() {
+        return NotifMap.METHOD_EMAIL;
     }
     
 }

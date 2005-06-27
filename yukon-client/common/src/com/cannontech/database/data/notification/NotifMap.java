@@ -15,6 +15,8 @@ public class NotifMap implements java.io.Serializable
 	// [0]:send email, [1]:make phone call
 	private String attribs = DEF_ATTRIBS;
 	public static final String DEF_ATTRIBS = "YNNNNNNNNNNNNNNN";
+    public static final int METHOD_EMAIL = 0;
+    public static final int METHOD_VOICE = 1;
 
 
 	public NotifMap( int id )
@@ -28,13 +30,17 @@ public class NotifMap implements java.io.Serializable
 		this( id );
 		setAttribs( attribs );
 	}
+    
+    public boolean supportsMethod(int notificationMethod) {
+        return getAttribs().charAt(notificationMethod) == 'Y';
+    }
 
 	/**
 	 * @return
 	 */
 	public boolean isSendEmails()
 	{
-		return getAttribs().charAt(0) == 'Y';
+		return supportsMethod(METHOD_EMAIL);
 	}
 
 	/**
@@ -42,7 +48,7 @@ public class NotifMap implements java.io.Serializable
 	 */
 	public boolean isSendOutboundCalls()
 	{
-		return getAttribs().charAt(1) == 'Y';
+		return supportsMethod(METHOD_VOICE);
 	}
 
 	/**
@@ -58,7 +64,7 @@ public class NotifMap implements java.io.Serializable
 	 */
 	public void setSendEmails( boolean t )
 	{
-		setChars( 2, (t ? 'Y' : 'N') );
+		setChars( 2, (t ? 'Y' : 'N') ); //TODO I Think this, and the above, are wrong should be 0 and 1
 	}
 	
 	private void setChars( int indx, char theChar )

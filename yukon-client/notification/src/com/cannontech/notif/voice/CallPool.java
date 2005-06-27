@@ -119,14 +119,18 @@ public class CallPool implements PropertyChangeListener {
         }
     }
 
-    public void shutdown() throws InterruptedException {
+    public void shutdown() {
         _shutdown  = true;
         
         _threadPool.shutdown();
         
         // The voice server API doesn't respond to interrupts, so there
         // really isn't any way to force an in-progress call to terminate
-        _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT, TimeUnit.SECONDS);
+        try {
+            _threadPool.awaitTermination(MAX_SHUTDOWN_WAIT, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // ignore
+        }
         if (!_threadPool.isTerminated()) {
             CTILogger.error("Unable to cleanly shutdown notification call pool. Forcing shutdown.");
             _threadPool.shutdownNow();
@@ -140,12 +144,6 @@ public class CallPool implements PropertyChangeListener {
             Call pendingCall = (Call) iter.next();
             pendingCall.removePropertyChangeListener(this);
             pendingCall.changeState(new Unconfirmed("Server shutdown"));
-        }
-    }
-    
-    public class UnknownCallTokenException extends Exception {
-        public UnknownCallTokenException(String token) {
-            super("Unable to retreive call for token " + token);
         }
     }
 }

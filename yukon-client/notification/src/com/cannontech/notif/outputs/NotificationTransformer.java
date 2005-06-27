@@ -7,6 +7,12 @@ import org.jdom.Document;
 import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.ivr.OutboundCallingRole;
+
 
 /**
  * This class is responsible for transforming the XML Document stored within
@@ -17,17 +23,23 @@ import org.jdom.transform.XSLTransformer;
  * Where rootDirectory is specified when the class is constructed and should 
  * specify the root of a URL and end with a slash. For instance, to point to
  * a file on the local file system:
- *    file://
+ *    file:/C:/eclipse-workspace/notification/sample_templates/
  */
 public class NotificationTransformer {
-    /**
-     * This shall contain Notification -> Document mapping.
-     */
     private final String _rootDirectory;
     private String _outputType;
 
     public NotificationTransformer(String rootDirectory, String outputType) {
         _rootDirectory = rootDirectory;
+        _outputType = outputType;
+    }
+    
+    public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
+        LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
+        _rootDirectory = AuthFuncs.getRolePropertyValue(user, OutboundCallingRole.TEMPLATE_ROOT);
+        if (_rootDirectory == null) {
+            throw new TransformException("Could not get template_root Role Property for " + energyCompany);
+        }
         _outputType = outputType;
     }
     
