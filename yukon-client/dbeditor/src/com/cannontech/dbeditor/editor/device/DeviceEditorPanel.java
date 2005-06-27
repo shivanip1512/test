@@ -44,7 +44,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,
-         PAOGroups.CBC_7010
+         PAOGroups.CBC_7010, PAOGroups.CBC_7020
      	 },
 	  	{	//3 - Series5SettingsEditorPanel
 		  PAOGroups.SERIES_5_LMI

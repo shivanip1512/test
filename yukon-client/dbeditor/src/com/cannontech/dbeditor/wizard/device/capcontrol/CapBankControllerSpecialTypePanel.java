@@ -93,7 +93,7 @@ public class CapBankControllerSpecialTypePanel extends DataInputPanel {
 		if(jRadioButton7020 == null) {
 			jRadioButton7020 = new javax.swing.JRadioButton();
 			jRadioButton7020.setText("CBC 7020");
-			jRadioButton7020.setEnabled(false);
+			jRadioButton7020.setEnabled(true);
 			
 			getButtonGroup().add(jRadioButton7020);
 		}
@@ -157,9 +157,9 @@ public class CapBankControllerSpecialTypePanel extends DataInputPanel {
 	{
 		if( getJRadioButton7010().isSelected() )
 			return com.cannontech.database.data.pao.DeviceTypes.CBC_7010;
-		/*else if( getJRadioButtonCBC7000Series().isSelected() )
-			return com.cannontech.database.data.pao.PAOGroups.CBC_7000SERIES;
-		if( getJRadioButtonExpresscomCBC().isSelected() )
+		else if( getJRadioButton7020().isSelected() )
+			return com.cannontech.database.data.pao.PAOGroups.CBC_7020;
+		/*if( getJRadioButtonExpresscomCBC().isSelected() )
 			return com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM;*/
 		else //oops! slacker!!!
 			return com.cannontech.database.data.pao.PAOGroups.INVALID;

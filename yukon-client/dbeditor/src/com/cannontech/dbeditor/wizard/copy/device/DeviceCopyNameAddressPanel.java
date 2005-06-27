@@ -16,6 +16,7 @@ import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
+import com.cannontech.database.data.capcontrol.CapBankController7020;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.common.gui.util.DataInputPanel;
  
@@ -1006,7 +1007,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
        {
          	getPhysicalAddressLabel().setText(
             (val instanceof CapBankController ? "Serial Number:"
-             : (val instanceof CapBankController6510 ? "Master Address:" : "Address:")) );
+             : ((val instanceof CapBankController6510 || 
+             	val instanceof CapBankController7020)? "Master Address:" : "Address:")) );
    
          getAddressTextField().setText( 
             ((ICapBankController)val).copiableAddress().toString() );            

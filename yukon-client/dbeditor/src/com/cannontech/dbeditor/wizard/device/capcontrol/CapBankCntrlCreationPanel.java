@@ -260,6 +260,8 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
    	  	newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
 	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]))
 	   	newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
+	else if( getJComboBoxCBCType().getSelectedItem().toString().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7020[0]))
+		newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7020);
 	
 	//store the SerialNumber
    	Integer serialNumber = new Integer(getJTextFieldCBCAddress().getText());
@@ -497,7 +499,7 @@ private javax.swing.JComboBox getJComboBoxCBCType() {
 			ivjJComboBoxCBCType.setMaximumSize(new java.awt.Dimension(202,23));
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
-			//ivjJComboBoxCBCType.addItem( "7020" );
+			ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7020[0]);
 			//ivjJComboBoxCBCType.addItem( "7025" );
 			//ivjJComboBoxCBCType.addItem( "7030" );
          	ivjJComboBoxCBCType.addItem( com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
@@ -914,7 +916,9 @@ private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
       return;
       
    boolean isDNP = getJComboBoxCBCType().getSelectedItem().toString().equals(
-         com.cannontech.database.data.pao.DeviceTypes.STRING_DNP_CBC_6510[0] );
+         	com.cannontech.database.data.pao.DeviceTypes.STRING_DNP_CBC_6510[0] )
+         || getJComboBoxCBCType().getSelectedItem().toString().equals(
+         	com.cannontech.database.data.pao.DeviceTypes.STRING_CBC_7020[0] );
    
    getJLabelCBCRoute().setText(
          isDNP 
@@ -942,7 +946,7 @@ private void jComboBoxCBCType_ActionPerformed( java.awt.event.ActionEvent e)
    }
    
    is7000Series = getJComboBoxCBCType().getSelectedItem().toString().equals(
-		 com.cannontech.database.data.pao.DeviceTypes.STRING_CBC_7010[0] );
+		 com.cannontech.database.data.pao.DeviceTypes.STRING_CBC_7010[0] ) ;
 		 
 	fireInputUpdate();
 

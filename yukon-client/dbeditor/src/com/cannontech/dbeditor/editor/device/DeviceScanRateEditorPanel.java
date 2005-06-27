@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
+import com.cannontech.database.data.capcontrol.CapBankController7020;
 import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -1574,6 +1575,7 @@ public Object getValue(Object device)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
+            || (val instanceof CapBankController7020)
             || (val instanceof DNPBase)
             || (val instanceof Series5Base) )
 	{
@@ -2090,6 +2092,7 @@ public void setValue(Object val)
 				|| (val instanceof MCTBase) 
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
+            || (val instanceof CapBankController7020)
             || (val instanceof DNPBase)
             || (val instanceof Series5Base) )
 	{

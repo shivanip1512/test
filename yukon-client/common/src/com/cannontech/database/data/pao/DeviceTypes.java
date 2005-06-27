@@ -101,9 +101,10 @@ public interface DeviceTypes extends TypeBase
 	public final static int MCT410CL	 			= DEVICE_OFFSET + 81;
 	
 	public final static int CBC_7010				= DEVICE_OFFSET + 82;
+	public final static int CBC_7020				= DEVICE_OFFSET + 83;
 	
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 82;
+	public final static int DEVICE_TYPES_COUNT = 83;
 	
 
 	//all the possible text representation of each device type.
@@ -191,5 +192,5 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SENTINEL = {"SENTINEL"};
 	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
 	public static final String[] STRING_CBC_7010 = {"CBC 7010"};
-		
+	public static final String[] STRING_CBC_7020 = {"CBC 7020"};	
 }

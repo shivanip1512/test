@@ -78,24 +78,27 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
    {
       cbcType = newCbcType;
       
-      getJTextFieldPostCommWait().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
-      getJLabelMillis().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
-      getJLabelPostCommWait().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
-      getJTextFieldSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
-      getJLabelSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 );
+      getJTextFieldPostCommWait().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 || cbcType == DeviceTypes.CBC_7020 );
+      getJLabelMillis().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 || cbcType == DeviceTypes.CBC_7020);
+      getJLabelPostCommWait().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 || cbcType == DeviceTypes.CBC_7020);
+      getJTextFieldSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 || cbcType == DeviceTypes.CBC_7020);
+      getJLabelSlaveAddress().setVisible( cbcType == DeviceTypes.DNP_CBC_6510 || cbcType == DeviceTypes.CBC_7020);
       
       getSerialNumberTextField().setName(
-         (cbcType == DeviceTypes.DNP_CBC_6510)
+         (cbcType == DeviceTypes.DNP_CBC_6510
+         	|| cbcType == DeviceTypes.CBC_7020)
          ? "Master Address"
          : "Serial Number" );
          
       getSerialNumberLabel().setText(
-         (cbcType == DeviceTypes.DNP_CBC_6510)
+         (cbcType == DeviceTypes.DNP_CBC_6510
+         	|| cbcType == DeviceTypes.CBC_7020)
          ? "Master Address:"
          : "Serial Number:" );            
 
       getCommunicationRouteLabel().setText(
-         (cbcType == DeviceTypes.DNP_CBC_6510)
+         (cbcType == DeviceTypes.DNP_CBC_6510
+         	|| cbcType == DeviceTypes.CBC_7020)
          ? "Communication Channel:"
          : "Communication Route:" );
 
@@ -105,7 +108,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
       synchronized(cache)
       {         
          java.util.List list = 
-            (cbcType == DeviceTypes.DNP_CBC_6510)
+            (cbcType == DeviceTypes.DNP_CBC_6510
+            	|| cbcType == DeviceTypes.CBC_7020)
             ? cache.getAllPorts()
             : cache.getAllRoutes();
          
@@ -930,7 +934,9 @@ public com.cannontech.database.data.device.DeviceBase createNewCBC(
 	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM )
 		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
 	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_7010 )
-		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);
+		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7010);	
+	else if( getCbcType() == com.cannontech.database.data.pao.PAOGroups.CBC_7020 )
+		capBankController = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_7020);
    	else
     	throw new IllegalStateException("CBC type of: " + getCbcType() + " not found");
 
@@ -991,7 +997,8 @@ public Object getValue(Object val)
       //be sure our serial number or our master address is unique
       //checkCBCSerialNumbers( serialNumber.intValue() );
 
-		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController6510 )
+		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController6510 
+			|| capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController7020)
 	   {
 	      
 	      Integer slave = 
@@ -1006,11 +1013,21 @@ public Object getValue(Object val)
 	            ? new Integer(0)
 	            : new Integer(getJTextFieldPostCommWait().getText());
 	
-	      com.cannontech.database.data.capcontrol.CapBankController6510 tempController 
-	            = (com.cannontech.database.data.capcontrol.CapBankController6510)capBankController;
-	
-	      tempController.getDeviceAddress().setSlaveAddress( slave );
-	      tempController.getDeviceAddress().setPostCommWait( postWait );
+	      if(capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController6510)
+	      {
+			 com.cannontech.database.data.capcontrol.CapBankController6510 tempController = (com.cannontech.database.data.capcontrol.CapBankController6510)capBankController;
+	      
+			 tempController.getDeviceAddress().setSlaveAddress( slave );
+			 tempController.getDeviceAddress().setPostCommWait( postWait );
+	      }
+		  else
+		  {
+			 com.cannontech.database.data.capcontrol.CapBankController7020 tempController = (com.cannontech.database.data.capcontrol.CapBankController7020)capBankController;	
+		  
+			 tempController.getDeviceAddress().setSlaveAddress( slave );
+			 tempController.getDeviceAddress().setPostCommWait( postWait );
+		  }
+		  
 	   }
    }   
    else
@@ -1204,6 +1221,15 @@ public void setValue(Object val)
 	      getJTextFieldSlaveAddress().setText( tempController.getDeviceAddress().getSlaveAddress().toString() );
 	      getJTextFieldPostCommWait().setText( tempController.getDeviceAddress().getPostCommWait().toString() );	      
 	   }
+		if( capBankController instanceof com.cannontech.database.data.capcontrol.CapBankController7020 )
+		{      
+	   		com.cannontech.database.data.capcontrol.CapBankController7020 tempController 
+			 	= (com.cannontech.database.data.capcontrol.CapBankController7020)capBankController;
+	
+	   		getSerialNumberTextField().setText( tempController.getDeviceAddress().getMasterAddress().toString() );
+	   		getJTextFieldSlaveAddress().setText( tempController.getDeviceAddress().getSlaveAddress().toString() );
+	   		getJTextFieldPostCommWait().setText( tempController.getDeviceAddress().getPostCommWait().toString() );	      
+		}
    }
    else
       throw new IllegalStateException("CBC class of: " + capBankController.getClass().getName() + " not found");

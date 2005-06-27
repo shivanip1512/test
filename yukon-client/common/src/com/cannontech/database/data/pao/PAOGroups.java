@@ -279,6 +279,8 @@ public final static int getDeviceType(String typeString)
 	   return ALPHA_A3;
 	else if (isStringDevice(compareString, STRING_CBC_7010))
 		return CBC_7010;
+	else if (isStringDevice(compareString, STRING_CBC_7020))
+		return CBC_7020;
    	else
 	  return INVALID;
 }
@@ -511,6 +513,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_CBC_EXPRESSCOM[0];
 		case CBC_7010:
 			return STRING_CBC_7010[0];
+		case CBC_7020:
+			return STRING_CBC_7020[0];
  	  	default:
 		  	return STRING_INVALID;
 	}
