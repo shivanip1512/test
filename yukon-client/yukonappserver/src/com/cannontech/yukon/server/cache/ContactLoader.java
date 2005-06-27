@@ -84,7 +84,7 @@ public class ContactLoader implements Runnable
 				"where cn.ContactNotifID > " + CtiUtilities.NONE_ZERO_ID + " " +
 				"order by cn.ContactID";
 			
-			Vector vectVals = new Vector(8);
+			Vector contNotifs = new Vector(8);
 			rset = stmt.executeQuery(sqlString);
 
 			while( rset.next() )
@@ -96,32 +96,20 @@ public class ContactLoader implements Runnable
 						rset.getString(4),
 						rset.getString(5) );
 
-				vectVals.add( ln);
+				contNotifs.add( ln);
 			}
 			
 			
 			//assign our ContactNotifications to their owner Contact
-			for( int i = 0; i < allContacts.size(); i++ )
+			for( int i = 0; i < contNotifs.size(); i++ )
 			{
-				LiteContact lc = (LiteContact)allContacts.get(i);
-				boolean found = false; //tries to make this loop fast
-				
-				for( int j = 0; j < vectVals.size(); j++ )
-				{
-					LiteContactNotification ltCntNotif 
-							= (LiteContactNotification)vectVals.get(j);
+				LiteContactNotification ltCntNotif 
+						= (LiteContactNotification)contNotifs.get(i);
 
-					if( ltCntNotif.getContactID() == lc.getContactID() )
-					{
-						lc.getLiteContactNotifications().add(
-							ltCntNotif );
-						
-						found = true;
-					}
-					else if( found )  //speed it up!
-						break;
-				}
-				
+				LiteContact lc =
+					(LiteContact)allContactsMap.get( new Integer(ltCntNotif.getContactID()) );
+
+				lc.getLiteContactNotifications().add( ltCntNotif );
 			}			
 			
 		}
