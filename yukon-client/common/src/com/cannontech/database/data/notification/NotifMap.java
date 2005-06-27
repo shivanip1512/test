@@ -56,7 +56,7 @@ public class NotifMap implements java.io.Serializable
 	 */
 	public void setSendEmails( boolean t )
 	{
-		setChars( 0, (t ? 'Y' : 'N') );
+		setChars( METHOD_EMAIL, (t ? 'Y' : 'N') );
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class NotifMap implements java.io.Serializable
 	 */
 	public void setSendOutboundCalls( boolean t )
 	{
-		setChars( 1, (t ? 'Y' : 'N') );
+		setChars( METHOD_VOICE, (t ? 'Y' : 'N') );
 	}
 	
 	private void setChars( int indx, char theChar )
