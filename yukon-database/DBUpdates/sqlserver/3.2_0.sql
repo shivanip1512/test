@@ -182,12 +182,12 @@ go
 
 insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
 insert into YukonRoleProperty values(-80000,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonRoleProperty values(-80001,-800,'Template Root','','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonRoleProperty values(-80001,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
 go
 
 update YukonGroupRole set roleid = -800 where rolepropertyid = -1400;
 update YukonRoleProperty set roleid = -800 where rolepropertyid = -1400;
-insert into YukonRoleProperty values(-1403,-5,'Call Prefix','','Any number or numbers that must be dialed before a call can be placed.');
+insert into YukonRoleProperty values(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
 go
 
 
