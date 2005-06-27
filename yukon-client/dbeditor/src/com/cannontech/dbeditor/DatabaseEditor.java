@@ -1,60 +1,43 @@
 package com.cannontech.dbeditor;
 
-/**
- * This type was created in VisualAge.
- */
-import javax.swing.*;
-import com.cannontech.dbeditor.menu.*;
-import com.cannontech.dbeditor.offsets.PointOffsetLegend;
-import com.cannontech.common.wizard.*;
-import com.cannontech.database.model.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.net.URL;
 import java.util.Vector;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.PopupMenuEvent;
+
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.common.gui.util.MessagePanel;
-import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.gui.util.SplashWindow;
+import com.cannontech.common.gui.util.*;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.FileMessageLog;
-import com.cannontech.common.util.MessageEvent;
-import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.common.util.*;
+import com.cannontech.common.wizard.WizardPanel;
+import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.model.*;
 import com.cannontech.dbeditor.defines.CommonDefines;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutes;
 import com.cannontech.dbeditor.editor.defaults.DefaultRoutesDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateDialog;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
+import com.cannontech.dbeditor.menu.*;
+import com.cannontech.dbeditor.offsets.PointOffsetLegend;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChngTypesPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
-import com.cannontech.debug.gui.*;
+import com.cannontech.debug.gui.AboutDialog;
+import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.application.BillingRole;
-import com.cannontech.roles.application.DBEditorRole;
-import com.cannontech.roles.application.TDCRole;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.common.util.ClientRights;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-
-import java.awt.Dimension;
+import com.cannontech.roles.application.*;
 
 public class DatabaseEditor
 	implements
@@ -1537,50 +1520,20 @@ public com.cannontech.message.util.ClientConnection getClientConnection()
 	return getConnToDispatch();
 }
 /**
- * Insert the method's description here.
- * Creation date: (12/20/2001 1:46:57 PM)
  * @return com.cannontech.message.dispatch.ClientConnection
  */
 private com.cannontech.message.dispatch.ClientConnection getConnToDispatch() 
 {
 	if( connToDispatch == null )
 	{
-		String host = "127.0.0.1";
-		int port = 1510;
-		try
-		{
-         host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-
-			port = Integer.parseInt(
-						RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
-		}
-		catch( Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
-		connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName("DatabaseEditor @" + CtiUtilities.getUserName() );
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
-
+        connToDispatch = ClientConnection.createDefaultConnection("DatabaseEditor @" + CtiUtilities.getUserName());
 		connToDispatch.addObserver(this);
-		connToDispatch.setHost(host);
-		connToDispatch.setPort(port);
-		connToDispatch.setAutoReconnect(true);
-		connToDispatch.setRegistrationMsg(reg);
 		
-		try 
-      {
+		try {
 			connToDispatch.connectWithoutWait();
+		} catch( Exception e ) {
+			// connectWithoutWait won't actually throw an exception
 		}
-		catch( Exception e ) 
-      {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
 	}
 
 	return connToDispatch;
