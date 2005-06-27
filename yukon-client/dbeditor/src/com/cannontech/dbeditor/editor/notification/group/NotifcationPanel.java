@@ -3,14 +3,13 @@ package com.cannontech.dbeditor.editor.notification.group;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.event.TreeSelectionEvent;
+import javax.swing.JCheckBox;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -19,7 +18,6 @@ import javax.swing.tree.TreeSelectionModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.gui.table.CTITableRenderer;
 import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
@@ -40,26 +38,23 @@ import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifMap;
 import com.cannontech.database.data.notification.NotificationGroup;
+import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.dbeditor.editor.user.LiteBaseNode;
 
 
-public class NotifcationPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.TreeSelectionListener, ActionListener {
+public class NotifcationPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener {
 	private javax.swing.JTree ivjJTreeNotifis = null;
 	private javax.swing.JScrollPane ivjJScrollJTree = null;
-	private javax.swing.JPanel ivjJPanelProperties = null;
-	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
-	private javax.swing.JTable ivjJTableProperties = null;
 	private NotifcationAddressTableModel notifTableModel = null;
 	private CheckNodeSelectionListener nodeListener = null;
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JCheckBox ivjJCheckBoxPhoneCall = null;
 
-	private final DummyTreeNode customersNode = new DummyTreeNode("Customers");
-	private final DummyTreeNode contactsNode = new DummyTreeNode("Contacts");
-	private final DummyTreeNode emailNode = new DummyTreeNode("Individual Email");
-	private final DummyTreeNode phoneNode = new DummyTreeNode("Individual Phone");
-
+	private final DummyTreeNode unassignContactsNode = new DummyTreeNode("Unassigned Contacts");
+	
+	private javax.swing.JSplitPane jSplitPane = null;
+	private javax.swing.JCheckBox jCheckBoxEmails = null;
 
 /**
  * Constructor
@@ -72,32 +67,42 @@ public NotifcationPanel() {
 
 public void actionPerformed(ActionEvent e)
 {
-	if( e.getSource() == getJCheckBoxPhoneCall() )
-	{
-		doCheckBoxAction( e );
+	if( e.getSource() == getJCheckBoxPhoneCall() ) {
+		doCheckBoxAction( getJCheckBoxPhoneCall() );
 	}
+
+	if( e.getSource() == getJCheckBoxEmails() ) {
+		doCheckBoxAction( getJCheckBoxEmails() );
+	}
+
 
 }
 
-private void doCheckBoxAction(ActionEvent arg1)
+private void doCheckBoxAction( JCheckBox checkBox )
 {
 	int selRow = getJTreeNotifs().getMaxSelectionRow();
-	if(selRow != -1) 
+	if(selRow != -1)
 	{
 		TreeNode node = 
 			(TreeNode)getJTreeNotifs().getPathForRow( selRow ).getLastPathComponent();
 
+		//create a dummy notifmap to use the attribs logic only 
+		NotifMap nm = new NotifMap(-1);
+
 		if( node instanceof LiteBaseNode )
 		{
+			if( checkBox == getJCheckBoxPhoneCall() ) {	
+				nm.setSendOutboundCalls( checkBox.isSelected() );				
+			}
+			else if( checkBox == getJCheckBoxEmails() ) {
+				nm.setSendEmails( checkBox.isSelected() );				
+			}
+
+
 			//set our attribs inside the user string of the Tree node
 			LiteBaseNode lbNode = (LiteBaseNode)node;
-
-			//create a dummy notifmap to use the attribs logic only 
-			NotifMap nm = new NotifMap(-1);
-			nm.setSendOutboundCalls( getJCheckBoxPhoneCall().isSelected() );
 			lbNode.setUserValue( nm.getAttribs() );
 		}
-
 
 		fireInputUpdate();              
 	}
@@ -108,27 +113,31 @@ private void doCheckBoxAction(ActionEvent arg1)
  * Returns all the LiteContactNotifcations for the given list of LiteContact objects
  *
  */
-private void addContactNotifs( List contacts )
-{
-	if( contacts == null ) return;
-
-	boolean hasPhone = false;
-	for( int i = 0; i < contacts.size(); i++)
-	{
-		LiteContact lc = (LiteContact)contacts.get(i);
-		for( int j = 0; j < lc.getLiteContactNotifications().size(); j++ )
-		{
-			LiteContactNotification lcn = (LiteContactNotification)lc.getLiteContactNotifications().get(j);			
-			getJTableNotifTableModel().addRow( lcn );
-
-			hasPhone |= YukonListFuncs.isPhoneNumber( lcn.getNotificationCategoryID() );
-		}
-		
-	}
-
-	//if there is a phone number in this list of contacts, make the check box enabled
-	getJCheckBoxPhoneCall().setEnabled( hasPhone );	
-}
+//private void addContactNotifs( List contacts )
+//{
+//	if( contacts == null ) return;
+//
+//	boolean hasPhone = false;
+//	for( int i = 0; i < contacts.size(); i++)
+//	{
+//		LiteContact lc = (LiteContact)contacts.get(i);
+//		for( int j = 0; j < lc.getLiteContactNotifications().size(); j++ )
+//		{
+//			LiteContactNotification lcn = (LiteContactNotification)lc.getLiteContactNotifications().get(j);			
+//			if( YukonListFuncs.isPhoneNumber(lcn.getNotificationCategoryID())
+//				|| YukonListFuncs.isEmail(lcn.getNotificationCategoryID()) )
+//			{
+//				getJTableNotifTableModel().addRow( lcn );
+//	
+//				hasPhone |= YukonListFuncs.isPhoneNumber( lcn.getNotificationCategoryID() );
+//			}
+//		}
+//		
+//	}
+//
+//	//if there is a phone number in this list of contacts, make the check box enabled
+//	getJCheckBoxPhoneCall().setEnabled( hasPhone );
+//}
 
 
 /**
@@ -224,7 +233,7 @@ private javax.swing.JCheckBox getJCheckBoxPhoneCall() {
 		try {
 			ivjJCheckBoxPhoneCall = new javax.swing.JCheckBox();
 			ivjJCheckBoxPhoneCall.setName("JCheckBoxPhoneCall");
-			ivjJCheckBoxPhoneCall.setToolTipText("Should the phone numbers below be called or not");
+			ivjJCheckBoxPhoneCall.setToolTipText("Should the phone numbers in this group be called or not");
 			ivjJCheckBoxPhoneCall.setText("Make Phone Calls");
 			// user code begin {1}
 			
@@ -256,10 +265,9 @@ private javax.swing.JPanel getJPanelLoginDescription() {
 			ivjJPanelLoginDescription = new javax.swing.JPanel();
 			ivjJPanelLoginDescription.setName("JPanelLoginDescription");
 			ivjJPanelLoginDescription.setBorder(ivjLocalBorder);
-			ivjJPanelLoginDescription.setLayout(getJPanelLoginDescriptionBoxLayout());
-			getJPanelLoginDescription().add(getJCheckBoxPhoneCall(), getJCheckBoxPhoneCall().getName());
-			// user code begin {1}
-			// user code end
+			ivjJPanelLoginDescription.setLayout(new javax.swing.BoxLayout(ivjJPanelLoginDescription, javax.swing.BoxLayout.Y_AXIS));
+			ivjJPanelLoginDescription.add(getJCheckBoxEmails(), null);
+			ivjJPanelLoginDescription.add(getJCheckBoxPhoneCall(), null);
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -267,53 +275,6 @@ private javax.swing.JPanel getJPanelLoginDescription() {
 		}
 	}
 	return ivjJPanelLoginDescription;
-}
-
-/**
- * Return the JPanelLoginDescriptionBoxLayout property value.
- * @return javax.swing.BoxLayout
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.BoxLayout getJPanelLoginDescriptionBoxLayout() {
-	javax.swing.BoxLayout ivjJPanelLoginDescriptionBoxLayout = null;
-	try {
-		/* Create part */
-		ivjJPanelLoginDescriptionBoxLayout = new javax.swing.BoxLayout(getJPanelLoginDescription(), javax.swing.BoxLayout.Y_AXIS);
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	};
-	return ivjJPanelLoginDescriptionBoxLayout;
-}
-
-
-/**
- * Return the JPanelValue property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getJPanelProperties() {
-	if (ivjJPanelProperties == null) {
-		try {
-			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
-			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
-			ivjLocalBorder1.setTitleFont(new java.awt.Font("Arial", 1, 14));
-			ivjLocalBorder1.setTitle("Notifications");
-			ivjJPanelProperties = new javax.swing.JPanel();
-			ivjJPanelProperties.setName("JPanelProperties");
-			ivjJPanelProperties.setBorder(ivjLocalBorder1);
-			ivjJPanelProperties.setLayout(new java.awt.BorderLayout());
-			ivjJPanelProperties.setFont(new java.awt.Font("dialog", 0, 12));
-			getJPanelProperties().add(getJScrollPaneTable(), "Center");
-			// user code begin {1}
-
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJPanelProperties;
 }
 
 /**
@@ -328,7 +289,6 @@ private javax.swing.JScrollPane getJScrollJTree() {
 			ivjJScrollJTree.setName("JScrollJTree");
 			getJScrollJTree().setViewportView(getJTreeNotifs());
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -336,31 +296,6 @@ private javax.swing.JScrollPane getJScrollJTree() {
 		}
 	}
 	return ivjJScrollJTree;
-}
-
-
-/**
- * Return the JScrollPane1 property value.
- * @return javax.swing.JScrollPane
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JScrollPane getJScrollPaneTable() {
-	if (ivjJScrollPaneTable == null) {
-		try {
-			ivjJScrollPaneTable = new javax.swing.JScrollPane();
-			ivjJScrollPaneTable.setName("JScrollPaneTable");
-			ivjJScrollPaneTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			ivjJScrollPaneTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			getJScrollPaneTable().setViewportView(getJTableProperties());
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJScrollPaneTable;
 }
 
 
@@ -372,57 +307,6 @@ private NotifcationAddressTableModel getJTableNotifTableModel()
 	return notifTableModel;
 }
 
-
-/**
- * Return the ScrollPaneTable1 property value.
- * @return javax.swing.JTable
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTable getJTableProperties() {
-	if (ivjJTableProperties == null) {
-		try {
-			ivjJTableProperties = new javax.swing.JTable();
-			ivjJTableProperties.setName("JTableProperties");
-			getJScrollPaneTable().setColumnHeaderView(ivjJTableProperties.getTableHeader());
-			getJScrollPaneTable().getViewport().setBackingStoreEnabled(true);
-			ivjJTableProperties.setAutoResizeMode(0);
-			ivjJTableProperties.setPreferredSize(new java.awt.Dimension(115, 168));
-			ivjJTableProperties.setBounds(0, 0, 132, 269);
-			// user code begin {1}
-
-			//do this to force the table to layout completely in the ScrollPane
-			//  VAJ puts the above setting on automatically
-			ivjJTableProperties.setPreferredSize( null );
-
-
-
-			ivjJTableProperties.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_NEXT_COLUMN);
-			ivjJTableProperties.setOpaque(false);
-			ivjJTableProperties.setShowVerticalLines(false);
-			ivjJTableProperties.setShowHorizontalLines(false);
-			
-			ivjJTableProperties.setIntercellSpacing(new java.awt.Dimension(0,0));
-			ivjJTableProperties.setRowHeight( (int)(ivjJTableProperties.getFont().getSize() * 1.75) );
-			
-			ivjJTableProperties.setGridColor( getJTableProperties().getTableHeader().getBackground() );
-			ivjJTableProperties.setBackground( getJTableProperties().getTableHeader().getBackground() );
-			ivjJTableProperties.createDefaultColumnsFromModel();
-
-			
-			ivjJTableProperties.setModel( getJTableNotifTableModel() );
-			ivjJTableProperties.setDefaultRenderer(
-					Object.class, new CTITableRenderer() );
-              
-                          
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJTableProperties;
-}
 
 /**
  * This method was created in VisualAge.
@@ -448,79 +332,66 @@ private javax.swing.JTree getJTreeNotifs() {
 			// user code begin {1}
 			
 			DummyTreeNode root = 
-				new DummyTreeNode("Notifications");
+				new DummyTreeNode("CI Customers");
 
 			ivjJTreeNotifis.setModel( new CTITreeModel(root) );			
 			ivjJTreeNotifis.setCellRenderer( new CheckRenderer() );
 			ivjJTreeNotifis.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 
+			//disable double click expansion of each tree node
+			ivjJTreeNotifis.setToggleClickCount(-1);
+
 
 			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			
 			synchronized( cache )
 			{
-				root.add( customersNode ); root.add( contactsNode );
-				root.add( emailNode ); root.add( phoneNode );
-
-
 				List customers = cache.getAllCICustomers();
 				Collections.sort( customers, LiteComparators.liteStringComparator );
 				for( int i = 0; i < customers.size(); i++ )
 				{
-					LiteCICustomer lcust = (LiteCICustomer)customers.get(i);
-					LiteBaseNode lbNode = new LiteBaseNode( lcust );
-					lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
-					
-					customersNode.add( lbNode );	
+					LiteCICustomer lCust = (LiteCICustomer)customers.get(i);
+					LiteBaseNode custNode = new LiteBaseNode( lCust );
+					custNode.setUserValue( NotifMap.DEF_ATTRIBS );
+					root.add( custNode );
+
+
+					List tempConts = CustomerFuncs.getAllContacts(lCust.getCustomerID());
+					if( tempConts != null )
+					{
+						Collections.sort( tempConts, LiteComparators.liteStringComparator );
+						for( int j = 0; j < tempConts.size(); j++ )
+						{
+							LiteContact lcont = (LiteContact)tempConts.get(j);
+							LiteBaseNode contNode = new LiteBaseNode( lcont );
+							contNode.setUserValue( NotifMap.DEF_ATTRIBS );
+
+							custNode.add( contNode );
+							
+							addContactNotifsToTree( lcont, contNode );
+						}		
+					}
+
 				}
 
-
-				List contacts = cache.getAllContacts();
-				Collections.sort( contacts, LiteComparators.liteStringComparator );
-				for( int i = 0; i < contacts.size(); i++ )
+				int[] contIDs = Contact.getOrphanedContacts();
+				for( int i = 0; i < contIDs.length; i++ )
 				{
-					LiteContact lcont = (LiteContact)contacts.get(i);
+					LiteContact lcont = ContactFuncs.getContact( contIDs[i] );
 					LiteBaseNode lbNode = new LiteBaseNode( lcont );
 					lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
 					
-					contactsNode.add( lbNode );	
-				}
-
-
-				//add individual addresses
-				List cntctNotifs = ContactFuncs.getAllContactNotifications();
-				Collections.sort( cntctNotifs, LiteComparators.liteStringComparator );
-				for( int i = 0; i < cntctNotifs.size(); i++ )
-				{
-					LiteContactNotification lcn = (LiteContactNotification)cntctNotifs.get(i);
-					LiteBaseNode lbNode = new LiteBaseNode( lcn );
-					lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
+					unassignContactsNode.add( lbNode );
 					
-					if( YukonListFuncs.isEmail(lcn.getNotificationCategoryID()) )
-					{
-						emailNode.add( lbNode );
-					}
-					else if( YukonListFuncs.isPhoneNumber(lcn.getNotificationCategoryID()) )
-					{
-						phoneNode.add( lbNode );
-					}
-
+					addContactNotifsToTree( lcont, lbNode );
 				}
-
 				
 			}
-			
+
+			root.add( unassignContactsNode );
+
 			//expand the root
-			ivjJTreeNotifis.expandPath( new TreePath(root.getPath()) );
+			ivjJTreeNotifis.expandPath( new TreePath(root.getPath()) );			
 			ivjJTreeNotifis.addMouseListener( getNodeListener() );
-            
-            ivjJTreeNotifis.addMouseListener( new MouseAdapter()
-            {
-                public void mouseClicked(MouseEvent e)
-                {                	
-                    valueChanged( null );
-                }
-            });
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -532,11 +403,43 @@ private javax.swing.JTree getJTreeNotifs() {
 	return ivjJTreeNotifis;
 }
 
+/**
+ * Adds all the notifications to the JTree under the given parent
+ *
+ */
+private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
+{
+	if(contact == null || parent == null) return;
+
+	for( int j = 0; j < contact.getLiteContactNotifications().size(); j++ )
+	{
+		LiteContactNotification lcn = (LiteContactNotification)contact.getLiteContactNotifications().get(j);			
+		if( YukonListFuncs.isPhoneNumber(lcn.getNotificationCategoryID())
+			|| YukonListFuncs.isEmail(lcn.getNotificationCategoryID()) )
+		{
+			LiteBaseNode notifNode = new LiteBaseNode( lcn );
+			notifNode.setUserValue( NotifMap.DEF_ATTRIBS );
+
+			parent.add( notifNode );
+		}
+	}
+
+}
+
 
 private CheckNodeSelectionListener getNodeListener()
 {
 	if( nodeListener == null )
-		nodeListener = new CheckNodeSelectionListener( getJTreeNotifs() );
+		nodeListener = new CheckNodeSelectionListener( getJTreeNotifs() )
+		{
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked( e );
+				int row = getJTreeNotifs().getRowForLocation(e.getX(), e.getY());
+				
+				nodeSelectionChanged(
+					isCheckBoxSelected(e.getPoint(), getJTreeNotifs().getRowBounds(row)) );
+			}
+		};
 	
 	return nodeListener;
 }
@@ -552,7 +455,8 @@ public Object getValue(Object obj)
 	DefaultMutableTreeNode
 		root = (DefaultMutableTreeNode)getJTreeNotifs().getModel().getRoot();
 
-	List allNotifications = getJTreeModel().getAllLeafNodes( new TreePath(root) );
+	//get all the elements in this tree
+	Enumeration allNotifications = root.depthFirstEnumeration();
 
 	// store all of our selected entries in Lists so we can set them below
 	// on the NotifcationGroup
@@ -560,17 +464,15 @@ public Object getValue(Object obj)
 	Vector contVect = new Vector(32);
 	Vector custVect = new Vector(32);
 
-	for( int i = 0; i < allNotifications.size(); i++  )
+	while( allNotifications.hasMoreElements() )
 	{
-		if( allNotifications.get(i) instanceof LiteBaseNode
-			 && ((LiteBaseNode)allNotifications.get(i)).isSelected() )
+		Object next = allNotifications.nextElement();
+		if( next instanceof LiteBaseNode
+			 && ((LiteBaseNode)next).isSelected() )
 		{
 			//treeNode.getUserValue() is the attribs of the checkbox data
-			LiteBaseNode treeNode = 
-					(LiteBaseNode)allNotifications.get(i);
-
-			LiteBase notifElem = 
-				(LiteBase)treeNode.getUserObject();
+			LiteBaseNode treeNode = (LiteBaseNode)next;
+			LiteBase notifElem = (LiteBase)treeNode.getUserObject();
 
 			if( notifElem instanceof LiteContactNotification )
 			{
@@ -624,10 +526,8 @@ private void handleException(Throwable exception)
 
 private void initConnections()
 {
-	// add the TreeSelectionListener for the JTree
-	getJTreeNotifs().addTreeSelectionListener( this );
-	
 	getJCheckBoxPhoneCall().addActionListener( this );
+	getJCheckBoxEmails().addActionListener( this );
 
 }
 
@@ -642,49 +542,16 @@ private void initialize() {
 		// user code end
 		setName("UserRolePanel");
 		setToolTipText("");
-		setLayout(new java.awt.GridBagLayout());
+		setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.X_AXIS));
+		this.add(getJSplitPane(), null);
 		setSize(405, 364);
 
-		java.awt.GridBagConstraints constraintsJScrollJTree = new java.awt.GridBagConstraints();
-		constraintsJScrollJTree.gridx = 1; constraintsJScrollJTree.gridy = 1;
-constraintsJScrollJTree.gridheight = 2;
-		constraintsJScrollJTree.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJScrollJTree.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJScrollJTree.weightx = 1.0;
-		constraintsJScrollJTree.weighty = 1.0;
-		constraintsJScrollJTree.ipadx = 190;
-		constraintsJScrollJTree.ipady = 321;
-		constraintsJScrollJTree.insets = new java.awt.Insets(12, 4, 9, 1);
-		add(getJScrollJTree(), constraintsJScrollJTree);
-
-		java.awt.GridBagConstraints constraintsJPanelLoginDescription = new java.awt.GridBagConstraints();
-		constraintsJPanelLoginDescription.gridx = 2; constraintsJPanelLoginDescription.gridy = 1;
-		constraintsJPanelLoginDescription.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelLoginDescription.anchor = java.awt.GridBagConstraints.EAST;
-		constraintsJPanelLoginDescription.weightx = 1.0;
-		constraintsJPanelLoginDescription.weighty = 1.0;
-		constraintsJPanelLoginDescription.ipadx = 46;
-		constraintsJPanelLoginDescription.ipady = 56;
-		constraintsJPanelLoginDescription.insets = new java.awt.Insets(13, 2, 5, 4);
-		add(getJPanelLoginDescription(), constraintsJPanelLoginDescription);
-
-		java.awt.GridBagConstraints constraintsJPanelProperties = new java.awt.GridBagConstraints();
-		constraintsJPanelProperties.gridx = 2; constraintsJPanelProperties.gridy = 2;
-		constraintsJPanelProperties.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJPanelProperties.anchor = java.awt.GridBagConstraints.EAST;
-		constraintsJPanelProperties.weightx = 1.0;
-		constraintsJPanelProperties.weighty = 1.0;
-		constraintsJPanelProperties.ipadx = 150;
-		constraintsJPanelProperties.ipady = 178;
-		constraintsJPanelProperties.insets = new java.awt.Insets(5, 2, 7, 4);
-		add(getJPanelProperties(), constraintsJPanelProperties);
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
 
 	initConnections();
-	updateSelectionCountNodes();
 
 	// user code end
 }
@@ -729,29 +596,6 @@ public void setValue(Object o)
 
 	}
 
-	//add all the notifcations from each contact
-	for( int i = 0; i < notifGrp.getContactMap().length; i++ )
-	{
-		int contID = notifGrp.getContactMap()[i].getContactID();
-
-		//set the selected node
-		DefaultMutableTreeNode tnode = getJTreeModel().findNode(
-			new TreePath(getJTreeModel().getRoot()), ContactFuncs.getContact(contID) );
-
-		if( tnode != null )
-		{
-			LiteBaseNode lbNode = (LiteBaseNode)tnode;
-			lbNode.setSelected( true );
-			lbNode.setUserValue( notifGrp.getContactMap()[i].getAttribs() );
-
-			//validate our individual contact notifications
-			validateIndividualNotifs();
-//			LiteContact lc = ContactFuncs.getContact(contID);
-//			List contacts = new Vector(1);
-//			contacts.add( lc );
-//			validateIndividualNotifs( contacts, true );
-		}
-	}
 
 	//add all the notifcations from each customer
 	for( int i = 0; i < notifGrp.getCustomerMap().length; i++ )
@@ -768,71 +612,111 @@ public void setValue(Object o)
 			lbNode.setSelected( true );
 			lbNode.setUserValue( notifGrp.getCustomerMap()[i].getAttribs() );
 			
-			//validate our individual contact notifications
-			validateIndividualNotifs();;
-//			LiteCustomer lc = CustomerFuncs.getLiteCICustomer(custID);
-//			List contacts = CustomerFuncs.getAllContacts( lc.getCustomerID() );
-//			validateIndividualNotifs( contacts, true );			
+			setChildNodesEnabled( lbNode, lbNode.isSelected() );
 		}
 
 	}
 
-
-	getJTreeModel().reload();
-	updateSelectionCountNodes();
-}
-
-
-/**
- * Updates the text that shows the number of checked nodes under each parent
- *
- */
-private void updateSelectionCountNodes()
-{
-	DefaultMutableTreeNode root = (DefaultMutableTreeNode)getJTreeModel().getRoot();
-			
-	for( int i = 0; i < root.getChildCount(); i++ )
+	//add all the notifcations from each contact
+	for( int i = 0; i < notifGrp.getContactMap().length; i++ )
 	{
-		DefaultMutableTreeNode currParent= (DefaultMutableTreeNode)root.getChildAt(i);
+		int contID = notifGrp.getContactMap()[i].getContactID();
 
-		int selected = 0;
-		for( int j = 0; j < currParent.getChildCount(); j++ )
-			if( currParent.getChildAt(j) instanceof CheckNode )
-				if( ((CheckNode)currParent.getChildAt(j)).isSelected() )
-					selected++;
-			
+		//set the selected node
+		DefaultMutableTreeNode tnode = getJTreeModel().findNode(
+			new TreePath(getJTreeModel().getRoot()), ContactFuncs.getContact(contID) );
 
-		int endIndx = currParent.getUserObject().toString().indexOf("\t");
+		if( tnode != null )
+		{
+			LiteBaseNode lbNode = (LiteBaseNode)tnode;
+			lbNode.setSelected( true );
+			lbNode.setUserValue( notifGrp.getContactMap()[i].getAttribs() );
 
-		currParent.setUserObject(
-				currParent.getUserObject().toString().substring(
-					0,
-					(endIndx >= 0 ? endIndx : currParent.getUserObject().toString().length()) ) +
-				"\t   (" + selected + " Selected)");
-
-
-		//let the tree repaint itself
-		getJTreeModel().nodeChanged( currParent );
-
-		getJTreeNotifs().invalidate();
-		getJTreeNotifs().repaint();
+			setChildNodesEnabled( lbNode, lbNode.isSelected() );
+		}
 	}
 
+
+	getJTreeModel().reload();
+	setSelectionCount();
 }
 
+/**
+ * Recursive method to count the number of selected tree nodes for a given
+ * TreeNode. All children under the given TreeNode are considered in
+ * this count.
+ * 
+ */
+private int getCheckedNodeCnt( TreeNode treeNode )
+{
+	if( treeNode == null ) return 0;
+	
+	int selected = 0;
+	for( int j = 0; j < treeNode.getChildCount(); j++ )
+	{
+		if( treeNode.getChildAt(j).getChildCount() > 0 )
+			selected += getCheckedNodeCnt( treeNode.getChildAt(j) );
+		
+		if( treeNode.getChildAt(j) instanceof CheckNode )
+			if( ((CheckNode)treeNode.getChildAt(j)).isSelected() )
+				selected++;
+	}
+				
+	return selected;	
+}
+
+/**
+ * Updates the text for the given node that shows the number of checked
+ * nodes.
+ *
+ */
+private void setSelectionCount()
+{
+	DefaultMutableTreeNode
+		root = (DefaultMutableTreeNode)getJTreeNotifs().getModel().getRoot();
+
+	//get all the elements in this tree
+	Enumeration nodes = root.depthFirstEnumeration();
+
+	int selected = 0;
+	int endIndx = root.getUserObject().toString().indexOf("\t");
+	while( nodes.hasMoreElements() )
+	{
+		Object next = nodes.nextElement();
+		if( next instanceof LiteBaseNode )
+		{
+			LiteBaseNode nextNode = (LiteBaseNode)next;
+			if( nextNode.isSelected() )
+				selected ++;
+		}
+
+	}
+
+	root.setUserObject(
+		root.getUserObject().toString().substring( 0,
+			(endIndx >= 0 ? endIndx : root.getUserObject().toString().length()) ) +
+		"\t   (" + selected + " Selected)");
+
+	//let the tree repaint itself
+	getJTreeModel().nodeChanged( root );
+
+	getJTreeNotifs().invalidate();
+	getJTreeNotifs().repaint();
+
+}
 
 /**
  * Forces validation of the the selected nodes to occur along with
  * the appropriate GUI reactions to a newly selected node.
  * 
  */
-public void valueChanged(TreeSelectionEvent e)
+public void nodeSelectionChanged( boolean checkBoxCliked )
 {
 	//remove all rows from the table
 	getJTableNotifTableModel().clear();
 
     int selRow = getJTreeNotifs().getMaxSelectionRow();
-    if(selRow != -1) 
+    if(selRow != -1)
     {
         TreeNode node = 
             (TreeNode)getJTreeNotifs().getPathForRow( selRow ).getLastPathComponent();
@@ -843,48 +727,71 @@ public void valueChanged(TreeSelectionEvent e)
             LiteBase lb = (LiteBase)(lbNode).getUserObject();
 
 			//be sure we can set this value
-			getJCheckBoxPhoneCall().setEnabled( true );
+			getJCheckBoxPhoneCall().setEnabled( !lbNode.isSystemReserved() );
+			getJCheckBoxEmails().setEnabled( !lbNode.isSystemReserved() );
+
+			if( lbNode.isSystemReserved() )
+				return;
+
 
 			//create a dummy notifmap to use the attribs logic only 
 			NotifMap dummyMap = new NotifMap(-1);
 			dummyMap.setAttribs( lbNode.getUserValue() );
 			getJCheckBoxPhoneCall().setSelected( dummyMap.isSendOutboundCalls() );
+			getJCheckBoxEmails().setSelected( dummyMap.isSendEmails() );
 
-
-			//add the appropriate object to the tree model
-			if( lb instanceof LiteContactNotification )
-			{
-				//only allow phone number definitions to be changed
-				YukonListEntry entry =
-					YukonListFuncs.getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
-		
-				getJCheckBoxPhoneCall().setEnabled(
-					entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_PHONE );
-
-				getJTableNotifTableModel().addRow(
-					ContactNotifcationFuncs.getContactNotification(
-						((LiteContactNotification)lb).getContactNotifID()) );
-			}
-			else if( lb instanceof LiteContact )
-			{	
-				List contacts = new Vector(1);
-				contacts.add( lb );
-				addContactNotifs( contacts );
-				validateIndividualNotifs();
-			}
-			else if( lb instanceof LiteCustomer )
-			{
-				List contacts = CustomerFuncs.getAllContacts( ((LiteCustomer)lb).getCustomerID() );
-				addContactNotifs( contacts );
-				validateIndividualNotifs();
+			//see if the check box in the tree was clicked
+			if( checkBoxCliked ) {
+				if( lb instanceof LiteContactNotification )
+				{
+					//only allow phone number definitions to be changed
+					YukonListEntry entry =
+						YukonListFuncs.getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
+			
+					getJCheckBoxPhoneCall().setEnabled(
+						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_PHONE );
+	
+					getJCheckBoxEmails().setEnabled(
+						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL );
+				}
+				else if( lb instanceof LiteContact )
+				{	
+					setChildNodesEnabled( lbNode, lbNode.isSelected() );
+				}
+				else if( lb instanceof LiteCustomer )
+				{
+					setChildNodesEnabled( lbNode, lbNode.isSelected() );
+				}
 			}
 
         }
 
 
-		updateSelectionCountNodes();
+		setSelectionCount();
         fireInputUpdate();
     }
+
+}
+
+/**
+ * Disables the children node for the given node
+ *
+ */
+private void setChildNodesEnabled( TreeNode node, boolean enabled )
+{
+	//selected all the children contacts and make them disabled
+	if( node instanceof CheckNode ) {
+		for( int i = 0; i < node.getChildCount(); i++ ) {
+			TreeNode child = node.getChildAt(i);
+			if( child instanceof CheckNode ) {
+				setChildNodesEnabled( child, enabled );
+			}
+
+			((CheckNode)child).setSelected( false );
+			((CheckNode)child).setIsSystemReserved( enabled );
+		}					
+
+	}
 
 }
 
@@ -892,34 +799,34 @@ public void valueChanged(TreeSelectionEvent e)
  * Returns the selected contacts from our tree
  *
  */
-private List getSelectedContacts( TreeNode parentNode )
-{
-	List allContacts = new Vector(32);
-
-	for( int i = 0; i < parentNode.getChildCount(); i++ )
-	{
-		TreeNode node = parentNode.getChildAt(i);
-		if( node instanceof LiteBaseNode )
-		{
-			LiteBaseNode lbNode = (LiteBaseNode)node;
-			LiteBase lb = (LiteBase)(lbNode).getUserObject();
-			
-			if( lbNode.isSelected()
-				&& lb instanceof LiteContact )
-			{	
-				allContacts.add( lb );
-			}
-			else if( lbNode.isSelected()
-					 && lb instanceof LiteCustomer )
-			{
-				List cstContacts = CustomerFuncs.getAllContacts( ((LiteCustomer)lb).getCustomerID() );
-				allContacts.addAll( cstContacts );
-			}
-		}
-	}
-	
-	return allContacts;
-}
+//private List getSelectedContacts( TreeNode parentNode )
+//{
+//	List allContacts = new Vector(32);
+//
+//	for( int i = 0; i < parentNode.getChildCount(); i++ )
+//	{
+//		TreeNode node = parentNode.getChildAt(i);
+//		if( node instanceof LiteBaseNode )
+//		{
+//			LiteBaseNode lbNode = (LiteBaseNode)node;
+//			LiteBase lb = (LiteBase)(lbNode).getUserObject();
+//			
+//			if( lbNode.isSelected()
+//				&& lb instanceof LiteContact )
+//			{	
+//				allContacts.add( lb );
+//			}
+//			else if( lbNode.isSelected()
+//					 && lb instanceof LiteCustomer )
+//			{
+//				List cstContacts = CustomerFuncs.getAllContacts( ((LiteCustomer)lb).getCustomerID() );
+//				allContacts.addAll( cstContacts );
+//			}
+//		}
+//	}
+//
+//	return allContacts;
+//}
 
 /**
  * Sets our individual contact nodes to disabled if the parent Contact
@@ -927,6 +834,7 @@ private List getSelectedContacts( TreeNode parentNode )
  * disabled if List of conatcts does not have a phone number.
  * 
  */
+/*
 private void validateIndividualNotifs()
 {
 	// store all of our selected entries in Hashmap so we can set them below
@@ -971,12 +879,14 @@ private void validateIndividualNotifs()
 		validateNode( phoneNode.getChildAt(i), contNotifIDMap );
 
 }
+*/
 
 /**
  * Sets a singled node deslected and disabled if its parent object is already
  * selected.
  * 
  */
+/*
 private void validateNode( TreeNode realNode, HashMap idMap )
 {
 	if( realNode instanceof LiteBaseNode ) {
@@ -1003,5 +913,35 @@ private void validateNode( TreeNode realNode, HashMap idMap )
 		treeNode.setIsSystemReserved( exists );		
 	}	
 }
+*/
 	
+	/**
+	 * This method initializes jSplitPane
+	 * 
+	 * @return javax.swing.JSplitPane
+	 */
+	private javax.swing.JSplitPane getJSplitPane() {
+		if(jSplitPane == null) {
+			jSplitPane = new javax.swing.JSplitPane();
+			jSplitPane.setLeftComponent(getJScrollJTree());
+			jSplitPane.setRightComponent(getJPanelLoginDescription());
+			jSplitPane.setDividerLocation(250);
+			jSplitPane.setDividerSize(10);
+		}
+		return jSplitPane;
+	}
+	/**
+	 * This method initializes jCheckBox
+	 * 
+	 * @return javax.swing.JCheckBox
+	 */
+	private javax.swing.JCheckBox getJCheckBoxEmails() {
+		if(jCheckBoxEmails == null) {
+			jCheckBoxEmails = new javax.swing.JCheckBox();
+			jCheckBoxEmails.setText("Send Emails");
+			jCheckBoxEmails.setEnabled(false);
+			jCheckBoxEmails.setToolTipText("Should emails be sent to the email addresses in this notifcation group");
+		}
+		return jCheckBoxEmails;
+	}
 }

@@ -140,44 +140,7 @@ public class NotifcationAddressTableModel extends AbstractTableModel implements 
 			default:
 				return null;
 		}
-	
-		
-	}
 
-	/**
-	 *  What to store when a cell is edited.
-	 */
-	public void setValueAt(Object aValue, int row, int col) 
-	{
-//		if( row >= getRowCount() || col >= getColumnCount() )
-//			return;
-//	
-//		switch( col )
-//		{
-//			case COL_VALUE:
-//				getRowAt(row).setValue( aValue.toString() );
-//				
-//				//only add a change if it is not the default setting, sotred as (none) in DB
-//				if( !aValue.equals(getRowAt(row).getLiteProperty().getDefaultValue()) )
-//				{
-//					RolePropertyRow rowProp = (RolePropertyRow)changedValues.get( getRowAt(row) );				
-//					if( rowProp == null )
-//					{
-//						changedValues.put( getRowAt(row), getRowAt(row) );
-//					}
-//					else
-//					{
-//						//just update the value
-//						rowProp.setValue( aValue.toString() );					
-//					}
-//				}
-//				else  //we do have a default value, make sure we remove this entry
-//					changedValues.remove( getRowAt(row) );
-//								
-//
-//				break;
-//		}
-	
 	}
 
 	public Color getCellBackgroundColor(int row, int col)
