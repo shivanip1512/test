@@ -133,48 +133,6 @@ void CtiLMServer::stop()
     }
 }
 
-/*---------------------------------------------------------------------------
-    Broadcast
-    
-    Notifies all objects that are observing this that a new message is 
-    available to broadcast.  The mutex lock gives all the observers a 
-    chance to broadcast the current message before the next message
-    comes in.  Observers must deal with this notification quickly to avoid
-    new messages from piling up here.
----------------------------------------------------------------------------*/
-void CtiLMServer::Broadcast(CtiMessage* message)
-{
-    //Only allow one broadcast at a time!
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_broadcastmutex);
-
-    if( _currentmessage != NULL )
-    {
-        delete _currentmessage;
-        _currentmessage = NULL;
-    }
-    _currentmessage = message;
-
-    if( _LM_DEBUG & LM_DEBUG_CLIENT )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Outgoing Message has class ID of " << message->isA() << endl;
-    }
-
-    setChanged();
-    notifyObservers();
-}
-
-/*---------------------------------------------------------------------------
-    BroadcastMessage
-    
-    Returns the CtiMessage that is currently being broadcast
----------------------------------------------------------------------------*/
-CtiMessage* CtiLMServer::BroadcastMessage()
-{
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_broadcastmutex);
-
-    return _currentmessage;
-}
 
 /*---------------------------------------------------------------------------
     _checkstatus

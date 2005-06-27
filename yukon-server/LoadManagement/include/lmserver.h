@@ -29,9 +29,6 @@ public:
     void start();
     void stop();
     
-    void Broadcast(CtiMessage* message);
-    CtiMessage* BroadcastMessage();
-
     bool isRunning() const { return _running; };
 
     static CtiLMServer* getInstance();
