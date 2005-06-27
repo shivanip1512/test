@@ -83,7 +83,7 @@ public class CheckNodeSelectionListener extends MouseAdapter
 	/**
 	 * takes a mouse clicks point and the rows visible rectangle attribute to know
 	 */
-	private boolean isCheckBoxSelected(Point pt, Rectangle visRowRect_)
+	protected boolean isCheckBoxSelected(Point pt, Rectangle visRowRect_)
 	{
 		if (visRowRect_ == null || pt == null)
 			return false;
