@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/10/2005 4:33:34 PM                         */
+/* Created on:     6/27/2005 1:04:39 PM                         */
 /*==============================================================*/
 
 
@@ -236,6 +236,8 @@ drop table DynamicLMGroup cascade constraints;
 drop table DynamicLMProgram cascade constraints;
 
 drop table DynamicLMProgramDirect cascade constraints;
+
+drop table DynamicPAOInfo cascade constraints;
 
 drop table DynamicPAOStatistics cascade constraints;
 
@@ -2138,6 +2140,24 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-358, -95, 'VersacomSerial', 16, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-359, -96, 'VersacomSerial', 17, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-360, -97, 'VersacomSerial', 18, 'Y');
 
+INSERT INTO DEVICETYPECOMMAND VALUES (-361, -11, 'MCT-410IL', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-362, -12, 'MCT-410IL', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-363, -13, 'MCT-410IL', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-364, -1, 'MCT-410CL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-365, -81, 'MCT-410CL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-366, -3, 'MCT-410CL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-367, -6, 'MCT-410CL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-368, -34, 'MCT-410CL', 5, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-369, -82, 'MCT-410CL', 6, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-370, -18, 'MCT-410CL', 7, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-371, -19, 'MCT-410CL', 8, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-372, -83, 'MCT-410CL', 9, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-373, -84, 'MCT-410CL', 10, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-374, -11, 'MCT-410CL', 11, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-375, -12, 'MCT-410CL', 12, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-376, -13, 'MCT-410CL', 13, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-377, -30, 'MCT-248', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-378, -31, 'MCT-248', 15, 'Y');
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID);
 
@@ -2381,6 +2401,23 @@ create table DynamicLMProgramDirect  (
 
 alter table DynamicLMProgramDirect
    add constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID);
+
+/*==============================================================*/
+/* Table: DynamicPAOInfo                                        */
+/*==============================================================*/
+create table DynamicPAOInfo  (
+   EntryID              NUMBER                          not null,
+   PAObjectID           NUMBER                          not null,
+   Owner                VARCHAR2(64)                    not null,
+   Info                 VARCHAR2(128)                   not null,
+   Value                VARCHAR2(128)                   not null
+);
+
+alter table DynamicPAOInfo
+   add constraint PK_DYNPAOINFO primary key (EntryID);
+
+alter table DynamicPAOInfo
+   add constraint AK_DYNPAO_OWNKYUQ unique (EntryID, PAObjectID, Owner);
 
 /*==============================================================*/
 /* Table: DynamicPAOStatistics                                  */
@@ -3644,6 +3681,7 @@ INSERT into point  values (-2,  'System', 'Scanner', 0, 'Default', 0, 'N', 'N', 
 INSERT into point  values (-3,  'System', 'Dispatch', 0, 'Default', 0, 'N', 'N', 'S', 3  ,'None', 0);
 INSERT into point  values (-4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4  ,'None', 0);
 INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
+INSERT into point  values (-6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 alter table POINT
@@ -4536,6 +4574,7 @@ insert into yukongrouprole values (-767,-301,-210,-21002,'(none)');
 insert into yukongrouprole values (-770,-301,-202,-20200,'(none)');
 insert into yukongrouprole values (-775,-301,-203,-20300,'(none)');
 insert into yukongrouprole values (-776,-301,-203,-20301,'(none)');
+insert into yukongrouprole values (-777,-301,-203,-20302,'(none)');
 
 insert into yukongrouprole values (-780,-301,-204,-20400,'(none)');
 insert into yukongrouprole values (-785,-301,-205,-20500,'(none)');
@@ -4751,6 +4790,7 @@ insert into YukonGroupRole values (-1267,-2,-210,-21002,'(none)');
 insert into YukonGroupRole values (-1270,-2,-202,-20200,'(none)');
 insert into YukonGroupRole values (-1275,-2,-203,-20300,'(none)');
 insert into YukonGroupRole values (-1276,-2,-203,-20301,'(none)');
+insert into YukonGroupRole values (-1277,-2,-203,-20302,'(none)');
 
 insert into YukonGroupRole values (-1280,-2,-204,-20400,'(none)');
 insert into YukonGroupRole values (-1285,-2,-205,-20500,'(none)');
@@ -5463,6 +5503,9 @@ insert into YukonRole values (-601,'Trending','Analysis','Access to trending fun
 /* Capacitor Control roles */
 insert into YukonRole values (-700,'CBC Control','CapBank Control','Allows the user to control change states of the CapControl system .');
 
+/* IVR roles */
+insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
+
 alter table YukonRole
    add constraint PK_YUKONROLE primary key (RoleID);
 
@@ -5522,10 +5565,9 @@ insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentica
 insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
 insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
 
-insert into YukonRoleProperty values(-1400,-5,'voice_app','login','The voice server application that Yukon should use');
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
-
+insert into YukonRoleProperty values(-1403,-5,'Call Prefix','','Any number or numbers that must be dialed before a call can be placed.');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
@@ -5640,6 +5682,7 @@ insert into YukonRoleProperty values(-20200,-202,'Trending Disclaimer',' ','The 
 /* Operator Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-20300,-203,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
 insert into YukonRoleProperty values(-20301,-203,'Individual Switch','true','Controls access to operator individual switch control');
+insert into YukonRoleProperty values(-20302,-203,'3 Tier Direct Control','false','Allows access to the 3-tier load management web interface');
 
 /* Operator Direct Curtailment Role Properties */
 insert into YukonRoleProperty values(-20400,-204,'Direct Curtailment Label','Notification','The operator specific name for direct curtailment');
@@ -5875,6 +5918,11 @@ insert into YukonRoleProperty values(-70006,-700,'cbc_creation_name','CBC %PAONa
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
+
+/* IVR Role properties */
+insert into YukonRoleProperty values(-80000,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80001,-800,'Template Root','','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID);
 
@@ -6184,6 +6232,8 @@ insert into YukonUserRole values (-766,-1,-210,-21001,'(none)');
 insert into YukonUserRole values (-770,-1,-202,-20200,'(none)');
 insert into YukonUserRole values (-775,-1,-203,-20300,'(none)');
 insert into YukonUserRole values (-776,-1,-203,-20301,'(none)');
+insert into YukonUserRole values (-777,-1,-203,-20302,'(none)');
+
 insert into YukonUserRole values (-780,-1,-204,-20400,'(none)');
 insert into YukonUserRole values (-785,-1,-205,-20500,'(none)');
 insert into YukonUserRole values (-790,-1,-207,-20700,'(none)');
@@ -6713,6 +6763,10 @@ alter table DynamicLMProgram
 alter table DynamicLMProgramDirect
    add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
       references LMProgramDirect (DeviceID);
+
+alter table DynamicPAOInfo
+   add constraint FK_DynPAOInfo_YukPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
 
 alter table DynamicPAOStatistics
    add constraint FK_PASt_YkPA foreign key (PAOBjectID)
