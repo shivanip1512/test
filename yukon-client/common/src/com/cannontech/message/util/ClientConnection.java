@@ -122,7 +122,7 @@ public void connect() throws java.io.IOException
 /**
  * This method was created in VisualAge.
  */
-public void connect( long millis ) throws java.io.IOException 
+public void connect( long millis )
 {
 	connectWithoutWait();
 
@@ -142,7 +142,7 @@ public void connect( long millis ) throws java.io.IOException
 /**
  * This method was created in VisualAge.
  */
-public void connectWithoutWait() throws java.io.IOException 
+public void connectWithoutWait()
 {	
 	monitorThread = new Thread(this, "ConnectionMonitor");
 	monitorThread.setDaemon(true);

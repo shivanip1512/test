@@ -1174,18 +1174,11 @@ private void initClientConnection()
    LoadControlClientConnection.getInstance().setAutoReconnect(true);
    LoadControlClientConnection.getInstance().setTimeToReconnect(5);
 
-   try
+   //lock the connection down and try to connect if we arent connected already
+   synchronized( LoadControlClientConnection.getInstance() )
    {
-	   //lock the connection down and try to connect if we arent connected already
-	   synchronized( LoadControlClientConnection.getInstance() )
-	   {
-		   if( !LoadControlClientConnection.getInstance().isMonitorThreadAlive() /*.isValid()*/ )
-	  			LoadControlClientConnection.getInstance().connectWithoutWait();
-	   }
-	}
-	catch( java.io.IOException i )
-   {
-	   com.cannontech.clientutils.CTILogger.error( i.getMessage(), i );
+	   if( !LoadControlClientConnection.getInstance().isMonitorThreadAlive() /*.isValid()*/ )
+  			LoadControlClientConnection.getInstance().connectWithoutWait();
    }
    
 }

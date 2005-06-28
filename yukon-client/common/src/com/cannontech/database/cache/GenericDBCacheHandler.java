@@ -73,14 +73,7 @@ public class GenericDBCacheHandler implements DBChangeListener, Observer
 			connToDispatch.setAutoReconnect(true);
 			connToDispatch.setRegistrationMsg(reg);
 		
-			try 
-			{
-				connToDispatch.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			connToDispatch.connectWithoutWait();
 
 		}
 

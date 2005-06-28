@@ -119,15 +119,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	conn.setAutoReconnect(true);	
 	conn.setTimeToReconnect(30);
 
-	try
-	{
-		conn.connectWithoutWait();
-	}
-	catch( java.io.IOException io )
-	{
-		io.printStackTrace();
-		CTILogger.error("An error occured connecting with load control", io);
-	}
+	conn.connectWithoutWait();
 
 	// Create a load control cache
 	cache = new LoadcontrolCache();

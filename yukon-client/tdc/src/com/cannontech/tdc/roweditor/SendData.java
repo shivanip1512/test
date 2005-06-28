@@ -147,15 +147,7 @@ private void initialize()
 				
 		buildRegistration();
 		
-		try
-		{
-			connection.connectWithoutWait();
-		}
-		catch( java.io.IOException e )
-		{
-			handleException( e );
-			return;
-		}
+		connection.connectWithoutWait();
 		
 		tagManager = new TagManager( connection );
 	}

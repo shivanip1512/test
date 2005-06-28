@@ -248,24 +248,17 @@ public void stop()
  */
 private void tryConnection() 
 {	
-	try
-	{
-		getExternalResources();
-		
-		com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + HOST + " " + PORT );
+	getExternalResources();
+    
+    com.cannontech.clientutils.CTILogger.info("Trying to connect to:  " + HOST + " " + PORT );
 
-		getConnection().setHost(HOST);		
-		getConnection().setPort(PORT);		
+    getConnection().setHost(HOST);		
+    getConnection().setPort(PORT);		
 
-		getConnection().setRegistrationMsg( buildRegistrationMessage() );
-		getConnection().connectWithoutWait();
+    getConnection().setRegistrationMsg( buildRegistrationMessage() );
+    getConnection().connectWithoutWait();
 
-		com.cannontech.clientutils.CTILogger.info("....Connection & Registration to Server Established.");
-	}	
-	catch( java.io.IOException e )
-	{
-		handleException( e );				
-	}
+    com.cannontech.clientutils.CTILogger.info("....Connection & Registration to Server Established.");
 	
 }
 /**

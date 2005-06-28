@@ -116,15 +116,7 @@ public synchronized void connect()
 	conn.addMessageListener(this); 
 	conn.setQueueMessages(false);
 	
-	try
-	{
-		conn.connectWithoutWait();
-	}
-	catch( java.io.IOException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		CTILogger.warn("An error occured connecting with dispatch");
-	}
+	conn.connectWithoutWait();
 }
 /**
  * Insert the method's description here.

@@ -265,10 +265,6 @@ public void run()
 		LDCNTSUMThread.join();
 
 	}
-	catch( java.io.IOException ioe )
-	{
-		ioe.printStackTrace();
-	}
 	catch( InterruptedException ie )
 	{
 		logMessage("Interrupted Exception in WPSCMain()", com.cannontech.common.util.LogWriter.ERROR);

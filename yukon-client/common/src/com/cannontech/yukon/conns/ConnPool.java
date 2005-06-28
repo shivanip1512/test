@@ -251,14 +251,7 @@ public class ConnPool
 		{		
 			notifConn = (NotifClientConnection)createNotificationConn();
 
-			try
-			{
-				notifConn.connectWithoutWait();
-			}
-			catch( java.io.IOException ex )
-			{
-				CTILogger.error( ex );
-			}
+			notifConn.connectWithoutWait();
 			
 			getAllConns().put( NOTIFCATION_CONN, notifConn );
 		}
