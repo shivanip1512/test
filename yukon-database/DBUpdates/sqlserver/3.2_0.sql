@@ -170,13 +170,6 @@ alter table PAOScheduleAssignmentTable
       references YukonPAObject (PAObjectID);
 go
 
-alter table dynamicccsubstationbus add AdditionalFlags varchar(20);
-go
-update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
-go
-alter table dynamicccsubstationbus alter column AdditionalFlags varchar(20) not null;
-go
-
 INSERT into point  values (-6, 'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6, 'None', 0);
 go
 
@@ -189,6 +182,66 @@ update YukonGroupRole set roleid = -800 where rolepropertyid = -1400;
 update YukonRoleProperty set roleid = -800 where rolepropertyid = -1400;
 insert into YukonRoleProperty values(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
 go
+
+alter table dynamiccccapbank add assumedstartverificationstatus numeric;
+update dynamiccccapbank set assumedstartverificationstatus = 0;
+alter table dynamiccccapbank alter column assumedstartverificationstatus numeric not null;
+go
+
+alter table dynamiccccapbank add prevverificationcontrolstatus numeric;
+update dynamiccccapbank set prevverificationcontrolstatus = 0;
+alter table dynamiccccapbank alter column prevverificationcontrolstatus numeric not null;
+go
+
+alter table dynamiccccapbank add verificationcontrolindex numeric;
+update dynamiccccapbank set verificationcontrolindex = 0;
+alter table dynamiccccapbank alter column verificationcontrolindex numeric not null;
+gp
+
+alter table dynamiccccapbank add AdditionalFlags varchar(32);
+update dynamiccccapbank set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamiccccapbank alter column AdditionalFlags varchar(32) not null;
+go
+
+alter table dynamicccfeeder add AdditionalFlags varchar(32);
+update dynamicccfeeder set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamicccfeeder alter column AdditionalFlags varchar(32) not null;
+go
+
+alter table dynamicccsubstationbus add AdditionalFlags varchar(32);
+update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamicccsubstationbus alter column AdditionalFlags varchar(32) not null;
+go
+
+alter table dynamicccsubstationbus add currVerifyCBId numeric;
+update dynamicccsubstationbus set currVerifyCBId = -1;
+alter table dynamicccsubstationbus alter column currVerifyCBId numeric not null;
+go
+
+alter table dynamicccsubstationbus add currVerifyFeederId numeric;
+update dynamicccsubstationbus set currVerifyFeederId = -1;
+alter table dynamicccsubstationbus alter column currVerifyFeederId numeric not null;
+go
+
+alter table dynamicccsubstationbus add currVerifyCBOrigState numeric;
+update dynamicccsubstationbus set currVerifyCBOrigState = 0;
+alter table dynamicccsubstationbus alter column currVerifyCBOrigState numeric not null;
+go
+
+alter table dynamicccsubstationbus add verificationStrategy numeric;
+update dynamicccsubstationbus set verificationStrategy = -1;
+alter table dynamicccsubstationbus alter column verificationStrategy numeric not null;
+go
+
+alter table dynamicccsubstationbus add cbInactivityTime numeric;
+update dynamicccsubstationbus set cbInactivityTime = -1;
+alter table dynamicccsubstationbus alter column cbInactivityTime numeric not null;
+go
+
+
+
+
+
 
 
 

@@ -79,7 +79,7 @@ alter table LMProgramDirect rename column NotifyOffset to NotifyActiveOffset;
 
 alter table LMProgramDirect add NotifyInactiveOffset number;
 update LMProgramDirect set NotifyInactiveOffset = 0;
-alter table LMProgramDirect alter column NotifyInactiveOffset number not null;
+alter table LMProgramDirect modify NotifyInactiveOffset number not null;
 
 alter table DynamicLMProgramDirect rename column NotifyTime to NotifyActiveTime;
 
@@ -130,10 +130,6 @@ alter table PAOScheduleAssignmentTable
    add constraint FK_PAOSch_YukPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
-alter table dynamicccsubstationbus add AdditionalFlags varchar2(20);
-update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
-alter table dynamicccsubstationbus modify AdditionalFlags varchar2(20) not null;
-
 INSERT into point  values (-6, 'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6, 'None', 0);
 
 insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
@@ -143,6 +139,55 @@ insert into YukonRoleProperty values(-80001,-800,'Template Root','http://localho
 update YukonGroupRole set roleid = -800 where rolepropertyid = -1400;
 update YukonRoleProperty set roleid = -800 where rolepropertyid = -1400;
 insert into YukonRoleProperty values(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
+
+
+
+alter table dynamiccccapbank add assumedstartverificationstatus number;
+update dynamiccccapbank set assumedstartverificationstatus = 0;
+alter table dynamiccccapbank modify assumedstartverificationstatus number not null;
+
+alter table dynamiccccapbank add prevverificationcontrolstatus number;
+update dynamiccccapbank set prevverificationcontrolstatus = 0;
+alter table dynamiccccapbank modify prevverificationcontrolstatus number not null;
+
+alter table dynamiccccapbank add verificationcontrolindex number;
+update dynamiccccapbank set verificationcontrolindex = 0;
+alter table dynamiccccapbank modify verificationcontrolindex number not null;
+
+alter table dynamiccccapbank add AdditionalFlags varchar2(32);
+update dynamiccccapbank set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamiccccapbank modify AdditionalFlags varchar2(32) not null;
+
+alter table dynamicccfeeder add AdditionalFlags varchar2(32);
+update dynamicccfeeder set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamicccfeeder modify AdditionalFlags varchar2(32) not null;
+
+alter table dynamicccsubstationbus add AdditionalFlags varchar2(32);
+update dynamicccsubstationbus set AdditionalFlags = 'NNNNNNNNNNNNNNNNNNNN';
+alter table dynamicccsubstationbus modify AdditionalFlags varchar2(32) not null;
+
+alter table dynamicccsubstationbus add currVerifyCBId number;
+update dynamicccsubstationbus set currVerifyCBId = -1;
+alter table dynamicccsubstationbus modify currVerifyCBId number not null;
+
+alter table dynamicccsubstationbus add currVerifyFeederId number;
+update dynamicccsubstationbus set currVerifyFeederId = -1;
+alter table dynamicccsubstationbus modify currVerifyFeederId number not null;
+
+alter table dynamicccsubstationbus add currVerifyCBOrigState number;
+update dynamicccsubstationbus set currVerifyCBOrigState = 0;
+alter table dynamicccsubstationbus modify currVerifyCBOrigState number not null;
+
+alter table dynamicccsubstationbus add verificationStrategy number;
+update dynamicccsubstationbus set verificationStrategy = -1;
+alter table dynamicccsubstationbus modify verificationStrategy number not null;
+
+alter table dynamicccsubstationbus add cbInactivityTime number;
+update dynamicccsubstationbus set cbInactivityTime = -1;
+alter table dynamicccsubstationbus modify cbInactivityTime number not null;
+
+
+
 
 
 

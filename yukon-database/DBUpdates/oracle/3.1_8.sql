@@ -11,7 +11,7 @@ create table DynamicPAOInfo  (
    EntryID              NUMBER                          not null,
    PAObjectID           NUMBER                          not null,
    Owner                VARCHAR2(64)                    not null,
-   Info                 VARCHAR2(128)                   not null,
+   InfoKey              VARCHAR2(128)                   not null,
    Value                VARCHAR2(128)                   not null
 );
 alter table DynamicPAOInfo
