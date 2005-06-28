@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/06/15 19:20:30 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/28 19:58:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,7 +249,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
 
     if( getEntryID() && tmp_owner && tmp_key )
     {
-        updater << table["paoid"].assign(getPaoID())
+        updater << table["paobjectid"].assign(getPaoID())
                 << table["owner"].assign(tmp_owner->data())
                 << table["infokey"].assign(tmp_key->data())
                 << table["value"].assign(tmp_value.data());
@@ -289,7 +289,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Restore()
     RWDBSelector selector = getDatabase().selector();
 
     selector << table["entryid"]
-             << table["paoid"]
+             << table["paobjectid"]
              << table["owner"]
              << table["infokey"]
              << table["value"];
@@ -340,7 +340,7 @@ void CtiTableDynamicPaoInfo::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBS
     owner_map_t::const_iterator o_itr;
 
     selector << keyTable["entryid"]
-             << keyTable["paoid"]
+             << keyTable["paobjectid"]
              << keyTable["owner"]
              << keyTable["infokey"]
              << keyTable["value"];
@@ -363,7 +363,7 @@ void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
     owner_map_t::const_iterator o_itr;
 
     rdr["entryid"] >> tmp_entryid;
-    rdr["paoid"]   >> tmp_paoid;
+    rdr["paobjectid"]   >> tmp_paoid;
     rdr["owner"]   >> tmp_owner;
     rdr["infokey"]     >> tmp_key;
     rdr["value"]   >> tmp_value;
