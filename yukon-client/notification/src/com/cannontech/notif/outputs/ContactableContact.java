@@ -34,7 +34,8 @@ public class ContactableContact extends ContactableBase {
         };
         return result;
     }
-
-
-
+    
+    public String toString() {
+        return _liteContact.toString();
+    }
 }

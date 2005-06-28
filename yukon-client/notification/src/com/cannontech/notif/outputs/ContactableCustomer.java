@@ -3,18 +3,17 @@ package com.cannontech.notif.outputs;
 import java.util.*;
 
 import com.cannontech.database.cache.functions.CustomerFuncs;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.*;
 
 public class ContactableCustomer extends ContactableBase {
     private List _contactList = new LinkedList();
-    private final LiteCustomer _liteCustomer;
+    private final LiteCICustomer _liteCustomer;
     
     /**
      * Create a Contactable object from a CustomerNotifGroupMap.
      * @param customer
      */
-    public ContactableCustomer(LiteCustomer customer) {
+    public ContactableCustomer(LiteCICustomer customer) {
         _liteCustomer = customer;
         List contacts = CustomerFuncs.getAllContacts(customer.getCustomerID());
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
@@ -31,11 +30,12 @@ public class ContactableCustomer extends ContactableBase {
         }
         return result;
     }
-
-
+    
     public LiteCustomer getContactableCustomer() {
         return _liteCustomer;
     }
     
-
+    public String toString() {
+        return _liteCustomer.toString();
+    }
 }

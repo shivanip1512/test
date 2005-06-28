@@ -13,7 +13,7 @@ public class Contactable {
     
     public Contactable(CustomerNotifGroupMap customerMap) {
         _notifMap = customerMap;
-        LiteCustomer liteCustomer = CustomerFuncs.getLiteCustomer(customerMap.getCustomerID());
+        LiteCICustomer liteCustomer = CustomerFuncs.getLiteCICustomer(customerMap.getCustomerID());
         _contactableBase = new ContactableCustomer(liteCustomer);
     }
     
@@ -37,6 +37,12 @@ public class Contactable {
         return _contactableBase.getNotifications(types);
     }
 
+    /**
+     * Returns the TimeZone object of the parent customer of this object.
+     * This is different depeneding on what this object is constructed from:
+     * Customer, Contact of NotifDestination.
+     * @return a TimeZone object
+     */
     public TimeZone getTimeZone() {
         try {
             String tzString = _contactableBase.getContactableCustomer().getTimeZone();
@@ -47,6 +53,12 @@ public class Contactable {
 
     }
     
+    /**
+     * Determines the appropriate LiteEnergyCompany by first finding the parent
+     * customer. When the parent customer cannot be found, the default energy company
+     * will be returned (EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID).
+     * @return a valid LiteEnergyCompany for this Contactable
+     */
     public LiteEnergyCompany getEnergyCompany() {
         int energyCompanyID;
         try {
@@ -70,7 +82,7 @@ public class Contactable {
     
     /**
      * Returns a list of Contactables given a LiteNotificationGroup. The 
-     * LiteNotificationGroup can contain LiteCustomers, LiteContacts, and
+     * LiteNotificationGroup can be composed of LiteCICustomers, LiteContacts, and
      * LiteContactNotifications. The resulting list will have one entry for each 
      * entry in the LiteNotificationGroup.
      * @param lng The LiteNotificationGroup to use
@@ -99,5 +111,8 @@ public class Contactable {
         return resultList;
     }
 
+    public String toString() {
+        return _contactableBase.toString();
+    }
 
 }
