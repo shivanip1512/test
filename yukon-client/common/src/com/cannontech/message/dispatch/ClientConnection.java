@@ -87,7 +87,7 @@ public class ClientConnection extends com.cannontech.message.util.ClientConnecti
         return connToDispatch;
     }
 
-    public static ClientConnection createDefaultConnection() throws IOException {
+    public static ClientConnection createDefaultConnection() {
         return createDefaultConnection(CtiUtilities.getAppRegistration());
     }
 
