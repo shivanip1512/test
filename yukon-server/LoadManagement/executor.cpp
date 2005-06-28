@@ -2619,6 +2619,10 @@ void CtiLMForwardMsgToDispatchExecutor::Execute()
     Execute
     
     Executes a shutdown on the server
+    THIS EXECUTOR IS THE EXCEPTION
+    IT MUST NOT BE EXECUTED ON THE MAIN THREAD AS THE REST OF THEM SHOULD BE
+    THE REASON IS BECAUSE IT SHUTS DOWN THE CTILOADMANAGER WHICH OWNS
+    THE MAIN THREAD
 ---------------------------------------------------------------------------*/
 void CtiLMShutdownExecutor::Execute()
 {

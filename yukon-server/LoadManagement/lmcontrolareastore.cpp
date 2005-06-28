@@ -1949,10 +1949,9 @@ void CtiLMControlAreaStore::reset()
             msgBitMask = CtiLMControlAreaMsg::AllControlAreasSent | CtiLMControlAreaMsg::ControlAreaDeleted;
         }
         _wascontrolareadeletedflag = false;
-        CtiLMExecutorFactory f;
-        CtiLMExecutor* executor = f.createExecutor(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
-        executor->Execute();
-        delete executor;
+
+	// Make sure all the clients get the new control areas, let the main thread do it
+	CtiLoadManager::getInstance()->handleMessage(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
     catch(...)
     {
@@ -2024,14 +2023,21 @@ void CtiLMControlAreaStore::doResetThr()
             dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        RWDBDateTime lastPeriodicDatabaseRefresh = RWDBDateTime();
-
+        RWDBDateTime lastPeriodicDatabaseRefresh;
+	RWDBDateTime lastCheck;
         while(TRUE)
         {
             rwRunnable().serviceCancellation();
             RWDBDateTime now;
-            if( now.rwdate() != lastPeriodicDatabaseRefresh.rwdate() )
+
+	    // When we cross midnight these dates won't match and we can do our daily midnight maintenance
+            if( now.rwdate() != lastCheck.rwdate() )
             {//check to see if it is midnight
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Resetting midnight defaults" << endl;
+                }		
                 checkMidnightDefaultsForReset();
             }
 
@@ -2047,10 +2053,9 @@ void CtiLMControlAreaStore::doResetThr()
                 setValid(false);
                 lastPeriodicDatabaseRefresh = RWDBDateTime();
             }
-            else
-            {
-                rwRunnable().sleep(5000);
-            }
+         
+	    lastCheck = now;		
+	    rwRunnable().sleep(5000);
         }
     }
     catch(RWCancellation& )
