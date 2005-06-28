@@ -2,8 +2,7 @@ package com.cannontech.notif.voice;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
@@ -19,7 +18,7 @@ import com.cannontech.roles.yukon.VoiceServerRole;
  */
 public class NotificationQueue {
     private boolean _shutdown = false;
-    private TreeMap _poolMap = new TreeMap();
+    private Map _poolMap = new TreeMap();
     
     public NotificationQueue() {
     }
@@ -55,7 +54,7 @@ public class NotificationQueue {
         callPool.submitCall(call);
     }
     
-    public void shutdown() {
+    public synchronized void shutdown() {
         _shutdown = true;
         for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
             CallPool pool = (CallPool) iter.next();
@@ -63,7 +62,7 @@ public class NotificationQueue {
         }
     }
     
-    private CallPool getCallPool(LiteEnergyCompany energyCompany) {
+    private synchronized CallPool getCallPool(LiteEnergyCompany energyCompany) {
         if (_poolMap.containsKey(energyCompany)) {
             return (CallPool) _poolMap.get(energyCompany);
         } else {
@@ -86,12 +85,12 @@ public class NotificationQueue {
 
     }
     
-    public Call getCall(String token) throws UnknownCallTokenException {
+    public synchronized Call getCall(String token) throws UnknownCallTokenException {
         for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
             CallPool pool = (CallPool) iter.next();
-            try {
-                return pool.getCall(token);
-            } catch (UnknownCallTokenException e) {
+            Call call = pool.getCall(token);
+            if (call != null) {
+                return call;
             }
         }
         throw new UnknownCallTokenException(token);

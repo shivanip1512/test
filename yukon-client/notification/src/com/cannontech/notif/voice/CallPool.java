@@ -110,13 +110,9 @@ public class CallPool implements PropertyChangeListener {
      * @return The Call object matching the token
      * @throws UnknownCallTokenException 
      */
-    public Call getCall(String token) throws UnknownCallTokenException {
+    public Call getCall(String token) {
         Object call = _pendingCalls.get(token);
-        if (call == null) {
-            throw new UnknownCallTokenException(token);
-        } else {
-            return (Call)call;
-        }
+        return (Call)call;
     }
 
     public void shutdown() {
