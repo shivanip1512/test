@@ -295,9 +295,9 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 
 		submitButton.addActionListener(this);
 
-		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
+		//conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
-		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+		//conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]);
 		conTypeCB.addItem(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
 
@@ -533,21 +533,22 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				smartMulti.setOwnerDBPersistent( capBank );
 				
 				DeviceBase newCBC = null;
-				if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
-				{
-					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
-					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
-				}
-				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
+//				if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]) )
+//				{
+//					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_FP_2800);
+//					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0]);
+//				}
+//				else 
+				if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]) )
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CAPBANKCONTROLLER);
 					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0]);
 				}
-				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
-				{
-					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
-					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
-				}
+//				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]) )
+//				{
+//					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.DNP_CBC_6510);
+//					capBank.getCapBank().setControllerType(com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0]);
+//				}
 				else if( val.getControllerType().equalsIgnoreCase(com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0]))
 				{
 					newCBC = DeviceFactory.createDevice(com.cannontech.database.data.pao.PAOGroups.CBC_EXPRESSCOM);
