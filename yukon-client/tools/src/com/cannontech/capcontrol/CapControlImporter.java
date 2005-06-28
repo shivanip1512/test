@@ -69,13 +69,14 @@ public class CapControlImporter
 			log("Argument Syntax:");
 			System.out.println();
 			log("Commandline arguments should be enclosed in quote marks.");
-			log("For command line: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC FP-2800\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
+			log("For command line: \"from=000000001\" \"to=000000050\" \"route=route1\" \"contype=CBC Versacom\" \"banksize=1200\" \"manufacturer=Westinghouse\" \"switchtype=oil\"");
 			System.out.println();
 			log("For gui: gui");
 			System.out.println();
-			log("Controller Types: " + com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] + ", " + 
+			log("Controller Types: " + 
+				//com.cannontech.database.data.pao.PAOGroups.STRING_CBC_FP_2800[0] + ", " + 
 				com.cannontech.database.data.pao.PAOGroups.STRING_CAP_BANK_CONTROLLER[0] + ", " +
-				com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0] + ", " +
+				//com.cannontech.database.data.pao.PAOGroups.STRING_DNP_CBC_6510[0] + ", " +
 				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_EXPRESSCOM[0] + ", " +
 				com.cannontech.database.data.pao.PAOGroups.STRING_CBC_7010[0]);
 			System.out.println();
