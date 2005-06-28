@@ -347,14 +347,19 @@ public void run()
 			// we were not given a Socket, so create a new one everytime
 			if( !isServerSocket() )
 			{
+				String logStr = "Attempting to open SOCKET to: " + this.host + " " + this.port;
 				if(retryCount == 0) 
 				{
-					CTILogger.info("Attempting to open SOCKET to: " + this.host + " " + this.port);
+					CTILogger.info(logStr);
+				}
+				else
+				{
+					CTILogger.debug(logStr);
 				}
 				this.sock = new Socket( this.host, this.port );
 			}
 
-
+			
 			inStrm = new java.io.BufferedInputStream(this.sock.getInputStream());
 			outStrm = new java.io.BufferedOutputStream(this.sock.getOutputStream());
 			
@@ -364,6 +369,8 @@ public void run()
 
 			CollectableStreamer polystreamer = new CollectableStreamer();
 			registerMappings(polystreamer);
+
+			CTILogger.debug("Starting connection in/out threads. ");
 			
 			inThread  = new InThread( this, pinStrm, polystreamer, inQueue );
 			outThread = new OutThread( this, poutStrm, polystreamer, outQueue);
@@ -387,6 +394,7 @@ public void run()
 				Thread.sleep(400);		
 			} while( inThread.isAlive() && outThread.isAlive() );
 
+			CTILogger.debug("Interruping connection in/out threads");
 			inThread.interrupt();
 			outThread.interrupt();
 
@@ -406,7 +414,13 @@ public void run()
 			{
 				CTILogger.info( io.getMessage() );
 			}
+			else
+			{
+				CTILogger.debug( io.getMessage() );
+			}
 		}
+		
+		CTILogger.debug("Setting connection to " + host + " " + port + " invalid");
 		
 		isValid = false;
 
@@ -415,12 +429,14 @@ public void run()
         //use this for alerting clients to our connection state change
         fireMessageEvent( new ConnStateChange(false) );
 
-        
-
-		if( !getAutoReconnect() )
+		if( !getAutoReconnect() ) 
+		{
 			return;
+		}
 		else
 		{
+			CTILogger.debug("Connection to  " + host + " " + port + " is set to autoreconnect in " + getTimeToReconnect() + " seconds");			
+
 			try
 			{
 				Thread.sleep( getTimeToReconnect() * 1000 );
@@ -436,6 +452,10 @@ public void run()
 		if(retryCount == 0)
 		{
 			CTILogger.info("Attempting to reconnect to " + getHost() + ":" + getPort() );
+		}
+		else
+		{
+			CTILogger.debug("Attempting to reconnect to " + getHost() + ":" + getPort() );
 		}
 		retryCount++;
 	} 
@@ -529,5 +549,4 @@ protected void fireMessageEvent(Message msg) {
 	public void setQueueMessages(boolean b) {
 		queueMessages = b;
 	}
-
 }
