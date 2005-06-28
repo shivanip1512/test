@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.device.capcontrol;
 
+import java.awt.event.FocusEvent;
+
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -9,7 +11,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 /**
  * This type was created in VisualAge.
  */
-public class DeviceCapBankControllerEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
+public class DeviceCapBankControllerEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, java.awt.event.FocusListener
 {
 	private int paoID = -1;
    private int cbcType = 0;
@@ -1078,7 +1080,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code end
 	getDisableFlagCheckBox().addActionListener(this);
 	getNameTextField().addCaretListener(this);
-	getSerialNumberTextField().addCaretListener(this);
+	getSerialNumberTextField().addFocusListener(this);
 	getControlInhibitCheckBox().addActionListener(this);
 	getCommunicationRouteComboBox().addActionListener(this);
 	getJTextFieldSlaveAddress().addCaretListener(this);
@@ -1302,6 +1304,39 @@ private void connEtoC7(javax.swing.event.CaretEvent arg1) {
 		// user code begin {3}
 		// user code end
 		handleException(ivjExc);
+	}
+}
+
+
+/* (non-Javadoc)
+ * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+ */
+public void focusGained(FocusEvent arg0)
+{
+	// TODO Auto-generated method stub
+	
+}
+
+
+/* (non-Javadoc)
+ * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+ */
+public void focusLost(FocusEvent arg0)
+{
+	// TODO Auto-generated method stub
+	if( arg0.getSource() == ivjSerialNumberTextField )
+	{
+		try {
+			// user code begin {1}
+			// user code end
+			this.fireInputUpdate();
+			// user code begin {2}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {3}
+			// user code end
+			handleException(ivjExc);
+		}
 	}
 }
 }
