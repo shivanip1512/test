@@ -399,16 +399,16 @@ private javax.swing.JComboBox getAreaCodeGroupComboBox() {
 			ivjAreaCodeGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
 			// user code begin {1}
          
-         try
-         {
-            String availableAreaCodeGroups[] = DeviceMeterGroup.getDeviceTestCollectionGroups();
-            for(int i=0;i<availableAreaCodeGroups.length;i++)
-               ivjAreaCodeGroupComboBox.addItem( availableAreaCodeGroups[i] );
-         }
-         catch(java.sql.SQLException e)
-         {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         }
+		 try
+		 {
+			String availableAreaCodeGroups[] = DeviceMeterGroup.getDeviceTestCollectionGroups();
+			for(int i=0;i<availableAreaCodeGroups.length;i++)
+			   ivjAreaCodeGroupComboBox.addItem( availableAreaCodeGroups[i] );
+		 }
+		 catch(java.sql.SQLException e)
+		 {
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		 }
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -625,16 +625,16 @@ private javax.swing.JComboBox getCycleGroupComboBox() {
 			ivjCycleGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
 			// user code begin {1}
          
-         try
-         {
-            String availableCycleGroups[] = DeviceMeterGroup.getDeviceCollectionGroups();
-            for(int i=0;i<availableCycleGroups.length;i++)
-               ivjCycleGroupComboBox.addItem( availableCycleGroups[i] );
-         }
-         catch(java.sql.SQLException e)
-         {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         }
+		 try
+		 {
+			String availableCycleGroups[] = DeviceMeterGroup.getDeviceCollectionGroups();
+			for(int i=0;i<availableCycleGroups.length;i++)
+			   ivjCycleGroupComboBox.addItem( availableCycleGroups[i] );
+		 }
+		 catch(java.sql.SQLException e)
+		 {
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		 }
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -777,16 +777,16 @@ private javax.swing.JComboBox getJComboBoxBillingGroup() {
 			ivjJComboBoxBillingGroup.setMinimumSize(new java.awt.Dimension(200, 25));
 			// user code begin {1}
          
-         try
-         {
-            String avBillGrps[] = DeviceMeterGroup.getDeviceBillingGroups();
-            for( int i = 0; i < avBillGrps.length; i++ )
-               ivjJComboBoxBillingGroup.addItem( avBillGrps[i] );
-         }
-         catch(java.sql.SQLException e)
-         {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         }
+		 try
+		 {
+			String avBillGrps[] = DeviceMeterGroup.getDeviceBillingGroups();
+			for( int i = 0; i < avBillGrps.length; i++ )
+			   ivjJComboBoxBillingGroup.addItem( avBillGrps[i] );
+		 }
+		 catch(java.sql.SQLException e)
+		 {
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		 }
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -961,14 +961,14 @@ private javax.swing.JComboBox getLastIntervalDemandRateComboBox() {
 			ivjLastIntervalDemandRateComboBox.setEnabled(true);
 			// user code begin {1}
          
-         ivjLastIntervalDemandRateComboBox.addItem("1 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("2 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("3 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("5 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("10 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("15 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("30 minute");
-         ivjLastIntervalDemandRateComboBox.addItem("1 hour");
+		 ivjLastIntervalDemandRateComboBox.addItem("1 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("2 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("3 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("5 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("10 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("15 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("30 minute");
+		 ivjLastIntervalDemandRateComboBox.addItem("1 hour");
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1098,10 +1098,10 @@ private javax.swing.JComboBox getLoadProfileDemandRateComboBox() {
 			ivjLoadProfileDemandRateComboBox.setMinimumSize(new java.awt.Dimension(133, 23));
 			// user code begin {1}
          
-         ivjLoadProfileDemandRateComboBox.addItem("5 minute");
-         ivjLoadProfileDemandRateComboBox.addItem("15 minute");
-         ivjLoadProfileDemandRateComboBox.addItem("30 minute");
-         ivjLoadProfileDemandRateComboBox.addItem("1 hour");
+		 ivjLoadProfileDemandRateComboBox.addItem("5 minute");
+		 ivjLoadProfileDemandRateComboBox.addItem("15 minute");
+		 ivjLoadProfileDemandRateComboBox.addItem("30 minute");
+		 ivjLoadProfileDemandRateComboBox.addItem("1 hour");
          
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1171,26 +1171,26 @@ private javax.swing.JLabel getMeterNumberLabel() {
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getMeterNumberTextField()
 {
-    if (ivjMeterNumberTextField == null)
-    {
-        try
-        {
-            ivjMeterNumberTextField = new javax.swing.JTextField();
-            ivjMeterNumberTextField.setName("MeterNumberTextField");
-            // user code begin {1}
-            ivjMeterNumberTextField.setDocument(
-                new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_METER_NUMBER_LENGTH));
+	if (ivjMeterNumberTextField == null)
+	{
+		try
+		{
+			ivjMeterNumberTextField = new javax.swing.JTextField();
+			ivjMeterNumberTextField.setName("MeterNumberTextField");
+			// user code begin {1}
+			ivjMeterNumberTextField.setDocument(
+				new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_METER_NUMBER_LENGTH));
 
-            // user code end
-        }
-        catch (java.lang.Throwable ivjExc)
-        {
-            // user code begin {2}
-            // user code end
-            handleException(ivjExc);
-        }
-    }
-    return ivjMeterNumberTextField;
+			// user code end
+		}
+		catch (java.lang.Throwable ivjExc)
+		{
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjMeterNumberTextField;
 }
 /**
  * This method was created in VisualAge.
@@ -1215,12 +1215,12 @@ public Object getValue(Object val)
 		}
 				
 		dlp.setLastIntervalDemandRate(
-         CtiUtilities.getIntervalComboBoxSecondsValue(getLastIntervalDemandRateComboBox()) );
+		 CtiUtilities.getIntervalComboBoxSecondsValue(getLastIntervalDemandRateComboBox()) );
 
 		if( getLoadProfileCollectionPanel().isVisible() )
 		{
-         dlp.setLoadProfileDemandRate(
-            CtiUtilities.getIntervalComboBoxSecondsValue(getLoadProfileDemandRateComboBox()) );
+		 dlp.setLoadProfileDemandRate(
+			CtiUtilities.getIntervalComboBoxSecondsValue(getLoadProfileDemandRateComboBox()) );
 
 			StringBuffer loadProfileCollection = new StringBuffer();
 			if( getChannel1CheckBox().isSelected() )
@@ -1267,16 +1267,16 @@ public Object getValue(Object val)
    String billingGroup = getJComboBoxBillingGroup().getSelectedItem().toString();
    
    if( cycleGroup != null && cycleGroup.length() > 0 )
-   	dmg.setCollectionGroup( cycleGroup );
+	dmg.setCollectionGroup( cycleGroup );
       
    if( areaCodeGroup != null && areaCodeGroup.length() > 0 )
-   	dmg.setTestCollectionGroup( areaCodeGroup );
+	dmg.setTestCollectionGroup( areaCodeGroup );
       
    if( meterNumber != null && meterNumber.length() > 0 )
-   	dmg.setMeterNumber( meterNumber );
+	dmg.setMeterNumber( meterNumber );
 
    if( billingGroup != null && billingGroup.length() > 0 )
-      dmg.setBillingGroup( billingGroup );
+	  dmg.setBillingGroup( billingGroup );
 	
 	return val;
 }
@@ -1385,11 +1385,11 @@ private void initialize() {
 public boolean isInputValid() 
 {
 /*   if( getJCheckBoxScanWindow().isSelected() 
-       && (getJTextFieldClose().getTimeTotalSeconds().intValue()
-           == getJTextFieldOpen().getTimeTotalSeconds().intValue()) )
+	   && (getJTextFieldClose().getTimeTotalSeconds().intValue()
+		   == getJTextFieldOpen().getTimeTotalSeconds().intValue()) )
    {
-      setErrorString("The Device Window open and close values can not be equal");
-      return false;
+	  setErrorString("The Device Window open and close values can not be equal");
+	  return false;
    }
 */
 	/*if(is410 && getMeterNumberTextField().getText().length() < 7)
@@ -1503,8 +1503,8 @@ public void setValue(Object val)
 
 		String loadProfileCollection = dlp.getLoadProfileCollection();
 
-      	CtiUtilities.setIntervalComboBoxSelectedItem(
-      		getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
+		CtiUtilities.setIntervalComboBoxSelectedItem(
+			getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
 
 		CtiUtilities.setIntervalComboBoxSelectedItem(
 			getJComboBoxlVoltInterval(), dlp.getVoltageDmdInterval().intValue() );
@@ -1537,8 +1537,8 @@ public void setValue(Object val)
 		CtiUtilities.setIntervalComboBoxSelectedItem(
 			getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue() );
       	
-      	CtiUtilities.setIntervalComboBoxSelectedItem(
-            getLoadProfileDemandRateComboBox(), dlp.getLoadProfileDemandRate().intValue() );
+		CtiUtilities.setIntervalComboBoxSelectedItem(
+			getLoadProfileDemandRateComboBox(), dlp.getLoadProfileDemandRate().intValue() );
 
 
 		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType) )
@@ -1548,13 +1548,24 @@ public void setValue(Object val)
 			getChannel3CheckBox().setVisible(false);
 			getChannel4CheckBox().setVisible(false);
 		}
-      else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType) )
-      {
-         CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
-         CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
-         CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
-         getChannel4CheckBox().setVisible(false);
-      }
+	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType) )
+	  {
+		 CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+		 CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+		 CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+		 getChannel4CheckBox().setVisible(false);
+	  }
+      
+	  else if( deviceType == PAOGroups.MCT470)
+	  {
+	  	getChannel2CheckBox().setEnabled(true);
+		getChannel3CheckBox().setEnabled(true);	
+		getChannel4CheckBox().setEnabled(true);
+		CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+		CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+		CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+		CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
+	  }
 		else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) )
 		{
 			CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
@@ -1568,11 +1579,11 @@ public void setValue(Object val)
 			}
 		}
 	   else //must not have load profile capabilities
-      {
-         //setting invisible lays out the JPanel in a Funny way, just remove the comps
-         getLoadProfileCollectionPanel().removeAll();
-         getLoadProfileCollectionPanel().setBorder( null );
-      }
+	  {
+		 //setting invisible lays out the JPanel in a Funny way, just remove the comps
+		 getLoadProfileCollectionPanel().removeAll();
+		 getLoadProfileCollectionPanel().setBorder( null );
+	  }
 
 	}
 
