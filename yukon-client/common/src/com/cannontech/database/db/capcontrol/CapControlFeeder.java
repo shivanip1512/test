@@ -10,7 +10,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 	private Double upperBandwidth = new Double(0.0);
 	private Integer currentVarLoadPointID = null;
 	private Integer currentWattLoadPointID = null;	
-	private Integer mapLocationID = new Integer(0);
+	private String mapLocationID = "0";  //old integer default
 	private Double lowerBandwidth = new Double(0.0);	
 
 	public static final String SETTER_COLUMNS[] = 
@@ -115,7 +115,7 @@ public java.lang.Double getLowerBandwidth() {
  * Creation date: (11/9/2001 1:42:02 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getMapLocationID() {
+public String getMapLocationID() {
 	return mapLocationID;
 }
 
@@ -230,7 +230,7 @@ public void retrieve() throws java.sql.SQLException
 		setUpperBandwidth( (Double) results[2] );
 		setCurrentVarLoadPointID( (Integer) results[3] );
 		setCurrentWattLoadPointID( (Integer) results[4] );
-		setMapLocationID( (Integer) results[5] );
+		setMapLocationID( (String) results[5] );
 		setLowerBandwidth( (Double) results[6] );
 	}
 	else
@@ -284,7 +284,7 @@ public void setLowerBandwidth(java.lang.Double newLowerBandwidth) {
  * Creation date: (11/9/2001 1:42:02 PM)
  * @param newMapLocationID java.lang.Integer
  */
-public void setMapLocationID(java.lang.Integer newMapLocationID) {
+public void setMapLocationID(String newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
 

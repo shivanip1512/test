@@ -28,7 +28,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 	private Integer minConfirmPercent = new Integer(15);
 	private Integer failurePercent = new Integer(15);
 	private String daysOfWeek = new String("YYYYYNNN");
-	private Integer mapLocationID = new Integer(0);  //not used as of 11-12-2001
+	private String mapLocationID = "0";  //old integer default
 	private Double lowerBandwidth = new Double(0.0);
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 	private Integer controlDelayTime = new Integer(0);
@@ -182,7 +182,7 @@ public java.lang.Double getLowerBandwidth() {
  * Creation date: (11/9/2001 1:42:02 PM)
  * @return java.lang.Integer
  */
-public java.lang.Integer getMapLocationID() {
+public String getMapLocationID() {
 	return mapLocationID;
 }
 
@@ -395,7 +395,7 @@ public void retrieve() throws java.sql.SQLException
 		setMinConfirmPercent( (Integer) results[12] );
 		setFailurePercent( (Integer) results[13] );
 		setDaysOfWeek( (String) results[14] );
-		setMapLocationID( (Integer) results[15] );
+		setMapLocationID( (String) results[15] );
 		setLowerBandwidth( (Double) results[16] );
 		setControlUnits( (String) results[17] );
 		setControlDelayTime( (Integer) results[18] );
@@ -490,7 +490,7 @@ public void setLowerBandwidth(java.lang.Double newLowerBandwidth) {
  * Creation date: (11/9/2001 1:42:02 PM)
  * @param newMapLocationID java.lang.Integer
  */
-public void setMapLocationID(java.lang.Integer newMapLocationID) {
+public void setMapLocationID(String newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
 

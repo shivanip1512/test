@@ -1,6 +1,8 @@
 package com.cannontech.dbeditor.editor.capsubbus;
 
+import com.cannontech.common.gui.unchanging.StringRangeDocument;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.capcontrol.CapControlYukonPAOBase;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 
 /**
@@ -8,7 +10,7 @@ import com.cannontech.roles.capcontrol.CBCSettingsRole;
  */
 public class CCSubstationBusBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener
 {
-	private Integer originalMapLocID = null;
+	private String originalMapLocID = null;
 	private javax.swing.JPanel ivjIdentificationPanel = null;
 	private javax.swing.JCheckBox ivjDisableCheckBox = null;
 	private javax.swing.JLabel ivjJLabelGeoName = null;
@@ -473,8 +475,7 @@ private javax.swing.JTextField getJTextFieldMapLocation() {
 			ivjJTextFieldMapLocation.setName("JTextFieldMapLocation");
 			// user code begin {1}
 
-			ivjJTextFieldMapLocation.setDocument( 
-					new com.cannontech.common.gui.unchanging.LongRangeDocument() );
+			ivjJTextFieldMapLocation.setDocument( new StringRangeDocument(64) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -538,10 +539,9 @@ public Object getValue(Object val)
 			: new Character('N') );
 
 	if( getJTextFieldMapLocation().getText() == null || getJTextFieldMapLocation().getText().length() <= 0 )
-		subBus.getCapControlSubstationBus().setMapLocationID( new Integer(0) );
+		subBus.getCapControlSubstationBus().setMapLocationID( CapControlYukonPAOBase.DEFAULT_MAPLOCATION_ID );
 	else
-		subBus.getCapControlSubstationBus().setMapLocationID(
-				new Integer( getJTextFieldMapLocation().getText() ) );
+		subBus.getCapControlSubstationBus().setMapLocationID( getJTextFieldMapLocation().getText() );
 	
 	originalMapLocID = subBus.getCapControlSubstationBus().getMapLocationID();
 
@@ -653,18 +653,18 @@ public boolean isInputValid()
 		 && getJTextFieldMapLocation().getText() != null 
 		 && getJTextFieldMapLocation().getText().length() > 0 )	
 	{
-		int[] mapIDs = null;
+		String[] mapIDs = null;
 		
 		if( originalMapLocID != null )
-			mapIDs = com.cannontech.database.data.capcontrol.CapControlYukonPAOBase.getAllUsedCapControlMapIDs( originalMapLocID.intValue() );
+			mapIDs = com.cannontech.database.data.capcontrol.CapControlYukonPAOBase.getAllUsedCapControlMapIDs( originalMapLocID );
 		else
 			mapIDs = com.cannontech.database.data.capcontrol.CapControlYukonPAOBase.getAllUsedCapControlMapIDs();
 
 		StringBuffer buf = new StringBuffer("The MapLocationID selected is already used, try another\nUsed IDs: ");
 
-		long mapId = Long.parseLong( getJTextFieldMapLocation().getText() );
+		String mapId = getJTextFieldMapLocation().getText();
 		for( int i = 0; i < mapIDs.length; i++ )
-			if( mapIDs[i] == mapId )
+			if( mapIDs[i].equalsIgnoreCase(mapId) )
 			{
 				//setErrorString("The MapLocationID selected is already used, try another");
 				for( int j = 0; j < mapIDs.length; j ++ )

@@ -1,11 +1,17 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.util.HashMap;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+
 /**
  * This type was created in VisualAge.
  */
 public abstract class CapControlYukonPAOBase extends com.cannontech.database.data.pao.YukonPAObject
 {
-	public static final int DEFAULT_MAPLOCATION_ID = 0;
+	public static final String DEFAULT_MAPLOCATION_ID = "0";
 /**
  * TwoWayDevice constructor comment.
  */
@@ -16,7 +22,7 @@ public CapControlYukonPAOBase() {
  * Insert the method's description here.
  * Creation date: (11/9/2001 3:15:43 PM)
  */
-public static int[] getAllUsedCapControlMapIDs()
+public static String[] getAllUsedCapControlMapIDs()
 {
 	return getAllUsedCapControlMapIDs( CapControlYukonPAOBase.DEFAULT_MAPLOCATION_ID );
 }
@@ -24,18 +30,16 @@ public static int[] getAllUsedCapControlMapIDs()
  * Insert the method's description here.
  * Creation date: (11/9/2001 3:15:43 PM)
  */
-public static int[] getAllUsedCapControlMapIDs( int currentMapLocID )
+public static String[] getAllUsedCapControlMapIDs( String currentMapLocID )
 {
 	java.sql.Connection conn = null;
 	java.sql.Statement pstmt = null;
 	java.sql.ResultSet rset = null;
-	com.cannontech.common.util.NativeIntVector mapIDs = new com.cannontech.common.util.NativeIntVector(50);
+	HashMap mapIDs = new HashMap(64);
 		
 	try
 	{		
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-						com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
+		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		if( conn == null )
 		{
 			throw new IllegalStateException("Error getting database connection.");
@@ -57,15 +61,14 @@ public static int[] getAllUsedCapControlMapIDs( int currentMapLocID )
 						"from " + tableNames[i] +
 						" order by maplocationid");
 
-				int value = -1;
-
+				String value = null;
 				while( rset.next() )
 				{
-					value = rset.getInt("maplocationid");
+					value = rset.getString(1);
 
-					if( !mapIDs.contains(value) && value != currentMapLocID 
-						 && value != CapControlYukonPAOBase.DEFAULT_MAPLOCATION_ID )
-						mapIDs.add( value );
+					if( !mapIDs.containsKey(value) && !value.equalsIgnoreCase(currentMapLocID) 
+						 && !value.equalsIgnoreCase(CapControlYukonPAOBase.DEFAULT_MAPLOCATION_ID) )
+						mapIDs.put( value, value );
 				}
 
 			}
@@ -74,7 +77,7 @@ public static int[] getAllUsedCapControlMapIDs( int currentMapLocID )
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -85,11 +88,12 @@ public static int[] getAllUsedCapControlMapIDs( int currentMapLocID )
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
-	int[] vals = mapIDs.toArray();
+	String[] vals = new String[ mapIDs.size() ];
+	vals = (String[])mapIDs.keySet().toArray( vals );
 	java.util.Arrays.sort(vals);
 	
 	return vals;

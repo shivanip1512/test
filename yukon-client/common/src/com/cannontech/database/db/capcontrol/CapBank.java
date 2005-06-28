@@ -13,7 +13,7 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private Integer bankSize = null;
 	private String typeOfSwitch = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String switchManufacture = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private Integer mapLocationID = new Integer(0);
+	private String mapLocationID = "0";  //old integer default
 	private Integer recloseDelay = new Integer(0);
 
 	public static final String SETTER_COLUMNS[] = 
@@ -101,11 +101,9 @@ public Integer getDeviceID() {
 	return deviceID;
 }
 /**
- * Insert the method's description here.
- * Creation date: (12/6/2001 2:05:57 PM)
- * @return java.lang.Integer
+ * @return String
  */
-public java.lang.Integer getMapLocationID() {
+public String getMapLocationID() {
 	return mapLocationID;
 }
 /**
@@ -219,7 +217,7 @@ public void retrieve() throws java.sql.SQLException
 		setBankSize( (Integer) results[4] );
 		setTypeOfSwitch( (String) results[5] );
 		setSwitchManufacture( (String) results[6] );
-		setMapLocationID( (Integer) results[7] );
+		setMapLocationID( (String) results[7] );
 		setRecloseDelay( (Integer) results[8] );
 	}
 
@@ -262,11 +260,9 @@ public void setDeviceID(Integer newValue) {
 	this.deviceID = newValue;
 }
 /**
- * Insert the method's description here.
- * Creation date: (12/6/2001 2:05:57 PM)
- * @param newMapLocationID java.lang.Integer
+ * @param newMapLocationID String
  */
-public void setMapLocationID(java.lang.Integer newMapLocationID) {
+public void setMapLocationID(String newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
 /**
