@@ -80,14 +80,14 @@ public class BillingFile extends java.util.Observable implements Runnable
 					String subString = argLowerCase.substring(startIndex);
 					billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
 				}
-				else if( argLowerCase.startsWith("coll") )
+				else if( argLowerCase.startsWith("coll") ||  argLowerCase.startsWith("group") )
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
 					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.COLLECTION_GROUP);
 					String subString = args[i].substring(startIndex);
 					billingFile.getBillingDefaults().setBillGroup(subString);
 				}
-				else if( argLowerCase.startsWith("test"))
+				else if( argLowerCase.startsWith("test") ||  argLowerCase.startsWith("alt") )
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
 					billingFile.getBillingDefaults().setBillGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
