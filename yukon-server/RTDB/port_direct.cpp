@@ -313,6 +313,11 @@ INT CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, RWTPtrSlist< CtiMess
             }
 
             Xfer.setInCountExpected( bytesavail );
+
+            if(Xfer.getBufferSize() && (Xfer.getBufferSize()<bytesavail))//greater than 0 and less then bytes avail
+            {
+                Xfer.setInCountExpected(Xfer.getBufferSize());
+            }
         }
 
         if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
