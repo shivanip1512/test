@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/10/29 20:02:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/06/29 19:35:08 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -68,7 +68,8 @@ public:
     enum Protocol
     {
         Protocol_Golay,
-        Protocol_SA205
+        Protocol_SA205,
+        Protocol_SNPP
     };
 
     enum Type
