@@ -64,6 +64,15 @@ UINT     CtiXfer::getFlag() const
    return _flag;
 }
 
+ULONG    CtiXfer::getBufferSize() const
+{
+   return _bufferSize;
+}
+ULONG&    CtiXfer::getBufferSize()
+{
+   return _bufferSize;
+}
+
 CtiXfer& CtiXfer::setOutBuffer(BYTE * p)
 {
    _outBuffer = p;
@@ -139,6 +148,12 @@ CtiXfer& CtiXfer::setTraceMask(INT all, INT errs, INT port, LONG rem)
    {
       setRemoteToTrace(rem);
    }
+   return *this;
+}
+
+CtiXfer& CtiXfer::setBufferSize(ULONG c)
+{
+   _bufferSize = c;
    return *this;
 }
 

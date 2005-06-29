@@ -37,6 +37,7 @@ protected:
    ULONG    *_inCountActual; // Returned back in this guy
    ULONG    _inCountExpected;
    ULONG    _inTimeout;
+   ULONG    _bufferSize; //Size of buffer in Bytes. NOTE this is only used in direct port, non-blocking reads.
 
    union {
       UINT    _flag;
@@ -76,7 +77,8 @@ public:
       _inCountExpected(inCount),
       _inCountActual(inRecv),
       _inTimeout(timeOut),
-      _remoteToTrace(0)
+      _remoteToTrace(0),
+      _bufferSize(0)
    {
       setTraceMask(trceMask);
    }
@@ -99,6 +101,8 @@ public:
    ULONG    getInTimeout() const;
    ULONG&   getInTimeout();
    UINT     getFlag() const;
+   ULONG    getBufferSize() const;
+   ULONG&   getBufferSize();
 
    CtiXfer& setOutBuffer(BYTE *p);
    CtiXfer& setInBuffer(BYTE *p);
@@ -108,6 +112,7 @@ public:
    CtiXfer& setInCountActual(ULONG c);
    CtiXfer& setInTimeout(ULONG t);
    CtiXfer& setFlag(UINT flg);
+   CtiXfer& setBufferSize(ULONG c);
 
 
    CtiXfer& setRemoteToTrace(ULONG remote);
