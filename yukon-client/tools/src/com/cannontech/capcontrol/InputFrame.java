@@ -269,10 +269,10 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 		serialFromTF.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999));
 		serialToTF.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999));
 		serialRangeLabel.setBounds(new Rectangle(10, 10, 90, 20));
-		serialFromTF.setBounds(new Rectangle(100, 10, 60, 20));
+		serialFromTF.setBounds(new Rectangle(100, 10, 70, 20));
 		
-		serialToLabel.setBounds(new Rectangle(170, 10, 20, 20));
-		serialToTF.setBounds(new Rectangle(190, 10, 60, 20));
+		serialToLabel.setBounds(new Rectangle(180, 10, 20, 20));
+		serialToTF.setBounds(new Rectangle(200, 10, 70, 20));
 		routeLabel.setBounds(new Rectangle(10, 40, 50, 20));
 		routeCB.setBounds(new Rectangle(70, 40, 120, 20));
 		bankSizeLabel.setBounds(new Rectangle(10, 160, 90, 20));
