@@ -56,9 +56,11 @@ tbl_dv_lmvcserial.obj \
 tbl_dv_lmgmct.obj \
 tbl_dv_lmg_ripple.obj \
 tbl_dv_mctiedport.obj \
+tbl_dv_pagingreceiver.obj \
 tbl_dv_rtc.obj \
 tbl_dv_scandata.obj \
 tbl_dv_tappaging.obj \
+tbl_dv_tnpp.obj \
 tbl_dv_versacom.obj \
 tbl_dv_wnd.obj \
 tbl_gateway_end_device.obj \
