@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.144 $
-* DATE         :  $Date: 2005/06/16 21:25:14 $
+* REVISION     :  $Revision: 1.145 $
+* DATE         :  $Date: 2005/06/29 20:04:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,6 +78,8 @@ using namespace std;
 #include "dev_lcu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
+#include "dev_pagingreceiver.h"
+#include "dev_tnpp.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
 #include "dev_wctp.h"
@@ -1205,6 +1207,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_SERIESVLMIRTU:
                 case TYPE_RTM:
                 case TYPE_SNPP:
+                case TYPE_PAGING_RECEIVER:
+                case TYPE_TNPP:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int protocolStatus = NoError;
@@ -1554,6 +1558,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             Port->close(0);         // 06062002 CGP  Make it reopen when needed.
                             Port->setTAP( FALSE );
 
+                            //Do Verification!
+                            queue< CtiVerificationBase * > verification_queue;
+                            IED->getVerificationObjects(verification_queue);
+                            PorterVerificationThread.push(verification_queue);
+
                             VanGoghConnection.WriteConnQue(Device->rsvpToDispatch());
                         }
                         catch(...)
@@ -1580,7 +1589,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
 
-
+                            //Do Verification!
+                            queue< CtiVerificationBase * > verification_queue;
+                            IED->getVerificationObjects(verification_queue);
+                            PorterVerificationThread.push(verification_queue);
 
                             if( status != NORMAL && !(status == ErrorPageRS || status == ErrorPageNAK || status == ErrorPageNoResponse) )
                             {
@@ -2044,6 +2056,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ION7700:
                     case TYPE_ION8300:
                     case TYPE_SNPP:
+                    case TYPE_PAGING_RECEIVER:
+                    case TYPE_TNPP:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:
