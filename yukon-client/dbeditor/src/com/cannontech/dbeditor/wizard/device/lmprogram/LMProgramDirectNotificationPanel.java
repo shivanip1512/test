@@ -434,8 +434,13 @@ public Object getValue(Object o)
 	else
 		program.getDirectProgram().setMessageFooter( getJTextPaneMsgFooter().getText() );
 
-	program.getDirectProgram().setNotifyActiveOffset( new Integer( new Integer(getJTextFieldNotifyActiveOffset().getText()).intValue() * 60 ) );
-	program.getDirectProgram().setNotifyInactiveOffset( new Integer( new Integer(getJTextFieldNotifyInactiveOffset().getText()).intValue() * 60 ) );
+	String programStart = getJTextFieldNotifyActiveOffset().getText();
+	String programStop = getJTextFieldNotifyInactiveOffset().getText();
+	
+	if(programStart.length() > 0)
+		program.getDirectProgram().setNotifyActiveOffset( new Integer( new Integer(programStart).intValue() * 60 ) );
+	if(programStop.length() > 0)
+		program.getDirectProgram().setNotifyInactiveOffset( new Integer( new Integer(programStop).intValue() * 60 ) );
 
 	return o;
 }
