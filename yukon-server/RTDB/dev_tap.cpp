@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/06/29 19:32:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 #include "msg_pdata.h"
 #include "msg_trace.h"
 #include "numstr.h"
+#include "verification_objects.h"
 #include "dev_tap.h"
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
@@ -100,14 +101,15 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
 
 INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
 {
+    if(_outMessage == NULL)
+    {
+        _outMessage = CTIDBG_new OUTMESS(*oMess);//new out message
+    }
     if(_pageBuffer == NULL)
     {
-        _pageBuffer = (CHAR*) CTIDBG_new CHAR[256];
-
-        if(_pageBuffer != NULL && oMess != NULL)
-        {
-            setPageBuffer(oMess->Buffer.TAPSt.Message, oMess->Buffer.TAPSt.Length);
-        }
+        _pageBuffer = (CHAR*) _outMessage->Buffer.TAPSt.Message;//point pointer to new message structure.
+        setPageLength(_outMessage->Buffer.TAPSt.Length);
+        
     }
 
     return NORMAL;
@@ -117,8 +119,12 @@ INT CtiDeviceTapPagingTerminal::freeDataBins()
 {
     if(_pageBuffer != NULL)
     {
-        delete [] _pageBuffer;
         _pageBuffer = NULL;
+    }
+    if(_outMessage != NULL)
+    {
+        delete _outMessage;
+        _outMessage = NULL;
     }
 
     return NORMAL;
@@ -185,17 +191,16 @@ CHAR  CtiDeviceTapPagingTerminal::getPageBuffer(const INT i) const
     return ch;
 }
 
+//This should no longer be used!
+/*
 CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setPageBuffer(const CHAR* copyBuffer, const INT len)
 {
-    if(_pageBuffer != NULL && len < 256)
-    {
         setPageLength(len);
         memcpy(_pageBuffer, copyBuffer, len);
-    }
 
     return *this;
 }
-
+*/
 
 RWCString CtiDeviceTapPagingTerminal::getDescription(const CtiCommandParser & parse) const
 {
@@ -1094,6 +1099,15 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         {
                             traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
                         }
+
+                        //Message sent and accepted. Add to verification list!
+                        //If Verification is set, this is our second time through..
+                        if( !_outMessage->VerificationSequence )
+                        {
+                            _outMessage->VerificationSequence = VerificationSequenceGen();
+                        }
+                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
+                        _verification_objects.push(work);
                     }
                 }
                 else
@@ -1412,7 +1426,8 @@ _pageCount(0),
 _pagePrefix('a'),
 _pageLength(0),
 _inStr(RWCString()),
-_pageBuffer(NULL)
+_pageBuffer(NULL),
+_outMessage(NULL)
 {}
 
 /*
@@ -1652,5 +1667,15 @@ CtiMessage* CtiDeviceTapPagingTerminal::rsvpToDispatch(bool clearMessage)
     }
 
     return returnMsg;
+}
+
+void CtiDeviceTapPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    while( !_verification_objects.empty() )
+    {
+        work_queue.push(_verification_objects.front());
+
+        _verification_objects.pop();
+    }
 }
 

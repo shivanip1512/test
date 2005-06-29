@@ -39,6 +39,7 @@
 #include "msg_trace.h"
 #include "cmdparse.h"
 #include "dev_wctp.h"
+#include "verification_objects.h"
 
 static int pagesPerMinute  = gConfigParms.getValueAsInt("PAGES_PER_MINUTE", 0);
 
@@ -213,16 +214,15 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
 
 INT CtiDeviceWctpTerminal::allocateDataBins(OUTMESS *oMess)
 {
+    if(_outMessage == NULL)
+    {
+        _outMessage = CTIDBG_new OUTMESS(*oMess);//new out message
+    }
     if(_pageBuffer == NULL)
     {
-        _pageBuffer = (CHAR*) CTIDBG_new CHAR[256];
-        _pageBuffer[0] = 0;
-
-        if(_pageBuffer != NULL && oMess != NULL)
-        {
-            // Use the TAP message structure for now
-            setPageBuffer(oMess->Buffer.TAPSt.Message, oMess->Buffer.TAPSt.Length);
-        }
+        _pageBuffer = (CHAR*) _outMessage->Buffer.TAPSt.Message;//point pointer to new message structure.
+        setPageLength(_outMessage->Buffer.TAPSt.Length);
+        
     }
 
     return NORMAL;
@@ -232,9 +232,12 @@ INT CtiDeviceWctpTerminal::freeDataBins()
 {
     if(_pageBuffer != NULL)
     {
-        delete [] _pageBuffer;
         _pageBuffer = NULL;
-        _pageLength = 0;
+    }
+    if(_outMessage != NULL)
+    {
+        delete _outMessage;
+        _outMessage = NULL;
     }
 
     return NORMAL;
@@ -301,6 +304,8 @@ CHAR  CtiDeviceWctpTerminal::getPageBuffer(const INT i) const
     return ch;
 }
 
+//Shouldnt be used anymore!
+/*
 CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setPageBuffer(const CHAR* copyBuffer, const INT len)
 {
     if(_pageBuffer != NULL && len < 256)
@@ -311,7 +316,7 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setPageBuffer(const CHAR* copyBuff
     }
 
     return *this;
-}
+}*/
 
 
 RWCString CtiDeviceWctpTerminal::getDescription(const CtiCommandParser & parse) const
@@ -1025,6 +1030,16 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                         // And call the termination method
                         XMLPlatformUtils::Terminate();
 
+                        //Set up Verification.
+                        //Message sent and accepted. Add to verification list!
+                        //If Verification is set, this is our second time through..
+                        if( !_outMessage->VerificationSequence )
+                        {
+                            _outMessage->VerificationSequence = VerificationSequenceGen();
+                        }
+                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
+                        _verification_objects.push(work);
+
                         setCurrentState( StateScanComplete );
                         break;
                     }
@@ -1157,7 +1172,8 @@ parser(NULL),
 handler(NULL),
 statusParsed(FALSE),
 headerParsed(FALSE),
-timeEllapsed(0)
+timeEllapsed(0),
+_outMessage(NULL)
 {}
 
 /*
@@ -1628,5 +1644,15 @@ CtiMessage* CtiDeviceWctpTerminal::rsvpToDispatch(bool clearMessage)
     }
 
     return returnMsg;
+}
+
+void CtiDeviceWctpTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    while( !_verification_objects.empty() )
+    {
+        work_queue.push(_verification_objects.front());
+
+        _verification_objects.pop();
+    }
 }
 
