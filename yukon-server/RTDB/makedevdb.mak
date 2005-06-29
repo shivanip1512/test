@@ -80,6 +80,7 @@ dev_mct410.obj \
 dev_mct470.obj \
 dev_mct_broadcast.obj \
 dev_mct_lmt2.obj \
+dev_pagingreceiver.obj \
 dev_repeater.obj \
 dev_repeater800.obj \
 dev_rtc.obj \
@@ -88,6 +89,7 @@ dev_seriesv.obj \
 dev_single.obj \
 dev_sixnet.obj \
 dev_snpp.obj \
+dev_tnpp.obj \
 dev_system.obj \
 dev_tap.obj \
 dev_tcu.obj \
