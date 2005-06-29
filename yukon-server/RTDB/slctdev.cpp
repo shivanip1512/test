@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/06/15 19:16:42 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/06/29 19:43:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,8 @@
 #include "dev_rtm.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
+#include "dev_pagingreceiver.h"
+#include "dev_tnpp.h"
 #include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
@@ -296,16 +298,26 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSixnet;
             break;
         }
-    case TYPE_SNPP:
-        {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSnppPagingTerminal;
-            break;
-        }
     case TYPE_TAPTERM:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceTapPagingTerminal;
             break;
         }
+    case TYPE_SNPP:
+    {
+        Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSnppPagingTerminal;
+        break;
+    }
+    case TYPE_PAGING_RECEIVER:
+    {
+        Device = (CtiDeviceBase*) CTIDBG_new CtiDevicePagingReceiver;
+        break;
+    }
+    case TYPE_TNPP:
+    {
+        Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceTnppPagingTerminal;
+        break;
+    }
     case TYPE_WCTP:
         {
             Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceWctpTerminal;
