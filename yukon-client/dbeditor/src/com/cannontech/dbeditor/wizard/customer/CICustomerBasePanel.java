@@ -259,12 +259,9 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 			ivjJComboBoxEnergyCompany = new javax.swing.JComboBox();
 			ivjJComboBoxEnergyCompany.setName("JComboBoxEnergyCompany");
 			ivjJComboBoxEnergyCompany.setToolTipText("What energy company owns this customer");
-			ivjJComboBoxEnergyCompany.setVisible(false);
 			// user code begin {1}
 			
 			getJComboBoxEnergyCompany().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
-
-
 
 			try
 			{
@@ -273,8 +270,6 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 						com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
 				conn.close();
 					
-				getJLabelEnergyCmpy().setVisible( companies.length > 0 );
-				getJComboBoxEnergyCompany().setVisible( companies.length > 0 );
 
 				for( int i = 0; i < companies.length; i++ )
 					getJComboBoxEnergyCompany().addItem( companies[i] );
@@ -329,9 +324,7 @@ private javax.swing.JLabel getJLabelEnergyCmpy() {
 			ivjJLabelEnergyCmpy.setName("JLabelEnergyCmpy");
 			ivjJLabelEnergyCmpy.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelEnergyCmpy.setText("Owner Energy Company:");
-			ivjJLabelEnergyCmpy.setEnabled(false);
 			// user code begin {1}
-			ivjJLabelEnergyCmpy.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -759,6 +752,22 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
+
+	//for now do not show the Curtailment kW or Demand Level kW	
+	getJLabelCurtailAmount().setVisible( false );
+	getJLabelKw().setVisible( false );
+	getJTextFieldCurtailAmount().setVisible( false );
+	
+	getJLabelFPL().setVisible( false );
+	getJLabelKw1().setVisible( false );
+	getJTextFieldFPL().setVisible( false );
+
+	
+	boolean isEComp = getJComboBoxEnergyCompany().getItemCount() >= 1;
+	getJLabelEnergyCmpy().setEnabled( isEComp );
+	getJComboBoxEnergyCompany().setEnabled( isEComp );
+
+
 
 	// user code end
 }
