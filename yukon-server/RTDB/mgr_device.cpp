@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2005/06/17 15:36:29 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2005/06/29 19:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,8 @@
 #include "dev_rtm.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
+#include "dev_tnpp.h"
+#include "dev_pagingreceiver.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_energypro.h"
 #include "dev_grp_expresscom.h"
