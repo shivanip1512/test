@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/06/13 13:45:49 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/06/29 19:34:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,8 @@
 #define TYPE_TAPTERM_EMAIL                   1902
 #define TYPE_WCTP                            1905
 #define TYPE_SNPP                            1907
+#define TYPE_PAGING_RECEIVER                 1908
+#define TYPE_TNPP                            1909
 
 #define TYPE_RTC                             1910
 #define TYPE_RTM                             1911
