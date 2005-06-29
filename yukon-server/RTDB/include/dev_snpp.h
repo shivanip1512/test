@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/13 14:04:48 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/06/29 19:44:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,11 +32,11 @@ class IM_EX_DEVDB CtiDeviceSnppPagingTerminal  : public CtiDeviceRemote
 {
 protected:
 
+   queue< CtiVerificationBase * >  _verification_objects;
    CtiTableDeviceTapPaging       _table;
 
    BYTE                          _outBuffer[505];
    BYTE                          _inBuffer[100];
-   BYTE                          _messageBuffer[500];
    ULONG                         _inCountActual;
 
 public:
@@ -64,6 +64,8 @@ public:
                           RWTPtrSlist< OUTMESS >         &outList);
 
    bool isTransactionComplete();
+
+   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
    enum CommandState
    {
@@ -108,6 +110,8 @@ private:
    void resetStates();
    void setCurrentState(StateMachine newCurrentState);
    void setPreviousState(StateMachine newPreviousState);
+
+   OUTMESS _outMessage;
 
     static const char *_command_login;
     static const char *_command_page;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/13 14:05:03 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/06/29 19:44:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 #include "msg_pdata.h"
 #include "msg_trace.h"
 #include "numstr.h"
+#include "verification_objects.h"
 #include "dev_snpp.h"
 
 const char *CtiDeviceSnppPagingTerminal::_command_login       = "logi";
@@ -414,7 +415,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendData:
             {
-                strncpy((char *)xfer.getOutBuffer(),(char *)_messageBuffer,500);//send whole message!
+                strncpy((char *)xfer.getOutBuffer(),reinterpret_cast<char *>(_outMessage.Buffer.OutMessage),500);//send whole message!
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,2);
                 strncat((char *)xfer.getOutBuffer(),".",2);
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,2);
@@ -438,6 +439,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendQuit:
             {
+                //we can assume here that everything is ok, so set up the verification object!
+                
+                //If Retry is set, this is not a verification retry...
+                if( !_outMessage.VerificationSequence )
+                {
+                    _outMessage.VerificationSequence = VerificationSequenceGen();
+                }
+                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
+                _verification_objects.push(work);
+
                 strncpy((char *)xfer.getOutBuffer(),_command_quit,10);
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
@@ -468,7 +479,7 @@ int CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 
     if( OutMessage )
     {
-        strcpy((char *)_messageBuffer,reinterpret_cast<char *>(OutMessage->Buffer.OutMessage));
+        _outMessage = *OutMessage;
         resetStates();
         _command = Normal;
 
@@ -641,7 +652,7 @@ void CtiDeviceSnppPagingTerminal::resetStates()
 void CtiDeviceSnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceTapPaging::getSQL(db, keyTable, selector);
+    _table.getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
@@ -657,3 +668,13 @@ void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
     _table.DecodeDatabaseReader(rdr);
 }
                                                                                 
+
+void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
+{
+    while( !_verification_objects.empty() )
+    {
+        work_queue.push(_verification_objects.front());
+
+        _verification_objects.pop();
+    }
+}

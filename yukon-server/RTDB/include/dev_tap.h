@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2004/03/23 20:42:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/06/29 19:44:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,10 +35,12 @@ protected:
 
    CtiTableDeviceTapPaging       _tap;
 
+   queue< CtiVerificationBase * >  _verification_objects;
    UINT                          _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR                          _pagePrefix;   // Used to fake the TAPTERM into thining it is a new message (a-d)
    UINT                          _pageLength;
    CHAR                          *_pageBuffer;
+   OUTMESS                       *_outMessage;
 
    RWCString                     _inStr;
 
@@ -79,7 +81,8 @@ public:
    BOOL  isValidPageBuffer() const;
    CHAR* getPageBuffer();
    CHAR  getPageBuffer(const INT i) const;
-   CtiDeviceTapPagingTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
+
+  // CtiDeviceTapPagingTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
 
    CtiTableDeviceTapPaging    getTap() const;//       { return _tap; }
    CtiTableDeviceTapPaging&   getTap();//             { return _tap; }
@@ -126,6 +129,8 @@ public:
    void updatePageCountData(UINT addition);
 
    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+
+   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
 };
 

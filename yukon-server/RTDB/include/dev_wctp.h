@@ -34,10 +34,12 @@ protected:
 
    CtiTableDeviceTapPaging      _wctp;          // Use the same class as a TapPagingTerminal for now
 
+   queue< CtiVerificationBase * >  _verification_objects;
    UINT                         _pageCount;    // Used to count the number of pages sent out (0-n)
    CHAR                         _pagePrefix;   // Used to fake the WCTPTERM into thining it is a new message (a-d)
    UINT                         _pageLength;
    CHAR*                        _pageBuffer;
+   OUTMESS                      *_outMessage;
 
    RWCString                    _inStr;
 
@@ -90,7 +92,7 @@ public:
    BOOL  isValidPageBuffer() const;
    CHAR* getPageBuffer();
    CHAR  getPageBuffer(const INT i) const;
-   CtiDeviceWctpTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
+   //CtiDeviceWctpTerminal& setPageBuffer(const CHAR* copyBuffer, const INT len);
 
    CHAR* getOutBuffer();
    CHAR* getInBuffer();
@@ -135,6 +137,8 @@ public:
    void updatePageCountData(UINT addition);
 
    virtual CtiMessage* rsvpToDispatch(bool clearMessage = true);
+
+   void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
 
 private:
 
