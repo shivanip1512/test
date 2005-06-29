@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/06/15 19:22:08 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/06/29 19:28:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,6 +433,14 @@ RWCString desolveDeviceType( INT aType )
    else if(aType == TYPE_SNPP)
    {
       Ret = "snpp terminal";
+   }
+   else if(aType == TYPE_TNPP)
+   {
+       Ret = "tnpp terminal";
+   }
+   else if(aType == TYPE_PAGING_RECEIVER)
+   {
+      Ret = "page receiver";
    }
    else if(aType == TYPE_WCTP)
    {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2005/06/15 19:17:48 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2005/06/29 19:29:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -550,6 +550,14 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_SNPP;
     }
+    else if(rwsTemp == "tnpp terminal")
+    {
+        nRet = TYPE_TNPP;
+    }
+    else if(rwsTemp == "page receiver")
+    {
+      nRet = TYPE_PAGING_RECEIVER;
+    }
     else if(rwsTemp == "wctp terminal")
     {
         nRet = TYPE_WCTP;
@@ -1047,6 +1055,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_LCUT3026:
     case TYPE_TAPTERM:
     case TYPE_SNPP:
+    case TYPE_TNPP:
     case TYPE_WCTP:
     case TYPE_TCU5000:
     case TYPE_TCU5500:
@@ -1088,6 +1097,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPECBC7010:
     case TYPE_RTC:
     case TYPE_RTM:
+    case TYPE_PAGING_RECEIVER:
         {
             bRet = true;
             break;
@@ -1617,6 +1627,9 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_DR87:
     case TYPE_TAPTERM:
     case TYPE_WCTP:
+    case TYPE_SNPP:
+    case TYPE_TNPP:
+    case TYPE_PAGING_RECEIVER:
     case TYPE_KV2:
     case TYPE_ALPHA_A3:
     case TYPE_SENTINEL:
@@ -1626,7 +1639,6 @@ INT resolveSlaveAddress(const INT DeviceType, RWCString str)
     case TYPE_ION7700:
     case TYPE_ION8300:
     case TYPE_TDMARKV:
-    case TYPE_SNPP:
         {
             slaveAddress = -1;
             break;
