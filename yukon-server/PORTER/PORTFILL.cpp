@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/06/13 13:50:18 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/06/29 19:46:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,8 @@ using namespace std;
 #include "dev_tcu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
+#include "dev_tnpp.h"
+#include "dev_pagingreceiver.h"
 #include "dev_wctp.h"
 #include "prot_versacom.h"
 #include "expresscom.h"
