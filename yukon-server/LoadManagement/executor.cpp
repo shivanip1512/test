@@ -1436,7 +1436,7 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyStartTime));
 
     RWDBDateTime notifyStopTime(stop);
-    notifyStopTime.addSeconds(-1*lmProgramDirect->getNotifyInactiveOffset());
+    notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
     lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1492,7 +1492,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
 
 	//Update the stop notifcation time
 	RWDBDateTime notifyStopTime(stopTime);
-	notifyStopTime.addSeconds(-1*lmProgramDirect->getNotifyInactiveOffset());
+	notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
 	lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
     
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
