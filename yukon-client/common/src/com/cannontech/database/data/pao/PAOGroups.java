@@ -483,6 +483,9 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_LM_ENERGY_EXCHANGE_PROGRAM[0];
 	  	case LM_CONTROL_AREA:
 		  	return STRING_LM_CONTROL_AREA[0];
+		case LM_SCENARIO:
+			return STRING_LM_SCENARIO[0];
+
 	  	case EDITABLEVERSACOMSERIAL:
 		  	return STRING_VERSACOM_SERIAL_NUMBER[0];
 	  	case DR_87:

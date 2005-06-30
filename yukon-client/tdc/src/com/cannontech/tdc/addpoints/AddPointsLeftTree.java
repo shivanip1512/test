@@ -10,6 +10,7 @@ import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceListener;
 
 import javax.swing.event.TreeExpansionEvent;
+import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -39,6 +40,14 @@ public AddPointsLeftTree()
 	dragSource.createDefaultDragGestureRecognizer( this, DnDConstants.ACTION_MOVE, this );
 	
 }
+
+/**
+ * This method overriden so keystrokes do not find elements in our tree.
+ */
+public TreePath getNextMatch(String prefix, int startingRow, Position.Bias bias) {
+	return null;
+}
+
 /**
  * AddPointsTree constructor comment.
  * @param value java.util.Vector

@@ -41,6 +41,30 @@ public final class LiteComparators
 		}
 	};
 
+	public static java.util.Comparator litePaoTypeComparator = new java.util.Comparator()
+	{
+		public int compare(Object o1, Object o2)
+		{
+			int thisVal = ((LiteYukonPAObject)o1).getType();
+			int anotherVal = ((LiteYukonPAObject)o2).getType();
+			
+			
+			if( thisVal != anotherVal )
+				return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+				
+			//if the types are equal, we need to sort by Name
+			String thisName = ((LiteYukonPAObject)o1).getPaoName();
+			String anotherName = ((LiteYukonPAObject)o2).getPaoName();
+				
+			return( thisName.compareToIgnoreCase(anotherName) );			
+			//return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+
 	public static java.util.Comparator litePointPointOffsetComparator = new java.util.Comparator()
 	{
 		public int compare(Object o1, Object o2)

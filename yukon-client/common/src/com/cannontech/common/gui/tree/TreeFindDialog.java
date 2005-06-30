@@ -4,11 +4,11 @@ import java.awt.Frame;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
+import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.clientutils.CTILogger;
@@ -68,7 +68,7 @@ public class TreeFindDialog extends OkCancelDialog
 
 							if( value != null )
 							{
-								boolean found = searchFirstLevelString(value.toString());
+								boolean found = searchTreeString(value.toString());
 
 								if( !found )
 									JOptionPane.showMessageDialog(
@@ -119,40 +119,63 @@ public class TreeFindDialog extends OkCancelDialog
 	}
 
 	/**
-	 * This method was created in VisualAge.
+	 * Searches the ALL visible tree nodes starting from the Treepath that is 
+	 * currently selected. The search algorithm used is BreadthFirst. This order:
+	 *      1
+	 *    / | \
+	 *   2  3  4
+	 *  /    \   \
+	 * 5     6    7
+	 * |   / | \
+	 * 8   9 10 11
+	 *
 	 * @return boolean
-	 * @param val java.lang.Object
 	 */
-	public boolean searchFirstLevelString(String val)
+	public boolean searchTreeString(String val)
 	{
-		if( val == null || val.length() <= 0 )
+		if( val == null || val.length() <= 0 || !(getFindTree().getModel().getRoot() instanceof DefaultMutableTreeNode) )
 			return false;
 
-		TreeNode rootNode = (TreeNode)getFindTree().getModel().getRoot();
-	
-		for( int i = 0; i < rootNode.getChildCount(); i++ )
+		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)getFindTree().getModel().getRoot();
+		
+		//could get chunky!!
+		Enumeration childEnum = rootNode.breadthFirstEnumeration();		
+		TreePath startPath = getFindTree().getSelectionPath();
+		boolean start = false;
+		
+		while( childEnum.hasMoreElements() )
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)rootNode.getChildAt(i);
-
-			String nodeStr = 
-					(node.getUserObject().toString().length() < val.length()
-						? node.getUserObject().toString()
-						: node.getUserObject().toString().substring(0, val.length()) );
-
-			//we found the string
-			if( nodeStr.toLowerCase().indexOf(val.toLowerCase()) >= 0 )
-			{
-				TreePath path = new TreePath( node.getPath() );
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)childEnum.nextElement();
 			
-				getFindTree().getSelectionModel().setSelectionPath( path );
-				getFindTree().scrollPathToVisible( path );
-				return true;
+			if( startPath != null && !start ) {
+
+				TreePath tp = new TreePath( node.getPath() );
+				if( startPath.equals(tp) ) {
+					start = true;
+				}
+			}
+			else {
+
+				String nodeStr = 
+						(node.getUserObject().toString().length() < val.length()
+							? node.getUserObject().toString()
+							: node.getUserObject().toString().substring(0, val.length()) );
+	
+				//we found the string
+				if( nodeStr.toLowerCase().indexOf(val.toLowerCase()) >= 0 )
+				{
+					TreePath path = new TreePath( node.getPath() );
+				
+					getFindTree().getSelectionModel().setSelectionPath( path );
+					getFindTree().scrollPathToVisible( path );
+					return true;
+				}
 			}
 		}
 
-		if( val.length() > 0 )
-			if( searchFirstLevelString( val.substring(0, val.length()-1) ) )
-				return true;
+//		if( val.length() > 0 )
+//			if( searchFirstLevelString( val.substring(0, val.length()-1) ) )
+//				return true;
 
 		return false;
 	}

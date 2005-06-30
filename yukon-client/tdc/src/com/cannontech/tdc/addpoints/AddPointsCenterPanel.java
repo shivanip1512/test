@@ -6,8 +6,10 @@ package com.cannontech.tdc.addpoints;
  * @author: 
  */
 import java.awt.Cursor;
+import java.awt.event.ActionListener;
 
 import javax.swing.ListSelectionModel;
+import javax.swing.plaf.basic.BasicTreeUI;
 
 import com.cannontech.common.gui.dnd.DAndDDevicePointTable;
 import com.cannontech.common.gui.tree.TreeFindDialog;
@@ -332,6 +334,9 @@ private AddPointsLeftTree getLeftTree() {
 			ivjLeftTree.setName("LeftTree");
 			ivjLeftTree.setBounds(0, 0, 78, 72);
 			// user code begin {1}
+			
+			ivjLeftTree.setToggleClickCount( -1 );
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -419,7 +424,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 
 	fndDialog = new TreeFindDialog(
-			CtiUtilities.getParentFrame(this), getLeftTree() );
+			CtiUtilities.getParentFrame(this), getLeftTree());
 
 	getRightTableModel().addTableModelListener(this);
 

@@ -1,5 +1,11 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * Insert the type's description here.
  * Creation date: (4/18/00 11:39:02 AM)
@@ -14,16 +20,19 @@ public class TDCDeviceTreeModel extends DeviceTreeModel
  */
 public TDCDeviceTreeModel() 
 {
-	super( true, new DBTreeNode("Point Attachable Objects") );
+	super( true, new DBTreeNode("Object Types") );
 }
 /**
  * Insert the method's description here.
  * Creation date: (4/22/2002 4:11:23 PM)
  * @param deviceType int
  */
-public boolean isDeviceValid( int cateogry_, int class_, int type_ )
+public boolean isDeviceValid( int category_, int class_, int type_ )
 {
-	return( class_ != com.cannontech.database.data.pao.DeviceClasses.SYSTEM );
+	return class_ != DeviceClasses.SYSTEM
+			&& class_ != PAOGroups.INVALID
+			&& type_ != PAOGroups.INVALID
+			&& category_ != PAOGroups.INVALID ;
 }
 
 protected synchronized java.util.List getCacheList(
@@ -32,64 +41,51 @@ protected synchronized java.util.List getCacheList(
     return cache.getAllYukonPAObjects();
 }
 
-/**
- * update method comment.
- */
-/*public void update() {
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)
+// Override me if you want a sub class to do something different.
+protected synchronized void runUpdate() 
+{
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized (cache)
 	{
-		java.util.List devices = cache.getAllYukonPAObjects();
-		java.util.List points = cache.getAllPoints();
+		java.util.List paos = getCacheList(cache);
+		java.util.Collections.sort( paos, LiteComparators.litePaoTypeComparator );
 
-		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		java.util.Collections.sort( points, 
-				com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-
-
-		javax.swing.tree.DefaultMutableTreeNode rootNode = (javax.swing.tree.DefaultMutableTreeNode) getRoot();
+		DBTreeNode rootNode = (DBTreeNode)getRoot();
 		rootNode.removeAllChildren();
 		
-		int deviceDevID;
-		int deviceClass;
-		for( int i = 0; i < devices.size(); i++ )
+		int currType = Integer.MIN_VALUE;
+		DummyTreeNode devTypeNode = null;
+		for( int i = 0; i < paos.size(); i++ )
 		{
-			deviceClass = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass();
-			
-			if( isDeviceValid(-1, deviceClass, -1) )
-			{								
-				DBTreeNode deviceNode = new DBTreeNode( devices.get(i));
-				deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID();
-				boolean rootNeedsAdding = true;
-				boolean pointsFound = false;
-				
-				for( int j = 0; j < points.size(); j++ )
-				{
-					if( ((com.cannontech.database.data.lite.LitePoint)points.get(j)).getPaobjectID() == deviceDevID )
-					{
-						pointsFound = true;
-						
-						if( rootNeedsAdding )						
-						{ 	//only add device if it has some points
-							rootNeedsAdding = false;
-							rootNode.add( deviceNode );
-						}
+			LiteYukonPAObject litPAO = (LiteYukonPAObject)paos.get(i);
 
-						deviceNode.add( new DBTreeNode( points.get(j)) );
-					}
-//					else if( pointsFound )  // used to optimize the iterations
-//					{						
-//						pointsFound = false;
-//						break;
-//					}					
+			if( isDeviceValid(
+					litPAO.getCategory(),
+					litPAO.getPaoClass(),
+					litPAO.getType() ) )
+			{
+				if( currType != litPAO.getType() )
+				{
+					devTypeNode = new DummyTreeNode(
+						PAOGroups.getPAOTypeString(litPAO.getType()) );
+
+					rootNode.add(devTypeNode);
 				}
+
+				DBTreeNode deviceNode = getNewNode(litPAO);
+				devTypeNode.add(deviceNode);					
+				deviceNode.setWillHaveChildren(true);
+
+				currType = litPAO.getType();
 			}
-		}
-	}
+
+
+		} //for loop
+		
+
+	} //synch
 
 	reload();	
 }
-*/
+
 }
