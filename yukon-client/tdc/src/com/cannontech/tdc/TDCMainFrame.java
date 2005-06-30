@@ -244,8 +244,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 
 	if( e.getSource() == getJMenuItemEndSession() )
 	{
-		if( ClientSession.getInstance().establishSession() )
-			ClientSession.getInstance().closeSession();
+		ClientSession.getInstance().closeSession();
 
 		jMenuItemExit_ActionPerformed(e);
 	}		

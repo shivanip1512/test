@@ -203,8 +203,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		}
 		else if( e.getSource() == getMenuItemLogout() )
 		{
-			if( ClientSession.getInstance().establishSession() )
-				ClientSession.getInstance().closeSession();
+			ClientSession.getInstance().closeSession();
 				
             exitApp();
 		}		
