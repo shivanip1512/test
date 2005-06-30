@@ -169,11 +169,9 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		delete("LMEnergyExchangeHourlyCustomer", "CustomerID", getCustomerID() );
 		delete("LMEnergyExchangeCustomerReply", "CustomerID", getCustomerID() );
 		delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
+		delete(CICustomerPointData.TABLE_NAME, "CustomerID", getCustomerID() );
 			
 		getCustomerBaseLinePoint().delete();
-
-		for( int i = 0; i < getCiCustomerPointData().length; i++ )
-			getCiCustomerPointData()[i].delete();
 
 		
 		//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
