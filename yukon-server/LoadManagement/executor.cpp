@@ -1431,21 +1431,32 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
 
-    RWDBDateTime notifyStartTime(startTime);
-    notifyStartTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
-    lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyStartTime));
-
-    RWDBDateTime notifyStopTime(stop);
-    notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
-    lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
-
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    if(lmProgramDirect->getNotifyActiveOffset() != -1)
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << RWTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;
-        dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+	RWDBDateTime notifyStartTime(startTime);
+	notifyStartTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
+	lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyStartTime));
+
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;	    
+	}
     }
-                                   
+
+    if(lmProgramDirect->getNotifyInactiveOffset() != -1)
+    {
+	RWDBDateTime notifyStopTime(stop);
+	notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
+	lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
+
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+	}
+    }
+    
     if( stop.seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
     {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
         RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
@@ -1490,11 +1501,21 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setDirectStopTime(stopTime);
 
-	//Update the stop notifcation time
-	RWDBDateTime notifyStopTime(stopTime);
-	notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
-	lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
-    
+	if(lmProgramDirect->getNotifyInactiveOffset() != -1)
+	{
+	    //Update the stop notifcation time
+	
+	    RWDBDateTime notifyStopTime(stopTime);
+	    notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
+	    lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
+
+	    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	    {
+		CtiLockGuard<CtiLogger> dout_guard(dout);
+		dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+	    }	    
+	}
+	
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }

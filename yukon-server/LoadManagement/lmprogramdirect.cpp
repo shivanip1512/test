@@ -81,6 +81,7 @@ CtiLMProgramDirect::~CtiLMProgramDirect()
   getNotifyActiveOffset
 
   Returns the program active notification offset in seconds
+  -1 indicates it isn't used.
 ----------------------------------------------------------------------------*/
 LONG CtiLMProgramDirect::getNotifyActiveOffset() const
 {
@@ -91,6 +92,7 @@ LONG CtiLMProgramDirect::getNotifyActiveOffset() const
   getNotifyInactiveOffset
 
   Returns the program inactive notification offset in seconds
+  -1 indicates it isn't used.
 ----------------------------------------------------------------------------*/
 LONG CtiLMProgramDirect::getNotifyInactiveOffset() const
 {
