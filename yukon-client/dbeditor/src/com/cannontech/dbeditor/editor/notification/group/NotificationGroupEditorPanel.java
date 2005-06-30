@@ -43,7 +43,7 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 
 			case 1:
 				objs[0] = new NotifcationPanel();
-				objs[1] = "Notifcaions";
+				objs[1] = "Notifications";
 				break;
 
 		}
