@@ -190,6 +190,7 @@ void CtiCalculateThread::periodicLoop( void )
 
                 periodicMultiMsg->getData( ).insert( pointData );
 
+                if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
