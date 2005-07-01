@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2005/06/13 19:07:41 $
+* REVISION     :  $Revision: 1.103 $
+* DATE         :  $Date: 2005/07/01 17:39:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1727,6 +1727,13 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 messageDump(pMsg);
                 const CtiDBChangeMsg &aChg = *((CtiDBChangeMsg*)(pMsg));
                 postDBChange(aChg);
+
+                if(aChg.getDatabase() == ChangePAODb)
+                {
+                    _deviceLiteSet.erase(aChg.getId());
+                    adjustDeviceDisableTags(aChg.getId(), true);
+                }
+
                 break;
             }
         case MSG_PCRETURN:
@@ -4247,7 +4254,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
 
                     Now = Now.now();
-                    adjustDeviceDisableTags(id);
+                    adjustDeviceDisableTags(id, pChg != 0);
 
                     deltaT = Now.now().seconds() - Now.seconds();
                     if( deltaT > 5 )
@@ -5642,7 +5649,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
  *  A key item to remember is that this information _really_ only exists on the _points_ which dispatch tracks.
  *
  */
-void CtiVanGogh::adjustDeviceDisableTags(LONG id)
+void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange)
 {
     if(!_deviceLiteSet.empty())
     {
@@ -5687,7 +5694,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id)
 
                             ablementPoint(pPoint, devicedifferent, setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti);
 
-                            if(devicedifferent)
+                            if(devicedifferent && !dbchange)
                             {
                                 devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
                             }
