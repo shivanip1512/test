@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/09/05 18:46:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/07/01 20:38:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,8 @@ private:
 
     // execute a command on a tcl interpreter
     void executeCommand(const string& command, const string& target = "");
+
+    void sendDBChange(const int& paoid, const string& user) const;
 
     // start and stops scripts
     void executeScript(const CtiMCSchedule& sched);

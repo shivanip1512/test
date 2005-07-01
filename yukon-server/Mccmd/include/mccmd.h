@@ -74,7 +74,7 @@ static int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc,
 
 /* Reset state info for the given interpreter */
 static int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
-    
+
 static int Command(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 static int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
@@ -103,6 +103,7 @@ static int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 /*  Command to send a signal message to van gogh (log an event) */
 static int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+static int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] );
 
 /*  Prints to stdout, used the global dout logger.
     Useful for debugging. */
@@ -136,14 +137,14 @@ static int DoTwoWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
 static int DoRequest(Tcl_Interp* interp, RWCString& cmd_line, long timeout, bool two_way);
 
 static void HandleReturnMessage(CtiReturnMsg* msg,
-				PILReturnMap& good_map,
-				PILReturnMap& bad_map,
-				PILReturnMap& device_map);
+                PILReturnMap& good_map,
+                PILReturnMap& bad_map,
+                PILReturnMap& device_map);
 
 static void HandleMessage(RWCollectable* msg,
-			  PILReturnMap& good_map,
-			  PILReturnMap& bad_map,
-			  PILReturnMap& device_map);
+              PILReturnMap& good_map,
+              PILReturnMap& bad_map,
+              PILReturnMap& device_map);
 
 /* Retrieves the id of a notification group given its name */
 static long GetNotificationGroupID( const RWCString& name );

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/05/06 19:34:59 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/07/01 20:38:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -621,7 +621,8 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                  event_text += "\\\"";
 
                  logEvent( string( add_msg->getUser().data() ), event_text );
-
+                 sleep(2500); // CGP Let the writer thread have a chance.  Yes this is bad, but we are lazy.
+                 sendDBChange( new_sched->getScheduleID(), string( add_msg->getUser().data() ) );
                  ret_val = true;
             }
             else
@@ -1218,6 +1219,38 @@ void CtiMCServer::dumpRunningScripts()
     {
         dout << RWTime() << " Schedule id: " << iter->first << " Interpreter: " << iter->second << endl;
     }
+}
+
+/*----------------------------------------------------------------------------
+  sendDBChange
+
+  DBCHange Message to dispatch.
+  Uses a tcl interpreter to do the logging.
+
+  user - the user who caused whatever that needs to be logged
+  text - short description of what happened
+----------------------------------------------------------------------------*/
+void CtiMCServer::sendDBChange(const int& paoid, const string& user) const
+{
+    // build up the SendDBChange tcl command
+    // make sure to embed " in case there are spaces in
+    // user
+    string cmd_string("SendDBChange ");
+    cmd_string.append(CtiNumStr(paoid));
+    cmd_string.append(" \"");
+    cmd_string.append(user);
+    cmd_string.append("\" \" \""); //last arg is blank space
+
+    if( gMacsDebugLevel & MC_DEBUG_EVENTS )
+    {
+        CtiLockGuard< CtiLogger > g(dout);
+        dout << RWTime() << cmd_string << endl;
+    }
+
+    // Acquire an interpreter and send out the command
+    CtiInterpreter* interp = _interp_pool.acquireInterpreter();
+    interp->evaluate( cmd_string, true ); //block
+    _interp_pool.releaseInterpreter(interp);
 }
 
 

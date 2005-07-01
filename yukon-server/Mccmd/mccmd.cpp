@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/05/18 21:04:37 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/07/01 20:38:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "msg_pdata.h"
 #include "msg_signal.h"
 #include "msg_email.h"
+#include "msg_dbchg.h"
 #include "ctibase.h"
 #include "collectable.h"
 #include "pointtypes.h"
@@ -226,7 +227,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     RWCString fm_config_range;
 
     {
-        CtiLockGuard< CtiLogger > guard(dout);    
+        CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " MCCMD loading cparms:" << endl;
     }
 
@@ -258,7 +259,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     if(gFMConfigRouteID != -1)
     {
-        CtiLockGuard< CtiLogger > guard(dout);  
+        CtiLockGuard< CtiLogger > guard(dout);
         dout << " Using route id: " << gFMConfigRouteID << " as the FM config route" << endl;
     }
 
@@ -303,10 +304,10 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     }
 
     {
-        CtiLockGuard< CtiLogger > guard(dout);    
+        CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " MCCMD done loading cparms" << endl;
     }
-    
+
     PILConnection = new CtiConnection( pil_port, pil_host );
 
     //Send a registration message
@@ -430,6 +431,10 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "logevent", LogEvent, NULL, NULL );
     Tcl_CreateCommand( interp, "LOGEVENT", LogEvent, NULL, NULL );
 
+    Tcl_CreateCommand( interp, "SendDBChange", SendDBChange, NULL, NULL );
+    Tcl_CreateCommand( interp, "senddbchange", SendDBChange, NULL, NULL );
+    Tcl_CreateCommand( interp, "SENDDBCHANGE", SendDBChange, NULL, NULL );
+
     Tcl_CreateCommand( interp, "Dout", Dout, NULL, NULL );
     Tcl_CreateCommand( interp, "dout", Dout, NULL, NULL );
     Tcl_CreateCommand( interp, "DOUT", Dout, NULL, NULL );
@@ -464,17 +469,17 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     /* Load up the initialization script */
     RWCString init_script;
-    
+
     init_script = gConfigParms.getValueAsString(MCCMD_CTL_SCRIPTS_DIR, "c:/yukon/server/macsscripts");
     init_script += "/";
     init_script += gConfigParms.getValueAsString(MCCMD_INIT_SCRIPT, "init.tcl");
 
     gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
-    
+
     if( gMccmdDebugLevel > 0 )
     {
-	CtiLockGuard<CtiLogger> doubt_guard(dout);
-	dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << RWTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << hex <<  gMccmdDebugLevel << dec << endl;
     }
 
     if( gMccmdDebugLevel & MCCMD_DEBUG_INIT )
@@ -1831,3 +1836,39 @@ void BuildRequestSet(Tcl_Interp* interp, RWCString& cmd_line, RWSet& req_set)
         req_set.insert(msg);
     }
 }
+
+/*
+ *  This function sends a DBCHANGE to dispatch to help keep any clients in sync with the paobjectid.
+ */
+int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
+{
+    RWCString app = "MACS Server";
+    RWCString user = "";
+    RWCString message = "";
+    RWCString info = "";
+    int classification = 7;
+    int index = 1;
+
+    int paoid;
+    RWCString objtype;
+
+    if( argc < 3 )
+    {
+        WriteOutput( "Usage:  SendDBChange paoid user");
+        WriteOutput( "paoid is the paobject id to notify about.");
+        WriteOutput( "user is a string");
+        return TCL_OK;
+    }
+
+    paoid = atoi( argv[index++] );
+    user = argv[index++];
+
+    CtiDBChangeMsg *dbChange = new CtiDBChangeMsg(paoid, ChangePAODb, "Schedule", "Script", ChangeTypeAdd);
+    dbChange->setUser(user);
+    dbChange->setSource(app);
+
+    VanGoghConnection->WriteConnQue(dbChange);
+
+    return TCL_OK;
+}
+
