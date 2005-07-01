@@ -138,7 +138,7 @@ function hardwareMenuAppear(event, source, divId, num)
 	
 	coordx = parseInt(source.offsetLeft + source.offsetWidth);
 	coordy = parseInt(source.offsetTop + source.offsetHeight - 12);
-	basicMenuAppear(event, source, divID, coordx, coordy);
+	basicMenuAppear(event, source, divId, coordx, coordy);
 }
 
 function showPage(idx) {
