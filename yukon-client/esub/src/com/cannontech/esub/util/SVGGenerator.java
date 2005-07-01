@@ -118,18 +118,11 @@ public class SVGGenerator {
 			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "action.js");
 			svgRoot.appendChild(scriptElem);
-			
-		/*	scriptElem = doc.createElementNS(null, "script");	
+						
+			scriptElem = doc.createElementNS(null, "script");	
 			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "ol/overlib_mini.js");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "point.js");
 			svgRoot.appendChild(scriptElem);
-			*/			
-			if(genOptions.isControlEnabled()) {
-				scriptElem = doc.createElementNS(null, "script");	
-				scriptElem.setAttributeNS(null, "type", "text/ecmascript");
-				scriptElem.setAttributeNS(xlinkNS, "xlink:href", "point.js");
-				svgRoot.appendChild(scriptElem);
-			}
 		}
 		
 		Element backRect = doc.createElementNS(svgNS, "rect");
