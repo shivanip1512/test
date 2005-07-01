@@ -1,5 +1,6 @@
 package com.cannontech.database.model;
 
+import java.util.Vector;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -14,6 +15,8 @@ import com.cannontech.database.data.pao.PAOGroups;
  */
 public class TDCDeviceTreeModel extends DeviceTreeModel
 {
+
+	
 /**
  * NoEmptyDeviceTreeModel constructor comment.
  * @param root javax.swing.tree.TreeNode
@@ -44,13 +47,15 @@ protected synchronized java.util.List getCacheList(
 // Override me if you want a sub class to do something different.
 protected synchronized void runUpdate() 
 {
+	DBTreeNode rootNode = (DBTreeNode)getRoot();
+	Vector typeList = new Vector(32);
+
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized (cache)
 	{
 		java.util.List paos = getCacheList(cache);
 		java.util.Collections.sort( paos, LiteComparators.litePaoTypeComparator );
 
-		DBTreeNode rootNode = (DBTreeNode)getRoot();
 		rootNode.removeAllChildren();
 		
 		int currType = Integer.MIN_VALUE;
@@ -69,7 +74,7 @@ protected synchronized void runUpdate()
 					devTypeNode = new DummyTreeNode(
 						PAOGroups.getPAOTypeString(litPAO.getType()) );
 
-					rootNode.add(devTypeNode);
+					typeList.add( devTypeNode );
 				}
 
 				DBTreeNode deviceNode = getNewNode(litPAO);
@@ -80,10 +85,13 @@ protected synchronized void runUpdate()
 			}
 
 
-		} //for loop
-		
-
+		} //for loop		
 	} //synch
+
+	//this list will be a fixed size with a controlled max value
+	java.util.Collections.sort( typeList, DummyTreeNode.comparator);
+	for( int i = 0; i < typeList.size(); i++ )
+		rootNode.add( (DummyTreeNode)typeList.get(i) );
 
 	reload();	
 }
