@@ -1,3 +1,5 @@
+<%@ page import="java.text.DecimalFormat" %>
+
 <%@ page import="com.cannontech.database.cache.functions.PointFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.StateFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.PAOFuncs" %>
@@ -5,6 +7,7 @@
 <%@ page import="com.cannontech.database.cache.functions.UnitMeasureFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
+<%@ page import="com.cannontech.database.data.lite.LitePointUnit" %>
 <%@ page import="com.cannontech.database.data.lite.LiteState" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
 <%@ page import="com.cannontech.database.data.lite.LiteUnitMeasure" %>
@@ -30,17 +33,23 @@
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
 	double currentValue = PointChangeCache.getPointChangeCache().getValue(pointID).getValue();	
-
+	
+	// Build a formatter so we can present the value with the correct decimal places    
+    DecimalFormat valueFormatter = new DecimalFormat();
+	
 	String uOfM = null; 
 	String currentState = null;
 	if(PointTypes.STATUS_POINT == lPoint.getPointType()) {
 		currentState = PointChangeCache.getPointChangeCache().getCurrentState(pointID).getStateText();
 	} 
-	else {
+	else { // analog
 		LiteUnitMeasure lUOfM = UnitMeasureFuncs.getLiteUnitMeasureByPointID(pointID);
 		if(lUOfM != null) {
 			uOfM = lUOfM.getUnitMeasureName();		
 		}
+	    LitePointUnit lpu = PointFuncs.getPointUnit(pointID);	
+		valueFormatter.setMaximumFractionDigits(lpu.getDecimalPlaces());
+		valueFormatter.setMinimumFractionDigits(lpu.getDecimalPlaces());	    		
 	}
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
@@ -66,8 +75,8 @@
 </tr>
 <% } %>
 <tr>
-<td>Current Value:</td><td><%= currentValue %> <% if(uOfM != null) { %><%= uOfM %><% } %></td>
-</td>
+<td>Current Value:</td><td><%= valueFormatter.format(currentValue) %> <% if(uOfM != null) { %><%= uOfM %><% } %></td>
+</tr>
 </table>
 </td></tr>
 <tr><td align="center">
