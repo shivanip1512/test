@@ -119,6 +119,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_FILTER_BY_LOCATION		= 2903;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_CONFIG			= 2904;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS		= 2905;
+	public static final int YUK_DEF_ID_RATE_SCHEDULE				= 2906;
 	
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;
