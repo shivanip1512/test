@@ -147,8 +147,16 @@ function init() {
                           <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
-<% } %>
                       <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right">Customer #: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="Customer #" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
+                        </td>
+                      </tr>
+<% } %>
+					  <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Last Name:</div>
                         </td>
@@ -225,6 +233,25 @@ function init() {
                           <span class="SubtitleHeader">SERVICE INFORMATION</span> 
                           <hr>
                           <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                             <tr> 
+                       	 		<td width="90" class="TableCell"> 
+                         			<div align="right">Rate Schedule: </div>
+                         		</td>
+                         		<td width="210"> 
+						 			<select name="RateSchedule" onchange="setContentChanged(true)">
+                                	<%
+	StarsCustSelectionList rateSchedList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE );
+	for (int i = 0; i < rateSchedList.getStarsSelectionListEntryCount(); i++) {
+		StarsSelectionListEntry entry = rateSchedList.getStarsSelectionListEntry(i);
+		String selected = (account.getCompany().compareTo("SkyNet") == 0) ? "selected" : "";
+									%>
+                                	<option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+                                	<%
+									} %>
+									</select>
+                         		</td>
+                       		</tr>
+                            
                             <tr> 
                               <td width="90" class="TableCell"> 
                                 <div align="right">Substation Name: </div>
