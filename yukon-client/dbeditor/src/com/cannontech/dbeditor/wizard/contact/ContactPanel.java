@@ -15,6 +15,7 @@ import javax.swing.table.TableColumn;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.db.contact.ContactNotification;
@@ -783,6 +784,7 @@ private javax.swing.JTextField getJTextFieldAddress() {
 			ivjJTextFieldAddress = new javax.swing.JTextField();
 			ivjJTextFieldAddress.setName("JTextFieldAddress");
 			ivjJTextFieldAddress.setToolTipText("Enter an e-mail address, phone number, etc.");
+			ivjJTextFieldAddress.setDocument(	new TextFieldDocument( 130 ) );
 			// user code begin {1}
 
 			// user code end
