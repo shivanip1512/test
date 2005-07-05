@@ -12,6 +12,7 @@
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "dbaccess.h"
 #include "ccid.h"
 #include "ccstate.h"
 #include "logger.h"

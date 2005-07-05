@@ -59,6 +59,8 @@ public:
 private:
     void EnableSubstationBus();
     void DisableSubstationBus();
+    //void EnableSubstationBusVerification();
+    //void DisableSubstationBusVerification();
     void EnableFeeder();
     void DisableFeeder();
     void EnableCapBank();
@@ -92,6 +94,23 @@ public:
 private:
 
     CtiCCCapBankMoveMsg* _capMoveMsg;
+};
+
+
+class CtiCCSubstationVerificationExecutor : public CtiCCExecutor
+{
+public:
+    CtiCCSubstationVerificationExecutor(CtiCCSubstationVerificationMsg* subVerificationMsg) : _subVerificationMsg(subVerificationMsg) {};
+    virtual ~CtiCCSubstationVerificationExecutor() { delete _subVerificationMsg;};
+
+    virtual void Execute();
+
+private:
+
+    void EnableSubstationBusVerification();   
+    void DisableSubstationBusVerification();  
+
+    CtiCCSubstationVerificationMsg* _subVerificationMsg;
 };
 
 class CtiCCPointDataMsgExecutor : public CtiCCExecutor

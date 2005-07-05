@@ -163,7 +163,27 @@ void CtiCCClientConnection::_sendthr()
     RWCollectable* out;
 
     try
-    {     
+    {   
+        /*{
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+            ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
+
+            
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(RWDBDateTime().seconds()),msgBitMask));
+            executor->Execute();
+            delete executor;
+            executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(RWDBDateTime().seconds())));
+            executor->Execute();
+            delete executor;
+            executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(RWDBDateTime().seconds())) );
+            executor->Execute();
+            delete executor;
+        }*/
+
+
         do
         {
             rwRunnable().serviceCancellation();
@@ -179,7 +199,7 @@ void CtiCCClientConnection::_sendthr()
                         if( out->isA()!=__RWCOLLECTABLE && oStream->good())
                         {
                             try
-                            {
+                            {    
                                 *oStream << out;
                                 oStream->vflush();
                             }
@@ -238,20 +258,27 @@ void CtiCCClientConnection::_recvthr()
 {
     RWRunnable runnable;
 
-    CtiCCExecutorFactory f;
+   // CtiCCExecutorFactory f;
 
     try
     {
-        rwRunnable().serviceCancellation();
+      //  rwRunnable().serviceCancellation();
         
         do
         {
             rwRunnable().serviceCancellation();
             //cout << RWTime()  << "waiting to receive - thr:  " << rwThreadId() << endl;
             RWCollectable* current = NULL;
-
-            *iStream >> current;
-
+             try
+                {
+                 *iStream >> current;
+                 
+             }
+             catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
             if ( current != NULL )
             {
                try

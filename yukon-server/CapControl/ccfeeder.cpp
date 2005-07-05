@@ -39,7 +39,8 @@ CtiCCFeeder::CtiCCFeeder()
 
 CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr)
 {
-    restore(rdr);
+     restoreFeederTableValues(rdr);
+    //restore(rdr);
 }
 
 CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
@@ -125,6 +126,17 @@ BOOL CtiCCFeeder::getDisableFlag() const
     return _disableflag;
 }
 
+
+/*---------------------------------------------------------------------------
+    getParentId
+
+    Returns the parentID (subBusId) of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getParentId() const
+{
+    return _parentId;
+}
+
 /*---------------------------------------------------------------------------
     getPeakSetPoint
 
@@ -200,7 +212,7 @@ DOUBLE CtiCCFeeder::getCurrentWattLoadPointValue() const
 
     Returns the map location id of the feeder
 ---------------------------------------------------------------------------*/
-LONG CtiCCFeeder::getMapLocationId() const
+const RWCString& CtiCCFeeder::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -416,6 +428,36 @@ BOOL CtiCCFeeder::getWaiveControlFlag() const
 }
 
 /*---------------------------------------------------------------------------
+    getParentControlUnits
+
+    Returns the ParentControlUnits of the feeder
+---------------------------------------------------------------------------*/
+const RWCString& CtiCCFeeder::getParentControlUnits() const
+{
+    return _parentControlUnits;
+}
+
+/*---------------------------------------------------------------------------
+    getParentDecimalPlaces
+
+    Returns the ParentDecimalPlaces of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getParentDecimalPlaces() const
+{
+    return _parentDecimalPlaces;
+}
+
+/*---------------------------------------------------------------------------
+    getParentPeakTimeFlag
+
+    Returns the ParentPeakTimeFlag of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getParentPeakTimeFlag() const
+{
+    return _parentPeakTimeFlag;
+}
+    
+/*---------------------------------------------------------------------------
     getCCCapBanks
 
     Returns the list of cap banks in the feeder
@@ -501,6 +543,17 @@ CtiCCFeeder& CtiCCFeeder::setPAODescription(const RWCString& description)
 CtiCCFeeder& CtiCCFeeder::setDisableFlag(BOOL disable)
 {
     _disableflag = disable;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setParentId
+
+    Sets the parentID (subBusID) of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setParentId(LONG parentId)
+{
+    _parentId = parentId;
     return *this;
 }
 
@@ -602,7 +655,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(DOUBLE currentwattval)
 
     Sets the map location id of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCFeeder& CtiCCFeeder::setMapLocationId(LONG maplocation)
+CtiCCFeeder& CtiCCFeeder::setMapLocationId(const RWCString& maplocation)
 {
     _maplocationid = maplocation;
     return *this;
@@ -921,6 +974,51 @@ CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(BOOL waive)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setParentControlUnits
+
+    Sets the ParentControlUnits in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setParentControlUnits(RWCString parentControlUnits)
+{
+    if (_parentControlUnits != parentControlUnits)
+    {
+        _dirty = TRUE;
+    }
+    _parentControlUnits = parentControlUnits;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setParentDecimalPlaces
+
+    Sets the ParentDecimalPlaces in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setParentDecimalPlaces(LONG parentDecimalPlaces)
+{
+    if (_parentDecimalPlaces != parentDecimalPlaces)
+    {
+        _dirty = TRUE;
+    }
+    _parentDecimalPlaces = parentDecimalPlaces;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setParentPeakTimeFlag
+
+    Sets the ParentPeakTimeFlag in the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setParentPeakTimeFlag(BOOL parentPeakTimeFlag)
+{
+    if (_parentPeakTimeFlag != parentPeakTimeFlag)
+    {
+        _dirty = TRUE;
+    }
+    _parentPeakTimeFlag = parentPeakTimeFlag;
+    return *this;
+}       
+
 
 /*---------------------------------------------------------------------------
     findCapBankToDecreaseVars
@@ -1022,6 +1120,109 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOr
     return reqMsg;
 }
 
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
+{
+    CtiRequestMsg* reqMsg = NULL;
+    if( capBank != NULL )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ***JULIE***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
+        }
+
+        setLastCapBankControlledDeviceId(capBank->getPAOId());
+        capBank->setControlStatus(CtiCCCapBank::OpenPending);
+        figureEstimatedVarLoadPointValue();
+        _currentdailyoperations++;
+        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+        //setRecentlyControlledFlag(TRUE);
+        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        if( capBank->getStatusPointId() > 0 )
+        {
+            char tempchar[80] = "";
+            RWCString text = RWCString("Open sent, Var Load = ");
+            _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
+            text += tempchar;
+            RWCString additional = RWCString("Feeder: ");
+            additional += getPAOName();
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+            capBank->setLastStatusChangeTime(RWDBDateTime());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Cap Bank: " << capBank->getPAOName()
+            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+        } 
+
+        if( capBank->getOperationAnalogPointId() > 0 )
+        {
+            pointChanges.insert(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+        }  
+
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+        reqMsg->setSOE(4);
+    }
+
+    return reqMsg;
+}
+
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces)
+{
+    CtiRequestMsg* reqMsg = NULL;
+    if( capBank != NULL )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ***JULIE***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
+        }
+
+        setLastCapBankControlledDeviceId(capBank->getPAOId());
+        capBank->setControlStatus(CtiCCCapBank::ClosePending);
+        figureEstimatedVarLoadPointValue();
+        _currentdailyoperations++;
+        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+        //setRecentlyControlledFlag(TRUE);
+        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+        if( capBank->getStatusPointId() > 0 )
+        {
+            char tempchar[80] = "";
+            RWCString text = RWCString("Open sent, Var Load = ");
+            _snprintf(tempchar,80,"%.*f",decimalPlaces,currentVarLoadPointValue);
+            text += tempchar;
+            RWCString additional = RWCString("Feeder: ");
+            additional += getPAOName();
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+            pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+            capBank->setLastStatusChangeTime(RWDBDateTime());
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - Cap Bank: " << capBank->getPAOName()
+            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+        } 
+
+        if( capBank->getOperationAnalogPointId() > 0 )
+        {
+            pointChanges.insert(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
+        }  
+
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
+        reqMsg->setSOE(4);
+    }
+
+    return reqMsg;
+}
+
+
 /*---------------------------------------------------------------------------
     createDecreaseVarRequest
 
@@ -1085,7 +1286,7 @@ CtiCCFeeder& CtiCCFeeder::figureEstimatedVarLoadPointValue()
     if( getCurrentVarLoadPointId() > 0 )
     {
         DOUBLE tempValue;
-        if( getRecentlyControlledFlag() )
+        if( getRecentlyControlledFlag() || getPerformingVerificationFlag())
             tempValue = getVarValueBeforeControl();
         else
             tempValue = getCurrentVarLoadPointValue();
@@ -1510,6 +1711,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
     return returnBoolean;
 }
 
+
+BOOL CtiCCFeeder::capBankVerificationStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality)
+{
+    return TRUE;
+}
 /*---------------------------------------------------------------------------
     fillOutBusOptimizedInfo
 
@@ -1694,13 +1900,13 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
                 else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - Cannot Resend Control, Not Pending in: " << __FILE__ << " at: " << __LINE__ << endl;
+                    dout << RWTime() << " - Cannot Resend Control for Cap Bank: "<< currentCapBank->getPAOName() <<", Not Pending in: " << __FILE__ << " at: " << __LINE__ << endl;
                 }
             }
             else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Cannot Resend Control, Past Confirm Time in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << RWTime() << " - Cannot Resend Control for Cap Bank: "<< currentCapBank->getPAOName() <<", Past Confirm Time in: " << __FILE__ << " at: " << __LINE__ << endl;
             }
             break;
         }
@@ -1708,6 +1914,65 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
 
     return returnBoolean;
 }
+
+CtiCCFeeder& CtiCCFeeder::setVerificationFlag(BOOL verificationFlag)
+{
+    if (_verificationFlag != verificationFlag)
+        _dirty = TRUE;
+    _verificationFlag = verificationFlag;
+
+    return *this;
+}
+CtiCCFeeder& CtiCCFeeder::setPerformingVerificationFlag(BOOL performingVerificationFlag)
+{
+    if (_performingVerificationFlag != performingVerificationFlag)
+        _dirty = TRUE;
+    _performingVerificationFlag = performingVerificationFlag;
+
+    return *this;
+}
+CtiCCFeeder& CtiCCFeeder::setVerificationDoneFlag(BOOL verificationDoneFlag)
+{
+    if (_verificationDoneFlag != verificationDoneFlag)
+        _dirty = TRUE;
+    _verificationDoneFlag = verificationDoneFlag;
+
+    return *this;
+}
+
+
+
+
+BOOL CtiCCFeeder::getVerificationFlag() const
+{
+    return _verificationFlag;
+}
+
+BOOL CtiCCFeeder::getPerformingVerificationFlag() const
+{
+    return _performingVerificationFlag;
+}
+
+BOOL CtiCCFeeder::getVerificationDoneFlag() const
+{
+    return _verificationDoneFlag;
+}
+
+
+BOOL CtiCCFeeder::isFeederPerformingVerification()
+{
+    return TRUE;
+}
+BOOL CtiCCFeeder::isVerificationAlreadyControlled(LONG minConfirmPercent)
+{
+    return isAlreadyControlled(minConfirmPercent);
+}
+
+//BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
+
+
+
+
 
 /*---------------------------------------------------------------------------
     isDirty
@@ -1842,6 +2107,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
                     dout << "  " << updater.asString() << endl;
                 }
             }
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            addFlags[0] = (_verificationFlag?'Y':'N');
+            addFlags[1] = (_performingVerificationFlag?'Y':'N');
+            addFlags[2] = (_verificationDoneFlag?'Y':'N');
+            _additionalFlags = RWCString(RWCString(*addFlags) + RWCString(*(addFlags+1)) + RWCString(*(addFlags+2)) + RWCString(*(addFlags + 3), 17));
 
             updater.clear();
 
@@ -1852,7 +2122,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
             << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCFeederTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) );
+            << dynamicCCFeederTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) )
+            << dynamicCCFeederTable["additionalflags"].assign( _additionalFlags );
+
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1886,7 +2158,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted Feeder into DynamicCCFeeder: " << getPAOName() << endl;
             }
-
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            
             RWDBInserter inserter = dynamicCCFeederTable.inserter();
 
             inserter << _paoid
@@ -1907,7 +2180,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDat
             << _kvarsolution
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
-            << RWCString((_waivecontrolflag?'Y':'N'));
+            << RWCString((_waivecontrolflag?'Y':'N'))
+            << RWCString(*addFlags, 20);
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -1960,6 +2234,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _paotype
     >> _paodescription
     >> _disableflag
+    >> _parentId
     >> _peaksetpoint
     >> _offpeaksetpoint
     >> _upperbandwidth
@@ -1987,12 +2262,20 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _estimatedpowerfactorvalue
     >> _currentvarpointquality
     >> _waivecontrolflag;
+    //>> _additionalFlags;
+    //>>  _parentControlUnits 
+   // >> _parentDecimalPlaces
+   // >> _parentPeakTimeFlag;
+   
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
     {
         istrm >> currentCapBank;
         _cccapbanks.insert(currentCapBank);
     }
+   // _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+   // _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+  //  _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
 
     _lastcurrentvarpointupdatetime = RWDBDateTime(tempTime1);
     _lastoperationtime = RWDBDateTime(tempTime2);
@@ -2025,6 +2308,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _paotype
     << _paodescription
     << _disableflag
+    << _parentId
     << _peaksetpoint
     << _offpeaksetpoint
     << _upperbandwidth
@@ -2052,6 +2336,11 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag;
+   // << RWCString(_additionalFlags);
+    //<< _parentControlUnits 
+   // << _parentDecimalPlaces
+  //  << _parentPeakTimeFlag;
+
     ostrm << _cccapbanks.entries();
     for(LONG i=0;i<_cccapbanks.entries();i++)
     {
@@ -2073,6 +2362,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+        //_parentId = right._parentId;
         _peaksetpoint = right._peaksetpoint;
         _offpeaksetpoint = right._offpeaksetpoint;
         _upperbandwidth = right._upperbandwidth;
@@ -2100,6 +2390,11 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
         _currentvarpointquality = right._currentvarpointquality;
         _waivecontrolflag = right._waivecontrolflag;
+        _additionalFlags = right._additionalFlags;
+
+        //_parentControlUnits = right._parentControlUnits;
+       // _parentDecimalPlaces = right._parentDecimalPlaces;
+       // _parentPeakTimeFlag = right._parentPeakTimeFlag;
 
         _cccapbanks.clearAndDestroy();
         for(LONG i=0;i<right._cccapbanks.entries();i++)
@@ -2198,6 +2493,13 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         rdr["waivecontrolflag"] >> tempBoolString;
         tempBoolString.toLower();
         _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["additionalflags"] >> _additionalFlags;
+        _additionalFlags.toLower();
+
+        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -2207,11 +2509,11 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         setCurrentVarLoadPointValue(0.0);
         setCurrentWattLoadPointValue(0.0);
         setNewPointDataReceivedFlag(FALSE);
-        setLastCurrentVarPointUpdateTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
         setEstimatedVarLoadPointValue(0.0);
         setCurrentDailyOperations(0);
         setRecentlyControlledFlag(FALSE);
-        setLastOperationTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastOperationTime(gInvalidRWDBDateTime);
         setVarValueBeforeControl(0.0);
         setLastCapBankControlledDeviceId(0);
         _busoptimizedvarcategory = 1;
@@ -2221,6 +2523,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
         _estimatedpowerfactorvalue = -1000000.0;
         _currentvarpointquality = NormalQuality;
         _waivecontrolflag = FALSE;
+        setVerificationFlag(FALSE);
+        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+        setPerformingVerificationFlag(FALSE);
+        setVerificationDoneFlag(FALSE);
 
         _insertDynamicDataFlag = TRUE;
     }
@@ -2273,6 +2579,116 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     {
         _currentwattloadpointvalue = 0;
     }
+}
+
+void CtiCCFeeder::restoreFeederTableValues(RWDBReader& rdr)
+{
+    RWDBNullIndicator isNull;
+    RWDBDateTime currentDateTime = RWDBDateTime();
+    RWDBDateTime dynamicTimeStamp;
+    RWCString tempBoolString;
+
+    rdr["paobjectid"] >> _paoid;
+    rdr["category"] >> _paocategory;
+    rdr["paoclass"] >> _paoclass;
+    rdr["paoname"] >> _paoname;
+    rdr["type"] >> _paotype;
+    rdr["description"] >> _paodescription;
+    rdr["disableflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["peaksetpoint"] >> _peaksetpoint;
+    rdr["offpeaksetpoint"] >> _offpeaksetpoint;
+    rdr["upperbandwidth"] >> _upperbandwidth;
+    rdr["currentvarloadpointid"] >> _currentvarloadpointid;
+    rdr["currentwattloadpointid"] >> _currentwattloadpointid;
+    rdr["maplocationid"] >> _maplocationid;
+    rdr["lowerbandwidth"] >> _lowerbandwidth;
+    //rdr["displayorder"] >> _displayorder;
+
+
+    _displayorder = 0;
+    _estimatedvarloadpointid = 0;
+    _dailyoperationsanalogpointid = 0;
+    _powerfactorpointid = 0;
+    _estimatedpowerfactorpointid = 0;
+
+    
+    //initialize dynamic data members
+    setCurrentVarLoadPointValue(0.0);
+    setCurrentWattLoadPointValue(0.0);
+    setNewPointDataReceivedFlag(FALSE);
+    setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
+    setEstimatedVarLoadPointValue(0.0);
+    setCurrentDailyOperations(0);
+    setRecentlyControlledFlag(FALSE);
+    setLastOperationTime(gInvalidRWDBDateTime);
+    setVarValueBeforeControl(0.0);
+    setLastCapBankControlledDeviceId(0);
+    _busoptimizedvarcategory = 1;
+    _busoptimizedvaroffset = 0.0;
+    _powerfactorvalue = -1000000.0;
+    _kvarsolution = 0.0;
+    _estimatedpowerfactorvalue = -1000000.0;
+    _currentvarpointquality = NormalQuality;
+    _waivecontrolflag = FALSE;
+    setVerificationFlag(FALSE);
+    _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+    setPerformingVerificationFlag(FALSE);
+    setVerificationDoneFlag(FALSE);
+
+    _insertDynamicDataFlag = TRUE;
+
+
+    if( _currentvarloadpointid <= 0 )
+    {
+        _currentvarloadpointvalue = 0;
+    }
+    if( _currentwattloadpointid <= 0 )
+    {
+        _currentwattloadpointvalue = 0;
+    }
+}
+
+void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
+{
+
+    RWDBDateTime dynamicTimeStamp;
+    RWCString tempBoolString;
+    rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
+    rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
+    rdr["newpointdatareceivedflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
+    rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
+    rdr["currentdailyoperations"] >> _currentdailyoperations;
+    rdr["recentlycontrolledflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["lastoperationtime"] >> _lastoperationtime;
+    rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
+    rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
+    rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
+    rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
+    rdr["ctitimestamp"] >> dynamicTimeStamp;
+    rdr["powerfactorvalue"] >> _powerfactorvalue;
+    rdr["kvarsolution"] >> _kvarsolution;
+    rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
+    rdr["currentvarpointquality"] >> _currentvarpointquality;
+    rdr["waivecontrolflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["additionalflags"] >> _additionalFlags;
+    _additionalFlags.toLower();
+    _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+
+    _insertDynamicDataFlag = FALSE;
+    _dirty = false;
+
 }
 
 /*---------------------------------------------------------------------------

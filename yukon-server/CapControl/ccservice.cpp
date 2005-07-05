@@ -25,6 +25,10 @@ ULONG _CC_DEBUG;
 BOOL _IGNORE_NOT_NORMAL_FLAG;
 ULONG _SEND_TRIES;
 
+RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
+ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
+
+
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
 //To know when to bail

@@ -41,7 +41,8 @@ CtiCCSubstationBus::CtiCCSubstationBus()
 
 CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr)
 {
-    restore(rdr);
+    restoreSubstationBusTableValues(rdr);
+    //restore(rdr);
 }
 
 CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
@@ -125,6 +126,16 @@ const RWCString& CtiCCSubstationBus::getPAODescription() const
 BOOL CtiCCSubstationBus::getDisableFlag() const
 {
     return _disableflag;
+}
+
+/*---------------------------------------------------------------------------
+    getParentId
+
+    Returns the parentID (AreaId) of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getParentId() const
+{
+    return _parentId;
 }
 
 /*---------------------------------------------------------------------------
@@ -302,7 +313,7 @@ const RWCString& CtiCCSubstationBus::getDaysOfWeek() const
 
     Returns the map location id of the substation
 ---------------------------------------------------------------------------*/
-LONG CtiCCSubstationBus::getMapLocationId() const
+const RWCString& CtiCCSubstationBus::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -568,6 +579,41 @@ BOOL CtiCCSubstationBus::getWaiveControlFlag() const
 }
 
 /*---------------------------------------------------------------------------
+    getVerificationFlag
+
+    Returns the WaiveControlFlag of the substation
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::getVerificationFlag() const
+{
+    return _verificationFlag;
+}
+
+BOOL CtiCCSubstationBus::getPerformingVerificationFlag() const
+{
+    return _performingVerificationFlag;
+}
+
+BOOL CtiCCSubstationBus::getVerificationDoneFlag() const
+{
+    return _verificationDoneFlag;
+}
+
+LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
+{
+    return _currentVerificationFeederId;
+}
+LONG CtiCCSubstationBus::getCurrentVerificationCapBankId() const
+{
+    return _currentVerificationCapBankId;
+}
+LONG CtiCCSubstationBus::getCurrentVerificationCapBankOrigState() const
+{
+    return _currentCapBankToVerifyAssumedOrigState;
+}
+
+
+
+/*---------------------------------------------------------------------------
     getCCFeeders
 
     Returns the list of feeders in the substation
@@ -653,6 +699,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPAODescription(const RWCString& descr
 CtiCCSubstationBus& CtiCCSubstationBus::setDisableFlag(BOOL disable)
 {
     _disableflag = disable;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
+    setParentId
+
+    Sets the parentID (AreaID) of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setParentId(LONG parentId)
+{
+    _parentId = parentId;
     return *this;
 }
 
@@ -864,7 +922,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDaysOfWeek(const RWCString& days)
 
     Sets the map location id of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(LONG maplocation)
+CtiCCSubstationBus& CtiCCSubstationBus::setMapLocationId(const RWCString& maplocation)
 {
     _maplocationid = maplocation;
     return *this;
@@ -2165,6 +2223,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE setpoint, const RW
     }
 }
 
+
+
 /*---------------------------------------------------------------------------
     figureCurrentSetPoint
 
@@ -2314,6 +2374,203 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 
     //setNewPointDataReceivedFlag(FALSE);
 
+    return returnBoolean;
+}
+
+
+BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges)
+{
+    BOOL returnBoolean = FALSE;
+    char tempchar[64] = "";
+    RWCString text = "";
+    RWCString additional = "";
+
+    BOOL vResult = FALSE; //fail
+
+    for(LONG i=0;i<_ccfeeders.entries();i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+        if (currentFeeder->getPAOId() == getCurrentVerificationFeederId())
+        {
+            RWSortedVector& ccCapBanks = currentFeeder->getCCCapBanks();
+            CtiCCCapBank* currentCapBank = NULL;
+
+            for(int j=0;j<ccCapBanks.entries();j++)
+            {
+               currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+               if (currentCapBank->getPAOId() == getCurrentVerificationCapBankId())
+               {   
+
+                   if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                   {
+                       if( !_IGNORE_NOT_NORMAL_FLAG ||
+                           getCurrentVarPointQuality() == NormalQuality )
+                       {    
+                           DOUBLE change;
+                           if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                           {
+                               change = currentFeeder->getCurrentVarLoadPointValue() - currentFeeder->getVarValueBeforeControl();
+                           }
+                           else
+                           {
+                               change = getCurrentVarLoadPointValue() - getVarValueBeforeControl();
+                           }
+                           if( change < 0 )
+                           {
+                               CtiLockGuard<CtiLogger> logger_guard(dout);
+                               dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                           }
+                           DOUBLE ratio = change/currentCapBank->getBankSize();
+                           if( ratio < getMinConfirmPercent()*.01 )
+                           {
+                               if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                   text = RWCString("Var Change = ");
+                                   text += doubleToString(ratio*100.0);
+                                   text += "%, OpenFail";
+                                   additional = RWCString("Feeder: ");
+                                   additional = getPAOName();
+                               }
+                               else if( getMinConfirmPercent() != 0 )
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                   text = RWCString("Var Change = ");
+                                   text += doubleToString(ratio*100.0);
+                                   text += "%, OpenQuestionable";
+                                   additional = RWCString("Feeder: ");
+                                   additional = getPAOName();
+                               }
+                               else
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                                   vResult = TRUE;
+                               }
+                           }
+                           else
+                           {
+                               currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                               vResult = TRUE;
+                           }
+                       }
+                       else
+                       {
+                           char tempchar[80];
+                           currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                           text = RWCString("Non Normal Var Quality = ");
+                           _ltoa(getCurrentVarPointQuality(),tempchar,10);
+                           text += tempchar;
+                           text += "%, OpenQuestionable";
+                           additional = RWCString("Feeder: ");
+                           additional = getPAOName();
+                       }
+                   }
+                   else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                   {
+                       if( !_IGNORE_NOT_NORMAL_FLAG ||
+                           getCurrentVarPointQuality() == NormalQuality )
+                       {
+                           DOUBLE change;
+                           if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                           {
+                               change = currentFeeder->getVarValueBeforeControl() - currentFeeder->getCurrentVarLoadPointValue();
+                           }
+                           else
+                           {
+                               change = getVarValueBeforeControl() - getCurrentVarLoadPointValue();
+                           }
+                           if( change < 0 )
+                           {
+                               CtiLockGuard<CtiLogger> logger_guard(dout);
+                               dout << RWTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                           }
+                           DOUBLE ratio = change/currentCapBank->getBankSize();
+                           if( ratio < getMinConfirmPercent()*.01 )
+                           {
+                               if( ratio < getFailurePercent()*.01 && getFailurePercent() != 0 && getMinConfirmPercent() != 0 )
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                   text = RWCString("Var Change = ");
+                                   text += doubleToString(ratio*100.0);
+                                   text += "%, CloseFail";
+                                   additional = RWCString("Feeder: ");
+                                   additional = getPAOName();
+                               }
+                               else if( getMinConfirmPercent() != 0 )
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                   text = RWCString("Var Change = ");
+                                   text += doubleToString(ratio*100.0);
+                                   text += "%, CloseQuestionable";
+                                   additional = RWCString("Feeder: ");
+                                   additional = getPAOName();
+                               }
+                               else
+                               {
+                                   currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                                   vResult = TRUE;
+                               }
+                           }
+                           else
+                           {
+                               currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                               vResult = TRUE;
+                           }
+                       }
+                       else
+                       {
+                           char tempchar[80];
+                           currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                           text = RWCString("Non Normal Var Quality = ");
+                           _ltoa(getCurrentVarPointQuality(),tempchar,10);
+                           text += tempchar;
+                           text += "%, CloseQuestionable";
+                           additional = RWCString("Feeder: ");
+                           additional = getPAOName();
+                       }
+                   }
+                   else
+                   {
+                       CtiLockGuard<CtiLogger> logger_guard(dout);
+                       dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                       returnBoolean = FALSE;
+                      // break;
+                   }
+
+                   if( currentCapBank->getStatusPointId() > 0 )
+                   {
+                       if( text.length() > 0 )
+                       {//if control failed or questionable, create event to be sent to dispatch
+                           long tempLong = currentCapBank->getStatusPointId();
+                           pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,GeneralLogType,SignalEvent));
+                           ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
+                       }
+                       pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                       ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
+                       currentCapBank->setLastStatusChangeTime(RWDBDateTime());
+                   }
+                   else
+                   {
+                       CtiLockGuard<CtiLogger> logger_guard(dout);
+                       dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
+                       << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
+                   }
+
+                   if (currentCapBank->updateVerificationState())
+                   {
+                       returnBoolean = TRUE;
+                       currentCapBank->setPerformingVerificationFlag(FALSE);
+                       currentFeeder->setPerformingVerificationFlag(FALSE);
+                       setBusUpdatedFlag(TRUE);
+                       return returnBoolean;
+                   }
+
+                   break;
+               }
+            }
+            break;
+        }
+    }
     return returnBoolean;
 }
 
@@ -2923,6 +3180,391 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
     return returnBoolean;
 }
 
+
+CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify()
+{
+    _currentVerificationFeederId = -1;
+    _currentVerificationCapBankId = -1;
+
+    //_currentCapBankToVerifyId = (LONG) _verificationCapBankIds.back();
+    //_verificationCapBankIds.pop_back();
+    for(LONG i=0;i<_ccfeeders.entries();i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+        if( currentFeeder->getVerificationFlag() && !currentFeeder->getVerificationDoneFlag() )
+        {
+            _currentVerificationFeederId = currentFeeder->getPAOId();
+
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(LONG j=0;j<ccCapBanks.entries();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                if( currentCapBank->getVerificationFlag() && !currentCapBank->getVerificationDoneFlag() )
+                {  
+                    _currentVerificationCapBankId = currentCapBank->getPAOId();
+                    return *this;
+                }
+            }
+            currentFeeder->setVerificationDoneFlag(TRUE);
+            _currentVerificationFeederId = -1;
+        }
+    }
+    setBusUpdatedFlag(TRUE);
+
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(BOOL verificationFlag)
+{
+
+    if( _verificationFlag != verificationFlag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _verificationFlag = verificationFlag;
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setPerformingVerificationFlag(BOOL performingVerificationFlag)
+{
+    if( _performingVerificationFlag != performingVerificationFlag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _performingVerificationFlag = performingVerificationFlag;
+
+    return *this;
+}
+CtiCCSubstationBus& CtiCCSubstationBus::setVerificationDoneFlag(BOOL verificationDoneFlag)
+{
+    if( _verificationDoneFlag != verificationDoneFlag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _verificationDoneFlag = verificationDoneFlag;
+
+    return *this;
+}
+
+
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feederId)
+{
+    if( _currentVerificationFeederId != feederId )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _currentVerificationFeederId = feederId;
+
+    return *this;
+}
+
+
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankId(LONG capBankId)
+{
+    if( _currentVerificationCapBankId != capBankId )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _currentVerificationCapBankId = capBankId;
+
+    return *this;
+}
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(LONG status)
+{
+    if( _currentCapBankToVerifyAssumedOrigState != status )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+
+    _currentCapBankToVerifyAssumedOrigState = status;
+
+    return *this;
+}
+
+
+CtiCCSubstationBus& CtiCCSubstationBus::setVerificationAlreadyStartedFlag(BOOL verificationFlag)
+{
+
+    if( _verificationAlreadyStartedFlag != verificationFlag )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _verificationAlreadyStartedFlag = verificationFlag;
+    return *this;
+}
+
+
+CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+{
+    CtiRequestMsg* request = NULL;
+    for (LONG i = 0; i < _ccfeeders.entries(); i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders[i];
+        if( currentFeeder->getPAOId() == _currentVerificationFeederId )
+        {
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(LONG j=0;j<ccCapBanks.entries();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                if( currentCapBank->getPAOId() == _currentVerificationCapBankId )
+                {
+                    if (currentCapBank->getVCtrlIndex() == 1)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " *** JULIE *** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    else if (currentCapBank->getVCtrlIndex() == 2)
+                    {
+                        if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
+                        {
+                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        }
+                        else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
+                        {
+                            request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges,getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        }
+
+                    }
+                    else if (currentCapBank->getVCtrlIndex() == 3)
+                    {
+                        if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
+                        {
+                            request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges,getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        }
+                        else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
+                        {
+                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                        }
+
+                    }
+                    if( request != NULL )
+                    {
+                        pilMessages.insert(request);
+                        setLastOperationTime(currentDateTime);
+                        setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                        setLastFeederControlledPosition(i);
+                        currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPAOId());
+                        currentFeeder->setLastOperationTime(currentDateTime);
+                       ((CtiCCFeeder*)_ccfeeders[i])->setLastOperationTime(currentDateTime);
+                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                        figureEstimatedVarLoadPointValue();
+                        if( getEstimatedVarLoadPointId() > 0 )
+                        {
+                            pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                        }
+                        //setRecentlyControlledFlag(TRUE);
+                        setBusUpdatedFlag(TRUE);
+                        return *this;
+                    }
+
+                }
+            }
+            
+        }
+    }
+
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
+{
+    //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
+
+    CtiRequestMsg* request = NULL;
+
+    for (LONG i = 0; i < _ccfeeders.entries(); i++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders[i];
+        if( currentFeeder->getPAOId() == _currentVerificationFeederId )
+        {
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(LONG j=0;j<ccCapBanks.entries();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                if( currentCapBank->getPAOId() == _currentVerificationCapBankId )
+                {
+                
+                    currentCapBank->initVerificationControlStatus();
+                    setCurrentVerificationCapBankState(currentCapBank->getAssumedOrigVerificationState());
+                    currentCapBank->setAssumedOrigVerificationState(getCurrentVerificationCapBankOrigState());
+                    currentCapBank->setPreviousVerificationControlStatus(-1);
+                    currentCapBank->setVCtrlIndex(1); //1st control sent
+                    currentCapBank->setPerformingVerificationFlag(TRUE);
+                    currentFeeder->setPerformingVerificationFlag(TRUE);
+
+                    if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
+                    {
+                        request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges,getCurrentVarLoadPointValue(), getDecimalPlaces());
+                    }
+                    else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
+                    {
+                        request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, getCurrentVarLoadPointValue(), getDecimalPlaces());
+                    }
+
+
+                    if( request != NULL )
+                    {
+                        pilMessages.insert(request);
+                        setLastOperationTime(currentDateTime);
+                        setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                        setLastFeederControlledPosition(i);
+                        currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPAOId());
+                        currentFeeder->setLastOperationTime(currentDateTime);
+                       //((CtiCCFeeder*)_ccfeeders[currentPosition])->setLastOperationTime(currentDateTime);
+                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                        figureEstimatedVarLoadPointValue();
+                        if( getEstimatedVarLoadPointId() > 0 )
+                        {
+                            pointChanges.insert(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                        }
+                        //setRecentlyControlledFlag(TRUE);
+                    }
+                    //setNewPointDataReceivedFlag(FALSE);
+                    //regardless what happened the substation bus should be should be sent to the client
+                    setBusUpdatedFlag(TRUE);
+                    return *this;
+                }
+            }
+        }
+    }
+
+    
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    isAlreadyControlled
+
+    Returns a boolean if the last cap bank controlled expected var changes
+    are reflected in the current var level before the max confirm time
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
+{
+    BOOL returnBoolean = FALSE;
+
+    if( !_IGNORE_NOT_NORMAL_FLAG ||
+        getCurrentVarPointQuality() == NormalQuality )
+    {
+        if( !_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) ||
+            !_controlmethod.compareTo(CtiCCSubstationBus::BusOptimizedFeederControlMethod,RWCString::ignoreCase) )
+        {
+            if( getMinConfirmPercent() > 0 )
+            {                   
+                for(LONG i = 0; i < _ccfeeders.entries(); i++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                    if( currentFeeder->getPAOId() == getCurrentVerificationFeederId() )
+                    {
+                        if( currentFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) )
+                        {
+                            returnBoolean = TRUE;
+                            break;
+                        }
+                    }
+                } 
+            }
+        }
+        else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
+        {
+            if( getMinConfirmPercent() > 0 )
+            {
+                DOUBLE oldCalcValue = getVarValueBeforeControl();
+                DOUBLE newCalcValue = getCurrentVarLoadPointValue();
+                for(LONG i=0;i<_ccfeeders.entries();i++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+
+                    if( currentFeeder->getPAOId() == getCurrentVerificationFeederId() )
+                    {
+                        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                        for(LONG j=0;j<ccCapBanks.entries();j++)
+                        {
+                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                            if( currentCapBank->getPAOId() == getCurrentVerificationCapBankId() )
+                            {
+                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                                {
+                                    DOUBLE change = newCalcValue - oldCalcValue;
+                                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                                    if( ratio >= getMinConfirmPercent()*.01 )
+                                    {
+                                        returnBoolean = TRUE;
+                                    }
+                                    else
+                                    {
+                                        returnBoolean = FALSE;
+                                    }
+                                }
+                                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                                {
+                                    DOUBLE change = oldCalcValue - newCalcValue;
+                                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                                    if( ratio >= getMinConfirmPercent()*.01 )
+                                    {
+                                        returnBoolean = TRUE;
+                                    }
+                                    else
+                                    {
+                                        returnBoolean = FALSE;
+                                    }
+                                }
+                                else
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    returnBoolean = FALSE;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            returnBoolean = isAlreadyControlled();
+        }
+    }
+    return returnBoolean;
+}
 /*---------------------------------------------------------------------------
     isPastMaxConfirmTime
 
@@ -2979,6 +3621,16 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const RWDBDateTime& current
                 returnBoolean = TRUE;
                 break;
             }
+            else if (getVerificationFlag() && getPerformingVerificationFlag() &&
+                     currentCCFeeder->getPAOId() == getCurrentVerificationFeederId() && 
+                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
+                     currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, pilMessages, getMaxConfirmTime()) )
+            {
+                setLastOperationTime(currentDateTime);
+                returnBoolean = TRUE;
+                break;
+            }
+
         }
     }
     else
@@ -2994,6 +3646,16 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const RWDBDateTime& current
                 returnBoolean = TRUE;
                 break;
             }
+            else if (getVerificationFlag() && getPerformingVerificationFlag() &&
+                     currentCCFeeder->getPAOId() == getCurrentVerificationFeederId() &&
+                     currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, pilMessages, getMaxConfirmTime()) )
+                     
+            {
+                setLastOperationTime(currentDateTime);
+                returnBoolean = TRUE;
+                break;
+            }
+
         }
     }
 
@@ -3134,6 +3796,11 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                     dout << "  " << updater.asString() << endl;
                 }
             }
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            addFlags[0] = (_verificationFlag?'Y':'N');
+            addFlags[1] = (_performingVerificationFlag?'Y':'N');
+            addFlags[2] = (_verificationDoneFlag?'Y':'N');
+            _additionalFlags = RWCString(RWCString(*addFlags) + RWCString(*(addFlags+1)) + RWCString(*(addFlags+2)) + RWCString(*(addFlags + 3), 17));
 
             updater.clear();
 
@@ -3145,8 +3812,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << dynamicCCSubstationBusTable["kvarsolution"].assign( _kvarsolution )
             << dynamicCCSubstationBusTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
             << dynamicCCSubstationBusTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCSubstationBusTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) );
-
+            << dynamicCCSubstationBusTable["waivecontrolflag"].assign( RWCString((_waivecontrolflag?'Y':'N')) )
+            << dynamicCCSubstationBusTable["additionalflags"].assign( _additionalFlags )
+            << dynamicCCSubstationBusTable["currverifycbid"].assign( _currentVerificationCapBankId )
+            << dynamicCCSubstationBusTable["currverifyfeederid"].assign( _currentVerificationFeederId )
+            << dynamicCCSubstationBusTable["currverifycborigstate"].assign( _currentCapBankToVerifyAssumedOrigState );
+             
+             
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - " << updater.asString().data() << endl;
@@ -3177,6 +3849,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted substation bus into DynamicCCSubstationBus: " << getPAOName() << endl;
             }
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
 
             RWDBInserter inserter = dynamicCCSubstationBusTable.inserter();
 
@@ -3200,7 +3873,11 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& cur
             << _kvarsolution
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
-            << RWCString((_waivecontrolflag?'Y':'N'));
+            << RWCString((_waivecontrolflag?'Y':'N'))
+            << RWCString(*addFlags, 20)
+            << _currentVerificationCapBankId
+            << _currentVerificationFeederId 
+            << _currentCapBankToVerifyAssumedOrigState;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -3285,6 +3962,293 @@ DOUBLE CtiCCSubstationBus::convertKVARToKQ(DOUBLE kvar, DOUBLE kw)
     return returnKQ;
 }
 
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// LOTS OF WORK TO DO HERE!!!!
+/////////////////////////////////////////////////////////////////////////////
+
+BOOL CtiCCSubstationBus::isBusPerformingVerification()
+{
+    return _performingVerificationFlag;
+
+}
+BOOL CtiCCSubstationBus::isVerificationPastMaxConfirmTime(const RWDBDateTime& currentDateTime)
+{
+    if (getLastOperationTime().seconds() + getMaxConfirmTime() <= currentDateTime.seconds() )
+        return TRUE;
+    else
+        return FALSE;
+}
+BOOL CtiCCSubstationBus::capBankVerificationDone(RWOrdered& pointChanges)
+{
+    BOOL returnBool = FALSE;
+
+   /*if (_currentVerificationCapBank->getVerificationState() == VerificationSuccess ||
+        _currentVerificationCapBank->getVerificationState() == VerificationFail)
+    {
+        return TRUE;
+    }  */
+
+
+    return returnBool;
+
+}
+BOOL CtiCCSubstationBus::areThereMoreCapBanksToVerify()
+{
+    getNextCapBankToVerify();
+    if (getCurrentVerificationCapBankId() != -1)
+    {
+        setPerformingVerificationFlag(TRUE);
+
+        return TRUE;
+    }
+    else
+    {
+        for(LONG i=0;i<_ccfeeders.entries();i++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            currentFeeder->setVerificationFlag(FALSE);
+            currentFeeder->setPerformingVerificationFlag(FALSE);
+            currentFeeder->setVerificationDoneFlag(TRUE);
+
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(LONG j=0;j<ccCapBanks.entries();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                currentCapBank->setVerificationFlag(FALSE);
+                currentCapBank->setPerformingVerificationFlag(FALSE);
+                currentCapBank->setVerificationDoneFlag(TRUE);
+            }
+        }
+        setPerformingVerificationFlag(FALSE);
+        setBusUpdatedFlag(TRUE);
+        return FALSE;
+    }
+}
+   
+    
+/*list <LONG> CtiCCSubstationBus::getVerificationCapBankList()
+{
+    return _verificationCapBankIds;
+} */
+
+void CtiCCSubstationBus::setVerificationStrategy(int verificationStrategy)
+{
+    if( _verificationStrategy != verificationStrategy )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _verificationStrategy = verificationStrategy;
+}
+
+int CtiCCSubstationBus::getVerificationStrategy(void) const
+{
+    return _verificationStrategy;
+}
+
+
+void CtiCCSubstationBus::setCapBankInactivityTime(LONG capBankToVerifyInactivityTime)
+{
+    if( _capBankToVerifyInactivityTime != capBankToVerifyInactivityTime )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _capBankToVerifyInactivityTime = capBankToVerifyInactivityTime;
+}
+
+LONG CtiCCSubstationBus::getCapBankInactivityTime(void) const
+{
+    return _capBankToVerifyInactivityTime;
+}
+
+
+ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy)
+{
+    LONG x, j;
+    //_verificationCapBankIds.clear();
+
+    switch (verificationStrategy)
+    {
+        case ALLBANKS:
+        {
+            for (x = 0; x < _ccfeeders.entries(); x++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+                currentFeeder->setVerificationFlag(TRUE);
+                currentFeeder->setVerificationDoneFlag(FALSE);
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(j=0;j<ccCapBanks.entries();j++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase))
+                    {
+//                        _verificationCapBankIds.push_back(currentCapBank->getPAOId());
+                        currentCapBank->setVerificationFlag(TRUE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        currentCapBank->setVCtrlIndex(0);
+                    }
+                }
+            }
+            break;
+        }
+        case FAILEDBANKS:
+        {
+            for (x = 0; x < _ccfeeders.entries(); x++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+                currentFeeder->setVerificationFlag(TRUE);
+                currentFeeder->setVerificationDoneFlag(FALSE);
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(j=0;j<ccCapBanks.entries();j++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                        ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
+                          currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) )
+                    {
+
+                        currentCapBank->setVerificationFlag(TRUE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        currentCapBank->setVCtrlIndex(0);
+               //         _verificationCapBankIds.push_back(currentCapBank->getPAOId());
+                    }
+                }
+            }
+            break;
+        }
+        case QUESTIONABLEBANKS:
+        {
+            for (x = 0; x < _ccfeeders.entries(); x++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+                currentFeeder->setVerificationFlag(TRUE);
+                currentFeeder->setVerificationDoneFlag(FALSE);
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(j=0;j<ccCapBanks.entries();j++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                        (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
+                         currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
+                    {
+
+                        currentCapBank->setVerificationFlag(TRUE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        currentCapBank->setVCtrlIndex(0);
+                        //_verificationCapBankIds.push_back(currentCapBank->getPAOId());
+                    }
+                }
+            }
+            break;
+        }
+        case FAILEDANDQUESTIONABLEBANKS:
+        {
+            for (x = 0; x < _ccfeeders.entries(); x++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+                currentFeeder->setVerificationFlag(TRUE);
+                currentFeeder->setVerificationDoneFlag(FALSE);
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(j=0;j<ccCapBanks.entries();j++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                        (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail || 
+                         currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
+                         currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable || 
+                         currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
+                    {
+
+                        currentCapBank->setVerificationFlag(TRUE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        currentCapBank->setVCtrlIndex(0);
+                       // _verificationCapBankIds.push_back(currentCapBank->getPAOId());
+                    }
+                }
+            }
+            break;
+        }
+        case SELECTEDFORVERIFICATIONBANKS:
+        {
+            break;
+        }
+        case BANKSINACTIVEFORXTIME:
+        {
+            RWDBDateTime currentTime = RWTime();
+            currentTime.now();
+            for (x = 0; x < _ccfeeders.entries(); x++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+                currentFeeder->setVerificationFlag(TRUE);
+                currentFeeder->setVerificationDoneFlag(FALSE);
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(j=0;j<ccCapBanks.entries();j++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                    if (!currentCapBank->getOperationalState().compareTo(CtiCCCapBank::SwitchedOperationalState,RWCString::ignoreCase) &&
+                        ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) )
+                    {
+
+                        currentCapBank->setVerificationFlag(TRUE);
+                        currentCapBank->setVerificationDoneFlag(FALSE);
+                        currentCapBank->setVCtrlIndex(0);
+                       // _verificationCapBankIds.push_back(currentCapBank->getPAOId());
+                    }
+                }
+            }
+
+            break;
+        }
+        default:
+            break;
+    }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout <<" CapBank LIST:  ";
+    }
+        for (x = 0; x < _ccfeeders.entries(); x++)
+    {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+        for(j=0;j<ccCapBanks.entries();j++)
+        {
+            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+            if (currentCapBank->getVerificationFlag())
+            { 
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout <<"  " << currentCapBank->getPAOId();
+                }
+            }
+
+        }
+    }
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout <<endl;
+    }
+
+
+    setBusUpdatedFlag(TRUE);
+
+    return *this;
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -3295,6 +4259,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     RWTime tempTime1;
     RWTime tempTime2;
     RWTime tempTime3;
+    RWCString tempString;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -3305,6 +4270,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _paotype
     >> _paodescription
     >> _disableflag
+    >> _parentId
     >> _controlmethod
     >> _maxdailyoperation
     >> _maxoperationdisableflag
@@ -3349,7 +4315,16 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _estimatedpowerfactorvalue
     >> _currentvarpointquality
     >> _waivecontrolflag
-    >> _ccfeeders;
+    >> _additionalFlags
+    /*>> _currentVerificationCapBankId 
+    >> _currentVerificationFeederId 
+    */>> _ccfeeders;
+     
+   /* _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+   */  
+
 
     _nextchecktime = RWDBDateTime(tempTime1);
     _lastcurrentvarpointupdatetime = RWDBDateTime(tempTime2);
@@ -3383,6 +4358,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _paotype
     << _paodescription
     << _disableflag
+    << _parentId
     << _controlmethod
     << _maxdailyoperation
     << _maxoperationdisableflag
@@ -3427,6 +4403,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
+    << RWCString(_additionalFlags) /*
+    << _currentVerificationCapBankId
+    << _currentVerificationFeederId  */
     << _ccfeeders;
 }
 
@@ -3444,6 +4423,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+        //_parentId = right._parentId;
         _controlmethod = right._controlmethod;
         _maxdailyoperation = right._maxdailyoperation;
         _maxoperationdisableflag = right._maxoperationdisableflag;
@@ -3488,6 +4468,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _estimatedpowerfactorvalue = right._estimatedpowerfactorvalue;
         _currentvarpointquality = right._currentvarpointquality;
         _waivecontrolflag = right._waivecontrolflag;
+        _additionalFlags = right._additionalFlags;
+        _currentVerificationCapBankId = right._currentVerificationCapBankId; 
+        _currentVerificationFeederId = right._currentVerificationFeederId; 
+        _verificationStrategy = right._verificationStrategy;
+        _capBankToVerifyInactivityTime = right._capBankToVerifyInactivityTime;
 
         _ccfeeders.clearAndDestroy();
         for(LONG i=0;i<right._ccfeeders.entries();i++)
@@ -3545,6 +4530,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+   // rdr["parentId"] >> _parentId;
     rdr["controlmethod"] >> _controlmethod;
     rdr["maxdailyoperation"] >> _maxdailyoperation;
     rdr["maxoperationdisableflag"] >> tempBoolString;
@@ -3615,6 +4601,20 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         rdr["waivecontrolflag"] >> tempBoolString;
         tempBoolString.toLower();
         _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["additionalflags"] >> _additionalFlags;
+        _additionalFlags.toLower();
+
+        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+
+
+        rdr["currverifycbid"] >> _currentVerificationCapBankId;
+        rdr["currverifyfeederid"] >> _currentVerificationFeederId;
+        rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
+        rdr["verificationstrategy"] >> _verificationStrategy;
+        rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
 
         _insertDynamicDataFlag = FALSE;
     }
@@ -3626,12 +4626,12 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         figureNextCheckTime();
         setNewPointDataReceivedFlag(FALSE);
         setBusUpdatedFlag(FALSE);
-        setLastCurrentVarPointUpdateTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
         setEstimatedVarLoadPointValue(0.0);
         setCurrentDailyOperations(0);
         setPeakTimeFlag(TRUE);
         setRecentlyControlledFlag(FALSE);
-        setLastOperationTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastOperationTime(gInvalidRWDBDateTime);
         setVarValueBeforeControl(0.0);
         setLastFeederControlledPAOId(0);
         setLastFeederControlledPosition(-1);
@@ -3640,6 +4640,17 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
         setEstimatedPowerFactorValue(-1000000.0);
         setCurrentVarPointQuality(NormalQuality);
         setWaiveControlFlag(FALSE);
+        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+
+        setVerificationFlag(FALSE);
+        setPerformingVerificationFlag(FALSE);
+        setVerificationDoneFlag(FALSE);
+
+        setCurrentVerificationCapBankId(-1);
+        setCurrentVerificationFeederId(-1);
+        setCurrentVerificationCapBankState(0);
+        setVerificationStrategy(-1);
+        setCapBankInactivityTime(-1);
 
         _insertDynamicDataFlag = TRUE;
     }
@@ -3691,6 +4702,156 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     if( _currentwattloadpointid <= 0 )
     {
         _currentwattloadpointvalue = 0;
+    }
+}
+
+void CtiCCSubstationBus::restoreSubstationBusTableValues(RWDBReader& rdr)
+{
+    //RWDBNullIndicator isNull;
+    //RWDBDateTime currentDateTime = RWDBDateTime();
+    //RWDBDateTime dynamicTimeStamp;
+    RWCString tempBoolString;
+
+    rdr["paobjectid"] >> _paoid;
+    rdr["category"] >> _paocategory;
+    rdr["paoclass"] >> _paoclass;
+    rdr["paoname"] >> _paoname;
+    rdr["type"] >> _paotype;
+    rdr["description"] >> _paodescription;
+    rdr["disableflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["controlmethod"] >> _controlmethod;
+    rdr["maxdailyoperation"] >> _maxdailyoperation;
+    rdr["maxoperationdisableflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    _maxoperationdisableflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["peaksetpoint"] >> _peaksetpoint;
+    rdr["offpeaksetpoint"] >> _offpeaksetpoint;
+    rdr["peakstarttime"] >> _peakstarttime;
+    rdr["peakstoptime"] >> _peakstoptime;
+    rdr["currentvarloadpointid"] >> _currentvarloadpointid;
+    rdr["currentwattloadpointid"] >> _currentwattloadpointid;
+    rdr["upperbandwidth"] >> _upperbandwidth;
+    rdr["controlinterval"] >> _controlinterval;
+    rdr["minresponsetime"] >> _maxconfirmtime;//will become "minconfirmtime" in the DB in 3.1
+    rdr["minconfirmpercent"] >> _minconfirmpercent;
+    rdr["failurepercent"] >> _failurepercent;
+    rdr["daysofweek"] >> _daysofweek;
+    rdr["maplocationid"] >> _maplocationid;
+    rdr["lowerbandwidth"] >> _lowerbandwidth;
+    rdr["controlunits"] >> _controlunits;
+    rdr["controldelaytime"] >> _controldelaytime;
+    rdr["controlsendretries"] >> _controlsendretries;
+
+
+
+    _decimalplaces = 2;
+    _estimatedvarloadpointid = 0;
+    _dailyoperationsanalogpointid = 0;
+    _powerfactorpointid = 0;
+    _estimatedpowerfactorpointid = 0;
+
+
+    //initialize dynamic data members
+    setCurrentVarLoadPointValue(0.0);
+    setCurrentWattLoadPointValue(0.0);
+    figureNextCheckTime();
+    setNewPointDataReceivedFlag(FALSE);
+    setBusUpdatedFlag(FALSE);
+    setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
+    setEstimatedVarLoadPointValue(0.0);
+    setCurrentDailyOperations(0);
+    setPeakTimeFlag(TRUE);
+    setRecentlyControlledFlag(FALSE);
+    setLastOperationTime(gInvalidRWDBDateTime);
+    setVarValueBeforeControl(0.0);
+    setLastFeederControlledPAOId(0);
+    setLastFeederControlledPosition(-1);
+    setPowerFactorValue(-1000000.0);
+    setKVARSolution(0.0);
+    setEstimatedPowerFactorValue(-1000000.0);
+    setCurrentVarPointQuality(NormalQuality);
+    setWaiveControlFlag(FALSE);
+
+    _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+    setVerificationFlag(FALSE);
+    setPerformingVerificationFlag(FALSE);
+    setVerificationDoneFlag(FALSE);
+    setCurrentVerificationCapBankId(-1);
+    setCurrentVerificationFeederId(-1);
+    setCurrentVerificationCapBankState(0);
+    setVerificationStrategy(-1);
+    setCapBankInactivityTime(-1);
+
+    _insertDynamicDataFlag = TRUE;
+
+    if( _currentvarloadpointid <= 0 )
+    {
+        _currentvarloadpointvalue = 0;
+    }
+    if( _currentwattloadpointid <= 0 )
+    {
+        _currentwattloadpointvalue = 0;
+    }
+
+}
+void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
+{   
+    RWDBNullIndicator isNull;
+    RWDBDateTime dynamicTimeStamp;
+    RWCString tempBoolString;
+
+
+    rdr["currentvarpointvalue"] >> isNull;
+    if( !isNull )
+    {
+        rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
+        rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
+        rdr["nextchecktime"] >> _nextchecktime;
+        rdr["newpointdatareceivedflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["busupdatedflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _busupdatedflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
+        rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
+        rdr["currentdailyoperations"] >> _currentdailyoperations;
+        rdr["peaktimeflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _peaktimeflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["recentlycontrolledflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
+        rdr["lastoperationtime"] >> _lastoperationtime;
+        rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
+        rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
+        rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
+        rdr["ctitimestamp"] >> dynamicTimeStamp;
+        rdr["powerfactorvalue"] >> _powerfactorvalue;
+        rdr["kvarsolution"] >> _kvarsolution;
+        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
+        rdr["currentvarpointquality"] >> _currentvarpointquality;
+        rdr["waivecontrolflag"] >> tempBoolString;
+        tempBoolString.toLower();
+        _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
+
+        rdr["additionalflags"] >> _additionalFlags;
+        _additionalFlags.toLower();
+        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+        rdr["currverifycbid"] >> _currentVerificationCapBankId;
+        rdr["currverifyfeederid"] >> _currentVerificationFeederId;
+        rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
+        rdr["verificationstrategy"] >> _verificationStrategy;
+        rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
+
+        _insertDynamicDataFlag = FALSE;
+
+        _dirty = false;
     }
 }
 

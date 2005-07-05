@@ -38,6 +38,8 @@
 #include "pointtypes.h"
 #include "devicetypes.h"
 #include "resolvers.h" 
+//#include "ccscheduler.h"
+#include "mgr_paosched.h"
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
@@ -68,7 +70,7 @@ CtiCapController* CtiCapController::getInstance()
     Private to ensure that only one CtiCapController is available through the
     instance member function
 ---------------------------------------------------------------------------*/
-CtiCapController::CtiCapController()
+CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inmsg_delay(0), control_loop_outmsg_delay(0)
 {
     _dispatchConnection = NULL;
     _pilConnection = NULL;
@@ -169,7 +171,7 @@ void CtiCapController::stop()
     other related applications (server programs: pil, dispatch;
     client: cap control client in TDC).
 --------------------------------------------------------------------------*/
-void CtiCapController::controlLoop()
+void CtiCapController::controlLoop()                                    
 {
     try
     {
@@ -181,6 +183,12 @@ void CtiCapController::controlLoop()
         store->setReregisterForPoints(FALSE);
         store->verifySubBusAndFeedersStates();
 
+        CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
+        scheduleMgr->start();
+
+        // 3 cparms, set for control loop wait scenerios - main, rcv msgs, send msgs
+        loadControlLoopCParms();
+
         RWDBDateTime currentDateTime;
         RWOrdered substationBusChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
@@ -189,6 +197,8 @@ void CtiCapController::controlLoop()
         LONG lastDailyReset = 0;
         while(TRUE)
         {
+            long main_wait = control_loop_delay;
+            bool received_message = false;
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
@@ -252,7 +262,8 @@ void CtiCapController::controlLoop()
                     {
                         currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
                         if( currentSubstationBus->isVarCheckNeeded(currentDateTime) ||
-                            currentSubstationBus->isConfirmCheckNeeded() )
+                            currentSubstationBus->isConfirmCheckNeeded() ||
+                            currentSubstationBus->getVerificationFlag()) /**/
                         {
                             if( currentSubstationBus->getRecentlyControlledFlag() )
                             {
@@ -289,6 +300,102 @@ void CtiCapController::controlLoop()
                                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
+                            else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
+                            {
+                                if (currentSubstationBus->isBusPerformingVerification())
+                                {
+                                    if (currentSubstationBus->isVerificationAlreadyControlled() ||
+                                        currentSubstationBus->isVerificationPastMaxConfirmTime(currentDateTime))
+                                    {
+
+                                        if( (_SEND_TRIES > 1 ||
+                                             currentSubstationBus->getControlSendRetries() > 0) &&
+                                            !currentSubstationBus->isVerificationAlreadyControlled() &&
+                                            currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, pilMessages) )
+                                        {
+                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        }
+                                        else if(!currentSubstationBus->capBankVerificationStatusUpdate(pointChanges)  && 
+                                           currentSubstationBus->getCurrentVerificationCapBankId() != -1)
+                                        {
+                                            currentSubstationBus->sendNextCapBankVerificationControl(currentDateTime, pointChanges, pilMessages);
+                                        }
+                                        else
+                                        {
+                                            if(currentSubstationBus->areThereMoreCapBanksToVerify())
+                                            {
+                                                {
+                                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                        dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                                }
+
+                                                currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, pilMessages);
+                                            }
+                                            else
+                                            {
+                                                //reset VerificationFlag
+                                                currentSubstationBus->setVerificationFlag(FALSE);
+                                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                                CtiCCExecutorFactory f;
+                                                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, -1));
+                                                executor->Execute();
+                                                delete executor;
+                                                {
+                                                   CtiLockGuard<CtiLogger> logger_guard(dout);
+                                                   dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                                } 
+                                                //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
+                                            }
+                                        }
+
+                                    }
+                                    else // WAIT!!!
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    {
+                                       CtiLockGuard<CtiLogger> logger_guard(dout);
+                                       dout << RWTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                    }
+                                    int strategy = (long)currentSubstationBus->getVerificationStrategy();
+
+                                    currentSubstationBus->setCapBanksToVerifyFlags(strategy);
+                                    if(currentSubstationBus->areThereMoreCapBanksToVerify())
+                                    {
+                                        {
+                                             CtiLockGuard<CtiLogger> logger_guard(dout);
+                                             dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                        }
+                                        currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, pilMessages);
+                                        //currentSubstationBus->setPerformingVerificationFlag(TRUE);
+                                        // 
+                                        //currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    }
+                                    else
+                                    {
+                                        //reset VerificationFlag
+                                        currentSubstationBus->setVerificationFlag(FALSE);
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        CtiCCExecutorFactory f;
+                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, currentSubstationBus->getCapBankInactivityTime()));
+                                        executor->Execute();
+                                        delete executor;
+                                        {
+                                           CtiLockGuard<CtiLogger> logger_guard(dout);
+                                           dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
+                                        } 
+
+                                        //ALSO need to reset verification flags/ busperforming verificationflags/ on feeders and capbanks!!!
+                                    }
+                                    //currentSubstationBus->setPerformingVerificationFlag(TRUE);
+
+                                }
+                            }  
                             else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
                             {//not recently controlled and var check needed
                                 try
@@ -780,51 +887,67 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
         dout << RWTime() << " - Registering for point changes." << endl;
     }
 
-    CtiPointRegistrationMsg* regMsg = new CtiPointRegistrationMsg();
-    for(LONG i=0;i<subBuses.entries();i++)
+    CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
+    string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
+    if(simple_registration == "true" || simple_registration == "TRUE")
+    {   
+        //register for all points
+        regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+    }
+    else
+    { 
+        //register for each point specifically
+        regMsg = new CtiPointRegistrationMsg();
+
+        for(LONG i=0;i<subBuses.entries();i++)
+        {
+            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses[i];
+
+            if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+            {
+                regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
+            }
+            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+            {
+                regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
+            }
+
+            RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+            for(LONG j=0;j<ccFeeders.entries();j++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
+
+                if( currentFeeder->getCurrentVarLoadPointId() > 0 )
+                {
+                    regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
+                }
+                if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                {
+                    regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
+                }
+
+                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(LONG k=0;k<ccCapBanks.entries();k++)
+                {
+                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+
+                    if( currentCapBank->getStatusPointId() > 0 )
+                    {
+                        regMsg->insert(currentCapBank->getStatusPointId());
+                    }
+                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                    {
+                        regMsg->insert(currentCapBank->getOperationAnalogPointId());
+                    }
+                }
+            }
+        }
+    }
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses[i];
-
-        if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
-        {
-            regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
-        }
-        if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
-        {
-            regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
-        }
-
-        RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(LONG j=0;j<ccFeeders.entries();j++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders[j]);
-
-            if( currentFeeder->getCurrentVarLoadPointId() > 0 )
-            {
-                regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
-            }
-            if( currentFeeder->getCurrentWattLoadPointId() > 0 )
-            {
-                regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
-            }
-
-            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(LONG k=0;k<ccCapBanks.entries();k++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-
-                if( currentCapBank->getStatusPointId() > 0 )
-                {
-                    regMsg->insert(currentCapBank->getStatusPointId());
-                }
-                if( currentCapBank->getOperationAnalogPointId() > 0 )
-                {
-                    regMsg->insert(currentCapBank->getOperationAnalogPointId());
-                }
-            }
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - End Registering for point changes." << endl;
     }
 
     /*for(LONG x=0;x<regMsg->getCount();x++)
@@ -884,6 +1007,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
                         CtiCCSubstationBusStore::getInstance()->setValid(false);
+                        CtiPAOScheduleManager::getInstance()->setValid(false);
                     }
                 }
                 break;
@@ -1008,12 +1132,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
     BOOL found = FALSE;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+    //RWOrdered& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
 
-    for(int i=0;i<ccSubstationBuses.entries();i++)
-    {
+    /*for(int i=0;i<ccSubstationBuses.entries();i++)
+    { 
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
-
+      */
+    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPointID(pointID);
+    if (currentSubstationBus != NULL)
+    {
         if( currentSubstationBus->getCurrentVarLoadPointId() == pointID )
         {
             if( timestamp > currentSubstationBus->getLastCurrentVarPointUpdateTime() )
@@ -1058,7 +1185,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             found = TRUE;
-            break;
+            //break;
         }
         else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
         {
@@ -1091,15 +1218,18 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
             found = TRUE;
-            break;
+           // break;
         }
         else if( !found )
         {
             RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
 
-            for(int j=0;j<ccFeeders.entries();j++)
+           // for(int j=0;j<ccFeeders.entries();j++)
+            CtiCCFeeder* currentFeeder = store->findFeederByPointID(pointID);
+            if (currentFeeder != NULL)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+
+                //CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
                 if( currentFeeder->getCurrentVarLoadPointId() == pointID )
                 {
                     if( timestamp > currentFeeder->getLastCurrentVarPointUpdateTime() )
@@ -1144,7 +1274,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     found = TRUE;
-                    break;
+                   // break;
                 }
                 else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                 {
@@ -1177,15 +1307,17 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     found = TRUE;
-                    break;
+                   // break;
                 }
                 else if( !found )
                 {
-                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+                    //RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
-                    for(int k=0;k<ccCapBanks.entries();k++)
+                   // for(int k=0;k<ccCapBanks.entries();k++)
+                    CtiCCCapBank* currentCapBank = store->findCapBankByPointID(pointID);
+                    if (currentCapBank != NULL)
                     {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                        //CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
@@ -1214,31 +1346,41 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     }
                                 }
                             }
-                            currentCapBank->setControlStatus((LONG)value);
-                            currentCapBank->setTagsControlStatus((LONG)tags);
-                            currentCapBank->setLastStatusChangeTime(timestamp);
-                            currentSubstationBus->figureEstimatedVarLoadPointValue();
-                            if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
 
-                            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+                            /*if ( currentCapBank->getControlStatus() != (LONG)value &&
+                                currentSubstationBus->isBusPerformingVerification() &&
+                                currentCapBank->getVerificationDoneFlag() )
                             {
-                                currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                                if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
-                                {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
-                                }
+                                found = TRUE;
                             }
-                            if( currentFeeder->getCurrentWattLoadPointId() > 0 )
-                            {
-                                currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                                if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                            else
+                            {  */
+                                currentCapBank->setControlStatus((LONG)value);
+                                currentCapBank->setTagsControlStatus((LONG)tags);
+                                currentCapBank->setLastStatusChangeTime(timestamp);
+                                currentSubstationBus->figureEstimatedVarLoadPointValue();
+                                if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+     
+                                if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                                 {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                                    if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                                    {
+                                        sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    }
                                 }
-                            }
-                            found = TRUE;
-                            break;
+                                if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                                {
+                                    currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                    if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                                    {
+                                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    }
+                                }
+                                found = TRUE;
+                               // break;
+                          //  }
                         }
                         else if( currentCapBank->getOperationAnalogPointId() == pointID )
                         {
@@ -1247,9 +1389,12 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            currentCapBank->setTotalOperations((LONG)value);
-                            found = TRUE;
-                            break;
+                            else
+                            {
+                                currentCapBank->setTotalOperations((LONG)value);
+                                found = TRUE;
+                            }
+                            //break;
                         }
                     }
                 }
@@ -1257,10 +1402,201 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
         }
         else if( found )
         {
-            break;
+         //   break;
         }
     }
+    else 
+    {
+        CtiCCFeeder* currentFeeder = store->findFeederByPointID(pointID);
+        if (currentFeeder != NULL)
+        {
+            long subBusId = store->findSubBusIDbyFeederID(currentFeeder->getPAOId());
+            if (subBusId != NULL)
+            {
+                currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
+                if (currentSubstationBus == NULL)
+                {
+                    return;
+                }
+            }
+            //CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
+            if( currentFeeder->getCurrentVarLoadPointId() == pointID )
+            {
+                if( timestamp > currentFeeder->getLastCurrentVarPointUpdateTime() )
+                {
+                    /*{
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - Last Point Update: " << currentFeeder->LastCurrentVarPointUpdateTime().asString() << endl;
+                    }*/
+                    currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
+                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                }
+                currentFeeder->setCurrentVarLoadPointValue(value);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                currentFeeder->figureEstimatedVarLoadPointValue();
+                currentFeeder->setCurrentVarPointQuality(quality);
+                if( currentFeeder->getEstimatedVarLoadPointId() > 0 )
+                {
+                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),currentFeeder->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                }
 
+                if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                {
+                    if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                    {
+                        currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()));
+                    }
+                    currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                    currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                    if( currentFeeder->getPowerFactorPointId() > 0 )
+                    {
+                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                    }
+                    if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                    {
+                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                    }
+                }
+                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                found = TRUE;
+               // break;
+            }
+            else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
+            {
+                if( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+                {
+                    DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
+                    currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
+                }
+
+                currentFeeder->setCurrentWattLoadPointValue(value);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+
+                if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+                {
+                    currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                    currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                    if( currentFeeder->getPowerFactorPointId() > 0 )
+                    {
+                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                    }
+                    if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                    {
+                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                    }
+                }
+                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+                found = TRUE;
+               // break;
+            }
+        }
+        else
+        {
+            CtiCCCapBank* currentCapBank = store->findCapBankByPointID(pointID);
+            CtiCCFeeder* currentFeeder = NULL;
+            if (currentCapBank != NULL)
+            {
+                //CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                long subBusId = store->findSubBusIDbyCapBankID(currentCapBank->getPAOId());
+                if (subBusId != NULL)
+                {
+                    currentSubstationBus = store->findSubBusByPAObjectID(subBusId);
+                    if (currentSubstationBus != NULL)
+                    {
+                        long feederId = store->findFeederIDbyCapBankID(currentCapBank->getPAOId());
+                        if (feederId != NULL)
+                        {
+                            currentFeeder = store->findFeederByPAObjectID(feederId);
+                        }
+                        else
+                            return;
+
+                    }
+                    else
+                        return;
+                }
+                else
+                    return;
+
+                RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
+
+                if( currentCapBank->getStatusPointId() == pointID )
+                {
+                    if( timestamp > currentCapBank->getLastStatusChangeTime() ||
+                        currentCapBank->getControlStatus() != (LONG)value ||
+                        currentCapBank->getTagsControlStatus() != (LONG)tags )
+                    {
+                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                    }
+
+                    if( currentCapBank->getControlStatus() != (LONG)value &&
+                        currentSubstationBus->getRecentlyControlledFlag() &&
+                        currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPAOId() )
+                    {
+                        currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                        currentFeeder->setRecentlyControlledFlag(FALSE);
+                        if( !currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) )
+                        {
+                            for(LONG x=0;x<ccFeeders.entries();x++)
+                            {
+                                if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(TRUE);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    currentCapBank->setControlStatus((LONG)value);
+                    currentCapBank->setTagsControlStatus((LONG)tags);
+                    currentCapBank->setLastStatusChangeTime(timestamp);
+                    currentSubstationBus->figureEstimatedVarLoadPointValue();
+                    if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
+                        sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+
+                    if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+                    {
+                        currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                        if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
+                    }
+                    if( currentFeeder->getCurrentWattLoadPointId() > 0 )
+                    {
+                        currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                        if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                        }
+                    }
+                    found = TRUE;
+                   // break;
+                }
+                else if( currentCapBank->getOperationAnalogPointId() == pointID )
+                {
+                    if( timestamp > currentCapBank->getLastStatusChangeTime() ||
+                        currentCapBank->getTotalOperations() != (LONG)value )
+                    {
+                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                    }
+                    currentCapBank->setTotalOperations((LONG)value);
+                    found = TRUE;
+                    //break;
+                }
+            }
+        }
+    }
     return;
 }
 
@@ -1490,3 +1826,48 @@ RWPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
 {
     return _outClientMsgQueue;
 } 
+
+/*
+ * loadControlLoopCParms
+ * initialize control loop delay cparms that control behavior of the main loop
+ * these cparms are optional.
+ */
+void CtiCapController::loadControlLoopCParms()
+{
+    RWCString str;
+    char var[128];
+
+    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_NORMAL_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+    control_loop_delay = atoi(str);
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - " << var << ":  " << str << endl;
+    }
+    }
+
+    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_INMSG_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+    control_loop_inmsg_delay = atoi(str);
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - " << var << ":  " << str << endl;
+    }
+    }
+
+    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_OUTMSG_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+    control_loop_outmsg_delay = atoi(str);
+    if( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - " << var << ":  " << str << endl;
+    }
+    }
+}
+

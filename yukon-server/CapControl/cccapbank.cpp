@@ -34,7 +34,8 @@ CtiCCCapBank::CtiCCCapBank()
 
 CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
 {
-    restore(rdr);
+    restoreCapBankTableValues(rdr);
+    //restore(rdr);
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
@@ -118,6 +119,17 @@ BOOL CtiCCCapBank::getDisableFlag() const
 {
     return _disableflag;
 }
+
+/*---------------------------------------------------------------------------
+    getParentId
+
+    Returns the parentID (feederID) of the cap bank
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getParentId() const
+{
+    return _parentId;
+}
+
 
 /*---------------------------------------------------------------------------
     getAlarmInhibitFlag
@@ -214,7 +226,7 @@ const RWCString& CtiCCCapBank::getSwitchManufacture() const
 
     Returns the map location id of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getMapLocationId() const
+const RWCString& CtiCCCapBank::getMapLocationId() const
 {
     return _maplocationid;
 }
@@ -250,13 +262,110 @@ LONG CtiCCCapBank::getStatusPointId() const
 }
 
 /*---------------------------------------------------------------------------
+    getVerificationFlag
+    
+    Returns the verification flag of the cap bank
+---------------------------------------------------------------------------*/
+BOOL CtiCCCapBank::getVerificationFlag() const
+{
+    return _verificationFlag;
+}
+
+BOOL CtiCCCapBank::getPerformingVerificationFlag() const
+{
+    return _performingVerificationFlag;
+}
+
+BOOL CtiCCCapBank::getVerificationDoneFlag() const
+{
+    return _verificationDoneFlag;
+}
+
+/*---------------------------------------------------------------------------
+    getVCtrlIndex
+    
+    Returns the VerificationCtrlIndex of the cap bank
+---------------------------------------------------------------------------*/
+int  CtiCCCapBank::getVCtrlIndex() const
+{
+    return _vCtrlIndex;
+}
+
+/*---------------------------------------------------------------------------
+    getCurrVCmdResult
+        
+    Returns the CurrVCmdResult of the cap bank
+---------------------------------------------------------------------------*/
+CCBANKVRESULT CtiCCCapBank::getCurrVCmdResult() const
+{
+    return _currCmdResult;
+}
+
+/*---------------------------------------------------------------------------
+    getPrevVCmdResult
+        
+    Returns the PrevVCmdResult of the cap bank
+---------------------------------------------------------------------------*/
+CCBANKVRESULT CtiCCCapBank::getPrevVCmdResult() const
+{
+    return _prevCmdResult;
+}
+
+/*---------------------------------------------------------------------------
+    getVerificationState
+        
+    Returns the VerificationState of the cap bank
+---------------------------------------------------------------------------*/
+CCBANKVSTATE CtiCCCapBank::getVerificationState() const
+{
+    return _verificationState;
+}
+
+/*---------------------------------------------------------------------------
+    getAssumedOrigVerificationState
+        
+    Returns the AssumedOrigVerificationState of the cap bank
+---------------------------------------------------------------------------*/
+int CtiCCCapBank::getAssumedOrigVerificationState() const
+{
+    LONG controlStatus = getControlStatus();
+
+    if ( controlStatus == CtiCCCapBank::Open ||
+         controlStatus == CtiCCCapBank::OpenQuestionable ||
+         controlStatus == CtiCCCapBank::OpenFail )
+    {
+        return CtiCCCapBank::Open;
+    }
+    else if ( controlStatus == CtiCCCapBank::Close ||
+              controlStatus == CtiCCCapBank::CloseQuestionable ||
+              controlStatus == CtiCCCapBank::CloseFail )
+    {
+        return CtiCCCapBank::Close;
+    }
+    else  // CtiCCCapBank::OpenPending ||  CtiCCCapBank::ClosePending
+    {
+        return CtiCCCapBank::Open;
+    }
+    
+    return controlStatus;
+}
+
+/*---------------------------------------------------------------------------
     getControlStatus
 
     Returns the control status of the cap bank
 ---------------------------------------------------------------------------*/
 LONG CtiCCCapBank::getControlStatus() const
 {
-    return _controlstatus;
+
+   /* if (_verificationFlag)
+    {
+        return _verificationControlStatus;
+    }
+    else */
+    {
+        return _controlstatus;
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -405,6 +514,18 @@ CtiCCCapBank& CtiCCCapBank::setDisableFlag(BOOL disable)
 }
 
 /*---------------------------------------------------------------------------
+    setParentId
+
+    Sets the parentId (feederId) of the capbank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setParentId(LONG parentId)
+{
+    _parentId = parentId;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
     setAlarmInhibitFlag
 
     Sets the alarm inhibit of the capbank
@@ -517,7 +638,7 @@ CtiCCCapBank& CtiCCCapBank::setSwitchManufacture(const RWCString& manufacture)
 
     Sets the map location id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMapLocationId(LONG maplocation)
+CtiCCCapBank& CtiCCCapBank::setMapLocationId(const RWCString& maplocation)
 {
     _maplocationid = maplocation;
 
@@ -559,6 +680,222 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
 
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setVerificationFlag
+    
+    Sets the verification flag, b4 capbank is exercised in the verification routine
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setVerificationFlag(BOOL verificationFlag)
+{
+
+    if (_verificationFlag != verificationFlag)
+    {
+        _dirty = TRUE;
+    }
+    _verificationFlag = verificationFlag;
+
+    return *this;
+}
+
+CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(BOOL performingVerificationFlag)
+{
+    if (_performingVerificationFlag != performingVerificationFlag)
+        _dirty = TRUE;
+    _performingVerificationFlag = performingVerificationFlag;
+
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(BOOL verificationDoneFlag)
+{
+    if(_verificationDoneFlag != verificationDoneFlag)
+        _dirty = TRUE;
+    _verificationDoneFlag = verificationDoneFlag;
+
+    return *this;
+}
+
+
+
+BOOL CtiCCCapBank::updateVerificationState(void)
+{
+
+    int ctrlIdx = getVCtrlIndex();
+    _verificationDoneFlag = FALSE;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " CB: "<<getPAOId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
+    }
+    switch (ctrlIdx)
+    {
+    case 1:
+        {
+            setPreviousVerificationControlStatus(getControlStatus());
+            //_prevVerificationControlStatus = getControlStatus();
+            _verificationDoneFlag = FALSE;
+            ctrlIdx++;
+            break;
+        }
+    case 2:
+        {
+            if ( (getControlStatus() == Open || getControlStatus() == Close) &&
+                  getControlStatus() != _assumedOrigCapBankPos )
+            {
+                _verificationDoneFlag = TRUE;
+                ctrlIdx = 5;
+                _retryFlag = FALSE;
+            }
+            else
+            {
+                if ( _prevVerificationControlStatus == OpenFail ||
+                     //_prevVerificationControlStatus == OpenQuestionable ||
+                     _prevVerificationControlStatus == CloseFail /*||
+                     _prevVerificationControlStatus == CloseQuestionable */)
+                {
+                    if (getControlStatus() == OpenFail ||
+                        //getControlStatus() == OpenQuestionable ||
+                        getControlStatus() == CloseFail /*||       
+                        getControlStatus() == CloseQuestionable */) 
+                    {
+                        _verificationDoneFlag = TRUE;
+                        ctrlIdx = 5;
+                        _retryFlag = FALSE;
+                    }
+                    else
+                    {
+                        ctrlIdx++;
+                        _retryFlag = FALSE;
+                        //_prevVerificationControlStatus = getControlStatus();
+                        setPreviousVerificationControlStatus(getControlStatus());
+                    }
+                }
+                else //_prevVerificationControlStatus == Questionable, Open or Close (Success)!!!
+                {
+                    if (getControlStatus() == OpenFail ||
+                        //getControlStatus() == OpenQuestionable ||
+                        getControlStatus() == CloseFail /*||       
+                        getControlStatus() == CloseQuestionable*/ ) 
+                    {
+                        if (_retryFlag)
+                        {
+                            _retryFlag = FALSE;
+                            ctrlIdx = 5;
+                            _verificationDoneFlag = TRUE;
+                        }
+                        else
+                        {
+                            _retryFlag = TRUE;
+
+                        }
+                    }
+                    else // getControlStatus() == Open or Close (Success)!!   MUST HAVE BEEN A RETRY!
+                    {
+                         _retryFlag = FALSE; 
+                         ctrlIdx = 5;
+                         _verificationDoneFlag = TRUE;
+                         /*{
+                             CtiLockGuard<CtiLogger> doubt_guard(dout);
+                             dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                         }*/
+                    }
+                }
+            }
+
+            break;
+        }
+    case 3:
+        {
+            if (getControlStatus() == OpenFail ||
+                //getControlStatus() == OpenQuestionable ||
+                getControlStatus() == CloseFail /*||       
+                getControlStatus() == CloseQuestionable*/ ) 
+            {
+                if (_retryFlag)
+                {
+                    _retryFlag = FALSE;
+                    ctrlIdx = 5;
+                    _verificationDoneFlag = TRUE;
+                }
+                else
+                {
+                    _retryFlag = TRUE;
+
+                }
+            }
+            else  // getControlStatus() == Open or Close (Success!!!)
+            {
+                _retryFlag = FALSE;
+                ctrlIdx = 5;
+                _verificationDoneFlag = TRUE;
+            }
+
+            break;
+        }
+    default:
+        {
+                             CtiLockGuard<CtiLogger> doubt_guard(dout);
+                             dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        break;
+    }
+
+    setVCtrlIndex(ctrlIdx);
+
+    return _verificationDoneFlag;
+}
+
+CtiCCCapBank& CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
+{
+    if (vCtrlIndex != _vCtrlIndex)
+    {
+        _dirty = TRUE;
+    }
+    _vCtrlIndex = vCtrlIndex;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setCurrVCmdResult(CCBANKVRESULT CmdResult)
+{
+    _currCmdResult = CmdResult;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setPrevVCmdResult(CCBANKVRESULT CmdResult)
+{
+    _prevCmdResult = CmdResult;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setVerificationState(CCBANKVSTATE verificationState)
+{
+    _verificationState = verificationState;
+    return *this;
+}
+
+
+CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(LONG status)
+{
+    if (status != _prevVerificationControlStatus)
+    {
+        _dirty = TRUE;
+    }
+    _prevVerificationControlStatus = status;
+    return *this;
+
+}
+CtiCCCapBank& CtiCCCapBank::setAssumedOrigVerificationState(int assumedOrigCapBankPos)
+{
+    if (assumedOrigCapBankPos != _assumedOrigCapBankPos)
+    {
+        _dirty = TRUE;
+    }
+    _assumedOrigCapBankPos = assumedOrigCapBankPos;
+    return *this;
+}
+
+
+
+CtiCCCapBank& CtiCCCapBank::initVerificationControlStatus()
+{
+   _verificationControlStatus = getControlStatus();
+   return *this;
+}
 
 /*---------------------------------------------------------------------------
     setControlStatus
@@ -567,15 +904,43 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
 {
-    if( _controlstatus != status )
+
+    if (_verificationFlag)
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
+        if( _verificationControlStatus != status )
+        {
+            /*{
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }*/
+            _dirty = TRUE;
+        }
+        _verificationControlStatus = status;
+        _controlstatus = status;       //temporarily here!!!
+
     }
-    _controlstatus = status;
+    else
+    {
+        if( _controlstatus != status )
+        {
+            /*{
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }*/
+            _dirty = TRUE;
+        }
+        _controlstatus = status;
+    }
+
+    if (_controlstatus == CtiCCCapBank::OpenPending ||
+        _controlstatus == CtiCCCapBank::ClosePending)
+    {
+        {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " CB: " << getPAOId()<< " _controlStatus = ----Pending  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+    }
     return *this;
 }
 
@@ -687,7 +1052,6 @@ CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
     return *this;
 }
 
-
 /*-------------------------------------------------------------------------
     restoreGuts
 
@@ -705,6 +1069,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _paotype
     >> _paodescription
     >> _disableflag
+    >> _parentId
     >> _alarminhibitflag
     >> _controlinhibitflag
     >> _operationalstate
@@ -724,7 +1089,16 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> tempTime1
     >> _tagscontrolstatus
     >> _originalfeederid;
+    //>> _originalswitchingorder;
+    /*>> _assumedOrigCapBankPos
+    >> _prevVerificationControlStatus
+    >> _vCtrlIndex
+    >> _additionalFlags;
 
+    _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+     */
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
 
@@ -744,6 +1118,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _paotype
     << _paodescription
     << _disableflag
+    << _parentId
     << _alarminhibitflag
     << _controlinhibitflag
     << _operationalstate
@@ -763,6 +1138,13 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _laststatuschangetime.rwtime()
     << _tagscontrolstatus
     << _originalfeederid;
+    /*<< _originalswitchingorder;/*
+    << _assumedOrigCapBankPos
+    << _prevVerificationControlStatus
+    << _vCtrlIndex
+    << RWCString(_additionalFlags);
+
+  */
 }
 
 /*---------------------------------------------------------------------------
@@ -779,6 +1161,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+   //     _parentId = right._parentId;
         _alarminhibitflag = right._alarminhibitflag;
         _controlinhibitflag = right._controlinhibitflag;
         _operationalstate = right._operationalstate;
@@ -799,6 +1182,11 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _tagscontrolstatus = right._tagscontrolstatus;
         _originalfeederid = right._originalfeederid;
         _originalswitchingorder = right._originalswitchingorder;
+        _assumedOrigCapBankPos = right._assumedOrigCapBankPos;
+        _prevVerificationControlStatus = right._prevVerificationControlStatus;
+        _vCtrlIndex = right._vCtrlIndex;
+        _additionalFlags = right._additionalFlags;
+
     }
     return *this;
 }
@@ -841,6 +1229,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
+    //rdr["parentid"] >> _parentId;
     rdr["alarminhibit"] >> tempBoolString;
     tempBoolString.toLower();
     setAlarmInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
@@ -871,6 +1260,15 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         rdr["ctitimestamp"] >> dynamicTimeStamp;
         rdr["originalfeederid"] >> _originalfeederid;
         rdr["originalswitchingorder"] >> _originalswitchingorder;
+        rdr["assumedstartverificationstatus"] >> _assumedOrigCapBankPos;
+        rdr["prevverificationcontrolstatus"] >> _prevVerificationControlStatus;
+        rdr["verificationcontrolindex"] >> _vCtrlIndex;
+        rdr["additionalflags"] >> _additionalFlags;
+        _additionalFlags.toLower();
+
+        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
 
         _insertDynamicDataFlag = FALSE;
         _dirty = FALSE;
@@ -879,11 +1277,19 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     {
         //initialize dynamic data members
         setTotalOperations(0);
-        setLastStatusChangeTime(RWDBDateTime(1990,1,1,0,0,0,0));
+        setLastStatusChangeTime(gInvalidRWDBDateTime);
         setControlStatus(CtiCCCapBank::Open);
         setTagsControlStatus(0);
         setOriginalFeederId(0);
         setOriginalSwitchingOrder(0);
+        setAssumedOrigVerificationState(CtiCCCapBank::Open);
+        setPreviousVerificationControlStatus(CtiCCCapBank::Open);
+        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+
+        setVerificationFlag(FALSE);
+        setPerformingVerificationFlag(FALSE);
+        setVerificationDoneFlag(FALSE);
+        
 
         _insertDynamicDataFlag = TRUE;
         /*{
@@ -925,6 +1331,95 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         }
     }
 }
+void CtiCCCapBank::restoreCapBankTableValues(RWDBReader& rdr)
+{
+    RWDBNullIndicator isNull;
+    RWDBDateTime currentDateTime = RWDBDateTime();
+    RWDBDateTime dynamicTimeStamp;
+    RWCString tempBoolString;
+
+    rdr["paobjectid"] >> _paoid;
+    rdr["category"] >> _paocategory;
+    rdr["paoclass"] >> _paoclass;
+    rdr["paoname"] >> _paoname;
+    rdr["type"] >> _paotype;
+    rdr["description"] >> _paodescription;
+    rdr["disableflag"] >> tempBoolString;
+    tempBoolString.toLower();
+    setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
+    //rdr["alarminhibit"] >> tempBoolString;
+    //tempBoolString.toLower();
+    //setAlarmInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
+    //rdr["controlinhibit"] >> tempBoolString;
+    //tempBoolString.toLower();
+    //setControlInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
+    rdr["operationalstate"] >> _operationalstate;
+    rdr["controllertype"] >> _controllertype;
+    rdr["controldeviceid"] >> _controldeviceid;
+    rdr["controlpointid"] >> _controlpointid;
+    rdr["banksize"] >> _banksize;
+    rdr["typeofswitch"] >> _typeofswitch;
+    rdr["switchmanufacture"] >> _switchmanufacture;
+    rdr["maplocationid"] >> _maplocationid;
+    rdr["reclosedelay"] >> _reclosedelay;
+    //rdr["controlorder"] >> _controlorder;
+
+
+
+    //setAlarmInhibitFlag(false);
+  //  setControlInhibitFlag(false);
+  //  _controlorder = 0;
+  //  setStatusPointId(0);
+   // setOperationAnalogPointId(0);
+
+ //initialize dynamic data members
+  //  setTotalOperations(0);
+  //  setLastStatusChangeTime(gInvalidRWDBDateTime);
+   // setControlStatus(CtiCCCapBank::Open);
+  //  setTagsControlStatus(0);
+   // setOriginalFeederId(0);
+ //   setOriginalSwitchingOrder(0);
+
+  //  setVerificationFlag(FALSE);
+  //  _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+ //
+
+
+    _insertDynamicDataFlag = FALSE;
+    /*{
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }*/
+    _dirty = TRUE;
+
+}
+
+void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
+{
+
+    RWDBDateTime dynamicTimeStamp;
+    rdr["controlstatus"] >> _controlstatus;
+    rdr["currentdailyoperations"] >> _totaloperations;
+    rdr["laststatuschangetime"] >> _laststatuschangetime;
+    rdr["tagscontrolstatus"] >> _tagscontrolstatus;
+    rdr["ctitimestamp"] >> dynamicTimeStamp;
+    rdr["originalfeederid"] >> _originalfeederid;
+    rdr["originalswitchingorder"] >> _originalswitchingorder;
+    rdr["assumedstartverificationstatus"] >> _assumedOrigCapBankPos;
+    rdr["prevverificationcontrolstatus"] >> _prevVerificationControlStatus;
+    rdr["verificationcontrolindex"] >> _vCtrlIndex;
+
+    rdr["additionalflags"] >> _additionalFlags;
+    _additionalFlags.toLower();
+    _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+    _insertDynamicDataFlag = FALSE;
+    _dirty = FALSE;
+
+}
+
 
 /*---------------------------------------------------------------------------
     replicate
@@ -980,6 +1475,13 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {
+
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            addFlags[0] = (_verificationFlag?'Y':'N');
+            addFlags[1] = (_performingVerificationFlag?'Y':'N');
+            addFlags[2] = (_verificationDoneFlag?'Y':'N');
+            _additionalFlags = RWCString(RWCString(*addFlags) + RWCString(*(addFlags+1)) + RWCString(*(addFlags+2)) + RWCString(*(addFlags + 3), 17));
+
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
             updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
@@ -990,7 +1492,14 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
             << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
             << dynamicCCCapBankTable["originalfeederid"].assign( _originalfeederid )
-            << dynamicCCCapBankTable["originalswitchingorder"].assign( _originalswitchingorder );
+            << dynamicCCCapBankTable["originalswitchingorder"].assign( _originalswitchingorder )
+            << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
+            << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
+            << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
+            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags);
+
+
+
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1022,6 +1531,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
             }
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
 
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();
 
@@ -1032,7 +1542,11 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << _tagscontrolstatus
             << currentDateTime
             << _originalfeederid
-            << _originalswitchingorder;
+            << _originalswitchingorder
+            << _assumedOrigCapBankPos
+            << _prevVerificationControlStatus
+            << _vCtrlIndex
+            << RWCString(*addFlags, 20);
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -1067,6 +1581,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 /* Public Static members */
 const RWCString CtiCCCapBank::SwitchedOperationalState = "Switched";
 const RWCString CtiCCCapBank::FixedOperationalState = "Fixed";
+const RWCString CtiCCCapBank::UninstalledState = "Uninstalled";
 
 int CtiCCCapBank::Open = STATEZERO;
 int CtiCCCapBank::Close = STATEONE;

@@ -56,6 +56,8 @@ public:
     void confirmCapBankControl(CtiRequestMsg* pilRequest);
     RWPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
     RWPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
+
+    void loadControlLoopCParms();
     
 private:
     
@@ -83,6 +85,11 @@ private:
 
     RWPCPtrQueue< RWCollectable > _inClientMsgQueue;
     RWPCPtrQueue< RWCollectable > _outClientMsgQueue;
+
+    int control_loop_delay;
+    int control_loop_inmsg_delay;
+    int control_loop_outmsg_delay;
+
 
 };
 #endif

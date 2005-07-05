@@ -73,6 +73,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const RWCString& getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
+    LONG getParentId() const;
     DOUBLE getPeakSetPoint() const;
     DOUBLE getOffPeakSetPoint() const;
     DOUBLE getUpperBandwidth() const;
@@ -80,7 +81,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
-    LONG getMapLocationId() const;
+    const RWCString& getMapLocationId() const;
     DOUBLE getLowerBandwidth() const;
     LONG getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
@@ -102,7 +103,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
     BOOL getWaiveControlFlag() const;
-
+    const RWCString& getParentControlUnits() const;
+    LONG getParentDecimalPlaces() const;
+    BOOL getParentPeakTimeFlag() const;
+    
     RWSortedVector& getCCCapBanks();
 
     CtiCCFeeder& setPAOId(LONG id);
@@ -112,6 +116,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPAOType(const RWCString& type);
     CtiCCFeeder& setPAODescription(const RWCString& description);
     CtiCCFeeder& setDisableFlag(BOOL disable);
+    CtiCCFeeder& setParentId(LONG parentId);
     CtiCCFeeder& setPeakSetPoint(DOUBLE peak);
     CtiCCFeeder& setOffPeakSetPoint(DOUBLE offpeak);
     CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
@@ -119,7 +124,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCFeeder& setMapLocationId(LONG maplocation);
+    CtiCCFeeder& setMapLocationId(const RWCString& maplocation);
     CtiCCFeeder& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCFeeder& setDisplayOrder(LONG order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
@@ -142,6 +147,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
     CtiCCFeeder& setWaiveControlFlag(BOOL waive);
+    CtiCCFeeder& setParentControlUnits(RWCString parentControlUnits);
+    CtiCCFeeder& setParentDecimalPlaces(LONG parentDecimalPlaces);
+    CtiCCFeeder& setParentPeakTimeFlag(BOOL parentPeakTimeFlag);
+
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
@@ -154,6 +163,23 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
+
+
+    CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
+    CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
+    CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
+
+    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
+    BOOL getVerificationFlag() const;
+    BOOL getPerformingVerificationFlag() const;
+    BOOL getVerificationDoneFlag() const;
+
+
+    BOOL isFeederPerformingVerification();
+    BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
+
+    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -169,6 +195,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     int operator!=(const CtiCCFeeder& right) const;
 
     CtiCCFeeder* replicate() const;
+
+
+    void setDynamicData(RWDBReader& rdr);
 
     //Possible states
     /*static const RWCString Enabled;
@@ -186,6 +215,7 @@ private:
     RWCString _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
+    LONG _parentId; //subBusId
     DOUBLE _peaksetpoint;
     DOUBLE _offpeaksetpoint;
     DOUBLE _upperbandwidth;
@@ -193,7 +223,7 @@ private:
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
-    LONG _maplocationid;
+    RWCString _maplocationid;
     DOUBLE _lowerbandwidth;
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;
@@ -216,13 +246,30 @@ private:
     LONG _currentvarpointquality;
     BOOL _waivecontrolflag;
 
+    RWCString _parentControlUnits;
+    LONG _parentDecimalPlaces;
+    BOOL _parentPeakTimeFlag;
+
     RWSortedVector _cccapbanks;
+
+    //verification info
+    RWCString _additionalFlags;
+
+    BOOL _verificationFlag;
+    BOOL _performingVerificationFlag;
+    BOOL _verificationDoneFlag;
+
 
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
+    void restoreFeederTableValues(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
 };
+
+
+//typedef shared_ptr<CtiCCFeeder> CtiCCFeederPtr;
+typedef CtiCCFeeder* CtiCCFeederPtr;
 #endif

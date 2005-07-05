@@ -68,7 +68,9 @@ public:
         WAIVE_FEEDER,//15
         UNWAIVE_FEEDER,//16
         ENABLE_OVUV,//17 
-        DISABLE_OVUV//18
+        DISABLE_OVUV,//18
+      //  ENABLE_SUBSTATION_BUS_VERIFICATION, //19
+       // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 
     CtiCCCommand(LONG command);
@@ -121,6 +123,86 @@ private:
     LONG _newfeederid;
     LONG _capswitchingorder;
 };
+
+
+class CtiCCSubstationVerificationMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCSubstationVerificationMsg )
+
+public:
+
+    enum
+    {
+        ENABLE_SUBSTATION_BUS_VERIFICATION, //0
+        DISABLE_SUBSTATION_BUS_VERIFICATION //1
+    };
+
+    virtual ~CtiCCSubstationVerificationMsg();
+
+    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(-1) { }; //provided for polymorphic persitence only
+    CtiCCSubstationVerificationMsg(LONG action, LONG id, LONG strategy, LONG inactivityTime) : _action(action), _id(id), _strategy(strategy), _cbInactivityTime(inactivityTime) { };
+
+    LONG getStrategy() const { return _strategy; };
+    LONG getAction() const { return _action; };
+    LONG getSubBusId() const { return _id; };
+    LONG getInactivityTime() const {return _cbInactivityTime; };
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiCCSubstationVerificationMsg& operator=(const CtiCCSubstationVerificationMsg& right);
+private:
+
+    CtiCCSubstationVerificationMsg() { }; //provided for polymorphic persitence only
+
+    LONG _action; //enable or disable...
+    LONG _id; //subBusID
+    LONG _strategy;
+    LONG _cbInactivityTime;
+
+};
+
+
+class CtiPAOScheduleMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiPAOScheduleMsg )
+
+public:
+
+    enum
+    {
+        ADD_SCHEDULE, //0
+        UPDATE_SCHEDULE, //1
+        DELETE_SCHEDULE //2
+    };
+
+    virtual ~CtiPAOScheduleMsg();
+
+    CtiPAOScheduleMsg(LONG action, LONG id, RWDBDateTime nextRunTime, LONG intervalRate) : _action(action), _scheduleId(id), _nextRunTime(nextRunTime), _intervalRate(intervalRate) { }; //provided for polymorphic persitence only
+    
+
+    LONG getAction() const { return _action; };
+    LONG getScheduleId() const { return _scheduleId; };
+
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiPAOScheduleMsg& operator=(const CtiPAOScheduleMsg& right);
+private:
+
+    CtiPAOScheduleMsg() { }; //provided for polymorphic persitence only
+
+    LONG          _action;
+    LONG          _scheduleId; //scheduleId...
+    RWDBDateTime  _nextRunTime; 
+    RWDBDateTime  _lastRunTime; 
+    LONG          _intervalRate;
+
+};
+
+
+
 
 class CtiCCSubstationBusMsg : public CtiCCMessage
 {

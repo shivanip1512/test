@@ -54,10 +54,23 @@ public:
     void resetDailyOperations();
 
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
+    bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
     bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
+
+    CtiCCSubstationBusPtr findSubBusByPointID(long point_id);
+    CtiCCFeederPtr findFeederByPointID(long point_id);
+    CtiCCCapBankPtr findCapBankByPointID(long point_id);
+    CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
+    CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
+    CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
+
+    long findSubBusIDbyFeederID(long feederId);
+    long findSubBusIDbyCapBankID(long capBankId);
+    long findFeederIDbyCapBankID(long capBankId);
+
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
 
@@ -125,6 +138,23 @@ private:
     static const RWCString m3iAMFMSwitchedString;
 
     static const RWCString m3iAMFMNullString;
+
+
+    //map< long, CtiCCSubstationBusPtr > _points_subbus_map;
+
+    map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
+    map< long, CtiCCFeederPtr > _paobject_feeder_map;
+    map< long, CtiCCCapBankPtr > _paobject_capbank_map;
+
+    map< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
+    map< long, CtiCCFeederPtr > _pointid_feeder_map;
+    map< long, CtiCCCapBankPtr > _pointid_capbank_map;
+
+    map< long, long > _feeder_subbus_map; 
+    map< long, long > _capbank_subbus_map;
+    map< long, long > _capbank_feeder_map;
+
+    list <long> _pointIdList;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };

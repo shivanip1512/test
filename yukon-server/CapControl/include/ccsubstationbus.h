@@ -29,6 +29,15 @@
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
 
+
+#define ALLBANKS 0
+#define FAILEDBANKS 1
+#define QUESTIONABLEBANKS 2
+#define FAILEDANDQUESTIONABLEBANKS 3
+#define SELECTEDFORVERIFICATIONBANKS 4
+#define BANKSINACTIVEFORXTIME 5
+
+
 class CtiCCSubstationBus : public RWCollectable
 {
 
@@ -49,6 +58,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const RWCString& getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
+    LONG getParentId() const;
     const RWCString& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
@@ -66,7 +76,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
-    LONG getMapLocationId() const;
+    const RWCString& getMapLocationId() const;
     DOUBLE getLowerBandwidth() const;
     const RWCString& getControlUnits() const;
     LONG getControlDelayTime() const;
@@ -93,6 +103,13 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getEstimatedPowerFactorValue() const;
     LONG getCurrentVarPointQuality() const;
     BOOL getWaiveControlFlag() const;
+    BOOL getVerificationFlag() const;
+    BOOL getPerformingVerificationFlag() const;
+    BOOL getVerificationDoneFlag() const;
+    LONG getCurrentVerificationFeederId() const;
+    LONG getCurrentVerificationCapBankId() const;
+    LONG getCurrentVerificationCapBankOrigState() const;
+
 
     RWOrdered& getCCFeeders();
 
@@ -103,6 +120,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPAOType(const RWCString& type);
     CtiCCSubstationBus& setPAODescription(const RWCString& description);
     CtiCCSubstationBus& setDisableFlag(BOOL disable);
+    CtiCCSubstationBus& setParentId(LONG parentId);
     CtiCCSubstationBus& setControlMethod(const RWCString& method);
     CtiCCSubstationBus& setMaxDailyOperation(LONG max);
     CtiCCSubstationBus& setMaxOperationDisableFlag(BOOL maxopdisable);
@@ -120,7 +138,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setMinConfirmPercent(LONG confirm);
     CtiCCSubstationBus& setFailurePercent(LONG failure);
     CtiCCSubstationBus& setDaysOfWeek(const RWCString& days);
-    CtiCCSubstationBus& setMapLocationId(LONG maplocation);
+    CtiCCSubstationBus& setMapLocationId(const RWCString& maplocation);
     CtiCCSubstationBus& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCSubstationBus& setControlUnits(const RWCString& contunit);
     CtiCCSubstationBus& setControlDelayTime(LONG delay);
@@ -167,9 +185,41 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static DOUBLE calculateKVARSolution(const RWCString& controlUnits, DOUBLE setPoint, DOUBLE varValue, DOUBLE wattValue);
     BOOL checkForAndPerformSendRetry(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
 
+    BOOL isBusPerformingVerification();
+    BOOL isBusReadyToStartVerification();
+    BOOL isBusVerificationAlreadyStarted();
+    BOOL isVerificationPastMaxConfirmTime(const RWDBDateTime& currentDateTime);
+    BOOL capBankVerificationDone(RWOrdered& pointChanges);
+    BOOL areThereMoreCapBanksToVerify();
+    //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
+    CtiCCSubstationBus& startVerificationOnCapBank(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    BOOL isVerificationAlreadyControlled();
+    CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy);
+    CtiCCSubstationBus& recompileCapBanksToVerifyList();
+    CtiCCSubstationBus& getNextCapBankToVerify();
+    CtiCCSubstationBus& sendNextCapBankVerificationControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    CtiCCSubstationBus& setVerificationFlag(BOOL verificationFlag);
+    CtiCCSubstationBus& setPerformingVerificationFlag(BOOL performingVerificationFlag);
+    CtiCCSubstationBus& setVerificationDoneFlag(BOOL verificationDoneFlag);
+    CtiCCSubstationBus& setCurrentVerificationFeederId(LONG feederId);
+    CtiCCSubstationBus& setCurrentVerificationCapBankId(LONG capBankId);
+    CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
+
+
+    CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
+    list <LONG> getVerificationCapBankList();
+    void setVerificationStrategy(int verificationStrategy);
+    int getVerificationStrategy(void) const;
+    void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
+    LONG getCapBankInactivityTime(void) const;
+
+    BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges);
+
+
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+    void setDynamicData(RWDBReader& rdr);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -183,8 +233,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus* replicate() const;
 
     //Possible control methods
-    static const RWCString IndividualFeederControlMethod;
     static const RWCString SubstationBusControlMethod;
+    static const RWCString IndividualFeederControlMethod;
     static const RWCString BusOptimizedFeederControlMethod;
     static const RWCString ManualOnlyControlMethod;
 
@@ -194,7 +244,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     //static int PeakState;
     //static int OffPeakState;
 
-private:
+
+    private:
 
     LONG _paoid;
     RWCString _paocategory;
@@ -203,6 +254,7 @@ private:
     RWCString _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
+    LONG _parentId;
     RWCString _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
@@ -220,7 +272,7 @@ private:
     LONG _minconfirmpercent;
     LONG _failurepercent;
     RWCString _daysofweek;
-    LONG _maplocationid;
+    RWCString _maplocationid;
     DOUBLE _lowerbandwidth;
     RWCString _controlunits;
     LONG _controldelaytime;
@@ -248,13 +300,32 @@ private:
     LONG _currentvarpointquality;
     BOOL _waivecontrolflag;
 
+    RWCString _additionalFlags;
+    LONG _currentVerificationCapBankId;
+    LONG _currentVerificationFeederId; 
     RWOrdered _ccfeeders;
+
+    BOOL _verificationFlag;
+    BOOL _performingVerificationFlag;
+    BOOL _verificationDoneFlag;
+
+    BOOL _startVerificationFlag;
+    BOOL _verificationAlreadyStartedFlag;
+    //list <LONG> _verificationCapBankIds;
+    LONG _currentCapBankToVerifyAssumedOrigState;
+    int _verificationStrategy;
+    LONG _capBankToVerifyInactivityTime;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
+    void restoreSubstationBusTableValues(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
 };
+
+
+//typedef shared_ptr<CtiCCSubstationBus> CtiCCSubstationBusPtr;
+typedef CtiCCSubstationBus* CtiCCSubstationBusPtr;
 #endif

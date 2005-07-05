@@ -23,6 +23,25 @@
 
 #include "dbaccess.h"
 #include "observe.h"
+
+typedef enum
+{
+    uninit = 0,
+    pending1stCmd, 
+    pending2ndCmd,
+    pending2ndCmdRetry,
+    pending3rdCmd,
+    pending3rdCmdRetry,
+    success,
+    fail
+} CCBANKVSTATE;  
+
+typedef enum
+{
+    verificationFail = 0,
+    verificationSuccess,
+    verificationRetry
+} CCBANKVRESULT;
                 
 class CtiCCCapBank : public RWCollectable
 {
@@ -43,6 +62,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     const RWCString& getPAOType() const;
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
+    LONG getParentId() const;
     BOOL getAlarmInhibitFlag() const;
     BOOL getControlInhibitFlag() const;
     const RWCString& getOperationalState() const;
@@ -52,7 +72,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     LONG getBankSize() const;
     const RWCString& getTypeOfSwitch() const;
     const RWCString& getSwitchManufacture() const;
-    LONG getMapLocationId() const;
+    const RWCString& getMapLocationId() const;
     LONG getRecloseDelay() const;
     LONG getControlOrder() const;
     LONG getStatusPointId() const;
@@ -63,6 +83,15 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     LONG getTagsControlStatus() const;
     LONG getOriginalFeederId() const;
     LONG getOriginalSwitchingOrder() const;
+    BOOL getVerificationFlag() const;
+    BOOL getPerformingVerificationFlag() const;
+    BOOL getVerificationDoneFlag() const;
+
+    int  getVCtrlIndex() const;
+    CCBANKVRESULT getCurrVCmdResult() const;
+    CCBANKVRESULT getPrevVCmdResult() const;
+    CCBANKVSTATE getVerificationState() const;
+    int getAssumedOrigVerificationState() const;
 
     CtiCCCapBank& setPAOId(LONG id);
     CtiCCCapBank& setPAOCategory(const RWCString& category);
@@ -71,6 +100,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setPAOType(const RWCString& type);
     CtiCCCapBank& setPAODescription(const RWCString& description);
     CtiCCCapBank& setDisableFlag(BOOL disable);
+    CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
     CtiCCCapBank& setControlInhibitFlag(BOOL controlinhibit);
     CtiCCCapBank& setDeviceClass(const RWCString& deviceclass);
@@ -81,7 +111,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setBankSize(LONG size);
     CtiCCCapBank& setTypeOfSwitch(const RWCString& switchtype);
     CtiCCCapBank& setSwitchManufacture(const RWCString& manufacture);
-    CtiCCCapBank& setMapLocationId(LONG maplocation);
+    CtiCCCapBank& setMapLocationId(const RWCString& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(LONG order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
@@ -93,12 +123,29 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
     CtiCCCapBank& setOriginalSwitchingOrder(LONG origorder);
 
+    CtiCCCapBank& setVerificationFlag(BOOL verificationFlag);
+    CtiCCCapBank& setPerformingVerificationFlag(BOOL performingVerificationFlag);
+    CtiCCCapBank& setVerificationDoneFlag(BOOL verificationDoneFlag);
+
+    CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
+    CtiCCCapBank& setCurrVCmdResult(CCBANKVRESULT CmdResult);
+    CtiCCCapBank& setPrevVCmdResult(CCBANKVRESULT CmdResult);
+    CtiCCCapBank& setVerificationState(CCBANKVSTATE verificationState);
+    CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
+    CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
+     BOOL updateVerificationState(void);
+
+    //int getAssumedOrigVerificationState();
+    CtiCCCapBank& initVerificationControlStatus();
+
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
+
+    void setDynamicData(RWDBReader& rdr);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -114,6 +161,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     //Possible operational states
     static const RWCString SwitchedOperationalState;
     static const RWCString FixedOperationalState;
+    static const RWCString UninstalledState;
     
     //Possible states
     static int Open;
@@ -124,7 +172,8 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     static int CloseFail;
     static int OpenPending;
     static int ClosePending;
-    
+
+        
 private:
 
     LONG _paoid;
@@ -134,6 +183,7 @@ private:
     RWCString _paotype;
     RWCString _paodescription;
     BOOL _disableflag;
+    LONG _parentId; //feederId
     BOOL _alarminhibitflag;
     BOOL _controlinhibitflag;
     RWCString _operationalstate;
@@ -143,7 +193,7 @@ private:
     LONG _banksize;
     RWCString _typeofswitch;
     RWCString _switchmanufacture;
-    LONG _maplocationid;
+    RWCString _maplocationid;
     LONG _reclosedelay;
     LONG _controlorder;
     LONG _statuspointid;
@@ -155,11 +205,37 @@ private:
     LONG _originalfeederid;
     LONG _originalswitchingorder;
 
+
+    //verification info
+    RWCString _additionalFlags;
+
+
+    LONG _verificationControlStatus;
+
+    int _vCtrlIndex; //1,2, or 3
+    BOOL _retryFlag;
+
+    LONG _prevVerificationControlStatus;
+    int _assumedOrigCapBankPos;
+    BOOL _verificationFlag;
+    BOOL _performingVerificationFlag;
+    BOOL _verificationDoneFlag;
+
+
+    CCBANKVRESULT _currCmdResult; //0 = fail, 1 = success, 2 = retry????
+    CCBANKVRESULT _prevCmdResult;
+    CCBANKVSTATE _verificationState;
+    
+
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
+    void restoreCapBankTableValues(RWDBReader& rdr);
     CtiCCCapBank();
 };
+
+//typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;
+typedef CtiCCCapBank* CtiCCCapBankPtr;
 #endif

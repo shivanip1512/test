@@ -256,6 +256,75 @@ CtiCCCapBankMoveMsg& CtiCCCapBankMoveMsg::operator=(const CtiCCCapBankMoveMsg& r
 
     return *this;
 }
+/*===========================================================================
+    CtiCCSubstationVerificationMsg
+
+
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCSubstationVerificationMsg, CTICCSUBVERIFICATIONMSG_ID )
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCSubstationVerificationMsg::~CtiCCSubstationVerificationMsg()
+{
+}
+
+/*LONG CtiCCSubstationVerificationMsg::getStrategy() const
+{
+    return _strategy;
+} */
+   
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCSubstationVerificationMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> _action
+         >> _id
+         >>_strategy
+         >>_cbInactivityTime;
+
+      return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCSubstationVerificationMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm <<  _action             
+         <<  _id                 
+         << _strategy            
+         << _cbInactivityTime;   
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCSubstationVerificationMsg& CtiCCSubstationVerificationMsg::operator=(const CtiCCSubstationVerificationMsg& right)
+{
+    if( this != &right )
+    {
+        _action           = right._action;
+        _strategy         = right._strategy;
+        _id               = right._id;
+        _cbInactivityTime = right._cbInactivityTime;
+    }
+
+    return *this;
+}
+
 
 
 
@@ -574,4 +643,68 @@ void CtiCCShutdown::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
 }
+
+
+
+
+
+
+
+
+/*===========================================================================
+    CtiCCSubstationVerificationMsg
+
+
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiPAOScheduleMsg, CTIPAOSCHEDULEMSG_ID )
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiPAOScheduleMsg::~CtiPAOScheduleMsg()
+{
+}
+ 
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiPAOScheduleMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> _scheduleId;
+ 
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiPAOScheduleMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm << _scheduleId;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiPAOScheduleMsg& CtiPAOScheduleMsg::operator=(const CtiPAOScheduleMsg& right)
+{
+    if( this != &right )
+    {
+        _scheduleId    = right._scheduleId;
+    }
+
+    return *this;
+}
+
+
 

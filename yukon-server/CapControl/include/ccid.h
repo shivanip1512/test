@@ -28,6 +28,8 @@
 #define CTICCDONE_ID                511
 #define CTICCUPDATE_ID              512
 #define CTICCCAPBANKMOVEMSG_ID      513
+#define CTICCSUBVERIFICATIONMSG_ID  514
+#define CTIPAOSCHEDULEMSG_ID        515
 
 
 /*#define CTICCSTRATEGYLIST_ID     501
@@ -58,3 +60,6 @@
 //#define CC_DEBUG_                  0x00000000
 #define CC_DEBUG_EXTENDED          0x10000000
 
+
+extern RWDBDateTime gInvalidRWDBDateTime;
+extern ULONG gInvalidRWDBDateTimeSeconds;
