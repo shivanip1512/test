@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.customer;
  */
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.customer.CICustomerBase;
 
 public class CICustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -466,6 +467,7 @@ private javax.swing.JTextField getJTextFieldCompanyName() {
 		try {
 			ivjJTextFieldCompanyName = new javax.swing.JTextField();
 			ivjJTextFieldCompanyName.setName("JTextFieldCompanyName");
+			ivjJTextFieldCompanyName.setDocument( new TextFieldDocument( TextFieldDocument.STRING_LENGTH_80 ) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
