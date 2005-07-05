@@ -119,7 +119,6 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_INV_FILTER_BY_LOCATION		= 2903;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_CONFIG			= 2904;
 	public static final int YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS		= 2905;
-	public static final int YUK_DEF_ID_RATE_SCHEDULE				= 2906;
 	
 	public static final int YUK_DEF_ID_GED_TIMESTAMP				= 3201;
 	public static final int YUK_DEF_ID_GED_SETPOINTS				= 3202;
@@ -174,5 +173,12 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SO_FILTER_BY_STATUS			= 3501;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE		= 3502;
 	public static final int YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY		= 3503;
+	
+	public static final int YUK_DEF_ID_RATE_SCHED_J					= 3601;
+	public static final int YUK_DEF_ID_RATE_SCHED_PS				= 3602;
+	public static final int YUK_DEF_ID_RATE_SCHED_PSO				= 3603;
+	public static final int YUK_DEF_ID_RATE_SCHED_PLS				= 3604;
+	public static final int YUK_DEF_ID_RATE_SCHED_PP				= 3605;
+	public static final int YUK_DEF_ID_RATE_SCHED_PT				= 3606;
 
 }
