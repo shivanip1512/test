@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.alarmcategories;
 
+import com.cannontech.common.gui.unchanging.StringRangeDocument;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/5/00 9:57:57 AM)
@@ -258,41 +260,41 @@ private javax.swing.JPanel getJPanelAssociation() {
 			constraintsJComboBoxNotificationGroup.insets = new java.awt.Insets(41, 2, 4, 16);
 			getJPanelAssociation().add(getJComboBoxNotificationGroup(), constraintsJComboBoxNotificationGroup);
 
-			java.awt.GridBagConstraints constraintsJLabelSoundFile = new java.awt.GridBagConstraints();
-			constraintsJLabelSoundFile.gridx = 1; constraintsJLabelSoundFile.gridy = 2;
-			constraintsJLabelSoundFile.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelSoundFile.ipadx = 11;
-			constraintsJLabelSoundFile.ipady = -1;
-			constraintsJLabelSoundFile.insets = new java.awt.Insets(5, 19, 5, 3);
-			getJPanelAssociation().add(getJLabelSoundFile(), constraintsJLabelSoundFile);
-
-			java.awt.GridBagConstraints constraintsJTextFieldSoundFile = new java.awt.GridBagConstraints();
-			constraintsJTextFieldSoundFile.gridx = 2; constraintsJTextFieldSoundFile.gridy = 2;
-			constraintsJTextFieldSoundFile.gridwidth = 2;
-			constraintsJTextFieldSoundFile.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldSoundFile.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldSoundFile.weightx = 1.0;
-			constraintsJTextFieldSoundFile.ipadx = 166;
-			constraintsJTextFieldSoundFile.insets = new java.awt.Insets(4, 3, 4, 16);
-			getJPanelAssociation().add(getJTextFieldSoundFile(), constraintsJTextFieldSoundFile);
-
-			java.awt.GridBagConstraints constraintsJLabelDuration = new java.awt.GridBagConstraints();
-			constraintsJLabelDuration.gridx = 1; constraintsJLabelDuration.gridy = 3;
-			constraintsJLabelDuration.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelDuration.ipadx = 16;
-			constraintsJLabelDuration.ipady = -1;
-			constraintsJLabelDuration.insets = new java.awt.Insets(5, 19, 72, 12);
-			getJPanelAssociation().add(getJLabelDuration(), constraintsJLabelDuration);
-
-			java.awt.GridBagConstraints constraintsJTextFieldDuration = new java.awt.GridBagConstraints();
-			constraintsJTextFieldDuration.gridx = 2; constraintsJTextFieldDuration.gridy = 3;
-			constraintsJTextFieldDuration.gridwidth = 2;
-			constraintsJTextFieldDuration.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldDuration.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldDuration.weightx = 1.0;
-			constraintsJTextFieldDuration.ipadx = 166;
-			constraintsJTextFieldDuration.insets = new java.awt.Insets(6, 3, 69, 16);
-			getJPanelAssociation().add(getJTextFieldDuration(), constraintsJTextFieldDuration);
+//			java.awt.GridBagConstraints constraintsJLabelSoundFile = new java.awt.GridBagConstraints();
+//			constraintsJLabelSoundFile.gridx = 1; constraintsJLabelSoundFile.gridy = 2;
+//			constraintsJLabelSoundFile.anchor = java.awt.GridBagConstraints.WEST;
+//			constraintsJLabelSoundFile.ipadx = 11;
+//			constraintsJLabelSoundFile.ipady = -1;
+//			constraintsJLabelSoundFile.insets = new java.awt.Insets(5, 19, 5, 3);
+//			getJPanelAssociation().add(getJLabelSoundFile(), constraintsJLabelSoundFile);
+//
+//			java.awt.GridBagConstraints constraintsJTextFieldSoundFile = new java.awt.GridBagConstraints();
+//			constraintsJTextFieldSoundFile.gridx = 2; constraintsJTextFieldSoundFile.gridy = 2;
+//			constraintsJTextFieldSoundFile.gridwidth = 2;
+//			constraintsJTextFieldSoundFile.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsJTextFieldSoundFile.anchor = java.awt.GridBagConstraints.WEST;
+//			constraintsJTextFieldSoundFile.weightx = 1.0;
+//			constraintsJTextFieldSoundFile.ipadx = 166;
+//			constraintsJTextFieldSoundFile.insets = new java.awt.Insets(4, 3, 4, 16);
+//			getJPanelAssociation().add(getJTextFieldSoundFile(), constraintsJTextFieldSoundFile);
+//
+//			java.awt.GridBagConstraints constraintsJLabelDuration = new java.awt.GridBagConstraints();
+//			constraintsJLabelDuration.gridx = 1; constraintsJLabelDuration.gridy = 3;
+//			constraintsJLabelDuration.anchor = java.awt.GridBagConstraints.WEST;
+//			constraintsJLabelDuration.ipadx = 16;
+//			constraintsJLabelDuration.ipady = -1;
+//			constraintsJLabelDuration.insets = new java.awt.Insets(5, 19, 72, 12);
+//			getJPanelAssociation().add(getJLabelDuration(), constraintsJLabelDuration);
+//
+//			java.awt.GridBagConstraints constraintsJTextFieldDuration = new java.awt.GridBagConstraints();
+//			constraintsJTextFieldDuration.gridx = 2; constraintsJTextFieldDuration.gridy = 3;
+//			constraintsJTextFieldDuration.gridwidth = 2;
+//			constraintsJTextFieldDuration.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsJTextFieldDuration.anchor = java.awt.GridBagConstraints.WEST;
+//			constraintsJTextFieldDuration.weightx = 1.0;
+//			constraintsJTextFieldDuration.ipadx = 166;
+//			constraintsJTextFieldDuration.insets = new java.awt.Insets(6, 3, 69, 16);
+//			getJPanelAssociation().add(getJTextFieldDuration(), constraintsJTextFieldDuration);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -336,6 +338,7 @@ private javax.swing.JTextField getJTextFieldName() {
 		try {
 			ivjJTextFieldName = new javax.swing.JTextField();
 			ivjJTextFieldName.setName("JTextFieldName");
+			ivjJTextFieldName.setDocument(new StringRangeDocument(41));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
