@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.editor.alarmcategories;
 
 import com.cannontech.common.gui.unchanging.StringRangeDocument;
+import com.cannontech.common.gui.util.TextFieldDocument;
 
 /**
  * Insert the type's description here.
@@ -338,7 +339,7 @@ private javax.swing.JTextField getJTextFieldName() {
 		try {
 			ivjJTextFieldName = new javax.swing.JTextField();
 			ivjJTextFieldName.setName("JTextFieldName");
-			ivjJTextFieldName.setDocument(new StringRangeDocument(41));
+			ivjJTextFieldName.setDocument( new TextFieldDocument(TextFieldDocument.STRING_LENGTH_40));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
