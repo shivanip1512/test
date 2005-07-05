@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.customer;
  */
 import java.awt.Dimension;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.customer.IAddress;
 import com.cannontech.database.db.customer.Address;
@@ -529,6 +530,7 @@ private javax.swing.JTextField getJTextFieldCity() {
 		try {
 			ivjJTextFieldCity = new javax.swing.JTextField();
 			ivjJTextFieldCity.setName("JTextFieldCity");
+			ivjJTextFieldCity.setDocument(	new TextFieldDocument( TextFieldDocument.MAX_STATE_NAME_LENGTH) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -551,6 +553,7 @@ private javax.swing.JTextField getJTextFieldCounty() {
 		try {
 			ivjJTextFieldCounty = new javax.swing.JTextField();
 			ivjJTextFieldCounty.setName("JTextFieldCounty");
+			ivjJTextFieldCounty.setDocument(	new TextFieldDocument( TextFieldDocument.STRING_LENGTH_30) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -573,6 +576,7 @@ private javax.swing.JTextField getJTextFieldPrimeLocation() {
 		try {
 			ivjJTextFieldPrimeLocation = new javax.swing.JTextField();
 			ivjJTextFieldPrimeLocation.setName("JTextFieldPrimeLocation");
+			ivjJTextFieldPrimeLocation.setDocument(	new TextFieldDocument( TextFieldDocument.STRING_LENGTH_40) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -595,6 +599,7 @@ private javax.swing.JTextField getJTextFieldSecLocation() {
 		try {
 			ivjJTextFieldSecLocation = new javax.swing.JTextField();
 			ivjJTextFieldSecLocation.setName("JTextFieldSecLocation");
+			ivjJTextFieldSecLocation.setDocument(	new TextFieldDocument( TextFieldDocument.STRING_LENGTH_40) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -617,6 +622,7 @@ private javax.swing.JTextField getJTextFieldZip() {
 		try {
 			ivjJTextFieldZip = new javax.swing.JTextField();
 			ivjJTextFieldZip.setName("JTextFieldZip");
+			ivjJTextFieldZip.setDocument(new com.cannontech.common.gui.unchanging.LongRangeDocument(00000, 99999) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
