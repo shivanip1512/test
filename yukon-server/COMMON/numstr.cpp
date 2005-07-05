@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/07/05 15:59:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,20 +18,20 @@
 #include <stdio.h>  //  for _snprintf
 #include "numstr.h"
 
-CtiNumStr::CtiNumStr( double dVal, int precision )  {  _data.d = dVal;  _dataType = Double;  _precision = precision;  init( );  }
-CtiNumStr::CtiNumStr( float fVal,  int precision )  {  _data.f = fVal;  _dataType = Float;   _precision = precision;  init( );  }
+CtiNumStr::CtiNumStr( double dVal, int precision )  {  _data.ul = 0;    _data.d   =  dVal;               _dataType = Double;  _precision = precision;  init();  }
+CtiNumStr::CtiNumStr( float fVal,  int precision )  {  _data.ul = 0;    _data.f   =  fVal;               _dataType = Float;   _precision = precision;  init();  }
 
-CtiNumStr::CtiNumStr( char cVal )             {  _data.c  = (int)cVal;              _dataType = Char;   init( );  }
-CtiNumStr::CtiNumStr( unsigned char ucVal )   {  _data.uc = (unsigned int)ucVal;    _dataType = UChar;  init( );  }
+CtiNumStr::CtiNumStr( char cVal )                   {  _data.ul = 0;    _data.c   = (int)cVal;           _dataType = Char;       init();  }
+CtiNumStr::CtiNumStr( unsigned char ucVal )         {  _data.ul = 0;    _data.uc  = (unsigned int)ucVal; _dataType = UChar;      init();  }
 
-CtiNumStr::CtiNumStr( short sVal )            {  _data.s   =  sVal;  _dataType = Short;  init( );  }
-CtiNumStr::CtiNumStr( unsigned short usVal )  {  _data.us  = usVal;  _dataType = UShort; init( );  }
-CtiNumStr::CtiNumStr( int iVal )              {  _data.i   =  iVal;  _dataType = Int;    init( );  }
-CtiNumStr::CtiNumStr( unsigned int uiVal )    {  _data.ui  = uiVal;  _dataType = UInt;   init( );  }
-CtiNumStr::CtiNumStr( long lVal )             {  _data.l   =  lVal;  _dataType = Long;   init( );  }
-CtiNumStr::CtiNumStr( unsigned long ulVal )   {  _data.ul  = ulVal;  _dataType = ULong;  init( );  }
+CtiNumStr::CtiNumStr( short sVal )                  {  _data.ul = 0;    _data.s   =  sVal;               _dataType = Short;      init();  }
+CtiNumStr::CtiNumStr( unsigned short usVal )        {  _data.ul = 0;    _data.us  = usVal;               _dataType = UShort;     init();  }
+CtiNumStr::CtiNumStr( int iVal )                    {  _data.ul = 0;    _data.i   =  iVal;               _dataType = Int;        init();  }
+CtiNumStr::CtiNumStr( unsigned int uiVal )          {  _data.ul = 0;    _data.ui  = uiVal;               _dataType = UInt;       init();  }
+CtiNumStr::CtiNumStr( long lVal )                   {  _data.ul = 0;    _data.l   =  lVal;               _dataType = Long;       init();  }
+CtiNumStr::CtiNumStr( unsigned long ulVal )         {  _data.ul = 0;    _data.ul  = ulVal;               _dataType = ULong;      init();  }
 
-CtiNumStr::CtiNumStr( void *vpVal )  {  _data.vp  = vpVal;  _dataType = Pointer;  init( );  }
+CtiNumStr::CtiNumStr( void *vpVal )                 {  _data.ul = 0;    _data.vp  = vpVal;               _dataType = Pointer;    init();  }
 
 CtiNumStr::CtiNumStr( const CtiNumStr &aRef )
 {
@@ -180,6 +180,13 @@ void CtiNumStr::buildIntString( void )
         case Hex:
         case XHex:
         {
+            if( _dataType == Short || _dataType == UShort ||
+                _dataType == Char  || _dataType == UChar )
+            {
+                //  anything shorter than 4 bytes needs this (see printf format specification for details)
+                fmtString[fmtChars++] = 'h';
+            }
+
             fmtString[fmtChars++] = 'x';
             break;
         }
