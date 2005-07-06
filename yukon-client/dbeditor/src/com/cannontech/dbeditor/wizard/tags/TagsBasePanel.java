@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.tags;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanelListener;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.db.tags.Tag;
 
 /**
@@ -341,6 +342,7 @@ private javax.swing.JTextField getNameTextField() {
 		try {
 			ivjNameTexField = new javax.swing.JTextField();
 			ivjNameTexField.setName("NameTexField");
+			ivjNameTexField.setDocument(new TextFieldDocument(TextFieldDocument.STRING_LENGTH_60));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
