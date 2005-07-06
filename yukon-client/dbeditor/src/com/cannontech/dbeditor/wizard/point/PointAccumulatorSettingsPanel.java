@@ -127,6 +127,7 @@ private javax.swing.JTextField getDataOffsetTextField() {
 			ivjDataOffsetTextField.setName("DataOffsetTextField");
 			ivjDataOffsetTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjDataOffsetTextField.setColumns(0);
+			ivjDataOffsetTextField.setDocument( new com.cannontech.common.gui.unchanging.DoubleRangeDocument(000000.000000000, 999999.999999999, 10) );
 			// user code begin {1}
 
 			getDataOffsetTextField().setText( (new Double(0.0)).toString() );
