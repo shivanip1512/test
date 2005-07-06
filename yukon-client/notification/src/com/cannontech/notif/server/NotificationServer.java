@@ -19,7 +19,7 @@ import com.cannontech.roles.yukon.SystemRole;
  * The server used for accepting and creating notification messages.
  *
  */
-public class NotificationServer implements Runnable
+public class NotificationServer implements Runnable, NotificationServerMBean
 {
 	// The port the web server listens on
 	private int port = 1515;
@@ -110,8 +110,6 @@ public class NotificationServer implements Runnable
 	public void start() throws IOException {
         server = new ServerSocket(getPort(), getBacklog(), null);
 
-        CTILogger.info("Started Notification server: " + server);
-
         dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
         DefaultDatabaseCache.getInstance().addDBChangeListener(dbCacheHandler);
         
@@ -150,6 +148,8 @@ public class NotificationServer implements Runnable
         acceptThread = new Thread(this, "NotifListener");
         acceptThread.start();
 
+        CTILogger.info("Started Notification server: " + server);
+
 	}
 
 
@@ -175,6 +175,9 @@ public class NotificationServer implements Runnable
 		}
 		catch (Exception e)
 		{}
+        
+        CTILogger.info("Stopped Notification server: " + server);
+
 	}
 
 	public boolean isRunning()
