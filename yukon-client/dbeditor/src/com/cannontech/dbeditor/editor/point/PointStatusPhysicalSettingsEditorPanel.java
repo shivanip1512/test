@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
@@ -888,6 +889,7 @@ private javax.swing.JTextField getJTextFieldControlOne() {
 			ivjJTextFieldControlOne = new javax.swing.JTextField();
 			ivjJTextFieldControlOne.setName("JTextFieldControlOne");
 			ivjJTextFieldControlOne.setEnabled(false);
+			ivjJTextFieldControlOne.setDocument(new TextFieldDocument(TextFieldDocument.STRING_LENGTH_100));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -909,6 +911,7 @@ private javax.swing.JTextField getJTextFieldControlZero() {
 			ivjJTextFieldControlZero = new javax.swing.JTextField();
 			ivjJTextFieldControlZero.setName("JTextFieldControlZero");
 			ivjJTextFieldControlZero.setEnabled(false);
+			ivjJTextFieldControlZero.setDocument(new TextFieldDocument(TextFieldDocument.STRING_LENGTH_100));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
