@@ -17,7 +17,6 @@ public class LMProgramWizardPanel extends com.cannontech.common.wizard.WizardPan
 	private LMProgramEnergyExchangeCustomerListPanel lmProgramEnergyExchangeCustomerListPanel;
 	
 	private LMProgramCurtailmentPanel lmProgramCurtailmentPanel;
-	private LMProgramDirectNotificationPanel lmProgramDirectNotificationPanel;
 	private LMProgramDirectNotifGroupListPanel lmProgramDirectNotifGroupListPanel;
 /**
  * LMGroupWizardPanel constructor comment.
@@ -102,14 +101,6 @@ public LMProgramDirectPanel getLmProgramDirectPanel()
 		lmProgramDirectPanel = new LMProgramDirectPanel();
 
 	return lmProgramDirectPanel;
-}
-
-public LMProgramDirectNotificationPanel getLmProgramDirectNotificationPanel() 
-{
-	if( lmProgramDirectNotificationPanel == null )
-		lmProgramDirectNotificationPanel = new LMProgramDirectNotificationPanel();
-
-	return lmProgramDirectNotificationPanel;
 }
 
 public LMProgramDirectNotifGroupListPanel getLmProgramDirectCustomerListPanel() 
@@ -221,10 +212,6 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 		return getLmProgramListPanel();
 	}
 	else if( currentInputPanel == getLmProgramListPanel() )
-	{
-		return getLmProgramDirectNotificationPanel();
-	}
-	else if( currentInputPanel == getLmProgramDirectNotificationPanel() )
 	{
 		return getLmProgramDirectCustomerListPanel();
 	}

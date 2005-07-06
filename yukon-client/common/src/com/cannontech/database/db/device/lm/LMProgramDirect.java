@@ -8,8 +8,8 @@ import com.cannontech.common.util.CtiUtilities;
 public class LMProgramDirect extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private Integer notifyActiveOffset = new Integer(0);
-	private Integer notifyInactiveOffset = new Integer(0);
+	private Integer notifyActiveOffset = new Integer(-1);
+	private Integer notifyInactiveOffset = new Integer(-1);
 	private String heading = CtiUtilities.STRING_NONE;
 	private String messageHeader = CtiUtilities.STRING_NONE;
 	private String messageFooter = CtiUtilities.STRING_NONE;
