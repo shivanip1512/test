@@ -14,7 +14,7 @@ public class Feeder extends StreamableCapObject
 	private Double currentVarLoadPointValue = null;
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
-	private Integer mapLocationID = null;
+	private String mapLocationID = null;
 	private Double lowerBandWidth = null;
    
 	private Integer displayOrder = null;
@@ -181,10 +181,9 @@ public java.util.Date getLastOperationTime() {
 }
 /**
  * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @return java.lang.Integer
+ *
  */
-public java.lang.Integer getMapLocationID() {
+public String getMapLocationID() {
 	return mapLocationID;
 }
 /**
@@ -344,10 +343,9 @@ public void setLastOperationTime(java.util.Date newLastOperationTime) {
 }
 /**
  * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @param newMapLocationID java.lang.Integer
+ *
  */
-public void setMapLocationID(java.lang.Integer newMapLocationID) {
+public void setMapLocationID(String newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
 /**

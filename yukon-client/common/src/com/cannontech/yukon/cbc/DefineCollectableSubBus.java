@@ -73,7 +73,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setMinConfirmPercent( new Integer( (int)vstr.extractUnsignedInt() ) );	
 	subBus.setFailurePercent( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setDaysOfWeek( (String) vstr.restoreObject( SimpleMappings.CString ) );
-	subBus.setMapLocationID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	subBus.setMapLocationID( (String) vstr.restoreObject( SimpleMappings.CString ) );
    
    subBus.setLowerBandWidth( new Double( vstr.extractDouble() ) );
    subBus.setControlUnits( (String) vstr.restoreObject( SimpleMappings.CString ) );
@@ -157,7 +157,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( subBus.getFailurePercent().intValue() );
 	
 	vstr.saveObject( subBus.getDaysOfWeek(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( subBus.getMapLocationID().intValue() );
+	vstr.saveObject( subBus.getMapLocationID(), SimpleMappings.CString );
    
    vstr.insertDouble( subBus.getLowerBandWidth().doubleValue() );
    vstr.saveObject( subBus.getControlUnits(), SimpleMappings.CString );

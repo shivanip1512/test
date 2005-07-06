@@ -61,7 +61,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setBankSize( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setTypeOfSwitch( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setSwitchManufacture( (String) vstr.restoreObject( SimpleMappings.CString ) );	
-	capBank.setMapLocationID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	capBank.setMapLocationID((String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setRecloseDelay( new Integer( (int)vstr.extractUnsignedInt() ) );
 	
 	capBank.setControlOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -93,7 +93,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( capBank.getBankSize().intValue() );
 	vstr.saveObject( capBank.getTypeOfSwitch(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getSwitchManufacture(), SimpleMappings.CString );
-	vstr.insertUnsignedInt( capBank.getMapLocationID().intValue() );
+	vstr.saveObject( capBank.getMapLocationID(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( capBank.getRecloseDelay().intValue() );
 	
 	vstr.insertUnsignedInt( capBank.getControlOrder().intValue() );	

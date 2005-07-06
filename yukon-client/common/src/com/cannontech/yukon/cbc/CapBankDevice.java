@@ -16,7 +16,7 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer bankSize = null;
 	private String typeOfSwitch = null;
 	private String switchManufacture = null;
-	private Integer mapLocationID = null;
+	private String mapLocationID = null;
 	private Integer controlOrder = null;
 
 	private Integer statusPointID = null;
@@ -128,10 +128,9 @@ public class CapBankDevice extends StreamableCapObject
 	}
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (12/5/2001 2:21:14 PM)
-	 * @return java.lang.Integer
+	 *
 	 */
-	public java.lang.Integer getMapLocationID() {
+	public String getMapLocationID() {
 		return mapLocationID;
 	}
 	/**
@@ -309,10 +308,9 @@ public class CapBankDevice extends StreamableCapObject
 	}
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (12/5/2001 2:21:14 PM)
-	 * @param newMapLocationID java.lang.Integer
+	 *
 	 */
-	public void setMapLocationID(java.lang.Integer newMapLocationID) {
+	public void setMapLocationID(String newMapLocationID) {
 		mapLocationID = newMapLocationID;
 	}
 	/**
