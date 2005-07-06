@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.editor.user;
  */
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.user.UserUtils;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import java.util.List;
@@ -544,6 +545,7 @@ private javax.swing.JPasswordField getJPasswordFieldPassword() {
 			ivjJPasswordFieldPassword.setPreferredSize(new java.awt.Dimension(167, 20));
 			ivjJPasswordFieldPassword.setEnabled(true);
 			ivjJPasswordFieldPassword.setMinimumSize(new java.awt.Dimension(167, 20));
+			ivjJPasswordFieldPassword.setDocument( new TextFieldDocument(64));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -569,6 +571,7 @@ private javax.swing.JPasswordField getJPasswordFieldRetypePassword() {
 			ivjJPasswordFieldRetypePassword.setPreferredSize(new java.awt.Dimension(167, 20));
 			ivjJPasswordFieldRetypePassword.setEnabled(true);
 			ivjJPasswordFieldRetypePassword.setMinimumSize(new java.awt.Dimension(167, 20));
+			ivjJPasswordFieldRetypePassword.setDocument( new TextFieldDocument(64));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -594,6 +597,7 @@ private javax.swing.JTextField getJTextFieldUserID() {
 			ivjJTextFieldUserID.setPreferredSize(new java.awt.Dimension(229, 20));
 			ivjJTextFieldUserID.setEnabled(true);
 			ivjJTextFieldUserID.setMinimumSize(new java.awt.Dimension(229, 20));
+			ivjJTextFieldUserID.setDocument( new TextFieldDocument(64));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
