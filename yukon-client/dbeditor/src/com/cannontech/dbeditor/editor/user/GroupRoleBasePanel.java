@@ -210,6 +210,7 @@ private javax.swing.JEditorPane getJEditorPaneDesc() {
 			ivjJEditorPaneDesc.setPreferredSize(new java.awt.Dimension(137, 56));
 			ivjJEditorPaneDesc.setBounds(0, 0, 137, 56);
 			ivjJEditorPaneDesc.setMinimumSize(new java.awt.Dimension(137, 56));
+			ivjJEditorPaneDesc.setDocument( new TextFieldDocument(200));
 			// user code begin {1}
 			
 			ivjJEditorPaneDesc.setText("A user created role group");
@@ -439,8 +440,7 @@ private javax.swing.JTextField getJTextFieldGroupName() {
 			ivjJTextFieldGroupName.setMinimumSize(new java.awt.Dimension(216, 20));
 			// user code begin {1}
 			ivjJTextFieldGroupName.setDocument(
-					new TextFieldDocument(
-						TextFieldDocument.MAX_LOGIN_NAME_LENGTH,
+					new TextFieldDocument(120,
 						TextFieldDocument.INVALID_CHARS_PAO) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
