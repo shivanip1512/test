@@ -7,30 +7,35 @@ import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.*;
 
 public class Contactable {
-    
+
     private final NotifMap _notifMap;
+
     private final ContactableBase _contactableBase;
-    
+
     public Contactable(CustomerNotifGroupMap customerMap) {
         _notifMap = customerMap;
-        LiteCICustomer liteCustomer = CustomerFuncs.getLiteCICustomer(customerMap.getCustomerID());
+        LiteCICustomer liteCustomer = CustomerFuncs
+                .getLiteCICustomer(customerMap.getCustomerID());
         _contactableBase = new ContactableCustomer(liteCustomer);
     }
-    
+
     public Contactable(ContactNotifGroupMap contactMap) {
         _notifMap = contactMap;
-        LiteContact liteContact = ContactFuncs.getContact(contactMap.getContactID());
+        LiteContact liteContact = ContactFuncs.getContact(contactMap
+                .getContactID());
         _contactableBase = new ContactableContact(liteContact);
     }
-    
+
     public Contactable(NotifDestinationMap notifMap) {
         _notifMap = notifMap;
-        LiteContactNotification liteNotif = ContactNotifcationFuncs.getContactNotification(notifMap.getRecipientID());
+        LiteContactNotification liteNotif = ContactNotifcationFuncs
+                .getContactNotification(notifMap.getRecipientID());
         _contactableBase = new ContactableNotification(liteNotif);
     }
-    
+
     /**
-     * @param types a Set of contact notification types
+     * @param types
+     *            a Set of contact notification types
      * @return A List of LiteContactNotification
      */
     public List getNotifications(Set types) {
@@ -38,54 +43,61 @@ public class Contactable {
     }
 
     /**
-     * Returns the TimeZone object of the parent customer of this object.
-     * This is different depeneding on what this object is constructed from:
+     * Returns the TimeZone object of the parent customer of this object. This
+     * is different depeneding on what this object is constructed from:
      * Customer, Contact of NotifDestination.
+     * 
      * @return a TimeZone object
      */
     public TimeZone getTimeZone() {
         try {
-            String tzString = _contactableBase.getContactableCustomer().getTimeZone();
+            String tzString = _contactableBase.getContactableCustomer()
+                    .getTimeZone();
             return TimeZone.getTimeZone(tzString);
         } catch (UnknownCustomerException e) {
             return TimeZone.getDefault();
         }
 
     }
-    
+
     /**
      * Determines the appropriate LiteEnergyCompany by first finding the parent
-     * customer. When the parent customer cannot be found, the default energy company
-     * will be returned (EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID).
+     * customer. When the parent customer cannot be found, the default energy
+     * company will be returned (EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID).
+     * 
      * @return a valid LiteEnergyCompany for this Contactable
      */
     public LiteEnergyCompany getEnergyCompany() {
         int energyCompanyID;
         try {
-            energyCompanyID = _contactableBase.getContactableCustomer().getEnergyCompanyID();
+            energyCompanyID = _contactableBase.getContactableCustomer()
+                    .getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
             energyCompanyID = EnergyCompanyFuncs.DEFAULT_ENERGY_COMPANY_ID;
         }
         return EnergyCompanyFuncs.getEnergyCompany(energyCompanyID);
     }
-    
+
     /**
-     * Returns true if this Contactable supports being notifications
-     * of the indicated method. The possible method types are listed
-     * in the NotifMap class.
+     * Returns true if this Contactable supports being notifications of the
+     * indicated method. The possible method types are listed in the NotifMap
+     * class.
+     * 
      * @param notificationMethod
      * @return
      */
     public boolean supportsNotificationMethod(int notificationMethod) {
         return _notifMap.supportsMethod(notificationMethod);
     }
-    
+
     /**
-     * Returns a list of Contactables given a LiteNotificationGroup. The 
-     * LiteNotificationGroup can be composed of LiteCICustomers, LiteContacts, and
-     * LiteContactNotifications. The resulting list will have one entry for each 
-     * entry in the LiteNotificationGroup.
-     * @param lng The LiteNotificationGroup to use
+     * Returns a list of Contactables given a LiteNotificationGroup. The
+     * LiteNotificationGroup can be composed of LiteCICustomers, LiteContacts,
+     * and LiteContactNotifications. The resulting list will have one entry for
+     * each entry in the LiteNotificationGroup.
+     * 
+     * @param lng
+     *            The LiteNotificationGroup to use
      * @return A list of Contactable objects
      */
     public static List getContactablesForGroup(LiteNotificationGroup lng) {
@@ -102,12 +114,13 @@ public class Contactable {
             resultList.add(new Contactable(notifGroupMap));
         }
 
-        NotifDestinationMap[] notifDestinationMap = lng.getNotifDestinationMap();
+        NotifDestinationMap[] notifDestinationMap = lng
+                .getNotifDestinationMap();
         for (int i = 0; i < notifDestinationMap.length; i++) {
             NotifDestinationMap destinationMap = notifDestinationMap[i];
             resultList.add(new Contactable(destinationMap));
         }
-        
+
         return resultList;
     }
 
