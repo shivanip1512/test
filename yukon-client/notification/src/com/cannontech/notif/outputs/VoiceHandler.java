@@ -58,11 +58,11 @@ public class VoiceHandler extends OutputHandler
                    String newState = (String) evt.getNewValue();
                    if (newState.equals(SingleNotification.STATE_COMPLETE)) {
                        _systemLogHelper.log(this + "was succesfull", 
-                                            "description");
+                                            "Successful Voice Notification");
 
                    } else if (newState.equals(SingleNotification.STATE_FAILED)) {
                        _systemLogHelper.log(this + "was not succesfull", 
-                                            "description");
+                                            "Failed Voice Notification");
 
                    }
                 } 
