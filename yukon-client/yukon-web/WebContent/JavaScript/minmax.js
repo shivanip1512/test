@@ -130,7 +130,7 @@ function minmax_layout() {
 // nothing until <body> arrives, then call main init. Pass any new elements
 // found on each scan to be bound   
 
-var minmax_SCANDELAY= 500;
+var minmax_SCANDELAY= 1000;
 
 function minmax_scan() {
   var el;
@@ -139,18 +139,23 @@ function minmax_scan() {
     if (!el.minmax_bound) {
       el.minmax_bound= true;
       minmax_bind(el);
-  } }
+  	}
+  }
 
 }
 
 var minmax_scanner;
 function minmax_stop() {
   window.clearInterval(minmax_scanner);
-  minmax_scan();  
+  minmax_scan();
 }
 
-minmax_scan();
-minmax_scanner= window.setInterval(minmax_scan, minmax_SCANDELAY);
-window.attachEvent('onload', minmax_stop);
+//Changed the behavior to only scan the elements on a page load event
+// the window.clearInterval() call in minmax_stop() does not seem to work -- RWN
+
+//minmax_scan();
+//minmax_scanner= window.setInterval(minmax_scan, minmax_SCANDELAY);
+//window.attachEvent('onload', minmax_stop);
+window.attachEvent('onload', minmax_scan);
 
 @end @*/
