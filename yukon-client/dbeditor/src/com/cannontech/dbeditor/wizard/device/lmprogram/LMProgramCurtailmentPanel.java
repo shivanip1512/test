@@ -4,6 +4,10 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
+import javax.swing.text.StyledDocument;
+
+import com.cannontech.common.gui.util.LimitedStyledDocument;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.device.lm.LMProgramCurtailment;
 
 public class LMProgramCurtailmentPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, javax.swing.event.CaretListener {
@@ -627,6 +631,7 @@ private javax.swing.JTextField getJTextFieldSubject() {
 		try {
 			ivjJTextFieldSubject = new javax.swing.JTextField();
 			ivjJTextFieldSubject.setName("JTextFieldSubject");
+			ivjJTextFieldSubject.setDocument(new TextFieldDocument(TextFieldDocument.STRING_LENGTH_40));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -648,6 +653,8 @@ private javax.swing.JTextPane getJTextPaneMsgCanceled() {
 			ivjJTextPaneMsgCanceled = new javax.swing.JTextPane();
 			ivjJTextPaneMsgCanceled.setName("JTextPaneMsgCanceled");
 			ivjJTextPaneMsgCanceled.setBounds(0, 0, 185, 43);
+			LimitedStyledDocument lpd = new LimitedStyledDocument(80);
+			ivjJTextPaneMsgCanceled.setDocument(lpd);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -669,6 +676,8 @@ private javax.swing.JTextPane getJTextPaneMsgFooter() {
 			ivjJTextPaneMsgFooter = new javax.swing.JTextPane();
 			ivjJTextPaneMsgFooter.setName("JTextPaneMsgFooter");
 			ivjJTextPaneMsgFooter.setBounds(0, 0, 185, 43);
+			LimitedStyledDocument lpd = new LimitedStyledDocument(160);
+			ivjJTextPaneMsgFooter.setDocument(lpd);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -690,6 +699,8 @@ private javax.swing.JTextPane getJTextPaneMsgHeader() {
 			ivjJTextPaneMsgHeader = new javax.swing.JTextPane();
 			ivjJTextPaneMsgHeader.setName("JTextPaneMsgHeader");
 			ivjJTextPaneMsgHeader.setBounds(0, 0, 185, 43);
+			LimitedStyledDocument lpd = new LimitedStyledDocument(160);
+			ivjJTextPaneMsgHeader.setDocument(lpd);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -711,6 +722,8 @@ private javax.swing.JTextPane getJTextPaneMsgStoppedEarly() {
 			ivjJTextPaneMsgStoppedEarly = new javax.swing.JTextPane();
 			ivjJTextPaneMsgStoppedEarly.setName("JTextPaneMsgStoppedEarly");
 			ivjJTextPaneMsgStoppedEarly.setBounds(0, 0, 185, 43);
+			LimitedStyledDocument lpd = new LimitedStyledDocument(80);
+			ivjJTextPaneMsgStoppedEarly.setDocument(lpd);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
