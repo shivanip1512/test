@@ -3,6 +3,7 @@ package com.cannontech.database.data.lite;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.db.customer.Customer;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author yao
@@ -17,6 +18,8 @@ public class LiteCustomer extends LiteBase {
 	private int primaryContactID = 0;
 	private int customerTypeID = com.cannontech.database.data.customer.CustomerTypes.INVALID;
 	private String timeZone = null;
+	private String customerNumber = CtiUtilities.STRING_NONE;
+	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
 	
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
@@ -51,7 +54,7 @@ public class LiteCustomer extends LiteBase {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 			
 			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
-					"SELECT PrimaryContactID, CustomerTypeID, TimeZone" +
+					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID" +
 					" FROM " + Customer.TABLE_NAME +
 					" WHERE CustomerID = " + getCustomerID(),
 					conn );
@@ -66,6 +69,8 @@ public class LiteCustomer extends LiteBase {
 			setPrimaryContactID( ((java.math.BigDecimal) objs[0]).intValue() );
 			setCustomerTypeID( ((java.math.BigDecimal) objs[1]).intValue() );
 			setTimeZone( objs[2].toString() );
+			setCustomerNumber( objs[3].toString() );
+			setRateScheduleID( ((java.math.BigDecimal) objs[4]).intValue() );
 			
 			stat = new com.cannontech.database.SqlStatement(
 					"SELECT ca.ContactID " + 
@@ -216,6 +221,27 @@ public class LiteCustomer extends LiteBase {
 	public void setEnergyCompanyID(int i)
 	{
 		energyCompanyID = i;
+	}
+	
+	public String getCustomerNumber() 
+	{
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String custNum) 
+	{
+		this.customerNumber = custNum;
+	}
+	
+	public int getRateScheduleID() 
+	{
+		return rateScheduleID;
+	}
+
+
+	public void setRateScheduleID(int rSched) 
+	{
+		this.rateScheduleID = rSched;
 	}
 
 }

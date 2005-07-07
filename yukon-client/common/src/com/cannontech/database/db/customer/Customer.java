@@ -14,12 +14,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	private Integer customerTypeID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private String timeZone = "";
 	private String customerNumber = CtiUtilities.STRING_NONE;
+	private Integer rateScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber"
+		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber", "RateScheduleID"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
@@ -42,7 +43,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		{ 
 			getCustomerID(), getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
-			getCustomerNumber()
+			getCustomerNumber(), getRateScheduleID()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -115,6 +116,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			setCustomerTypeID( (Integer) results[1] );
 			setTimeZone( (String) results[2] );
 			setCustomerNumber( (String) results[3] );
+			setRateScheduleID( (Integer) results[4] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -130,7 +132,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		{ 
 			getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
-			getCustomerNumber()
+			getCustomerNumber(), getRateScheduleID()
 		};
 	
 		Object constraintValues[] = { getCustomerID() };
@@ -212,9 +214,22 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	/**
 	 * @param string
 	 */
-	public void setCustomerNumber(String string)
+	public void setCustomerNumber(String custNum)
 	{
-		customerNumber = string;
+		customerNumber = custNum;
+	}
+	
+	public Integer getRateScheduleID()
+	{
+		return rateScheduleID;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setRateScheduleID(Integer rSched)
+	{
+		rateScheduleID = rSched;
 	}
 
 }

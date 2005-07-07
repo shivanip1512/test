@@ -227,6 +227,8 @@ public class StarsFactory {
 			newAccount.setPrimaryContact( account.getPrimaryContact() );
 			newAccount.setAdditionalContact( account.getAdditionalContact() );
 			newAccount.setTimeZone( account.getTimeZone() );
+			newAccount.setCustomerNumber( account.getCustomerNumber() );
+			newAccount.setRateScheduleID( account.getRateScheduleID() );
             
 			return newAccount;
 		}
