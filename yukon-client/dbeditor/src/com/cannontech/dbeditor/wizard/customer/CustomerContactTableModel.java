@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.customer;
 
+import com.cannontech.common.gui.dnd.IDroppableTableModel;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 
@@ -8,7 +9,7 @@ import com.cannontech.database.data.lite.LiteContact;
  * Creation date: (3/19/2001 4:37:05 PM)
  * @author: 
  */
-public class CustomerContactTableModel extends javax.swing.table.AbstractTableModel 
+public class CustomerContactTableModel extends javax.swing.table.AbstractTableModel implements IDroppableTableModel 
 {
 	private java.util.Vector rows = null;
 
@@ -136,13 +137,37 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	 * Creation date: (3/19/2001 4:51:08 PM)
 	 * @param rowNumber int
 	 */
-	public LiteContact getRowAt(int rowNumber) 
+	public LiteContact getLiteContactAt(int rowNumber) 
 	{
 		if( rowNumber >= 0 && rowNumber < getRowCount() )
 			return (LiteContact)getRows().elementAt(rowNumber);
 		else
 			return null;
 	}
+	
+	public void insertNewRow( Object liteContact ) {
+		if( liteContact instanceof LiteContact)
+			addRow( (LiteContact)liteContact );
+		
+		fireTableDataChanged();
+	}
+
+	public boolean objectExists( Object liteContact ) {
+		return getRows().contains( liteContact );
+	}
+
+	public Object getRowAt( int row ) {
+		return getLiteContactAt( row );
+	}
+	
+	public void insertRowAt( Object value, int row ) {
+		if( value instanceof LiteContact)
+			getRows().insertElementAt( value, row );
+		
+		fireTableDataChanged();	
+	}
+
+
 	/**
 	 * getRowCount method comment.
 	 */
@@ -170,7 +195,7 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 		if( row >= getRowCount() || col >= getColumnCount() )
 			return null;
 	
-		LiteContact con = getRowAt(row);
+		LiteContact con = getLiteContactAt(row);
 		switch( col )
 		{
 			case COLUMN_NAME:
@@ -206,7 +231,6 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	public void removeRow( int rowNumber )
 	{
 		getRows().remove( rowNumber );
-	
 		fireTableDataChanged();
 	}
 

@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.wizard.customer;
 /**
  * This type was created in VisualAge.
  */
+import javax.swing.ListSelectionModel;
+
 import com.cannontech.database.cache.functions.ContactFuncs;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -17,6 +19,7 @@ public class CustomerContactPanel extends com.cannontech.common.gui.util.DataInp
 	
 	private static final String STR_NONE_AVAIL = "  (none available)";
 
+	private javax.swing.JLabel jLabel = null;
 /**
  * Constructor
  */
@@ -228,7 +231,7 @@ private javax.swing.JLabel getJLabelAssignedContacts() {
 			ivjJLabelAssignedContacts.setName("JLabelAssignedContacts");
 			ivjJLabelAssignedContacts.setFont(new java.awt.Font("Arial", 1, 14));
 			ivjJLabelAssignedContacts.setText("Assigned Contacts:");
-			// user code begin {1}
+			// user code begin {1}			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -276,7 +279,6 @@ private javax.swing.JScrollPane getJScrollPaneContactTable() {
 			ivjJScrollPaneContactTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			getJScrollPaneContactTable().setViewportView(getJTableContact());
 			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -294,22 +296,23 @@ private javax.swing.JScrollPane getJScrollPaneContactTable() {
 private javax.swing.JTable getJTableContact() {
 	if (ivjJTableContact == null) {
 		try {
-			ivjJTableContact = new javax.swing.JTable();
+			ivjJTableContact = new DAndDContactTable();
 			ivjJTableContact.setName("JTableContact");
 			getJScrollPaneContactTable().setColumnHeaderView(ivjJTableContact.getTableHeader());
 			ivjJTableContact.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 
-			ivjJTableContact.getSelectionModel().setSelectionMode( javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+			ivjJTableContact.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 			ivjJTableContact.setModel( new CustomerContactTableModel() );
+			ivjJTableContact.setRowHeight( 20 );
 
 			//do any column specific things here
 			javax.swing.table.TableColumn name = ivjJTableContact.getColumnModel().getColumn(CustomerContactTableModel.COLUMN_NAME);
-			name.setPreferredWidth(30);
+			name.setPreferredWidth(20);
 			javax.swing.table.TableColumn login = ivjJTableContact.getColumnModel().getColumn(CustomerContactTableModel.COLUMN_LOGIN);
-			login.setPreferredWidth(30);
+			login.setPreferredWidth(20);
 			javax.swing.table.TableColumn notif = ivjJTableContact.getColumnModel().getColumn(CustomerContactTableModel.COLUMN_NOTIFICATION);
-			notif.setPreferredWidth(60);
+			notif.setPreferredWidth(80);
 
 			
 /*			javax.swing.table.TableColumn primeContact = ivjJTableContact.getColumnModel().getColumn(CustomerContactTableModel.COLUMN_PRIME_CONTACT);
@@ -365,7 +368,7 @@ public Object getValue(Object o)
 	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
 	{
 		//build a totally new CustomerContact object
-		LiteContact cnt = getJTableModel().getRowAt(i);
+		LiteContact cnt = getJTableModel().getLiteContactAt(i);
 		cstCntIDs[i] = cnt.getContactID();
 	}
 
@@ -410,61 +413,68 @@ private void initialize() {
 		// user code end
 		setName("CustomerContactPanel");
 		setToolTipText("");
+		java.awt.GridBagConstraints consGridBagConstraints2 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints3 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints4 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints5 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints6 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints7 = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints consGridBagConstraints1 = new java.awt.GridBagConstraints();
+		consGridBagConstraints4.insets = new java.awt.Insets(19,10,7,1);
+		consGridBagConstraints4.ipady = -2;
+		consGridBagConstraints4.ipadx = 7;
+		consGridBagConstraints4.gridy = 0;
+		consGridBagConstraints4.gridx = 0;
+		consGridBagConstraints2.insets = new java.awt.Insets(3,44,5,10);
+		consGridBagConstraints2.ipadx = 16;
+		consGridBagConstraints2.gridy = 2;
+		consGridBagConstraints2.gridx = 2;
+		consGridBagConstraints2.anchor = java.awt.GridBagConstraints.EAST;
+		consGridBagConstraints5.insets = new java.awt.Insets(16,1,2,10);
+		consGridBagConstraints5.ipadx = 169;
+		consGridBagConstraints5.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		consGridBagConstraints5.weightx = 1.0;
+		consGridBagConstraints5.gridwidth = 2;
+		consGridBagConstraints5.gridy = 0;
+		consGridBagConstraints5.gridx = 1;
+		consGridBagConstraints3.insets = new java.awt.Insets(9,10,1,14);
+		consGridBagConstraints3.ipady = 7;
+		consGridBagConstraints3.ipadx = 46;
+		consGridBagConstraints3.gridy = 2;
+		consGridBagConstraints3.gridx = 0;
+		consGridBagConstraints6.insets = new java.awt.Insets(3,44,3,10);
+		consGridBagConstraints6.ipadx = 40;
+		consGridBagConstraints6.gridy = 1;
+		consGridBagConstraints6.gridx = 2;
+		consGridBagConstraints6.anchor = java.awt.GridBagConstraints.EAST;
+		consGridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints1.insets = new java.awt.Insets(1,8,1,8);
+		consGridBagConstraints1.ipady = -206;
+		consGridBagConstraints1.ipadx = -68;
+		consGridBagConstraints1.fill = java.awt.GridBagConstraints.BOTH;
+		consGridBagConstraints1.weighty = 1.0;
+		consGridBagConstraints1.weightx = 1.0;
+		consGridBagConstraints1.gridwidth = 3;
+		consGridBagConstraints1.gridy = 3;
+		consGridBagConstraints1.gridx = 0;
+		consGridBagConstraints7.insets = new java.awt.Insets(1,8,7,43);
+		consGridBagConstraints7.ipady = 2;
+		consGridBagConstraints7.ipadx = 8;
+		consGridBagConstraints7.gridwidth = 2;
+		consGridBagConstraints7.gridy = 4;
+		consGridBagConstraints7.gridx = 0;
+		consGridBagConstraints7.anchor = java.awt.GridBagConstraints.WEST;
+		consGridBagConstraints1.anchor = java.awt.GridBagConstraints.WEST;
 		setLayout(new java.awt.GridBagLayout());
+		this.add(getJScrollPaneContactTable(), consGridBagConstraints1);
+		this.add(getJButtonRemove(), consGridBagConstraints2);
+		this.add(getJLabelAssignedContacts(), consGridBagConstraints3);
+		this.add(getJLabelAvaillContacts(), consGridBagConstraints4);
+		this.add(getJComboBoxContacts(), consGridBagConstraints5);
+		this.add(getJButtonAdd(), consGridBagConstraints6);
+		this.add(getJLabel(), consGridBagConstraints7);
 		setSize(416, 348);
 
-		java.awt.GridBagConstraints constraintsJScrollPaneContactTable = new java.awt.GridBagConstraints();
-		constraintsJScrollPaneContactTable.gridx = 1; constraintsJScrollPaneContactTable.gridy = 4;
-		constraintsJScrollPaneContactTable.gridwidth = 3;
-		constraintsJScrollPaneContactTable.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsJScrollPaneContactTable.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJScrollPaneContactTable.weightx = 1.0;
-		constraintsJScrollPaneContactTable.weighty = 1.0;
-		constraintsJScrollPaneContactTable.ipadx = 378;
-		constraintsJScrollPaneContactTable.ipady = 199;
-		constraintsJScrollPaneContactTable.insets = new java.awt.Insets(1, 8, 17, 8);
-		add(getJScrollPaneContactTable(), constraintsJScrollPaneContactTable);
-
-		java.awt.GridBagConstraints constraintsJButtonRemove = new java.awt.GridBagConstraints();
-		constraintsJButtonRemove.gridx = 3; constraintsJButtonRemove.gridy = 3;
-		constraintsJButtonRemove.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJButtonRemove.ipadx = 19;
-		constraintsJButtonRemove.insets = new java.awt.Insets(3, 60, 5, 10);
-		add(getJButtonRemove(), constraintsJButtonRemove);
-
-		java.awt.GridBagConstraints constraintsJLabelAssignedContacts = new java.awt.GridBagConstraints();
-		constraintsJLabelAssignedContacts.gridx = 1; constraintsJLabelAssignedContacts.gridy = 3;
-		constraintsJLabelAssignedContacts.gridwidth = 2;
-		constraintsJLabelAssignedContacts.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelAssignedContacts.ipadx = 46;
-		constraintsJLabelAssignedContacts.ipady = 7;
-		constraintsJLabelAssignedContacts.insets = new java.awt.Insets(9, 10, 1, 59);
-		add(getJLabelAssignedContacts(), constraintsJLabelAssignedContacts);
-
-		java.awt.GridBagConstraints constraintsJLabelAvaillContacts = new java.awt.GridBagConstraints();
-		constraintsJLabelAvaillContacts.gridx = 1; constraintsJLabelAvaillContacts.gridy = 1;
-		constraintsJLabelAvaillContacts.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelAvaillContacts.ipadx = 7;
-		constraintsJLabelAvaillContacts.ipady = -2;
-		constraintsJLabelAvaillContacts.insets = new java.awt.Insets(18, 10, 6, 1);
-		add(getJLabelAvaillContacts(), constraintsJLabelAvaillContacts);
-
-		java.awt.GridBagConstraints constraintsJComboBoxContacts = new java.awt.GridBagConstraints();
-		constraintsJComboBoxContacts.gridx = 2; constraintsJComboBoxContacts.gridy = 1;
-		constraintsJComboBoxContacts.gridwidth = 2;
-		constraintsJComboBoxContacts.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJComboBoxContacts.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJComboBoxContacts.weightx = 1.0;
-		constraintsJComboBoxContacts.ipadx = 140;
-		constraintsJComboBoxContacts.insets = new java.awt.Insets(16, 1, 2, 10);
-		add(getJComboBoxContacts(), constraintsJComboBoxContacts);
-
-		java.awt.GridBagConstraints constraintsJButtonAdd = new java.awt.GridBagConstraints();
-		constraintsJButtonAdd.gridx = 3; constraintsJButtonAdd.gridy = 2;
-		constraintsJButtonAdd.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJButtonAdd.ipadx = 43;
-		constraintsJButtonAdd.insets = new java.awt.Insets(3, 60, 3, 10);
-		add(getJButtonAdd(), constraintsJButtonAdd);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
@@ -518,7 +528,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			
 			//add the row to our unassigned list of Contacts
 			int selRow = getJTableContact().getSelectedRows()[i];
-			getJComboBoxContacts().addItem( getJTableModel().getRowAt(selRow) );
+			getJComboBoxContacts().addItem( getJTableModel().getLiteContactAt(selRow) );
 
 			//remove it from our table
 			getJTableModel().removeRow( selRow );
@@ -587,4 +597,18 @@ public void setValue(Object o)
 	}
 
 }
+	/**
+	 * This method initializes jLabel
+	 * 
+	 * @return javax.swing.JLabel
+	 */
+	private javax.swing.JLabel getJLabel() {
+		if(jLabel == null) {
+			jLabel = new javax.swing.JLabel();
+			jLabel.setText("*(Drag and drop to reorder contacts in table)");
+			jLabel.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 10));
+			jLabel.setName("DragAndDropLabel");
+		}
+		return jLabel;
+	}
 }
