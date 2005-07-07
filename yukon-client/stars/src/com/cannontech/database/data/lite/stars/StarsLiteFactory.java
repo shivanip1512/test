@@ -1413,6 +1413,8 @@ public class StarsLiteFactory {
 		starsAccount.setPropertyNumber( StarsUtils.forceNotNull(liteAcctSite.getSiteNumber()) );
 		starsAccount.setPropertyNotes( StarsUtils.forceNotNull(liteAcctSite.getPropertyNotes()) );
 		starsAccount.setTimeZone( liteCustomer.getTimeZone() );
+		starsAccount.setCustomerNumber( liteCustomer.getCustomerNumber() );
+		starsAccount.setRateScheduleID(liteCustomer.getRateScheduleID() );
 		starsAcctInfo.setStarsCustomerAccount( starsAccount );
 		
 		StreetAddress streetAddr = new StreetAddress();

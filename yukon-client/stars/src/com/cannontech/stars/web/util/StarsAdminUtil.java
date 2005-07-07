@@ -1438,6 +1438,8 @@ public class StarsAdminUtil {
 			{
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) );
+				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE,
+					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE) );
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS) );
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_LOCATION,

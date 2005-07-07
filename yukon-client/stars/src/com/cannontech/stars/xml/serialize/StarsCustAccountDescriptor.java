@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccountDescriptor.java,v 1.94 2005/01/20 00:37:05 yao Exp $
+ * $Id: StarsCustAccountDescriptor.java,v 1.95 2005/07/07 17:12:43 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:05 $
+ * @version $Revision: 1.95 $ $Date: 2005/07/07 17:12:43 $
 **/
 public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -591,6 +591,85 @@ public class StarsCustAccountDescriptor extends org.exolab.castor.xml.util.XMLCl
             fieldValidator.setValidator(sv);
         }
         desc.setValidator(fieldValidator);
+        
+        //-- _customerNumber
+		desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_customerNumber", "CustomerNumber", NodeType.Element);
+		desc.setImmutable(true);
+		handler = (new XMLFieldHandler() {
+			public java.lang.Object getValue( java.lang.Object object ) 
+				throws IllegalStateException
+			{
+				StarsCustAccount target = (StarsCustAccount) object;
+				return target.getCustomerNumber();
+			}
+			public void setValue( java.lang.Object object, java.lang.Object value) 
+				throws IllegalStateException, IllegalArgumentException
+			{
+				try {
+					StarsCustAccount target = (StarsCustAccount) object;
+					target.setCustomerNumber( (java.lang.String) value);
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(ex.toString());
+				}
+			}
+			public java.lang.Object newInstance( java.lang.Object parent ) {
+				return null;
+			}
+		} );
+		desc.setHandler(handler);
+		desc.setMultivalued(false);
+		addFieldDescriptor(desc);
+        
+		//-- validation code for: _timeZone
+		fieldValidator = new FieldValidator();
+		{ //-- local scope
+			StringValidator sv = new StringValidator();
+			sv.setWhiteSpace("preserve");
+			fieldValidator.setValidator(sv);
+		}
+		desc.setValidator(fieldValidator);
+		
+		// -- _rateSchedule
+		desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_rateScheduleID", "rateScheduleID", NodeType.Attribute);
+		handler = (new XMLFieldHandler() {
+			public java.lang.Object getValue( java.lang.Object object ) 
+				throws IllegalStateException
+			{
+				StarsCustAccount target = (StarsCustAccount) object;
+
+				return new Integer(target.getRateScheduleID());
+			}
+			public void setValue( java.lang.Object object, java.lang.Object value) 
+				throws IllegalStateException, IllegalArgumentException
+			{
+				try {
+					StarsCustAccount target = (StarsCustAccount) object;
+					
+					target.setRateScheduleID( ((Integer)value).intValue());
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(ex.toString());
+				}
+			}
+			public java.lang.Object newInstance( java.lang.Object parent ) {
+				return null;
+			}
+		} );
+		desc.setHandler(handler);
+		addFieldDescriptor(desc);
+        
+		//-- validation code for: _rateScheduleID
+		fieldValidator = new FieldValidator();
+		{ //-- local scope
+			IntegerValidator iv = new IntegerValidator();
+			fieldValidator.setValidator(iv);
+		}
+		desc.setValidator(fieldValidator);
+		
+		
+        
+        
         
     } //-- com.cannontech.stars.xml.serialize.StarsCustAccountDescriptor()
 

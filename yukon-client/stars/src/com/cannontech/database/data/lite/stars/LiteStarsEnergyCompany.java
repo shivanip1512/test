@@ -145,6 +145,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY,
 		YukonSelectionListDefs.YUK_LIST_NAME_SO_SORT_BY,
 		YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY,
+		YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE
 	};
 	
 	
@@ -2791,7 +2792,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
 		list = getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_OPT_OUT_PERIOD);
 		if (list != null) starsCustSelLists.addStarsCustSelectionList( list );
-	}
+		
+		}
 	
 	public synchronized void updateStarsCustomerSelectionLists() {
 		Hashtable starsSelectionLists = getStarsCustSelectionLists();

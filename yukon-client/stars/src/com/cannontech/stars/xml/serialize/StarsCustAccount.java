@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.94 2005/01/20 00:37:05 yao Exp $
+ * $Id: StarsCustAccount.java,v 1.95 2005/07/07 17:12:43 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:05 $
+ * @version $Revision: 1.95 $ $Date: 2005/07/07 17:12:43 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -76,6 +76,10 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private java.util.Vector _additionalContactList;
 
     private java.lang.String _timeZone;
+    
+    private java.lang.String _customerNumber;
+    
+    private int _rateScheduleID;
 
 
       //----------------/
@@ -307,6 +311,16 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     {
         return this._timeZone;
     } //-- java.lang.String getTimeZone() 
+    
+    public java.lang.String getCustomerNumber()
+    {
+    	return this._customerNumber;
+    }
+     
+    public int getRateScheduleID()
+    {
+    	return this._rateScheduleID;
+    } 
 
     /**
     **/
@@ -536,11 +550,20 @@ public abstract class StarsCustAccount implements java.io.Serializable {
      * 
      * @param timeZone the value of field 'timeZone'.
     **/
-    public void setTimeZone(java.lang.String timeZone)
+    public void setTimeZone(java.lang.String tZone)
     {
-        this._timeZone = timeZone;
-    } //-- void setTimeZone(java.lang.String) 
+        this._timeZone = tZone;
+    } //-- void setTimeZone(java.lang.String)    
+    
+    public void setCustomerNumber(java.lang.String custNum)
+	{
+		this._customerNumber = custNum;
+	} //-- void setCustomerNumber(java.lang.String) 
 
+	public void setRateScheduleID(int rSched)
+	{
+		this._rateScheduleID = rSched;
+	} //-- void setRateSchedule(java.lang.String) 
     /**
     **/
     public void validate()
