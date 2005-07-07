@@ -67,6 +67,10 @@ public class NewCustAccountAction implements ActionBase {
 			account.setAccountNumber( req.getParameter("AcctNo") );
 			account.setIsCommercial( Boolean.valueOf(req.getParameter("Commercial")).booleanValue() );
 			account.setCompany( req.getParameter("Company") );
+			if (req.getParameter("CustomerNumber") != null)
+				account.setCustomerNumber( req.getParameter("CustomerNumber") );
+			if (req.getParameter("RateSchedule") != null)
+				account.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
 			account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			account.setPropertyNumber( req.getParameter("PropNo") );
 			account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );

@@ -66,6 +66,10 @@ public class UpdateCustAccountAction implements ActionBase {
 			updateAccount.setIsCommercial( starsAcctInfo.getStarsCustomerAccount().getIsCommercial() );
 			if (req.getParameter("Company") != null)
 				updateAccount.setCompany( req.getParameter("Company") );
+			if (req.getParameter("CustomerNumber") != null)
+				updateAccount.setCustomerNumber( req.getParameter("CustomerNumber") );
+			if (req.getParameter("RateSchedule") != null)
+				updateAccount.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
 			updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
 			updateAccount.setPropertyNumber( req.getParameter("PropNo") );
@@ -269,6 +273,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			
 			/* Update customer */
 			LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
+
 			com.cannontech.database.db.customer.Customer customerDB = new com.cannontech.database.db.customer.Customer();
 			StarsLiteFactory.setCustomer( customerDB, liteCustomer );
         	
@@ -277,7 +282,22 @@ public class UpdateCustAccountAction implements ActionBase {
 			
 			boolean primContChanged = false;
 			boolean ciCustChanged = false;
+			boolean altCustFieldChanged = false;
         	
+			//For new RateScheduleID and CustomerNumber fields
+			if (liteCustomer.getCustomerNumber().compareTo( updateAccount.getCustomerNumber() ) != 0) 
+			{
+				// Customer number has changed
+				customerDB.setCustomerNumber(updateAccount.getCustomerNumber());
+				altCustFieldChanged = true;
+			}
+			if (liteCustomer.getRateScheduleID() != updateAccount.getRateScheduleID()) 
+			{
+				// Rate schedule ID has changed
+				customerDB.setRateScheduleID(new Integer(updateAccount.getRateScheduleID()));
+				altCustFieldChanged = true;
+			}
+			
 			if (!StarsLiteFactory.isIdenticalCustomerContact( litePrimContact, starsPrimContact )) {
 				com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
 				StarsLiteFactory.setContact( primContact, litePrimContact, energyCompany );
@@ -303,12 +323,18 @@ public class UpdateCustAccountAction implements ActionBase {
 					ciDB.setCompanyName( updateAccount.getCompany() );
 					ciDB.setDbConnection( conn );
 					ciDB.update();
-        			
+					        			
 					liteCICust.setCompanyName( ciDB.getCompanyName() );
 					ciCustChanged = true;
 				}
 			}
-        	
+			
+			if(altCustFieldChanged)
+			{
+				customerDB.setDbConnection(conn);
+				customerDB.update();
+			}
+			
 			/* Update account site */
 			LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
         	
@@ -352,7 +378,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			conn.commit();
 			
 			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			if (ciCustChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			if (ciCustChanged || altCustFieldChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 		catch (java.sql.SQLException e) {

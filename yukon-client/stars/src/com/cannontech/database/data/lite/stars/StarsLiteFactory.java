@@ -333,6 +333,8 @@ public class StarsLiteFactory {
 		liteCustomer.setPrimaryContactID( customer.getCustomer().getPrimaryContactID().intValue() );
 		liteCustomer.setCustomerTypeID( customer.getCustomer().getCustomerTypeID().intValue() );
 		liteCustomer.setTimeZone( customer.getCustomer().getTimeZone() );
+		liteCustomer.setCustomerNumber( customer.getCustomer().getCustomerNumber());
+		liteCustomer.setRateScheduleID( customer.getCustomer().getRateScheduleID().intValue());
 		
 		int[] contactIDs = customer.getCustomerContactIDs();
 		for (int i = 0; i < contactIDs.length; i++)
@@ -803,6 +805,8 @@ public class StarsLiteFactory {
 		customer.setPrimaryContactID( new Integer(liteCustomer.getPrimaryContactID()) );
 		customer.setCustomerTypeID( new Integer(liteCustomer.getCustomerTypeID()) );
 		customer.setTimeZone( liteCustomer.getTimeZone() );
+		customer.setCustomerNumber( liteCustomer.getCustomerNumber() );
+		customer.setRateScheduleID( new Integer(liteCustomer.getRateScheduleID()) );
 	}
 	
 	public static void setCICustomerBase(com.cannontech.database.data.customer.CICustomerBase ci, LiteCICustomer liteCI) {

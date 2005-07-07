@@ -148,15 +148,15 @@ function init() {
                           <input type="text" name="Company" maxlength="30" size="24" value="<%= account.getCompany() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
+<% } %>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Customer #: </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="Customer #" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getCustomerNumber() : "" %>" onchange="setContentChanged(true)">
+                          <input type="text" name="CustomerNumber" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getCustomerNumber() : "" %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
-<% } %>
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Last Name:</div>
