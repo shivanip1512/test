@@ -41,4 +41,7 @@
 
 #include <rw/db/db.h>
 
+#include "boost/tokenizer.hpp"
+#include "boost/shared_ptr.hpp"
+
 #endif
