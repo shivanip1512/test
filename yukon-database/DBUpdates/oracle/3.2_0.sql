@@ -186,7 +186,20 @@ alter table dynamicccsubstationbus add cbInactivityTime number;
 update dynamicccsubstationbus set cbInactivityTime = -1;
 alter table dynamicccsubstationbus modify cbInactivityTime number not null;
 
+insert into YukonSelectionList values (1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y');
 
+insert into YukonListEntry values (1901,1065,0,'J',3601);
+insert into YukonListEntry values (1902,1065,1,'PS',3602);
+insert into YukonListEntry values (1903,1065,2,'Power Service Only',3603);
+insert into YukonListEntry values (1904,1065,3,'Power & Lighting Service',3604);
+insert into YukonListEntry values (1905, 1065, 4, 'PP', 3605);
+insert into YukonListEntry values (1906, 1065, 5, 'PT', 3606);
+
+alter table Customer add RateScheduleID number;
+update Customer set RateScheduleID = 0;
+alter table Customer modify RateScheduleID number not null;
+
+alter table Customer add constraint FK_Cust_YkLs foreign key (RateScheduleID) references YukonListEntry (EntryID);
 
 
 
