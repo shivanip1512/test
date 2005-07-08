@@ -185,6 +185,14 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
+                          <div align="right">Customer #: </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="CustomerNumber" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getCustomerNumber() : "" %>" onchange="setContentChanged(true)">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
                           <div align="right">Last Name:</div>
                         </td>
                         <td width="210"> 
@@ -496,6 +504,26 @@ function confirmCancel() {
                     <span class="SubtitleHeader">SERVICE INFORMATION</span> 
                     <hr>
                     <table width="300" border="0" cellspacing="0" cellpadding="1" align="center">
+                      <tr> 
+                      	<td width="90" class="TableCell"> 
+                        	<div align="right">Rate Schedule: </div>
+                        </td>
+                        <td width="210"> 
+							<select name="RateSchedule" onchange="setContentChanged(true)">
+<%	StarsCustSelectionList rateSchedList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE );%>
+	<option value="<%= 0 %>" <%= "(none)" %>><%= "(none)" %></option>
+<%	for (int j = 0; j < rateSchedList.getStarsSelectionListEntryCount(); j++) {
+		StarsSelectionListEntry entry = rateSchedList.getStarsSelectionListEntry(j);
+		
+		String selected = (entry.getEntryID() == account.getRateScheduleID())? "selected" : "";
+%>
+		<option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
+<%
+	}
+%>							</select>
+                       </td>
+                    </tr>
+                     
                       <tr> 
                         <td width="90" class="TableCell"> 
                           <div align="right">Substation Name: </div>

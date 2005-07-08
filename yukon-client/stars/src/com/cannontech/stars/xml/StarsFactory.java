@@ -269,6 +269,8 @@ public class StarsFactory {
 		newAccount.setStreetAddress( (StreetAddress)newStarsCustomerAddress(StreetAddress.class) );
 		newAccount.setBillingAddress( (BillingAddress)newStarsCustomerAddress(BillingAddress.class) );
 		newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
+		newAccount.setCustomerNumber(CtiUtilities.STRING_NONE);
+		newAccount.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         
 		Substation sub = new Substation();
 		sub.setEntryID( CtiUtilities.NONE_ZERO_ID );

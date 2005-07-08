@@ -406,6 +406,8 @@ public class NewCustAccountAction implements ActionBase {
 			
 			accountDB.setAccountNumber( starsAccount.getAccountNumber() );
 			accountDB.setAccountNotes( starsAccount.getAccountNotes() );
+			customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
+			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         	
