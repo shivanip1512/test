@@ -90,7 +90,7 @@
                             </tr>
 <%
 	}
-	for (int i = primContact.getContactNotificationCount(); i < 4; i++) {
+	for (int i = primContact.getContactNotificationCount(); i < 5; i++) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -184,7 +184,7 @@
                             </tr>
 <%
 		}
-		for (int j = contact.getContactNotificationCount(); j < 4; j++) {
+		for (int j = contact.getContactNotificationCount(); j < 5; j++) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -256,7 +256,7 @@
                         <td>
                           <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
 <%
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 %>
                             <tr> 
                               <td width="146" align="right"> 
