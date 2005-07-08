@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_dv_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:49:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/07/08 18:06:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,12 +44,13 @@ protected:
   // INT                  _originAddress;   //computers address?
    unsigned short       _inertia;
    int                  _destinationAddress; //The tnpp devices address
-   char                 _identifierFormat;
-   char                 _pagerProtocol;
-   char                 _dataFormat;
-   char                 _channel;
-   char                 _zone;
-   char                 _functionCode;
+   int                  _originAddress;
+   RWCString            _identifierFormat;
+   RWCString            _pagerProtocol;
+   RWCString            _dataFormat;
+   RWCString            _channel;
+   RWCString            _zone;
+   RWCString            _functionCode;
    int                  _pagerID;
 private:
 
@@ -66,12 +67,13 @@ public:
     LONG getDeviceID() const;
     unsigned short getInertia() const;
     int getDestinationAddress() const; //The tnpp devices address
-    char getIdentifierFormat() const;
-    char getPagerProtocol() const;
-    char getPagerDataFormat() const;
-    char getChannel() const;
-    char getZone() const;
-    char getFunctionCode() const;
+    int getOriginAddress() const; //The tnpp devices address
+    const char* getIdentifierFormat();
+    const char* getPagerProtocol();
+    const char* getPagerDataFormat();
+    const char* getChannel();
+    const char* getZone();
+    const char* getFunctionCode();
     int getPagerID() const;
 
 

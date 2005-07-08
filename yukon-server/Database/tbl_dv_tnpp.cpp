@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:49:49 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/07/08 18:04:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,12 +40,13 @@ CtiTableDeviceTnpp& CtiTableDeviceTnpp::operator=(const CtiTableDeviceTnpp& aRef
         _deviceID =           aRef.getDeviceID();
         _inertia =            aRef.getInertia();
         _destinationAddress = aRef.getDestinationAddress(); //The tnpp devices address
-        _identifierFormat =   aRef.getIdentifierFormat();
+        _originAddress     =  aRef.getOriginAddress();
+        /*_identifierFormat =   aRef.getIdentifierFormat();
         _pagerProtocol =      aRef.getPagerProtocol();
         _dataFormat =         aRef.getPagerDataFormat();
         _channel =            aRef.getChannel();
         _zone =               aRef.getZone();
-        _functionCode =       aRef.getFunctionCode();
+        _functionCode =       aRef.getFunctionCode();*/ //FIX_ME JESS
         _pagerID =            aRef.getPagerID();
     }
     return *this;
@@ -58,6 +59,7 @@ void CtiTableDeviceTnpp::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
     selector << devTbl["inertia"]
              << devTbl["destinationaddress"]
+             << devTbl["originaddress"]
              << devTbl["identifierformat"]
              << devTbl["protocol"]
              << devTbl["dataformat"]
@@ -83,7 +85,8 @@ void CtiTableDeviceTnpp::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["deviceid"]           >>   _deviceID;
     rdr["inertia"]            >>   _inertia;              
-    rdr["destinationaddress"] >>   _destinationAddress;  
+    rdr["destinationaddress"] >>   _destinationAddress;
+    rdr["originaddress"]      >>   _originAddress; 
     rdr["identifierformat"]   >>   _identifierFormat;
     rdr["protocol"]           >>   _pagerProtocol;  
     rdr["dataformat"]         >>   _dataFormat;
@@ -201,34 +204,39 @@ int CtiTableDeviceTnpp::getDestinationAddress() const
     return _destinationAddress;
 }
 
-char CtiTableDeviceTnpp::getIdentifierFormat() const
-{
-    return _identifierFormat;
+int CtiTableDeviceTnpp::getOriginAddress() const
+{ //The Computer's address
+    return _originAddress;
 }
 
-char CtiTableDeviceTnpp::getPagerProtocol() const
+const char* CtiTableDeviceTnpp::getIdentifierFormat()
 {
-    return _pagerProtocol;
+    return _identifierFormat.data();
 }
 
-char CtiTableDeviceTnpp::getPagerDataFormat() const
+const char* CtiTableDeviceTnpp::getPagerProtocol()
 {
-    return _dataFormat;
+    return _pagerProtocol.data();
 }
 
-char CtiTableDeviceTnpp::getChannel() const
+const char* CtiTableDeviceTnpp::getPagerDataFormat()
 {
-    return _channel;
+    return _dataFormat.data();
 }
 
-char CtiTableDeviceTnpp::getZone() const
+const char* CtiTableDeviceTnpp::getChannel() 
 {
-    return _zone;
+    return _channel.data();
 }
 
-char CtiTableDeviceTnpp::getFunctionCode() const
+const char* CtiTableDeviceTnpp::getZone() 
 {
-    return _functionCode;
+    return _zone.data();
+}
+
+const char* CtiTableDeviceTnpp::getFunctionCode() 
+{
+    return _functionCode.data();
 }
 
 int CtiTableDeviceTnpp::getPagerID() const
