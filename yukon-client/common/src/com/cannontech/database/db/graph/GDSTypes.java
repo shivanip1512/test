@@ -24,7 +24,7 @@ public interface GDSTypes
 	
 	public static final String DATE_STRING = "Specific Date";
 	public static final String DATE_TYPE_STRING = "mm/dd/yy";
-	public static final String THRESHOLD_TYPE_STRING = "Threshold";
+	public static final String MARKER_TYPE_STRING = "Marker";
 	public static final String USAGE_TYPE_STRING = "Usage";
 	public static final String BASIC_GRAPH_TYPE_STRING = "Graph";
 	public static final String USAGE_GRAPH_TYPE_STRING = "Usage Graph";
@@ -38,7 +38,7 @@ public interface GDSTypes
 	public static final int BASIC_TYPE = 0x0008;	//interval/normal point readings
 	public static final int PEAK_TYPE = 0x0010;	//actual peak day data used
 	public static final int YESTERDAY_TYPE = 0x0020;	//yesterday data used
-	public static final int THRESHOLD_TYPE = 0x0040;	//
+	public static final int MARKER_TYPE = 0x0041;	//a solid line for one value, (GRAPH)
 	public static final int DATE_TYPE = 0x0080;		// 
 	
 	//COMBINATION DATA SERIES TYPES
@@ -60,7 +60,7 @@ public interface GDSTypes
 		USAGE_GRAPH_TYPE_STRING,
 		PEAK_GRAPH_TYPE_STRING,
 		YESTERDAY_GRAPH_TYPE_STRING, 
-		THRESHOLD_TYPE_STRING,
+		MARKER_TYPE_STRING,
 		DATE_STRING,
 		DATE_TYPE_STRING
 	};	
@@ -75,7 +75,7 @@ public interface GDSTypes
 		USAGE_GRAPH_TYPE,
 		PEAK_GRAPH_TYPE,
 		YESTERDAY_GRAPH_TYPE,
-		THRESHOLD_TYPE,
+		MARKER_TYPE,
 		DATE_TYPE,
 		DATE_GRAPH_TYPE
 	}; 	

@@ -80,9 +80,9 @@ public class GDSTypesFuncs implements GDSTypes
 
 		return false;
 	}
-	public static boolean isThresholdType(int type)
+	public static boolean isMarkerType(int type)
 	{
-		if((type & THRESHOLD_TYPE) == THRESHOLD_TYPE)
+		if((type & MARKER_TYPE) == MARKER_TYPE)
 			return true;
 
 		return false;

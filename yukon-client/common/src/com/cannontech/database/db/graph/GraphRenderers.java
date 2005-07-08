@@ -39,6 +39,12 @@ public final class GraphRenderers
 	public final static String TABULAR_STRING = "Tabular";
 	public final static String SUMMARY_STRING = "Summary";
 	public final static String DEFAULT_STRING = "Default";
+
+	public final static String[] AVAILABLE_RENDERERS = new String[]{
+		LINE_STRING, LINE_SHAPES_STRING, LINE_AREA_STRING, LINE_AREA_SHAPES_STRING,
+		STEP_STRING, STEP_SHAPES_STRING, STEP_AREA_STRING, STEP_AREA_SHAPES_STRING,
+		BAR_STRING, BAR_3D_STRING
+	};	
 	
 	// ** NOTE ** Add more int model values here with the addition of new models.	
 
