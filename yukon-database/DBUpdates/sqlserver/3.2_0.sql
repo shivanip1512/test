@@ -174,8 +174,8 @@ INSERT into point  values (-6, 'System', 'Notifcation', 0, 'Default', 0, 'N', 'N
 go
 
 insert into YukonRole values (-800,'Outbound Calling','IVR','Settings for Interactive Voice Response module');
-insert into YukonRoleProperty values(-80000,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonRoleProperty values(-80001,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
+insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
 go
 
 update YukonGroupRole set roleid = -800 where rolepropertyid = -1400;
