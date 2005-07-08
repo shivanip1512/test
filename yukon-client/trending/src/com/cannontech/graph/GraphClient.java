@@ -237,6 +237,13 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 			refresh();
 		}
 	}
+	else if( event.getSource() == getViewMenu().getDefaultRadioButtonItem() )
+	{	
+		getGraph().setViewType( GraphRenderers.DEFAULT);
+		savedViewType = getGraph().getViewType();
+		refresh();
+		getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+	}
 	else if( event.getSource() == getViewMenu().getLineRadioButtonItem() )
 	{	
 		getGraph().setViewType( GraphRenderers.LINE);

@@ -6,7 +6,9 @@ package com.cannontech.graph;
  * Creation date: (10/23/00 3:24:57 PM)
  * @author: 
  */
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
@@ -23,6 +25,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.database.model.DeviceTree_CustomPointsModel;
 import com.cannontech.database.model.DummyTreeNode;
@@ -99,7 +102,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if ( event.getSource() == getThresholdsButton())
 	{
 		String value = javax.swing.JOptionPane.showInputDialog(
-			this, "Enter the value for your Threshold.\n(Threshold values are visible only when inclusive of trended data.)", "Threshold Value",
+			this, "Enter the value for your Marker.\n(Marker values are visible only when inclusive of trended data.)", "Value Marker",
 			javax.swing.JOptionPane.QUESTION_MESSAGE );
 	
 		if( value != null )
@@ -203,6 +206,10 @@ public GraphDataSeries createGDS(LitePoint point, String deviceName)
 	gds.setPointID(new Integer( point.getPointID() ));
 
 	String gdsLabel = point.getPointName();
+	
+	if( point.getPointID() == PointTypes.SYS_PID_THRESHOLD)
+		gdsLabel = "Marker";
+		
 	if( deviceName == null)
 	{
 		gds.setDeviceName( "System Device" );
@@ -220,6 +227,7 @@ public GraphDataSeries createGDS(LitePoint point, String deviceName)
 	gds.setAxis(new Character('L') );
 	gds.setColor( new Integer( getGraphColors().getNextLineColorID()) );
 
+	gds.setRenderer( new Integer(GraphRenderers.LINE));
 	// call to obtain the type from the database (pointUnit)
 	String type = getPointTypeString(point);
 	gds.setType(new Integer(GDSTypesFuncs.getTypeInt(type)));
@@ -553,7 +561,8 @@ private javax.swing.JTable getGraphGDSTable() {
 			colModel.getColumn(GDSTableModel.COLOR_NAME_COLUMN).setPreferredWidth(40);
 			colModel.getColumn(GDSTableModel.AXIS_NAME_COLUMN).setPreferredWidth(8);
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setPreferredWidth(55);
-			colModel.getColumn(GDSTableModel.MULT_NAME_COLUMN).setPreferredWidth(40);			
+			colModel.getColumn(GDSTableModel.MULT_NAME_COLUMN).setPreferredWidth(10);
+			colModel.getColumn(GDSTableModel.REND_NAME_COLUMN).setPreferredWidth(60);			
 //			colModel.getColumn(GDSTableModel.SETUP_NAME_COLUMN).setPreferredWidth(10);
 
 			//Color choices setup
@@ -618,6 +627,10 @@ private javax.swing.JTable getGraphGDSTable() {
 			javax.swing.DefaultCellEditor typeEditor = new javax.swing.DefaultCellEditor(getTypeComboBox());
 			colModel.getColumn(GDSTableModel.TYPE_NAME_COLUMN).setCellEditor(typeEditor);
 
+			JComboBox rendComboBox = new JComboBox( GraphRenderers.AVAILABLE_RENDERERS);
+			DefaultCellEditor rendEditor = new DefaultCellEditor(rendComboBox);
+			colModel.getColumn(GDSTableModel.REND_NAME_COLUMN).setCellEditor(rendEditor);
+			
 			//A checkBox is used here instead of a button, but you are REALLY putting a button in here.
 			/*
 			com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor setupEditor = new com.cannontech.graph.gds.tablemodel.GDSTableButtonEditor(new javax.swing.JCheckBox());
@@ -643,8 +656,8 @@ private javax.swing.JComboBox getTypeComboBox()
 		GDSTypes.YESTERDAY_GRAPH_TYPE_STRING,
 		GDSTypes.PEAK_GRAPH_TYPE_STRING,
 		GDSTypes.USAGE_GRAPH_TYPE_STRING,
-		GDSTypes.DATE_TYPE_STRING
-		//	,GraphDataSeries.THRESHOLD_TYPE_STRING	//not selectable!
+		GDSTypes.DATE_TYPE_STRING,
+		GDSTypes.MARKER_TYPE_STRING
 		};
 		typeComboBox = new javax.swing.JComboBox(typeStrings);
 		typeComboBox.addActionListener(this);
@@ -881,7 +894,7 @@ private javax.swing.JPanel getPointOptionsPanel() {
 public String getPointTypeString(LitePoint pt)
 {
 	if( pt.getPointID() == PointTypes.SYS_PID_THRESHOLD)
-		return GDSTypes.THRESHOLD_TYPE_STRING;
+		return GDSTypes.MARKER_TYPE_STRING;
 
 	else if( pt.getTags() == LitePoint.POINT_UOFM_GRAPH)
 		return GDSTypes.BASIC_GRAPH_TYPE_STRING;
@@ -979,7 +992,7 @@ private javax.swing.JButton getThresholdsButton() {
 		try {
 			ivjThresholdsButton = new javax.swing.JButton();
 			ivjThresholdsButton.setName("ThresholdsButton");
-			ivjThresholdsButton.setText("Add Thresholds...");
+			ivjThresholdsButton.setText("Add Value Marker...");
 			ivjThresholdsButton.setMaximumSize(new java.awt.Dimension(173, 25));
 			ivjThresholdsButton.setPreferredSize(new java.awt.Dimension(173, 25));
 			ivjThresholdsButton.setMinimumSize(new java.awt.Dimension(173, 25));

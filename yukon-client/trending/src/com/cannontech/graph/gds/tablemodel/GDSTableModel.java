@@ -11,6 +11,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -27,6 +28,7 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 	public final static int AXIS_NAME_COLUMN = 4;
 	public final static int TYPE_NAME_COLUMN = 5;
 	public final static int MULT_NAME_COLUMN = 6;
+	public final static int REND_NAME_COLUMN = 7;
 //	public final static int SETUP_NAME_COLUMN = 7;
 	
 	public static String[] columnNames =
@@ -37,7 +39,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		"Color",
 		"Axis",
 		"Type",
-		"Multiplier"
+		"Multiplier",
+		"Renderer"
 //		, "Setup"
 	};
 
@@ -49,7 +52,8 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		java.awt.Color.class,
 		String.class,
 		javax.swing.JCheckBox.class,
-		Double.class
+		Double.class,
+		String.class
 //		, String.class
 	};	
 
@@ -160,7 +164,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			
 			//must not have found it so we'll try some predefined points too.
 			if( id.intValue() == PointTypes.SYS_PID_THRESHOLD)
-				return "Threshold";
+				return "Marker";
 			
 			LitePoint pt = PointFuncs.getLitePoint( id.intValue() );
 			if( pt != null )
@@ -199,6 +203,11 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 		}
 		case MULT_NAME_COLUMN:
 			return gds.getMultiplier();
+		case REND_NAME_COLUMN:
+		{
+			Integer rend = gds.getRenderer();
+			return GraphRenderers.getRendererString(rend.intValue());			
+		}
 
 /*		case SETUP_NAME_COLUMN:
 			return "...";
@@ -259,7 +268,8 @@ public boolean isCellEditable(int row, int column)
 	if( column == LABEL_NAME_COLUMN ||
 		column == COLOR_NAME_COLUMN || 
 		column == AXIS_NAME_COLUMN ||
-		column == MULT_NAME_COLUMN )
+		column == MULT_NAME_COLUMN  ||
+		column == REND_NAME_COLUMN )
 	{
 		editable = true;
 	}
@@ -267,8 +277,10 @@ public boolean isCellEditable(int row, int column)
 	{
 		String value = ((String)getValueAt(row,column));
 		
-		//When type column value is 'THRESHOLD', the combo box is NOT editable.
-		if( !value.equalsIgnoreCase( GDSTypes.THRESHOLD_TYPE_STRING))
+		//When type column value is 'MARKER', the combo box is NOT editable.
+		if( value.equalsIgnoreCase( GDSTypes.MARKER_TYPE_STRING) && getRow(row).getPointID().intValue() == PointTypes.SYS_PID_THRESHOLD )
+			editable = false;
+		else
 			editable = true;
 	}
 		
@@ -379,6 +391,9 @@ public void setValueAt(Object value, int row, int col)
 		
 		case MULT_NAME_COLUMN:
 			gds.setMultiplier( Double.valueOf(value.toString()));
+		break;
+		case REND_NAME_COLUMN:
+			gds.setRenderer(new Integer(GraphRenderers.getRendererID(value.toString())));
 		break;
 		
 /*		case SETUP_NAME_COLUMN:

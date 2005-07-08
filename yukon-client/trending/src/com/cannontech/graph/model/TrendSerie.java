@@ -9,15 +9,18 @@ import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
-import org.jfree.data.time.RegularTimePeriod;
-import org.jfree.data.time.TimeSeriesDataItem;
+//import org.jfree.data.time.RegularTimePeriod;
+//import org.jfree.data.time.TimeSeriesDataItem;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.graph.GraphColors;
 
 /**
  * @author snebben
@@ -29,24 +32,18 @@ public class TrendSerie
 {
 	//Contains values of org.jfree.data.time.TimeSeriesDataItem values.
 	//TimeSeriesDataItem has a value and timestamp item.
-	private TreeMap dataItemsMap = null;
-	private Object dataSeries = null;	//THIS SHOULD BE SERIES or DEFAULTCATEGORYDATASET
-	
-	private Integer pointId;
-	private String label = null;
-	private Color color = Color.blue;
-	private String deviceName = null;
-	private Double multiplier = new Double(1.0);	//This is different then the point multiplier, this is a GDS
-	private Character axis = new Character('L');
-	public int typeMask = GDSTypes.BASIC_GRAPH_TYPE;
-	public String moreData = CtiUtilities.STRING_NONE;
-	public int renderer = GraphRenderers.LINE;
+//	private TreeMap dataItemsMap = null;
+	private Vector timeAndValueVector = null;
+	private GraphDataSeries gds = null;
+
 	// Flag for using graph multiplier
 	public boolean useMultiplier = false;
 	public long resolution = 1;
 
-	private TimeSeriesDataItem minimumTSDataItem = null;
-	private TimeSeriesDataItem maximumTSDataItem = null;
+//	private TimeSeriesDataItem minimumTSDataItem = null;
+//	private TimeSeriesDataItem maximumTSDataItem = null;
+	private Pair minTimePair = null;
+	private Pair maxTimePair = null;
 
 	// Load factor values computed for each point in the model, stored in an array that
 	//  is in accordance to the order of the pointIds.
@@ -74,13 +71,7 @@ public class TrendSerie
 	public TrendSerie(GraphDataSeries gds)
 	{
 		super();
-		setPointId(gds.getPointID());
-		setColor(Colors.getColor(gds.getColor().intValue()));
-		setLabel(gds.getLabel().toString());
-		setAxis(gds.getAxis());
-		setTypeMask(gds.getType().intValue());
-		setMultiplier(gds.getMultiplier());
-		setMoreData(gds.getMoreData());
+		setGraphDataSeries(gds);
 	}
 
 	/**
@@ -90,23 +81,38 @@ public class TrendSerie
 	{
 		if( areaOfSet == 0)
 		{
-			Iterator iter = getDataItemsMap().entrySet().iterator();
-			while( iter.hasNext())
+			for (int i = 0; i < getTimeAndValueVector().size(); i++)
 			{
-				TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
-				areaOfSet += dataItem.getValue().doubleValue();					
+				Pair tv = (Pair)getTimeAndValueVector().get(i);
+				areaOfSet += getAdjustedValue((Double)tv.getSecond()).doubleValue();
 			}
+//			Iterator iter = getDataItemsMap().entrySet().iterator();
+//			while( iter.hasNext())
+//			{
+//				TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
+//				areaOfSet += dataItem.getValue().doubleValue();					
+//			}
 		}
 		return areaOfSet;
 	}
 
+
+	public Double getAdjustedValue(Double valueToAdjust)
+	{
+		Double returnVal = valueToAdjust;
+		if( getUseMultiplier() )
+		{
+			returnVal = new Double(returnVal.doubleValue() * getMultiplier().doubleValue());
+		}
+		return returnVal;
+	}
 
 	/**
 	 * MUST USE this method to retrieve the dataItem from the MAP.
 	 * This way, the multiplier can be applied to the value.
 	 * @return
 	 */
-	public TimeSeriesDataItem getDataItem(Map.Entry entry_ )
+/*	public TimeSeriesDataItem getDataItem(Map.Entry entry_ )
 	{
 		TimeSeriesDataItem item = (TimeSeriesDataItem)entry_.getValue();
 		if( getUseMultiplier() )
@@ -118,14 +124,14 @@ public class TrendSerie
 		}
 		return item;
 	}
-
+*/
 	/**
 	 * Returns the axis value.
 	 * @return java.lang.Character
 	 */
 	public Character getAxis()
 	{
-		return axis;
+		return getGraphDataSeries().getAxis();
 	}
 
 	/**
@@ -134,7 +140,7 @@ public class TrendSerie
 	 */
 	public Color getColor()
 	{
-		return color;
+		return Colors.getColor(getGraphDataSeries().getColor().intValue());
 	}
 	/**
 	 * Returns the color value.
@@ -149,7 +155,7 @@ public class TrendSerie
 		// Render into the BufferedImage graphics to create the texture
 		big.setColor(Color.white);
 		big.fillRect(0,0,5,5);
-		big.setColor(color);
+		big.setColor(Colors.getColor(getGraphDataSeries().getColor().intValue()));
 		big.fillOval(0,0,4,4);
 		
 		// Create a texture paint from the buffered image
@@ -163,10 +169,10 @@ public class TrendSerie
 	 * Returns the dataItemMap value.
 	 * @return TreeMap
 	 */
-	public TreeMap getDataItemsMap()
-	{
-		return dataItemsMap;
-	}
+//	public TreeMap getDataItemsMap()
+//	{
+//		return dataItemsMap;
+//	}
 
 	/**
 	 * Returns the decimalPlaces value.
@@ -183,7 +189,7 @@ public class TrendSerie
 	 */
 	public String getDeviceName()
 	{
-		return deviceName;
+		return getGraphDataSeries().getDeviceName();
 	}
 	/**
 	 * Returns the label value.
@@ -191,7 +197,7 @@ public class TrendSerie
 	 */
 	public String getLabel()
 	{
-		return label;
+		return getGraphDataSeries().getLabel();
 	}
 	/**
 	 * Returns the load factor value.
@@ -200,7 +206,8 @@ public class TrendSerie
 	 */
 	public double getLoadFactor()
 	{
-		if( getDataItemsMap() != null)
+//		if( getDataItemsMap() != null)
+		if( getTimeAndValueVector() != null)
 		{
 			if (getMaxArea() != 0.0 )
 				return getAreaOfSet() / getMaxArea();
@@ -220,7 +227,8 @@ public class TrendSerie
 		if( maxArea == 0)
 		{
 			if( getMaximumValue() != null)
-				maxArea = getMaximumValue().doubleValue() * getDataItemsMap().size();//getDataItemArray().length;
+				maxArea = getMaximumValue().doubleValue() * getTimeAndValueVector().size();//getDataItemArray().length;
+//				maxArea = getMaximumValue().doubleValue() * getDataItemsMap().size();//getDataItemArray().length;
 		}
 		return maxArea;
 	}
@@ -229,14 +237,26 @@ public class TrendSerie
 	 * Searches through the entire dataItemArray for the MAX value and respective timeStamp.
 	 * @return org.jfree.data.time.TimeSeriesDataItem
 	 */
-	public TimeSeriesDataItem getMaximumTSDataItem()
+	public Pair getMaxTimePair()
 	{
-		if( maximumTSDataItem == null)
+		if( maxTimePair == null)
 		{
 			double max = -1;
-			if( getDataItemsMap() != null)
+//			if( getDataItemsMap() != null)
+			if( getTimeAndValueVector() != null)
 			{
-				Iterator iter = getDataItemsMap().entrySet().iterator();
+				for (int i = 0; i < getTimeAndValueVector().size(); i++)
+				{
+					Pair tv = (Pair)getTimeAndValueVector().get(i);
+					double val = getAdjustedValue((Double)tv.getSecond()).doubleValue();
+					if( val > max)
+					{
+						max = (val);
+						maxTimePair = tv;
+					}
+					
+				}
+				/*Iterator iter = getDataItemsMap().entrySet().iterator();
 				while( iter.hasNext())
 				{
 					TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
@@ -245,24 +265,36 @@ public class TrendSerie
 						max = dataItem.getValue().doubleValue();
 						maximumTSDataItem = dataItem;
 					}
-				}
+				}*/
 			}
 		}
-		return maximumTSDataItem;
+		return maxTimePair;
 	}
 	/**
 	 * Returns the minimumTSDataItem value.
 	 * Searches through the entire dataItemArray for the MIN value and respective timeStamp.
 	 * @return org.jfree.data.time.TimeSeriesDataItem
 	 */
-	public TimeSeriesDataItem getMinimumTSDataItem()
+	public Pair getMinTimePair()
 	{
-		if( minimumTSDataItem == null)
+		if( minTimePair == null)
 		{
 			double min = Double.MAX_VALUE;
-			if( getDataItemsMap() != null )
+//			if( getDataItemsMap() != null )
+			if( getTimeAndValueVector() != null)
 			{
-				Iterator iter = getDataItemsMap().entrySet().iterator();
+				for (int i = 0; i < getTimeAndValueVector().size(); i++)
+				{
+					Pair tv = (Pair)getTimeAndValueVector().get(i);
+					double val = getAdjustedValue((Double)tv.getSecond()).doubleValue();
+					if( val < min)
+					{
+						min = (val);
+						minTimePair = tv;
+					}
+					
+				}				
+/*				Iterator iter = getDataItemsMap().entrySet().iterator();
 				while( iter.hasNext())
 				{
 					TimeSeriesDataItem dataItem = getDataItem((Map.Entry)iter.next());
@@ -272,9 +304,10 @@ public class TrendSerie
 						minimumTSDataItem = dataItem;
 					}
 				}
+*/
 			}
 		}
-		return minimumTSDataItem;
+		return minTimePair;
 	}
 
 	/**
@@ -283,8 +316,10 @@ public class TrendSerie
 	 */
 	public Double getMaximumValue()
 	{
-		if( getMaximumTSDataItem() != null)
-			return (Double)getMaximumTSDataItem().getValue();
+//		if( getMaximumTSDataItem() != null)
+		if( getMaxTimePair() != null)
+//			return (Double)getMaximumTSDataItem().getValue();
+			return (Double)getMaxTimePair().getSecond();
 		else 
 			return null;
 	}
@@ -294,8 +329,10 @@ public class TrendSerie
 	 */
 	public Double getMinimumValue()
 	{
-		if( getMinimumTSDataItem() != null)
-			return (Double)getMinimumTSDataItem().getValue();
+//		if( getMinimumTSDataItem() != null)
+		if( getMinTimePair() != null)
+//			return (Double)getMinimumTSDataItem().getValue();
+			return (Double)getMinTimePair().getSecond();
 		else
 			return null;
 	}
@@ -306,7 +343,7 @@ public class TrendSerie
 	 */
 	public Double getMultiplier()
 	{
-		return multiplier;
+		return getGraphDataSeries().getMultiplier();
 	}
 
 	/**
@@ -323,7 +360,7 @@ public class TrendSerie
 	 */
 	public Integer getPointId()
 	{
-		return pointId;
+		return getGraphDataSeries().getPointID();
 	}
 
 	/**
@@ -332,7 +369,7 @@ public class TrendSerie
 	 */
 	public int getTypeMask()
 	{
-		return typeMask;
+		return getGraphDataSeries().getType().intValue();
 	}
 	/**
 	 * Returns the valuesArray value.
@@ -345,12 +382,15 @@ public class TrendSerie
 	{
 		if( valuesArray == null)
 		{
-			if( getDataItemsMap() == null )
+//			if( getDataItemsMap() == null )
+			if( getTimeAndValueVector() == null)
 				return null;
 
-			valuesArray = new double[getDataItemsMap().size()];
-			periodsArray = new long[getDataItemsMap().size()];
-			Iterator iter = getDataItemsMap().entrySet().iterator();
+//			valuesArray = new double[getDataItemsMap().size()];
+//			periodsArray = new long[getDataItemsMap().size()];
+			loadPeriodAndValueArrays();
+			
+			/*			Iterator iter = getDataItemsMap().entrySet().iterator();
 			int index = 0;
 			while( iter.hasNext())
 			{
@@ -363,8 +403,24 @@ public class TrendSerie
 				periodsArray[index] = time;
 				index++;
 			}
+			*/
 		}
 		return valuesArray;
+	}
+	private synchronized void loadPeriodAndValueArrays()
+	{
+		valuesArray = new double[getTimeAndValueVector().size()];
+		periodsArray = new long[getTimeAndValueVector().size()];
+
+		for (int i = 0; i < getTimeAndValueVector().size(); i++)
+		{
+			Pair tv = (Pair)getTimeAndValueVector().get(i);
+			valuesArray[i] = getAdjustedValue((Double)tv.getSecond()).doubleValue();
+			long time = ((Long)tv.getFirst()).longValue();
+			long round = time % resolution;
+			time = time - round;
+			periodsArray[i] = time;
+		}
 	}
 	/**
 	 * Returns the periodsArray value.
@@ -377,10 +433,12 @@ public class TrendSerie
 	{
 		if( periodsArray == null)
 		{
-			if (getDataItemsMap() == null )
+//			if (getDataItemsMap() == null )
+			if( getTimeAndValueVector() == null)
 				return null;
 
-			valuesArray = new double[getDataItemsMap().size()];
+			loadPeriodAndValueArrays();
+			/*valuesArray = new double[getDataItemsMap().size()];
 			periodsArray = new long[getDataItemsMap().size()];
 			Iterator iter = getDataItemsMap().entrySet().iterator();
 			int index = 0;
@@ -394,7 +452,7 @@ public class TrendSerie
 				time = time - round;
 				periodsArray[index] = time;
 				index++;
-			}
+			}*/
 		}
 		return periodsArray;
 	}	
@@ -405,7 +463,7 @@ public class TrendSerie
 	 */
 	public void setAxis(Character newAxis)
 	{
-		axis = newAxis;
+		getGraphDataSeries().setAxis(newAxis);
 	}
 	/**
 	 * Sets the color value.
@@ -413,16 +471,16 @@ public class TrendSerie
 	 */
 	protected void setColor(Color newColor)
 	{
-		color = newColor;
+		getGraphDataSeries().setColor(new Integer(Colors.getColorID(newColor)));
 	}
 	/**
 	 * Sets the dataItemsMap value.
 	 * @param newDataItemMap TreeMap
 	 */
-	protected void setDataItemsMap(TreeMap newDataItemsMap)
-	{
-		dataItemsMap = newDataItemsMap;
-	}
+//	protected void setDataItemsMap(TreeMap newDataItemsMap)
+//	{
+//		dataItemsMap = newDataItemsMap;
+//	}
 	/**
 	 * Sets the decimalPlaces value.
 	 * @param newDecimalPlaces int
@@ -437,7 +495,7 @@ public class TrendSerie
 	 */
 	protected void setDeviceName(String newDeviceName)
 	{
-		deviceName = newDeviceName;
+		getGraphDataSeries().setDeviceName(newDeviceName);
 	}
 	/**
 	 * Sets the label value
@@ -445,7 +503,7 @@ public class TrendSerie
 	 */
 	protected void setLabel(String newLabel)
 	{
-		label = newLabel;
+		getGraphDataSeries().setLabel(newLabel);
 	}
 	/**
 	 * Sets the multiplier value.
@@ -453,7 +511,7 @@ public class TrendSerie
 	 */
 	protected void setMultiplier(Double newMultiplier)
 	{
-		multiplier = newMultiplier;
+		getGraphDataSeries().setMultiplier(newMultiplier);
 	}
 	/**
 	 * Sets the useMultipier value
@@ -466,8 +524,10 @@ public class TrendSerie
 		valuesArray = null;
 		periodsArray = null;
 //		Reset the max/min dataItems when multiplier selection changes.
-		maximumTSDataItem = null;
-		minimumTSDataItem = null;
+		minTimePair = null;
+		maxTimePair = null;
+//		maximumTSDataItem = null;
+//		minimumTSDataItem = null;
 	}	
 	/**
 	 * Sets the pointID value.
@@ -475,7 +535,7 @@ public class TrendSerie
 	 */
 	protected void setPointId(Integer newPointId)
 	{
-		pointId = newPointId;
+		getGraphDataSeries().setPointID(newPointId);
 	}
 	/**
 	 * Sets the typeMask value
@@ -483,7 +543,7 @@ public class TrendSerie
 	 */
 	protected void setTypeMask(int newTypeMask)
 	{
-		typeMask = newTypeMask;
+		getGraphDataSeries().setType(new Integer(newTypeMask));
 	}
 	/**
 	 * @param l
@@ -498,7 +558,7 @@ public class TrendSerie
 	 */
 	public String getMoreData()
 	{
-		return moreData;
+		return getGraphDataSeries().getMoreData();
 	}
 
 	/**
@@ -506,39 +566,67 @@ public class TrendSerie
 	 */
 	public void setMoreData(String string)
 	{
-		moreData = string;
+		getGraphDataSeries().setMoreData( string);
 	}
 
 	/**
 	 * @return
 	 */
-/*	public int getRenderer()
+	public int getRenderer()
 	{
-		return renderer;
+		return getGraphDataSeries().getRenderer().intValue();
 	}
-*/
+
 	/**
 	 * @param i
 	 */
-/*	public void setRenderer(int i)
-	{
-		renderer = i;
-	}
-*/
+//	public void setRenderer(int i)
+//	{
+//		getGraphDataSeries().setRenderer(new Integer(i));
+//	}
+
+//	/**
+//	 * @return
+//	 */
+//	public Object getDataSeries()
+//	{
+//		return dataSeries;
+//	}
+//	
+//	/**
+//	 * @param series
+//	 */
+//	public void setDataSeries(Object series)
+//	{
+//		dataSeries = series;
+//	}
+
+/**
+ * @return
+ */
+public GraphDataSeries getGraphDataSeries() {
+	return gds;
+}
+
+/**
+ * @param series
+ */
+public void setGraphDataSeries(GraphDataSeries series) {
+	gds = series;
+}
+
 	/**
 	 * @return
 	 */
-	public Object getDataSeries()
-	{
-		return dataSeries;
+	public Vector getTimeAndValueVector() {
+		return timeAndValueVector;
 	}
-	
+
 	/**
-	 * @param series
+	 * @param vector
 	 */
-	public void setDataSeries(Object series)
-	{
-		dataSeries = series;
+	public void setTimeAndValueVector(Vector vector) {
+		timeAndValueVector = vector;
 	}
 
 }

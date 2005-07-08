@@ -1,5 +1,7 @@
 package com.cannontech.graph.menu;
 
+import java.awt.Font;
+
 import com.cannontech.database.db.graph.GraphRenderers;
 
 /**
@@ -12,6 +14,7 @@ public class ViewMenu extends javax.swing.JMenu {
 	private javax.swing.ButtonGroup graphViewButtonGroup = null;
 	private javax.swing.JMenuItem ivjRefreshMenuItem = null;
 	private javax.swing.JSeparator ivjViewSeparator = null;
+	private javax.swing.JRadioButtonMenuItem ivjDefaultRadioButtonItem = null;
 	private javax.swing.JRadioButtonMenuItem ivjLineAreaRadioButtonItem = null;
 	private javax.swing.JRadioButtonMenuItem ivjLineAreaShapesRadioButtonItem = null;
 	private javax.swing.JRadioButtonMenuItem ivjLineShapesRadioButtonItem = null;
@@ -159,6 +162,28 @@ public javax.swing.JRadioButtonMenuItem getLineAreaShapesRadioButtonItem() {
 		}
 	}
 	return ivjLineAreaShapesRadioButtonItem;
+}
+/**
+ * Return the LineGraphRadioButtonItem property value.
+ * @return javax.swing.JRadioButtonMenuItem
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+public javax.swing.JRadioButtonMenuItem getDefaultRadioButtonItem() {
+	if (ivjDefaultRadioButtonItem == null) {
+		try {
+			ivjDefaultRadioButtonItem = new javax.swing.JRadioButtonMenuItem();
+			ivjDefaultRadioButtonItem.setName("DefaultRadioButtonItem");
+			ivjDefaultRadioButtonItem.setSelected(true);
+			ivjDefaultRadioButtonItem.setText("Default (By Serie)");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjDefaultRadioButtonItem;
 }
 /**
  * Return the LineGraphRadioButtonItem property value.
@@ -344,6 +369,7 @@ private void handleException(java.lang.Throwable exception) {
 private void initialize() {
 	try {
 		// user code begin {1}
+		getButtonGroup().add(getDefaultRadioButtonItem());
 		getButtonGroup().add(getLineRadioButtonItem());
 		getButtonGroup().add(getLineShapesRadioButtonItem());
 		getButtonGroup().add(getLineAreaRadioButtonItem());
@@ -360,6 +386,7 @@ private void initialize() {
 		setName("ViewMenu");
 		setMnemonic('v');
 		setText("View");
+		add(getDefaultRadioButtonItem());
 		add(getLineRadioButtonItem());
 		add(getLineShapesRadioButtonItem());
 		add(getLineAreaRadioButtonItem());
@@ -444,7 +471,7 @@ private void setSelectedView(int viewType)
 			break;
 
 		default :
-			getLineRadioButtonItem().setSelected(true);
+			getDefaultRadioButtonItem().setSelected(true);
 			break;
 	}
 }

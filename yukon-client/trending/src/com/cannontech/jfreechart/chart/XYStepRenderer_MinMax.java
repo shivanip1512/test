@@ -86,21 +86,21 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 		if (!getItemVisible(series, item)) {
 			return;   
 		}
-		
-        // get the data point...
-        Number x1 = dataset.getX(series, item);
-        Number y1 = dataset.getY(series, item);
-        if (y1 == null) {
-            return;
-        }
 
-        double transX1 = domainAxis.valueToJava2D(x1.doubleValue(), dataArea, plot.getDomainAxisEdge());
-        double transY1 = rangeAxis.valueToJava2D(y1.doubleValue(), dataArea, plot.getRangeAxisEdge());
+		// get the data point...
+		double x1 = dataset.getXValue(series, item);
+		double y1 = dataset.getYValue(series, item);
+		if (Double.isNaN(y1)) {
+			return;
+		}
+
+		double transX1 = domainAxis.valueToJava2D(x1, dataArea, plot.getDomainAxisEdge());
+		double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
 		
 		PlotOrientation orientation = plot.getOrientation();
 		
 		boolean drawShape = false;
-		if( this.plotAllValues || isPlotMinOrMaxValue(y1.doubleValue(), series))
+		if( this.plotAllValues || isPlotMinOrMaxValue(y1, series))
 		{
 			Shape shape = getItemShape(series, item);
 			if (orientation == PlotOrientation.HORIZONTAL) {
@@ -111,7 +111,7 @@ public class XYStepRenderer_MinMax extends XYStepRenderer
 			}
 			if (shape.intersects(dataArea)) {
 				//draw with opposite fill, so if all shapes is selected, we can see a difference
-				if (plotAllValues && isPlotMinOrMaxValue(y1.doubleValue(), series)){
+				if (plotAllValues && isPlotMinOrMaxValue(y1, series)){
 					g2.fill(shape);
 				}
 				else {

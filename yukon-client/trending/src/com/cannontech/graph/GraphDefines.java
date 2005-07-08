@@ -12,14 +12,16 @@ import java.text.SimpleDateFormat;
 import org.jfree.data.time.TimePeriodValue;
 import org.jfree.data.time.TimeSeriesDataItem;
 
+import com.cannontech.common.util.Pair;
+
 public interface GraphDefines 
-{	
-	public static java.util.Comparator timeSeriesDataItemValueComparator = new java.util.Comparator()
+{
+	public static java.util.Comparator timeAndValuePair_ValueComparator = new java.util.Comparator()
 	{
 		public int compare(Object o1, Object o2)
 		{
-			Double thisVal = (Double)((TimeSeriesDataItem)o1).getValue();
-			Double anotherVal = (Double)((TimeSeriesDataItem)o2).getValue();
+			Double thisVal = (Double)((Pair)o1).getSecond();
+			Double anotherVal = (Double)((Pair)o2).getSecond();
 			return (thisVal.doubleValue()>anotherVal.doubleValue() ? -1 : (thisVal.doubleValue()==anotherVal.doubleValue() ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -27,20 +29,20 @@ public interface GraphDefines
 			return false;
 		}
 	};
-	
-	public static java.util.Comparator timeSeriesDataItemPeriodComparator = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2)
+
+	public static java.util.Comparator timeAndValuePair_TimeComparator = new java.util.Comparator()
 		{
-			Date thisVal = ((TimePeriodValue)o1).getPeriod().getStart();
-			Date anotherVal = ((TimePeriodValue)o2).getPeriod().getStart();
-			return (thisVal.getTime()>anotherVal.getTime() ? -1 : (thisVal.getTime()==anotherVal.getTime() ? 0 : 1));
-		}
-		public boolean equals(Object obj)
-		{
-			return false;
-		}
-	};
+			public int compare(Object o1, Object o2)
+			{
+				Long thisVal = (Long)((Pair)o1).getFirst();
+				Long anotherVal = (Long)((Pair)o2).getFirst();
+				return (thisVal.longValue()>anotherVal.longValue() ? -1 : (thisVal.longValue()==anotherVal.longValue() ? 0 : 1));
+			}
+			public boolean equals(Object obj)
+			{
+				return false;
+			}
+		};
 
 	public String TITLE_HEADER_BGCOLOR = "#FFFFFF";
 	public String HEADER_CELL_BGCOLOR = "#999966";

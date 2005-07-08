@@ -5,11 +5,13 @@ package com.cannontech.graph.buffer.html;
  * Creation date: (1/31/2001 1:35:09 PM)
  * @author: 
  */
+import java.util.Arrays;
 import java.util.TreeMap;
 
 import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeSeriesDataItem;
 
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -282,18 +284,24 @@ public class TabularHtml extends HTMLBuffer
 				//Sort each dataItemArray. (no primary point coincidentals)
 				String timeString = "";
 				String valueString = "";
-				if (serie.getDataItemsMap() != null )
+//				if (serie.getDataItemsMap() != null )
+				if( serie.getTimeAndValueVector() != null)
 				{
-					Object [] dataItemsArray = serie.getDataItemsMap().values().toArray();
-				
-					java.util.Arrays.sort(dataItemsArray, timeSeriesDataItemValueComparator);
+//					Object [] dataItemsArray = serie.getDataItemsMap().values().toArray();
+					Object [] timeAndValueArray = serie.getTimeAndValueVector().toArray();
+//					java.util.Arrays.sort(dataItemsArray, timeSeriesDataItemValueComparator);
+					Arrays.sort(timeAndValueArray, timeAndValuePair_ValueComparator);
 		
-					for (int j = 0; j < dataItemsArray.length; j++)
+//					for (int j = 0; j < dataItemsArray.length; j++)
+					for (int j = 0; j < timeAndValueArray.length; j++)
 					{
-						TimeSeriesDataItem item = (TimeSeriesDataItem)dataItemsArray[j];
-						long ts = item.getPeriod().getStart().getTime();
-						Double value = (Double)item.getValue();
-						timeString += tabularTimeFormat.format(new java.util.Date(ts)) + "<br>";
+						Pair timeAndValue = (Pair)timeAndValueArray[j];
+//						TimeSeriesDataItem item = (TimeSeriesDataItem)dataItemsArray[j];
+//						long ts = item.getPeriod().getStart().getTime();
+						Long ts = (Long)timeAndValue.getFirst();
+//						Double value = (Double)item.getValue();
+						Double value = ((Double)timeAndValue.getSecond());
+						timeString += tabularTimeFormat.format(new java.util.Date(ts.longValue())) + "<br>";
 						valueString += valueFormat.format(value) + "<br>";
 					}
 				}
