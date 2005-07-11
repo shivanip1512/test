@@ -140,25 +140,34 @@ public Object getValue(Object o)
 	
 	String programStart = getJTextFieldNotifyActiveOffset().getText();
 	String programStop = getJTextFieldNotifyInactiveOffset().getText();
-
-	if(programStart.length() > 0)
+	
+	if(getJCheckBoxEnableStart().isSelected())
 	{
-		Integer numStart = new Integer(programStart);
-		
-		if(getJCheckBoxEnableStart().isSelected())
+		if(programStart.length() > 0)
+		{
+			Integer numStart = new Integer(programStart);
 			program.getDirectProgram().setNotifyActiveOffset( new Integer( numStart.intValue() * 60 ) );
+		}
 		else
-			program.getDirectProgram().setNotifyActiveOffset(new Integer(-1));
-	}
-	if(programStop.length() > 0)
+		{
+			program.getDirectProgram().setNotifyActiveOffset( new Integer(0));
+		}
+	}		
+	else
+		program.getDirectProgram().setNotifyActiveOffset(new Integer(-1));
+
+	if(getJCheckBoxEnableStop().isSelected())
 	{
-		Integer numStop = new Integer(programStop);
-		
-		if(getJCheckBoxEnableStop().isSelected())
+		if(programStop.length() > 0)
+		{
+			Integer numStop = new Integer(programStop);
 			program.getDirectProgram().setNotifyInactiveOffset( new Integer( numStop.intValue() * 60 ) );
+		}
 		else
-			program.getDirectProgram().setNotifyInactiveOffset(new Integer(-1));
+			program.getDirectProgram().setNotifyInactiveOffset(new Integer(0));
 	}
+	else
+		program.getDirectProgram().setNotifyInactiveOffset(new Integer(-1));
 	
 	return o;
 	
