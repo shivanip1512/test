@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/04/22 19:00:28 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/07/11 20:06:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -344,15 +344,14 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        // 2 byte demand value.  Upper 2 bits are error indicators.
-        pulses = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
+        pulses = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
 
         demand_interval = getDemandInterval();
 
         //  look for first defined DEMAND accumulator
         pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
 
-        if( checkDemandQuality( pulses, quality, bad_data ) )
+        if( checkDemandQuality(pulses, quality, bad_data) )
         {
             Value = 0.0;
         }

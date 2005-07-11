@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/07/11 20:06:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -840,8 +840,7 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        // 2 byte demand value.  Upper 2 bits are error indicators.
-        pulses = MAKEUSHORT(DSt->Message[1], (DSt->Message[0] & 0x3f) );
+        pulses = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
 
         demand_interval = getDemandInterval();
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/07/11 20:06:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2196,9 +2196,6 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     INT pnt_offset, byte_offset;
     ULONG i,x;
     INT pid;
-    INT Error;
-    USHORT StatusData[8];
-    USHORT SaveCount;
     RWCString resultString;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
@@ -2249,15 +2246,12 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         {
             byte_offset = ((pnt_offset - 1) * 2) + 1;          // First byte is the status byte.
 
-            Error = (DSt->Message[byte_offset] & 0xc0);
-
-            // 2 byte demand value.  Upper 2 bits are error indicators.
-            pulses = MAKEUSHORT(DSt->Message[byte_offset + 1], (DSt->Message[byte_offset] & 0x3f) );
+            pulses = MAKEUSHORT(DSt->Message[byte_offset + 1], DSt->Message[byte_offset]);
 
             //  look for the demand accumulator point for this offset
             pPoint = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( pnt_offset, DemandAccumulatorPointType );
 
-            if( checkDemandQuality( pulses, quality, bad_data ) )
+            if( checkDemandQuality(pulses, quality, bad_data) )
             {
                 Value = 0.0;
             }
@@ -2277,24 +2271,10 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
             // handle demand data here
             if( pPoint != NULL)
             {
-                if(Error == 0)
-                {
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
-                }
-                else
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - error indicated on MCT \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                         ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    resultString = "Error indicated on MCT " + getName() + " / " + pPoint->getName() + "  Error " + CtiNumStr(Error);
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
-                }
-
-                if(pData != NULL)
+                if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString))
                 {
                     pData->setTime( pointTime );
 
@@ -2302,7 +2282,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     pData = NULL;  // We just put it on the list...
 
                     //  clear out any demand input 1 messages we may have appended - we have a real one
-                    ReturnMsg->setResultString( RWCString() );
+                    ReturnMsg->setResultString("");
                 }
             }
             //  else send the raw pulses for offset 1
@@ -2313,7 +2293,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
                     resultString += "\n";
 
                 resultString += getName() + " / Demand " + CtiNumStr(pnt_offset) + " = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
-                ReturnMsg->setResultString( resultString );
+                ReturnMsg->setResultString(resultString);
             }
         }
     }
