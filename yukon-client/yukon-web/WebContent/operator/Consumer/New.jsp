@@ -243,6 +243,15 @@ function confirmCancel() {
                           <input type="text" name="Email" maxlength="50" size="24" value="<%= emailAddr %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_ALT_TRACK_NUM %>" defaultvalue="Alt Tracking #"/> </div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getAltTrackingNumber() : "" %>" onchange="setContentChanged(true)">
+                        </td>
+                      </tr>
+                      <tr> 
 <cti:checkRole roleid="<%= com.cannontech.roles.operator.OddsForControlRole.ROLEID %>">
                       <tr> 
                         <td width="90" class="TableCell">&nbsp;</td>
