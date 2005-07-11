@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.notif.server.NotificationServer
-Class-Path: ./ common.jar log4j-1.2.4.jar rwav.jar vvr_tools.jar yukonappserver.jar j2ee.jar jtds.jar jdom.jar SqlServer.jar classes12.jar ../log/ ../export/
+Class-Path: ./ common.jar log4j-1.2.4.jar rwav.jar vvr_tools.jar yukonappserver.jar j2ee.jar jtds.jar jdom.jar SqlServer.jar backport-util-concurrent/backport-util-concurrent.jar classes12.jar ../log/ ../export/
