@@ -3,10 +3,14 @@ package com.cannontech.notif.outputs;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.log4j.Level;
 import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -45,11 +49,21 @@ public class NotificationTransformer {
     
     public Document transform(Notification notif) throws TransformException {
         try {
+
             Document result;
             InputStream styleSheet = getStyleSheet(notif.getMessageType(),
                                                    _outputType);
             XSLTransformer trans = new XSLTransformer(styleSheet);
             result = trans.transform(notif.getDocument());
+            
+            if (CTILogger.getLogLevel().isGreaterOrEqual(Level.DEBUG)) {
+                CTILogger.debug("Transforming notification");
+                CTILogger.debug("  Input document: " + notif.getXmlString());
+
+                XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+                String xmlDebug = outputter.outputString(result);
+                CTILogger.debug("  Output document: " + xmlDebug);
+            }
             return result;
         } catch (XSLTransformException e) {
             throw new TransformException("Unable to transform " + notif + " to " + _outputType + ".",e);
@@ -58,6 +72,7 @@ public class NotificationTransformer {
 
     private InputStream getStyleSheet(String messageType, String outputType) throws TransformException {
         String urlString = _rootDirectory + messageType + "_" + outputType + ".xsl";
+        CTILogger.debug("  Using stylesheet from: " + urlString);
         try {
             URL url = new URL(urlString);
             return url.openStream();
