@@ -60,6 +60,7 @@ public interface ConsumerInfoRole {
 	public static final int WEB_LABEL_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 43;
 	public static final int WEB_LABEL_INTERVAL_DATA = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 44;
 	public static final int WEB_LABEL_THERM_SAVED_SCHED = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 45;
+	public static final int WEB_LABEL_ALT_TRACK_NUM = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 46;
 	public static final int WEB_TITLE_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 50;
 	public static final int WEB_TITLE_PROGRAM_CTRL_HIST = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 51;
 	public static final int WEB_TITLE_PROGRAM_CTRL_SUM = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 52;
