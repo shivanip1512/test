@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/06/10 21:10:48 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/07/11 18:26:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1043,6 +1043,24 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
+    switch( _pil_info.protocol_command )
+    {
+        case Protocol::DNPInterface::Command_Class0Read:
+        case Protocol::DNPInterface::Command_Class1230Read:
+        {
+            setDNPScanPending(ScanRateIntegrity, false);
+            break;
+        }
+        case Protocol::DNPInterface::Command_Class123Read:
+        case Protocol::DNPInterface::Command_Class1Read:
+        case Protocol::DNPInterface::Command_Class2Read:
+        case Protocol::DNPInterface::Command_Class3Read:
+        {
+            setDNPScanPending(ScanRateGeneral, false);
+            break;
+        }
+    }
+
     if( pPIL != NULL )
     {
         CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -1111,6 +1129,39 @@ void DNP::DecodeDatabaseReader(RWDBReader &rdr)
        _dnp.setOptions(Protocol::DNPInterface::Options_DatalinkConfirm);
    }
 }
+
+
+INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT nRet = NoMethod;
+
+    //  if it's a control open/close request without an offset
+    if( (parse.getCommand() == ControlRequest) && !(parse.getFlags() & CMD_FLAG_OFFSET) &&
+        (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
+    {
+        if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+        {
+            pReq->setCommandString("control open offset 1");
+        }
+        else // if( parse.getFlags() & CMD_FLAG_CTL_CLOSE ) - implied because of the above if condition
+        {
+            pReq->setCommandString("control close offset 1");
+        }
+
+        CtiCommandParser new_parse(pReq->CommandString());
+
+        //  NOTE the new parser I'm passing in - i've already touched the pReq string, so
+        //    i need to seal the deal with a new parse
+        nRet = Inherited::ExecuteRequest(pReq, new_parse, OutMessage, vgList, retList, outList);
+    }
+    else
+    {
+        nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    return nRet;
+}
+
 
 }
 }
