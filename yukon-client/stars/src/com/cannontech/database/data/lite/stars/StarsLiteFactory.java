@@ -335,6 +335,7 @@ public class StarsLiteFactory {
 		liteCustomer.setTimeZone( customer.getCustomer().getTimeZone() );
 		liteCustomer.setCustomerNumber( customer.getCustomer().getCustomerNumber());
 		liteCustomer.setRateScheduleID( customer.getCustomer().getRateScheduleID().intValue());
+		liteCustomer.setAltTrackingNumber( customer.getCustomer().getAltTrackingNumber());
 		
 		int[] contactIDs = customer.getCustomerContactIDs();
 		for (int i = 0; i < contactIDs.length; i++)
@@ -807,6 +808,7 @@ public class StarsLiteFactory {
 		customer.setTimeZone( liteCustomer.getTimeZone() );
 		customer.setCustomerNumber( liteCustomer.getCustomerNumber() );
 		customer.setRateScheduleID( new Integer(liteCustomer.getRateScheduleID()) );
+		customer.setAltTrackingNumber( liteCustomer.getAltTrackingNumber() );
 	}
 	
 	public static void setCICustomerBase(com.cannontech.database.data.customer.CICustomerBase ci, LiteCICustomer liteCI) {
@@ -1419,6 +1421,7 @@ public class StarsLiteFactory {
 		starsAccount.setTimeZone( liteCustomer.getTimeZone() );
 		starsAccount.setCustomerNumber( liteCustomer.getCustomerNumber() );
 		starsAccount.setRateScheduleID(liteCustomer.getRateScheduleID() );
+		starsAccount.setAltTrackingNumber( liteCustomer.getAltTrackingNumber() );
 		starsAcctInfo.setStarsCustomerAccount( starsAccount );
 		
 		StreetAddress streetAddr = new StreetAddress();

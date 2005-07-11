@@ -229,6 +229,7 @@ public class StarsFactory {
 			newAccount.setTimeZone( account.getTimeZone() );
 			newAccount.setCustomerNumber( account.getCustomerNumber() );
 			newAccount.setRateScheduleID( account.getRateScheduleID() );
+			newAccount.setAltTrackingNumber( account.getAltTrackingNumber() );
             
 			return newAccount;
 		}
@@ -271,6 +272,7 @@ public class StarsFactory {
 		newAccount.setPrimaryContact( (PrimaryContact)newStarsCustomerContact(PrimaryContact.class) );
 		newAccount.setCustomerNumber(CtiUtilities.STRING_NONE);
 		newAccount.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
+		newAccount.setAltTrackingNumber(CtiUtilities.STRING_NONE);
         
 		Substation sub = new Substation();
 		sub.setEntryID( CtiUtilities.NONE_ZERO_ID );

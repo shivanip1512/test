@@ -72,7 +72,7 @@ public class NewCustAccountAction implements ActionBase {
 			if (req.getParameter("RateSchedule") != null)
 				account.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
 			if (req.getParameter("AltTrackNum") != null)
-				account.setCustomerNumber( req.getParameter("AltTrackNum") );
+				account.setAltTrackingNumber( req.getParameter("AltTrackNum") );
 			account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			account.setPropertyNumber( req.getParameter("PropNo") );
 			account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );

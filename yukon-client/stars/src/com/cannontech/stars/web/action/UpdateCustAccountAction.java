@@ -70,6 +70,8 @@ public class UpdateCustAccountAction implements ActionBase {
 				updateAccount.setCustomerNumber( req.getParameter("CustomerNumber") );
 			if (req.getParameter("RateSchedule") != null)
 				updateAccount.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
+			if (req.getParameter("AltTrackNum") != null)
+				updateAccount.setAltTrackingNumber( req.getParameter("AltTrackNum") );
 			updateAccount.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 
 			updateAccount.setPropertyNumber( req.getParameter("PropNo") );
@@ -295,6 +297,13 @@ public class UpdateCustAccountAction implements ActionBase {
 			{
 				// Rate schedule ID has changed
 				customerDB.setRateScheduleID(new Integer(updateAccount.getRateScheduleID()));
+				altCustFieldChanged = true;
+			}
+			
+			if (liteCustomer.getAltTrackingNumber().compareTo( updateAccount.getAltTrackingNumber() ) != 0) 
+			{
+				// Customer number has changed
+				customerDB.setAltTrackingNumber(updateAccount.getAltTrackingNumber());
 				altCustFieldChanged = true;
 			}
 			
