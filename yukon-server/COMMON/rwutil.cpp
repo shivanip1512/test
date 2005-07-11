@@ -72,3 +72,16 @@ RWDBInserter& operator<<(RWDBInserter& ins, const ptime& p)
     return ins << dbdt;
 }
 
+RWvostream& operator<<(RWvostream &strm, bool b)
+{
+    strm << (int) b;
+    return strm;
+}
+
+RWvistream& operator>>(RWvistream &strm, bool& b)
+{
+    int i;
+    strm >> i;
+    b = (bool) i;
+    return strm;
+}

@@ -45,6 +45,12 @@ IM_EX_CTIBASE RWDBInserter &operator<<(RWDBInserter &ins, const ptime &p);
 IM_EX_CTIBASE RWDBReader   &operator>>(RWDBReader   &rdr,       ptime &p);
 
 /*
+ * RW stream operators.  seralize bool
+ */
+IM_EX_CTIBASE RWvostream& operator<<(RWvostream &strm, bool b);
+IM_EX_CTIBASE RWvistream& operator>>(RWvistream &strm, bool& b);
+
+/*
  * RW stream operators.  serialize stl containers
  */
 template <class T>
