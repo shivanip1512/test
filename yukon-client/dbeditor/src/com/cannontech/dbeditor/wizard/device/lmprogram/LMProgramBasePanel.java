@@ -406,7 +406,7 @@ private javax.swing.JComboBox getJComboBoxOperationalState() {
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelActualProgType() {
+public javax.swing.JLabel getJLabelActualProgType() {
 	if (ivjJLabelActualProgType == null) {
 		try {
 			ivjJLabelActualProgType = new javax.swing.JLabel();

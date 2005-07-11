@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:21:12 PM)
@@ -179,6 +181,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 	else if( currentInputPanel == getLmProgramTypePanel() )
 	{
 		getLmProgramBasePanel().setIsAWizardOp(true);
+		getLmProgramBasePanel().getJLabelActualProgType().setText(PAOGroups.getPAOTypeString(getLmProgramTypePanel().getLMSelectedType()));
 		if( getLmProgramTypePanel().getLMSelectedType() == com.cannontech.database.data.pao.PAOGroups.LM_DIRECT_PROGRAM )
 			getLmProgramBasePanel().setTriggerThresholdVisible(true);
 		else
