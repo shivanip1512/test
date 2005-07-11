@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/06/29 19:46:21 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/07/11 13:58:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,6 +230,7 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
             case TYPE_SNPP:
             case TYPE_WCTP:
             case TYPE_TAPTERM:
+            case TYPE_TNPP:
                 {
                     CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
@@ -598,6 +599,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
+        case TYPE_TNPP:
             {
                 CtiDeviceTapPagingTerminal *TapDev = (CtiDeviceTapPagingTerminal *)(_transmitterDevice.get());
 
