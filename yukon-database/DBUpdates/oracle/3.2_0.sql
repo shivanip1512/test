@@ -201,8 +201,13 @@ alter table Customer modify RateScheduleID number not null;
 
 alter table Customer add constraint FK_Cust_YkLs foreign key (RateScheduleID) references YukonListEntry (EntryID);
 
+insert into YukonRoleProperty values(-20846,-201,'Label Alt Tracking #','Alt Tracking #','Text of the alternate tracking number label on a customer account');
+insert into yukongrouprole values (-2146,-303,-201,-20846,'(none)');
+insert into yukongrouprole values (-846,-301,-201,-20846,'(none)');
 
-
+alter table Customer add AltTrackNum varchar(64);
+update Customer set AltTrackNum = '(none)';
+alter table Customer modify AltTrackNum varchar(64) not null;
 
 
 
