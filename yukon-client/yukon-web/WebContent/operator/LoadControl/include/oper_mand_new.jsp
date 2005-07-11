@@ -118,8 +118,6 @@ function confirm_form(f) {
             <td class="TableCell"><struts:text property="notifydate" size="10" pattern="@date"/> 
             </td>
           </tr>
-          <!--<tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifydate") %></center>
-            </cti:errormsg> </tr> -->
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Notify Time:</div>
@@ -133,8 +131,6 @@ function confirm_form(f) {
               </table>
             </td>
           </tr> 
-          <!-- <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("notifytime") %></center> 
-            </cti:errormsg> </tr> -->
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Curtail Date:</div>
@@ -142,8 +138,6 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="curtaildate" size="10" pattern="@date"/> 
             </td>
           </tr>
-          <!-- <tr> <cti:errormsg colSpan="2"><center><%= checker.getError("curtaildate") %></center> 
-            </cti:errormsg> </tr> -->
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Curtail Time: </div>
@@ -157,8 +151,6 @@ function confirm_form(f) {
               </table>
             </td> 
           </tr>
-          <!-- <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("curtailtime") %></center>
-            </cti:errormsg> </tr> -->
           <tr> 
             <td width="150" class="TableCell"> 
               <div align="right">Duration (Hour):</div>
@@ -166,8 +158,6 @@ function confirm_form(f) {
             <td width="150" class="TableCell"><struts:text property="duration" size="10" pattern="@int"/> 
             </td>
           </tr>
-          <!-- <tr> <cti:errormsg colSpan="2"> <center><%= checker.getError("duration") %></center></cti:errormsg> 
-          </tr> -->
         </table>
         <br>
         <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="MainText">
