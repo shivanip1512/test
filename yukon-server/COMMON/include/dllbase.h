@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/04/15 18:25:17 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/07/11 20:08:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,8 @@ IM_EX_CTIBASE extern RWCString      dbName;
 IM_EX_CTIBASE extern RWCString      dbUser;
 IM_EX_CTIBASE extern RWCString      dbPassword;
 IM_EX_CTIBASE extern RWCString      VanGoghMachine;
+IM_EX_CTIBASE extern RWCString      NotificationMachine;
+IM_EX_CTIBASE extern int            NotificationPort;
 IM_EX_CTIBASE extern RWCString      gSMTPServer;
 IM_EX_CTIBASE extern RWCString      gLogDirectory;
 IM_EX_CTIBASE extern RWCString      gEmailFrom;

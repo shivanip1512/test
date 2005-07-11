@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/25 21:38:58 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/07/11 20:08:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,8 @@ IM_EX_CTIBASE RWCString     dbName("yukon");
 IM_EX_CTIBASE RWCString     dbUser("yukon");
 IM_EX_CTIBASE RWCString     dbPassword("yukon");
 IM_EX_CTIBASE RWCString     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
+IM_EX_CTIBASE RWCString     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
+IM_EX_CTIBASE INT           NotificationPort = NOTIFICATIONNEXUS;
 IM_EX_CTIBASE RWCString     gSMTPServer("mail");
 IM_EX_CTIBASE RWCString     gEmailFrom;
 IM_EX_CTIBASE RWCString     gLogDirectory("\\yukon\\server\\log");
@@ -120,6 +122,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 DLLEXPORT void InitYukonBaseGlobals(void)
 {
     RWCString str;
+    int int_val;
 
     if( !(str = gConfigParms.getValueAsString("DB_DEBUGLEVEL")).isNull() )
     {
@@ -142,6 +145,26 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DISPATCH_MACHINE   failed : " << endl;
     }
 
+    if((str = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "")) != "")
+    {
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE  found : " << str << endl;
+        NotificationMachine = str;
+    }
+    else
+    {
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_MACHINE   failed : " << endl;
+    }
+
+    if((int_val = gConfigParms.getValueAsInt("NOTIFICATION_PORT", -1)) != -1)
+    {
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   found : " << int_val << endl;
+        NotificationPort = int_val;
+    }
+    else
+    {
+        if(DebugLevel & 0x0001) cout << "Configuration Parameter NOTIFICATION_PORT   failed : " << endl;
+    }
+        
     if( !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).isNull() )
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL   found : " << str << endl;
