@@ -1172,6 +1172,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     RWCRExpr    time("time( |$)");  //  only match "time" as a single word
     RWCRExpr    multiplier("mult.* *(kyz *[123])?");
     RWCRExpr    address("address (group|uniq)");
+    RWCRExpr    lp_channel(" lp channel [0-9]+");
 
     char *p;
 
@@ -1262,6 +1263,17 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
                 {
                     _cmd["rawlen"] = CtiParseValue( atoi( temp2.data() ) );
                 }
+            }
+        }
+
+        if(!(CmdStr.match("lp")).isNull())
+        {
+            if(!(token = CmdStr.match(lp_channel)).isNull())
+            {
+                RWCTokenizer cmdtok(token);
+                cmdtok();  //  lp
+                cmdtok();  //  channel
+                _cmd["lp_channel"] = CtiParseValue(atoi(cmdtok().data()));
             }
         }
 
