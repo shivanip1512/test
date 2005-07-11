@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/27/2005 1:04:39 PM                         */
+/* Created on:     7/11/2005 1:12:42 PM                         */
 /*==============================================================*/
 
 
@@ -371,9 +371,9 @@ drop table OperatorLoginGraphList cascade constraints;
 
 drop table PAOExclusion cascade constraints;
 
-drop table PAOScheduleAssignmentTable cascade constraints;
+drop table PAOSchedule cascade constraints;
 
-drop table PAOScheduleTable cascade constraints;
+drop table PAOScheduleAssignment cascade constraints;
 
 drop table PAOowner cascade constraints;
 
@@ -1058,10 +1058,12 @@ create table Customer  (
    PrimaryContactID     NUMBER                          not null,
    CustomerTypeID       NUMBER                          not null,
    TimeZone             VARCHAR2(40)                    not null,
-   CustomerNumber       VARCHAR2(64)                    not null
+   CustomerNumber       VARCHAR2(64)                    not null,
+   RateScheduleID       NUMBER                          not null,
+   AltTrackNum          VARCHAR2(64)                    not null
 );
 
-INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)' );
+INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)', 0, '(none)' );
 alter table Customer
    add constraint PK_CUSTOMER primary key (CustomerID);
 
@@ -2409,7 +2411,7 @@ create table DynamicPAOInfo  (
    EntryID              NUMBER                          not null,
    PAObjectID           NUMBER                          not null,
    Owner                VARCHAR2(64)                    not null,
-   Info                 VARCHAR2(128)                   not null,
+   InfoKey              VARCHAR2(128)                   not null,
    Value                VARCHAR2(128)                   not null
 );
 
@@ -3347,7 +3349,7 @@ create table LMProgramDirect  (
    Heading              VARCHAR2(40)                    not null,
    MessageHeader        VARCHAR2(160)                   not null,
    MessageFooter        VARCHAR2(160)                   not null,
-   TriggerOffset        SMALLINT                        not null,
+   TriggerOffset        FLOAT                           not null,
    RestoreOffset        FLOAT                           not null
 );
 
@@ -3621,30 +3623,30 @@ create unique index Indx_PAOExclus on PAOExclusion (
 );
 
 /*==============================================================*/
-/* Table: PAOScheduleAssignmentTable                            */
+/* Table: PAOSchedule                                           */
 /*==============================================================*/
-create table PAOScheduleAssignmentTable  (
-   EventID              NUMBER                          not null,
-   ScheduleID           NUMBER                          not null,
-   PaoID                NUMBER                          not null,
-   Command              VARCHAR2(128)                   not null
-);
-
-alter table PAOScheduleAssignmentTable
-   add constraint PK_PAOSCHEDULEASSIGNMENTTABLE primary key (EventID, ScheduleID);
-
-/*==============================================================*/
-/* Table: PAOScheduleTable                                      */
-/*==============================================================*/
-create table PAOScheduleTable  (
+create table PAOSchedule  (
    ScheduleID           NUMBER                          not null,
    NextRunTime          DATE                            not null,
    LastRunTime          DATE                            not null,
    IntervalRate         NUMBER                          not null
 );
 
-alter table PAOScheduleTable
-   add constraint PK_PAOSCHEDULETABLE primary key (ScheduleID);
+alter table PAOSchedule
+   add constraint PK_PAOSCHEDULE primary key (ScheduleID);
+
+/*==============================================================*/
+/* Table: PAOScheduleAssignment                                 */
+/*==============================================================*/
+create table PAOScheduleAssignment  (
+   EventID              NUMBER                          not null,
+   ScheduleID           NUMBER                          not null,
+   PaoID                NUMBER                          not null,
+   Command              VARCHAR2(128)                   not null
+);
+
+alter table PAOScheduleAssignment
+   add constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID, ScheduleID);
 
 /*==============================================================*/
 /* Table: PAOowner                                              */
@@ -4614,6 +4616,7 @@ insert into yukongrouprole values (-842,-301,-201,-20842,'(none)');
 insert into yukongrouprole values (-843,-301,-201,-20843,'(none)');
 insert into yukongrouprole values (-844,-301,-201,-20844,'(none)');
 insert into yukongrouprole values (-845,-301,-201,-20845,'(none)');
+insert into yukongrouprole values (-846,-301,-201,-20846,'(none)');
 
 insert into yukongrouprole values (-850,-301,-201,-20850,'(none)');
 insert into yukongrouprole values (-851,-301,-201,-20851,'(none)');
@@ -4902,6 +4905,7 @@ insert into yukongrouprole values (-2142,-303,-201,-20842,'(none)');
 insert into yukongrouprole values (-2143,-303,-201,-20843,'(none)');
 insert into yukongrouprole values (-2144,-303,-201,-20844,'(none)');
 insert into yukongrouprole values (-2145,-303,-201,-20845,'(none)');
+insert into yukongrouprole values (-2146,-303,-201,-20846,'(none)');
 
 insert into yukongrouprole values (-2150,-303,-201,-20850,'(none)');
 insert into yukongrouprole values (-2151,-303,-201,-20851,'(none)');
@@ -5362,7 +5366,7 @@ insert into YukonListEntry values (1752,1025,0,'Poor (0-3)"',0);
 insert into YukonListEntry values (1753,1025,0,'Fair (3-5)"',0);
 insert into YukonListEntry values (1754,1025,0,'Average (6-8)"',0);
 insert into YukonListEntry values (1755,1025,0,'Good (9-11)"',0);
-insert into YukonListEntry values (1756,1025,0,'Excellent (12+)"',0);
+insert into YukonListEntry values (1756,1025,0,'Excellant (12+)"',0);
 insert into YukonListEntry values (1760,1026,0,' ',0);
 insert into YukonListEntry values (1761,1026,0,'Poor',0);
 insert into YukonListEntry values (1762,1026,0,'Fair',0);
@@ -5399,6 +5403,13 @@ insert into YukonListEntry values (1811,1031,0,'Propane',0);
 insert into YukonListEntry values (1812,1031,0,'Electric',0);
 insert into YukonListEntry values (1813,1031,0,'Natural Gas',0);
 insert into YukonListEntry values (1814,1031,0,'Oil',0);
+
+insert into YukonListEntry values (1901,1065,0,'J',3601);
+insert into YukonListEntry values (1902,1065,1,'PS',3602);
+insert into YukonListEntry values (1903,1065,2,'Power Service Only',3603);
+insert into YukonListEntry values (1904,1065,3,'Power & Lighting Service',3604);
+insert into YukonListEntry values (1905, 1065, 4, 'PP', 3605);
+insert into YukonListEntry values (1906, 1065, 5, 'PT', 3606);
 
 insert into YukonListEntry values (2000,0,0,'Customer List Entry Base',0);
 alter table YukonListEntry
@@ -5567,7 +5578,7 @@ insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of sec
 
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
-insert into YukonRoleProperty values(-1403,-5,'Call Prefix','','Any number or numbers that must be dialed before a call can be placed.');
+insert into YukonRoleProperty values(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
@@ -5726,6 +5737,7 @@ insert into YukonRoleProperty values(-20842,-201,'Label Change Login','Change Lo
 insert into YukonRoleProperty values(-20843,-201,'Label FAQ','FAQ','Text of the FAQ link');
 insert into YukonRoleProperty values(-20844,-201,'Label Interval Data','Interval Data','Text of the interval data link');
 insert into YukonRoleProperty values(-20845,-201,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
+insert into YukonRoleProperty values(-20846,-201,'Label Alt Tracking #','Alt Tracking #','Text of the alternate tracking number label on a customer account');
 
 insert into YukonRoleProperty values(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
 insert into YukonRoleProperty values(-20851,-201,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
@@ -5920,9 +5932,9 @@ insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allow
 insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
 
 /* IVR Role properties */
-insert into YukonRoleProperty values(-80000,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
-insert into YukonRoleProperty values(-80001,-800,'Template Root','','A URL base where the notification templates will be stored (file: or http: are okay).');
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
+insert into YukonRoleProperty values(-80001,-800,'Number of Channels','1','The number of outgoing channels assigned to the specified voice application.');
+insert into YukonRoleProperty values(-80002,-800,'Template Root','http://localhost:8080/template/','A URL base where the notification templates will be stored (file: or http: are okay).');
 alter table YukonRoleProperty
    add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID);
 
@@ -6006,6 +6018,7 @@ insert into YukonSelectionList values (1061,'N','(none)','Irrigation meter locat
 insert into YukonSelectionList values (1062,'N','(none)','Irrigation meter voltage selection','IRRMeterVoltage','Y');
 insert into YukonSelectionList values (1063,'N','(none)','Water heater location selection','WHLocation','Y');
 insert into YukonSelectionList values (1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y');
+insert into YukonSelectionList values (1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y');
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 alter table YukonSelectionList
    add constraint PK_YUKONSELECTIONLIST primary key (ListID);
@@ -6539,6 +6552,10 @@ alter table ContactNotification
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
       references Contact (ContactID);
+
+alter table Customer
+   add constraint FK_Cust_YkLs foreign key (RateScheduleID)
+      references YukonListEntry (EntryID);
 
 alter table Customer
    add constraint FK_Cst_Cnt foreign key (PrimaryContactID)
@@ -7171,11 +7188,11 @@ alter table PAOExclusion
    add constraint FK_PAOEXCLU_REF_PAOEX_YUKONPAO foreign key (ExcludedPaoID)
       references YukonPAObject (PAObjectID);
 
-alter table PAOScheduleAssignmentTable
+alter table PAOScheduleAssignment
    add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
-      references PAOScheduleTable (ScheduleID);
+      references PAOSchedule (ScheduleID);
 
-alter table PAOScheduleAssignmentTable
+alter table PAOScheduleAssignment
    add constraint FK_PAOSch_YukPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
