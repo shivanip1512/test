@@ -20,6 +20,7 @@ public class LiteCustomer extends LiteBase {
 	private String timeZone = null;
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
+	private String altTrackNum = CtiUtilities.STRING_NONE;
 	
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
@@ -54,7 +55,7 @@ public class LiteCustomer extends LiteBase {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 			
 			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
-					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID" +
+					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum" +
 					" FROM " + Customer.TABLE_NAME +
 					" WHERE CustomerID = " + getCustomerID(),
 					conn );
@@ -71,6 +72,7 @@ public class LiteCustomer extends LiteBase {
 			setTimeZone( objs[2].toString() );
 			setCustomerNumber( objs[3].toString() );
 			setRateScheduleID( ((java.math.BigDecimal) objs[4]).intValue() );
+			setAltTrackingNumber( objs[5].toString() );
 			
 			stat = new com.cannontech.database.SqlStatement(
 					"SELECT ca.ContactID " + 
@@ -231,6 +233,16 @@ public class LiteCustomer extends LiteBase {
 	public void setCustomerNumber(String custNum) 
 	{
 		this.customerNumber = custNum;
+	}
+	
+	public String getAltTrackingNumber() 
+	{
+		return altTrackNum;
+	}
+
+	public void setAltTrackingNumber(String altNum) 
+	{
+		this.altTrackNum = altNum;
 	}
 	
 	public int getRateScheduleID() 

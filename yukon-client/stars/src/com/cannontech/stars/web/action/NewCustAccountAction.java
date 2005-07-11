@@ -71,6 +71,8 @@ public class NewCustAccountAction implements ActionBase {
 				account.setCustomerNumber( req.getParameter("CustomerNumber") );
 			if (req.getParameter("RateSchedule") != null)
 				account.setRateScheduleID( Integer.parseInt(req.getParameter("RateSchedule")) );
+			if (req.getParameter("AltTrackNum") != null)
+				account.setCustomerNumber( req.getParameter("AltTrackNum") );
 			account.setAccountNotes( req.getParameter("AcctNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
 			account.setPropertyNumber( req.getParameter("PropNo") );
 			account.setPropertyNotes( req.getParameter("PropNotes").replaceAll(System.getProperty("line.separator"), "<br>") );
@@ -408,6 +410,7 @@ public class NewCustAccountAction implements ActionBase {
 			accountDB.setAccountNotes( starsAccount.getAccountNotes() );
 			customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
 			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
+			customer.getCustomer().setAltTrackingNumber(starsAccount.getAltTrackingNumber());
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         	

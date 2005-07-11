@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustAccount.java,v 1.95 2005/07/07 17:12:43 jdayton Exp $
+ * $Id: StarsCustAccount.java,v 1.96 2005/07/11 15:08:59 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.95 $ $Date: 2005/07/07 17:12:43 $
+ * @version $Revision: 1.96 $ $Date: 2005/07/11 15:08:59 $
 **/
 public abstract class StarsCustAccount implements java.io.Serializable {
 
@@ -80,6 +80,8 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     private java.lang.String _customerNumber;
     
     private int _rateScheduleID;
+    
+	private java.lang.String _altTrackNumber;
 
 
       //----------------/
@@ -322,6 +324,10 @@ public abstract class StarsCustAccount implements java.io.Serializable {
     	return this._rateScheduleID;
     } 
 
+	public java.lang.String getAltTrackingNumber()
+	{
+		return this._altTrackNumber;
+	}
     /**
     **/
     public boolean hasAccountID()
@@ -564,6 +570,11 @@ public abstract class StarsCustAccount implements java.io.Serializable {
 	{
 		this._rateScheduleID = rSched;
 	} //-- void setRateSchedule(java.lang.String) 
+	
+	public void setAltTrackingNumber(java.lang.String altNum)
+	{
+		this._altTrackNumber = altNum;
+	} //-- void setCustomerNumber(java.lang.String) 
     /**
     **/
     public void validate()

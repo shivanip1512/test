@@ -15,12 +15,13 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	private String timeZone = "";
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private Integer rateScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private String altTrackNum = CtiUtilities.STRING_NONE;
 
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber", "RateScheduleID"
+		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber", "RateScheduleID", "AltTrackNum"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
@@ -43,7 +44,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		{ 
 			getCustomerID(), getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
-			getCustomerNumber(), getRateScheduleID()
+			getCustomerNumber(), getRateScheduleID(),
+			getAltTrackingNumber()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -117,6 +119,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			setTimeZone( (String) results[2] );
 			setCustomerNumber( (String) results[3] );
 			setRateScheduleID( (Integer) results[4] );
+			setAltTrackingNumber( (String) results[5]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -132,7 +135,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		{ 
 			getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
-			getCustomerNumber(), getRateScheduleID()
+			getCustomerNumber(), getRateScheduleID(),
+			getAltTrackingNumber()
 		};
 	
 		Object constraintValues[] = { getCustomerID() };
@@ -210,13 +214,23 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	{
 		return customerNumber;
 	}
+	
+	public void setCustomerNumber(String custNum)
+	{
+		customerNumber = custNum;
+	}
+	
+	public String getAltTrackingNumber()
+	{
+		return altTrackNum;
+	}
 
 	/**
 	 * @param string
 	 */
-	public void setCustomerNumber(String custNum)
+	public void setAltTrackingNumber(String altNum)
 	{
-		customerNumber = custNum;
+		altTrackNum = altNum;
 	}
 	
 	public Integer getRateScheduleID()
