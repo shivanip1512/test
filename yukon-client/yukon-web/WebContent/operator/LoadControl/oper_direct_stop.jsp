@@ -234,8 +234,8 @@
                 <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                   </td>
               </tr>
-              <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
-                </cti:errormsg> </tr>
+              <tr> <!-- <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
+                </cti:errormsg> </tr> -->
             </table>
           </td>
         </tr>
