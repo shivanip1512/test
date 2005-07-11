@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/06/29 19:43:03 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/07/11 18:30:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,7 +100,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
     INT      DevType;
 
-    CtiDeviceBase *Device = NULL;
+    CtiDeviceBase *NewDevice = NULL;
 
     rdr["type"]  >> rwsType;
 
@@ -116,85 +116,85 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     {
     case TYPE_WELCORTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceWelco;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceWelco;
             break;
         }
     case TYPE_ILEXRTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceILEX;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceILEX;
             break;
         }
     case TYPE_DARTRTU:
     case TYPE_DNPRTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new Device::DNP;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new Device::DNP;
             break;
         }
     case TYPE_SERIESVRTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSeriesV;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceSeriesV;
             break;
         }
     case TYPE_SERIESVLMIRTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceLMI;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceLMI;
             break;
         }
     case TYPE_ION7330:
     case TYPE_ION7700:
     case TYPE_ION8300:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceION;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceION;
             break;
         }
     case TYPE_TCU5000:
     case TYPE_TCU5500:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceTCU;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceTCU;
             break;
         }
     case TYPE_CCU711:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceCCU;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceCCU;
             break;
         }
     case TYPE_CCU710:
     case TYPE_CCU700:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceCCU710;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceCCU710;
             break;
         }
     case TYPE_DAVIS:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceDavis;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceDavis;
             break;
         }
     case TYPE_SES92RTU:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRemote;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceRemote;
             break;
         }
     case TYPEDCT501:
         {
-            Device = (CtiDeviceBase *) CTIDBG_new CtiDeviceDCT501;
+            NewDevice = (CtiDeviceBase *) CTIDBG_new CtiDeviceDCT501;
             break;
         }
     case TYPELMT2:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT_LMT2;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT_LMT2;
             break;
         }
     case TYPEMCT210:     // S00095C
     case TYPEMCT213:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT210;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT210;
             break;
         }
     case TYPEMCT212:     // S0074E (sspec indicates a 213 too, but I know nothing)
     case TYPEMCT224:
     case TYPEMCT226:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT22X;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT22X;
             break;
         }
     case TYPEMCT240:     // S00121B (240, 242, 248)
@@ -202,7 +202,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEMCT248:
     case TYPEMCT250:     // S00111B (250)
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT24X;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT24X;
             break;
         }
     case TYPEMCT310:
@@ -210,7 +210,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEMCT310IDL:
     case TYPEMCT310IL:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT310;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT310;
             break;
         }
     case TYPEMCT318:
@@ -218,154 +218,159 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEMCT360:
     case TYPEMCT370:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT31X;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT31X;
             break;
         }
     case TYPEMCT410:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT410;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT410;
             break;
         }
     case TYPEMCT470:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT470;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCT470;
             break;
         }
     case TYPE_REPEATER800:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRepeater800;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceRepeater800;
             break;
         }
     case TYPE_REPEATER900:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRepeater900;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceRepeater900;
             break;
         }
     case TYPE_FULCRUM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceFulcrum;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceFulcrum;
             break;
         }
     case TYPE_QUANTUM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceQuantum;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceQuantum;
             break;
         }
     case TYPE_VECTRON:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceVectron;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceVectron;
             break;
         }
     case TYPE_ALPHA_PPLUS:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceAlphaPPlus;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceAlphaPPlus;
             break;
         }
     case TYPE_TDMARKV:
        {
-           Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMarkV;
+           NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMarkV;
            break;
        }
     case TYPE_ALPHA_A1:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceAlphaA1;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceAlphaA1;
             break;
         }
     case TYPE_LGS4:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceLandisGyrS4;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceLandisGyrS4;
             break;
         }
     case TYPE_DR87:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceDR87;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceDR87;
             break;
         }
     case TYPE_KV2:
     case TYPE_ALPHA_A3:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceKV2;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceKV2;
             break;
         }
     case TYPE_SENTINEL:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSentinel;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceSentinel;
             break;
         }
 
     case TYPE_SIXNET:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSixnet;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceSixnet;
             break;
         }
     case TYPE_TAPTERM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceTapPagingTerminal;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceTapPagingTerminal;
             break;
         }
     case TYPE_SNPP:
     {
-        Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSnppPagingTerminal;
+        NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceSnppPagingTerminal;
         break;
     }
     case TYPE_PAGING_RECEIVER:
     {
-        Device = (CtiDeviceBase*) CTIDBG_new CtiDevicePagingReceiver;
+        NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDevicePagingReceiver;
         break;
     }
     case TYPE_TNPP:
     {
-        Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceTnppPagingTerminal;
+        NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceTnppPagingTerminal;
         break;
     }
     case TYPE_WCTP:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceWctpTerminal;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceWctpTerminal;
             break;
         }
     case TYPE_LMGROUP_EMETCON:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupEmetcon;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupEmetcon;
             break;
         }
     case TYPE_LMGROUP_RIPPLE:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupRipple;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupRipple;
             break;
         }
     case TYPE_LMGROUP_VERSACOM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupVersacom;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupVersacom;
             break;
         }
     case TYPE_LMGROUP_EXPRESSCOM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupExpresscom;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupExpresscom;
             break;
         }
     case TYPE_LMGROUP_ENERGYPRO:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupEnergyPro;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupEnergyPro;
             break;
         }
     case TYPE_LMGROUP_MCT:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupMCT;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupMCT;
             break;
         }
     case TYPE_MACRO:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMacro;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMacro;
             break;
         }
     case TYPE_SYSTEM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceSystem;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceSystem;
             break;
         }
     case TYPECBC6510:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceCBC6510;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceCBC6510;
+            break;
+        }
+    case TYPECBC7020:
+        {
+            NewDevice = (CtiDeviceBase*) CTIDBG_new Device::CBC7020;
             break;
         }
     case TYPECBC7010:
@@ -373,7 +378,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPEVERSACOMCBC:
     case TYPEEXPRESSCOMCBC:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceCBC;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceCBC;
             break;
         }
     case TYPE_LCU415:
@@ -381,47 +386,47 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
     case TYPE_LCU415ER:
     case TYPE_LCUT3026:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceLCU(DevType);
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceLCU(DevType);
             break;
         }
     case TYPEMCTBCAST:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCTBroadcast;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceMCTBroadcast;
             break;
         }
     case TYPE_RTC:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRTC;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceRTC;
             break;
         }
     case TYPE_RTM:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceRTM;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceRTM;
             break;
         }
     case TYPE_LMGROUP_GOLAY:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupGolay;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupGolay;
             break;
         }
     case TYPE_LMGROUP_SADIGITAL:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSADigital;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSADigital;
             break;
         }
     case TYPE_LMGROUP_SA105:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA105;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA105;
             break;
         }
     case TYPE_LMGROUP_SA205:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA205;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA205;
             break;
         }
     case TYPE_LMGROUP_SA305:
         {
-            Device = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA305;
+            NewDevice = (CtiDeviceBase*) CTIDBG_new CtiDeviceGroupSA305;
             break;
         }
     case TYPE_ENERGYPRO:
@@ -436,7 +441,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         }
     }
 
-    return Device;
+    return NewDevice;
 }
 
 DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
