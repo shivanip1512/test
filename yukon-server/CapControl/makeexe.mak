@@ -53,7 +53,10 @@ ccmessage.obj \
 ccservice.obj \
 ccstate.obj \
 ccsubstationbus.obj \
-ccsubstationbusstore.obj
+ccsubstationbusstore.obj \
+pao_schedule.obj \
+pao_event.obj \
+mgr_paosched.obj
 
 TARGS = capcontrol.exe
 
