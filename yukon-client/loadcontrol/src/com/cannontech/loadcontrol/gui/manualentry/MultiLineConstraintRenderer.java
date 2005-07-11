@@ -1,28 +1,24 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
-/**
- * Insert the type's description here.
- * Creation date: (7/17/2001 11:56:30 AM)
- * @author: 
- */
-
 import java.awt.Color;
-import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
 
+/**
+ * Renders multi rows inside a JTable
+ * 
+ * @author ryan
+ *
+ */
 public class MultiLineConstraintRenderer extends javax.swing.JPanel implements javax.swing.table.TableCellRenderer 
 {
 	private java.awt.Font boldFont = null;
 	private java.awt.Font plainFont = null;
 	private javax.swing.JLabel ivjJLabelText = null;
-    
-    private Hashtable rowHeights = new Hashtable();
-
 	
 /**
  * MultiLineConstraintRenderer constructor comment.
@@ -83,7 +79,7 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 	
 	if( value instanceof List )
 	{
-		processList( (List)value, table, foreColor );
+		processList( (List)value, table, foreColor, row, column );
 	}
 	else
 	{
@@ -102,19 +98,6 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 		getJLabelText().setText( "" );
 		((javax.swing.JComponent)this).setToolTipText( "" );
 	}
-
-    //set the table's row height if we have a multi lined row
-    if( column == ConstraintTableModel.COL_VIOLATION )
-    {
-        Integer oldHeight = (Integer)rowHeights.get(new Integer(row));
-        Integer newHeight = new Integer( getPreferredSize().height + 10 ); //give ourself a little space between each row
-
-        if( oldHeight == null || !oldHeight.equals(newHeight) )
-        {
-            rowHeights.put(new Integer(row), newHeight);
-            table.setRowHeight( row, newHeight.intValue() );        
-        }
-    }
 
 	return this;
 }
@@ -155,17 +138,34 @@ private void initialize() {
  * Insert the method's description here.
  * Creation date: (7/18/2001 5:03:03 PM)
  */
-private void processList( List values, javax.swing.JTable table, Color fgColor ) 
+private void processList( List values, javax.swing.JTable table, Color fgColor, int row, int col ) 
 {
-
+	int h = table.getRowHeight(row);
     for( int i = 0; i < values.size(); i++ )
-	{		
-		JLabel newLabel = new JLabel( values.get(i).toString() );
-		newLabel.setForeground( fgColor );	
+	{
+		//reset our height, we may need a resizing
+		if( i == 0 ) h = 0;
+
+		String txt = "(" + (i+1) + "):  " + values.get(i).toString();
+		JTextArea newLabel = new JTextArea( txt );
+		newLabel.setForeground( fgColor );
+		newLabel.setBackground( Color.BLACK );
+		newLabel.setLineWrap( true );
+		newLabel.setWrapStyleWord( true );
+		newLabel.setToolTipText( txt );
+
+		//determine the sizes needed to display all text
+		newLabel.setSize( 
+			table.getColumnModel().getColumn(col).getWidth(),
+			table.getRowHeight(row) );		
+
+		h += (int)newLabel.getPreferredSize().getHeight();
+
 		add( newLabel );
-		newLabel.setToolTipText( values.get(i).toString() );
-		//table.setRowHeight( table.getRowHeight() + table.getFont().getSize() );
 	}
+
+	if( h != table.getRowHeight(row) )
+		table.setRowHeight(row, h);
 
 }
 
