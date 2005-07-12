@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:51:17 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/07/12 14:35:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,22 +119,7 @@ static const char *_RS;
 static const char *_CAN;
 static const char *_zero_origin;
 static const char *_zero_serial;
-static const char *_originAddress;
 
 };
-/*
-#define CHAR_CR         0x0D
-#define CHAR_LF         0x0A
-#define CHAR_ESC        0x1B
-#define CHAR_STX        0x02
-#define CHAR_ETX        0x03
-#define CHAR_US         0x1F
-#define CHAR_ETB        0x17
-#define CHAR_EOT        0x04
-#define CHAR_SUB        0x1A
-#define CHAR_ACK        0x06
-#define CHAR_NAK        0x15
-#define CHAR_RS         0x1e
-*/
 
 #endif // #ifndef __DEV_TNPP_H__

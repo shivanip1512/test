@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/07/08 18:04:05 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/07/12 14:35:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,12 @@ const char *CtiDeviceTnppPagingTerminal::_RS                  = "\x030";
 const char *CtiDeviceTnppPagingTerminal::_CAN                 = "\x024";
 const char *CtiDeviceTnppPagingTerminal::_zero_origin         = "0000";
 const char *CtiDeviceTnppPagingTerminal::_zero_serial         = "00";
-const char *CtiDeviceTnppPagingTerminal::_originAddress       = "0002";//address of this computer according to tnpp. Random!
+
+//*****************************************************************************
+/* NOTE! The tnpp device must be set to immediatelly send all messages
+** If this is not the case, this code may cause errors (sending 0 packet
+** every time causes problems if buffering is attempted) -Jess
+******************************************************************************/
 
 
 CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal() 
@@ -160,6 +165,15 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             }
                             else if(getPreviousState() == StateGeneratePacket)
                             {
+                                //setup verification object
+
+                                if( !_outMessage.VerificationSequence )
+                                {
+                                    _outMessage.VerificationSequence = VerificationSequenceGen();
+                                }
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
+                                _verification_objects.push(work);
+
                                 _command = Complete;
                                 status = Normal;
                             }
