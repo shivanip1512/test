@@ -1201,8 +1201,23 @@ RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate )
 
     if( rate > 3600 )
     {
-        RWTime hourstart = RWTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
-        first = RWTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
+        if( rate == 2592000 ) // 1 month. == Midnight 1st of month.
+        {
+           RWDate origindate(origin);
+           RWDate nextMonth = origindate.firstDayOfMonth() + origindate.daysInMonthYear(origindate.month(), origindate.year());
+           first = RWTime(nextMonth);
+        }
+        else if( rate == 25200 ) // ( 3600 * 7 ) = 1 week. == Midnight Sunday!
+        {
+            RWDate origindate(origin);
+            RWDate nextWeek = origindate + (7 - (origindate.weekDay() % 7));
+            first = RWTime(nextWeek);
+        }
+        else
+        {
+            RWTime hourstart = RWTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
+            first = RWTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
+        }
     }
     else if(rate > 0 )    // Prevent a divide by zero with this check...
     {
