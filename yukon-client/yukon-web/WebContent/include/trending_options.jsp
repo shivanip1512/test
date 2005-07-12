@@ -66,6 +66,7 @@
   <tr>
     <td>
       <div id="viewMenu" class = "bgmenu" style = "width:130px" align = "left"> 
+        <div id = "DEFAULTID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.DEFAULT%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.DEFAULT_STRING%></div>
         <div id = "LINEID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_STRING%></div>
         <div id = "LINESHAPESID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE_SHAPES%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_SHAPES_STRING%></div>
         <div id = "LINEAREAID" name = "view"  style = "width:130px" onmouseover = "changeOptionStyle(this)" class = "optmenu1" onclick = "changeView(<%=GraphRenderers.LINE_AREA%>);">&nbsp;&nbsp;&nbsp;<%=GraphRenderers.LINE_AREA_STRING%></div>

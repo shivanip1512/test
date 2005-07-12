@@ -1,5 +1,6 @@
 <SCRIPT> <!--trend/view menu items-->
 //view types
+var DEFAULT = parseInt(<%=GraphRenderers.DEFAULT %>);
 var LINE  = parseInt(<%=GraphRenderers.LINE%>);
 var LINE_SHAPES = parseInt(<%=GraphRenderers.LINE_SHAPES%>);
 var LINE_AREA  = parseInt(<%=GraphRenderers.LINE_AREA%>);
@@ -34,6 +35,9 @@ function initViewMenu()
 {
 	switch(viewType)
 	{
+		case DEFAULT:
+			document.getElementById('DEFAULTID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.DEFAULT_STRING%>";
+			break;
 		case LINE:
 			document.getElementById('LINEID').innerHTML = "&nbsp;&#149;&nbsp;<%=GraphRenderers.LINE_STRING%>";
 			break;
