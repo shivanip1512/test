@@ -38,7 +38,7 @@ public final class GraphRenderers
 	public final static String BAR_3D_STRING = "3D Bar";
 	public final static String TABULAR_STRING = "Tabular";
 	public final static String SUMMARY_STRING = "Summary";
-	public final static String DEFAULT_STRING = "Default";
+	public final static String DEFAULT_STRING = "Default (Use Serie)";
 
 	public final static String[] AVAILABLE_RENDERERS = new String[]{
 		LINE_STRING, LINE_SHAPES_STRING, LINE_AREA_STRING, LINE_AREA_SHAPES_STRING,
