@@ -11,8 +11,7 @@ import org.jdom.transform.XSLTransformException;
 import org.jdom.transform.XSLTransformer;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.AuthFuncs;
-import com.cannontech.database.cache.functions.YukonUserFuncs;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.ivr.OutboundCallingRole;
@@ -39,12 +38,13 @@ public class NotificationTransformer {
     }
     
     public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
-        LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
-        _rootDirectory = AuthFuncs.getRolePropertyValue(user, OutboundCallingRole.TEMPLATE_ROOT);
-        if (_rootDirectory == null) {
-            throw new TransformException("Could not get template_root Role Property for " + energyCompany);
+        try {
+            LiteYukonUser user = YukonUserFuncs.getLiteYukonUser(energyCompany.getUserID());
+            _rootDirectory = AuthFuncs.getRolePropertyValueEx(user, OutboundCallingRole.TEMPLATE_ROOT);
+            _outputType = outputType;
+        } catch (UnknownRolePropertyException e) {
+            throw new TransformException("Could not get Template Root Role Property for " + energyCompany, e);
         }
-        _outputType = outputType;
     }
     
     public Document transform(Notification notif) throws TransformException {
