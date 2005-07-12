@@ -34,7 +34,7 @@ public class TrendProperties
 
 	private static long resolutionInMillis = 1;	//default to millis
 	public int optionsMaskSettings = GraphRenderers.NONE_MASK;
-	public int viewType = GraphRenderers.LINE;
+	public int viewType = GraphRenderers.DEFAULT;
 	public String gdefName = "";
 	
 	/**
