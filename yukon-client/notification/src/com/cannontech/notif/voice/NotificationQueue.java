@@ -5,20 +5,18 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.cache.functions.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.notif.outputs.UnknownCustomerException;
-import com.cannontech.roles.ivr.OutboundCallingRole;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
 
 
 /**
  * A queue to manage pending SingleNotifications.
  */
-public class NotificationQueue {
+public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
     private Map _poolMap = new TreeMap();
+    private int _callsProcessed = 0;
     
     public NotificationQueue() {
     }
@@ -37,21 +35,26 @@ public class NotificationQueue {
         if (!notification.getState().equals(SingleNotification.STATE_READY)) {
             throw new UnsupportedOperationException("Can't add notification that isn't in ready state.");
         }
-        
-        final CallPool callPool = getCallPool(notification.getContactable().getEnergyCompany());
-        
-        notification.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getNewValue().equals(SingleNotification.STATE_READY)
-                    && !_shutdown) {
-                    Call call = notification.createNewCall();
-                    callPool.submitCall(call);
+        try {
+            
+            final CallPool callPool = getCallPool(notification.getContactable().getEnergyCompany());
+            
+            notification.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    if (evt.getNewValue().equals(SingleNotification.STATE_READY)
+                        && !_shutdown) {
+                        Call call = notification.createNewCall();
+                        callPool.submitCall(call);
+                    }
                 }
-            }
-        });
-        CTILogger.info("Adding single notification: " + notification);
-        Call call = notification.createNewCall();
-        callPool.submitCall(call);
+            });
+            CTILogger.info("Adding single notification: " + notification);
+            Call call = notification.createNewCall();
+            callPool.submitCall(call);
+            _callsProcessed++;
+        } catch (UnknownRolePropertyException e) {
+            CTILogger.warn("Unable to add " + notification + " to calling queue.", e);
+        }
     }
     
     public synchronized void shutdown() {
@@ -62,27 +65,14 @@ public class NotificationQueue {
         }
     }
     
-    private synchronized CallPool getCallPool(LiteEnergyCompany energyCompany) {
+    private synchronized CallPool getCallPool(LiteEnergyCompany energyCompany) throws UnknownRolePropertyException {
         if (_poolMap.containsKey(energyCompany)) {
             return (CallPool) _poolMap.get(energyCompany);
         } else {
-            CallPool newPool = createCallPool(energyCompany);
+            CallPool newPool = new CallPool(energyCompany);
             _poolMap.put(energyCompany, newPool);
             return newPool;
         }
-    }
-    
-    private CallPool createCallPool(LiteEnergyCompany energyCompany) {
-        String voiceHost = RoleFuncs.getGlobalPropertyValue(SystemRole.VOICE_HOST);
-        String voiceApp = RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.VOICE_APP);
-        VocomoDialer dialer = new VocomoDialer(voiceHost, voiceApp);
-        dialer.setPhonePrefix(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_PREFIX));
-        dialer.setCallTimeout(Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_TIMEOUT)));
-        
-        int callTimeout = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(VoiceServerRole.CALL_RESPONSE_TIMEOUT));
-        int numberOfChannels = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(OutboundCallingRole.NUMBER_OF_CHANNELS));
-        return new CallPool(dialer, numberOfChannels, callTimeout);
-
     }
     
     public synchronized Call getCall(String token) throws UnknownCallTokenException {
@@ -94,6 +84,23 @@ public class NotificationQueue {
             }
         }
         throw new UnknownCallTokenException(token);
+    }
+    
+    public int getActiveCalls() {
+        int result = 0;
+        for (Iterator iter = _poolMap.values().iterator(); iter.hasNext();) {
+            CallPool pool = (CallPool) iter.next();
+            result += pool.getNumberPendingCalls();
+        }
+        return result;
+    }
+
+    public int getCallsProcessed() {
+        return _callsProcessed;
+    }
+
+    public void setCallsProcessed(int callsProcessed) {
+        _callsProcessed = callsProcessed;
     }
 
 }
