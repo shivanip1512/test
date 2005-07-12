@@ -99,16 +99,32 @@ public class AuthFuncs {
 	public static boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
 		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID, null));
 	}	
-	/**
-	 * Returns the value for a given user and role property.
-	 * @param user
-	 * @param rolePropertyID
-	 * @return String
-	 */
-	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) {
-		return getRolePropertyValue(user,rolePropertyID,null);
-	}
-	
+    
+    /**
+     * Returns the value for a given user and role property.
+     * @param user
+     * @param rolePropertyID
+     * @return String
+     */
+    public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) {
+        return getRolePropertyValue(user,rolePropertyID,null);
+    }
+    
+    /**
+     * Returns the value for a given user and role property.
+     * @param user
+     * @param rolePropertyID
+     * @return String
+     * @throws UnknownRolePropertyException If RoleProperty doesn't exist. 
+     */
+    public static String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID) throws UnknownRolePropertyException {
+        String value = getRolePropertyValue(user,rolePropertyID, null);
+        if (value == null) {
+            throw new UnknownRolePropertyException(user, rolePropertyID);
+        }
+        return value;
+    }
+    
 	/**
 	 * Returns the value for a given user and role property.
 	 * If no value is found then defaultValue is returned for convenience.
