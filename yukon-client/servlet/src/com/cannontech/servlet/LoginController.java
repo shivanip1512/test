@@ -298,7 +298,7 @@ private void doVoiceLogin( HttpServletRequest req, HttpServletResponse resp, Str
 	LiteContact lContact = ContactFuncs.getContact( contactid ); //store this for logging purposes only
 	LiteYukonUser user = AuthFuncs.voiceLogin( contactid, password );
 
-	String voice_home_url = "/voice/messages.jsp"; //null;
+	String voice_home_url = "/voice/notification.jsp";
 		
 	if( user != null 
 		/*&& (voice_home_url = AuthFuncs.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ )
