@@ -9,17 +9,21 @@ import com.cannontech.database.data.lite.LiteCustomer;
 public class ContactableNotification extends ContactableBase {
     List _noChildren = new ArrayList(0);
     private final LiteContactNotification _liteNotif;
+    private LiteCustomer _customer = null;
     
     public ContactableNotification(LiteContactNotification liteNotif) {
         _liteNotif = liteNotif;
     }
     
     public LiteCustomer getContactableCustomer() throws UnknownCustomerException {
-        LiteCustomer customer = ContactFuncs.getCustomer(_liteNotif.getContactID());
-        if (customer == null) {
+        if (_customer != null) {
+            return _customer;
+        }
+        _customer = ContactFuncs.getCustomer(_liteNotif.getContactID());
+        if (_customer == null) {
             throw new UnknownCustomerException("Can't return LiteCustomer for contact id " + _liteNotif.getContactID());
         }
-        return customer;
+        return _customer;
     }
     
     public List getNotifications(Set notifTypes) {
