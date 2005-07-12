@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/07/12 19:11:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -335,7 +335,8 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                 {
                     if(
                       pPt->getArchiveType() == ArchiveTypeOnTimer             ||
-                      pPt->getArchiveType() == ArchiveTypeOnTimerAndUpdated
+                      pPt->getArchiveType() == ArchiveTypeOnTimerAndUpdated   ||
+                      pPt->getArchiveType() == ArchiveTypeOnTimerOrUpdated
                       )
                     {
                         if( pDyn->getNextArchiveTime() <= Now )
@@ -343,6 +344,7 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                             switch( pPt->getArchiveType() )
                             {
                             case ArchiveTypeOnTimer:
+                            case ArchiveTypeOnTimerOrUpdated:
                                 {
                                     Que.putQueue(CTIDBG_new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
                                     break;

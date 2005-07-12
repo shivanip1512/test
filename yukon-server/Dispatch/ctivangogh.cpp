@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2005/07/01 17:39:09 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2005/07/12 19:11:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1507,7 +1507,8 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                 }
                 else if(pDyn->isArchivePending() ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnUpdate) ||
-                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew))
+                        (TempPoint->getArchiveType() == ArchiveTypeOnChange && isNew) ||
+                        (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
                     _archiverQueue.putQueue( CTIDBG_new CtiTableRawPointHistory(TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
                     TempPoint->setArchivePending(FALSE);

@@ -77,6 +77,7 @@ typedef enum
    ArchiveTypeOnTimer,
    ArchiveTypeOnUpdate,
    ArchiveTypeOnTimerAndUpdated,
+   ArchiveTypeOnTimerOrUpdated
 
 } CtiArchiveType_t;
 
