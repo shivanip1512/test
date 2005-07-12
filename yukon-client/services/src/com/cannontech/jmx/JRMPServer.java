@@ -1,20 +1,15 @@
 package com.cannontech.jmx;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
-import javax.management.Attribute;
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import javax.naming.Context;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.util.MBeanUtil;
 
 /**
  * @author rneuharth
@@ -28,10 +23,9 @@ import com.cannontech.database.PoolManager;
 public class JRMPServer
 {
 	// Create a MBeanServer
-	private MBeanServer server = MBeanServerFactory.createMBeanServer();
 	
 	// The domain for all CTI services in the JMX domain
-	public static final String CTI_DOMAIN = "CTI-Server:name=";
+	//public static final String CTI_DOMAIN = "CTI-WServer:name=";
 
 
 	/**
@@ -55,6 +49,7 @@ public class JRMPServer
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rset = null;
+        MBeanServer server = MBeanUtil.getInstance();
 		
 		try 
 		{
@@ -67,7 +62,7 @@ public class JRMPServer
 			{
 				try
 				{
-					ObjectName name = new ObjectName( CTI_DOMAIN + rset.getString(2).trim() );
+					ObjectName name = new ObjectName( ":name=" + rset.getString(2).trim() );
 					server.createMBean( rset.getString(3).trim(), name, null);
 					
 					//better have a start() method defined in the class!
@@ -112,26 +107,6 @@ public class JRMPServer
 //		server.invoke(webGName, "start", null, null); 		
 	}
 
-	/**
-	 * Necessary Services for monitoring & managing MBeans
-	 * @throws Exception
-	 */
-	private void loadJMXServices() throws Exception //throws a lot of things, just force a catch for all
-	{
-		ObjectName naming = new ObjectName("Naming:type=registry");
-		//	Create and register the MBean in the MBeanServer
-		server.createMBean("mx4j.tools.naming.NamingService", naming, null);			
-		server.invoke(naming, "start", null, null);
-		
-		
-		
-		ObjectName adaptName = new ObjectName("Adaptor:protocol=JRMP");
-		server.createMBean("mx4j.adaptor.rmi.jrmp.JRMPAdaptor", adaptName, null);		
-		server.setAttribute( adaptName, new Attribute("JNDIName", "jrmp") );		
-
-		server.invoke(adaptName, "start", null, null ); 
-	}
-
 	public static void main(String[] args)
 	{
 		try
@@ -146,19 +121,7 @@ public class JRMPServer
             if(session == null) 
                 System.exit(-1);
 
-
-			//RMI specific setters
-			System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory" );
-			System.setProperty( Context.PROVIDER_URL, "rmi://localhost:1099" );
-
 			JRMPServer thisServer = new JRMPServer();
-			
-			//
-			// If management and monitoring is needed, load the JMX services
-			// 
-			thisServer.loadJMXServices();
-			
-			
 			
 			thisServer.loadCustomServices();
 
