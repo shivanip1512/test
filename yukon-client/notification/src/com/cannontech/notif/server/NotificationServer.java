@@ -48,8 +48,7 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     private OutputHandlerHelper _outputHelper;
 
 
-	public NotificationServer()
-	{
+	public NotificationServer() {
 		setBindAddress(
                 RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_HOST) );
         
@@ -57,46 +56,40 @@ public class NotificationServer implements Runnable, NotificationServerMBean
                 RoleFuncs.getGlobalPropertyValue(SystemRole.NOTIFICATION_PORT) ) );        
 	}
 
-	public int getBacklog()
-	{
+	public int getBacklog() {
 		return backlog;
 	}
 
-	public int getPort()
-	{
+	public int getPort() {
 		return port;
 	}
 
-	public void setBacklog(int i)
-	{
-		if( i <= 0 )
-			i = 50;
+	public void setBacklog(int i) {
+		if( i <= 0 ) {
+            i = 50;
+        }
 		backlog = i;
 	}
 
-	public void setPort(int i)
-	{
+	public void setPort(int i) {
 		port = i;
 	}
 
-	public String getBindAddress()
-	{
+	public String getBindAddress() {
 		String address = null;
-		if( bindAddress != null )
-			address = bindAddress.getHostAddress();
+		if( bindAddress != null ) {
+            address = bindAddress.getHostAddress();
+        }
 
 		return address;
 	}
 
-	public void setBindAddress(String host)
-	{
-		try
-		{
-			if (host != null)
-				bindAddress = InetAddress.getByName(host);
-		}
-		catch(UnknownHostException e)
-		{
+	public void setBindAddress(String host) {
+		try {
+			if (host != null) {
+                bindAddress = InetAddress.getByName(host);
+            }
+		} catch(UnknownHostException e) {
 			String msg = "Invalid host address specified: " + host;
 			CTILogger.error( msg, e );
 		}
@@ -107,108 +100,115 @@ public class NotificationServer implements Runnable, NotificationServerMBean
      * If this fails with an exception, no threads will have been started.
 	 * @throws IOException
 	 */
-	public void start() throws IOException {
-        server = new ServerSocket(getPort(), getBacklog(), null);
+	public void start() {
+        try {
+            server = new ServerSocket(getPort(), getBacklog(), null);
 
-        dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
-        DefaultDatabaseCache.getInstance().addDBChangeListener(dbCacheHandler);
-        
-        ClientConnection dispatchConnection = ClientConnection.createDefaultConnection();
-        dispatchConnection.connectWithoutWait();
+            dbCacheHandler = new GenericDBCacheHandler("NotificationServer");
+            DefaultDatabaseCache.getInstance().addDBChangeListener(
+                    dbCacheHandler);
 
-        _outputHelper = new OutputHandlerHelper();
-        // create voice handler, add to output helper
-        VoiceHandler _voiceHandler = new VoiceHandler(dispatchConnection);
-        _outputHelper.addOutputHandler(_voiceHandler);
+            ClientConnection dispatchConnection = ClientConnection
+                    .createDefaultConnection();
+            dispatchConnection.connectWithoutWait();
 
-        // create email handler, add to output helper
-        OutputHandler emailHandler = new EmailHandler();
-        _outputHelper.addOutputHandler(emailHandler);
-        
-        // start output handlers
-        _outputHelper.startup();
+            _outputHelper = new OutputHandlerHelper();
+            // create voice handler, add to output helper
+            VoiceHandler _voiceHandler = new VoiceHandler(dispatchConnection);
+            _outputHelper.addOutputHandler(_voiceHandler);
 
-        _msgHandler = new NotifMsgHandler();
-        // create load management handler
-        LoadManagementMessageHandler lmMsgHandler = new LoadManagementMessageHandler(_outputHelper);
-        _msgHandler.registerHandler(lmMsgHandler);
-        
-        // create alarm handler
-        AlarmMessageHandler alarmMsgHandler = new AlarmMessageHandler(_outputHelper);
-        _msgHandler.registerHandler(alarmMsgHandler);
-        
-        // create confirmation handler
-        CompletedMessageHandler completedMsgHandler = new CompletedMessageHandler(_voiceHandler);
-        _msgHandler.registerHandler(completedMsgHandler);
-        
-        // create data request handler
-        VoiceDataRequestMessageHandler dataRequestMsgHandler = new VoiceDataRequestMessageHandler(_voiceHandler);
-        _msgHandler.registerHandler(dataRequestMsgHandler);
+            // create email handler, add to output helper
+            OutputHandler emailHandler = new EmailHandler();
+            _outputHelper.addOutputHandler(emailHandler);
 
-        acceptThread = new Thread(this, "NotifListener");
-        acceptThread.start();
+            // start output handlers
+            _outputHelper.startup();
 
-        CTILogger.info("Started Notification server: " + server);
+            _msgHandler = new NotifMsgHandler();
+            // create load management handler
+            LoadManagementMessageHandler lmMsgHandler = new LoadManagementMessageHandler(
+                    _outputHelper);
+            _msgHandler.registerHandler(lmMsgHandler);
 
-	}
+            // create alarm handler
+            AlarmMessageHandler alarmMsgHandler = new AlarmMessageHandler(
+                    _outputHelper);
+            _msgHandler.registerHandler(alarmMsgHandler);
+
+            // create confirmation handler
+            CompletedMessageHandler completedMsgHandler = new CompletedMessageHandler(
+                    _voiceHandler);
+            _msgHandler.registerHandler(completedMsgHandler);
+
+            // create data request handler
+            VoiceDataRequestMessageHandler dataRequestMsgHandler = new VoiceDataRequestMessageHandler(
+                    _voiceHandler);
+            _msgHandler.registerHandler(dataRequestMsgHandler);
+
+            acceptThread = new Thread(this, "NotifListener");
+            acceptThread.start();
+
+            CTILogger.info("Started Notification server: " + server);
+        } catch (Exception e) {
+            try {
+                server.close();
+            } catch (IOException e1) {}
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
 	/**
      * Shutdown the notification server
      */
-	public void stop()
-	{
-		try
-		{
+	public void stop() {
+		try {
 			dbCacheHandler.getClientConnection().disconnect();
 			DefaultDatabaseCache.getInstance().removeDBChangeListener( dbCacheHandler );
 
             if (server != null) {
-                server.close();
+                ServerSocket temp = server;
                 server = null;
+                temp.close();
             }
             
             //TODO how does the accept thread get shutdown?
             
             // shutdown voice handler
             _outputHelper.shutdown();
-		}
-		catch (Exception e)
-		{}
+		} catch (Exception e) {}
         
         CTILogger.info("Stopped Notification server: " + server);
 
 	}
 
-	public boolean isRunning()
-	{
+	public boolean isRunning() {
 		return server != null;
 	}
 
 	/** 
 	 * Listen threads entry point. Here we accept a client connection
 	 */
-	public void run()
-	{
+	public void run() {
 		for( ;; )
 		{
 			// Return if the server has been stopped
-			if (server == null)
-				return;
+			if (server == null) {
+                return;
+            }
 
 
 			// Accept a connection
 			Socket socket = null;
-			try 
-			{
+			try {
 				socket = server.accept();
 				connsMade++;
-			}
-			catch (IOException e) 
-			{
+			} catch (IOException e) {
 				// If the server is not null meaning we were not stopped report the error
-				if( server != null )
-					CTILogger.error("Failed to accept connection", e);
+				if( server != null ) {
+                    CTILogger.error("Failed to accept connection", e);
+                }
 
 				server = null;
 				return;
@@ -216,15 +216,12 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 
 	
 			//we have a connection, pass it off to another thread to process it
-			try 
-			{
+			try {
 				//start handling the message here
 				NotifServerConnection conn = new NotifServerConnection( socket, _msgHandler );
 
 				conn.connectWithoutWait(); //passes control to another thread
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				CTILogger.error( "error handling socket connection", ex );
 			}
 		}
