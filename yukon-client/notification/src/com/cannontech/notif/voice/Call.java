@@ -19,7 +19,7 @@ public class Call {
     PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
     private Object _message;
     private PhoneNumber _number;
-    static private AtomicInteger nextToken = new AtomicInteger(1);
+    static private AtomicInteger nextToken = new AtomicInteger(0);
     final String _token;
     public static final String CALL_STATE = "state";
     private TreeMap _parameterMap;
