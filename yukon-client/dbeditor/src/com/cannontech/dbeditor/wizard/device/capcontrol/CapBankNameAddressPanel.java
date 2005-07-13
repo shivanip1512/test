@@ -497,8 +497,6 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	if( getOperationStateComboBox().getModel().getSize() > 0 )
-		getOperationStateComboBox().removeAllItems();
 		
 	getJLabelAlreadyUsed().setVisible(false);
 
