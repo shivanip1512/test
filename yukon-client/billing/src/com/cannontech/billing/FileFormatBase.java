@@ -44,7 +44,7 @@ public abstract class FileFormatBase
 
 	public static final int kvarhAnalogOffsets[] =
 	{
-		21, 23, 25, 27, 29, 31
+		21, 23, 25, 27, 29
 	};
 	
 	public static final int validAccPtOffsets[] =
