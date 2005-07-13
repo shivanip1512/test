@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.145 $
-* DATE         :  $Date: 2005/06/29 20:04:18 $
+* REVISION     :  $Revision: 1.146 $
+* DATE         :  $Date: 2005/07/13 16:09:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3924,6 +3924,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
      *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
      *  this call is relatively inexpensive.
      */
+    if( Port->getQueueSlot() == 0 )
     {
         CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
         Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage ) );
