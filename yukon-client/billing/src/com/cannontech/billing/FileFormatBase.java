@@ -29,17 +29,17 @@ public abstract class FileFormatBase
 	
 	public static final int kwAnalogOffsets[] =
 	{
-		2, 4, 6, 8, 10
+		2, 4, 6, 8
 	};
 	
 	public static final int kwhAnalogOffsets[] =
 	{
-		1, 3, 5, 7, 9, 11
+		1, 3, 5, 7, 9
 	};
 	
 	public static final int kvarAnalogOffsets[] =
 	{
-		22, 24, 26, 28, 30
+		22, 24, 26, 28
 	};
 
 	public static final int kvarhAnalogOffsets[] =
