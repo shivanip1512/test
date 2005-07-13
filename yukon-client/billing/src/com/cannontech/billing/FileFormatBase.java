@@ -22,7 +22,7 @@ public abstract class FileFormatBase
 	
 	public static final int validAnalogPtOffsets[] =
 	{
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27, 28
 	};
 	//Added offset 1 to AnalogPtOffsets for IED meters per David 3.0.30
 	
@@ -44,7 +44,7 @@ public abstract class FileFormatBase
 
 	public static final int kvarhAnalogOffsets[] =
 	{
-		21, 23, 25, 27, 29
+		21, 23, 25, 27
 	};
 	
 	public static final int validAccPtOffsets[] =
