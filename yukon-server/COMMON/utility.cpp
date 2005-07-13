@@ -1207,7 +1207,7 @@ RWTime nextScheduledTimeAlignedOnRate( const RWTime &origin, LONG rate )
            RWDate nextMonth = origindate.firstDayOfMonth() + origindate.daysInMonthYear(origindate.month(), origindate.year());
            first = RWTime(nextMonth);
         }
-        else if( rate == 25200 ) // ( 3600 * 7 ) = 1 week. == Midnight Sunday!
+        else if( rate == 604800 ) // = 1 week. == Midnight Sunday!
         {
             RWDate origindate(origin);
             RWDate nextWeek = origindate + (7 - (origindate.weekDay() % 7));

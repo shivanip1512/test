@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/12/21 21:23:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/07/13 16:09:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,9 +77,6 @@ public:
 
    CtiTablePointBase  getPointBase() const;
    CtiTablePointBase& getPointBase();
-
-
-   RWTime computeNextArchiveTime(const RWTime &Now) const;
 
    INT               getArchiveInterval() const;
    INT               getArchiveType() const;

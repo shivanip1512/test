@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/07/12 19:11:26 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/07/13 16:09:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -359,7 +359,7 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                             /*
                              *  Now make the time correct for the next archive.
                              */
-                            pDyn->setNextArchiveTime( pPt->computeNextArchiveTime(Now) );
+                            pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
                         }
                         else if( pPt->getArchiveInterval() >= 0 &&                                      // pPt->getArchiveInterval() != ULONG_MAX &&
                                  pDyn->getNextArchiveTime() > Now + (2 * pPt->getArchiveInterval()))
@@ -367,7 +367,7 @@ void CtiPointClientManager::scanForArchival(const RWTime &Now, CtiQueue<CtiTable
                             /*
                              *  Now make the time correct for the next archive.
                              */
-                            pDyn->setNextArchiveTime( pPt->computeNextArchiveTime(Now) );
+                            pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
                         }
                     }
                 }

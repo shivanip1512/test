@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/07/13 16:09:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -235,31 +235,6 @@ void CtiPointBase::DumpData()
 CtiTablePointBase  CtiPointBase::getPointBase() const            { return _pointBase;}
 CtiTablePointBase& CtiPointBase::getPointBase()                  { return _pointBase;}
 
-
-RWTime CtiPointBase::computeNextArchiveTime(const RWTime &Now) const
-{
-    RWTime nextTime;
-
-    INT archiveInterval = getArchiveInterval();
-
-    if( archiveInterval > 3600 )
-    {
-        RWTime hourstart = RWTime(Now.seconds() - (Now.seconds() % 3600)); // align to the hour.
-
-        nextTime = RWTime(hourstart.seconds() - ((hourstart.hour() * 3600) % archiveInterval) + archiveInterval);
-    }
-    else
-    {
-        nextTime = RWTime(Now.seconds() - (Now.seconds() % archiveInterval) + archiveInterval);
-    }
-
-    while(nextTime <= Now)
-    {
-        nextTime += archiveInterval;
-    }
-
-    return nextTime;
-}
 
 INT               CtiPointBase::getArchiveInterval() const       { return getPointBase().getArchiveInterval();}
 INT               CtiPointBase::getArchiveType() const           { return getPointBase().getArchiveType();}
