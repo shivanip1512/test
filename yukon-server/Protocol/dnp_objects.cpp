@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/04/05 16:53:37 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/07/13 18:56:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,6 +134,7 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
     {
         case NoIndex_ByteQty:
         case ByteIndex_ByteQty:
+        case ByteIndex_ShortQty:
         case ShortIndex_ShortQty:
         case NoIndex_NoRange:
         case NoIndex_ShortQty:
@@ -219,6 +220,7 @@ bool ObjectBlock::addObject( const Object *object )
             }
 
             case ByteIndex_ByteQty:
+            case ByteIndex_ShortQty:
             case ShortIndex_ShortQty:
             default:
             {
@@ -250,6 +252,7 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
             switch( _qualifier )
             {
                 case ByteIndex_ByteQty:
+                case ByteIndex_ShortQty:
                 case ShortIndex_ShortQty:
                 {
                     if( _group < 0 )
@@ -376,6 +379,7 @@ int ObjectBlock::getSerializedLen( void ) const
             }
 
         case NoIndex_ShortQty:
+        case ByteIndex_ShortQty:
         case ShortIndex_ShortQty:
         case NoIndex_ByteStartStop:
             {
@@ -407,7 +411,7 @@ int ObjectBlock::getSerializedLen( void ) const
     for( int i = 0; i < _objectList.size(); i++ )
     {
         //  add on the index size
-        if( _qualifier == ByteIndex_ByteQty )
+        if( _qualifier == ByteIndex_ByteQty || _qualifier == ByteIndex_ShortQty )
         {
             blockSize += 1;
         }
@@ -446,6 +450,7 @@ int ObjectBlock::serialize( unsigned char *buf ) const
             }
 
         case NoIndex_ShortQty:
+        case ByteIndex_ShortQty:
         case ShortIndex_ShortQty:
             {
                 buf[pos++] = qty & 0xff;
@@ -499,7 +504,7 @@ int ObjectBlock::serialize( unsigned char *buf ) const
     {
         //  add on the index size
         //  ACH: maybe a switch/case someday when there are more than two indexing options...
-        if( _qualifier == ByteIndex_ByteQty )
+        if( _qualifier == ByteIndex_ByteQty || _qualifier == ByteIndex_ShortQty )
         {
             buf[pos++] = _objectIndices[i] & 0xff;
         }
@@ -536,6 +541,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
         switch( _qualifier )
         {
             case ShortIndex_ShortQty:
+            case ByteIndex_ShortQty:
             case NoIndex_ShortQty:
             {
                 qty  = buf[pos++];
@@ -615,6 +621,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 }
 
                 case ByteIndex_ByteQty:
+                case ByteIndex_ShortQty:
                 {
                     idx  = buf[pos++];
                     break;

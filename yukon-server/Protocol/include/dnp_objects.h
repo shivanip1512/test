@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/03/17 05:18:59 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/07/13 18:56:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,6 +109,7 @@ public:
         NoIndex_ByteQty        = 0x07,
         NoIndex_ShortQty       = 0x08,
         ByteIndex_ByteQty      = 0x17,
+        ByteIndex_ShortQty     = 0x18,
         ShortIndex_ShortQty    = 0x28
     };
 
