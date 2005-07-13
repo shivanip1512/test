@@ -18,6 +18,7 @@
 
 #include "dbaccess.h"
 #include "rwutil.h"
+
 #include "lmprogramdirect.h"
 #include "lmprogramdirectgear.h"
 #include "lmgroupbase.h"
@@ -30,8 +31,8 @@
 #include "pointtypes.h"
 #include "logger.h"
 #include "loadmanager.h"
+#include "msg_signal.h"
 #include "msg_pcrequest.h"
-#include "msg_email.h"
 #include "msg_notif_lmcontrol.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogramthermostatgear.h"
@@ -570,6 +571,9 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 if( getProgramState() != CtiLMProgramBase::FullyActiveState &&
                     getProgramState() != CtiLMProgramBase::ActiveState )
                 {
+		    // Let the world know we are starting up!
+		    scheduleStartNotification(RWDBDateTime());
+		    
                     setProgramState(CtiLMProgramBase::ActiveState);
                     setStartedControlling(RWDBDateTime());
 //                    incrementDailyOps();
@@ -776,6 +780,13 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
                         }
                     }
+
+		    if( getProgramState() == CtiLMProgramBase::InactiveState)
+		    {
+			// Let the world know we are starting up!
+			scheduleStartNotification(RWDBDateTime());		    
+		    }
+		    
                     if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -879,6 +890,13 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
                         }
                     }
+
+		    if( getProgramState() == CtiLMProgramBase::InactiveState)
+		    {
+			// Let the world know we are starting up!
+			scheduleStartNotification(RWDBDateTime());		    
+		    }		    
+
                     if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -941,6 +959,13 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             }
                         }
                     }
+
+		    if( getProgramState() == CtiLMProgramBase::InactiveState)
+		    {
+			// Let the world know we are starting up!
+			scheduleStartNotification(RWDBDateTime());		    
+		    }		    
+		    
                     if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
@@ -4982,7 +5007,10 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
     bool do_ramp = (lm_gear->getRampInPercent() > 0);
     int num_groups = _lmprogramdirectgroups.size();
     double expected_load_reduction = 0.0;
-    
+
+    // Let the world know we are starting
+    scheduleStartNotification(RWDBDateTime());		        
+	
     if(do_ramp)
     {   
         RampInGroups(secondsFrom1901);
@@ -5075,6 +5103,57 @@ bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
     return true;
 }
 
+/**
+ * Sets up the notification of groups given a start (active) and a stop (inactive) time
+ * If this program isn't set to do notifications then this will do nothing.
+ */
+void CtiLMProgramDirect::scheduleNotification(const RWDBDateTime&  start_time, const RWDBDateTime& stop_time)
+{
+    scheduleStartNotification(start_time);
+    scheduleStopNotification(stop_time);
+}
+
+/**
+ * Sets up the notification of groups give a start time
+ * If this program isn't set to do start (active) notifications then this will do nothing
+ */
+void CtiLMProgramDirect::scheduleStartNotification(const RWDBDateTime& start_time)
+{
+    // -1 indicates we shouldn't notify on active
+    if(getNotifyActiveOffset() != -1)
+    {
+	RWDBDateTime notifyStartTime(start_time);
+	notifyStartTime.addSeconds(-1*getNotifyActiveOffset());
+	setNotifyActiveTime(RWDBDateTime(notifyStartTime));
+
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;	    
+	}
+    }
+}
+
+/**
+ * Sets up the notification of groups give a stop time
+ * If this program isn't set to do stop (inactive) notifications then this will do nothing
+ */
+void CtiLMProgramDirect::scheduleStopNotification(const RWDBDateTime& stop_time)
+{
+    // -1 indicates we shouldn't notify on inactive
+    if(getNotifyInactiveOffset() != -1)
+    {
+	RWDBDateTime notifyStopTime(stop_time);
+	notifyStopTime.addSeconds(getNotifyInactiveOffset());
+	setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
+
+	if( _LM_DEBUG & LM_DEBUG_STANDARD )
+	{
+	    CtiLockGuard<CtiLogger> dout_guard(dout);
+	    dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
+	}
+    }        
+}
 
 // Static Members
 int CtiLMProgramDirect::defaultLMStartPriority = 13;

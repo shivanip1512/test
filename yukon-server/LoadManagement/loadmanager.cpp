@@ -18,6 +18,7 @@
 #include "connection.h"
 #include "message.h"
 #include "msg_multi.h"
+#include "msg_signal.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_pdata.h"

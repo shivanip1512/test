@@ -23,7 +23,6 @@
 #include "lmprogramenergyexchange.h"
 #include "lmenergyexchangecustomer.h"
 #include "lmenergyexchangecustomerreply.h"
-#include "msg_email.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -389,7 +388,8 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
 {
 
-
+#pragma message("!**** Energy Exchange Programs don't know how to email their customers ****!")
+#ifdef OLD_EMAIL_MSG
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
     if( _lmenergyexchangecustomers.entries() > 0 )
@@ -448,6 +448,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
             }
         }
     }
+#endif    
 }
 
 /*---------------------------------------------------------------------------
@@ -458,7 +459,8 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
 {
 
-
+#pragma message("!**** Energy Exchange programs don't know how to email their customers ****!")
+#ifdef OLD_EMAIL_MSG
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
     if( _lmenergyexchangecustomers.entries() > 0 )
@@ -497,6 +499,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
             }
         }
     }
+#endif    
 }
 
 /*---------------------------------------------------------------------------

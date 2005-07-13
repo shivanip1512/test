@@ -130,6 +130,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     double getCurrentLoadReduction();
     ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
 
+    void scheduleNotification(const RWDBDateTime& start_time, const RWDBDateTime& stop_time);
+    void scheduleStartNotification(const RWDBDateTime& start_time);
+    void scheduleStopNotification(const RWDBDateTime& stop_time);
+	
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -183,6 +187,8 @@ private:
     void ResetGroups();
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
+
+
     
     void restore(RWDBReader& rdr);
 };

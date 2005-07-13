@@ -13,6 +13,7 @@
 
 #include "msg_server_req.h"
 #include "msg_server_resp.h"
+#include "msg_signal.h"
 
 #include "executor.h"
 #include "clistener.h"
@@ -171,7 +172,7 @@ void CtiLMCommandExecutor::ChangeThreshold()
                         additional += " to: ";
                         _snprintf(tempchar,80,"%.*f",3,_command->getValue());
                         additional += tempchar;
-                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                        CtiLoadManager::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser(), NULL));
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - " << text << ", " << additional << endl;
@@ -1431,31 +1432,8 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
 
-    if(lmProgramDirect->getNotifyActiveOffset() != -1)
-    {
-	RWDBDateTime notifyStartTime(startTime);
-	notifyStartTime.addSeconds(-1*lmProgramDirect->getNotifyActiveOffset());
-	lmProgramDirect->setNotifyActiveTime(RWDBDateTime(notifyStartTime));
-
-	if( _LM_DEBUG & LM_DEBUG_STANDARD )
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " - " << " going to notify of start @: " << notifyStartTime.asString() << endl;	    
-	}
-    }
-
-    if(lmProgramDirect->getNotifyInactiveOffset() != -1)
-    {
-	RWDBDateTime notifyStopTime(stop);
-	notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
-	lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
-
-	if( _LM_DEBUG & LM_DEBUG_STANDARD )
-	{
-	    CtiLockGuard<CtiLogger> dout_guard(dout);
-	    dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
-	}
-    }
+    // Let any notification groups know if they care
+    lmProgramDirect->scheduleNotification(start, stop);
     
     if( stop.seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
     {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
@@ -1501,20 +1479,7 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setDirectStopTime(stopTime);
 
-	if(lmProgramDirect->getNotifyInactiveOffset() != -1)
-	{
-	    //Update the stop notifcation time
-	
-	    RWDBDateTime notifyStopTime(stopTime);
-	    notifyStopTime.addSeconds(lmProgramDirect->getNotifyInactiveOffset());
-	    lmProgramDirect->setNotifyInactiveTime(RWDBDateTime(notifyStopTime));
-
-	    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-	    {
-		CtiLockGuard<CtiLogger> dout_guard(dout);
-		dout << RWTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
-	    }	    
-	}
+	lmProgramDirect->scheduleStopNotification(stopTime);
 	
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);

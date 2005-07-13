@@ -21,6 +21,8 @@
 #include "mgr_holiday.h"
 #include "mgr_season.h"
 
+#include "msg_signal.h"
+
 #include "lmcontrolareastore.h"
 #include "lmcurtailcustomer.h"
 #include "lmenergyexchangecustomer.h"

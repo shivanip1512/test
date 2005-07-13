@@ -22,7 +22,6 @@
 #include "lmcurtailcustomer.h"
 #include "msg_pcrequest.h"
 #include "lmcontrolareatrigger.h"
-#include "msg_email.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -583,7 +582,8 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
 {
 
-
+#pragma message("!**** Curtailment Programs don't know how to email their customers ****!")
+#ifdef OLD_EMAIL_MSG
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
@@ -642,6 +642,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             multiDispatchMsg->insert(emailMsg);
         }
     }
+#endif    
 }
 
 /*---------------------------------------------------------------------------
@@ -652,7 +653,8 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
 void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg)
 {
 
-
+#pragma message("!**** Curtailment Programs don't know how to email their customers ****!")
+#ifdef OLD_EMAIL_MSG
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
         CtiEmailMsg* emailMsg = NULL;
@@ -718,6 +720,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             multiDispatchMsg->insert(emailMsg);
         }
     }
+#endif    
 }
 
 /*---------------------------------------------------------------------------

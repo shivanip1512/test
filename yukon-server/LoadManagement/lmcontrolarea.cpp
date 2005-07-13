@@ -15,6 +15,8 @@
 #include "yukon.h"
 
 #include "dbaccess.h"
+#include "msg_signal.h"
+
 #include "lmcontrolarea.h"
 #include "lmcontrolareatrigger.h"
 #include "lmid.h"
@@ -1257,6 +1259,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
             activePrograms++;
         }
     }
+
 
     if( fullyActivePrograms > 0 &&
         fullyActivePrograms >= _lmprograms.entries() )
