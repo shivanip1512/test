@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.UnknownRolePropertyException;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.notif.outputs.UnknownCustomerException;
+import com.cannontech.util.MBeanUtil;
 
 
 /**
@@ -19,6 +20,7 @@ public class NotificationQueue implements NotificationQueueMBean {
     private int _callsProcessed = 0;
     
     public NotificationQueue() {
+        MBeanUtil.tryRegisterMBean("name=NotificationCallQueue", this);
     }
 
     /**
