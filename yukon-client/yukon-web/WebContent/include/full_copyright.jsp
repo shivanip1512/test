@@ -1,4 +1,5 @@
 <%
+	int crStartYear = 2002;
 	int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
 	String crYears = String.valueOf(currentYear);
 	if (crStartYear < currentYear)

@@ -104,7 +104,7 @@
   <table width="740" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td align="center">
-        <% int crStartYear = 2002; %><%@ include file="../include/full_copyright.jsp" %>
+        <%@ include file="../include/full_copyright.jsp" %>
       </td>
     </tr>
   </table>
