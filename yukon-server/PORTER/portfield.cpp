@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.146 $
-* DATE         :  $Date: 2005/07/13 16:09:24 $
+* REVISION     :  $Revision: 1.147 $
+* DATE         :  $Date: 2005/07/14 17:19:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1201,6 +1201,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_ION8300:
                 case TYPECBC6510:
                 case TYPECBC7010:
+                case TYPECBC7020:
                 case TYPE_DNPRTU:
                 case TYPE_DARTRTU:
                 case TYPE_SERIESVRTU:
@@ -1219,7 +1220,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 if(Device->getType() == TYPE_SNPP)
                                 {
-                                    Port->close(0);//Close the port so it re-opens every time!
+                                    Port->close(0);  //  Close the port so it re-opens every time!
                                 }
 
                                 while( !ds->isTransactionComplete() )
@@ -1558,7 +1559,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             Port->close(0);         // 06062002 CGP  Make it reopen when needed.
                             Port->setTAP( FALSE );
 
-                            //Do Verification!
+                            //  Do verification!
                             queue< CtiVerificationBase * > verification_queue;
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
@@ -1589,7 +1590,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             status = PerformRequestedCmd (Port, Device, NULL, NULL, traceList);
 
-                            //Do Verification!
+                            //  Do verification!
                             queue< CtiVerificationBase * > verification_queue;
                             IED->getVerificationObjects(verification_queue);
                             PorterVerificationThread.push(verification_queue);
@@ -1999,6 +2000,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         }
                     case TYPECBC6510:
                     case TYPECBC7010:
+                    case TYPECBC7020:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -2118,6 +2120,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DAVIS:
                     case TYPECBC6510:
                     case TYPECBC7010:
+                    case TYPECBC7020:
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2827,7 +2830,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     case TYPE_CCU700:
     case TYPE_CCU710:
         {
-            unsigned short nack1, nack2;
+            unsigned short nack1 = 0, nack2 = 0;
 
             if(CommResult)
             {
