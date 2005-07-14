@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/06/23 15:48:06 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/07/14 16:46:03 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -189,6 +189,13 @@ void CtiPorterVerification::verificationThread( void )
 
                                         delete report;
                                         report = 0;
+
+                                        /*
+                                        if( (*itr)->complete() )
+                                        {
+                                            somehow reorder this one to the top so it gets written in a reasonable amount of time... ?
+                                        }
+                                        */
 
                                         break;
                                     }
