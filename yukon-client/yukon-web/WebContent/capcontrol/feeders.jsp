@@ -62,29 +62,30 @@ function toggleImg( imgID )
 	</tr>
 
 	<td>
-	<table width="95%" border="0" cellspacing="0" cellpadding="0"
-		align="center" height="30">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
 		<tr>
-			<td valign="bottom" colspan="2">
-
-			<div class="rAlign">
-			<cti:breadCrumb>
-				<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-				<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
-				<cti:crLink url="feeders.jsp" title="Feeders" cssClass="crumbs" />
-			</cti:breadCrumb>			
-			
-			<form id="findForm" action="results.jsp" method="post">
-				<p class="main">Find: <input type="text" name="searchCriteria">
-				<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
-			</form>
-
+          <td valign="top">
+			<div class="lAlign">
+				<form id="findForm" action="results.jsp" method="post">
+					<p class="main">Find: <input type="text" name="searchCriteria">
+					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
+				</form>
 			</div>
-			</td>
+          </td>
+
+          <td valign="top">
+	          <div class="rAlign">
+				<cti:breadCrumb>
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
+					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
+					<cti:crLink url="feeders.jsp" title="Feeders" cssClass="crumbs" />
+				</cti:breadCrumb>
+	          </div>
+          </td>
 		</tr>
 	</table>
 
-	<table width="95%" border="0" cellspacing="0" cellpadding="0">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
 			<td class="trimBGColor cellImgShort">Substation</td>
@@ -152,7 +153,7 @@ if( subBus != null ) {
 
 	<br>
 
-	<table width="95%" border="0" cellspacing="0" cellpadding="0">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td class="cellImgFill"><img src="images\Header_left.gif"
 				class="cellImgFill"></td>
@@ -236,7 +237,7 @@ for( int i = 0; i < feeders.length; i++ )
 
 	<br>
 
-	<table width="95%" border="0" cellspacing="0" cellpadding="0">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td class="cellImgFill"><img src="images\Header_left.gif"
 				class="cellImgFill"></td>
@@ -538,6 +539,6 @@ for( int i = 0; i < capBanks.length; i++ )
 
 </form>
 
-
+<%@include file="cbc_footer.jspf"%>
 
 </HTML>

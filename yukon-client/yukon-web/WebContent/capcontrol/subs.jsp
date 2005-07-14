@@ -40,26 +40,30 @@ var intSubID = -1;
   </tr>
 
     <td> 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
         <tr>
-          <td valign="bottom" colspan="2">
-            <div class="rAlign">
-				<cti:breadCrumb>
-					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
-				</cti:breadCrumb>
-
+          <td valign="top">
+			<div class="lAlign">
 				<form id="findForm" action="results.jsp" method="post">
 					<p class="main">Find: <input type="text" name="searchCriteria">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
-            </div>
+			</div>
+          </td>
+
+          <td valign="top">
+	          <div class="rAlign">
+				<cti:breadCrumb>
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
+					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
+				</cti:breadCrumb>
+	          </div>
           </td>
 
         </tr>
       </table>
 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
           <td class="trimBGColor cellImgShort">Substation Buses In Area:  <%=cbcSession.getLastArea()%></td>
@@ -213,5 +217,7 @@ for( int i = 0; i < areaSubs.length; i++ )
   </table>
 </div>
 </form>
+
+<%@include file="cbc_footer.jspf"%>
 
 </HTML>

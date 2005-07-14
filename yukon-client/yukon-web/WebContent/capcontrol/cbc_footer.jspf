@@ -1,0 +1,7 @@
+<!-- START Static Page Footer Include -->
+<div id="smCopyRight" class="rAlign">
+  <p><font color="#000000">
+	<%@ include file="../include/copyright.jsp" %>
+  </font></p>
+</div>
+<!-- END Static Page Footer Include -->

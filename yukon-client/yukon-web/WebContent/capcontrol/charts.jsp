@@ -21,8 +21,6 @@
 	}
 
 %>
-
-
   <table id="chartTable" width="505px" border="0" cellspacing="0" cellpadding="0">
     <tr> 
       <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>

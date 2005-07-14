@@ -37,25 +37,28 @@ pageEncoding="ISO-8859-1"
   </tr>
 
     <td> 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
-        <tr>
-          <td valign="bottom" colspan="2">
-            <div class="rAlign">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
+		<tr>
+          <td valign="top">
+			<div class="lAlign">
+				<form id="findForm" action="results.jsp" method="post">
+					<p class="main">Find: <input type="text" name="searchCriteria">
+					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
+				</form>
+			</div>
+          </td>
+
+          <td valign="top">
+	          <div class="rAlign">
 				<cti:breadCrumb>
 					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
 				</cti:breadCrumb>
-
-				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
-					<INPUT type="image" id="Go" src="images\GoButton.gif" alt="Find"></p>
-				</form>
-            </div>
+	          </div>
           </td>
-
-        </tr>
+		</tr>
       </table>
 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
           <td class="trimBGColor cellImgShort">Substation Bus Areas</td>
@@ -146,6 +149,8 @@ pageEncoding="ISO-8859-1"
     </td>
     
   </table>
+
+<%@include file="cbc_footer.jspf"%>
 
 </body>
 </HTML>

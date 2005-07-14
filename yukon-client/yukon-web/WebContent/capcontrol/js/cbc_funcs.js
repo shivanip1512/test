@@ -53,8 +53,19 @@ function validateData( elemName )
 // Any javascript that is needed to init a page
 // -------------------------------------------
 function init()
+{	
+}
+
+// -------------------------------------------
+// A fun method that may come in handy. Uses the DOM to dynamically
+//  include javascript files. Better than writting out HTML!
+// -------------------------------------------
+function includeJSinJS( jsFileName )
 {
-	
+	myscript = document.createElement('script');
+	myscript.type = 'text/javasript';
+	myscript.src = jsFileName; //'myscript.js'
+	document.getElementsByTagName('head')[0].appendChild(myscript);
 }
 
 // -------------------------------------------
@@ -383,7 +394,7 @@ function processMenuReq()
     {    
     	var req = getReq(manMsgID).req;
 
-		// ...processing statements go here...
+		//store the response of the request
  		response = req.responseText;
 
 		overlib(
@@ -391,6 +402,11 @@ function processMenuReq()
 
 		//always do this
 		freeReq( manMsgID );
+		
+		//Make up for bug in IE not respecting the min/max size attribute on
+		// pages. This call rescans for min/max attributes for the newly
+		// received HTML.
+		minmax_scan();
     }
 
 }

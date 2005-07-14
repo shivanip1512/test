@@ -56,26 +56,30 @@ pageEncoding="ISO-8859-1"
   </tr>
 
     <td> 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
-        <tr>
-          <td valign="bottom" colspan="2">
-            <div class="rAlign">
-				<cti:breadCrumb>
-					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-					<cti:crLink url="results.jsp" title="Results" cssClass="crumbs" />
-				</cti:breadCrumb>	          
-
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
+		<tr>
+          <td valign="top">
+			<div class="lAlign">
 				<form id="findForm" action="results.jsp" method="post">
 					<p class="main">Find: <input type="text" name="searchCriteria">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
-            </div>
+			</div>
           </td>
 
-        </tr>
+          <td valign="top">
+	          <div class="rAlign">
+				<cti:breadCrumb>
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
+					<cti:crLink url="results.jsp" title="Results" cssClass="crumbs" />
+				</cti:breadCrumb>
+	          </div>
+          </td>
+		</tr>
+
       </table>
 
-      <table width="95%" border="0" cellspacing="0" cellpadding="0">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
           <td class="trimBGColor cellImgShort">Search Resuls For: '<%=srchCriteria%>'   (<%=items.length%> found)</td>
@@ -133,5 +137,6 @@ for( int i = 0; i < items.length; i++ )
   </table>
 </body>
 
+<%@include file="cbc_footer.jspf"%>
 
 </HTML>
