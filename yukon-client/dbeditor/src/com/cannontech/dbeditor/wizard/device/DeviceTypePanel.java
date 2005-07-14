@@ -12,6 +12,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener 
 {
 	private javax.swing.JLabel ivjTypeLabel = null;
+	private int devicetype = 0;
 	//CHANGE THESE STRINGS TO CONSTANTS AT LEAST AND GET THE THE STRINGS
 	//BY CALLING DeviceTypes!!!!
 	String deviceCategory[] = {
@@ -352,6 +353,7 @@ public Object getValue(Object val)
 	String typeString = (String) getDeviceTypeList().getSelectedValue();
 
 	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType(typeString);
+	devicetype = type;
 	DeviceBase returnDevice = com.cannontech.database.data.device.DeviceFactory.createDevice(type);
 
 	return returnDevice;

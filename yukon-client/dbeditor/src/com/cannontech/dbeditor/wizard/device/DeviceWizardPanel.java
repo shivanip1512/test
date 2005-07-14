@@ -320,6 +320,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		else
 		{
 			getDeviceCommChannelPanel().setValue(null);
+			getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
+			getDeviceCommChannelPanel().setDeviceType(getDeviceTypePanel().getDeviceType());
 			return getDeviceCommChannelPanel();
 		}
 	}
