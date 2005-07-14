@@ -19,7 +19,5 @@
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5,7 +5,6 @@
 	<projects>
 		<project>dbeditor</project>
 		<project>esub</project>
-		<project>resource</project>
 		<project>tdc</project>
 		<project>trending</project>
 	</projects>
