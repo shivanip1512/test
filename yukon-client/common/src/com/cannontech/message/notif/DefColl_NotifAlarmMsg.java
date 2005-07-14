@@ -44,13 +44,16 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         super.restoreGuts(obj, vstr, polystr);
         NotifAlarmMsg msg = (NotifAlarmMsg) obj;
 
+        msg.notifGroupIds = new int[vstr.extractInt()];
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	msg.notifGroupIds[i] = vstr.extractInt();
+        }        
         msg.pointId = vstr.extractInt();
         msg.condition = vstr.extractInt();
         msg.value = vstr.extractDouble();
         msg.acknowledged = 
             vstr.restoreObject(SimpleMappings.CString).equals("y");
         msg.abnormal = vstr.restoreObject(SimpleMappings.CString).equals("y");
-        msg.categoryId = vstr.extractInt();
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -58,13 +61,15 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         super.saveGuts(obj, vstr, polystr);
         NotifAlarmMsg msg = (NotifAlarmMsg) obj;
 
+        vstr.insertInt(msg.notifGroupIds.length);
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	vstr.insertInt(msg.notifGroupIds[i]);
+        }        
         vstr.insertInt(msg.pointId);
         vstr.insertInt(msg.condition);
         vstr.insertDouble(msg.value);
         vstr.saveObject(msg.acknowledged ? "y" : "n", SimpleMappings.CString);
         vstr.saveObject(msg.abnormal ? "y" : "n", SimpleMappings.CString);
-        vstr.insertInt(msg.categoryId);
-
     }
 
 }
