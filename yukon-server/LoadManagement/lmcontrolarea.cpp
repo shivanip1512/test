@@ -1327,6 +1327,11 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
 		//so count this program as still active
 		num_active_programs++;
 	    }
+	    else
+	    {
+		// Let the world know we just auto stopped?
+		lm_program_direct->scheduleStopNotification(RWDBDateTime());		
+	    }
         }
 
 
@@ -1587,6 +1592,11 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
 		{
 		    stopped_program = true;
 		}
+		else
+		{
+		    // Let the world know we just auto stopped?
+		    lm_program_direct->scheduleStopNotification(RWDBDateTime());		
+		}
 	    }
 	}
     }
@@ -1721,6 +1731,9 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
             if( ((CtiLMProgramDirect*)currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901 ) )
             {
                 returnBOOL = TRUE;
+
+		// Let the world know we just auto stopped?
+		((CtiLMProgramDirect*)currentLMProgram)->scheduleStopNotification(RWDBDateTime());
 
                 if( !sentSignalMsg )
                 {
