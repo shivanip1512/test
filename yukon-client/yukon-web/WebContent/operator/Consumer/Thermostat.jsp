@@ -84,7 +84,7 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <%@ include file="../../include/therm_manual2.jsp" %>
 			  <p align="center" class="MainText">
-			    <% int crStartYear = 2003; %><%@ include file="../../include/copyright.jsp" %>
+			    <%@ include file="../../include/copyright.jsp" %>
 			  </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>

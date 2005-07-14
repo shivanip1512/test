@@ -107,7 +107,7 @@
 	}
 %>
 			  <p align="center" class="MainText">
-			    <% int crStartYear = 2003; %><%@ include file="../../../include/copyright.jsp" %>
+			    <%@ include file="../../../include/copyright.jsp" %>
 			  </p>
               <p align="center" class="MainText">&nbsp; </p>
             </div>

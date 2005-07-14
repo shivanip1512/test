@@ -175,7 +175,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 </table>
 <div align="center">
   <p><FONT COLOR="#ffffff">
-    <% int crStartYear = 2002; %><%@ include file="../include/copyright.jsp" %>
+    <%@ include file="../include/copyright.jsp" %>
   </FONT></p>
 </div>
 </body>
