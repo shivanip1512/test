@@ -40,7 +40,15 @@ pageEncoding="ISO-8859-1"
       <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="30">
 		<tr>
           <td valign="top">
-			<div class="lAlign">
+	          <div class="lAlign">
+				<cti:breadCrumb>
+					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
+				</cti:breadCrumb>
+	          </div>
+          </td>
+		
+          <td valign="top">
+			<div class="rAlign">
 				<form id="findForm" action="results.jsp" method="post">
 					<p class="main">Find: <input type="text" name="searchCriteria">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
@@ -48,13 +56,6 @@ pageEncoding="ISO-8859-1"
 			</div>
           </td>
 
-          <td valign="top">
-	          <div class="rAlign">
-				<cti:breadCrumb>
-					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-				</cti:breadCrumb>
-	          </div>
-          </td>
 		</tr>
       </table>
 
