@@ -32,6 +32,9 @@ public class MCT410AllPointCreate extends PointCreate
 		boolean voltage = true;
 		boolean kWLP= true;
 		boolean kWh = true;
+		boolean frozenPeakDemand = true;	//offset 21 (demandAcc)
+		boolean frozenMaxVolts = true;	//offset 24 (demandAcc)
+		boolean frozenMinVolts = true;	//offset 25 (demandAcc)
 	}
 
 
@@ -188,6 +191,48 @@ public class MCT410AllPointCreate extends PointCreate
 				pointID++;
 				addCount++;
 			}
+			if( createPoint.frozenPeakDemand)
+			{
+				multi.addDBPersistent(
+				        PointFactory.createDmdAccumPoint(
+						   "Frozen Peak Demand",
+						   new Integer(paobjectID),
+						   new Integer(pointID),
+						   PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						   PointUnits.UOMID_KW,
+						   multiplier) );
+				    CTILogger.info("Adding Frozen Peak Demand: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
+					pointID++;
+					addCount++;
+			}
+			if( createPoint.frozenMaxVolts)
+			{
+				multi.addDBPersistent(
+				        PointFactory.createDmdAccumPoint(
+						   "Frozen Max Volts",
+						   new Integer(paobjectID),
+						   new Integer(pointID),
+						   PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						   PointUnits.UOMID_VOLTS,
+						   multiplier) );
+				    CTILogger.info("Adding Frozen Max Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
+					pointID++;
+					addCount++;
+			}
+			if( createPoint.frozenMinVolts)
+			{
+				multi.addDBPersistent(
+				        PointFactory.createDmdAccumPoint(
+						   "Frozen Min Volts",
+						   new Integer(paobjectID),
+						   new Integer(pointID),
+						   PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
+						   PointUnits.UOMID_VOLTS,
+						   multiplier) );
+				    CTILogger.info("Adding Frozen Min Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
+					pointID++;
+					addCount++;
+			}
 		}
 	
 		boolean success = writeToSQLDatabase(multi);
@@ -212,7 +257,7 @@ public class MCT410AllPointCreate extends PointCreate
 	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
 	{
 		//All MCT410s 
-		return DeviceTypesFuncs.isMCT4XX(litePaobject_.getType());
+		return DeviceTypesFuncs.isMCT410(litePaobject_.getType());
 	}
 
 	/**
@@ -240,6 +285,13 @@ public class MCT410AllPointCreate extends PointCreate
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).kWLP = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).kWh = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenPeakDemand = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMaxVolts = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMinVolts = false;
+		
 		return false;
 	}	
 	
