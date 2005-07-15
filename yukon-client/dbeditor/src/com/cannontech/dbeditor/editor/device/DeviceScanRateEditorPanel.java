@@ -1913,7 +1913,7 @@ public void setDeviceType(int type)
 	{		
 		if( DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)  )
 		{
-			if(DeviceTypesFuncs.is410(type))
+			if(DeviceTypesFuncs.isMCT410(type))
 				getIntegrityRateCheckBox().setText("Demand & Voltage Rate");
 			else
 				getIntegrityRateCheckBox().setText("Demand & Status Rate");
