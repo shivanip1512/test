@@ -573,6 +573,7 @@ public static boolean isMCT4XX( int type )
 	switch (type)
 	{
 		case MCT410IL:
+		case MCT410CL:
 		case MCT470:  
 			return true;
 		default :
@@ -581,7 +582,7 @@ public static boolean isMCT4XX( int type )
 
 }
 
-public static boolean is410( int type )
+public static boolean isMCT410( int type )
 {
 	switch (type)
 	{
