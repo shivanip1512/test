@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
@@ -20,6 +21,7 @@ import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TransdataMarkV;
 import com.cannontech.database.data.device.TwoWayDevice;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -150,6 +152,80 @@ private javax.swing.JLabel getPortLabel() {
 public Dimension getPreferredSize() {
 	return new Dimension(350, 200);
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (4/30/2002 1:16:35 PM)
+ */
+private void checkAddress()
+{
+	// hit the database to check for dublicate address on non-dial up com channels
+	LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
+	if( port == null )
+		return;
+	
+	int portID = port.getLiteID();
+	if( (! PAOGroups.isDialupPort(port.getType())) && (DeviceTypesFuncs.isCCU(deviceType) 
+		 || DeviceTypesFuncs.isRTU(deviceType) ))
+	{
+	
+		java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
+												com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+		java.util.Vector devices = new java.util.Vector(5);
+
+		String sql = 
+				"select y.paoname " +
+				"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
+				TABLE_NAME + " d, " + "DeviceDirectCommSettings p " +
+				"where y.paobjectid= d.deviceid " +
+				"and d.address= " + address + " and y.paobjectid= p.deviceid and p.portid= " + portID;
+		try
+		{
+			stmt = conn.createStatement();
+			rset = stmt.executeQuery( sql.toString() );
+			
+			while( rset.next() )
+			{
+				devices.add( rset.getString(1) );
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
+			}
+			catch( java.sql.SQLException e2 )
+			{
+				CTILogger.error( e2.getMessage(), e2 );//something is up
+			}
+		}
+	
+		if( devices.size() > 0 )
+		{
+			//setErrorString("Physical address already used by another device");
+
+			javax.swing.JOptionPane.showMessageDialog(
+							this, 
+							"Physical address already used by another device on this com channel.", 
+							"Address Already Used",
+							
+							javax.swing.JOptionPane.WARNING_MESSAGE );
+
+			throw new CancelInsertException("Device was not inserted");
+		}
+	}
+
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -275,6 +351,8 @@ public Object getValue(Object val)
 		//newVal is a vector that contains: Transmitter device, a route & a status point
 		//and returned if device is a transmitter
 		
+		checkAddress();
+		
 		return newVal;
 	}
 	else if( DeviceTypesFuncs.isMeter(devType) 
@@ -373,7 +451,8 @@ private SmartMultiDBPersistent createPoints( DeviceBase val )
 				PointTypes.PT_OFFSET_KVAR_DEMAND,
 				com.cannontech.database.data.point.PointUnits.UOMID_KVAR) );
 	}				
-	
+
+
 	return smartDB;	
 }
 
@@ -532,60 +611,6 @@ public void setDeviceType( int deviceTypevar )
  */
 public boolean isInputValid()
 {
-	// hit the database to check for dublicate address on non-dial up com channels
-	com.cannontech.database.data.lite.LiteYukonPAObject port = ((com.cannontech.database.data.lite.LiteYukonPAObject)getPortComboBox().getSelectedItem());
-	int portID = port.getLiteID();
-	if((! PAOGroups.isDialupPort(port.getType())) && (com.cannontech.database.data.device.DeviceTypesFuncs.isCCU(deviceType) || com.cannontech.database.data.device.DeviceTypesFuncs.isRTU(deviceType) ))
-	{
-	
-	java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(
-												com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		java.util.Vector devices = new java.util.Vector(5);
-
-		String sql = 
-				"select y.paoname " +
-				"from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME + " y, " + 
-				TABLE_NAME + " d, " + "DeviceDirectCommSettings p " +
-				"where y.paobjectid= d.deviceid " +
-				"and d.address= " + address + " and y.paobjectid= p.deviceid and p.portid= " + portID;
-	try
-	{
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery( sql.toString() );
-		
-		while( rset.next() )
-		{
-			devices.add( rset.getString(1) );
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );//something is up
-		}
-	}
-	
-	if( devices.size() > 0 )
-	{
-		setErrorString("Physical address already used by another device");
-		return false;
-	}
-	
-	return true;
-	}
 	return true;
 }
 
