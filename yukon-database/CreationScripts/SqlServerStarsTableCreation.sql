@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/17/2005 11:40:31 AM                        */
+/* Created on:     7/15/2005 11:55:41 AM                        */
 /*==============================================================*/
 
 
@@ -864,6 +864,8 @@ insert into ECToGenericMapping values (-1, 1061, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1065, 'YukonSelectionList');
+
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key  (EnergyCompanyID, ItemID, MappingCategory)
 go

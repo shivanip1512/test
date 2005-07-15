@@ -1,6 +1,6 @@
 /*==============================================================*/
-/* DBMS name:      ORACLE Version 9i2                           */
-/* Created on:     5/17/2005 11:41:09 AM                        */
+/* DBMS name:      ORACLE Version 9i                            */
+/* Created on:     7/15/2005 11:56:20 AM                        */
 /*==============================================================*/
 
 
@@ -464,6 +464,8 @@ insert into ECToGenericMapping values (-1, 1061, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
 insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
+insert into ECToGenericMapping values (-1, 1065, 'YukonSelectionList');
+
 alter table ECToGenericMapping
    add constraint PK_ECTOGENERICMAPPING primary key (EnergyCompanyID, ItemID, MappingCategory);
 
