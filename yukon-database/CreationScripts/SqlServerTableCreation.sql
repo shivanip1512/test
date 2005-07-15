@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/15/2005 11:53:03 AM                        */
+/* Created on:     7/15/2005 1:40:01 PM                         */
 /*==============================================================*/
 
 
@@ -4129,8 +4129,9 @@ create table DynamicLMProgramDirect (
    StartTime            datetime             not null,
    StopTime             datetime             not null,
    TimeStamp            datetime             not null,
-   NotifyTime           datetime             not null,
-   StartedRampingOut    datetime             not null
+   NotifyActiveTime     datetime             not null,
+   StartedRampingOut    datetime             not null,
+   NotifyInactiveTime   numeric              not null
 )
 go
 
@@ -5313,12 +5314,13 @@ go
 /*==============================================================*/
 create table LMProgramDirect (
    DeviceID             numeric              not null,
-   NotifyOffset         numeric              not null,
+   NotifyActiveOffset   numeric              not null,
    Heading              varchar(40)          not null,
    MessageHeader        varchar(160)         not null,
    MessageFooter        varchar(160)         not null,
    TriggerOffset        float                not null,
-   RestoreOffset        float                not null
+   RestoreOffset        float                not null,
+   NotifyInactiveOffset numeric              not null
 )
 go
 

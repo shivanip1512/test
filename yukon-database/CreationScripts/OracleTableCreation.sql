@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/15/2005 11:54:38 AM                        */
+/* Created on:     7/15/2005 1:40:56 PM                         */
 /*==============================================================*/
 
 
@@ -2397,8 +2397,9 @@ create table DynamicLMProgramDirect  (
    StartTime            DATE                            not null,
    StopTime             DATE                            not null,
    TimeStamp            DATE                            not null,
-   NotifyTime           DATE                            not null,
-   StartedRampingOut    DATE                            not null
+   NotifyActiveTime     DATE                            not null,
+   StartedRampingOut    DATE                            not null,
+   NotifyInactiveTime   NUMBER                          not null
 );
 
 alter table DynamicLMProgramDirect
@@ -3345,12 +3346,13 @@ alter table LMProgramCurtailment
 /*==============================================================*/
 create table LMProgramDirect  (
    DeviceID             NUMBER                          not null,
-   NotifyOffset         NUMBER                          not null,
+   NotifyActiveOffset   NUMBER                          not null,
    Heading              VARCHAR2(40)                    not null,
    MessageHeader        VARCHAR2(160)                   not null,
    MessageFooter        VARCHAR2(160)                   not null,
    TriggerOffset        FLOAT                           not null,
-   RestoreOffset        FLOAT                           not null
+   RestoreOffset        FLOAT                           not null,
+   NotifyInactiveOffset NUMBER                          not null
 );
 
 alter table LMProgramDirect
