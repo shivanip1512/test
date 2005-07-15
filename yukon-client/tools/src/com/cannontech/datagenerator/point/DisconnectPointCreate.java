@@ -4,7 +4,9 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import com.cannontech.database.cache.functions.DBPersistentFuncs;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.StatusPoint;
 public class DisconnectPointCreate extends PointCreate
@@ -27,6 +29,12 @@ public class DisconnectPointCreate extends PointCreate
 	public boolean isDeviceValid(com.cannontech.database.data.lite.LiteYukonPAObject litePaobject_ )
 	{
 		int type = litePaobject_.getType();
+	    if( DeviceTypesFuncs.isMCT4XX(type))
+	    {
+	        MCT400SeriesBase mct = (MCT400SeriesBase)DBPersistentFuncs.retrieveDBPersistent(litePaobject_);
+	        if( mct.getDeviceMCT400Series().getDisconnectAddress().intValue() > -1)
+	            return true;
+	    }
 		return ( DeviceTypesFuncs.isDisconnectMCT(type) );
 	}
 
