@@ -233,7 +233,18 @@ private void checkAddress()
  */
 public Object getValue(Object val)
 {
-	Integer portID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
+	Integer portID = null;
+		
+	if( null == getPortComboBox().getSelectedItem() )
+	{
+		javax.swing.JOptionPane.showMessageDialog(
+			this, 
+			"Please create a com channel first.", 
+			"No Com Channels to Assign!",
+			javax.swing.JOptionPane.WARNING_MESSAGE );
+		throw new CancelInsertException("Device was not inserted");
+	}else portID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
+	
 	int devType = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase) val).getPAOType() );
 	
 	if( val instanceof PagingTapTerminal )
