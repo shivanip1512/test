@@ -92,6 +92,7 @@ private javax.swing.JRadioButton getDedicatedRadioButton() {
 			ivjDedicatedRadioButton.setName("DedicatedRadioButton");
 			ivjDedicatedRadioButton.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjDedicatedRadioButton.setText("Dedicated");
+			ivjDedicatedRadioButton.setSelected(true);
 			ivjDedicatedRadioButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			// user code begin {1}
 			// user code end
