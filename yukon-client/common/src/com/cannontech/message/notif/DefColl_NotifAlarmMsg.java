@@ -1,11 +1,9 @@
 package com.cannontech.message.notif;
-
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.*;
-import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     // RogueWave classId
@@ -51,9 +49,8 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         msg.pointId = vstr.extractInt();
         msg.condition = vstr.extractInt();
         msg.value = vstr.extractDouble();
-        msg.acknowledged = 
-            vstr.restoreObject(SimpleMappings.CString).equals("y");
-        msg.abnormal = vstr.restoreObject(SimpleMappings.CString).equals("y");
+        msg.acknowledged = (vstr.extractInt() != 0);
+        msg.abnormal = (vstr.extractInt()  != 0);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
@@ -68,8 +65,8 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
         vstr.insertInt(msg.pointId);
         vstr.insertInt(msg.condition);
         vstr.insertDouble(msg.value);
-        vstr.saveObject(msg.acknowledged ? "y" : "n", SimpleMappings.CString);
-        vstr.saveObject(msg.abnormal ? "y" : "n", SimpleMappings.CString);
+        vstr.insertUnsignedInt(msg.acknowledged ? 1 : 0);
+        vstr.insertUnsignedInt(msg.abnormal ? 1 : 0);
     }
 
 }
