@@ -16,7 +16,7 @@ public class MBeanUtil {
         System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.rmi.registry.RegistryContextFactory" );
         System.setProperty( Context.PROVIDER_URL, "rmi://localhost:1099" );
         
-        server = MBeanServerFactory.createMBeanServer("cti.yukon");
+        server = MBeanServerFactory.createMBeanServer("com.cannontech.yukon");
         
         try {
             ObjectName naming = new ObjectName("Naming:type=registry");
