@@ -50,7 +50,7 @@ public class ReportFactory
 	public static final FloatDimension REPORT_STYLE_DIMENSION = new FloatDimension(0, 48);
 
 	public static final FontDefinition GROUP_HEADER_BAND_FONT = new FontDefinition(DEFAULT_FONT, 10, true, false, false, false); 
-	public static final FloatDimension GROUP_HEADER_STYLE_DIMENSION = new FloatDimension(0, 18);
+	public static final FloatDimension GROUP_HEADER_STYLE_DIMENSION = new FloatDimension(0, 30);
 	
 	public static final FontDefinition ITEM_BAND_FONT = new FontDefinition(DEFAULT_FONT, 10, false, false, false, false);
 	public static final FloatDimension ITEM_BAND_STYLE_DIMENSION = new FloatDimension(0, 10);
