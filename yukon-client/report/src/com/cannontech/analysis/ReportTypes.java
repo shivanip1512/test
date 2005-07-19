@@ -14,6 +14,7 @@ import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
+import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
@@ -60,24 +61,25 @@ public class ReportTypes
 	public static final int ROUTE_DATA = 11;
 //	public static final int LOAD_PROFILE_DATA = 12;
 	public static final int LP_SETUP_DATA = 12;
+	public static final int LP_SUMMARY_DATA = 13;		//Extension of Point_Data_Summary_Data
 	
-	public static final int EC_ACTIVITY_LOG_DATA = 13;
-	public static final int EC_ACTIVITY_DETAIL_DATA = 14;
-	public static final int PROGRAM_DETAIL_DATA = 15;
+	public static final int EC_ACTIVITY_LOG_DATA = 14;
+	public static final int EC_ACTIVITY_DETAIL_DATA = 15;
+	public static final int PROGRAM_DETAIL_DATA = 16;
 	
-	public static final int EC_WORK_ORDER_DATA = 16;
+	public static final int EC_WORK_ORDER_DATA = 17;
 	
-	public static final int STARS_LM_SUMMARY_DATA = 17;
-	public static final int STARS_LM_DETAIL_DATA = 18;
-	public static final int STARS_AMR_SUMMARY_DATA = 19;	//TODO
-	public static final int STARS_AMR_DETAIL_DATA = 20;
+	public static final int STARS_LM_SUMMARY_DATA = 18;
+	public static final int STARS_LM_DETAIL_DATA = 19;
+	public static final int STARS_AMR_SUMMARY_DATA = 20;	//TODO
+	public static final int STARS_AMR_DETAIL_DATA = 21;
 
 	/** Cap Bank Reports */
-	public static final int CBC_BANK_DATA = 21;
-	public static final int CAP_CONTROL_NEW_ACTIVITY_DATA = 22;
+	public static final int CBC_BANK_DATA = 22;
+	public static final int CAP_CONTROL_NEW_ACTIVITY_DATA = 23;
 
-	public static final int POINT_DATA_INTERVAL_DATA = 23;	//Coincidental
-	public static final int POINT_DATA_SUMMARY_DATA = 24;	//Peaks/Usage
+	public static final int POINT_DATA_INTERVAL_DATA = 24;	//Coincidental
+	public static final int POINT_DATA_SUMMARY_DATA = 25;	//Peaks/Usage
 	
 	private static Class[] typeToClassMap =
 	{
@@ -95,6 +97,7 @@ public class ReportTypes
 		RouteMacroModel.class,
 		RouteDBModel.class,
 		LPSetupDBModel.class,
+		LPDataSummaryModel.class,
 		
 		ActivityModel.class,
 		ActivityDetailModel.class,
@@ -130,6 +133,7 @@ public class ReportTypes
 	public static final String ROUTE_DATA_STRING = "Route Data";
 //	public static final String LOAD_PROFILE_DATA_STRING = "Load Profile Data";
 	public static final String LP_SETUP_DATA_STRING = "Load Profile Setup Data";
+	public static final String LP_SUMMARY_DATA_STRING = "Load Profile Summary Data";
 
 	public static final String EC_ACTIVITY_LOG_DATA_STRING = "Activity Log - Summary";
 	public static final String EC_ACTIVITY_DETAIL_DATA_STRING = "Activity Log - Detail";
@@ -164,6 +168,7 @@ public class ReportTypes
 		CARRIER_ROUTE_MACRO_DATA_STRING,
 		ROUTE_DATA_STRING,
 		LP_SETUP_DATA_STRING,
+		LP_SUMMARY_DATA_STRING,
 
 		EC_ACTIVITY_LOG_DATA_STRING,
 		EC_ACTIVITY_DETAIL_DATA_STRING,
@@ -220,7 +225,7 @@ public class ReportTypes
 	private static int[][] groupToTypeMap = {
 		{POINT_DATA_INTERVAL_DATA, POINT_DATA_SUMMARY_DATA, 
 			EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//archive data, admin log reports
-		{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA },	//amr reports
+		{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA},		//lm reports
 		{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA }, //cap control reports

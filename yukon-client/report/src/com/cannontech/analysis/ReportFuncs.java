@@ -6,8 +6,6 @@
  */
 package com.cannontech.analysis;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
@@ -21,8 +19,6 @@ import org.jfree.report.modules.output.pageable.pdf.PDFOutputTarget;
 import com.cannontech.analysis.report.*;
 import com.cannontech.analysis.tablemodel.*;
 import com.keypoint.PngEncoder;
-import com.klg.jclass.util.swing.encode.EncoderException;
-import com.klg.jclass.util.swing.encode.page.PDFEncoder;
 
 /**
  * @author snebben
@@ -63,6 +59,8 @@ public class ReportFuncs
 	        returnVal = new RouteDBReport();
 	    else if( model instanceof LPSetupDBModel)
 	        returnVal = new LPSetupDBReport();
+	    else if( model instanceof LPDataSummaryModel)
+	        returnVal = new LPDataSummaryReport();
 	    else if( model instanceof ActivityDetailModel)
 	        returnVal = new ECActivityDetailReport();
 	    else if( model instanceof ProgramDetailModel)
@@ -95,13 +93,6 @@ public class ReportFuncs
 	public static void outputYukonReport(JFreeReport report, String ext, OutputStream out)
 		throws Exception
 	{
-		PageDefinition pageDefinition = report.getPageDefinition();
-		//create buffered image
-		BufferedImage image = createImage(pageDefinition);
-		final Graphics2D g2 = image.createGraphics();
-		g2.setPaint(Color.white);
-		g2.fillRect(0,0, (int) pageDefinition.getWidth(), (int) pageDefinition.getHeight());
-		
 		if (ext.equalsIgnoreCase("pdf"))
 		{
 		    final PDFOutputTarget target = new PDFOutputTarget(out);
@@ -114,7 +105,6 @@ public class ReportFuncs
 			target.open();
 			processor.processReport();
 			target.close();
-			encodePDF(out, image);
 		}
 		else if (ext.equalsIgnoreCase("png"))
 		{
@@ -167,23 +157,6 @@ public class ReportFuncs
 		//write the report to the temp file
 		final BufferedImage bi = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_BYTE_INDEXED);
 		return bi;
-	}
-	
-	public static void encodePDF(java.io.OutputStream out, Image image) throws java.io.IOException
-	{
-		try
-		{
-			PDFEncoder encoder = new PDFEncoder();
-			encoder.encode(image, out);
-		}		
-		catch( java.io.IOException io )
-		{
-			io.printStackTrace();
-		}
-		catch( EncoderException ee )
-		{
-			ee.printStackTrace();
-		}
 	}
 
 	public static void encodePNG(java.io.OutputStream out, Image image) throws java.io.IOException
