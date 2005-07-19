@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,7 +19,6 @@ import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.ModelFactory;
 
 /**
@@ -73,7 +73,7 @@ public class MeterReadModel extends ReportModelBase
 	private static String ATT_METER_READ_TYPE = "meterReadType";
 	private static final String ATT_ORDER_BY = "orderBy";
 	
-	public Comparator meterReadComparator = new java.util.Comparator()
+	public class MeterReadComparator implements Comparator, Serializable
 	{
 		public int compare(Object o1, Object o2){
 	        LiteDeviceMeterNumber ldmn1 = DeviceFuncs.getLiteDeviceMeterNumber( ((MeterAndPointData)o1).getPaobjectID().intValue());
@@ -130,6 +130,8 @@ public class MeterReadModel extends ReportModelBase
 			return false;
 		}
 	};
+	
+	public MeterReadComparator meterReadComparator = new MeterReadComparator();
 
 	/**
 	 * 
@@ -303,14 +305,6 @@ public class MeterReadModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	 public String getDateRangeString()
-	 {
-		 return (getDateFormat().format(getStartDate()) + " through " +
-					(getDateFormat().format(getStopDate())));
-	 }
 	 
 	 private String getInclusiveSQLString()
 	 {
@@ -340,11 +334,11 @@ public class MeterReadModel extends ReportModelBase
 				{
 				    if( ldmn == null)
 				        return NULL_STRING;
-				    if( getFilterModelType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+				    if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
 				        return ldmn.getTestCollGroup();
-				    else if( getFilterModelType() == DeviceMeterGroup.BILLING_GROUP)
+				    else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
 				        return ldmn.getBillGroup();
-				    else //if( getFilterModelType() == DeviceMeterGroup.COLLECTION_GROUP)
+				    else //if( getFilterModelType() == ModelFactory.COLLECTION_GROUP)
 				        return ldmn.getCollGroup();
 				}
 				case DEVICE_NAME_COLUMN:
@@ -368,7 +362,7 @@ public class MeterReadModel extends ReportModelBase
 				{
 				    if( ldmn == null)
 				        return NULL_STRING;
-				    if( getFilterModelType() == DeviceMeterGroup.COLLECTION_GROUP)
+				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
 				        return ldmn.getTestCollGroup();
 				    else 
 				        return ldmn.getCollGroup();
@@ -377,7 +371,7 @@ public class MeterReadModel extends ReportModelBase
 				{
 				    if( ldmn == null)
 				        return NULL_STRING;
-				    if( getFilterModelType() == DeviceMeterGroup.BILLING_GROUP)
+				    if( getFilterModelType() == ModelFactory.BILLING_GROUP)
 				        return ldmn.getTestCollGroup();
 				    else 
 				        return ldmn.getBillGroup();
@@ -394,7 +388,7 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
-		    if(getFilterModelType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+		    if(getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
 		    {
 				columnNames = new String[]{
 					ALT_GROUP_NAME_STRING,
@@ -407,7 +401,7 @@ public class MeterReadModel extends ReportModelBase
 					BILLING_GROUP_NAME_STRING
 				};
 		    }
-		    else if(getFilterModelType() == DeviceMeterGroup.BILLING_GROUP)
+		    else if(getFilterModelType() == ModelFactory.BILLING_GROUP)
 		    {
 				columnNames = new String[]{
 					BILLING_GROUP_NAME_STRING,
@@ -492,11 +486,11 @@ public class MeterReadModel extends ReportModelBase
     	    title += "Missed ";
 	    	    
 		title += "Meter Data";
-		if( getFilterModelType() == DeviceMeterGroup.COLLECTION_GROUP)
+		if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
 		    title += " By Collection Group";
-		else if( getFilterModelType() == DeviceMeterGroup.TEST_COLLECTION_GROUP)
+		else if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
 		    title += " By Alternate Group";
-		else if( getFilterModelType() == DeviceMeterGroup.BILLING_GROUP)
+		else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
 		    title += " By Billing Group";
 		return title;
 	}
@@ -521,11 +515,11 @@ public class MeterReadModel extends ReportModelBase
 		switch (orderBy)
 		{
 			case ORDER_BY_DEVICE_NAME:
-				return "Order By Device Name";
+				return "Device Name";
 			case ORDER_BY_METER_NUMBER:
-				return "Order By Meter Number";
+				return "Meter Number";
 			case ORDER_BY_ROUTE_NAME:
-			    return "Order By Route Name";
+			    return "Route Name";
 		}
 		return "UNKNOWN";
 	}
@@ -587,7 +581,16 @@ public class MeterReadModel extends ReportModelBase
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
 
-		
+
+		html += "    <td valign='middle'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='button' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
@@ -609,14 +612,13 @@ public class MeterReadModel extends ReportModelBase
 				setOrderBy(Integer.valueOf(param).intValue());
 			else
 				setOrderBy(ORDER_BY_DEVICE_NAME);
-							
 		}
 	}
 	/**
 	 * Override ReportModelBase in order to reset the column headings.
 	 * @param i
 	 */
-	public void setBillingGroupType(int billGroupType)
+	public void setFilterModelType(int billGroupType)
 	{
 		if( getFilterModelType() != billGroupType)
 			columnNames = null;
