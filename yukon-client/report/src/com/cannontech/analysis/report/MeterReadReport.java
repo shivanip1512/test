@@ -78,7 +78,7 @@ public class MeterReadReport extends YukonReportBase
 		Date start = cal.getTime();
 		
 		MeterReadModel model = new MeterReadModel(start);
-		model.setBillingGroupType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
+		model.setFilterModelType(DeviceMeterGroup.TEST_COLLECTION_GROUP);
 		YukonReportBase meterReadReport =new MeterReadReport(model);
 		meterReadReport.getModel().collectData();
 		
