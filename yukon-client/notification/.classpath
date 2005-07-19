@@ -19,6 +19,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry sourcepath="D:/jakarta-log4j-1.2/src/java/log4j12.jar" kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
