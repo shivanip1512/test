@@ -3,8 +3,6 @@ package com.cannontech.message.notif;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
-
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -69,13 +67,9 @@ public class DefColl_NotifCustomerEmailMsg extends com.cannontech.message.util.D
 		NotifCustomerEmailMsg nEmailMsg = (NotifCustomerEmailMsg) obj;
 
 
-		nEmailMsg.setTo( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setCustomerID( vstr.extractInt() );
 		nEmailMsg.setSubject( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setBody( (String)vstr.restoreObject(SimpleMappings.CString) );
-		nEmailMsg.setTo_CC( (String)vstr.restoreObject(SimpleMappings.CString) );
-		nEmailMsg.setTo_BCC( (String)vstr.restoreObject(SimpleMappings.CString) );
-		nEmailMsg.setAttachments( (Vector)vstr.restoreObject( polystr ) );
 	}
 	
 	/**
@@ -87,12 +81,8 @@ public class DefColl_NotifCustomerEmailMsg extends com.cannontech.message.util.D
 		NotifCustomerEmailMsg nEmailMsg = (NotifCustomerEmailMsg) obj;
 		
 		
-		vstr.saveObject( nEmailMsg.getTo(), SimpleMappings.CString );
 		vstr.insertInt( nEmailMsg.getCustomerID() );
 		vstr.saveObject( nEmailMsg.getSubject(), SimpleMappings.CString );
 		vstr.saveObject( nEmailMsg.getBody(), SimpleMappings.CString );
-		vstr.saveObject( nEmailMsg.getTo_CC(), SimpleMappings.CString );
-		vstr.saveObject( nEmailMsg.getTo_BCC(), SimpleMappings.CString );
-		vstr.saveObject( nEmailMsg.getAttachments(), polystr);
 	}
 }
