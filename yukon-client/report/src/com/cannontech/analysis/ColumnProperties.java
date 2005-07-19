@@ -1,12 +1,14 @@
 package com.cannontech.analysis;
 
+import java.io.Serializable;
+
 /**
  * Created on Oct 10, 2003 
  * @author snebben
  *
  * Properties for a tableModel's JFreeReport display/location.
  */
-public class ColumnProperties
+public class ColumnProperties implements Serializable
 {
 	/** X absolute position */ 
 	private float positionX = 0;
@@ -14,8 +16,7 @@ public class ColumnProperties
 	private float positionY = 1;
 	/** Minimum width */
 	private float width = 100;
-	/** @deprecated Minimum height */
-	private float height = 9;
+
 	/** Value display format, null implies basic String/Text display */
 	private String valueFormat = null;
 		
@@ -35,16 +36,6 @@ public class ColumnProperties
 		width = width_;
 		valueFormat = valueFormat_;
 	}
-
-	/**
-	 * Returns the height
-	 * @deprecated
-	 * @return float height.
-	 */
-//	public float getHeight()
-//	{
-//		return height;
-//	}
 
 	/**
 	 * Returns the positionX
@@ -71,16 +62,6 @@ public class ColumnProperties
 	public float getWidth()
 	{
 		return width;
-	}
-
-	/**
-	 * Set the height
-	 * @deprecated
-	 * @param float height_
-	 */
-	public void setHeight(float height_)
-	{
-		height = height_;
 	}
 
 	/**
