@@ -41,7 +41,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 {
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	public String NULL_STRING = "---";
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
 	protected String columnDateTimeFormat = "MM/dd/yyyy HH:mm:ss";
 	protected String columnValueFormat = "#,##0.000";
 	private TimeZone timeZone = TimeZone.getDefault();		
@@ -330,21 +330,20 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "<SCRIPT>" + LINE_SEPARATOR;
 		html += "function disableGroup(form){" + LINE_SEPARATOR;
 		html += "  if (form.paoIDs) {" + LINE_SEPARATOR;
-		html += "    var typeGroup = form.paoIDs;" + LINE_SEPARATOR;
-		html += "    for (var i = 0; i < typeGroup.length; i++) {" + LINE_SEPARATOR;
-		html += "      typeGroup[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;
-		html += "      typeGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
-		html += "    }" + LINE_SEPARATOR;
+		html += "    uncheckAll(form, form.paoIDs)" + LINE_SEPARATOR;
 		html += "  }" + LINE_SEPARATOR;
-		html += "  if (form.billGroupValues) {" + LINE_SEPARATOR;
-		html += "    var billGroup = form.billGroupValues;" + LINE_SEPARATOR;
-		html += "    for (var i = 0; i < billGroup.length; i++) {" + LINE_SEPARATOR;
-		html += "      billGroup[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;
-		html += "      billGroup[i].selectedIndex = -1;" + LINE_SEPARATOR;
-		html += "    }" + LINE_SEPARATOR;
+		html += "  if (form.filterValues) {" + LINE_SEPARATOR;
+		html += "    uncheckAll(form, form.filterValues)" + LINE_SEPARATOR;
 		html += "  }" + LINE_SEPARATOR;
 		html += "}" + LINE_SEPARATOR;
 
+		html += "function uncheckAll(form, group){" + LINE_SEPARATOR;
+		html += "  for (var i = 0; i < group.length; i++) {" + LINE_SEPARATOR;
+		html += "    group[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;		
+		html += "    group[i].selectedIndex = -1;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+		
 		if (getFilterModelTypes() != null)
 		{
 			html += "function changeFilter(filterBy) {" + LINE_SEPARATOR;
@@ -417,6 +416,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			html += "      <div id='DivSelectAll' style='displaytrue'>" + LINE_SEPARATOR;
 			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='disableGroup(document.reportForm);'>Select All" + LINE_SEPARATOR;
 			html += "      </div>" + LINE_SEPARATOR;
+			html += "      <div id='DivSelectNone' style='displaytrue'>" + LINE_SEPARATOR;			
+			html += "        <input type='button' value='Unselect All' onclick='disableGroup(document.reportForm);'/>";
+			html += "      </div>" + LINE_SEPARATOR;
+			    
 		}
 		html += "    </td>" + LINE_SEPARATOR;
 		html += "  </tr>" + LINE_SEPARATOR;
@@ -582,6 +585,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	            return cache.getAllLMControlAreas();
 	        case ModelFactory.LMGROUPS:
 	            return cache.getAllLMGroups();
+	        case ModelFactory.DEVICE:
+	            return cache.getAllDevices();
 	        case ModelFactory.MCT:
 	            return cache.getAllMCTs();
 	        case ModelFactory.COLLECTIONGROUP:
