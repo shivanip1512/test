@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_ngroup.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:12 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/07/19 22:48:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,25 +35,11 @@ using namespace std;
 
 class IM_EX_CTIYUKONDB CtiTableNotificationGroup : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
-public:
-
-   typedef set< CtiTableNotificationDestination > DESTINATIONSET;
-
 protected:
 
    LONG                 _notificationGroupID;
    RWCString            _groupName;
-
-   RWCString            _emailFromAddress;
-   RWCString            _emailSubject;
-   RWCString            _emailMessage;
-
-   RWCString            _numericPagerMessage;
-
    BOOL                 _groupDisabled;
-
-   DESTINATIONSET       _destinationSet;
-
    bool                 _isDirty;
 
 
@@ -74,29 +60,18 @@ public:
 
    LONG getGroupID() const;
    RWCString getGroupName() const;
-   RWCString getEmailFromAddress() const;
-   RWCString getEmailSubject() const;
-   RWCString getEmailMessage() const;
-   RWCString getNumericPagerMessage() const;
-   DESTINATIONSET getDestinations() const;
    BOOL isDisabled() const;
    vector<int> getRecipientVector();
 
 
    CtiTableNotificationGroup& setGroupID( const LONG &aRef );
    CtiTableNotificationGroup& setGroupName( const RWCString &aStr );
-   CtiTableNotificationGroup& setEmailFromAddress( const RWCString &aStr );
-   CtiTableNotificationGroup& setEmailSubject( const RWCString &aStr );
-   CtiTableNotificationGroup& setEmailMessage( const RWCString &aStr );
-   CtiTableNotificationGroup& setNumericPagerMessage( const RWCString &aStr );
    CtiTableNotificationGroup& setDisabled( const BOOL b = TRUE );
-   CtiTableNotificationGroup& setDestinations( const DESTINATIONSET dest );
    CtiTableNotificationGroup& setDirty( bool dirt );
 
    bool isDirty() const;
 
    void dump() const;
-   void dumpDestinations() const;
 
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static RWCString getTableName();

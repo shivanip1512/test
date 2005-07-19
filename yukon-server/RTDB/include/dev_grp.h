@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/06/14 20:19:19 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@
 #include "cparms.h"
 #include "msg_lmcontrolhistory.h"
 #include "msg_pcrequest.h"
+#include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_multi.h"
 #include "pt_status.h"

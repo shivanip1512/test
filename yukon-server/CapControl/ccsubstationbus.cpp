@@ -14,7 +14,10 @@
 #include "yukon.h"
 
 #include <rw/tpsrtvec.h>
+
 #include "dbaccess.h"
+#include "msg_signal.h"
+
 #include "ccsubstationbus.h"
 #include "ccid.h"
 #include "cccapbank.h"

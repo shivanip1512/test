@@ -8,19 +8,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/04/28 20:10:51 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include "logger.h"
 #include "utility.h"
 #include "porter.h"  //  for the RESULT EventCode flag
 
 #include "cparms.h"
+#include "msg_signal.h"
 
 #include "prot_ion.h"
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/14 02:25:44 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
                                  unsigned   attrib      ,
                                  unsigned   limit       ,
                                  int        pri         ,
-                                 unsigned   millis      ) :
+                                 unsigned   millis) :
    _id(id),
    _value(value),
    _quality(quality),

@@ -14,6 +14,8 @@
 #include "yukon.h"
 
 #include "dbaccess.h"
+#include "msg_signal.h"
+
 #include "ccsubstationbus.h"
 #include "ccid.h"
 #include "cccapbank.h"

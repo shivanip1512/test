@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,13 +22,14 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 #include "logger.h"
 #include "msg_signal.h"
+#include "msg_pdata.h"
 #include "utility.h"
 
 RWDEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
 unsigned int CtiSignalMsg::_instanceCount = 0;
 
-CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri, unsigned millis) :
+CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, int lt, unsigned cls, RWCString usr, unsigned tag, int pri, unsigned millis, CtiPointDataMsg* point_data) :
    Inherited(pri),
    _id(pid),
    _logType(lt),
@@ -38,7 +39,8 @@ CtiSignalMsg::CtiSignalMsg(long pid, int soe, RWCString text, RWCString addl, in
    _tags(tag),
    _condition(-1),
    _logid(0),
-   _signalMillis(millis)
+   _signalMillis(millis),
+   _point_data(point_data)
 {
    _instanceCount++;
    Inherited::setSOE(soe);
@@ -72,6 +74,14 @@ CtiSignalMsg& CtiSignalMsg::operator=(const CtiSignalMsg& aRef)
       _condition     = aRef.getCondition();
       _logid         = aRef.getLogID();
       _user          = aRef.getUser();
+      if(aRef.getPointData() != NULL)
+      {
+	  _point_data    = (CtiPointDataMsg*)aRef.getPointData()->replicateMessage();
+      }
+      else
+      {
+	  _point_data = NULL;
+      }
    }
    return *this;
 }
@@ -156,6 +166,17 @@ CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
    }
 
    return *this;
+}
+
+const CtiPointDataMsg* CtiSignalMsg::getPointData() const
+{
+    return _point_data;
+}
+
+CtiSignalMsg& CtiSignalMsg::setPointData(CtiPointDataMsg* pdata)
+{
+    _point_data = pdata;
+    return *this;
 }
 
 void CtiSignalMsg::dump() const

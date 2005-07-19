@@ -288,7 +288,7 @@ void CtiLoadManager::controlLoop()
 
                     if( currentControlArea->isManualControlReceived() )
                     {
-                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg);
+                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
                     }
 
 //                    if( !currentControlArea->getDisableFlag() ) // how about control area windows?
@@ -315,14 +315,14 @@ void CtiLoadManager::controlLoop()
                                 if( currentControlArea->getControlInterval() != 0 ||
                                     currentControlArea->isThresholdTriggerTripped() )
                                 {
-                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg);
+                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
                                 }
                                 else
                                 {
                                     //Special Case: if only a status trigger is tripped and the control interval is 0,
                                     //then we need make the control area fully active.  If some of the programs are disabled
                                     //or out of their control windows they will not be controlled
-                                    currentControlArea->takeAllAvailableControlAreaLoad(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg);
+                                    currentControlArea->takeAllAvailableControlAreaLoad(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
                                 }
                                 currentControlArea->setUpdatedFlag(TRUE);
                                 }
@@ -342,13 +342,13 @@ void CtiLoadManager::controlLoop()
 			    if(currentControlArea->getControlAreaState() != CtiLMControlArea::InactiveState &&
 			       currentControlArea->isPastMinResponseTime(secondsFrom1901) )
 			    {
-				if(currentControlArea->stopProgramsBelowThreshold(secondsFrom1901, multiPilMsg, multiDispatchMsg))
+				if(currentControlArea->stopProgramsBelowThreshold(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg))
 				{
 				    //don't have to do anything, just don't take any stop priorities
 				}
 				else if(currentControlArea->shouldReduceControl())
 				{
-				    currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg);
+				    currentControlArea->reduceControlAreaControl(secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
 				}
 			    }
 
@@ -371,7 +371,7 @@ void CtiLoadManager::controlLoop()
 			{
 			    //CtiLockGuard<CtiLogger> logger_guard(dout);
 			    //dout << RWTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-			    if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,examinedControlAreaForControlNeededFlag) )
+			    if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
 			    {
 				currentControlArea->setUpdatedFlag(TRUE);
 			    }
@@ -390,7 +390,7 @@ void CtiLoadManager::controlLoop()
                              (currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                               currentControlArea->getControlAreaState() == CtiLMControlArea::ActiveState) )
                     {
-                        if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, secondsFrom1901) )
+                        if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;

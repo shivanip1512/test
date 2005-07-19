@@ -11,6 +11,8 @@
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "msg_signal.h"
+
 #include "ccclientlistener.h"
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"

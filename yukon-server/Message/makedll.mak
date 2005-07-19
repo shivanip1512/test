@@ -36,10 +36,10 @@ message.obj \
 msg_cmd.obj \
 msg_commerrorhistory.obj \
 msg_dbchg.obj \
-msg_email.obj \
 msg_lmcontrolhistory.obj \
 msg_multi.obj \
 msg_multiwrap.obj \
+msg_notif_alarm.obj \
 msg_notif_email.obj \
 msg_notif_email_attachment.obj \
 msg_notif_lmcontrol.obj \
@@ -147,26 +147,27 @@ msg_commerrorhistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_commerrorhistory.h message.h
 msg_dbchg.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		msg_dbchg.h message.h dlldefs.h ctibase.h ctinexus.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h
-msg_email.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h msg_email.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h message.h
+		netports.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h
 msg_lmcontrolhistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		collectable.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		msg_lmcontrolhistory.h pointdefs.h message.h
 msg_multi.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		msg_multi.h dlldefs.h msg_pdata.h pointdefs.h message.h \
-		msg_signal.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h logger.h thread.h
+		msg_signal.h ctibase.h ctinexus.h netports.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h logger.h \
+		thread.h
 msg_multiwrap.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h msg_multiwrap.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		msg_signal.h
+msg_notif_alarm.obj:	yukon.h precompiled.h ctidbgmem.h \
+		msg_notif_alarm.h dlldefs.h message.h collectable.h rwutil.h \
+		boost_time.h
 msg_notif_email.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_notif_email.h collectable.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dsm2.h message.h msg_email.h msg_notif_email_attachment.h
+		dsm2.h message.h msg_notif_email_attachment.h
 msg_notif_email_attachment.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_notif_email_attachment.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h dllbase.h os2_2w32.h types.h cticalls.h \
@@ -186,7 +187,8 @@ msg_pdata.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 msg_ptchg.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h msg_ptchg.h \
 		msg_pdata.h pointdefs.h message.h msg_signal.h ctibase.h \
-		ctinexus.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
+		ctinexus.h netports.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h
 msg_ptreg.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h msg_ptreg.h \
 		message.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h

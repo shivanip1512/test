@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/05/27 02:34:36 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/07/19 22:48:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,36 +47,6 @@ IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);
 IM_EX_CTIBASE double limitValue(double input, double min, double max);
-
-
-// SendMail defines /////////////////////////////////////////////
-
-#define SMTP_PORT       25
-#define MAX_LINE_SIZE   1024
-#define MAX_NAME_SIZE   64
-
-
-// SendMail data structures /////////////////////////////////////
-typedef struct SENDMAIL
-{
-   LPCTSTR lpszHost;          // host name or dotted IP address
-   LPCTSTR lpszSender;        // sender userID (optional)
-   LPCTSTR lpszSenderName;    // sender display name (optional)
-   LPCTSTR lpszRecipient;     // recipient userID
-   LPCTSTR lpszRecipientName; // recipient display name (optional)
-   LPCTSTR lpszReplyTo;       // reply to userID (optional)
-   LPCTSTR lpszReplyToName;   // reply to display name (optional)
-   LPCTSTR lpszMessageID;     // message ID (optional)
-   LPCTSTR lpszSubject;       // subject of message
-   LPCTSTR lpszMessage;       // message text
-   BOOL    bLog;              // if TRUE, log messages to file
-} SENDMAIL;
-
-
-
-
-// SendMail exported functions //////////////////////////////////
-IM_EX_CTIBASE BOOL SendMail( struct SENDMAIL *pMail, int *pResult );
 
 typedef struct
 {

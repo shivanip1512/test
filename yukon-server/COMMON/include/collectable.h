@@ -5,12 +5,13 @@
 /*
  *  Defines for DEFINE_COLLECTABLES
  */
-
+#define NOTIF_CUST_EMAIL_MSG_ID           701
 #define NOTIF_EMAIL_MSG_ID                702
 #define NOTIF_EMAIL_ATTCH_MSG_ID          703
 #define NOTIF_VOICE_MSG_ID                704
 #define NOTIF_ALARM_MSG_ID                706
 #define NOTIF_LMCONTROL_MSG_ID            707
+
 
 
 #define MSG_BASE                          1500
@@ -30,7 +31,6 @@
 #define MSG_TAG                           ((MSG_BASE) + 94)
 #define MSG_POINTDATA                     ((MSG_BASE) + 95)
 #define MSG_SIGNAL                        ((MSG_BASE) + 96)
-#define MSG_EMAIL                         ((MSG_BASE) + 97)
 #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
 #define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
 

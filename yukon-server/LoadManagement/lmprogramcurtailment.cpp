@@ -21,6 +21,7 @@
 #include "lmprogramcurtailment.h"
 #include "lmcurtailcustomer.h"
 #include "msg_pcrequest.h"
+#include "msg_notif_email.h"
 #include "lmcontrolareatrigger.h"
 
 extern ULONG _LM_DEBUG;
@@ -420,7 +421,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::setAdditionalInfo(const RWCStr
 
     Sets the group selection method of the curtailment program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
 
@@ -434,7 +435,7 @@ DOUBLE CtiLMProgramCurtailment::reduceProgramLoad(DOUBLE loadReductionNeeded, LO
 
     Stops control on the program by sending all groups that are active.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
+BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
 {
     BOOL returnBool = TRUE;
 
@@ -456,7 +457,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
         {
             setRunStatus(CtiLMProgramCurtailment::StoppedEarlyRunStatus);
             setCurtailmentStopTime(RWDBDateTime());
-            notifyCustomersOfStop(multiDispatchMsg);
+            notifyCustomersOfStop(multiNotifMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
             setActionDateTime(gInvalidRWDBDateTime);
@@ -472,7 +473,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
         else if( currentDateTime >= getNotificationDateTime() && currentDateTime <= getCurtailmentStartTime() )
         {
             setRunStatus(CtiLMProgramCurtailment::CanceledRunStatus);
-            notifyCustomersOfStop(multiDispatchMsg);
+            notifyCustomersOfStop(multiNotifMsg);
             dumpDynamicData();
             setCurtailReferenceId(0);
             setActionDateTime(gInvalidRWDBDateTime);
@@ -507,10 +508,8 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
-
-
     BOOL returnBoolean = FALSE;
 
     const RWDBDateTime currentDateTime;
@@ -519,7 +518,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
         if( currentDateTime >= getNotificationDateTime() )
         {
             returnBoolean = TRUE;
-            notifyCustomers(multiDispatchMsg);
+            notifyCustomers(multiNotifMsg);
             setProgramState(CtiLMProgramBase::NotifiedState);
             setRunStatus(CtiLMProgramCurtailment::NotifiedRunStatus);
             dumpDynamicData();
@@ -549,7 +548,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
         {
             returnBoolean = TRUE;
             setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
             setManualControlReceivedFlag(FALSE);
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -562,7 +561,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
     else if( getProgramState() == CtiLMProgramBase::StoppingState )
     {
         returnBoolean = TRUE;
-        stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+        stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
         setManualControlReceivedFlag(FALSE);
     }
     else
@@ -579,14 +578,10 @@ BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMult
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
+void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
 {
-
-#pragma message("!**** Curtailment Programs don't know how to email their customers ****!")
-#ifdef OLD_EMAIL_MSG
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
-        CtiEmailMsg* emailMsg = NULL;
         for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
         {
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
@@ -601,7 +596,8 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             }
             currentCustomer->addLMCurtailCustomerActivityTable();
 
-            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
+            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
             RWCString emailBody = getMessageHeader();
@@ -638,11 +634,10 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += getMessageFooter();
 
-            emailMsg->setText(emailBody);
-            multiDispatchMsg->insert(emailMsg);
+            emailMsg->setBody(emailBody);
+            multiNotificationMsg->insert(emailMsg);
         }
     }
-#endif    
 }
 
 /*---------------------------------------------------------------------------
@@ -650,20 +645,17 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiDispatchMsg)
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg)
+void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificationMsg)
 {
-
-#pragma message("!**** Curtailment Programs don't know how to email their customers ****!")
-#ifdef OLD_EMAIL_MSG
     if( _lmprogramcurtailmentcustomers.entries() > 0 )
     {
-        CtiEmailMsg* emailMsg = NULL;
         for(LONG i=0;i<_lmprogramcurtailmentcustomers.entries();i++)
         {
             CtiLMCurtailCustomer* currentCustomer = (CtiLMCurtailCustomer*)_lmprogramcurtailmentcustomers[i];
             currentCustomer->dumpDynamicData();
 
-            CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
+            CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+	    emailMsg->setCustomerId(currentCustomer->getCustomerId());
             emailMsg->setSubject(getHeading());
 
             RWCString emailBody;
@@ -716,11 +708,10 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiDispatchMs
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += getMessageFooter();
 
-            emailMsg->setText(emailBody);
-            multiDispatchMsg->insert(emailMsg);
+            emailMsg->setBody(emailBody);
+            multiNotificationMsg->insert(emailMsg);
         }
     }
-#endif    
 }
 
 /*---------------------------------------------------------------------------

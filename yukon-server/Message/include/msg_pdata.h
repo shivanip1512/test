@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/10/19 20:18:47 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
 #include "dlldefs.h"
 #include "pointdefs.h"
 #include "message.h"
-#include "msg_signal.h"
+
 #include "yukon.h"
 
 class IM_EX_MSG CtiPointDataMsg : public CtiMessage

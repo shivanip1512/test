@@ -31,6 +31,7 @@
 #include "logger.h"
 #include "configparms.h"
 #include "msg_dbchg.h"
+#include "msg_signal.h"
 #include "capcontroller.h"
 #include "utility.h"
 

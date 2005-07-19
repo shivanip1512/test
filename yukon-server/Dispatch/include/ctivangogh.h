@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/07/01 17:39:09 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/07/19 22:48:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,6 @@ using namespace std;
 #include "msg_dbchg.h"
 #include "msg_multiwrap.h"
 #include "msg_pcreturn.h"
-#include "msg_email.h"
 #include "msg_commerrorhistory.h"
 #include "msg_lmcontrolhistory.h"
 #include "msg_tag.h"
@@ -124,8 +123,9 @@ private:
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
 
+    CtiConnection* _notificationConnection;
+    
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
-    RWCString resolveEmailMsgDescription( const CtiEmailMsg &aMail );
 
     int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
@@ -149,6 +149,10 @@ private:
     void queueSignalToSystemLog( CtiSignalMsg *&pSig );
     void stopDispatch();
 
+    CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
+    
+    CtiConnection* getNotificationConnection();
+    
 public:
 
     typedef CtiServer Inherited;
@@ -163,7 +167,6 @@ public:
     int   postDBChange(const CtiDBChangeMsg &Msg);
 
     int   registration(CtiVanGoghConnectionManager *, const CtiPointRegistrationMsg &aReg);
-    int   mail(const CtiEmailMsg &aMail);
 
     int   execute();
     void  VGMainThread();
@@ -232,9 +235,7 @@ public:
     void  postSignalAsEmail( const CtiSignalMsg &sig );
     void  loadAlarmToDestinationTranslation();
 
-    INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp, const CtiTableContactNotification &recip, RWCString subject = RWCString());
-    INT   sendMail(const CtiEmailMsg &aMail, const CtiTableContactNotification &recip);
-
+    INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp);
     RWCString getAlarmStateName( INT alarm );
 
     virtual int clientPurgeQuestionables(PULONG pDeadClients);
@@ -254,7 +255,6 @@ public:
     CtiTableContactNotification* getContactNotification(LONG notifID);
     CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);
-    void  sendEmailToGroup(LONG ngid, const CtiEmailMsg& email);
     LONG alarmToNotificationGroup(INT signaltrx);
 
     void displayConnections(void);

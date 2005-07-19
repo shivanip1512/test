@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/sigsrctest.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/07/19 22:48:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,9 +34,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_pcreturn.h"
+#include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
-#include "msg_email.h"
 #include "connection.h"
 #include "pointtypes.h"
 
@@ -117,10 +117,10 @@ void main(int argc, char **argv)
 
       CtiPointDataMsg   *pDat = NULL;
       CtiSignalMsg      *pSig = NULL;
-      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
+/*      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
 
       Connect.WriteConnQue(pEmail);
-
+*/
       for(int s = 0; s < loops; s++)
       {
          pMulti = CTIDBG_new CtiMultiMsg;

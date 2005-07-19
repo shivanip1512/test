@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/06/03 16:32:04 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,11 +32,11 @@ using namespace std;
 #include "message.h"
 #include "tbl_pao.h"
 #include "tbl_rtcomm.h"
+#include "msg_signal.h"
 #include "yukon.h"
 
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
-class CtiSignalMsg;
 
 class IM_EX_DEVDB CtiRouteBase : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {

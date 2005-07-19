@@ -23,6 +23,7 @@
 #include "lmprogramenergyexchange.h"
 #include "lmenergyexchangecustomer.h"
 #include "lmenergyexchangecustomerreply.h"
+#include "msg_notif_email.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -227,7 +228,7 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
     
     Sets the group selection method of the energy exchange program
 ---------------------------------------------------------------------------*/    
-DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
 
@@ -241,7 +242,7 @@ DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded,
 
     Stops control on the program by sending all groups that are active.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
+BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
 {
     BOOL returnBool = TRUE;
 
@@ -258,7 +259,7 @@ BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     Handles manual control messages for the energy exchange program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
 
 
@@ -278,7 +279,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
                 if( currentDateTime >= currentOfferRevision->getNotificationDateTime() )
                 {
                     returnBoolean = TRUE;
-                    notifyCustomers(currentOffer, multiDispatchMsg);
+                    notifyCustomers(currentOffer, multiNotifMsg);
                     setProgramState(CtiLMProgramBase::ManualActiveState);
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::OpenRunStatus);
                     currentOffer->dumpDynamicData();
@@ -385,16 +386,12 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiM
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
+void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiNotifMsg)
 {
-
-#pragma message("!**** Energy Exchange Programs don't know how to email their customers ****!")
-#ifdef OLD_EMAIL_MSG
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
     if( _lmenergyexchangecustomers.entries() > 0 )
     {
-        CtiEmailMsg* emailMsg = NULL;
         for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
         {
             CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
@@ -416,7 +413,8 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
                 newCustomerReply->addLMEnergyExchangeCustomerReplyTable();
                 customerReplies.insert(newCustomerReply);
 
-                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
+                CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+		emailMsg->setCustomerId(currentCustomer->getCustomerId());
                 emailMsg->setSubject(getHeading());
 
                 RWCString emailBody = getMessageHeader();
@@ -443,12 +441,11 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 
                 emailBody += getMessageFooter();
 
-                emailMsg->setText(emailBody);
-                multiDispatchMsg->insert(emailMsg);
+                emailMsg->setBody(emailBody);
+                multiNotifMsg->insert(emailMsg);
             }
         }
     }
-#endif    
 }
 
 /*---------------------------------------------------------------------------
@@ -456,22 +453,19 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiDispatchMsg)
+void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiNotifMsg)
 {
-
-#pragma message("!**** Energy Exchange programs don't know how to email their customers ****!")
-#ifdef OLD_EMAIL_MSG
     CtiLMEnergyExchangeOfferRevision* currentOfferRevision = offer->getCurrentOfferRevision();
 
     if( _lmenergyexchangecustomers.entries() > 0 )
     {
-        CtiEmailMsg* emailMsg = NULL;
         for(LONG i=0;i<_lmenergyexchangecustomers.entries();i++)
         {
             CtiLMEnergyExchangeCustomer* currentCustomer = (CtiLMEnergyExchangeCustomer*)_lmenergyexchangecustomers[i];
             if( currentCustomer->hasAcceptedOffer(offer->getOfferId()) )
             {
-                CtiEmailMsg* emailMsg = new CtiEmailMsg(currentCustomer->getCustomerId(),CtiEmailMsg::CICustomerEmailType);
+                CtiCustomerNotifEmailMsg* emailMsg = new CtiCustomerNotifEmailMsg();
+		emailMsg->setCustomerId(currentCustomer->getCustomerId());
                 emailMsg->setSubject(getHeading());
 
                 RWCString emailBody = getCanceledMsg();
@@ -494,12 +488,11 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
                 emailBody += "\r\n\r\n";// 2 return lines
                 emailBody += getMessageFooter();
 
-                emailMsg->setText(emailBody);
-                multiDispatchMsg->insert(emailMsg);
+                emailMsg->setBody(emailBody);
+                multiNotifMsg->insert(emailMsg);
             }
         }
     }
-#endif    
 }
 
 /*---------------------------------------------------------------------------

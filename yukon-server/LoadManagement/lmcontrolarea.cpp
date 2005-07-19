@@ -1095,7 +1095,7 @@ bool CtiLMControlArea::shouldReduceControl()
     Reduces load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
     LONG newlyActivePrograms = 0;
@@ -1184,7 +1184,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 //                            (lmProgramDirect->getMaxDailyOps() == 0 ||
 //                             lmProgramDirect->getDailyOps() < lmProgramDirect->getMaxDailyOps()))
                         {
-                            expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
+                            expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, isTriggerCheckNeeded(secondsFrom1901));
 
 			    if(lmProgramDirect->getProgramState() != CtiLMProgramBase::InactiveState)
 			    {   // reduceProgram load might not have been able to do anything,
@@ -1286,7 +1286,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
 
   Reduce the amount of control in the control area by one stop priority
 ----------------------------------------------------------------------------*/  
-void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     int cur_stop_priority = getCurrentStopPriority();
     int num_active_programs = 0;
@@ -1322,7 +1322,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
         if(lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
         {
             CtiLMProgramDirect* lm_program_direct = (CtiLMProgramDirect*) lm_program;
-            if(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901) == FALSE)
+            if(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE)
 	    { //the program didn't refused to stop (maybe a constraint was violated like a groups min activate time?)
 		//so count this program as still active
 		num_active_programs++;
@@ -1374,7 +1374,7 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
     Reduce load in the control area by running through the lmprograms to
     determine current priority and controlling one or more lmprograms
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
     LONG fullyActivePrograms = 0;
@@ -1420,7 +1420,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                         CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
                         while( lmProgramDirect->getProgramState() != CtiLMProgramBase::FullyActiveState )
                         {
-                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isTriggerCheckNeeded(secondsFrom1901));
+                            expectedLoadReduced += lmProgramDirect->reduceProgramLoad(0.0, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, isTriggerCheckNeeded(secondsFrom1901));
                         }
                         if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
                         {
@@ -1536,7 +1536,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
   This is intended to be supercede and be independent of stopping based on priority.
   Returns TRUE iff at least one program was stopped.  Fugly!
 -----------------------------------------------------------------------------*/  
-BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     int fullyActivePrograms = 0;
     int activePrograms = 0;
@@ -1588,7 +1588,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
 		    dout << RWTime() << " " <<  text << " - " << additional << endl;
 		}
 
-		if(!(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901) == FALSE))
+		if(!(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE))
 		{
 		    stopped_program = true;
 		}
@@ -1637,7 +1637,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
     need to increased.  Refreshes time refresh programs shed times.  Updates
     current hours values in programs as they continue to control.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL examinedControlAreaForControlNeededFlag)
+BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL examinedControlAreaForControlNeededFlag)
 {
     BOOL returnBoolean = FALSE;
     LONG numberOfActivePrograms = 0;
@@ -1650,7 +1650,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
             ( currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, isPastMinResponseTime(secondsFrom1901), examinedControlAreaForControlNeededFlag) )
+            if( ((CtiLMProgramDirect*)currentLMProgram)->maintainProgramControl(getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, isPastMinResponseTime(secondsFrom1901), examinedControlAreaForControlNeededFlag) )
             {
                 returnBoolean = TRUE;
             }
@@ -1710,7 +1710,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, UL
     Stops all Programs that are controlling in a control area, normally
     because we have left a control window.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901 )
+BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901 )
 {
     BOOL returnBOOL = FALSE;
     bool sentSignalMsg = false;
@@ -1728,7 +1728,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
               currentLMProgram->getProgramState() == CtiLMProgramBase::FullyActiveState ||
               currentLMProgram->getProgramState() == CtiLMProgramBase::NonControllingState ) )
         {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
-            if( ((CtiLMProgramDirect*)currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901 ) )
+            if( ((CtiLMProgramDirect*)currentLMProgram)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901 ) )
             {
                 returnBOOL = TRUE;
 
@@ -1823,7 +1823,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
 
     Takes appropriate action for a manual control messages.
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     LONG previousControlAreaState = getControlAreaState();
     LONG numberOfActivePrograms = 0;
@@ -1833,7 +1833,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
         CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
         if( currentLMProgram->getManualControlReceivedFlag() )
         {
-            if( currentLMProgram->handleManualControl(secondsFrom1901,multiPilMsg,multiDispatchMsg) )
+            if( currentLMProgram->handleManualControl(secondsFrom1901,multiPilMsg,multiDispatchMsg,multiNotifMsg) )
             {
                 setUpdatedFlag(TRUE);
             }

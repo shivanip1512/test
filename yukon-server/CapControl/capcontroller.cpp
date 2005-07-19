@@ -22,6 +22,7 @@
 #include "msg_multi.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
+#include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "msg_pcrequest.h"

@@ -95,7 +95,7 @@ mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		mutex.h guard.h ctdpcptrq.h dllBase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h dbaccess.h sema.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configparms.h \
-		netports.h msg_email.h ctibase.h ctinexus.h pointtypes.h \
+		netports.h msg_dbchg.h ctibase.h ctinexus.h pointtypes.h \
 		numstr.h mgr_holiday.h dsm2err.h wpsc.h xcel.h \
 		decodetextcmdfile.h
 mcs8100test.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h \

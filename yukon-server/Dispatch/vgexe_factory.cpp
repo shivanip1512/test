@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vgexe_factory.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/07/19 22:48:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,11 +39,6 @@ CtiExecutor* CtiVanGoghExecutorFactory::getExecutor(CtiMessage* msg)
    case MSG_TAG:
       {
          Ex = CTIDBG_new CtiPointChangeExecutor(msg);
-         break;
-      }
-   case MSG_EMAIL:
-      {
-         Ex = CTIDBG_new CtiEmailExecutor(msg);
          break;
       }
    default:

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/02/17 19:02:57 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/07/19 22:48:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,9 +35,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_dbchg.h"
 #include "msg_reg.h"
 #include "msg_pcreturn.h"
+#include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
-#include "msg_email.h"
 #include "msg_tag.h"
 #include "msg_commerrorhistory.h"
 #include "msg_lmcontrolhistory.h"

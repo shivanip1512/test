@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/10/19 20:18:47 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,10 @@
 
 #include <rw/cstring.h>
 #include "message.h"
+
 #include "yukon.h"
+
+class CtiPointDataMsg;
 
 class IM_EX_MSG CtiSignalMsg : public CtiMessage
 {
@@ -38,7 +41,8 @@ protected:
 
    unsigned    _logid;              // LogID in the systemlog... Zero when not in use or unknown.  No streaming.
 
-
+   CtiPointDataMsg* _point_data;
+   
 private:
 
     static unsigned int _instanceCount;
@@ -58,7 +62,8 @@ public:
                 RWCString  usr    = RWCString("(none)"),
                 unsigned   tag    = 0,
                 int        pri    = 7,
-                unsigned   millis = 0 );
+                unsigned   millis = 0,
+		CtiPointDataMsg* point_data = 0);
 
    CtiSignalMsg(const CtiSignalMsg& aRef);
 
@@ -90,6 +95,9 @@ public:
    unsigned getSignalMillis() const;
    CtiSignalMsg& setSignalMillis(unsigned millis);
 
+   const CtiPointDataMsg* getPointData() const;
+   CtiSignalMsg& setPointData(CtiPointDataMsg* pdata);
+   
    virtual void saveGuts(RWvostream &aStream) const;
    virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;

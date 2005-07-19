@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/07/01 20:38:23 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,8 @@
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_signal.h"
-#include "msg_email.h"
 #include "msg_dbchg.h"
+#include "msg_notif_email.h"
 #include "ctibase.h"
 #include "collectable.h"
 #include "pointtypes.h"
@@ -64,6 +64,8 @@ char* PILRequestPriorityVariable = "MessagePriority";
 
 CtiConnection* PILConnection = 0;
 CtiConnection* VanGoghConnection = 0;
+CtiConnection* NotificationConnection = 0;
+
 RWThread MessageThr;
 
 // Used to distinguish unique requests/responses to/from pil
@@ -212,7 +214,7 @@ void WriteOutput(const char* output)
 /* Connects to the PIL and VanGogh*/
 int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    if(PILConnection != 0 && VanGoghConnection != 0)
+    if(PILConnection != 0 && VanGoghConnection != 0 && NotificationConnection != 0)
     {
       return 0;
     }
@@ -226,6 +228,9 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     RWCString dispatch_host;
     RWCString fm_config_range;
 
+    string notification_host;
+    int notification_port;
+    
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << RWTime() << " MCCMD loading cparms:" << endl;
@@ -247,6 +252,14 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
         dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
     }
 
+    notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
+    notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
+
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << " Connecting to notification server, host: " << notification_host << ", port: " << notification_port << endl;
+    }
+    
     gPagingConfigRouteID = gConfigParms.getValueAsInt("PAGING_CONFIG_ROUTE_ID", -1);
     gFMConfigRouteID = gConfigParms.getValueAsInt("FM_CONFIG_ROUTE_ID", -1);
     fm_config_range = gConfigParms.getValueAsString("FM_CONFIG_SERIAL_RANGE", "");
@@ -320,6 +333,8 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("MCCMD", 0, false );
     VanGoghConnection->WriteConnQue( reg2 );
 
+    NotificationConnection = new CtiConnection( notification_port, notification_host.c_str() );
+    
     RWThreadFunction thr_func = rwMakeThreadFunction( _MessageThrFunc );
     thr_func.start();
 
@@ -348,12 +363,22 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     VanGoghConnection->ShutdownConnection();
 
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << RWTime() << " - " << "Shutting down connection to the Notification Server" << endl;
+    }
+
+    NotificationConnection->ShutdownConnection();
+    
     delete PILConnection;
     PILConnection = 0;
 
     delete VanGoghConnection;
     VanGoghConnection = 0;
 
+    delete NotificationConnection;
+    NotificationConnection = 0;
+    
     return 0;
 
 }
@@ -1207,20 +1232,20 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
         return TCL_ERROR;
     }
 
-    CtiEmailMsg* msg = new CtiEmailMsg( id, CtiEmailMsg::NGroupIDEmailType );
-
-    msg->setSubject( argv[2] );
-    msg->setText( argv[3] );
+    CtiNotifEmailMsg* msg = new CtiNotifEmailMsg();
+    msg->setNotifGroupId(id);
+    msg->setSubject(argv[2]);
+    msg->setBody(argv[3]);
 
     {
         CtiLockGuard< CtiLogger > g(dout);
-        dout << RWTime() << " Sending notify group to dispatch" << endl;
-        dout << RWTime() << " sender: " << msg->getSender() << endl;
+        dout << RWTime() << " Sending email notification to the notification server " << endl;
+        dout << RWTime() << " notification group id: " << msg->getNotifGroupId() << endl;
         dout << RWTime() << " subject: " << msg->getSubject() << endl;
-        dout << RWTime() << " text: " << msg->getText() << endl;
+        dout << RWTime() << " text: " << msg->getBody() << endl;
     }
 
-    VanGoghConnection->WriteConnQue(msg);
+    NotificationConnection->WriteConnQue(msg);
 
     return TCL_OK;
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/06/24 16:14:12 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/07/19 22:48:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1120,7 +1120,7 @@ void CtiConnection::messagePeek( CtiMessage *MyMsg )
             messagePeek(((CtiMessage*)(pMulti->getData()[i])));             // recurse.
         }
     }
-    else if(MyMsg->isA() > 0x8000 || MyMsg->isA() < 1510)
+    else if(MyMsg->isA() > 0x8000 || (MyMsg->isA() < 1510 && !(MyMsg->isA() > 700 && MyMsg->isA() < 710)))
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

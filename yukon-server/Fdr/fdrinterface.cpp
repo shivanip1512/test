@@ -15,10 +15,13 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.17 $
-*    DATE         :  $Date: 2005/02/17 19:02:58 $
+*    REVISION     :  $Revision: 1.18 $
+*    DATE         :  $Date: 2005/07/19 22:48:53 $
 *    History:
       $Log: fdrinterface.cpp,v $
+      Revision 1.18  2005/07/19 22:48:53  alauinger
+      Dispatch no longer handles email notifications, removed CtiEmailMsg.  Instead CtiNotifEmailMsg's should be sent to the notification server as a replacement.
+
       Revision 1.17  2005/02/17 19:02:58  mfisher
       Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 
@@ -110,6 +113,7 @@
 #include "msg_ptreg.h"
 #include "msg_cmd.h"
 #include "msg_dbchg.h"
+#include "msg_signal.h"
 
 #include "fdrinterface.h"
 #include "fdrpoint.h"

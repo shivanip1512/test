@@ -541,7 +541,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::setStartedRampingOutTime(const RWDBDateT
 
     Sets the group selection method of the direct program
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded)
+DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, RWOrdered controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
     DOUBLE expectedLoadReduced = 0.0;
 
@@ -593,7 +593,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         }
                     }
                     // Dont let subordinate programs keep running
-                    stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, secondsFromBeginningOfDay);
+                    stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFromBeginningOfDay);
                 }
 
                 if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) )
@@ -2142,7 +2142,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
     Maintains control on the program by going through all groups that are
     active and sending refresh pil requests if needed.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded)
+BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded)
 {
     BOOL returnBoolean = FALSE;
     LONG previousGearNumber = _currentgearnumber;
@@ -2153,7 +2153,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, RWOrdered&
 	    CtiLockGuard<CtiLogger> dout_guard(dout);
 	    dout << RWTime() << " - LM Program: " << getPAOName() << " is no longer in a valid control window, stopping program control" << endl;
 	}
-        stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901);
+        stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901);
         returnBoolean = TRUE;	
     }
 /*    else if(!hasExceededMaxActivateTime(secondsFrom1901))
@@ -3580,7 +3580,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
   Stops controlling any subordinate programs that may be active.
   Returns true if any programs were found active and stopped.
 ----------------------------------------------------------------------------*/  
-bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
+bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
 {
     bool stopped_programs = false;
     set<CtiLMProgramDirect*>& sub_set = getSubordinatePrograms();
@@ -3601,7 +3601,7 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
             CtiLockGuard<CtiLogger> dout_guard(dout);
             dout << RWTime() << " - " <<  text << endl;
         }
-        stopped_programs = (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, secondsFrom1901) || stopped_programs;
+        stopped_programs = (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) || stopped_programs;
         }
     }
     return stopped_programs;
@@ -3612,7 +3612,7 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
 
     Stops control on the program by stopping all groups that are active.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901)
+BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, ULONG secondsFrom1901)
 {
     BOOL returnBool = TRUE;
     bool is_ramping_out = false;
@@ -3980,7 +3980,7 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
 
     Handles manual control messages for the direct program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     BOOL returnBoolean = FALSE;
 
@@ -4005,7 +4005,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
             }
 
             // Dont let subordinate programs keep running
-            stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, secondsFrom1901);
+            stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901);
             manualReduceProgramLoad(multiPilMsg,multiDispatchMsg);
             setProgramState(CtiLMProgramBase::ManualActiveState);
         }
@@ -4026,7 +4026,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 }
             }
             //          setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
 //            setManualControlReceivedFlag(FALSE);
 
             setReductionTotal(0.0);
@@ -4054,7 +4054,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 }
             }
 //            setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
 //            setManualControlReceivedFlag(FALSE);
 
             setReductionTotal(0.0);
@@ -4112,7 +4112,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 }
             } //NOTE: SHOULD WE BE SETTING THE STATE HERE?  COULD MESS UP RAMPOUT
             setProgramState(CtiLMProgramBase::StoppingState);
-            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
             setManualControlReceivedFlag(FALSE);
 
             setReductionTotal(0.0);
@@ -4138,7 +4138,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
         }
-        stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+        stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
 //        setManualControlReceivedFlag(FALSE);
 
         setReductionTotal(0.0);
@@ -4162,7 +4162,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
 
     Handles timed control
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     if( (getDisableFlag() && CtiLMProgramBase::InactiveState) ||
         getProgramState() == CtiLMProgramBase::ManualActiveState ||
@@ -4235,7 +4235,7 @@ BOOL CtiLMProgramDirect::handleTimedControl(ULONG secondsFrom1901, LONG secondsF
                 dout << RWTime() << " - " << text << ", " << additional << endl;
             }
 
-            stopProgramControl(multiPilMsg,multiDispatchMsg, secondsFrom1901);
+            stopProgramControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, secondsFrom1901);
 
             setReductionTotal(0.0); //is this resetting dynamic info?
             setStartedControlling(gInvalidRWDBDateTime);
