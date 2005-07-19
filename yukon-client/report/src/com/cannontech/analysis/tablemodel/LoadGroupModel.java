@@ -69,13 +69,15 @@ public class LoadGroupModel extends ReportModelBase
 		
 	/** Array of IDs (of loadGroup paobjectIDs)*/
 	private int loadGroups[] = null;
-
-	/** A flag to show all ActiveRestore types R, T, M, O, N, or C
-	 * When true - all types
-	 * When false - only R, T, M, O types
+	
+	/** A holder for the most recent soe_Tag returned in the query resultset */
+	private int lastSoeTag = -1;
+	/**
+	 * A flag to show all ActiveRestore types
+	 * When true - Show everything
+	 * When false - Show only the most recent entry for each SOE_TAG
 	 */
 	private boolean showAllActiveRestore = false;
-	
 	private static final String ATT_ALL_RESTORE_TYPES = "allRestoreTypes";
 	
 	public static Comparator lmControlHistoryPAONameComparator = new java.util.Comparator()
@@ -132,30 +134,36 @@ public class LoadGroupModel extends ReportModelBase
 	{
 		try
 		{
-			Integer ctrlHistID = new Integer(rset.getInt(1));
-			Integer paoID = new Integer(rset.getInt(2));
-			java.sql.Timestamp startTS = rset.getTimestamp(3);
-			java.sql.Timestamp stopTS = rset.getTimestamp(4);
-			Integer controlDuration = new Integer(rset.getInt(5));
-			String controlType = rset.getString(6);
-			Integer dailyTime = new Integer(rset.getInt(7));
-			Integer monthyTime = new Integer(rset.getInt(8));
-			Integer seasonalTime = new Integer(rset.getInt(9));
-			Integer annualTime = new Integer(rset.getInt(10));
-			String activeRestore = rset.getString(11);
-			
-			LMControlHistory lmControlHist = new LMControlHistory(ctrlHistID);
-			lmControlHist.setPaObjectID(paoID);
-			lmControlHist.setStartDateTime(new java.util.Date(startTS.getTime()));
-			lmControlHist.setStopDateTime(new java.util.Date(stopTS.getTime()));
-			lmControlHist.setControlDuration(controlDuration);
-			lmControlHist.setControlType(controlType);
-			lmControlHist.setCurrentDailyTime(dailyTime);
-			lmControlHist.setCurrentMonthlyTime(monthyTime);
-			lmControlHist.setCurrentSeasonalTime(seasonalTime);
-			lmControlHist.setCurrentAnnualTime(annualTime);
-			lmControlHist.setActiveRestore(activeRestore); 
-			getData().add(lmControlHist);
+		    //Only keep the most recent entry (order by startTime asc, soe_tag desc.
+			Integer soeTag = new Integer(rset.getInt(12));
+			if(isShowAllActiveRestore() || soeTag.intValue() != lastSoeTag )
+			{
+			    Integer ctrlHistID = new Integer(rset.getInt(1));
+				Integer paoID = new Integer(rset.getInt(2));
+				java.sql.Timestamp startTS = rset.getTimestamp(3);
+				java.sql.Timestamp stopTS = rset.getTimestamp(4);
+				Integer controlDuration = new Integer(rset.getInt(5));
+				String controlType = rset.getString(6);
+				Integer dailyTime = new Integer(rset.getInt(7));
+				Integer monthyTime = new Integer(rset.getInt(8));
+				Integer seasonalTime = new Integer(rset.getInt(9));
+				Integer annualTime = new Integer(rset.getInt(10));
+				String activeRestore = rset.getString(11);
+				
+				LMControlHistory lmControlHist = new LMControlHistory(ctrlHistID);
+				lmControlHist.setPaObjectID(paoID);
+				lmControlHist.setStartDateTime(new java.util.Date(startTS.getTime()));
+				lmControlHist.setStopDateTime(new java.util.Date(stopTS.getTime()));
+				lmControlHist.setControlDuration(controlDuration);
+				lmControlHist.setControlType(controlType);
+				lmControlHist.setCurrentDailyTime(dailyTime);
+				lmControlHist.setCurrentMonthlyTime(monthyTime);
+				lmControlHist.setCurrentSeasonalTime(seasonalTime);
+				lmControlHist.setCurrentAnnualTime(annualTime);
+				lmControlHist.setActiveRestore(activeRestore); 
+				getData().add(lmControlHist);
+			}
+			lastSoeTag = soeTag.intValue();
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -172,13 +180,14 @@ public class LoadGroupModel extends ReportModelBase
 		StringBuffer sql = new StringBuffer("SELECT LMCH.LMCTRLHISTID, LMCH.PAOBJECTID, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
-				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE "+
+				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE, SOE_TAG "+
 				" FROM LMCONTROLHISTORY LMCH " + 
-				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
-
+				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? " +
+				" AND LMCH.ACTIVERESTORE NOT IN ('C', 'L') ");
+//				NOT DOING THIS HERE ANYMORE, Parsing the data in addDataRow instead!!! 
 //				DAVID - 7/29/04 I think the only records you need are the ones with a T, M, O or R.  The N or C (which are the other options I think) aren't necessary				
-				if(!isShowAllActiveRestore())
-					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
+//				if(!isShowAllActiveRestore())
+//					sql.append(" AND LMCH.ActiveRestore IN ('R', 'T', 'O', 'M') ");
 
 				if( getECIDs() != null)
 				{
@@ -204,7 +213,7 @@ public class LoadGroupModel extends ReportModelBase
 					}
 					sql.append(") ");
 				}
-				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime");	//, LMCH.StopDateTime");
+				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID DESC");	//, LMCH.StopDateTime");
 		return sql;
 	}	
 	/* (non-Javadoc)
@@ -296,7 +305,7 @@ public class LoadGroupModel extends ReportModelBase
 				case CONTROL_DURATION_COLUMN:
 					return convertSecondsToTimeString(lmch.getControlDuration().intValue());
 				case ACTIVE_RESTORE_COLUMN:
-					return lmch.getActiveRestore();
+					return getActiveRestoreString(lmch.getActiveRestore());
 				case CONTROL_TYPE_COLUMN:
 					return lmch.getControlType();
 				case DAILY_CONTROL_COLUMN:
@@ -430,14 +439,10 @@ public class LoadGroupModel extends ReportModelBase
 		html += "    <td valign='top'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Restore Types</td>" +LINE_SEPARATOR;
+		html += "          <td class='TitleHeader'>&nbsp;Display</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='" +ATT_ALL_RESTORE_TYPES + "' value='false' checked>Standard Restore Types (R, T, O, M)" + LINE_SEPARATOR;
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='" +ATT_ALL_RESTORE_TYPES + "' value='true'>All Restore Types (R, T, O, M, N, C)" + LINE_SEPARATOR;
+		html += "          <td><input type='checkbox' name='" +ATT_ALL_RESTORE_TYPES + "' value='true'>Show Additional Detail (Multiple entries for one control)" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 
@@ -477,6 +482,22 @@ public class LoadGroupModel extends ReportModelBase
 			else 
 				setShowAllActiveRestore(false);
 		}
+	}
+	public String getActiveRestoreString(String restore)
+	{
+	    if( restore.equalsIgnoreCase("M"))
+	        return "Manual";
+	    else if (restore.equalsIgnoreCase("0"))
+	        return "Override";
+	    else if (restore.equalsIgnoreCase("N"))
+	        return "New";
+	    else if (restore.equalsIgnoreCase("T"))
+	        return "Timed";
+	    else if (restore.equalsIgnoreCase("A"))
+	        return "Adjust";
+	        
+	    return restore;
+	    
 	}
 }
 	
