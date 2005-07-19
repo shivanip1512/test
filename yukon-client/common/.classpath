@@ -11,7 +11,11 @@
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry sourcepath="D:/jakarta-log4j-1.2/src/java/log4j12.jar" kind="lib" path="/third-party/log4j-1.2.4.jar"/>
+	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
+		<attributes>
+			<attribute value="http://logging.apache.org/log4j/docs/api/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/junit.jar"/>
 	<classpathentry kind="lib" path="/third-party/xerces.jar"/>
@@ -19,5 +23,7 @@
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
+	<classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
