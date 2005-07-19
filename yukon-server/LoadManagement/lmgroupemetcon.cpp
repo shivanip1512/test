@@ -178,8 +178,8 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, UL
 
     LONG controlTimeLeft = groupControlDone - secondsFrom1901;
     if( !_refreshsent &&
-        controlTimeLeft < 572 &&
-        controlTimeLeft >= 569 )
+        controlTimeLeft < 560 &&
+        controlTimeLeft >= 580 ) //This function better be evaluated every 20 seconds or we might miss!!
     {
         //CASE 8.5 TO 10.5: 7.5 min shed is ok and no over lap
         //CASE 16.5 TO 17.5: 15 min shed is ok and no over lap
