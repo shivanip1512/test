@@ -24,8 +24,8 @@ import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.function.TextFormatExpression;
+import org.jfree.report.layout.DefaultSizeCalculator;
 import org.jfree.report.modules.gui.base.PreviewDialog;
-import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
@@ -195,7 +195,14 @@ public class ECActivityDetailReport extends YukonReportBase
 	
 				//Hard code the pattern to be the actual text we want!
 				SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy");
-				String pattern = format.format((Date)getDataRow().get(ActivityDetailModel.DATE_TIME_STRING)) + "  -   TOTALS";
+				String pattern = format.format((Date)getDataRow().get(ActivityDetailModel.DATE_TIME_STRING));
+				float stringWidth = DefaultSizeCalculator.getDefaultSizeCalculator(ReportFactory.GROUP_HEADER_BAND_FONT).getStringWidth(pattern, 0, pattern.length());
+				do{
+				    pattern += " ";
+				    stringWidth = DefaultSizeCalculator.getDefaultSizeCalculator(ReportFactory.GROUP_HEADER_BAND_FONT).getStringWidth(pattern, 0, pattern.length());
+				}while(stringWidth < 200);	//attempt to center over the count (which is 220 pixels big)
+				pattern += "TOTALS";
+
 				
 				format = new SimpleDateFormat("yyyyMMdd");
 				String key = format.format((Date)getDataRow().get(ActivityDetailModel.DATE_TIME_STRING));			
@@ -208,12 +215,16 @@ public class ECActivityDetailReport extends YukonReportBase
 	
 					if(keyEntry.startsWith( key ) )
 					{
+					    //take a substring of it since the key actually as the 8 char date (yyyyMMdd) in front of it.
 						String action = entry.getKey().toString().substring(8);
-						pattern += "\r\n" + action;
-						int length = action.length();
-						for (int i = length; i < 40; i++)
-							pattern += " ";
-						pattern += entry.getValue().toString();
+						pattern += "\r\n";
+						stringWidth = DefaultSizeCalculator.getDefaultSizeCalculator(ReportFactory.GROUP_HEADER_BAND_FONT).getStringWidth(action, 0, action.length());
+						do{
+						    action += " ";
+						    stringWidth = DefaultSizeCalculator.getDefaultSizeCalculator(ReportFactory.GROUP_HEADER_BAND_FONT).getStringWidth(action, 0, action.length());
+						}while(stringWidth < 220);
+						
+						pattern += action + entry.getValue().toString();
 					}
 				}
 				setPattern(pattern);				   
@@ -283,11 +294,8 @@ public class ECActivityDetailReport extends YukonReportBase
 		}	//end is showDetail
 				
 		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		//TODO - Change so monospaced isn't used..hopefully when JFR implements subreporting! ( maybe in 0.8.6?)
-		footer.getStyle().setFontDefinitionProperty(new FontDefinition("Monospaced", 9, true, false, false, false));
 		footer.addElement(StaticShapeElementFactory.createShapeElement("line3", null, new BasicStroke(0.5f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 12, 12 }, 0) , new Line2D.Float(0, 0, 800, 0), true, false));
 		
-		//TODO Find a way to dynamically get the needed height for the summary...taking a stab in the dark right now that 4 rows is enough...which it won't be.
 		//Can't use ReportFactory as that is only good when using a tablemodel 
 		TextFieldElementFactory tfactory = new TextFieldElementFactory();
 		tfactory.setName(ActivityDetailModel.ACTION_STRING + " Group Element");
