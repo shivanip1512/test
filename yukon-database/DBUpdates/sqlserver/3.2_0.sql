@@ -270,6 +270,13 @@ go
 alter table Customer alter column AltTrackNum varchar(64) not null;
 go
 
+update yukonservices set serviceclass = 'com.cannontech.notif.server.NotificationServer' where serviceid = -1 or serviceid = 1;
+
+
+
+
+
+
 
 
 

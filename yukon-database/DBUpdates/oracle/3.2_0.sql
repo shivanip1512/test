@@ -209,6 +209,10 @@ alter table Customer add AltTrackNum varchar(64);
 update Customer set AltTrackNum = '(none)';
 alter table Customer modify AltTrackNum varchar(64) not null;
 
+update yukonservices set serviceclass = 'com.cannontech.notif.server.NotificationServer' where serviceid = -1 or serviceid = 1;
+
+
+
 
 
 
