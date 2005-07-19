@@ -288,14 +288,6 @@ public class PointDataIntervalModel extends ReportModelBase
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	public String getDateRangeString()
-	{
-		return getDateFormat().format(getStartDate()) + " through "+ getDateFormat().format(getStopDate());
-	}
-	
-	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
 	public Object getAttribute(int columnIndex, Object o)

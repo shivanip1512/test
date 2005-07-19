@@ -194,14 +194,6 @@ public class CapControlNewActivityModel extends ReportModelBase
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	 public String getDateRangeString()
-	 {
-		 return (getDateFormat().format(getStartDate()) + " through " +
-					(getDateFormat().format(getStopDate())));
-	 }
 	 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)

@@ -162,16 +162,6 @@ public class DisabledCBCDevicesModel extends ReportModelBase
 //		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.data.ReportModelBase#getDateRangeString()
-	 */
-	 public String getDateRangeString()
-	 {
-		 java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		 return (format.format(getStartDate()) + " through " +
-		 			(format.format(getStopDate())));
-	 }
-
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)

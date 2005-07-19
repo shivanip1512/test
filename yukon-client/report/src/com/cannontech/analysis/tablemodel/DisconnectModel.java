@@ -316,15 +316,9 @@ public class DisconnectModel extends ReportModelBase
 	 public String getDateRangeString()
 	 {
 	 	if( isShowHistory())
-	 	{
-			return (getDateFormat().format(getStartDate()) + " through " +
-								(getDateFormat().format(getStopDate())));
-	 	}
+			return super.getDateRangeString();
 	 	else 
-	 	{
 			return ( getDateFormat().format(new Date()));	//use current date
-	 	}
-		 
 	 }
 
 
