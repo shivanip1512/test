@@ -36,7 +36,7 @@ public class Call {
         _number = contactPhone.getPhoneNumber();
         
         _message = message;
-        _token = "CALLID" + nextToken.incrementAndGet();
+        _token = "CALL-" + nextToken.incrementAndGet();
 
         _parameterMap = new TreeMap();
         _parameterMap.put("TOKEN", _token);
@@ -63,7 +63,7 @@ public class Call {
             oldState = _state;
             _state = newState;
         }
-        CTILogger.info("Call " + this + " changing state " + oldState + " -> " + newState);
+        CTILogger.info(this + " changing state " + oldState + " -> " + newState);
         _listeners.firePropertyChange(CALL_STATE, oldState, newState);
     }
     
