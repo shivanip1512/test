@@ -49,6 +49,7 @@ public class NotificationTransformer {
     
     public Document transform(Notification notif) throws TransformException {
         try {
+            CTILogger.debug("Transforming notification");
 
             Document result;
             InputStream styleSheet = getStyleSheet(notif.getMessageType(),
@@ -57,12 +58,11 @@ public class NotificationTransformer {
             result = trans.transform(notif.getDocument());
             
             if (CTILogger.getLogLevel().isGreaterOrEqual(Level.DEBUG)) {
-                CTILogger.debug("Transforming notification");
-                CTILogger.debug("  Input document: " + notif.getXmlString());
+                CTILogger.debug("  Input document:\n" + notif.getXmlString());
 
                 XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
                 String xmlDebug = outputter.outputString(result);
-                CTILogger.debug("  Output document: " + xmlDebug);
+                CTILogger.debug("  Output document:\n" + xmlDebug);
             }
             return result;
         } catch (XSLTransformException e) {
