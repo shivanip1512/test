@@ -5,8 +5,10 @@
   <form id="message">
     <block>
 	  <xsl:apply-templates/>
-      Thank you for your <emphasis>participation</emphasis>.
-      This call was to: <xsl:value-of select="loadmanagement/contactname"/>
+      Thank you for your participation.
+      <xsl:if test="loadmanagement/customername != ''">
+      This call was to: <xsl:value-of select="loadmanagement/customername"/>
+      </xsl:if>
       <!-- How can we make this wait until the above has been read out??? -->
       <goto fetchint="safe" next="confirm.jsp?COMPLETE=yes"/>
     </block>
@@ -28,14 +30,14 @@
       Curtailment will stop at <xsl:value-of select="stoptime"/>. 
   </xsl:template>
   
-  <xsl:template match="loadmanagement[programname='other program']">
+  <xsl:template match="loadmanagement[programname='other program']" priority="-3">
       Other Program!!!
       HECO is calling for customers enrolled in the CIDLC program to curtail electric use.  
       Curtailment will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> 
       and last for approximately <xsl:value-of select="durationhours"/> hours.  
   </xsl:template>
   
-  <xsl:template match="loadmanagement">
+  <xsl:template match="loadmanagement" priority="-5">
       HECO is calling for customers enrolled in the CIDLC program to curtail electric use.  
       Curtailment will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> 
       and last for approximately <xsl:value-of select="durationhours"/> hours.  
