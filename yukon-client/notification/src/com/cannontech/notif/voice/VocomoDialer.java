@@ -33,7 +33,7 @@ public class VocomoDialer extends Dialer {
         try {
             String queryString = generateQueryString(call.getCallParameters());
             
-            CTILogger.debug("Dialing " + phoneNumber + " on " + _voiceHost + "/" + _voiceApp + " with " + queryString);
+            CTILogger.info("Dialing " + phoneNumber + " on " + _voiceHost + "/" + _voiceApp + " with " + queryString);
             rInt = mc.makeCall(phoneNumber, _voiceApp, _callTimeout, queryString);
             switch (rInt) {
             case MakeCall.CONNECTED:
