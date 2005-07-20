@@ -112,7 +112,7 @@ public abstract class ExportFormatBase
 	{
 		if( exportDirectory == null)
 		{
-			String expDir = ClientSession.getInstance().getRolePropertyValue(
+			exportDirectory = ClientSession.getInstance().getRolePropertyValue(
 				SystemRole.EXPORT_FILE_DIR, CtiUtilities.getExportDirPath() );
 
 			logEvent("Export File Directory : " + exportDirectory, com.cannontech.common.util.LogWriter.INFO);
@@ -462,7 +462,7 @@ public abstract class ExportFormatBase
 		}
 		finally
 		{
-			if( recordVector.size() <=0)
+			if( getRecordVector().size() <=0)
 				logEvent("...Exported * 0 * Records.  No file generated.", com.cannontech.common.util.LogWriter.INFO);
 			
 			else
