@@ -235,7 +235,7 @@ public class ScriptTemplate implements ScriptParameters
 	    code += COMMENT + "Send email notification" + ENDLINE;
 	    code += "set EMessage \"\\n\\n\"" + ENDLINE;
 	    code += "append EMessage $Message" + ENDLINE;
-	    code += "sendnotification $" + NOTIFY_GROUP_PARAM + " $" + EMAIL_SUBJECT_PARAM + " $" + " $EMessage" + ENDLINE;
+	    code += "sendnotification $" + NOTIFY_GROUP_PARAM + " $" + EMAIL_SUBJECT_PARAM + " $EMessage" + ENDLINE;
 	    code += COMMENT + END + NOTIFICATION + ENDLINE;
 	    return code;
 	}
