@@ -31,10 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
+import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.gui.ReportBean;
+import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.AuthFuncs;
@@ -141,8 +143,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			param = req.getParameter("fileName");
 			if( param != null)
 				fileName = param.toString();
-
 			fileName += "." + ext;
+
 
 			//The action of generating a report, content-disposition changes based on downloading or viewing option.
 			param = req.getParameter("ACTION");
@@ -151,6 +153,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				
 			if( param != null && param.equalsIgnoreCase("DownloadReport"))
 				resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
+			else if( param != null && param.equalsIgnoreCase("GenerateMissedMeterList"))
+				resp.addHeader("Content-Disposition", "attachment; filename=MissedList.txt");
 			else
 				resp.setHeader("Content-Disposition", "inline; filename="+fileName);					
 			
@@ -229,7 +233,8 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 					}*/
 					
 					ReportFuncs.outputYukonReport( report, ext, out );
-					out.flush();
+//					out.flush();
+					return;
 				}
 //				else {
 ////					java.awt.print.PageFormat pageFormat = report.getDefaultPageFormat();
@@ -273,20 +278,40 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 //					out.flush();
 //				}
 			}
+			else if( action.equalsIgnoreCase("GenerateMissedMeterList"))
+			{
+//			  Create the report
+				JFreeReport report = null;//(JFreeReport)session.getAttribute(reportKey + "Report");
+				//Force a MISSED MeterRead report
+				((MeterReadModel)reportBean.getModel()).setMeterReadType(MeterReadModel.MISSED_METER_READ_TYPE);
+				if( noCache || report == null )
+				{			
+					report = reportBean.createReport();
+					if( !noCache )
+						session.setAttribute(reportKey + "Report", report);
+				}
+				
+				final ServletOutputStream out = resp.getOutputStream();
+				resp.setContentType("text/plain");
+				CSVQuoter quoter = new CSVQuoter(","); 
+				
+				//Write data
+				for (int r = 0; r < report.getData().getRowCount(); r++) 
+				{
+					String rawValue = String.valueOf (report.getData().getValueAt(r,MeterReadModel.DEVICE_NAME_COLUMN)); 
+					out.write(quoter.doQuoting(rawValue).getBytes()); 
+					out.write(new String("\r\n").getBytes());
+				} 
+				return;
+			}
+			if( destURL!= null ) {
+				resp.sendRedirect(destURL);
+			}
 		}
 		catch( Throwable t )
 		{
 			CTILogger.error("An exception was throw in ReportGenerator:  ");
 			t.printStackTrace();
 		}
-		finally
-		{
-			if( destURL!= null ) {
-				resp.sendRedirect(destURL);
-			}
-	//		else {
-	//			resp.sendRedirect(req.getContextPath() + "/user/CILC/user_reporting.jsp");
-	//		}
-		}		
 	}
 }
