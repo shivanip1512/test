@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notificationmessage>
+  <loadmanagement>
+    <programname>My Program</programname>
+    <customername>ACME Power</customername>
+    <starttime>5:59 PM</starttime>  <!-- adjusted for the user's energy company's time zone -->
+    <startdate>Wednesday, July 20</startdate>
+    <stoptime>6:00 PM</stoptime>
+    <stopdate>Wednesday, July 20</stopdate>
+    <durationminutes>0</durationminutes>
+    <durationhours>0</durationhours>
+    <remainingminutes>0</remainingminutes> <!-- the modulo 60 of the durationminutes -->
+    <action>finishing</action> <!-- can be one of starting, adjusting, or finishing -->
+  </loadmanagement>
+</notificationmessage>
