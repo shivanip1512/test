@@ -39,7 +39,7 @@ public class ContactableNotification extends ContactableBase {
     }
     
     public String toString() {
-        return _liteNotif.toString() + "[CNtID-" + _liteNotif.getContactNotifID() + "]";
+        return _liteNotif.toString() + "[CNtID " + _liteNotif.getContactNotifID() + "]";
     }
 }
 

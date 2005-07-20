@@ -40,6 +40,6 @@ public class ContactableContact extends ContactableBase {
     }
     
     public String toString() {
-        return _liteContact.toString() + "[ConID-" + _liteContact.getContactID() + "]";
+        return _liteContact.toString() + "[ConID " + _liteContact.getContactID() + "]";
     }
 }
