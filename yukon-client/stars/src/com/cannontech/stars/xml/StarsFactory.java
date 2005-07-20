@@ -404,6 +404,7 @@ public class StarsFactory {
 		for (int i = 0; i < starsContact.getContactNotificationCount(); i++) {
 			com.cannontech.stars.xml.serialize.ContactNotification starsNotif = starsContact.getContactNotification(i);
 			
+			
 			ContactNotification notif = null;
 			for (int j = 0; j < contact.getContactNotifVect().size(); j++) {
 				if (((ContactNotification)contact.getContactNotifVect().get(j)).getNotificationCatID().intValue() == starsNotif.getNotifCatID()) {
@@ -426,6 +427,18 @@ public class StarsFactory {
 				notif.setOrdering( new Integer(i) );
 				notif.setOpCode( Transaction.INSERT );
 				contact.getContactNotifVect().add( notif );
+			}
+		}
+		
+		//another quick fix...too many of these in STARS already!  :(
+		/*this is a quick and dirty way to make sure the NestedDbPersistent comparator in Contact.update()
+		will correctly perceive this as an entry to be removed from the table.*/
+		for (int x = 0; x < contact.getContactNotifVect().size(); x++) 
+		{
+			if (((ContactNotification)contact.getContactNotifVect().get(x)).getOpCode() == Transaction.DELETE) 
+			{
+				contact.getContactNotifVect().remove(x);
+				x--;
 			}
 		}
 	}
