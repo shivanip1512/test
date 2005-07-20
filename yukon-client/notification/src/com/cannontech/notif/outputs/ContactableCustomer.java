@@ -31,11 +31,11 @@ public class ContactableCustomer extends ContactableBase {
         return result;
     }
     
-    public LiteCustomer getContactableCustomer() {
+    public LiteCICustomer getContactableCustomer() {
         return _liteCustomer;
     }
     
     public String toString() {
-        return _liteCustomer.toString();
+        return _liteCustomer.toString() + "[CusID-" + _liteCustomer.getCustomerID() + "]";
     }
 }

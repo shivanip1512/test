@@ -8,7 +8,7 @@ import com.cannontech.database.data.lite.*;
 public class ContactableContact extends ContactableBase {
     List _notifList = new LinkedList();
     private final LiteContact _liteContact;
-    private LiteCustomer _customer = null;
+    private LiteCICustomer _customer = null;
     
     public ContactableContact(LiteContact contact) {
         _liteContact = contact;
@@ -19,11 +19,11 @@ public class ContactableContact extends ContactableBase {
         }
     }
     
-    public LiteCustomer getContactableCustomer() throws UnknownCustomerException {
+    public LiteCICustomer getContactableCustomer() throws UnknownCustomerException {
         if (_customer != null) {
             return _customer;
         }
-        _customer = ContactFuncs.getCustomer(_liteContact.getContactID());
+        _customer = ContactFuncs.getCICustomer(_liteContact.getContactID());
         if (_customer == null) {
             throw new UnknownCustomerException("Can't return LiteCustomer for contact id " + _liteContact.getContactID());
         }
@@ -40,6 +40,6 @@ public class ContactableContact extends ContactableBase {
     }
     
     public String toString() {
-        return _liteContact.toString();
+        return _liteContact.toString() + "[ConID-" + _liteContact.getContactID() + "]";
     }
 }

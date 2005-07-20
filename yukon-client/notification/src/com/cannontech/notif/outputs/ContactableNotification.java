@@ -3,23 +3,23 @@ package com.cannontech.notif.outputs;
 import java.util.*;
 
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteCustomer;
 
 public class ContactableNotification extends ContactableBase {
     List _noChildren = new ArrayList(0);
     private final LiteContactNotification _liteNotif;
-    private LiteCustomer _customer = null;
+    private LiteCICustomer _customer = null;
     
     public ContactableNotification(LiteContactNotification liteNotif) {
         _liteNotif = liteNotif;
     }
     
-    public LiteCustomer getContactableCustomer() throws UnknownCustomerException {
+    public LiteCICustomer getContactableCustomer() throws UnknownCustomerException {
         if (_customer != null) {
             return _customer;
         }
-        _customer = ContactFuncs.getCustomer(_liteNotif.getContactID());
+        _customer = ContactFuncs.getCICustomer(_liteNotif.getContactID());
         if (_customer == null) {
             throw new UnknownCustomerException("Can't return LiteCustomer for contact id " + _liteNotif.getContactID());
         }
@@ -39,7 +39,7 @@ public class ContactableNotification extends ContactableBase {
     }
     
     public String toString() {
-        return _liteNotif.toString();
+        return _liteNotif.toString() + "[CNtID-" + _liteNotif.getContactNotifID() + "]";
     }
 }
 
