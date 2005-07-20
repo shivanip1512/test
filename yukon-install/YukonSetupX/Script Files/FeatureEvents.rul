@@ -87,11 +87,11 @@ begin
     	ChangeDirectory(SUPPORTDIR);
     	SdShowMsg ( szMsgWait, TRUE );
     	if(uninstallJavaFirst) then
-    		szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn /norestart';
+    		szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn REBOOT=ReallySuppress';
     		LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     		Delay(5);
     	endif;
-    	szCmdLine = '/I ' + JDKINSTALLFILE + ' /qn /norestart INSTALLDIR='+TARGETDIR+'\\Runtime';
+    	szCmdLine = '/I ' + JDKINSTALLFILE + ' /qn INSTALLDIR='+TARGETDIR+'\\Runtime REBOOT=ReallySuppress';
     	LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     	SdShowMsg ( szMsgWait, FALSE );
     	ChangeDirectory(TARGETDIR);
@@ -111,7 +111,7 @@ begin
 	ChangeDirectory(SUPPORTDIR);
 	szMsgWait = 'Yukon is attempting to uninstall Java SDK'+JAVAVERSION+'.  Depending on the speed of your system, this could take several minutes.';
     SdShowMsg ( szMsgWait, TRUE );
-    szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn /norestart';
+    szCmdLine = '/x ' + JDKINSTALLFILE + ' /qn REBOOT=ReallySuppress';
     LaunchAppAndWait ( 'msiexec.exe', szCmdLine, WAIT );
     Delay(3);
     SdShowMsg ( szMsgWait, FALSE ); 

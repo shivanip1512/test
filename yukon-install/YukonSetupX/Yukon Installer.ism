@@ -398,7 +398,6 @@
 		<row><td>applicationservlet.class</td><td>Tomcat</td><td>ApplicationServlet.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\ApplicationServlet.class</td><td>1</td><td>NewSubFolder34</td></row>
 		<row><td>appserver.conf</td><td>Common Bin</td><td>appserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\appserver.conf</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>attributetag.class</td><td>Tomcat</td><td>AttributeTag.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\AttributeTag.class</td><td>1</td><td>NewSubFolder34</td></row>
-		<row><td>backport_util_concurrent.jar</td><td>Common Bin</td><td>backport-util-concurrent.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\backport-util-concurrent.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>banner.jsp</td><td>Tomcat</td><td>banner.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\banner.jsp</td><td>1</td><td>NewSubFolder15</td></row>
 		<row><td>baseform.class</td><td>Tomcat</td><td>BaseForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\resources\BaseForm.class</td><td>1</td><td>NewSubFolder42</td></row>
 		<row><td>baseform.class1</td><td>Tomcat</td><td>BaseForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\users\BaseForm.class</td><td>1</td><td>NewSubFolder45</td></row>
@@ -617,7 +616,6 @@
 		<row><td>jcpagelayout450k.jar</td><td>Common Bin</td><td>jcpagelayout450K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcpagelayout450K.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jdbcrealm.jsp</td><td>Tomcat</td><td>jdbcRealm.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\realm\jdbcRealm.jsp</td><td>1</td><td>NewSubFolder22</td></row>
 		<row><td>jdbcrealmform.class</td><td>Tomcat</td><td>JDBCRealmForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\realm\JDBCRealmForm.class</td><td>1</td><td>NewSubFolder41</td></row>
-		<row><td>jdom.jar</td><td>Common Bin</td><td>jdom.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jdom.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jfreechart.jar</td><td>Common Bin</td><td>jfreechart.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreechart.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jfreereport.jar</td><td>Common Bin</td><td>jfreereport.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreereport.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jk2.properties</td><td>Tomcat</td><td>jk2.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\conf\jk2.properties</td><td>1</td><td>NewSubFolder9</td></row>
@@ -807,6 +805,7 @@
 		<row><td>setcharacterencodingfilter.c</td><td>Tomcat</td><td>SetCharacterEncodingFilter.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\filters\SetCharacterEncodingFilter.class</td><td>1</td><td>NewSubFolder30</td></row>
 		<row><td>setclasspath.bat</td><td>Tomcat</td><td>setclasspath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\bin\setclasspath.bat</td><td>1</td><td>NewSubFolder4</td></row>
 		<row><td>setclasspath.sh</td><td>Tomcat</td><td>setclasspath.sh</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\bin\setclasspath.sh</td><td>1</td><td>NewSubFolder4</td></row>
+		<row><td>setjavapath.bat</td><td>Common Bin</td><td>setjavapath.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\setjavapath.bat</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>setlocaleaction.class</td><td>Tomcat</td><td>SetLocaleAction.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\SetLocaleAction.class</td><td>1</td><td>NewSubFolder34</td></row>
 		<row><td>setlocaleform.class</td><td>Tomcat</td><td>SetLocaleForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\SetLocaleForm.class</td><td>1</td><td>NewSubFolder34</td></row>
 		<row><td>setupdatasourceaction.class</td><td>Tomcat</td><td>SetUpDataSourceAction.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\resources\SetUpDataSourceAction.class</td><td>1</td><td>NewSubFolder42</td></row>
@@ -2020,7 +2019,7 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>ProObjWizard</td><td>_stock_</td><td/></row>
 		<row><td>ProductCode</td><td>64356C2D-E7B6-4CD7-8F64-DD65A3F1C66C</td><td/></row>
 		<row><td>ProductName</td><td>Yukon Application Suite</td><td/></row>
-		<row><td>ProductVersion</td><td>3.2</td><td/></row>
+		<row><td>ProductVersion</td><td>3.1</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.1</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.2</td><td>Yes, I want to launch %p now.</td><td/></row>

@@ -116,6 +116,6 @@ END
 //
 // Icon
 //
-10002		ICON	"C:\\Websphere Workplaces\\headspace\\yukon-install\\YukonSetupX\\IconId_10002.ico"
-10003		ICON	"C:\\Websphere Workplaces\\headspace\\yukon-install\\YukonSetupX\\IconId_10003.ico"
-10004		ICON	"C:\\Websphere Workplaces\\headspace\\yukon-install\\YukonSetupX\\IconId_10004.ico"
+10002		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10002.ico"
+10003		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10003.ico"
+10004		ICON	"C:\\Eclipse\\eclipse\\alphabranchspace\\yukon-install\\YukonSetupX\\IconId_10004.ico"

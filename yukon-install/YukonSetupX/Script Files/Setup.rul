@@ -149,12 +149,14 @@ HAPPYFUNTIME:
 	SetDialogTitle(DLG_ASK_OPTIONS, 'Yukon: Java required to proceed');
     
 	szPath = TARGETDIR + "\\Runtime\\bin";
+	//The magic happy Java check
+	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+	szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
+	foundVal = RegDBKeyExist ( szKey );
 	dirSearch =  ExistsDir (szPath);
+	//Yukon Runtime directory is not found, must need to install JDK there
 	if(dirSearch < 0) then 		   
-   		//The magic happy Java check
-		RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-		szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
-		foundVal = RegDBKeyExist ( szKey );
+    	//1.4.2_05 is already on this system
     	if(foundVal = 1) then
     		szMsg = 'Yukon needs to install Java Development Kit version ' +JAVAVERSION+', which has been detected in another location.  Please click CONTINUE to allow Yukon to move JDK '+JAVAVERSION+'.';
     		bvCheckCont = TRUE;
@@ -163,18 +165,27 @@ HAPPYFUNTIME:
     		szTextCont = 'Continue';
     		szTextIg = 'Ignore (NOT RECOMMENDED)';
     		moveNext = AskOptions(EXCLUSIVE, szMsg, szTextCont, bvCheckCont, szTextIg, bvCheckIg);
+    		//they clicked continue like they should have
     		if(moveNext = NEXT && bvCheckCont) then 
     			uninstallJavaFirst = TRUE;
 				installJava = TRUE;
+	  		//clicked ignore...that was stupid
 	  		else 
  		    	if(moveNext = BACK) then goto Dlg_SdComponentTree;
 				endif;
  			endif;    
+		//1.4.2_05 was not installed somewhere else
 		else
 			installJava = TRUE;
 			//SprintfBox(INFORMATION, 'One true', '%s', 'One true');
-		endif;    
- 	endif;
+		endif;
+	//The Yukon\Runtime directory was found
+	else
+		//however, no registry entry exists for the 1.4.2_05 JDK, so Runtime must be empty 
+		if(foundVal < 0) then
+			installJava = TRUE;
+		endif;
+	endif;
     
 	// setup default status
     SetStatusWindow(0, "");
@@ -273,12 +284,15 @@ HAPPYFUNTIME:
 	SetDialogTitle(DLG_ASK_OPTIONS, 'Yukon: Java required to proceed');
     
 	szPath = TARGETDIR + "\\Runtime\\bin";
+	
+	//The magic happy Java check
+	RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
+	szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
+	foundVal = RegDBKeyExist ( szKey );
 	dirSearch =  ExistsDir (szPath);
-	if(dirSearch < 0 && (nType = REPAIR || nType = MODIFY)) then 		   
-   		//The magic happy Java check
-		RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-		szKey = "\\SOFTWARE\\JavaSoft\\Java Development Kit\\" + JAVAVERSION;
-		foundVal = RegDBKeyExist ( szKey );
+	//Yukon Runtime directory is not found, must need to install JDK there
+	if(dirSearch < 0) then 		   
+    	//1.4.2_05 is already on this system
     	if(foundVal = 1) then
     		szMsg = 'Yukon needs to install Java Development Kit version ' +JAVAVERSION+', which has been detected in another location.  Please click CONTINUE to allow Yukon to move JDK '+JAVAVERSION+'.';
     		bvCheckCont = TRUE;
@@ -287,17 +301,27 @@ HAPPYFUNTIME:
     		szTextCont = 'Continue';
     		szTextIg = 'Ignore (NOT RECOMMENDED)';
     		moveNext = AskOptions(EXCLUSIVE, szMsg, szTextCont, bvCheckCont, szTextIg, bvCheckIg);
+    		//they clicked continue like they should have
     		if(moveNext = NEXT && bvCheckCont) then 
     			uninstallJavaFirst = TRUE;
-				installJava = TRUE;	
+				installJava = TRUE;
+	  		//clicked ignore...that was stupid
 	  		else 
  		    	if(moveNext = BACK) then goto Dlg_SdComponentTree;
 				endif;
  			endif;    
+		//1.4.2_05 was not installed somewhere else
 		else
 			installJava = TRUE;
-		endif;    
- 	endif;
+			//SprintfBox(INFORMATION, 'One true', '%s', 'One true');
+		endif;
+	//The Yukon\Runtime directory was found
+	else
+		//however, no registry entry exists for the 1.4.2_05 JDK, so Runtime must be empty 
+		if(foundVal < 0) then
+			installJava = TRUE;
+		endif;
+	endif;
 
 Dlg_ObjDialogs:
     nResult = ShowObjWizardPages(nResult);
