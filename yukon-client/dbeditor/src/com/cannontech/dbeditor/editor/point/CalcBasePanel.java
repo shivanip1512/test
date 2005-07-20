@@ -64,6 +64,13 @@ public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 		"On Timer".equalsIgnoreCase(val) );
 	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 
+	if("On Timer Or Update".equalsIgnoreCase(val))
+	{
+		getArchiveIntervalLabel().setEnabled(true);
+		getArchiveIntervalComboBox().setEnabled(true);
+		getArchiveIntervalComboBox().setSelectedItem("Daily");
+	}
+
 	fireInputUpdate();
 
 	return;
@@ -547,7 +554,10 @@ public Object getValue(Object val)
 
 	com.cannontech.database.data.point.CalculatedPoint calcPoint = (com.cannontech.database.data.point.CalculatedPoint) val;
 
-	calcPoint.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
+	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0)
+		calcPoint.getPoint().setArchiveType("time|update");
+	else
+		calcPoint.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
 	calcPoint.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
 
 	calcPoint.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
@@ -679,6 +689,7 @@ private void initialize() {
 	getArchiveTypeComboBox().addItem("On Change");
 	getArchiveTypeComboBox().addItem("On Timer");
 	getArchiveTypeComboBox().addItem("On Update");
+	getArchiveTypeComboBox().addItem("On Timer Or Update");
 
 	//Load the Archive Interval combo box with default possible values
 	getArchiveIntervalComboBox().addItem("1 second");
@@ -698,7 +709,10 @@ private void initialize() {
 	getArchiveIntervalComboBox().addItem("2 hour");
 	getArchiveIntervalComboBox().addItem("6 hour");
 	getArchiveIntervalComboBox().addItem("12 hour");
-	getArchiveIntervalComboBox().addItem("24 hour");
+	//getArchiveIntervalComboBox().addItem("24 hour");
+	getArchiveIntervalComboBox().addItem("Daily");
+	getArchiveIntervalComboBox().addItem("Weekly");
+	getArchiveIntervalComboBox().addItem("Monthly");
 	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 
 	//Load the Update Type combo box with default possible values
@@ -770,6 +784,8 @@ public void setValue(Object val) {
 	com.cannontech.database.data.point.CalculatedPoint calcPoint = (com.cannontech.database.data.point.CalculatedPoint) val;
 
 	String archiveType = calcPoint.getPoint().getArchiveType();
+	if(archiveType.compareTo("time|update") == 0)
+		archiveType = "On Timer Or Update";
 	Integer archiveInteger = calcPoint.getPoint().getArchiveInterval();
 	int uOfMeasureID = calcPoint.getPointUnit().getUomID().intValue();
 	getArchiveIntervalLabel().setEnabled(false);

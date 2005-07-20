@@ -602,12 +602,28 @@ public final static Integer getIntervalComboBoxSecondsValue(JComboBox comboBox)
  */
 public final static Integer getIntervalSecondsValue(String selectedString) 
 {
+	Integer generic = null;
 	Integer retVal = null;
 	int multiplier = 1;
 
 	if( selectedString == null )
 	{
 		retVal = new Integer(0);  //we have no idea, just use zero
+	}
+	else if( selectedString.toLowerCase().compareTo("daily") == 0)
+	{
+		generic = new Integer(86400);
+		return generic;
+	}
+	else if( selectedString.toLowerCase().compareTo("weekly") == 0)
+	{
+		generic = new Integer(604800);
+		return generic;
+	}
+	else if( selectedString.toLowerCase().compareTo("monthly") == 0)
+	{
+		generic = new Integer(2592000);
+		return generic;
 	}
 	else if( selectedString.toLowerCase().indexOf("second") != -1 )
 	{
@@ -1111,7 +1127,14 @@ public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, dou
 	}
 	else
 	{
-		scanRateString = getDecimalFormatter().format(scanRateSecs/86400.0) + " day";
+		if(scanRateSecs == 86400)
+			scanRateString = "Daily";
+		else if(scanRateSecs == 604800)
+			scanRateString = "Weekly";
+		else if(scanRateSecs == 2592000)
+			scanRateString = "Monthly";
+		else
+			scanRateString = getDecimalFormatter().format(scanRateSecs/86400.0) + " day";
 	}
 	
 

@@ -62,6 +62,9 @@ public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 		getArchiveIntervalLabel().setEnabled(true);
 		getArchiveIntervalComboBox().setEnabled(true);
 		getArchiveIntervalComboBox().setSelectedItem("5 minute");
+		
+		if("On Timer Or Update".equalsIgnoreCase(((String)getArchiveTypeComboBox().getSelectedItem())))
+			getArchiveIntervalComboBox().setSelectedItem("Daily");
 	}
 
 	return;
@@ -425,7 +428,10 @@ public Object getValue(Object val) {
 	int uOfMeasureID = ((com.cannontech.database.data.lite.LiteUnitMeasure)getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 	
 	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
-	point.getPoint().setArchiveType((String)getArchiveTypeComboBox().getSelectedItem());
+	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0)
+		point.getPoint().setArchiveType("time|update");
+	else
+		point.getPoint().setArchiveType((String)getArchiveTypeComboBox().getSelectedItem());
 	point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
 	
 	point.getPointUnit().setDecimalPlaces( new Integer(((Number)getDecimalPlacesSpinner().getValue()).intValue() ) );
@@ -517,6 +523,7 @@ private void initialize() {
 	getArchiveTypeComboBox().addItem("On Change");
 	getArchiveTypeComboBox().addItem("On Timer");
 	getArchiveTypeComboBox().addItem("On Update");
+	getArchiveTypeComboBox().addItem("On Timer Or Update");
 
 	//Load the Archive Interval combo box with default possible values
 	getArchiveIntervalComboBox().addItem("1 second");
@@ -536,7 +543,10 @@ private void initialize() {
 	getArchiveIntervalComboBox().addItem("2 hour");
 	getArchiveIntervalComboBox().addItem("6 hour");
 	getArchiveIntervalComboBox().addItem("12 hour");
-	getArchiveIntervalComboBox().addItem("1 day");
+	//getArchiveIntervalComboBox().addItem("1 day");
+	getArchiveIntervalComboBox().addItem("Daily");
+	getArchiveIntervalComboBox().addItem("Weekly");
+	getArchiveIntervalComboBox().addItem("Monthly");
 	getArchiveIntervalComboBox().setSelectedItem("5 minute");
 	// user code end
 }
@@ -582,6 +592,8 @@ public void setValue(Object val) {
 
 	int uOfMeasureID = point.getPointUnit().getUomID().intValue();
 	String archiveType = point.getPoint().getArchiveType();
+	if(archiveType.compareTo("time|update") == 0)
+		archiveType = "On Timer Or Update";
 	Integer archiveInteger = point.getPoint().getArchiveInterval();
 	
 
