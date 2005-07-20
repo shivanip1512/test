@@ -31,7 +31,6 @@ public class EmailHandler extends OutputHandler
     
     public void handleNotification(NotificationBuilder notifFormatter, Contactable contact) {
         try {
-            List emailList = contact.getNotifications(EMAIL_NOTIFICATION_TYPES);
             
             Notification notif = notifFormatter.buildNotification(contact);
             
@@ -46,6 +45,7 @@ public class EmailHandler extends OutputHandler
             emailMsg.setSubject(emailSubject);
             emailMsg.setBody(emailBody);
             
+            List emailList = contact.getNotifications(EMAIL_NOTIFICATION_TYPES);
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
                 LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();
@@ -56,7 +56,7 @@ public class EmailHandler extends OutputHandler
                     emailMsg.setRecipient(emailTo);
                     emailMsg.send();
                 } catch (MessagingException e) {
-                    CTILogger.warn("Unable to email notification " + notif + " to address " + emailTo + ".", e);
+                    CTILogger.warn("Unable to email notification for " + contact + " to address " + emailTo + ".", e);
                 }
             }
             

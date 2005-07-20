@@ -1,6 +1,6 @@
 package com.cannontech.notif.handler;
 
-import com.cannontech.database.cache.functions.PointFuncs;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.message.util.Message;
@@ -14,7 +14,7 @@ public class AlarmMessageHandler extends NotifHandler {
     }
 
     public boolean canHandle(Message msg) {
-        return false;
+        return msg instanceof NotifAlarmMsg;
     }
 
     public void handleMessage(NotifServerConnection connection,  Message msg_) {
@@ -27,8 +27,8 @@ public class AlarmMessageHandler extends NotifHandler {
         LitePoint point = (LitePoint)PointFuncs.getLitePoint(msg.pointId);
         notif.addData("pointname", point.getPointName());
         notif.addData("value", Double.toString(msg.value));
-        LitePointUnit uOfM = PointFuncs.getPointUnit(msg.pointId);
-        notif.addData("unitofmeasure", uOfM.toString()); //This won't work!
+        String uofmName = UnitMeasureFuncs.getLiteUnitMeasureByPointID(msg.pointId).getUnitMeasureName();
+        notif.addData("unitofmeasure", uofmName);
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
             public Notification buildNotification(Contactable contact) {
@@ -36,12 +36,11 @@ public class AlarmMessageHandler extends NotifHandler {
             }
         };
 
-        // there will be more than one of these, so this will be a loop
-        
-        
-        
-        LiteNotificationGroup lng = null;
-        outputNotification(notifFormatter, lng);
+        for (int i = 0; i < msg.notifGroupIds.length; i++) {
+            int notifGroupId = msg.notifGroupIds[i];
+            LiteNotificationGroup liteNotifGroup = NotificationGroupFuncs.getLiteNotificationGroup(notifGroupId);
+            outputNotification(notifFormatter, liteNotifGroup);
+        }
     }
 
 }
