@@ -1,7 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
 import java.util.Map;
-import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteContact;
@@ -17,18 +16,22 @@ import com.cannontech.database.db.contact.ContactNotification;
 public class ContactLoader implements Runnable 
 {
     //Map<Integer(contactID), LiteContact>
-    private Map allContactsMap = null;
+    private final Map allContactsMap;
 
-    private java.util.ArrayList allContacts = null;
-	private String databaseAlias = null;
+    private final java.util.ArrayList allContacts;
+	private final String databaseAlias;
+
+    //Map<Integer(ContactNotifID), LiteContactNotif>
+    private final Map allContactNotifsMap;
 	
 	/**
 	 * CustomerContactLoader constructor comment.
 	 */
-	public ContactLoader(java.util.ArrayList customerContactArray, Map contactMap, String alias) {
+	public ContactLoader(java.util.ArrayList customerContactArray, Map contactMap, Map allContactNotifsMap, String alias) {
 		super();
 		this.allContacts = customerContactArray;
         this.allContactsMap = contactMap;
+        this.allContactNotifsMap = allContactNotifsMap;
 		this.databaseAlias = alias;
 	}
 	/**
@@ -82,11 +85,13 @@ public class ContactLoader implements Runnable
 				"cn.DisableFlag, cn.Notification " + 
 				"FROM " + ContactNotification.TABLE_NAME + " cn " +
 				"where cn.ContactNotifID > " + CtiUtilities.NONE_ZERO_ID + " " +
-				"order by cn.ContactID";
+				"order by cn.ContactID, cn.Ordering";
 			
-			Vector contNotifs = new Vector(8);
-			rset = stmt.executeQuery(sqlString);
+            // we'll store the last contact to take advantage of the
+            // fact that the ContactNotifications are ordered by ContactID
+			LiteContact lastContact = null;
 
+            rset = stmt.executeQuery(sqlString);
 			while( rset.next() )
 			{
 				LiteContactNotification ln = new LiteContactNotification(
@@ -95,27 +100,22 @@ public class ContactLoader implements Runnable
 						rset.getInt(3),
 						rset.getString(4),
 						rset.getString(5) );
+                // add to all contact notif map
+                allContactNotifsMap.put(new Integer(ln.getContactNotifID()), ln);
 
-				contNotifs.add( ln);
-			}
-			
-			
-			//assign our ContactNotifications to their owner Contact
-			for( int i = 0; i < contNotifs.size(); i++ )
-			{
-				LiteContactNotification ltCntNotif 
-						= (LiteContactNotification)contNotifs.get(i);
-
-				LiteContact lc =
-					(LiteContact)allContactsMap.get( new Integer(ltCntNotif.getContactID()) );
-
-				lc.getLiteContactNotifications().add( ltCntNotif );
+                // check if the lastContact is still valid
+                if (lastContact == null || lastContact.getContactID() != ln.getContactID()) {
+                    lastContact = 
+                        (LiteContact)allContactsMap.get( new Integer(ln.getContactID()) );
+                }
+                
+                // add this contact notif to its contact
+                lastContact.getLiteContactNotifications().add(ln);
 			}			
-			
 		}
 		catch( java.sql.SQLException e )
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			com.cannontech.clientutils.CTILogger.error( "Unable to load contacts.", e );
 		}
 		finally
 		{

@@ -277,9 +277,10 @@ public synchronized java.util.List getAllContacts()
 	{
 		allContacts = new ArrayList();        
 		allContactsMap = new HashMap();
+        allContactNotifsMap = new HashMap();
 
 		ContactLoader contactLoader =
-			new ContactLoader(allContacts, allContactsMap, databaseAlias);
+			new ContactLoader(allContacts, allContactsMap, allContactNotifsMap, databaseAlias);
 
 		contactLoader.run();		
 		return allContacts;
@@ -921,13 +922,10 @@ public synchronized java.util.Map getAllContactNotifsMap()
 		return allContactNotifsMap;
 	else
 	{
-		allContactNotifsMap = new HashMap();
+        releaseAllContacts();
+        getAllContacts();
 
-		ContactNotifcationLoader notifLoader =
-			new ContactNotifcationLoader(allContactNotifsMap, databaseAlias);
-
-		notifLoader.run();		
-		return allContactNotifsMap;
+        return allContactNotifsMap;
 	}
 }
 
