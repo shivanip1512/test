@@ -59,7 +59,7 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 
                 LiteYukonPAObject liteYukonPAO = PAOFuncs.getLiteYukonPAO(msg.programId);
                 notif.addData("programname", liteYukonPAO.getPaoName());
-                notif.addData("contactname", contact.toString());
+                notif.addData("customername", contact.getCustomerName());
 
                 _timeFormater.setTimeZone(contact.getTimeZone());
                 _dateFormater.setTimeZone(contact.getTimeZone());
