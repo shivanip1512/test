@@ -167,13 +167,15 @@ public class LiteContact extends LiteBase
 					"cn.DisableFlag, cn.Notification " + 
 					"FROM " + ContactNotification.TABLE_NAME + " cn " +
 					"where cn.ContactID = " + getContactID() + " " +
-					"order by cn.Notification",
+					"order by cn.Ordering, cn.Notification",
 					databaseAlias );
 			
 			//refresh our notification list
 			getLiteContactNotifications().removeAllElements();
 			
 			stmt.execute();
+            
+            getLiteContactNotifications().ensureCapacity(stmt.getRowCount());
 
 			for( int i = 0; i < stmt.getRowCount(); i++ )
 			{
@@ -190,7 +192,7 @@ public class LiteContact extends LiteBase
 	 	}
 	 	catch( Exception e )
 	 	{
-	 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	 		com.cannontech.clientutils.CTILogger.error( "Unable to load Contact", e );
 	 	}
 	}
 
@@ -217,7 +219,7 @@ public class LiteContact extends LiteBase
 	public Vector getLiteContactNotifications() 
 	{
 		if( liteContactNotifications == null )
-			liteContactNotifications = new Vector(8);
+			liteContactNotifications = new Vector(4);
 
 		return liteContactNotifications;
 	}
