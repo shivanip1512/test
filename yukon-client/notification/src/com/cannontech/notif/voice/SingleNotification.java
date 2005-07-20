@@ -70,7 +70,7 @@ public class SingleNotification implements PropertyChangeListener {
             CTILogger.info("Created " + _nextCall + " for " + this);
             return _nextCall;
         } else {
-            CTILogger.warn("Unable to contact " + contact + " because there is no associated PIN.");
+            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
             return createNewCall();
         }
 	}
