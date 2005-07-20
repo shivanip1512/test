@@ -11,6 +11,18 @@
   <jspversion>1.1</jspversion>
   <shortname>CTI Tags</shortname>
 
+  <!-- ===================== Control Flow Tags ====================== -->
+  <tag>
+  	<name>errormsg</name>
+	<tagclass>com.cannontech.taglib.ErrorMsgTag</tagclass>
+	<bodycontent>JSP</bodycontent>
+	<attribute>
+		<name>colSpan</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+  </tag>
+
   <!-- Start of user/role/roleproperty tags -->
   <tag>
   	<name>breadCrumb</name>
