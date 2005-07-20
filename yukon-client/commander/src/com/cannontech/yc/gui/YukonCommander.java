@@ -2115,6 +2115,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			tempModel.add(	ModelFactory.DEVICE);
 			tempModel.add( ModelFactory.DEVICE_METERNUMBER);
 			tempModel.add( ModelFactory.MCTBROADCAST);
+			tempModel.add( ModelFactory.TRANSMITTER);
 			tempModel.add( ModelFactory.LMGROUPS);
 			tempModel.add( ModelFactory.CAPBANKCONTROLLER);
 			tempModel.add( ModelFactory.COLLECTIONGROUP);
