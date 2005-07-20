@@ -17,7 +17,7 @@ import com.cannontech.util.MBeanUtil;
 public class NotificationQueue implements NotificationQueueMBean {
     private boolean _shutdown = false;
     private Map _poolMap = new TreeMap();
-    private int _callsProcessed = 0;
+    private int _notificationsProcessed = 0;
     
     public NotificationQueue() {
         MBeanUtil.tryRegisterMBean("name=NotificationCallQueue", this);
@@ -34,7 +34,7 @@ public class NotificationQueue implements NotificationQueueMBean {
      * @throws UnknownCustomerException 
      */
     public void add(final SingleNotification notification) {
-        if (!notification.getState().equals(SingleNotification.STATE_READY)) {
+        if (!notification.getState().equals(SingleNotification.STATE_INITIAL)) {
             throw new UnsupportedOperationException("Can't add notification that isn't in ready state.");
         }
         try {
@@ -45,15 +45,18 @@ public class NotificationQueue implements NotificationQueueMBean {
                 public void propertyChange(PropertyChangeEvent evt) {
                     if (evt.getNewValue().equals(SingleNotification.STATE_READY)
                         && !_shutdown) {
-                        Call call = notification.createNewCall();
-                        callPool.submitCall(call);
+                        try {
+                            Call call = notification.createNewCall();
+                            callPool.submitCall(call);
+                        } catch (NoRemainingCallsException e) {
+                            notification.setState(SingleNotification.STATE_FAILED);
+                        }
                     }
                 }
             });
             CTILogger.info("Adding single notification: " + notification);
-            Call call = notification.createNewCall();
-            callPool.submitCall(call);
-            _callsProcessed++;
+            notification.setState(SingleNotification.STATE_READY);
+            _notificationsProcessed++;
         } catch (UnknownRolePropertyException e) {
             CTILogger.warn("Unable to add " + notification + " to calling queue.", e);
         }
@@ -98,11 +101,11 @@ public class NotificationQueue implements NotificationQueueMBean {
     }
 
     public int getCallsProcessed() {
-        return _callsProcessed;
+        return _notificationsProcessed;
     }
 
     public void setCallsProcessed(int callsProcessed) {
-        _callsProcessed = callsProcessed;
+        _notificationsProcessed = callsProcessed;
     }
 
 }
