@@ -128,4 +128,17 @@ public class Contactable {
         return _contactableBase.toString();
     }
 
+    /**
+     * Return the name of the CICustomer associated with this Contactable.
+     * 
+     * @return name of CICustomer or "" if no CICustomer
+     */
+    public String getCustomerName() {
+        try {
+            return _contactableBase.getContactableCustomer().toString();
+        } catch (UnknownCustomerException e) {
+            return "";
+        }
+    }
+
 }
