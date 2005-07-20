@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -40,6 +41,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateContacts;
 import com.cannontech.stars.xml.serialize.StarsUpdateContactsResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+
 
 /**
  * @author yao
@@ -230,8 +232,15 @@ public class UpdateContactsAction implements ActionBase {
 					com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 					StarsFactory.setCustomerContact( contact, starsContact );
 		            
-					contact= (com.cannontech.database.data.customer.Contact)
+					contact = (com.cannontech.database.data.customer.Contact)
 							Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+					
+					//also need to add the link	between the customer and this new contact	
+					CustomerAdditionalContact newAdditional = new CustomerAdditionalContact();
+					newAdditional.setCustomerID(new Integer(liteCustomer.getCustomerID()));
+		            newAdditional.setContactID(contact.getContact().getContactID());
+		            newAdditional.setOrdering(new Integer(i));
+					Transaction.createTransaction( Transaction.INSERT, newAdditional ).execute();
 		            
 					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
 					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
