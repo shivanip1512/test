@@ -215,6 +215,12 @@ public class CTILogger //implements ILogging
       getLogger().debug( msg );
    }
 
+   public static void debug( Object msg, Throwable t )
+   {      
+		updateLogSettings();
+	  getLogger().debug( msg, t );
+   }
+
    public static void info( Object msg )
    {		
 		updateLogSettings();
