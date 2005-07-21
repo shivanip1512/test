@@ -223,7 +223,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 		energyCompany.addAddress( liteSAddr );
         
 		LiteAddress liteBAddr = new LiteAddress();
-		liteBAddr.setAddressID( liteAcctSite.getStreetAddressID() );
+		liteBAddr.setAddressID( liteAccount.getBillingAddressID() );
 		liteBAddr.setLocationAddress1( rset.getString("BAddr1") );
 		liteBAddr.setLocationAddress2( rset.getString("BAddr2") );
 		liteBAddr.setCityName( rset.getString("BCity") );
