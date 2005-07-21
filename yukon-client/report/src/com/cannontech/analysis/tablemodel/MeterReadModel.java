@@ -333,7 +333,7 @@ public class MeterReadModel extends ReportModelBase
 				case SORT_BY_GROUP_NAME_COLUMN:
 				{
 				    if( ldmn == null)
-				        return NULL_STRING;
+				        return null;
 				    if( getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
 				        return ldmn.getTestCollGroup();
 				    else if( getFilterModelType() == ModelFactory.BILLING_GROUP)
@@ -345,9 +345,7 @@ public class MeterReadModel extends ReportModelBase
 					return lPao.getPaoName();
 					
 				case METER_NUMBER_COLUMN:
-				    if( ldmn == null)
-				        return NULL_STRING;
-				    return ldmn.getMeterNumber();
+				    return ( ldmn == null ? null : ldmn.getMeterNumber());
 				    
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(lPao.getAddress());
@@ -361,7 +359,7 @@ public class MeterReadModel extends ReportModelBase
 				case GROUP_NAME_1_COLUMN:
 				{
 				    if( ldmn == null)
-				        return NULL_STRING;
+				        return null;
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
 				        return ldmn.getTestCollGroup();
 				    else 
@@ -370,7 +368,7 @@ public class MeterReadModel extends ReportModelBase
 				case GROUP_NAME_2_COLUMN:
 				{
 				    if( ldmn == null)
-				        return NULL_STRING;
+				        return null;
 				    if( getFilterModelType() == ModelFactory.BILLING_GROUP)
 				        return ldmn.getTestCollGroup();
 				    else 

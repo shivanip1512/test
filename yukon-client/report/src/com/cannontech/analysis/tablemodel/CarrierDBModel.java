@@ -175,7 +175,9 @@ public class CarrierDBModel extends ReportModelBase
 		if ( o instanceof Integer)
 		{
 		    LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(((Integer)o).intValue());
-		    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(((Integer)o).intValue());
+		    if (lPao == null)
+		    	return null;
+		    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(lPao.getYukonID());
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
@@ -185,7 +187,7 @@ public class CarrierDBModel extends ReportModelBase
 					return PAOGroups.getPAOTypeString(lPao.getType());
 
 				case METER_NUMBER_COLUMN:
-				    return ldmn.getMeterNumber();
+				    return (ldmn != null ? ldmn.getMeterNumber() : null);
 				    
 				case ADDRESS_COLUMN:
 					return String.valueOf(lPao.getAddress());
@@ -194,10 +196,10 @@ public class CarrierDBModel extends ReportModelBase
 					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
 				
 				case COLL_GROUP_NAME_COLUMN:
-					return ldmn.getCollGroup();
+					return (ldmn != null ? ldmn.getCollGroup() : null);
 				
 				case TEST_COLL_GROUP_NAME_COLUMN:
-					return ldmn.getTestCollGroup();
+					return (ldmn != null ? ldmn.getTestCollGroup() : null);
 			}
 		}
 		return null;

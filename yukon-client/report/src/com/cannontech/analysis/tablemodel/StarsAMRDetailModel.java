@@ -148,8 +148,8 @@ public class StarsAMRDetailModel extends ReportModelBase
 			    }
 			    if( tempOrderBy == ORDER_BY_METER_NUMBER)
 			    {
-			        thisVal = ((StarsAMRDetail)o1).getLiteDeviceMeterNumber().getMeterNumber();
-					anotherVal = ((StarsAMRDetail)o2).getLiteDeviceMeterNumber().getMeterNumber();
+			        thisVal = ((StarsAMRDetail)o1).getLiteDeviceMeterNumber() == null ? NULL_STRING : ((StarsAMRDetail)o1).getLiteDeviceMeterNumber().getMeterNumber();
+					anotherVal = ((StarsAMRDetail)o2).getLiteDeviceMeterNumber() == null ? NULL_STRING : ((StarsAMRDetail)o2).getLiteDeviceMeterNumber().getMeterNumber();
 			    }
 			    if( tempOrderBy == ORDER_BY_VALUE)
 			    {
@@ -373,15 +373,15 @@ public class StarsAMRDetailModel extends ReportModelBase
 				case SORT_BY_COLUMN:
 				{
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
-				        return (detail.getLiteDeviceMeterNumber() == null ? NULL_STRING : detail.getLiteDeviceMeterNumber().getCollGroup());
+				        return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				    else if( getFilterModelType() == ModelFactory.ROUTE)
 				        return PAOFuncs.getYukonPAOName(detail.getLitePaobject().getRouteID());
-				    return NULL_STRING;	//UNKNOWN????
+				    return null;	//UNKNOWN????
 				}
 				case ACCOUNT_NUMBER_COLUMN:
 				    return detail.getAccountNumber();
 				case CONTACT_NAME_COLUMN:
-				    return (detail.getLitePrimaryContact() == null ? NULL_STRING : detail.getLitePrimaryContact().getContLastName() + ", " + detail.getLitePrimaryContact().getContFirstName());
+				    return (detail.getLitePrimaryContact() == null ? null : detail.getLitePrimaryContact().getContLastName() + ", " + detail.getLitePrimaryContact().getContFirstName());
 				case MAP_NUMBER_COLUMN:
 				    return detail.getMapNumber();
 				case DEVICE_NAME_COLUMN:
@@ -389,14 +389,14 @@ public class StarsAMRDetailModel extends ReportModelBase
 		        case DEVICE_TYPE_COLUMN:
 		            return PAOGroups.getPAOTypeString(detail.getLitePaobject().getType());
 				case METER_NUMBER_COLUMN:
-				    return (detail.getLiteDeviceMeterNumber() == null ? NULL_STRING : detail.getLiteDeviceMeterNumber().getMeterNumber());
+				    return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getMeterNumber());
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(detail.getLitePaobject().getAddress());
 				case ROUTE_NAME_OR_COLL_GROUP_COLUMN:	//return the opposite of the SORT_BY_COLUMN attribute
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
 				        return PAOFuncs.getYukonPAOName(detail.getLitePaobject().getRouteID());
 				    else if( getFilterModelType() == ModelFactory.ROUTE)
-				    	return (detail.getLiteDeviceMeterNumber() == null ? NULL_STRING : detail.getLiteDeviceMeterNumber().getCollGroup());
+				    	return (detail.getLiteDeviceMeterNumber() == null ? null : detail.getLiteDeviceMeterNumber().getCollGroup());
 				    return NULL_STRING;	//UNKNOWN????
 				case LAST_KWH_READING_COLUMN:
 				    return detail.getMeterPointData().getValue();

@@ -228,8 +228,8 @@ public class PointDataSummaryModel extends ReportModelBase
 		    }
 		    if( getOrderBy() == ORDER_BY_METER_NUMBER)
 		    {
-		        thisVal = ((LPMeterData)o1).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
-				anotherVal = ((LPMeterData)o2).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
+		        thisVal = ((LPMeterData)o1).getMeterAndPointData().getLiteDeviceMeterNumber() == null ? NULL_STRING : ((LPMeterData)o1).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
+				anotherVal = ((LPMeterData)o2).getMeterAndPointData().getLiteDeviceMeterNumber() == null ? NULL_STRING : ((LPMeterData)o2).getMeterAndPointData().getLiteDeviceMeterNumber().getMeterNumber();
 		    }
 	        return ( thisVal.compareToIgnoreCase(anotherVal));
 		}

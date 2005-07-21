@@ -218,9 +218,7 @@ public class MeterOutageModel extends ReportModelBase
 				    
 				case METER_NUMBER_COLUMN:
 				    LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(meterPD.getPaobjectID().intValue());
-				    if( ldmn == null)
-				        return NULL_STRING;
-				    return ldmn.getMeterNumber();
+				    return ( ldmn == null ? null : ldmn.getMeterNumber());
 				    
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return String.valueOf(lPao.getAddress());
