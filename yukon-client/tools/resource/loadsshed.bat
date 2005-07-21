@@ -1,1 +1,2 @@
-%YUKON_BASE%\Runtime\bin\java -Djava.class.path=.;%YUKON_BASE%/server/web;report.jar;common.jar;classes12.jar;database.jar;log4j-1.2.4.jar;jcchart401K.jar;jcfield401K.jar;jcpagelayout450k.jar;SqlServer.jar;yukonappserver.jar;jtds.jar;j2ee.jar; com.cannontech.report.mainprograms.ReportCommandLine type=loads_shed print
+call setjavapath.bat
+java -Djava.class.path=.;%YUKON_BASE%/server/web;report.jar;common.jar;classes12.jar;database.jar;log4j-1.2.4.jar;jcchart401K.jar;jcfield401K.jar;jcpagelayout450k.jar;SqlServer.jar;yukonappserver.jar;jtds.jar;j2ee.jar; com.cannontech.report.mainprograms.ReportCommandLine type=loads_shed print
