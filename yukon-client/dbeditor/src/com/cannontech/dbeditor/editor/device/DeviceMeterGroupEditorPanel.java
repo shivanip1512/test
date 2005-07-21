@@ -1521,8 +1521,8 @@ public void setValue(Object val)
 			|| deviceType == PAOGroups.MCT410CL
 			|| deviceType == PAOGroups.MCT470)
 		{
-			getChannel2CheckBox().setEnabled(false);
-			getChannel3CheckBox().setEnabled(false);
+			getChannel2CheckBox().setEnabled(true);
+			getChannel3CheckBox().setEnabled(true);
 			
 			getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
 			getJComboBoxlVoltRate().removeAllItems();
