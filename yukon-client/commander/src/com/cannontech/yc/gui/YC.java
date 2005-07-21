@@ -673,7 +673,7 @@ public class YC extends Observable implements MessageListener
 		{
 			deviceType = "";			
 			//*TODO - This is a really bad catch all...revise!*/
-			CTILogger.error("Device Type undefined. Item instance of " + item_.getClass());
+			CTILogger.error("Device Type undefined. Item instance of " + (item_ == null ? null :item_.getClass()));
 		}
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
 		setLiteDeviceTypeCommandsVector(CommandFuncs.getAllDevTypeCommands(deviceType));

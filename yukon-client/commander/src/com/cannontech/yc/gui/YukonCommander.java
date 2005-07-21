@@ -1885,7 +1885,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		setTitle(displayTitle);
 
 		if (selectedItem == null)
+		{
+			getYC().setDeviceType(null);
 			return;
+		}
 	
 		if (getTreeViewPanel().getSelectedNode() != null)
 		{
