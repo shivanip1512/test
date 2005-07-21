@@ -227,16 +227,20 @@ public class YC extends Observable implements MessageListener
 				// TestCollectionGroup is selected.
 				else if ( getModelType() == ModelFactory.TESTCOLLECTIONGROUP )
 				{
-					Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
-					Vector savedVector = (Vector)getExecuteCmdsVector().clone();
-					for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+					synchronized(YC.this)
 					{
-						setDeviceID(deviceMeterGroupIds[i].intValue());
-						handleDevice ();
-						//clone the vector because handleDevice() removed the command but in truth, it 
-						// shouldn't be removed until all of the devices have been looped through.
-						if( i < deviceMeterGroupIds.length)
-							executeCmdsVector = (Vector)savedVector.clone();
+						Integer [] deviceMeterGroupIds = DeviceMeterGroup.getDeviceIDs_TestCollectionGroups(CtiUtilities.getDatabaseAlias(), getTreeItem().toString());
+						Vector savedVector = (Vector)getExecuteCmdsVector().clone();
+						
+						for ( int i = 0; i < deviceMeterGroupIds.length; i++)
+						{
+							setDeviceID(deviceMeterGroupIds [i].intValue());
+							handleDevice();
+							//clone the vector because handleDevice() removed the command but in truth, it
+							// shouldn't be removed until all of the devices have been looped through.							
+							if( i+1 < deviceMeterGroupIds.length)
+								executeCmdsVector = (Vector)savedVector.clone();
+						}
 					}
 				}
 				// Collectiongroup is selected.
