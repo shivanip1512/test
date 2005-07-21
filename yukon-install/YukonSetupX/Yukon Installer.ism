@@ -398,6 +398,7 @@
 		<row><td>applicationservlet.class</td><td>Tomcat</td><td>ApplicationServlet.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\ApplicationServlet.class</td><td>1</td><td>NewSubFolder34</td></row>
 		<row><td>appserver.conf</td><td>Common Bin</td><td>appserver.conf</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\appserver.conf</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>attributetag.class</td><td>Tomcat</td><td>AttributeTag.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\AttributeTag.class</td><td>1</td><td>NewSubFolder34</td></row>
+		<row><td>backport_util_concurrent.jar</td><td>Common Bin</td><td>backport-util-concurrent.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\backport-util-concurrent.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>banner.jsp</td><td>Tomcat</td><td>banner.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\banner.jsp</td><td>1</td><td>NewSubFolder15</td></row>
 		<row><td>baseform.class</td><td>Tomcat</td><td>BaseForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\resources\BaseForm.class</td><td>1</td><td>NewSubFolder42</td></row>
 		<row><td>baseform.class1</td><td>Tomcat</td><td>BaseForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\users\BaseForm.class</td><td>1</td><td>NewSubFolder45</td></row>
@@ -616,6 +617,7 @@
 		<row><td>jcpagelayout450k.jar</td><td>Common Bin</td><td>jcpagelayout450K.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jcpagelayout450K.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jdbcrealm.jsp</td><td>Tomcat</td><td>jdbcRealm.jsp</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\realm\jdbcRealm.jsp</td><td>1</td><td>NewSubFolder22</td></row>
 		<row><td>jdbcrealmform.class</td><td>Tomcat</td><td>JDBCRealmForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\realm\JDBCRealmForm.class</td><td>1</td><td>NewSubFolder41</td></row>
+		<row><td>jdom.jar</td><td>Common Bin</td><td>jdom.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\jdom.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jfreechart.jar</td><td>Common Bin</td><td>jfreechart.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreechart.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jfreereport.jar</td><td>Common Bin</td><td>jfreereport.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\jfreereport.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>jk2.properties</td><td>Tomcat</td><td>jk2.properties</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\conf\jk2.properties</td><td>1</td><td>NewSubFolder9</td></row>
@@ -694,12 +696,17 @@
 		<row><td>memoryrealmform.class</td><td>Tomcat</td><td>MemoryRealmForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\realm\MemoryRealmForm.class</td><td>1</td><td>NewSubFolder41</td></row>
 		<row><td>memtest.exe</td><td>Test Applications</td><td>memtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\memtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>monitor.jar</td><td>Alarm Monitor</td><td>monitor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\monitor.jar</td><td>1</td><td>NewSubFolder73</td></row>
+		<row><td>ms4j_rimpl.jar</td><td>Common Bin</td><td>ms4j-rimpl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\ms4j-rimpl.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>msq15d.dll</td><td>Common Dlls</td><td>msq15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\msq15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>msvcp60d.dll</td><td>Common Dlls</td><td>MSVCP60D.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCP60D.DLL</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>msvcrtd.dll</td><td>Common Dlls</td><td>MSVCRTD.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCRTD.DLL</td><td>1</td><td>NewSubFolder72</td></row>
+		<row><td>mx4j.jar</td><td>Common Bin</td><td>mx4j.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j.license</td><td>Tomcat</td><td>mx4j.license</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\lib\mx4j.license</td><td>1</td><td>NewSubFolder13</td></row>
+		<row><td>mx4j_impl.jar</td><td>Common Bin</td><td>mx4j-impl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-impl.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j_jmx.jar</td><td>Tomcat</td><td>mx4j-jmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\lib\mx4j-jmx.jar</td><td>1</td><td>NewSubFolder13</td></row>
 		<row><td>mx4j_jmx.jar1</td><td>Common Bin</td><td>mx4j-jmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-jmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>mx4j_remote.jar</td><td>Common Bin</td><td>mx4j-remote.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-remote.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>mx4j_rjmx.jar</td><td>Common Bin</td><td>mx4j-rjmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-rjmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j_tools.jar</td><td>Common Bin</td><td>mx4j-tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>naming_common.jar</td><td>Tomcat</td><td>naming-common.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\common\lib\naming-common.jar</td><td>1</td><td>NewSubFolder8</td></row>
 		<row><td>naming_factory.jar</td><td>Tomcat</td><td>naming-factory.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\common\lib\naming-factory.jar</td><td>1</td><td>NewSubFolder8</td></row>
@@ -2019,7 +2026,7 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>ProObjWizard</td><td>_stock_</td><td/></row>
 		<row><td>ProductCode</td><td>64356C2D-E7B6-4CD7-8F64-DD65A3F1C66C</td><td/></row>
 		<row><td>ProductName</td><td>Yukon Application Suite</td><td/></row>
-		<row><td>ProductVersion</td><td>3.1</td><td/></row>
+		<row><td>ProductVersion</td><td>3.2</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.1</td><td>Yes, I want to launch %p now.</td><td/></row>
 		<row><td>Yes__I_want_to_launch__p_now.2</td><td>Yes, I want to launch %p now.</td><td/></row>
