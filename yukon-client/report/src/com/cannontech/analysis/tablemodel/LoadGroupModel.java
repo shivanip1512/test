@@ -213,7 +213,9 @@ public class LoadGroupModel extends ReportModelBase
 					}
 					sql.append(") ");
 				}
-				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID DESC");	//, LMCH.StopDateTime");
+				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID ");	//, LMCH.StopDateTime");
+				if (!isShowAllActiveRestore())
+					sql.append(" DESC ");  // order desc so we can parse for the most recent soe_tag per control
 		return sql;
 	}	
 	/* (non-Javadoc)
