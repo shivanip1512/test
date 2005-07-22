@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2005/04/11 16:51:23 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2005/07/22 19:20:21 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.54  2005/07/22 19:20:21  cplender
+* Make isSimulated const.
+*
 * Revision 1.53  2005/04/11 16:51:23  mfisher
 * CtiProtocolEmetcon is now Cti::Protocol::Emetcon
 *
@@ -629,7 +632,7 @@ CtiPort& CtiPort::setTAP(BOOL b)
     return *this;
 }
 
-bool CtiPort::isSimulated()
+bool CtiPort::isSimulated() const
 {
     //  if we haven't checked before
     if( !_simulated )

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/07/22 19:20:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -868,7 +868,9 @@ INT CtiPortTCPIPDirect::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG
 
 bool CtiPortTCPIPDirect::isViable() const
 {
-    return(_socket != INVALID_SOCKET);
+    bool valid = _socket != INVALID_SOCKET;
+    if( isSimulated() ) valid = true;
+    return valid;
 }
 
 INT CtiPortTCPIPDirect::reset(INT trace)

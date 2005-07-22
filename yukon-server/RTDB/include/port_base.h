@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/03/14 01:20:42 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/07/22 19:20:22 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,7 +161,7 @@ public:
     bool isDialin() const;
     RWCString getName() const;
     bool isInhibited() const;
-    bool isSimulated();  //  not const so it can save a local copy of the result
+    bool isSimulated() const;
     virtual INT getBaudRate() const;
     virtual INT getBits() const;
     virtual INT getStopBits() const;
@@ -305,7 +305,7 @@ private:
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 
-    short                       _simulated;
+    mutable short               _simulated;
 };
 
 inline CtiMutex& CtiPort::getExclusionMux() { return _exclusionMux; }
