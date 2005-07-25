@@ -44,7 +44,7 @@ Here is what the DBUpdater tool does:
 
 Embedded descriptive tags:
 All tags apply to the line below the tag.
-@error [ignore | autofix | verbose] - what action to take in case of an error 
+@error [ignore | ignore-remaining | ignore-begin | ignore-end ] - what action to take in case of an error 
 @success [true | false]  - did the line commit successfully to the DB
   
 NOTES: 

@@ -19,15 +19,16 @@ public interface DBMSDefines
 	public static final String META_INCLUDE			= "include";
 
 
-
+	//order of this array must be kept constant!
 	public static final String[] OPTIONS_ERROR =
 	{
-		"ignore",  //print a messge and continue on
-		"autofix", //try to fix it with the provided FIX statement
-		"verbose",  //print out the provided error message
+		"ignore",  //print a message and continue on
+		/*not implemented*/ "autofix", //try to fix it with the provided FIX statement
+		/*not implemented*/ "verbose",  //print out the provided error message
 		"ignore-remaining",  //ignore all remaining errors in the file
-        "ignore-begin",  //ignore all errors up to the ignore-end string
-        "ignore-end"
+        
+		"ignore-begin", //ignore all errors up to the ignore-end tag
+        "ignore-end" //matching tag for ignore-begin
 	};
 
 
