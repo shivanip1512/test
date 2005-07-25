@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/07/25 16:37:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -831,6 +831,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             /* something went wrong so start by printing error */
+            if( (InMessage->EventCode & ~DECODED) != ErrPortSimulated)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
