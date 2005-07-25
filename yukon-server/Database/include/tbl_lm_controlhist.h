@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2004/12/01 20:15:03 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/07/25 16:40:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ public:
 
     typedef CtiMemDBObject Inherited;
 
-    //CtiTableLMControlHistory();
+    // CtiTableLMControlHistory();
 
     CtiTableLMControlHistory(LONG             paoid   = 0,
                              const RWTime&    start   = RWTime(),
@@ -100,7 +100,7 @@ public:
                              LONG             season  = 0,
                              LONG             annual  = 0,
                              const RWCString& restore = RWCString(LMAR_NEWCONTROL),
-                             DOUBLE           reduce  = 100.0,
+                             DOUBLE           reduce  = 0.0,
                              LONG             lmchid  = 0L);
 
     CtiTableLMControlHistory(const CtiTableLMControlHistory& aRef);

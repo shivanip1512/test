@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2005/07/19 22:48:52 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2005/07/25 16:41:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -143,10 +143,6 @@ void ApplyGroupControlStatusVerification(const CtiHashKey *key, CtiPoint *&pPoin
                 RWTime now;
                 // This point is in the CONTROLLED state and NOT in the pending control list... It must be set back to UNCONTROLLED.
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Adjusting point tags for point id " << pStatus->getPointID() << endl;
@@ -926,6 +922,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                                     pendingControlRequest->getControl().setPAOID( did );
                                     pendingControlRequest->getControl().setStartTime(RWTime(YUKONEOT));
+                                    pendingControlRequest->getControl().setControlDuration(0);
 
                                     RWCString devicename= resolveDeviceName(*pPoint);
                                     CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
@@ -938,7 +935,6 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
                                     pendingControlRequest->setSignal( pFailSig );
-
                                     addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
 
                                     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
@@ -6407,10 +6403,6 @@ int CtiVanGogh::loadPendingControls()
                         ppc->setTime( dynControl.getStartTime() );
                         ppc->setControl(dynControl);
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
                         ppc->getControl().setPreviousLogTime(dynControl.getStartTime());
                         ppc->getControl().setPreviousStopReportTime(dynControl.getStartTime());
 

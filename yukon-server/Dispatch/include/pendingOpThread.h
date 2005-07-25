@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/01 20:15:04 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/07/25 16:40:53 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.6  2005/07/25 16:40:53  cplender
+* Working on lmcontrolhistory for Minnkota.
+*
 * Revision 1.5  2004/12/01 20:15:04  cplender
 * LMControlHistory.
 *
@@ -105,7 +108,7 @@ public:
     void doPendingControls(bool bShutdown = false);
     void doPendingLimits(bool bShutdown = false);
     void doPendingPointData(bool bShutdown = false);
-    void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime() );
+    void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const RWTime &thetime = RWTime(), RWTime &now = RWTime(), int line = 0);
     // void dumpPendingOps( bool force = false  );
     void postControlStopPoint( CtiPendingPointOperations &ppc, bool doit = false);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );

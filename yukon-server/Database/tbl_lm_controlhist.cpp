@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/07/25 16:40:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -206,7 +206,7 @@ LONG CtiTableLMControlHistory::getCurrentDailyTime() const
 CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentDailyTime( const LONG dt )
 {
     setDirty();
-    _currentDailyTime = dt;
+    _currentDailyTime = dt >= 0 ? dt : 0;
     return *this;
 }
 
@@ -218,7 +218,7 @@ LONG CtiTableLMControlHistory::getCurrentSeasonalTime() const
 CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentSeasonalTime( const LONG st )
 {
     setDirty();
-    _currentSeasonalTime = st;
+    _currentSeasonalTime = st >= 0 ? st : 0;
     return *this;
 }
 
@@ -230,7 +230,7 @@ LONG CtiTableLMControlHistory::getCurrentMonthlyTime() const
 CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentMonthlyTime( const LONG mt )
 {
     setDirty();
-    _currentMonthlyTime = mt;
+    _currentMonthlyTime = mt >= 0 ? mt : 0;
     return *this;
 }
 
@@ -243,7 +243,7 @@ LONG CtiTableLMControlHistory::getCurrentAnnualTime() const
 CtiTableLMControlHistory& CtiTableLMControlHistory::setCurrentAnnualTime( const LONG at )
 {
     setDirty();
-    _currentAnnualTime = at;
+    _currentAnnualTime = at >= 0 ? at : 0;
     return *this;
 }
 
@@ -457,7 +457,7 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 
 void CtiTableLMControlHistory::DecodeControlTimes(RWDBReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -471,6 +471,7 @@ void CtiTableLMControlHistory::DecodeControlTimes(RWDBReader &rdr)
     rdr["activerestore"]       >> _loadedActiveRestore;
 
     _prevStopReportTime = _prevLogTime;
+    _controlCompleteTime = _stopDateTime;
 
     setUpdatedFlag();
 }
@@ -665,46 +666,55 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const RWTime 
 
     LONG partialIncrement = 0;              // This is the component of the log that should have been allocated into yesterday, and last month and last year.
 
-    if(today.day() != prevdate.day())
+    if(getPreviousLogTime() > logTime && increment < 0)
     {
-        if( isNewControl() )
+        // This is quite likely a backup from the shutdown process.
+        /* !!!!! May need to add code here in the future !!!!! */
+    }
+    else
+    {
+        if(today.day() != prevdate.day())
         {
-            // These controls did not continue into the next day.
-            partialIncrement = 0;
-            _loadedActiveRestore = "N";
-        }
-        else
-        {
-            // we must evaluate the day crossing.
-            RWTime lastTimePrevious(prevdate, 23,59,59);
-            ULONG todaysSeconds = logTime.seconds() - lastTimePrevious.seconds() - 1;
-            partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
-
-            if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
+            if( isNewControl() )
             {
-                LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
-
-                CtiTableLMControlHistory closeLog(*this);       // make a copy
-                closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
-                closeLog.setCurrentDailyTime   ( closeLog.getCurrentDailyTime()    + offtime );
-                closeLog.setCurrentMonthlyTime ( closeLog.getCurrentMonthlyTime()  + offtime );
-                closeLog.setCurrentSeasonalTime( closeLog.getCurrentSeasonalTime() + offtime );
-                closeLog.setCurrentAnnualTime  ( closeLog.getCurrentAnnualTime()   + offtime );
-                closeLog.setStopTime( lastTimePrevious );
-                closeLog.Insert();
+                // These controls did not continue into the next day.
+                partialIncrement = 0;
+                _loadedActiveRestore = "N";
             }
-        }
+            else
+            {
+                // we must evaluate the day crossing.
+                RWTime lastTimePrevious(prevdate, 23,59,59);
+                ULONG todaysSeconds = logTime.seconds() - lastTimePrevious.seconds() - 1;
+                partialIncrement = lastTimePrevious.seconds() - getPreviousLogTime().seconds();
 
-        newday = true;
+                if(partialIncrement <= increment )    // Be cautious since the last log may be many days ago.. We only want continuous controls to be recorded.
+                {
+                    LONG offtime = ( (double)getReductionRatio() * (double)(partialIncrement) / 100.0 );
+
+                    CtiTableLMControlHistory closeLog(*this);       // make a copy
+                    closeLog.setActiveRestore(LMAR_PERIOD_TRANSITION);
+                    closeLog.setCurrentDailyTime   ( closeLog.getCurrentDailyTime()    + offtime );
+                    closeLog.setCurrentMonthlyTime ( closeLog.getCurrentMonthlyTime()  + offtime );
+                    closeLog.setCurrentSeasonalTime( closeLog.getCurrentSeasonalTime() + offtime );
+                    closeLog.setCurrentAnnualTime  ( closeLog.getCurrentAnnualTime()   + offtime );
+                    closeLog.setStopTime( lastTimePrevious );
+                    closeLog.Insert();
+                }
+            }
+
+            newday = true;
+        }
+        if(today.month() != prevdate.month())
+        {
+            newmonth = true;
+        }
+        if(today.year() != prevdate.year())
+        {
+            newyear = true;
+        }
     }
-    if(today.month() != prevdate.month())
-    {
-        newmonth = true;
-    }
-    if(today.year() != prevdate.year())
-    {
-        newyear = true;
-    }
+
 
     LONG newincrement = ( (double)getReductionRatio() * (double)(increment - partialIncrement) / 100.0 );
 
