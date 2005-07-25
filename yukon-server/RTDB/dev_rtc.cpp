@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/06/16 21:25:14 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/07/25 16:37:38 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.30  2005/07/25 16:37:38  cplender
+* Expiration time is printed as an RWTime asString.
+*
 * Revision 1.29  2005/06/16 21:25:14  cplender
 * Adding the RTC scan command and decode. Must be trested with a device.
 *
@@ -572,7 +575,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  ET = " << OutMessage->ExpirationTime << endl;
+                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  ET = " << RWTime(OutMessage->ExpirationTime) << " Targeted PAOId = " << OutMessage->TargetID << endl;
                 }
                 delete OutMessage;
                 OutMessage = 0;
