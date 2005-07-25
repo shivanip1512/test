@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2005/06/15 19:18:53 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2005/07/25 16:39:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -615,6 +615,7 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
         }
     }
 
+    if(!printStr.isNull())
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << printStr << endl;
