@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/07/25 16:38:04 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.13  2005/07/25 16:38:04  cplender
+* Golay receivers cannot epire an OM in less than 15 minutes.
+*
 * Revision 1.12  2005/04/15 19:04:10  mfisher
 * got rid of magic number debuglevel checks
 *
@@ -221,7 +224,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             OutMessage->TargetID = getID();
             OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
             OutMessage->Retry = 0;
-            OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
+            OutMessage->ExpirationTime = RWTime().seconds() + (_loadGroup.getNominalTimeout() >= 900 ? _loadGroup.getNominalTimeout() : 900); // Time this out in 15 minutes or the setting.
 
             reportActionItemsToDispatch(pReq, parse, vgList);
 
