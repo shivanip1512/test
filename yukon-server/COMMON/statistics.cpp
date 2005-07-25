@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/07/25 16:41:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,8 @@ CtiStatistics::CtiStatistics(long id) :
     {
         _threshold[i] = 0.0;
         _thresholdAlarm[i] = false;
+
+        _dirtyCounter[ i ] = false;
     }
 
     if(_pid < 0)
@@ -96,6 +98,10 @@ void CtiStatistics::incrementRequest(const RWTime &stattime)
     _counter[ HourNo ].inc( Requests );
     _counter[ Daily ].inc( Requests );
     _counter[ Monthly ].inc( Requests );
+
+    _dirtyCounter[ HourNo ] = true;
+    _dirtyCounter[ Daily ] = true;
+    _dirtyCounter[ Monthly ] = true;
 }
 
 void CtiStatistics::decrementRequest(const RWTime &stattime)        // This is a retry scenario
@@ -107,6 +113,10 @@ void CtiStatistics::decrementRequest(const RWTime &stattime)        // This is a
     _counter[HourNo].dec( Requests );
     _counter[ Daily ].dec( Requests );
     _counter[ Monthly ].dec( Requests );
+
+    _dirtyCounter[ HourNo ] = true;
+    _dirtyCounter[ Daily ] = true;
+    _dirtyCounter[ Monthly ] = true;
 }
 
 void CtiStatistics::incrementAttempts(const RWTime &stattime, int CompletionStatus)        // This is a retry scenario
@@ -123,6 +133,10 @@ void CtiStatistics::incrementAttempts(const RWTime &stattime, int CompletionStat
     _counter[HourNo].inc( Attempts );
     _counter[ Daily ].inc( Attempts );
     _counter[ Monthly ].inc( Attempts );
+
+    _dirtyCounter[ HourNo ] = true;
+    _dirtyCounter[ Daily ] = true;
+    _dirtyCounter[ Monthly ] = true;
 }
 
 void CtiStatistics::incrementCompletion(const RWTime &stattime, int CompletionStatus)
@@ -153,6 +167,10 @@ void CtiStatistics::incrementFail(const RWTime &stattime, CtiStatisticsCounters_
     _counter[HourNo].inc( failtype );
     _counter[ Daily ].inc( failtype );
     _counter[ Monthly ].inc( failtype );
+
+    _dirtyCounter[ HourNo ] = true;
+    _dirtyCounter[ Daily ] = true;
+    _dirtyCounter[ Monthly ] = true;
 }
 
 void CtiStatistics::incrementSuccess(const RWTime &stattime)
@@ -164,6 +182,10 @@ void CtiStatistics::incrementSuccess(const RWTime &stattime)
     _counter[HourNo].inc( Completions );
     _counter[ Daily ].inc( Completions );
     _counter[ Monthly ].inc( Completions );
+
+    _dirtyCounter[ HourNo ] = true;
+    _dirtyCounter[ Daily ] = true;
+    _dirtyCounter[ Monthly ] = true;
 }
 
 CtiStatistics::CtiStatisticsCounters_t CtiStatistics::resolveFailType( int CompletionStatus ) const
@@ -208,6 +230,8 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         _counter[HourNo].resetAll( );
         computeHourInterval( HourNo, _startStopTimePairs[ HourNo ] );
         _dirty = true;
+
+        _dirtyCounter[ HourNo ] = true;
     }
 
     if(lastdate.day() != newdate.day())
@@ -219,6 +243,9 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         // Completely reset the daily counter.
         _counter[ Daily ].resetAll();
         computeDailyInterval(_startStopTimePairs[Daily]);
+
+        _dirtyCounter[ Yesterday ] = true;
+        _dirtyCounter[ Daily ] = true;
         _dirty = true;
     }
 
@@ -232,6 +259,8 @@ int CtiStatistics::newHour(const RWTime &newtime, CtiStatisticsCounters_t counte
         _counter[ Monthly ].resetAll( );
         computeMonthInterval(_startStopTimePairs[Monthly]);
         _dirty = true;
+        _dirtyCounter[ LastMonth ] = true;
+        _dirtyCounter[ Monthly ] = true;
     }
 
     _previoustime = newtime;
@@ -276,6 +305,7 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
             _threshold[i] = aRef._threshold[i];
             _thresholdAlarm[i] = aRef._thresholdAlarm[i];
             _startStopTimePairs[i] = aRef._startStopTimePairs[i];
+            _dirtyCounter[ i ] = aRef._dirtyCounter[i];
         }
 
         if(_pid < 0)
@@ -521,6 +551,8 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
 
     for(int i = 0; i < FinalCounterSlot; i++)
     {
+        _dirtyCounter[i] = false;
+
         ins <<
             getID() <<
             getCounterName( i ) <<
@@ -569,42 +601,47 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
 
     for(int i = 0; i < FinalCounterSlot && stat.errorCode() == RWDBStatus::ok; i++)
     {
-        updater <<
-        table["paobjectid"].assign(getID()) <<
-        table["statistictype"].assign(getCounterName( i )) <<
-        table["requests"].assign(_counter[i].get( Requests )) <<
-        table["completions"].assign(_counter[i].get( Completions )) <<
-        table["attempts"].assign(_counter[i].get( Attempts ));
-
-        updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
-
-        stat = updater.execute(conn).status();
-
-        if( stat.errorCode() != RWDBStatus::ok )
+        if(_dirtyCounter[i])
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Updater Error Code = " << stat.errorCode() << endl;
-            dout << updater.asString() << endl;
-        }
+            _dirtyCounter[i] = false;
 
-        updater.clear();
+            updater <<
+            table["paobjectid"].assign(getID()) <<
+            table["statistictype"].assign(getCounterName( i )) <<
+            table["requests"].assign(_counter[i].get( Requests )) <<
+            table["completions"].assign(_counter[i].get( Completions )) <<
+            table["attempts"].assign(_counter[i].get( Attempts ));
 
-        updater <<
-        table["commerrors"].assign(_counter[i].get( CommErrors )) <<
-        table["protocolerrors"].assign(_counter[i].get( ProtocolErrors )) <<
-        table["systemerrors"].assign(_counter[i].get( SystemErrors )) <<
-        table["startdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].first)) <<
-        table["stopdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].second));
+            updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
 
-        updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
+            stat = updater.execute(conn).status();
 
-        stat = updater.execute(conn).status();
+            if( stat.errorCode() != RWDBStatus::ok )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "Statistics Updater Error Code = " << stat.errorCode() << endl;
+                dout << updater.asString() << endl;
+            }
 
-        if( stat.errorCode() != RWDBStatus::ok )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Updater (2) Error Code = " << stat.errorCode() << endl;
-            dout << updater.asString() << endl;
+            updater.clear();
+
+            updater <<
+            table["commerrors"].assign(_counter[i].get( CommErrors )) <<
+            table["protocolerrors"].assign(_counter[i].get( ProtocolErrors )) <<
+            table["systemerrors"].assign(_counter[i].get( SystemErrors )) <<
+            table["startdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].first)) <<
+            table["stopdatetime"].assign(RWDBDateTime(_startStopTimePairs[i].second));
+
+            updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
+
+            stat = updater.execute(conn).status();
+
+            if( stat.errorCode() != RWDBStatus::ok )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "Statistics Updater (2) Error Code = " << stat.errorCode() << endl;
+                dout << updater.asString() << endl;
+            }
         }
     }
 

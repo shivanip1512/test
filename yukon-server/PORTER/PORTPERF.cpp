@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/02/18 14:36:51 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/07/25 16:38:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -758,7 +758,7 @@ VOID PerfUpdateThread (PVOID Arg)
         }
 
 
-#if 0
+#if 1
         statisticsRecord();
 #else
         {
@@ -776,7 +776,7 @@ VOID PerfUpdateThread (PVOID Arg)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -835,7 +835,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -846,80 +846,69 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
-    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
     {
-#ifndef DONOSTATS
-    CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
+    #ifndef DONOSTATS
+        CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
-    if(!PorterQuit)
-    {
-        CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
-
-        gDeviceStatDirty = true;
-
-        if( dStatItr != gDeviceStatMap.end() )
+        if(!PorterQuit)
         {
-            CtiStatistics &dStats = (*dStatItr).second;
-            dStats.incrementRequest( RWTime() );
-        }
-        dStatItr = statisticsPaoFind( devicepaoid );
+            CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
 
-        if( dStatItr != gDeviceStatMap.end() )
-        {
-            CtiStatistics &dStats = (*dStatItr).second;
-            dStats.incrementRequest( RWTime() );
-        }
-
-        if(statisticsDoTargetId( devicepaoid, targetpaoid ))
-        {
-            dStatItr = statisticsPaoFind( targetpaoid );
+            gDeviceStatDirty = true;
 
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
                 dStats.incrementRequest( RWTime() );
             }
+            dStatItr = statisticsPaoFind( devicepaoid );
+
+            if( dStatItr != gDeviceStatMap.end() )
+            {
+                CtiStatistics &dStats = (*dStatItr).second;
+                dStats.incrementRequest( RWTime() );
+            }
+
+            if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+            {
+                dStatItr = statisticsPaoFind( targetpaoid );
+
+                if( dStatItr != gDeviceStatMap.end() )
+                {
+                    CtiStatistics &dStats = (*dStatItr).second;
+                    dStats.incrementRequest( RWTime() );
+                }
+            }
         }
+    #endif
     }
-#endif
-}
 }
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
     {
-#ifndef DONOSTATS
-    CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
+    #ifndef DONOSTATS
+        CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
-    if(!PorterQuit)
-    {
-        CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
-        gDeviceStatDirty = true;
-
-        if( dStatItr != gDeviceStatMap.end() )
+        if(!PorterQuit)
         {
-            CtiStatistics &dStats = (*dStatItr).second;
+            CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
+            gDeviceStatDirty = true;
 
-            if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
+            if( dStatItr != gDeviceStatMap.end() )
             {
-                dStats.incrementAttempts( RWTime(), result );
-                dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                CtiStatistics &dStats = (*dStatItr).second;
+
+                if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
+                {
+                    dStats.incrementAttempts( RWTime(), result );
+                    dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                }
             }
-        }
 
-        dStatItr = statisticsPaoFind( devicepaoid );
-
-        if( dStatItr != gDeviceStatMap.end() )
-        {
-            CtiStatistics &dStats = (*dStatItr).second;
-            dStats.incrementAttempts( RWTime(), result );
-            dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
-        }
-
-        if(statisticsDoTargetId( devicepaoid, targetpaoid ))
-        {
-            dStatItr = statisticsPaoFind( targetpaoid );
+            dStatItr = statisticsPaoFind( devicepaoid );
 
             if( dStatItr != gDeviceStatMap.end() )
             {
@@ -927,52 +916,63 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
                 dStats.incrementAttempts( RWTime(), result );
                 dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
             }
+
+            if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+            {
+                dStatItr = statisticsPaoFind( targetpaoid );
+
+                if( dStatItr != gDeviceStatMap.end() )
+                {
+                    CtiStatistics &dStats = (*dStatItr).second;
+                    dStats.incrementAttempts( RWTime(), result );
+                    dStats.decrementRequest( RWTime() );       // Because I don't want it counted to try again.
+                }
+            }
         }
+    #endif
     }
-#endif
-}
 }
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( !gConfigParms.getValueAsString("PORTER_NOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
     {
-#ifndef DONOSTATS
-    CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
+    #ifndef DONOSTATS
+        CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
 
-    if(!PorterQuit)
-    {
-        CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
-
-        gDeviceStatDirty = true;
-
-        if( dStatItr != gDeviceStatMap.end() )
+        if(!PorterQuit)
         {
-            CtiStatistics &dStats = (*dStatItr).second;
-            dStats.incrementCompletion( RWTime(), result );
-        }
+            CtiStatisticsIterator_t dStatItr = statisticsPaoFind( paoportid );
 
-        dStatItr = statisticsPaoFind( devicepaoid );
-
-        if( dStatItr != gDeviceStatMap.end() )
-        {
-            CtiStatistics &dStats = (*dStatItr).second;
-            dStats.incrementCompletion( RWTime(), result );
-        }
-
-        if(statisticsDoTargetId( devicepaoid, targetpaoid ))
-        {
-            dStatItr = statisticsPaoFind( targetpaoid );
+            gDeviceStatDirty = true;
 
             if( dStatItr != gDeviceStatMap.end() )
             {
                 CtiStatistics &dStats = (*dStatItr).second;
                 dStats.incrementCompletion( RWTime(), result );
             }
+
+            dStatItr = statisticsPaoFind( devicepaoid );
+
+            if( dStatItr != gDeviceStatMap.end() )
+            {
+                CtiStatistics &dStats = (*dStatItr).second;
+                dStats.incrementCompletion( RWTime(), result );
+            }
+
+            if(statisticsDoTargetId( devicepaoid, targetpaoid ))
+            {
+                dStatItr = statisticsPaoFind( targetpaoid );
+
+                if( dStatItr != gDeviceStatMap.end() )
+                {
+                    CtiStatistics &dStats = (*dStatItr).second;
+                    dStats.incrementCompletion( RWTime(), result );
+                }
+            }
         }
+    #endif
     }
-#endif
-}
 }
 
 void statisticsRecord()
@@ -1012,11 +1012,6 @@ void statisticsRecord()
                 }
 
                 gDeviceStatDirty = false;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
             }
 
             // Ok, now we stuff the dirtyStatSet out on the DB.  WITHOUT BLOCKING OPERATIONS!
@@ -1048,7 +1043,7 @@ void statisticsRecord()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

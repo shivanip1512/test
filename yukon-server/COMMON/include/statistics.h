@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/09/08 19:55:16 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/07/25 16:41:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,6 +121,7 @@ protected:
     long _pid;                   // paoid.
     static RWCString _counterName[FinalCounterSlot];
 
+    bool        _dirtyCounter[FinalCounterSlot];
     CtiCounter  _counter[FinalCounterSlot];
     int         _threshold[FinalCounterSlot];
     bool        _thresholdAlarm[FinalCounterSlot];
