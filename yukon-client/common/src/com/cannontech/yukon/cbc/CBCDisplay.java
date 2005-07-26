@@ -149,7 +149,7 @@ public class CBCDisplay
             case CB_TIME_STAMP_COLUMN:
             {
                 if( capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    return "  ----";
+                    return DASH_LINE;
                 else
                     return new ModifiedDate(
                             capBank.getLastStatusChangeTime().getTime(), dateTimeFormat );    
