@@ -146,10 +146,8 @@ public class ConnPool
 
 	/**
 	 * Returns a ClientConnection to dispatch. The connection is returned in an
-	 * unconnected state. Which means you can modify it (add observers, for instance)
-	 * and then call your favorite connect*() method.
-	 * @param applicationName The application name passed to Registration.setAppName()
-	 * @return an unconnected ClientConnection
+	 * connected state. Notice that no PointRegistration is done here.
+	 * 
 	 */
 	public IServerConnection getDefDispatchConn() {
 
