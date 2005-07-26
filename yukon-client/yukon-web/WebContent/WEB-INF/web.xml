@@ -4,6 +4,7 @@
 	<display-name>Yukon Web Application</display-name>
 	<description>The Yukon web application</description>
 
+
 	<filter>
 		<filter-name>timerFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.TimerFilter</filter-class>
@@ -75,6 +76,20 @@
 		<filter-name>htmlFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>	
+
+
+    <!-- Faces Listener, that does all the startup work (configuration, init). -->
+    <listener>
+        <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+    </listener>
+
+
+    <!-- Faces Servlet -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 	
 	<servlet>
 		<servlet-name>LoginController</servlet-name>
@@ -310,7 +325,13 @@
 	    <servlet-name>DynamicJNLPServlet</servlet-name>
 		<url-pattern>*.jnlp</url-pattern>
 	</servlet-mapping>
-	
+
+    <!-- Faces extension mapping -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>	
+
 	
 	<session-config>
 		<session-timeout>60</session-timeout>
@@ -336,5 +357,11 @@
 		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
 
+
+	<!-- for internal errors thrown by the WebServer -->
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+    	<location>/internalError.jsp</location>
+	</error-page>
 	
 </web-app>
