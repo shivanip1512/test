@@ -11,4 +11,5 @@ public interface DirectLoadcontrolRole {
 	public static final int LOADCONTROL_LABEL = OperatorRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE;
 	public static final int INDIVIDUAL_SWITCH = OperatorRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 1;
 	public static final int THREE_TIER_DIRECT = OperatorRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 2;
+	public static final int DIRECT_CONTROL = OperatorRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 3;
 }

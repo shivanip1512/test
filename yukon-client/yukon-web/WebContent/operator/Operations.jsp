@@ -190,11 +190,11 @@ function confirmDelete() {
         </tr>
         <tr> 
           <!-- Changed direct control pages to use the 3 tier display instead of the 1tier (LoadControl/oper_direct.jsp) display-->
-<cti:checkRole roleid="<%= DirectLoadcontrolRole.ROLEID %>"> 
+<cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.DIRECT_CONTROL %>">
           <td width="25%" class = "MainText"> 
             <div align = "center" style = "border:solid 1px #666999;"><a href = "LoadControl/oper_direct.jsp" class = "Link1" style = "text-decoration:none;">Direct</a></div>
           </td>
-</cti:checkRole>
+</cti:isPropertyTrue>
 
 <cti:checkRole roleid="<%= DirectCurtailmentRole.ROLEID %>"> 
           <td width="25%" class = "MainText"> 

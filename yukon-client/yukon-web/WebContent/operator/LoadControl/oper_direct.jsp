@@ -21,7 +21,7 @@
 <%@ page import="java.util.Collections" %>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
  
-<cti:checkRole roleid="<%=DirectLoadcontrolRole.ROLEID%>">  
+<cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.DIRECT_CONTROL %>">
 <%
    String pending = request.getParameter("pending");
       
@@ -345,4 +345,4 @@
 </table>
 </body>
 </html>
-</cti:checkRole>
+</cti:isPropertyTrue>

@@ -142,12 +142,13 @@ function dispStatusMsg(msgStr)
             <td style="padding:1"><%= ((String[]) links.get("user_curtail.jsp"))[HTML] %></td>
           </tr>
           </cti:checkRole>
-          <cti:checkRole roleid="<%=com.cannontech.roles.cicustomer.DirectLoadcontrolRole.ROLEID%>"> 
+          <cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.DIRECT_CONTROL %>">
           <tr> 
             <td width="10"><%= ((String[]) links.get("user_direct.jsp"))[IMG] %></td>
             <td style="padding:1"><%= ((String[]) links.get("user_direct.jsp"))[HTML] %></td>
           </tr>
-          </cti:checkRole>
+          </cti:isPropertyTrue>
+
         </table>
       </div>
     </td>

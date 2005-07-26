@@ -273,7 +273,12 @@ go
 update yukonservices set serviceclass = 'com.cannontech.notif.server.NotificationServer' where serviceid = -1 or serviceid = 1;
 
 
-
+insert into YukonRoleProperty values(-20303,-203,'Direct Loadcontrol','true','Allows access to the Direct load management web interface');
+go
+insert into yukongrouprole values (-778,-301,-203,-20303,'(none)');
+insert into YukonGroupRole values (-1278,-2,-203,-20303,'(none)');
+go
+insert into YukonUserRole values (-778,-1,-203,-20303,'(none)');
 
 
 
