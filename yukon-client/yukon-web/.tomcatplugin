@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tomcatProjectProperties>
-    <rootDir>/WebContent</rootDir>
+    <rootDir>/WebConten</rootDir>
     <exportSource>false</exportSource>
     <reloadable>true</reloadable>
     <redirectLogger>false</redirectLogger>
@@ -43,5 +43,6 @@
         <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
         <webClassPathEntry>/billing/bin</webClassPathEntry>
         <webClassPathEntry>/tools/bin</webClassPathEntry>
+        <webClassPathEntry>/cttp/bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>

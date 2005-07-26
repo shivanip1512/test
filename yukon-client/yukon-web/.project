@@ -7,6 +7,7 @@
 		<project>cbc</project>
 		<project>commander</project>
 		<project>common</project>
+		<project>cttp</project>
 		<project>esub</project>
 		<project>loadcontrol</project>
 		<project>report</project>
@@ -64,20 +65,12 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>com.ibm.etools.struts.StrutsBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.ibm.etools.jsf.JSFNature</nature>
 		<nature>com.ibm.etools.beaninfo.BeaninfoNature</nature>
 		<nature>com.ibm.etools.j2ee.WebNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.ibm.etools.webpage.template.templatenature</nature>
 		<nature>com.ibm.etools.siteedit.WebSiteNature</nature>
-		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
-		<nature>com.ibm.etools.struts.StrutsNature</nature>
 	</natures>
 </projectDescription>

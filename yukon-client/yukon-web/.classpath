@@ -17,17 +17,24 @@
     <classpathentry kind="src" path="/trending"/>
     <classpathentry kind="src" path="/yukonappserver"/>
     <classpathentry kind="src" path="/esub"/>
-    <classpathentry kind="src" path="/cbc"/>
     <classpathentry kind="src" path="/tdc"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/standard.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxpath.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/jaxen-full.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/rte.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils.jar"/>
     <classpathentry kind="src" path="/tools"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.8.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.0.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/myfaces.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-1.5.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsp-2.0.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.2.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.0.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-el.jar"/>
+    <classpathentry kind="src" path="/cbc"/>
+    <classpathentry kind="src" path="/cttp"/>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/struts.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
     <classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
