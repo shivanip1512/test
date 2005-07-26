@@ -15,7 +15,7 @@ insert into state values( -6, 1, 'Connected', 0, 6, 0);
 insert into state values( -6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
 insert into state values( -6, 3, 'Connect Armed', 5, 6, 0);
 
-
+/* @error ignore-begin */
 delete from devicetypecommand where devicecommandid in (-8, -74, -75, -77, -132, -133, -134, -135, -136, -137, -138,  -139, -140, -141, -142, -143, -144, -145);
 delete from command where commandID in (-46, -47, -49, -70, -71, -72, -73, -74, -75, -76, -77, -78, -79, -80);
 insert into command values(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
@@ -90,6 +90,7 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-141, -94, 'ExpresscomSerial', 17, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-142, -95, 'ExpresscomSerial', 18, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-143, -96, 'ExpresscomSerial', 19, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-144, -97, 'ExpresscomSerial', 20, 'Y');
+/* @error ignore-end */
 
 update command set command = 'putconfig xcom service out temp offhours 24' where commandid = -68;
 update command set command = 'putconfig xcom service in' where commandid = -69;
