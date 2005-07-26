@@ -108,6 +108,51 @@ public java.lang.Integer getNotificationGroupID() {
 public java.lang.String getNotifyOnAcknowledge() {
 	return notifyOnAcknowledge;
 }
+
+public void setNotifyOnAck( boolean notify ) {
+	
+	if( notify ) {
+		if( isNotifyOnClear() ) setNotifyOnAcknowledge( "B" );
+		else setNotifyOnAcknowledge( "A" );
+	}
+	else {
+		if( isNotifyOnClear() ) setNotifyOnAcknowledge( "C" );
+		else setNotifyOnAcknowledge( "N" );
+	}
+}
+
+public void setNotifyOnClear( boolean notify ) {
+	
+	if( notify ) {
+		if( isNotifyOnAck() ) setNotifyOnAcknowledge( "B" );
+		else setNotifyOnAcknowledge( "C" );
+	}
+	else {
+		if( isNotifyOnAck() ) setNotifyOnAcknowledge( "A" );
+		else setNotifyOnAcknowledge( "N" );
+	}
+}
+
+/**
+ * Possible values: A, C, B, N
+ * A: notify on ACK only
+ * C: notify on CLEAR only
+ * B: notify on ACK or CLEAR (both)
+ * N: notify on none
+ */
+public boolean isNotifyOnClear() {	
+	return
+		getNotifyOnAcknowledge().charAt(0) == 'C'
+		|| getNotifyOnAcknowledge().charAt(0) == 'B';
+}
+
+public boolean isNotifyOnAck() {	
+	return
+		getNotifyOnAcknowledge().charAt(0) == 'A'
+		|| getNotifyOnAcknowledge().charAt(0) == 'B';
+}
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer

@@ -5,6 +5,7 @@ package com.cannontech.database.db.point;
  */
 import java.sql.Connection;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -487,4 +488,23 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+public boolean isOutOfService() {
+	return CtiUtilities.isTrue( getServiceFlag() );
+}
+
+public void setOutOfService( boolean val ) {
+	setServiceFlag( 
+		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+}
+
+public boolean isAlarmsDisabled() {
+	return CtiUtilities.isTrue( getAlarmInhibit() );
+}
+
+public void setAlarmsDisabled( boolean val ) {
+	setAlarmInhibit( 
+		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+}
+
 }
