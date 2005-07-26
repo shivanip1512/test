@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase=$$codebase href=$$href >
+   <information>
+     <title>Database Editor</title>
+     <vendor>Cannon Technologies</vendor>
+     <homepage href="start.html"/>
+     <description>Yukon client application to edit the Yukon database</description>
+     <description kind="short">Edit Yukon Database</description>
+     <icon href="images\dbEditorIcon.gif"/>
+     <icon kind="splash" href="images\cannonlogo.gif"/>
+     <offline-allowed/>
+   </information>
+   <security>
+      <all-permissions/>
+   </security>
+   <resources>
+      <j2se version="1.4+"/>
+      <jar href="dbeditor.jar"/>
+      <jar href="common.jar"/>
+      <jar href="dbeditor.jar"/>
+      <jar href="tdc.jar"/>
+      <jar href="graph.jar"/>
+      <jar href="yukonappserver.jar"/>
+      <jar href="ejbonly.jar"/>
+      <jar href="rwav.jar"/>
+      <jar href="jfreechart.jar"/>
+      <jar href="jcommon.jar"/>
+      <jar href="commons-logging.jar"/>
+      <jar href="jcchart401K.jar"/>
+      <jar href="jcfield401K.jar"/>
+      <jar href="jcpagelayout450K.jar"/>
+      <jar href="log4j-1.2.4.jar"/>
+      <jar href="SqlServer.jar"/>
+      <jar href="classes12.jar"/>
+      <jar href="jtds.jar"/>
+      
+      $$properties
+    </resources>
+    <application-desc main-class="com.cannontech.dbeditor.DatabaseEditor"/>
+</jnlp>
