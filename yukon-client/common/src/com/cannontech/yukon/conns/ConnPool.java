@@ -5,6 +5,8 @@ import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
@@ -83,8 +85,7 @@ public class ConnPool
             }
             else if( connName.toUpperCase().indexOf(DISPATCH_CONN) >= 0 )
             {
-                //chuck something!            
-                throw new IllegalAccessError("--Dispatch Conns are not implemented in the ConnPool");
+                conn = createDispatchConn();
             }
             else if( connName.toUpperCase().indexOf(MACS_CONN) >= 0 )
             {
@@ -122,7 +123,80 @@ public class ConnPool
 
 		return porterCC;
 	}
-    
+
+	/**
+	 * Creates a new Dispatch connection.
+	 * 
+	 */
+	private IServerConnection createDispatchConn()
+	{		
+		ClientConnection connToDispatch = new ClientConnection();
+
+		Registration reg = new Registration();
+		reg.setAppName("Generic_Dispatch_Conn");
+		reg.setAppIsUnique(0);
+		reg.setAppKnownPort(0);
+		reg.setAppExpirationDelay(300); // 5 minutes should be OK
+	
+		connToDispatch.setAutoReconnect(true);
+		connToDispatch.setRegistrationMsg(reg);
+		
+		return connToDispatch;
+	}
+
+	/**
+	 * Returns a ClientConnection to dispatch. The connection is returned in an
+	 * unconnected state. Which means you can modify it (add observers, for instance)
+	 * and then call your favorite connect*() method.
+	 * @param applicationName The application name passed to Registration.setAppName()
+	 * @return an unconnected ClientConnection
+	 */
+	public IServerConnection getDefDispatchConn() {
+
+		//check our master Map of existing connections
+		ClientConnection connToDispatch =
+			(ClientConnection)getAllConns().get(DISPATCH_CONN);
+
+		if( connToDispatch == null ) {
+			String defaultHost = "127.0.0.1";
+			int defaultPort = 1510;
+	
+			try {
+				defaultHost = RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
+	
+				defaultPort = Integer.parseInt(RoleFuncs.getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
+			} catch (Exception e) {
+				CTILogger.warn("Could not get host and port for dispatch connection from Role Properties, using defaults", e);
+			}
+	
+			connToDispatch = (ClientConnection)createDispatchConn();
+			Registration reg = new Registration();
+			reg.setAppName("Default_Conn");
+			reg.setAppIsUnique(0);
+			reg.setAppKnownPort(0);
+			reg.setAppExpirationDelay(300); // 5 minutes should be OK
+	
+			connToDispatch.setHost(defaultHost);
+			connToDispatch.setPort(defaultPort);
+			connToDispatch.setAutoReconnect(true);
+			connToDispatch.setRegistrationMsg(reg);
+	
+			try 
+			{
+				CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
+				connToDispatch.connectWithoutWait();
+			}
+			catch( Exception e ) 
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+	                
+			getAllConns().put( DISPATCH_CONN, connToDispatch); 
+		}
+
+		return connToDispatch;
+	}
+
     /**
      * Gets the default Porter connection that is available to all users.
      * If not found, we create a default connection that tries connecting
