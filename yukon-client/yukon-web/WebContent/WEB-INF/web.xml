@@ -275,7 +275,7 @@
         <servlet-class>com.cannontech.servlet.DynamicJNLPServlet</servlet-class>
         <init-param>
             <param-name>match.list</param-name>
-            <param-value>dbeditor|tdc</param-value>
+            <param-value>dbeditor|tdc|trending|esub-editor</param-value>
         </init-param>        
         <init-param>
             <param-name>parse.querystring</param-name>
