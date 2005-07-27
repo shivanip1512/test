@@ -14,7 +14,7 @@
       <all-permissions/>
    </security>
    <resources>
-      <j2se version="1.4+"/>
+      <j2se version="1.4.2+"/>
       <jar href="graph.jar"/>
       <jar href="common.jar"/>
       <jar href="dbeditor.jar"/>
