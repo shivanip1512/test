@@ -317,13 +317,15 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			return getDeviceSixnetWizardPanel();
 		}
-		else
+		else if( DeviceTypesFuncs.isRTU(devType) || DeviceTypesFuncs.isCCU(devType))
 		{
 			getDeviceCommChannelPanel().setValue(null);
 			getDeviceCommChannelPanel().setAddress(new Integer(getDeviceNameAddressPanel().getAddress()).intValue());
 			getDeviceCommChannelPanel().setDeviceType(getDeviceTypePanel().getDeviceType());
 			return getDeviceCommChannelPanel();
 		}
+		else
+			return getDeviceCommChannelPanel();
 	}
 	else if (currentInputPanel == getDeviceSixnetWizardPanel())
 	{
