@@ -64,6 +64,9 @@ public class TrendSerie
 	public TrendSerie()
 	{
 		super();
+
+		//creates a dummy GraphDataSeries instance of later usage
+		setGraphDataSeries( new GraphDataSeries() );
 	}
 	/**
 	 * @param gds
