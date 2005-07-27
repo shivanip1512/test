@@ -217,7 +217,24 @@ insert into YukonGroupRole values (-1278,-2,-203,-20303,'(none)');
 insert into YukonUserRole values (-778,-1,-203,-20303,'(none)');
 
 
-
+create table DeviceTNPPSettings  (
+   DeviceID             NUMBER                          not null,
+   Inertia              NUMBER                          not null,
+   DestinationAddress   NUMBER                          not null,
+   OriginAddress        NUMBER                          not null,
+   IdentifierFormat     CHAR(1)                         not null,
+   Protocol             CHAR(1)                         not null,
+   DataFormat           CHAR(1)                         not null,
+   Channel              CHAR(1)                         not null,
+   Zone                 CHAR(1)                         not null,
+   FunctionCode         CHAR(1)                         not null,
+   PagerID              NUMBER                          not null
+);
+alter table DeviceTNPPSettings
+   add constraint PK_DEVICETNPPSETTINGS primary key (DeviceID);
+alter table DeviceTNPPSettings
+   add constraint FK_DevTNPP_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
 
 
 
