@@ -48,6 +48,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.ca
 
 	if( currentInputPanel == null )
 	{
+		getTOUScheduleBasePanel().setIsNewSchedule(true);
 		return getTOUScheduleBasePanel();
 	}
 	else
