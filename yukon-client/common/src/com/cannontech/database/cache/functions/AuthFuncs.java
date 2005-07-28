@@ -107,7 +107,7 @@ public class AuthFuncs {
      * @return String
      */
     public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) {
-        return getRolePropertyValue(user,rolePropertyID,null);
+    	return getRolePropertyValue(user,rolePropertyID,null);
     }
     
     /**
@@ -152,6 +152,7 @@ public class AuthFuncs {
 		if(defaultValue == null)
 		{
 			LiteYukonRoleProperty prop = getRoleProperty(rolePropertyID);
+			CTILogger.warn("Unknown RoleProperty(" + rolePropertyID + ") '" + prop.getKeyName() + "' for user " + user + ".  Default value from DB will be used.");
 			return prop == null ? defaultValue : prop.getDefaultValue();	
 		}
 		return defaultValue;	
