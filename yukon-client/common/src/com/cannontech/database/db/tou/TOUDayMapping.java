@@ -210,8 +210,8 @@ public static final java.util.Vector getAllScheduleDays(Integer scheduleID, java
 			while( rset.next() )
 			{
 				touScheduleID = scheduleID;
-				touDayID = new Integer( rset.getInt(SETTER_COLUMNS[1]) );
-				touDayOffset = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
+				touDayID = new Integer( rset.getInt(SETTER_COLUMNS[0]) );
+				touDayOffset = new Integer( rset.getInt(SETTER_COLUMNS[1]) );
 								
 				returnVector.addElement( new TOUDayMapping(
 						touScheduleID, 

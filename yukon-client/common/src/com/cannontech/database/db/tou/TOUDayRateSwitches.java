@@ -60,6 +60,9 @@ public TOUDayRateSwitches(Integer rateID, String rate, Integer offset, Integer t
  */
 public void add() throws java.sql.SQLException
 {
+	if(getRateSwitchID() == null)
+		setRateSwitchID(getNextRateSwitchID(getDbConnection()));	
+	
 	Object addValues[] = 
 	{ 
 		getRateSwitchID(), getSwitchRate(),
@@ -124,10 +127,10 @@ public static final java.util.Vector getAllDayRateSwitches(Integer touDayID, jav
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
-	String sql = "SELECT " + SETTER_COLUMNS[1] +"," 
-		+ SETTER_COLUMNS[2] + 
+	String sql = "SELECT " + CONSTRAINT_COLUMNS[0 ] +"," + SETTER_COLUMNS[0] +"," 
+		+ SETTER_COLUMNS[1] + 
 		" FROM " + TABLE_NAME +
-		" WHERE " + CONSTRAINT_COLUMNS[0] + 
+		" WHERE " + SETTER_COLUMNS[2] + 
 		"=? ORDER BY " + SETTER_COLUMNS[1];
 
 	try
@@ -139,15 +142,15 @@ public static final java.util.Vector getAllDayRateSwitches(Integer touDayID, jav
 		else
 		{
 			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setInt( 1, rateSwitchID.intValue() );
+			pstmt.setInt( 1, touDayID.intValue() );
 			
 			rset = pstmt.executeQuery();
 	
 			while( rset.next() )
 			{
-				rateSwitchID = new Integer( rset.getInt(SETTER_COLUMNS[0]) );
-				switchRate = rset.getString(SETTER_COLUMNS[1]);
-				switchOffset = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
+				rateSwitchID = new Integer( rset.getInt(CONSTRAINT_COLUMNS[0]) );
+				switchRate = rset.getString(SETTER_COLUMNS[0]);
+				switchOffset = new Integer( rset.getInt(SETTER_COLUMNS[1]) );
 								
 				returnVector.addElement( new TOUDayRateSwitches(
 						rateSwitchID, 
@@ -261,5 +264,42 @@ public void setDayID(java.lang.Integer newDayID) {
 public void update() 
 {
 	throw new com.cannontech.common.util.MethodNotImplementedException();
+}
+
+public static synchronized Integer getNextRateSwitchID( java.sql.Connection conn )
+{
+	if( conn == null )
+		throw new IllegalStateException("Database connection should not be null.");
+
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
+	
+	try 
+	{		
+		stmt = conn.createStatement();
+		rset = stmt.executeQuery( "SELECT Max(TOURateSwitchID)+1 FROM " + TABLE_NAME );	
+				
+		//get the first returned result
+		rset.next();
+		return new Integer( rset.getInt(1) );
+	}
+	catch (java.sql.SQLException e) 
+	{
+		e.printStackTrace();
+	}
+	finally 
+	{
+		try 
+		{
+			if ( stmt != null) stmt.close();
+		}
+		catch (java.sql.SQLException e2) 
+		{
+			e2.printStackTrace();
+		}
+	}
+	
+	//strange, should not get here
+	return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 }
 }

@@ -7,6 +7,9 @@
 package com.cannontech.database.data.tou;
 
 import com.cannontech.database.db.tou.TOUDayRateSwitches;
+import com.cannontech.database.PoolManager;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.clientutils.CTILogger;
 
 /**
  * @author jdayton
@@ -14,7 +17,7 @@ import com.cannontech.database.db.tou.TOUDayRateSwitches;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class TOUDay extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
+public class TOUDay extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel, java.lang.Comparable
 {
 	com.cannontech.database.db.tou.TOUDay touDay = null;
 
@@ -33,7 +36,13 @@ public TOUDay(Integer id)
 {
 	super();
 
-	setNameID(id);
+	setDayID(id);
+}
+
+public TOUDay(String name)
+{
+	super();
+	setName(name);
 }
 /**
  * TOUDay constructor comment.
@@ -42,8 +51,8 @@ public TOUDay(Integer id, String name)
 {
 	super();
 
-	setNameID(id);
-	setNameName(name);
+	setDayID(id);
+	setName(name);
 }
 /**
  * Insert the method's description here.
@@ -162,7 +171,7 @@ public void setDbConnection(java.sql.Connection conn)
  * Creation date: (12/06/2004 10:35:21 AM)
  * @return com.cannontech.database.data.tou.TOUDay
  */
-public void setNameID( Integer newID )
+public void setDayID( Integer newID )
 {
 	getTOUDay().setDayID( newID );
 	
@@ -174,7 +183,7 @@ public void setNameID( Integer newID )
  * Creation date: (12/06/2004 10:35:21 AM)
  * @return com.cannontech.database.data.tou.TOUDay
  */
-public void setNameName( String newName )
+public void setName( String newName )
 {
 	getTOUDay().setDayName( newName );	
 }
@@ -185,6 +194,11 @@ public void setNameName( String newName )
 public String toString()
 {
 	return getDayName();
+}
+
+public void setTOURateSwitchVector(java.util.Vector newRates)
+{
+	touRateSwitchVector = newRates;
 }
 /**
  * Insert the method's description here.
@@ -198,7 +212,59 @@ public void update() throws java.sql.SQLException
 	TOUDayRateSwitches.deleteAllDayRateSwitches(getTOUDay().getDayID(), getDbConnection());
 
 	for (int i = 0; i < getTOURateSwitchVector().size(); i++)
+	{
+		((TOUDayRateSwitches) getTOURateSwitchVector().elementAt(i)).setDayID(getTOUDay().getDayID());
 		((TOUDayRateSwitches) getTOURateSwitchVector().elementAt(i)).add();	
+	}
+}
+
+/* (non-Javadoc)
+ * @see java.lang.Comparable#compareTo(java.lang.Object)
+ */
+public int compareTo(Object o) 
+{
+	return this.getDayName().compareTo(((TOUDay)o).getDayName());
+}
+
+public boolean equals(Object obj)
+{
+	if(this == null || obj == null)
+		return false;
+	return (((TOUDay)obj).getDayID().intValue() == this.getDayID().intValue());
+}
+
+public static Integer getNextTOUDayID()
+{
+	java.sql.Connection conn = null;
+	Integer newID = new Integer(0);
+	
+	try
+	{
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+		if (conn == null)
+		{
+			CTILogger.info("Error getting database connection.");
+			return null;
+		}
+		else
+			newID = com.cannontech.database.db.tou.TOUDay.getNextTOUDayID(conn);
+	}
+	finally
+	{
+		try
+		{
+			if (conn != null)
+				conn.close();
+		}
+		catch (java.sql.SQLException e2)
+		{
+			e2.printStackTrace(); //something is up
+		}
+	}
+	
+	return newID;
+	
 }
 
 }

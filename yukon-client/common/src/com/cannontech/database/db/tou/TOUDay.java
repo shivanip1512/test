@@ -35,6 +35,16 @@ public TOUDay() {
 	super();
 }
 
+public TOUDay(String name) {
+	super();
+	dayName = name;
+}
+
+public TOUDay(Integer id) {
+	super();
+	dayID = id;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/02/2004 12:08:19 PM)
@@ -77,6 +87,7 @@ public String getDayName()
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
+/*
 public final static Integer getNextTOUDayID()
 {
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
@@ -101,7 +112,45 @@ public final static Integer getNextTOUDayID()
 		
 		return new Integer( counter );
 	}
+}*/
+
+public static synchronized Integer getNextTOUDayID( java.sql.Connection conn )
+{
+	if( conn == null )
+		throw new IllegalStateException("Database connection should not be null.");
+
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
+	
+	try 
+	{		
+		stmt = conn.createStatement();
+		rset = stmt.executeQuery( "SELECT Max(TOUDayID)+1 FROM " + TABLE_NAME );	
+				
+		//get the first returned result
+		rset.next();
+		return new Integer( rset.getInt(1) );
+	}
+	catch (java.sql.SQLException e) 
+	{
+		e.printStackTrace();
+	}
+	finally 
+	{
+		try 
+		{
+			if ( stmt != null) stmt.close();
+		}
+		catch (java.sql.SQLException e2) 
+		{
+			e2.printStackTrace();
+		}
+	}
+	
+	//strange, should not get here
+	return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (12/02/2004 12:08:08 PM)
@@ -137,6 +186,11 @@ public void setDayID(Integer id)
 public void setDayName(String name) 
 {
 	dayName = name;
+}
+
+public String toString()
+{
+	return dayName;
 }
 
 /**
