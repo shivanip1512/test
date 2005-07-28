@@ -89,17 +89,16 @@ self.name = "mainWin";
 </td>
         </tr>
         </table>
-		<div align="center" class="TableCell1">
-		  <p><font color="#000000">
-			<%@ include file="include/full_copyright.jsp" %>
-		  </font></p>
-		</div>      
+		<div align="center"> </div>      
     </td>
   </tr>
 </table>
 <br>
 <div align="center" class="TableCell1">
   <img src="YukonLogo.gif" width="139" height="29">
+  <p><font color="#FFFFFF">
+	<%@ include file="include/full_copyright.jsp" %>
+  </font></p>
 </div>
 </body>
 
