@@ -144,6 +144,16 @@ public class AuthFuncs {
 				}
 			}	
 		}
+		//If the defaultValue is null, attempt to use the default value from the roleProperty
+		// Returning a null value could cause some serious exceptions.
+		// By returning the default value from the property, we should be able to continue on
+		//  with life better when new properties have been added to a Role but may not have 
+		//  successfully updated all existing login groups with the new properties. 
+		if(defaultValue == null)
+		{
+			LiteYukonRoleProperty prop = getRoleProperty(rolePropertyID);
+			return prop == null ? defaultValue : prop.getDefaultValue();	
+		}
 		return defaultValue;	
 	}
 
