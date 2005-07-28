@@ -235,23 +235,23 @@ public class DBDeletionFuncs
 		//this object is deleteable
 		return STATUS_ALLOW;
 	}	
-	/*
+	
 	private static byte createDeleteStringForTOU(int touID) throws java.sql.SQLException
 	{
 		Integer theID = new Integer( touID );
 	
-		if( TOUSchedule.inUseByDevice(
+		/*if( TOUSchedule.inUseByDevice(
 				theID, CtiUtilities.getDatabaseAlias() ) )
 		{
 			theWarning.delete(0, theWarning.length());
 			theWarning.append(CR_LF + "because it is in use by a device.");
 			return STATUS_DISALLOW;
-		}
+		}*/
 	
 		//this object is deleteable
 		return STATUS_ALLOW;
 	}
-	*/
+	
 	private static byte createDeleteStringForLMProgConst(int constrID) throws java.sql.SQLException
 	{
 		if( LMProgramConstraint.inUseByProgram(constrID, CtiUtilities.getDatabaseAlias()) )
@@ -619,8 +619,8 @@ public class DBDeletionFuncs
 			else if(type == CONFIG_TYPE)
 					return createDeleteStringForConfig(anID);
 			
-			/*else if(type == TOU_TYPE)
-				return createDeleteStringForTOU(anID);*/
+			else if(type == TOU_TYPE)
+				return createDeleteStringForTOU(anID);
 					
 			else if(type == TAG_TYPE)
 				return createDeleteStringForTag(anID);

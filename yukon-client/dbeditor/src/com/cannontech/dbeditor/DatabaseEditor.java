@@ -154,8 +154,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.LOGIN_GROUPS),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG)/*,
-			new Integer(ModelFactory.TOUSCHEDULE)*/
+			new Integer(ModelFactory.TAG),
+			new Integer(ModelFactory.TOUSCHEDULE)
 		};
 	private static final Integer[] NONLOGIN_SYSTEM_MODELS =
 		{
@@ -166,8 +166,8 @@ public class DatabaseEditor
 			new Integer(ModelFactory.HOLIDAY_SCHEDULE),
 			new Integer(ModelFactory.NOTIFICATION_GROUP),
 			new Integer(ModelFactory.SEASON),
-			new Integer(ModelFactory.TAG)/*,
-			new Integer(ModelFactory.TOUSCHEDULE)*/
+			new Integer(ModelFactory.TAG),
+			new Integer(ModelFactory.TOUSCHEDULE)
 		};	
 	
 
