@@ -243,6 +243,8 @@ alter table DeviceTNPPSettings
 
 
 
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
