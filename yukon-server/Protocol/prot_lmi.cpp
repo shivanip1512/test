@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/06/22 21:37:19 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -607,7 +607,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             if( !gConfigParms.getValueAsString("PROTOCOL_LMI_VERIFY").contains("false", RWCString::ignoreCase) )
                             {
                                 ptime::time_duration_type expiration(seconds(60));
-                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, codestr, expiration);
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *om, om->Request.CommandStr, codestr, expiration);
 
                                 _verification_objects.push(work);
                             }

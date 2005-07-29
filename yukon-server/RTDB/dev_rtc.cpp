@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/07/25 16:37:38 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.31  2005/07/29 16:26:02  cplender
+* Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
+*
 * Revision 1.30  2005/07/25 16:37:38  cplender
 * Expiration time is printed as an RWTime asString.
 *
@@ -480,7 +483,7 @@ INT CtiDeviceRTC::queueRepeatToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         else
         {
             CtiLockGuard<CtiLogger> slog_guard(slog);
-            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty(OutMessage->Buffer.SASt).asString() << endl;
+            slog << RWTime() << " "  << getName() << ": Requeued for " << _repeatTime << " repeat transmit: " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
         }
 
         OutMessage= 0;
@@ -649,13 +652,15 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
     {
         if(OutMessage->Buffer.SASt._commandType == ControlRequest)
         {
-            char codestr[256];  //  needs to be able to hold -2000000000
+            char codestr[256];
+            string cmdStr;
 
             switch(OutMessage->Buffer.SASt._groupType)
             {
             case SA305:
                 {
                     CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
+                    cmdStr = prot.asString();
                     prot.setTransmitterType(getType());
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
@@ -665,12 +670,9 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 }
             default:
                 {
-                    CtiProtocolSA3rdParty prot;
-
-                    prot.setSAData( OutMessage->Buffer.SASt );
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                        slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
                     }
                     break;
                 }
@@ -703,13 +705,23 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
                 codestr[12] = 0;
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, codestr, seconds(60));
+                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
+                }
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, codestr, seconds(60));
             }
             else
             {
                 strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
                 codestr[6] = 0;
-                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, codestr, seconds(60));
+                cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
+                }
+                work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
             }
 
             if(work) _verification_objects.push(work);
@@ -739,7 +751,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         codestr[6] = 0;
                     }
 
-                    CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, codestr, seconds(60));
+                    CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, rtcOutMessage->Request.CommandStr, codestr, seconds(60));
                     _verification_objects.push(work);
 
                     now = now.now();
@@ -763,12 +775,9 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         }
                     default:
                         {
-                            CtiProtocolSA3rdParty prot;
-
-                            prot.setSAData( rtcOutMessage->Buffer.SASt );
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                                slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
                             }
                             break;
                         }

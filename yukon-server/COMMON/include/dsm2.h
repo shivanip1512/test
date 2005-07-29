@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/04/11 16:13:51 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -826,6 +826,9 @@ typedef struct
     int _swTimeout;                     // Switch OFF time in seconds.
     int _cycleTime;                     // Switch on + off time in seconds.
     int _repeats;                       // Number of _cycleTimes to repeat the operation (DCU205)
+    int _sTime;                         // swTimeout as needed by the protocol
+    int _cTime;                         // cycleTime needed by the protocol
+
 
 
 } CtiSAData;

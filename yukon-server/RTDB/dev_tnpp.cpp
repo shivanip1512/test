@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/07/12 14:35:05 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ const char *CtiDeviceTnppPagingTerminal::_zero_serial         = "00";
 ******************************************************************************/
 
 
-CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal() 
+CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal()
 {
     resetStates();
 }
@@ -104,7 +104,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     if(xfer.getInCountActual()>=1)
                     {
                         //this is due to the un-buffered read just in case junk is in buffer on first read...
-                        if(xfer.getInBuffer()[0] == *_EOT || 
+                        if(xfer.getInBuffer()[0] == *_EOT ||
                            xfer.getInBuffer()[xfer.getInCountActual()] == *_EOT)
                         {
                             //SUCCESS!!!!
@@ -114,7 +114,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         }
                         else
                         {
-                            
+
                             status = UnknownError;
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -151,10 +151,10 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     }
                 }
             case StateDecodeResponse:
-                {   
+                {
                     if(xfer.getInCountActual() == 1)
                     {
-                        if(xfer.getInBuffer()[0] == *_ACK) 
+                        if(xfer.getInBuffer()[0] == *_ACK)
                         {//YAY!
                             _retryCount = 0;
                             if(getPreviousState() == StateGenerateZeroPacket)
@@ -171,13 +171,13 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 {
                                     _outMessage.VerificationSequence = VerificationSequenceGen();
                                 }
-                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
+                                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, _outMessage.Request.CommandStr, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
                                 _verification_objects.push(work);
 
                                 _command = Complete;
                                 status = Normal;
                             }
-                                
+
                         }
                         else if(xfer.getInBuffer()[0] == *_NAK)//bad crc or other error, re-send!
                         {
@@ -274,7 +274,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     xfer.setInCountExpected( 1 ); // Actually expecting 2 bytes in return, 1 return message, and 1 command message (ENQ, EOT)
                     xfer.setInTimeout( 1 );
 
-                    setPreviousState(StateGenerateZeroPacket);  
+                    setPreviousState(StateGenerateZeroPacket);
                     setCurrentState(StateDecodeHandshake);
 
                     break;
@@ -319,7 +319,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     }
                     else if((char)*_table.getIdentifierFormat()=='B')
                     {   //ID PAGE
-                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);                        
+                        strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
                     }
                     strncat((char*)xfer.getOutBuffer(),_table.getFunctionCode(),10);
                     strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
@@ -329,7 +329,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     unsigned int crc = crc16((const unsigned char *)xfer.getOutBuffer(),strlen((char *)xfer.getOutBuffer()));
                     strncat((char*)xfer.getOutBuffer(),reinterpret_cast<char *>(&crc),10);
 
-					xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 1 );
                     xfer.setInTimeout( 1 );
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/06/29 19:44:21 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,12 +54,12 @@ const char *CtiDeviceSnppPagingTerminal::_char_cr_lf          = "\r\n";
 
 CtiDeviceSnppPagingTerminal::CtiDeviceSnppPagingTerminal()
 {
-	resetStates();
+    resetStates();
 }
 
 /*CtiDeviceSnppPagingTerminal::CtiDeviceSnppPagingTerminal(const CtiDeviceSnppPagingTerminal& aRef)
 {
-	//Dont think I will need this function.
+    //Dont think I will need this function.
 }*/
 
 CtiDeviceSnppPagingTerminal::~CtiDeviceSnppPagingTerminal()
@@ -102,13 +102,13 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     {
                         //yay, end of string
                         setCurrentState(getPreviousState());//saved state
-                        
+
                         if(getPreviousState() == StateEnd)
                         {
                             status = NORMAL;
                             _command = Complete; //Transaction Complete
                         }
-    
+
                     }
                     else
                     {
@@ -120,64 +120,64 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     //OUCH. Nothing read in, probably a timeout.
                     _command = Complete; //Transaction Complete
                     status = FinalError; // FinalError returned when a carriage return isnt received from unit
-                    
+
                 }
-    
-                break;        
+
+                break;
             }
         case StateDecodeSetupReadResponse:
             {
                 setCurrentState(StateGenerateSetupReadResponse);
                 break;
-                
+
             }
         case StateDecodeResponse:
-            {   
+            {
                 if(xfer.getInCountActual() >= 3)
                 {
-                    if(strstr((char*)xfer.getInBuffer(), "250") != NULL || 
+                    if(strstr((char*)xfer.getInBuffer(), "250") != NULL ||
                        (strstr((char*)xfer.getInBuffer(), "220") != NULL && getPreviousState()==StateSendLoginInformation) ||
-                       (strstr((char*)xfer.getInBuffer(), "354") != NULL && getPreviousState()==StateSendData) || 
+                       (strstr((char*)xfer.getInBuffer(), "354") != NULL && getPreviousState()==StateSendData) ||
                        (strstr((char*)xfer.getInBuffer(), "221") !=NULL && getPreviousState()==StateEnd))
                     {//YAY!
-    
+
                         /*if(commReturnValue == READTIMEOUT)
                         {
                             // No clue how I got here since I read in the 3 bytes I was looking for...........
                             status = NORMAL;  // Make sure the portfield loop is not compromised!
                         }*/ //Dont think this is needed
-    
-                        setCurrentState(StateGenerateReadTextString);                          
+
+                        setCurrentState(StateGenerateReadTextString);
                     }
                     else
                     {
                         status = ErrorPageRS;
                         _command = Complete; //Transaction Complete
-    
+
                         if(getPreviousState() == StateEnd)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-    
+
                             }
                             status = NORMAL;//quit command failed, all others passed, return normal
                         }
-                            
+
                     }
-    
+
                 }
                 else
                 {
                     status = ErrorPageNoResponse;
                     _command = Complete; //Transaction Complete
-    
+
                     if(getPreviousState() == StateEnd)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-    
+
                         }
                         status = NORMAL;//quit command failed, all others passed, return normal
                     }
@@ -203,7 +203,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
 {
     INT status = NORMAL;
     try
-    { 
+    {
         switch( getCurrentState() )
         {
         case StateHandshakeInitialize:            // Look for any unsolicited ID= Message first... (no outbound CR's)
@@ -212,13 +212,13 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 xfer.setOutBuffer(_outBuffer);
                 xfer.setInCountActual(&_inCountActual);
                 xfer.setOutCount( 0 );              // We only need an in here. Make sure no outbound is sent.
-    
+
                 xfer.setInCountExpected( 3 ); // Looking for 3 bytes from the TAP (ID=)
                 xfer.setInTimeout( 1 );             // It is already there if it is there!
-    
+
                 setPreviousState(StateSendLoginInformation);      // Let anyone find us back...
                 setCurrentState(StateDecodeResponse);
-    
+
                 break;
             }
         case StateGenerateSetupReadResponse:
@@ -229,9 +229,9 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 xfer.setInCountExpected( 3 ); // Reading 1 byte at a time until we find <CR>
                 xfer.setInTimeout( 2 );       // Very arbitrary. Seems to work for most people, it is generally set to 1 in rest of code
                 setCurrentState(StateDecodeResponse);
-				break;
+                break;
             }
-    
+
         case StateGenerateReadTextString:
             {
                 xfer.setInCountExpected( 1 ); // Reading 1 byte at a time until we find <CR>
@@ -242,9 +242,9 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             //The next set of data is optional, and falls through to the next optional piece until a used piece is found..
         case StateSendLoginInformation:
             {
-                if (getLoginName() != NULL) 
+                if (getLoginName() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_login,10);//LOGIn command
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getLoginName(),50);
@@ -253,7 +253,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendLevelNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -264,16 +264,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendLevelNumber:
             {
-                if (getLevelNumber() != NULL) 
+                if (getLevelNumber() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_level,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getLevelNumber(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendAlertNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -282,16 +282,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendAlertNumber:
             {
-                if (getAlertNumber() != NULL) 
+                if (getAlertNumber() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_alert,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getAlertNumber(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendCoverageNumber);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -299,16 +299,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendCoverageNumber:
             {
-                if (getCoverageNumber() != NULL) 
+                if (getCoverageNumber() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_coverage,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getCoverageNumber(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendHoldTime);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -317,16 +317,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendHoldTime:
             {
-                if (getHoldTime() != NULL) 
+                if (getHoldTime() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_hold,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getHoldTime(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendPageWithPass);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -335,9 +335,9 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendPageWithPass:
             {
-                if (getPagePass() != NULL) 
+                if (getPagePass() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_page,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getPageNumber(),50);
@@ -346,7 +346,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendCallerID);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -361,23 +361,23 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
-    
+
                 setPreviousState(StateSendCallerID);
                 setCurrentState(StateDecodeSetupReadResponse);//Not sure if this is what I want
                 break;
             }
         case StateSendCallerID:
             {
-                if (getCallerID() != NULL) 
+                if (getCallerID() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_caller_id,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getCallerID(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendSubject);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -386,16 +386,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendSubject:
             {
-                if (getSubject() != NULL) 
+                if (getSubject() != NULL)
                 {
-    
+
                     strncpy((char *)xfer.getOutBuffer(),_command_subject,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getSubject(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
-    
+
                     setPreviousState(StateSendDataCommand);
                     setCurrentState(StateDecodeSetupReadResponse);
                     break;
@@ -408,7 +408,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
-    
+
                 setPreviousState(StateSendData);
                 setCurrentState(StateDecodeSetupReadResponse);
                 break;
@@ -421,7 +421,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,2);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
-    
+
                 setPreviousState(StateSendSend);
                 setCurrentState(StateDecodeSetupReadResponse);
                 break;
@@ -432,7 +432,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
-    
+
                 setPreviousState(StateSendQuit);
                 setCurrentState(StateDecodeSetupReadResponse);
                 break;
@@ -440,20 +440,20 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
         case StateSendQuit:
             {
                 //we can assume here that everything is ok, so set up the verification object!
-                
+
                 //If Retry is set, this is not a verification retry...
                 if( !_outMessage.VerificationSequence )
                 {
                     _outMessage.VerificationSequence = VerificationSequenceGen();
                 }
-                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
+                CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, _outMessage.Request.CommandStr, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
                 _verification_objects.push(work);
 
                 strncpy((char *)xfer.getOutBuffer(),_command_quit,10);
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
-    
+
                 setPreviousState(StateEnd);
                 setCurrentState(StateDecodeSetupReadResponse);
                 break;
@@ -667,7 +667,7 @@ void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
 
     _table.DecodeDatabaseReader(rdr);
 }
-                                                                                
+
 
 void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {

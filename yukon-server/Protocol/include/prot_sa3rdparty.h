@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/06/16 21:25:14 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.14  2005/07/29 16:26:02  cplender
+* Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
+*
 * Revision 1.13  2005/06/16 21:25:14  cplender
 * Adding the RTC scan command and decode. Must be trested with a device.
 *
@@ -90,8 +93,6 @@ protected:
 
     CtiSAData _sa;
 
-    int _sTime;
-    int _cTime;
     RWTime _onePeriodTime;
 
     bool _messageReady;
@@ -107,7 +108,6 @@ protected:
     INT restoreLoadControl();
     //INT formRTMRequest(USHORT command);
 
-
     /*
      * This method used the input strategy or the period and percentage to produce a strategy value.
      * The produced value will be equal or larger than the requested parse.  If the parse is unsuccessful, the result will be -1.
@@ -122,7 +122,9 @@ private:
 
     void computeShedTimes(int shed_time);
     void processResult(INT retCode);
-    void computeSnCTime();
+
+    SA_CODE _sa_code;   // This structure is filled out based upon all else.  It can be used later to generate a string command.
+    X205CMD _sa_x205cfg;
 
 public:
 
@@ -160,16 +162,25 @@ public:
     CtiSAData getSAData() const;
     CtiProtocolSA3rdParty& setSAData(const CtiSAData &sa);
 
-    RWCString asString() const;
-    RWCString strategyAsString() const;
-    RWCString functionAsString() const;
     int getStrategySTime() const;
     int getStrategyCTime() const;
     RWTime getStrategyOnePeriodTime() const;
 
+    const SA_CODE& getSACode() const { return _sa_code; };
+    const X205CMD& getX205Cmd() const { return _sa_x205cfg; };
+
     static INT formatTMScmd (UCHAR *abuf, INT *buflen, USHORT TMS_cmd_type, USHORT xmitter);
     static INT TMSlen (UCHAR *abuf, INT *len);
     static INT procTMSmsg(UCHAR *abuf, INT len, SA_CODE *scode, X205CMD *x205cmd);
+
+    static RWCString asString(const CtiSAData &sa);
+    static RWCString strategyAsString(const CtiSAData &sa);
+    static RWCString functionAsString(const CtiSAData &sa);
+    static pair< int, int > computeSnCTime(const int swTimeout, const int cycleTime);
+
+    static string asString(const SA_CODE &sa);
+    static string asString(const X205CMD &cmd);
+
 };
 
 #endif // #ifndef __PROT_SA3RDPARTY_H__

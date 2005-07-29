@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/06/29 19:32:31 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ INT CtiDeviceTapPagingTerminal::allocateDataBins(OUTMESS *oMess)
     {
         _pageBuffer = (CHAR*) _outMessage->Buffer.TAPSt.Message;//point pointer to new message structure.
         setPageLength(_outMessage->Buffer.TAPSt.Length);
-        
+
     }
 
     return NORMAL;
@@ -1106,7 +1106,7 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         {
                             _outMessage->VerificationSequence = VerificationSequenceGen();
                         }
-                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
+                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, _outMessage->Request.CommandStr, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
                         _verification_objects.push(work);
                     }
                 }

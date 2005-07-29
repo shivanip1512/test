@@ -222,7 +222,7 @@ INT CtiDeviceWctpTerminal::allocateDataBins(OUTMESS *oMess)
     {
         _pageBuffer = (CHAR*) _outMessage->Buffer.TAPSt.Message;//point pointer to new message structure.
         setPageLength(_outMessage->Buffer.TAPSt.Length);
-        
+
     }
 
     return NORMAL;
@@ -1037,7 +1037,7 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, R
                         {
                             _outMessage->VerificationSequence = VerificationSequenceGen();
                         }
-                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
+                        CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, _outMessage->Request.CommandStr, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
                         _verification_objects.push(work);
 
                         setCurrentState( StateScanComplete );

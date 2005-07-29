@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/06/29 19:35:08 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -45,6 +45,7 @@ private:
     Protocol _protocol;
     Type     _type;
     string   _code;
+    string   _command;
 
     CtiVerificationBase(const CtiVerificationBase& aRef);
 
@@ -52,7 +53,7 @@ protected:
 
     const ptime _birth;
 
-    CtiVerificationBase(Type t, Protocol p, const string &code);
+    CtiVerificationBase(Type t, Protocol p, const string &command, const string &code);
 
     static const string String_CodeStatus_Sent;
     static const string String_CodeStatus_Success;
@@ -91,6 +92,7 @@ public:
     Type          getType()     const   {  return _type;      };
     Protocol      getProtocol() const   {  return _protocol;  };
     const string &getCode()     const   {  return _code;      };
+    const string &getCommand()  const   {  return _command;   };
 
     static const string &getCodeStatusName(CodeStatus cs);
 
@@ -110,7 +112,7 @@ private:
 protected:
 public:
 
-    CtiVerificationReport(Protocol p, long id, const string &code, ptime time);
+    CtiVerificationReport(Protocol p, long id, const string &code, ptime time, const string &command=string("-"));
     virtual ~CtiVerificationReport();
 
     long  getReceiverID()   const    {  return _receiver_id;   };
@@ -131,7 +133,7 @@ private:
     ptime::time_duration_type _patience;
     ptime                     _expiration;
     const CtiOutMessage _retry_om;
-    long                _sequence;
+    long _sequence;
 
     CodeStatus _codeDisposition;
 
@@ -173,7 +175,7 @@ public:
         }
     };
 
-    CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &code, ptime::time_duration_type patience);  //  patience is how long we should wait for verification before logging a failure or retrying
+    CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &command, const string &code, ptime::time_duration_type patience);  //  patience is how long we should wait for verification before logging a failure or retrying
     virtual ~CtiVerificationWork();
 
     long  getTransmitterID()    const   {  return _transmitter_id;  };
@@ -182,7 +184,6 @@ public:
     ptime getSubmissionTime()   const   {  return _birth;           };
 
     CtiOutMessage *getRetryOM() const;
-    string         getCommand() const;
 
     void  addExpectation(long receiver_id, bool retransmit);
     bool  checkReceipt(const CtiVerificationReport &receipt);

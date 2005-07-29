@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/06/23 15:47:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/07/29 16:26:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,9 +27,10 @@ const string CtiVerificationBase::String_CodeStatus_Fail       = "fail";
 const string CtiVerificationBase::String_CodeStatus_Unexpected = "unexpected";
 const string CtiVerificationBase::String_CodeStatus_Invalid    = "(invalid status)";
 
-CtiVerificationBase::CtiVerificationBase(Type t, Protocol p, const string &code) :
+CtiVerificationBase::CtiVerificationBase(Type t, Protocol p, const string &command, const string &code) :
     _type(t),
     _protocol(p),
+    _command(command),
     _code(code),
     _birth(second_clock::universal_time())
 {
@@ -66,8 +67,8 @@ const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
     return *s;
 }
 
-CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &code, ptime::time_duration_type patience = seconds(0)) :
-    CtiVerificationBase(Type_Work, p, code),
+CtiVerificationWork::CtiVerificationWork(Protocol p, const CtiOutMessage &om, const string &command, const string &code, ptime::time_duration_type patience = seconds(0)) :
+    CtiVerificationBase(Type_Work, p, command, code),
     _retry_om(om),
     _expiration(second_clock::universal_time() + patience),
     _codeDisposition(CodeStatus_Uninitialized)
@@ -101,14 +102,6 @@ CtiOutMessage *CtiVerificationWork::getRetryOM() const
     retval->Retry = 0;
 
     return retval;
-}
-
-
-string CtiVerificationWork::getCommand() const
-{
-    string s(_retry_om.Request.CommandStr);
-
-    return s;
 }
 
 
@@ -204,8 +197,8 @@ deque< pair< long, ptime > > CtiVerificationWork::getReceipts() const
 }
 
 
-CtiVerificationReport::CtiVerificationReport(Protocol p, long id, const string &code, ptime time) :
-    CtiVerificationBase(Type_Report, p, code),
+CtiVerificationReport::CtiVerificationReport(Protocol p, long id, const string &code, ptime time, const string &command) :
+    CtiVerificationBase(Type_Report, p, command, code),
     _receiver_id(id),
     _receipt_time(time)
 {
