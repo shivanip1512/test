@@ -7,6 +7,8 @@ create unique index Indx_todsw_idoff on TOUDayRateSwitches (
    TOUDayID ASC
 );
 
+/* @error ignore */
+insert into YukonGroupRole values(-130,-100,-101,-10111,'(none)');
 
 
 

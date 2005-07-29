@@ -8,6 +8,8 @@ TOUDayID
 );
 go
 
+/* @error ignore */
+insert into YukonGroupRole values(-130,-100,-101,-10111,'(none)');
 
 
 
