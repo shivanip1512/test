@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2005/07/05 14:41:36 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2005/08/01 21:57:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2073,35 +2073,40 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     if(parse.isKeyValid("model"))
     {
         function = Emetcon::GetConfig_Model;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("ied"))
     {
         if(parse.isKeyValid("time"))
         {
             function = Emetcon::GetConfig_IEDTime;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
         else if( parse.isKeyValid("scan"))
         {
             function = Emetcon::GetConfig_IEDScan;
-            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+            found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
         }
+    }
+    else if( parse.isKeyValid("channels") )
+    {
+        function = Emetcon::GetConfig_ChannelSetup;
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("options"))
     {
         function = Emetcon::GetConfig_Options;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("disconnect"))
     {
         function = Emetcon::GetConfig_Disconnect;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("address_group"))
     {
         function = Emetcon::GetConfig_GroupAddress;
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if(parse.isKeyValid("time"))
     {
@@ -2122,18 +2127,10 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
         {
             switch( parse.getiValue("multchannel") )
             {
-                case 1:
-                    function = Emetcon::GetConfig_Multiplier;
-                    break;
-                case 2:
-                    function = Emetcon::GetConfig_Multiplier2;
-                    break;
-                case 3:
-                    function = Emetcon::GetConfig_Multiplier3;
-                    break;
-                case 4:
-                    function = Emetcon::GetConfig_Multiplier4;
-                    break;
+                case 1:     function = Emetcon::GetConfig_Multiplier;   break;
+                case 2:     function = Emetcon::GetConfig_Multiplier2;  break;
+                case 3:     function = Emetcon::GetConfig_Multiplier3;  break;
+                case 4:     function = Emetcon::GetConfig_Multiplier4;  break;
             }
         }
         else
@@ -2288,7 +2285,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         function = Emetcon::PutConfig_OnOffPeak;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-        OutMessage->Buffer.BSt.Message[0] = 0xf8 & ~0x04;  //  make sure the 0x04 bit is not set
+        OutMessage->Buffer.BSt.Message[0] = 0xf8 & ~0x04;  //  make sure the 0x04 bit is NOT set
     }
     else if( parse.isKeyValid("minmax") )
     {
