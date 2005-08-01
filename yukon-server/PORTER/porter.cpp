@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2005/08/01 16:19:36 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2005/08/01 22:02:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -667,7 +667,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /* Misc Definitions */
     INT    i, j;
     extern USHORT PrintLogEvent;
-    time_t last_print = 0;
+    time_t last_print = 0, last_flush = 0;
 
     BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
     BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -1004,6 +1004,12 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         {
             last_print = ::time(0);
             processInputFunction(0x79);  //  do an alt-y every 60 seconds
+        }
+
+        if( last_flush + 60 <= ::time(0) )
+        {
+            last_flush = ::time(0);
+            DeviceManager.writeDynamicPaoInfo();
         }
 
         CTISleep(250);
