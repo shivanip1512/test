@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/05/12 20:00:19 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/08/01 22:10:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ using Cti::Protocol::Emetcon;
 const CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::_commandStore   = CtiDeviceMCT470::initCommandStore();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
-    _intervalsSent(false)
+    _lastConfigRequest(0)
 {
 }
 
@@ -64,6 +64,11 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 {
     CtiDLCCommandStore cs;
     DLCCommandSet s;
+
+    cs._cmd     = Emetcon::Command_Loop;
+    cs._io      = Emetcon::IO_Read;
+    cs._funcLen = make_pair( (int)MCT_ModelPos, 1 );
+    s.insert( cs );
 
     cs._cmd     = Emetcon::Scan_Accum;
     cs._io      = Emetcon::IO_Function_Read;
@@ -99,13 +104,13 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._funcLen = make_pair((int)MCT470_FuncRead_DemandPos,
                             (int)MCT470_FuncRead_DemandLen );
     s.insert(cs);
-/*
+
     cs._cmd      = Emetcon::GetValue_PeakDemand;
     cs._io       = Emetcon::IO_Function_Read;
-    cs._funcLen  = make_pair((int)MCT470_FuncRead_PeakDemandPos,
+    cs._funcLen  = make_pair((int)MCT470_FuncRead_PeakDemandBasePos,
                              (int)MCT470_FuncRead_PeakDemandLen );
     s.insert(cs);
-*/
+
     cs._cmd     = Emetcon::PutConfig_Raw;
     cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair( 0, 0 );  //  filled in later
@@ -165,6 +170,12 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
                             (int)MCT470_Memory_IntervalsLen);
     s.insert(cs);
 
+    cs._cmd     = Emetcon::GetConfig_ChannelSetup;
+    cs._io      = Emetcon::IO_Function_Read;
+    cs._funcLen = make_pair((int)MCT470_FuncRead_ChannelSetupPos,
+                            (int)MCT470_FuncRead_ChannelSetupLen);
+    s.insert(cs);
+
     cs._cmd     = Emetcon::GetValue_LoadProfile;
     cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair(0, 0);
@@ -202,6 +213,16 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     cs._funcLen = make_pair(0, 0);
     s.insert(cs);
 
+    cs._cmd     = Emetcon::PutStatus_FreezeOne;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)MCT_Command_FreezeOne, 0);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutStatus_FreezeTwo;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)MCT_Command_FreezeTwo, 0);
+    s.insert(cs);
+
     return s;
 }
 
@@ -232,29 +253,162 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &l
 }
 
 
-ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
+//  this function checks to see if we have all of the parameters we need to correctly request and interpret
+//    load profile date from the MCT
+bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
 {
-    RWTime        Now;
-    unsigned long next_time, planned_time;
-    int           demand_rate, block_size;
+    bool retval = false;
+    long sspec = 0,
+         sspec_rev = 0;
 
-    next_time = YUKONEOT;
+    //  grab these two because we'll use them later...
+    //    also, the return value is identical to hasDynamicInfo, so we'll just use it the same
+    retval |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, sspec);
+    retval |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, sspec_rev);
 
-    demand_rate = getLoadProfile().getLoadProfileDemandRate();
-    block_size  = demand_rate * 6;
-    next_time   = YUKONEOT;
+    //  note that we're verifying this against the interval that's in the database - more things will be used this way in the future
+    retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile().getLoadProfileDemandRate());
 
-    if( !_intervalsSent )
+    //  we don't use the second load profile rate yet
+    //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
+
+    if( retval && sspec == MCT470_Sspec && sspec_rev >= MCT470_SspecRevMin && sspec_rev <= MCT470_SspecRevMax )
     {
-        //  send load profile interval on the next 5 minute boundary
-        next_time  = (Now.seconds() - MCT_LPWindow) + 300;
+        //  we only care about these if we're the correct rev...  otherwise, we ignore everything
+        //    we would've done with it.  everything pre-rev E is development only, and needs to be treated with kid gloves
 
-        next_time -= next_time % 300;
+        //  we will need to verify this eventually, and if it doesn't match the 470 config, we'll reconfig the 470 (and complain)
+        retval |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig);
+        retval |= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
+    }
+
+    return retval;
+}
+
+
+void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList )
+{
+    bool valid = true;
+
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    OutMessage->Priority  = ScanPriority_LoadProfile;
+    OutMessage->TimeOut   = 2;
+    OutMessage->Retry     = 2;
+
+    // Tell the porter side to complete the assembly of the message.
+    OutMessage->Request.BuildIt = TRUE;
+
+    if( getMCTDebugLevel(MCTDebug_DynamicInfo) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" requesting key (" << key << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec )
+    {
+        strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+        OutMessage->Sequence  = Emetcon::GetConfig_Model;     // Helps us figure it out later!
     }
     else
     {
+        //  the ideal case - the correct, non-development sspec
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT470_Sspec       &&
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax )
+        {
+            switch( key )
+            {
+                //  all of these three are retrieved by this read
+                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig:
+                {
+                    strncpy(OutMessage->Request.CommandStr, "getconfig channels", COMMAND_STR_SIZE );
+                    OutMessage->Sequence = Emetcon::GetConfig_ChannelSetup;     // Helps us figure it out later!
+
+                    break;
+                }
+                default:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - unhandled key (" << key << ") in CtiDeviceMCT470::requestDynamicInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    delete OutMessage;
+                    OutMessage = 0;
+                }
+            }
+        }
+        else
+        {
+            switch( key )
+            {
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval:
+                {
+                    strncpy(OutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
+                    OutMessage->Sequence = Emetcon::GetConfig_Intervals;     // Helps us figure it out later!
+
+                    break;
+                }
+                default:
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - unhandled key (" << key << ") in CtiDeviceMCT470::requestDynamicInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                //  we don't care about these keys, since this sspec should only be used for pulse inputs...
+                //    they only matter for IED reads
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig:
+                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                {
+                    delete OutMessage;
+                    OutMessage = 0;
+                }
+            }
+        }
+    }
+
+    if( OutMessage )
+    {
+        outList.insert(OutMessage);
+        OutMessage = NULL;
+    }
+}
+
+
+ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
+{
+    RWTime        Now;
+    unsigned long next_time    = YUKONEOT,
+                  planned_time = YUKONEOT;
+
+    if( !isLPDynamicInfoCurrent() )
+    {
+        //  i'm purposely using the DB rate instead of the fancy getLoadProfileInterval() call here, so it can be ignorant
+        //    of the dynamic LP config info - this could probably be improved to look at the minimum of the available
+        //    LP intervals (interval 1, interval 2, electronic)
+        unsigned int overdue_rate = getLPRetryRate(getLoadProfile().getLoadProfileDemandRate());
+
+        //  only try for the dynamic info at the retry rate, no faster
+        next_time  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
+        next_time -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
+
+        //  only for consistency...  we don't /really/ have to add on the evacuation time for config reads, but it keeps
+        //    outbound requests predictable, which is helpful
+        next_time += LPBlockEvacuationTime;
+    }
+    else
+    {
+        int demand_rate, block_size;
+
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
+            demand_rate = getLoadProfileInterval(i);
+            block_size  = demand_rate * 6;
+
             CtiPointBase *pPoint = getDevicePointOffsetTypeEqual((i+1) + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             //  if we're not collecting load profile, or there's no point defined, don't scan
@@ -300,7 +454,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
 
             //  if we've already made the request for a block, or we're overdue...  almost the same thing
             if( (_lp_info[i].current_request >= _lp_info[i].archived_reading) ||
-                (planned_time <= (Now.seconds() - MCT_LPWindow)) )
+                (planned_time <= Now.seconds()) )
             {
                 unsigned int overdue_rate = getLPRetryRate(demand_rate);
 
@@ -327,13 +481,13 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
             */
         }
     }
-/*
+
     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
+        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(next_time) << endl;
     }
-*/
+
     return (_nextLPScanTime = next_time);
 }
 
@@ -346,16 +500,84 @@ void CtiDeviceMCT470::sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS 
     OutMessage->Port      = getPortID();
     OutMessage->Remote    = getAddress();
     // 082002 CGP // OutMessage->RouteID   = getRouteID();
+    OutMessage->Priority  = ScanPriority_LoadProfile;
     OutMessage->TimeOut   = 2;
-    OutMessage->Sequence  = Emetcon::PutConfig_Intervals;     // Helps us figure it out later!
+    OutMessage->Sequence  = Emetcon::GetStatus_LoadProfile;     // Helps us figure it out later!
     OutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
     OutMessage->Request.BuildIt = TRUE;
-    strncpy(OutMessage->Request.CommandStr, "putconfig emetcon intervals", COMMAND_STR_SIZE );
+    strncpy(OutMessage->Request.CommandStr, "getstatus lp channel 1", COMMAND_STR_SIZE );
 
     outList.insert(OutMessage);
     OutMessage = NULL;
+}
+
+
+//  sero-based channel offset
+long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
+{
+    long retval = -1;
+    string config;
+
+    if( channel < MCT4XX_LPChannels )
+    {
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, config) )
+        {
+            //  the at() function call can throw, so this isn't ideal yet - if we ever go to exception based error handling, we
+            //    can be more graceful about this
+            try
+            {
+                if( config.at(channel * 3) == '1' )
+                {
+                    //  leaves it untouched (i.e., -1) if it doesn't have it
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, retval);
+                }
+                //  uncomment when we care about LP interval #2
+                /*else if( config.at(channel * 3 + 2) == '1' )
+                {
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2, retval);
+                }*/
+                else
+                {
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, retval);
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" - OOB exception when accessing Key_MCT_LoadProfileConfig **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" - dynamic LP interval not stored for channel " << channel << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" - channel " << channel << " not in range **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    if( retval < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" - load profile interval requested, but value not retrieved...  sending DB value **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        retval = getLoadProfile().getLoadProfileDemandRate();
+    }
+
+    return retval;
 }
 
 
@@ -369,22 +591,85 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
     string         descriptor;
     OUTMESS       *tmpOutMess;
 
-    demand_rate = getLoadProfile().getLoadProfileDemandRate();
-    block_size  = demand_rate * 6;
-
-    if( !_intervalsSent )
+    if( !isLPDynamicInfoCurrent() )
     {
-        sendIntervals(OutMessage, outList);
+        if( _lastConfigRequest >= (Now.seconds() - rwEpoch) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - config request too soon for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        else
+        {
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
+            {
+                requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, OutMessage, outList);
+            }
+            else
+            {
+                //  check if we're the IED sspec
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT470_Sspec       &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT470_SspecRevMin &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT470_SspecRevMax )
+                {
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                    {
+                        OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
 
-        _intervalsSent = true;
+                        //  send the intervals....
+                        sendIntervals(om, outList);
+                        //  then verify them - the ordering here does matter
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
+                    }
+                    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) )
+                    {
+                        //  as i understand it, we can only read this, not write it, so we'll never to a write-then-read confirmation
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
+                    }
+                    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
+                    {
+                        //  this will need to be changed to check for a match like LoadProfileInterval above -
+                        //    if it doesn't match, then re-send and re-read
+                        //    (which will happen when the 470 config is added)
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, OutMessage, outList);
+                    }
+                }
+                else
+                {
+                    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                    {
+                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+                        {
+                            OUTMESS *om = new CtiOutMessage(*OutMessage);
+
+                            sendIntervals(om, outList);
+                        }
+
+                        requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
+                    }
+                }
+            }
+
+            _lastConfigRequest = Now.seconds() - rwEpoch;
+        }
     }
     else
     {
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
+            demand_rate = getLoadProfileInterval(i);
+            block_size  = demand_rate * 6;
+
             if( useScanFlags() )
             {
-                if( _lp_info[i].current_schedule <= Now )
+                if( _lp_info[i].current_schedule > Now )
+                {
+                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else
                 {
                     tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
@@ -429,14 +714,6 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
                     }
 
                     outList.insert(tmpOutMess);
-                }
-                else
-                {
-                    if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                 }
             }
         }
@@ -520,13 +797,13 @@ INT CtiDeviceMCT470::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
-/*
+
         case Emetcon::GetValue_PeakDemand:
         {
             status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
-*/
+
         case Emetcon::GetValue_Outage:
         {
             status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);
@@ -580,6 +857,12 @@ INT CtiDeviceMCT470::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case Emetcon::GetConfig_Intervals:
         {
             status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case Emetcon::GetConfig_ChannelSetup:
+        {
+            status = decodeGetConfigChannelSetup(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -683,6 +966,34 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
             }
         }
     }
+    else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+    {
+        function = Emetcon::GetValue_PeakDemand;
+        found = getOperation( function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO );
+
+        if( parse.getFlags() & CMD_FLAG_OFFSET )
+        {
+            switch( parse.getOffset() )
+            {
+                //  both 0 and 1 resolve to the first register
+                case 0:     break;
+                case 1:     break;
+                //  please note the magic numbers
+                case 2:     OutMessage->Buffer.BSt.Function += 2;   break;
+                case 3:     OutMessage->Buffer.BSt.Function += 6;   break;
+                case 4:     OutMessage->Buffer.BSt.Function += 8;   break;
+
+                //  anything outside the range from 0-4 is invalid
+                default:    found = false;  break;
+            }
+        }
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            //  magic number
+            OutMessage->Buffer.BSt.Function += 1;
+        }
+    }
     else if( parse.isKeyValid("lp_command") )  //  kinda clunky...  the 400 series needs a base object
     {
         nRet = CtiDeviceMCT410::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
@@ -740,7 +1051,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
 
     if(parse.isKeyValid("ied"))
     {
-        //  ACH:  add a check to ensure that we're reading from Precanned Table 1
+        //  ACH:  add a dynamic read to ensure that we're reading from Precanned Table 1
         if(parse.isKeyValid("time"))
         {
             function = Emetcon::GetConfig_IEDTime;
@@ -998,30 +1309,28 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     return status;
 }
 
-/*
+
 INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    int           status = NORMAL;
-    unsigned long timeOfPeak;
-
-    point_info_t  pi;
-    RWCString     resultString;
-    RWTime        tmpTime;
+    int          status = NORMAL, base_offset, point_offset;
+    point_info_t pi, pi_time;
+    RWCString    resultString, pointString, stateName;
+    RWTime       pointTime;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
 
     CtiPointBase    *pPoint = NULL;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
+    if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-
-    //  resetScanPending();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1037,82 +1346,99 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        pi = getData(DSt->Message, 2, ValueType_KW);
+        base_offset = parse.getOffset();
 
-        timeOfPeak = DSt->Message[2] << 24 |
-                     DSt->Message[3] << 16 |
-                     DSt->Message[4] <<  8 |
-                     DSt->Message[5];
+        if( base_offset < 1 || base_offset > 4 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - offset = " << base_offset << " - resetting to 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
 
-        tmpTime = RWTime(timeOfPeak + rwEpoch);
+            base_offset = 1;
+        }
+
+        point_offset = base_offset + MCT4XX_PointOffset_PeakOffset;
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            point_offset += MCT4XX_PointOffset_FrozenOffset;
+        }
+
+        pi      = getData(DSt->Message + 0, 2, ValueType_KW);
+        pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
-        pi.value *= 3600 / getDemandInterval();
+        pi.value *= double(3600 / getDemandInterval());
 
-        // look for first defined DEMAND accumulator
-        if( pPoint = getDevicePointOffsetTypeEqual(1 + MCT_PeakOffset, DemandAccumulatorPointType) )
+        pointTime = RWTime(pi_time.value + rwEpoch);
+
+        if( pPoint = getDevicePointOffsetTypeEqual(point_offset, DemandAccumulatorPointType) )
         {
-            RWTime pointTime;
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
-
-            resultString = getName() + " / " + pPoint->getName() + " = "
-                                     + CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
-                                     + " @ " + tmpTime.asString();
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, DemandAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            if( pi_time.value > MCT4XX_DawnOfTime )
             {
-                pData->setTime( tmpTime );
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                pointString += " @ " + pointTime.asString();
             }
-        }
-        else
-        {
-            resultString = getName() + " / Peak Demand = " + CtiNumStr(Value) + " @ " + tmpTime.asString() + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(resultString);
-        }
+            else
+            {
+                pointString += " @ (invalid time)";
+            }
 
-        dp = getData(DSt->Message + 6, 3, ValueType_Accumulator);
-
-        Value   = dp.first;
-        quality = dp.second;
-
-        pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
-
-        if( pPoint != NULL)
-        {
-            RWTime pointTime;
-
-            Value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(Value);
-
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, quality, PulseAccumulatorPointType, resultString);
-
-            if(pData != NULL)
+            if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
+                pData->setTime(pointTime);
+
                 ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                pData = 0;  // We just put it on the list...
             }
         }
         else
         {
-            resultString = getName() + " / Current Meter Reading = " + CtiNumStr(Value) + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
+            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Max Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB\n";
         }
+
+        pi      = getData(DSt->Message + 6, 2, ValueType_KW);
+        pi_time = getData(DSt->Message + 8, 4, ValueType_Raw);
+
+        //  turn raw pulses into a demand reading
+        pi.value *= double(3600 / getDemandInterval());
+
+        pointTime = RWTime(pi_time.value + rwEpoch);
+
+        //  use the max point for the computation, if we've got it
+        if( pPoint )
+        {
+            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
+
+            pointString  = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+            if( pi_time.value > MCT4XX_DawnOfTime )
+            {
+                pointString += " @ " + pointTime.asString();
+            }
+            else
+            {
+                pointString += " @ (invalid time)";
+            }
+
+            //  we don't actually send a pointdata message for the min point, so we tack the results onto the result string instead
+            resultString += pointString;
+        }
+        else
+        {
+            resultString += getName() + " / Channel " + CtiNumStr(base_offset) + " Min Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB\n";
+        }
+
+        ReturnMsg->setResultString(resultString);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
 
     return status;
 }
-*/
 
 
 INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
@@ -1426,11 +1752,11 @@ INT CtiDeviceMCT470::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        interval_len = getLoadProfile().getLoadProfileDemandRate();
-        block_len    = interval_len * 6;
-
         channel      = _llpInterest.channel;
         decode_time  = _llpInterest.time + _llpInterest.offset;
+
+        interval_len = getLoadProfileInterval(channel - 1);  //  zero-based
+        block_len    = interval_len * 6;
 
         pPoint = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
@@ -1532,7 +1858,7 @@ INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
             (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
-            interval_len = getLoadProfile().getLoadProfileDemandRate();
+            interval_len = getLoadProfileInterval(channel - 1);
 
             point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
 
@@ -1754,7 +2080,11 @@ INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, RWTime &TimeNow
         }
 
         resultString += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[1]);
+
         resultString += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[2]) + " minutes\n";
+        // setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[2]);  //  eventually?
+
         resultString += getName() + " / Table Read Interval: " + CtiNumStr(DSt->Message[3] * 15) + " seconds\n";
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -1767,6 +2097,92 @@ INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT470::decodeGetConfigChannelSetup(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        string result_string, dynamic_info;
+
+        result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, (long)DSt->Message[4]);
+
+        result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
+        //  setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, DSt->Message[5]);  //  someday?
+
+        result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " seconds\n";
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, (long)DSt->Message[6]);
+
+        for( int i = 0; i < MCT470_ChannelCount; i++ )
+        {
+            result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
+
+            /*
+            Bits 0-1 - Type:    00=Channel Not Used
+                                01 = Electronic Meter
+                                10 = 2-wire KYZ (form A)
+                                11 = 3-wire KYZ (form C)
+            Bits 2-5 - Physical Channel / Attached Meter's Channel: 0000=1      0100=5      1000=9      1100=13
+                                                                    0001=2      0101=6      1001=10     1101=14
+                                                                    0010=3      0110=7      1010=11     1110=15
+                                                                    0011=4      0111=8      1011=12     1111=16
+            Bit 6 - Load Profile Interval #0 or #1 (0, 1)
+            */
+
+            if( DSt->Message[i] & 0x03 )
+            {
+                if     ( DSt->Message[i] & 0x03 == 1 ) { result_string += "Electronic meter ";      dynamic_info += "1"; }
+                else if( DSt->Message[i] & 0x03 == 2 ) { result_string += "2-wire KYZ (form A) ";   dynamic_info += "2"; }
+                else if( DSt->Message[i] & 0x03 == 3 ) { result_string += "3-wire KYZ (form C) ";   dynamic_info += "3"; }
+
+                result_string += "channel " + CtiNumStr((DSt->Message[i] >> 2) & 0x0f);
+                dynamic_info  += CtiNumStr((DSt->Message[i] >> 2) & 0x0f).hex();
+
+                result_string += " load profile interval #" + (DSt->Message[i] & 0x40)?"1":"0";
+                dynamic_info  += (DSt->Message[i] & 0x40)?"1":"0";
+
+                result_string += "\n";
+            }
+            else
+            {
+                result_string += "Channel not used\n";
+                dynamic_info  += "000";
+            }
+        }
+
+        if( getMCTDebugLevel(MCTDebug_DynamicInfo) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << dynamic_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, dynamic_info);
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(result_string.c_str());
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -1796,9 +2212,22 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
         ssp  = InMessage->Buffer.DSt.Message[0];
         ssp |= InMessage->Buffer.DSt.Message[4] << 8;
 
-        rev  = ('A' - 1) + InMessage->Buffer.DSt.Message[1];
+        rev  = InMessage->Buffer.DSt.Message[1];  //  1 = A, 2 = B, etc...  > 26 is undefined
 
-        sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString(rev) + "\n";
+        //  set the dynamic info for use later
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)rev);
+
+        if( rev && rev <= 26 )
+        {
+            rev += 'A' - 1;
+
+            sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + RWCString(rev) + "\n";
+        }
+        else
+        {
+            sspec = "\nSoftware Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(rev) + " (development)\n";
+        }
 
         options += "Connected Meter: ";
         switch( InMessage->Buffer.DSt.Message[3] & 0xf0 )
@@ -1817,7 +2246,8 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
             options += "Multiple electronic meters attached\n";
         }
 
-        options += "DST " + (InMessage->Buffer.DSt.Message[3] & 0x04)?"enabled\n":"disabled\n";
+        options += "DST ";
+        options += (InMessage->Buffer.DSt.Message[3] & 0x04)?"enabled\n":"disabled\n";
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
