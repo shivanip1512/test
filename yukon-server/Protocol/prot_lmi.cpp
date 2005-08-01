@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/08/01 09:30:15 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -541,7 +541,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                         }
 
-                        if( viable_codes.size() < max_codes )
+                        if( viable_codes.size() <= max_codes )
                         {
                             final_block = true;
                         }
@@ -781,6 +781,10 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                         _status.c = _inbound.data[0];
 
                         decodeStatuses(_status.s);
+
+                        //  this needs to be handled more intelligently - we've just gotten a "questionable" response - we need
+                        //    to handle this instead of just quitting
+                        _transaction_complete = true;
                     }
                     else
                     {
