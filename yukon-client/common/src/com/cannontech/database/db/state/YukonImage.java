@@ -8,7 +8,7 @@ import com.cannontech.database.db.DBPersistent;
  * @author rneuharth
  * Aug 1, 2002 at 11:42:04 AM
  * 
- * A undefined generated comment
+ * A undefined generated comment <-- nice
  */
 public class YukonImage extends DBPersistent implements com.cannontech.database.db.CTIDbChange
 {
@@ -17,8 +17,10 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
    private String imageName = com.cannontech.common.util.CtiUtilities.STRING_NONE;   
    private byte[] imageValue = null;
 
+   public static final int MIN_USER_DEFINED_IMAGE_ID = 100000;
+   
    public static final int NONE_IMAGE_ID = 0;
-
+   
    public static final String SETTER_COLUMNS[] = 
    { 
       "ImageCategory", "ImageName", "ImageValue"
@@ -37,6 +39,13 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
 	}
 
 
+	/**
+	 * Generate the next yukon image id.
+	 * There is a positive minimum user defined image id to reserve room for
+	 * system image ids. 
+	 * @param conn
+	 * @return
+	 */
    public static int getNextImageID( java.sql.Connection conn )
    {
       java.sql.PreparedStatement pstmt = null;
@@ -57,7 +66,7 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
             rSet = pstmt.executeQuery();
           
             while( rSet.next() )
-               return rSet.getInt(1) + 1;
+               return Math.max(MIN_USER_DEFINED_IMAGE_ID, rSet.getInt(1) + 1);
          }
    
       }
@@ -78,7 +87,7 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
          }  
       }
       
-      return -1;
+      return MIN_USER_DEFINED_IMAGE_ID;
    }
    
    /**
