@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/06/24 16:14:23 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/08/01 16:20:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1448,8 +1448,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " We've fallen off the back of " << Dev->getName() << "'s QueTable." << endl;
-                    dout << RWTime() << "   This should not happen.  Requeuing the command for later execution." << endl;
+                    dout << RWTime() << " " << Dev->getName() << "'s CCU QueTable is already full.  Cannot do a LGrpQ. Requeuing the command for later execution." << endl;
                 }
 
                 // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
