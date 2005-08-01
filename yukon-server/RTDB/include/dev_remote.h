@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/15 19:02:51 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/08/01 16:20:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,6 +223,7 @@ public:
             }
             else
             {
+                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** ERROR ****  Invalid DIALUPDEVICESETTINGS row for device (phonenumber is too short) " << getID() << " = " << getName() << endl;
