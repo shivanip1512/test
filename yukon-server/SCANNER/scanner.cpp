@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/06/15 19:17:29 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/08/01 21:58:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1575,6 +1575,7 @@ void DatabaseHandlerThread(VOID *Arg)
             }
 
             RecordDynamicData();
+            ScannerDeviceManager.writeDynamicPaoInfo();
 
             if(TimeNow >= RefreshTime)
             {
@@ -1587,6 +1588,9 @@ void DatabaseHandlerThread(VOID *Arg)
             }
         }
     } /* End of for */
+
+    RecordDynamicData();
+    ScannerDeviceManager.writeDynamicPaoInfo();
 }
 
 INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
