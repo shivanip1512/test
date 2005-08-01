@@ -17,8 +17,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -38,6 +40,7 @@ import com.cannontech.stars.xml.serialize.StarsCustomerContact;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateContacts;
+import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUpdateContactsResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
@@ -102,14 +105,19 @@ public class UpdateContactsAction implements ActionBase {
 				
 				String[] notifCatIDs = req.getParameterValues("NotifCat");
 				String[] notifications = req.getParameterValues("Notification");
+				//not sure why these arrays are arriving unmatched...better deal with it quickly
+				int tricksy = 0;
+				if(notifCatIDs.length > notifications.length)
+					tricksy = notifCatIDs.length - notifications.length;
 				
-				for (int i = 0; i < notifCatIDs.length; i++) {
+				for (int i = tricksy; i < notifCatIDs.length; i++) {
 					int notifCatID = Integer.parseInt( notifCatIDs[i] );
-					if (notifCatID > 0 && notifications[i].trim().length() > 0) {
-						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
-							notifications[i] = ServletUtils.formatPhoneNumber( notifications[i] );
+					if (notifCatID > 0 && notifications[i - tricksy].trim().length() > 0) {
+						if (notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE || notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
+							|| notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE)
+							notifications[i - tricksy] = ServletUtils.formatPhoneNumber( notifications[i - tricksy] );
 						
-						ContactNotification contNotif = ServletUtils.createContactNotification( notifications[i], notifCatID );
+						ContactNotification contNotif = ServletUtils.createContactNotification( notifications[i - tricksy], notifCatID );
 						if (contactID == account.getPrimaryContact().getContactID() && notifCatID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
 							ContactNotification email = ServletUtils.getContactNotification( account.getPrimaryContact(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
 							if (email != null)
@@ -133,7 +141,7 @@ public class UpdateContactsAction implements ActionBase {
 			
 			StarsOperation operation = new StarsOperation();
 			operation.setStarsUpdateContacts( updateContacts );
-
+			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
 		catch (WebClientException we) {
