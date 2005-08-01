@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/07/11 18:26:07 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/08/01 21:30:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -469,7 +469,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
                 controlout.aout.value     = parse.getiValue("analogvalue");
 
-                command = Protocol::DNPInterface::Command_SetAnalogOut, controlout;
+                command = Protocol::DNPInterface::Command_SetAnalogOut;
             }
 
             break;
