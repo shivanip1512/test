@@ -311,7 +311,8 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	    return(
 	         listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PHONE
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
+	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE );
 	}
 
 	/**
@@ -331,7 +332,24 @@ public final class YukonListFuncs implements YukonListEntryTypes
 		return
 			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PIN;
 	}
-
+	
+	/**
+	 * Checks for a fax entry
+	 */
+	public static boolean isFax( int listEntryID )
+	{
+		return
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_FAX;
+	}
+	
+	/**
+	 * Checks for a pager entry
+	 */
+	public static boolean isPager( int listEntryID )
+	{
+		return 
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
+	}	
 	/**
 	 * Get the selection list name based on the specified list entry yukon definition ID 
 	 */
