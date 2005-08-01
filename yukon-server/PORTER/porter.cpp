@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2005/07/25 16:39:57 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2005/08/01 16:19:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -174,7 +174,6 @@ using namespace std;
 #define DO_PORTERGUICONNECTIONTHREAD   0    // CODE INCOMPLETE AS OF 11/13/02 CGP
 #define DO_PORTERCONNECTIONTHREAD      1
 #define DO_TIMESYNCTHREAD              1
-#define DO_PERFTHREAD                  0    // DONT RUN THIS AS OF 11/13/02 CGP
 #define DO_PERFUPDATETHREAD            1
 #define DO_FILLERTHREAD                1
 #define DO_PORTSHARING                 1
@@ -224,7 +223,6 @@ RWThreadFunction _gwThread;
 RWThreadFunction _dnpudpThread;
 RWThreadFunction _pilThread;
 RWThreadFunction _tsyncThread;
-RWThreadFunction _perfThread;
 RWThreadFunction _perfuThread;
 RWThreadFunction _fillerThread;
 RWThreadFunction _vconfThread;
@@ -863,13 +861,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         _perfuThread.start();
     }
 
-    /* Start the performance thread */
-    if(DO_PERFTHREAD)
-    {
-        _perfThread = rwMakeThreadFunction( PerfThread, (void*)NULL );
-        _perfThread.start();
-    }
-
     /* Start the verification thread */
     if(DO_VERIFICATIONTHREAD)
     {
@@ -1058,7 +1049,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     if(_connThread.isValid())               _connThread.requestCancellation(200);
     if(_guiThread.isValid())                _guiThread.requestCancellation(200);
     if(_tsyncThread.isValid())              _tsyncThread.requestCancellation(200);
-    if(_perfThread.isValid())               _perfThread.requestCancellation(200);
     if(_perfuThread.isValid())              _perfuThread.requestCancellation(200);
     if(_fillerThread.isValid())             _fillerThread.requestCancellation(200);
     if(_vconfThread.isValid())              _vconfThread.requestCancellation(200);
@@ -1092,20 +1082,6 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _guiThread shutdown" << endl;
-        }
-    }
-
-    if(_perfThread.isValid())
-    {
-        if(_perfThread.join(2000) != RW_THR_COMPLETED )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " _perfThread did not shutdown" << endl;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " _perfThread shutdown" << endl;
         }
     }
 
