@@ -115,23 +115,53 @@ public class UpdateCustAccountAction implements ActionBase {
 			}
 			updateAccount.setBillingAddress( billAddr );
 
-			PrimaryContact primContact = new PrimaryContact();
+			PrimaryContact primContact = updateAccount.getPrimaryContact();
 			primContact.setLastName( req.getParameter("LastName") );
 			primContact.setFirstName( req.getParameter("FirstName") );
 			
+			int homeIndex = -1;
+			int workIndex = -1;
+			int emailIndex = -1;
+			
+			for(int j = 0; j < primContact.getContactNotificationCount(); j++)
+			{
+				if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+					homeIndex = j;
+				else if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
+					workIndex = j;
+				else if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
+					emailIndex = j;
+			}
+			
 			ContactNotification homePhone = ServletUtils.createContactNotification(
 					req.getParameter("HomePhone"), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE );
-			if (homePhone != null) primContact.addContactNotification( homePhone );
+			if (homePhone != null) 
+			{
+				if(homeIndex != -1)
+					primContact.addContactNotification(homeIndex, homePhone);
+				else
+					primContact.addContactNotification( homePhone );
+			} 
 			
 			ContactNotification workPhone = ServletUtils.createContactNotification(
 					req.getParameter("WorkPhone"), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
-			if (workPhone != null) primContact.addContactNotification( workPhone );
+			if (workPhone != null)
+			{
+				if(workIndex != -1)
+					primContact.addContactNotification(workIndex, workPhone);
+				else
+					primContact.addContactNotification( workPhone );
+			} 
 			
 			ContactNotification email = ServletUtils.createContactNotification(
 					req.getParameter("Email"), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
-			if (email != null) {
+			if (email != null) 
+			{
 				email.setDisabled( req.getParameter("NotifyControl") == null );
-				primContact.addContactNotification( email );
+				if(emailIndex != -1)
+					primContact.addContactNotification(emailIndex, email);
+				else
+					primContact.addContactNotification( email );
 			} 
             
 			updateAccount.setPrimaryContact( primContact );

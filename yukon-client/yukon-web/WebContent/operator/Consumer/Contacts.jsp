@@ -2,6 +2,14 @@
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	ArrayList contactTypeList = YukonListFuncs.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE).getYukonListEntries();
+
+	StarsUser login = userLogin;
+	if (login == null) {
+		login = new StarsUser();
+		login.setUsername("");
+		login.setPassword("");
+		login.setStatus(StarsLoginStatus.ENABLED);
+	}
 %>
 <html>
 <head>
@@ -61,6 +69,44 @@
                                 <input type="text" name="FirstName" size="24" value="<%= primContact.getFirstName() %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
+                            <!--
+                            <tr> 
+                    			<td width="100" class="TableCell"> 
+                      				<div align="right">Login Group: </div>
+                    			</td>
+                    			<td width="192"> 
+                      				<select name="CustomerGroup" onchange="setContentChanged(true)">
+									<%
+	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+	if (custGroups == null || custGroups.length == 0) {
+									%>
+                        			<option value="">(none)</option>
+									<%
+	}
+	else {
+		for (int i = 0; i < custGroups.length; i++) {
+			String selected = (login.getUsername().length() > 0 && custGroups[i].getGroupID() == login.getGroupID())? "selected" : "";
+									%>
+                        			<option value="<%= custGroups[i].getGroupID() %>" <%= selected %>><%= custGroups[i].getGroupName() %></option>
+									<%
+		}
+	}
+									%>
+                      				</select>
+                    			</td>
+                  			</tr>
+                         	 <tr>
+                             <td width="100" align="right">User Name:</td>
+                             <td width="192">
+                               <input type="text" name="Username" size="24" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
+                             </td>
+                          </tr>
+                          <tr>
+                             <td width="100" align="right">Password:</td>
+                             <td width="192">
+                               <input type="text" name="Password" size="24" value="<%= login.getPassword() %>" onchange="setContentChanged(true)">
+                             </td>
+                          </tr>-->
                           </table>
                         </td>
                         <td>
@@ -90,7 +136,7 @@
                             </tr>
 <%
 	}
-	for (int i = primContact.getContactNotificationCount(); i < 5; i++) {
+	for (int i = primContact.getContactNotificationCount(); i < 6; i++) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -184,7 +230,7 @@
                             </tr>
 <%
 		}
-		for (int j = contact.getContactNotificationCount(); j < 5; j++) {
+		for (int j = contact.getContactNotificationCount(); j < 6; j++) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -256,7 +302,7 @@
                         <td>
                           <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
 <%
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 %>
                             <tr> 
                               <td width="146" align="right"> 
