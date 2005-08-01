@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/06/21 18:04:19 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/08/01 21:59:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,6 +106,10 @@ protected:
         FuncRead_LLPPeakIntervalPos   = 0xa2,
         FuncRead_LLPPeakLen           =   13,
 
+        FuncRead_TOUBasePos           = 0xb0,
+        FuncRead_TOULen               =    9,
+        FuncRead_TOUFrozenOffset      =    4,
+
         FuncWrite_DisconnectConfigPos = 0xfe,
         FuncWrite_DisconnectConfigLen =    6,
 
@@ -149,8 +153,11 @@ protected:
 
         MCT410_PointOffset_Analog_Outage =  100,
 
-        MCT4XX_PointOffset_PeakOffset   = 10,
-        MCT4XX_PointOffset_FrozenOffset = 10
+        MCT4XX_PointOffset_PeakOffset    =   10,
+        MCT4XX_PointOffset_FrozenOffset  =   10,
+
+        MCT410_PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
+        MCT4XX_PointOffset_RateOffset    =   20   //  gets added for rate B, C, D
     };
 
     enum
@@ -204,8 +211,6 @@ protected:
         int period;
         int command;
     } _llpPeakInterest;
-
-    int _sspec, _rev;
 
 public:
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/06/21 18:05:06 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/08/01 21:59:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,9 +36,7 @@ const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDevic
 const CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
-    _intervalsSent(false),
-    _sspec(0),
-    _rev(0)
+    _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
 {
     _llpInterest.time    = 0;
     _llpInterest.channel = 0;
@@ -129,6 +127,12 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._cmd     = Emetcon::Scan_LoadProfile;
     cs._io      = Emetcon::IO_Function_Read;
     cs._funcLen = make_pair(0, 0);
+    s.insert( cs );
+
+    cs._cmd     = Emetcon::GetValue_TOU;
+    cs._io      = Emetcon::IO_Function_Read;
+    cs._funcLen = make_pair((int)FuncRead_TOUBasePos,
+                            (int)FuncRead_TOULen);
     s.insert( cs );
 
     cs._cmd     = Emetcon::GetValue_LoadProfile;
@@ -394,17 +398,16 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
 // ---
-            demand_rate = getLoadProfile().getLoadProfileDemandRate();
-/*
-            if( i == MCT410_LPVoltageChannel )
+//            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+
+            if( (i + 1) == MCT410_LPVoltageChannel )
             {
-                demand_rate = getLoadProfile().getVoltageLoadProfileRate();
+                demand_rate = getLoadProfile().getVoltageProfileRate();
             }
             else
             {
                 demand_rate = getLoadProfile().getLoadProfileDemandRate();
             }
-*/
 // ---
 
             block_size  = demand_rate * 6;
@@ -483,13 +486,13 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             */
         }
     }
-/*
+
     if( getMCTDebugLevel(MCTDebug_LoadProfile) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(nextTime) << endl;
+        dout << RWTime() << " " << getName() << "'s next Load Profile request at " << RWTime(next_time) << endl;
     }
-*/
+
     return (_nextLPScanTime = next_time);
 }
 
@@ -536,17 +539,17 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, RWTPtrSlist< 
         for( int i = 0; i < MCT4XX_LPChannels; i++ )
         {
 // ---
-            demand_rate = getLoadProfile().getLoadProfileDemandRate();
-/*
+//            demand_rate = getLoadProfile().getLoadProfileDemandRate();
+
             if( (i + 1) == MCT410_LPVoltageChannel )
             {
-                demand_rate = getLoadProfile().getVoltageLoadProfileRate();
+                demand_rate = getLoadProfile().getVoltageProfileRate();
             }
             else
             {
                 demand_rate = getLoadProfile().getLoadProfileDemandRate();
             }
-*/
+
 // ---
             block_size  = demand_rate * 6;
 
@@ -690,6 +693,7 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
+        case Emetcon::GetValue_TOU:  //  decoding the TOU peaks
         case Emetcon::GetValue_PeakDemand:
         case Emetcon::GetValue_FrozenPeakDemand:
         {
@@ -996,7 +1000,21 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.SOE,
                                                    RWOrdered( ));
 
-    if( parse.isKeyValid("lp_command") )  //  load profile
+    //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
+    if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
+        (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
+    {
+        function = Emetcon::GetValue_TOU;
+        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;
+
+        //  no need to increment for rate A
+        if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
+        if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
+        if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
+    }
+    else if( parse.isKeyValid("lp_command") )  //  load profile
     {
         RWTime now_time;
         RWDate now_date;
@@ -1059,8 +1077,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
 
 // ---
-            interval_len = getLoadProfile().getLoadProfileDemandRate();
-/*
+//            interval_len = getLoadProfile().getLoadProfileDemandRate();
+
             if( request_channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageProfileRate();
@@ -1069,7 +1087,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
-*/
+
 // ---
             block_len    = 6 * interval_len;
 
@@ -1271,7 +1289,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("outage") )  //  outages
     {
-        if( !_sspec )
+        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             //  we need to set it to the requested interval
             CtiOutMessage *sspec_om = new CtiOutMessage(*OutMessage);
@@ -1597,8 +1615,11 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
     int             status = NORMAL, pointoffset;
     unsigned long   timeOfPeak;
     point_info_t    pi;
-    RWCString resultString, freeze_info_string;
+
+    RWCString result_string, freeze_info_string;
     RWTime    pointTime;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -1610,13 +1631,23 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " **** Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << RWTime() << " **** TOU/Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    pointoffset = 1;
 
-    //  resetScanPending();
+    if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+    {
+        pointoffset += MCT410_PointOffset_TOUBase;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+        //  need to add smarts for multiple channels when applicable
+        //  no increment for rate A
+        if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += MCT4XX_PointOffset_RateOffset * 1;
+        if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += MCT4XX_PointOffset_RateOffset * 2;
+        if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += MCT4XX_PointOffset_RateOffset * 3;
+    }
+
+    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
     {
         // No error occured, we must do a real decode!
 
@@ -1642,24 +1673,24 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         //  turn raw pulses into a demand reading
         pi.value *= DOUBLE(3600 / getDemandInterval());
 
-        //  first defined peak demand accumulator
-        pointoffset = 1 + MCT4XX_PointOffset_PeakOffset;
-
-        if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
-            //  add on the frozen offset
-            pointoffset += MCT4XX_PointOffset_FrozenOffset;
+            pPoint = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset + MCT4XX_PointOffset_FrozenOffset, DemandAccumulatorPointType);
+        }
+        else
+        {
+            pPoint = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
         }
 
-        if( pPoint = getDevicePointOffsetTypeEqual(pointoffset, DemandAccumulatorPointType) )
+        if( pPoint )
         {
             pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = "
-                                     + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
-                                     + " @ " + pointTime.asString();
+            result_string = getName() + " / " + pPoint->getName() + " = "
+                                      + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
+                                      + " @ " + pointTime.asString();
 
-            if( pData = makePointDataMsg(pPoint, pi, resultString) )
+            if( pData = makePointDataMsg(pPoint, pi, result_string) )
             {
                 pData->setTime(pointTime);
                 ReturnMsg->PointData().insert(pData);
@@ -1668,15 +1699,17 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
         else
         {
-            resultString = getName() + " / Peak Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(resultString);
+            result_string = getName() + " / Peak Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB";
+            ReturnMsg->setResultString(result_string);
         }
+
+        //  now do the KWH/consumption reading
 
         pi = getData(DSt->Message + 6, 3, ValueType_Accumulator);
 
         if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
         {
-            pPoint = getDevicePointOffsetTypeEqual( 1 + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
+            pPoint = getDevicePointOffsetTypeEqual( pointoffset + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
 
             //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
             //    and the freeze counter (DSt->Message[8]) is what we expect
@@ -1689,7 +1722,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
         else
         {
-            pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
+            pPoint = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
 
             pointTime  = RWTime::now();
             pointTime -= pointTime.seconds() % 300;
@@ -1699,10 +1732,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         {
             pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
+            result_string = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            if( pData = makePointDataMsg(pPoint, pi, resultString) )
+            if( pData = makePointDataMsg(pPoint, pi, result_string) )
             {
                 pointTime -= pointTime.seconds() % getDemandInterval();
                 pData->setTime( pointTime );
@@ -1712,8 +1745,8 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
         else
         {
-            resultString = getName() + " / Meter Reading = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + resultString);
+            result_string = getName() + " / Meter Reading = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -1868,7 +1901,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( _sspec )
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             outagenum = parse.getiValue("outage");
 
@@ -1904,9 +1937,9 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                if( _sspec == MCT410_Sspec &&
-                    _rev   >= MCT410_Min_NewOutageRev &&
-                    _rev   <= MCT410_Max_NewOutageRev )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_Min_NewOutageRev &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= MCT410_Max_NewOutageRev )
                 {
                     if( duration == 0x8000 )
                     {
@@ -2023,7 +2056,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
         }
         else
         {
-            ReturnMsg->setResultString(getName() + " / Did not read sspec, could not reliably decode outages; try read again");
+            ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -2095,8 +2128,8 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             decode_time  = _llpInterest.time + _llpInterest.offset;
 
 // ---
-            interval_len = getLoadProfile().getLoadProfileDemandRate();
-/*
+//            interval_len = getLoadProfile().getLoadProfileDemandRate();
+
             if( channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageProfileRate();
@@ -2105,7 +2138,6 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfile(INMESS *InMessage, RWTime &TimeNo
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
-*/
 // ---
 
             block_len    = interval_len * 6;
@@ -2339,8 +2371,8 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             (block   = parse.getiValue("scan_loadprofile_block",   0)) )
         {
 // --
-            interval_len = getLoadProfile().getLoadProfileDemandRate();
-/*
+//            interval_len = getLoadProfile().getLoadProfileDemandRate();
+
             if( channel == MCT410_LPVoltageChannel )
             {
                 interval_len = getLoadProfile().getVoltageProfileRate();
@@ -2349,7 +2381,6 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
             {
                 interval_len = getLoadProfile().getLoadProfileDemandRate();
             }
-*/
 // ---
 
             if( point = (CtiPointNumeric *)getDevicePointOffsetTypeEqual( channel + MCT_PointOffset_LoadProfileOffset, DemandAccumulatorPointType ) )
@@ -2770,8 +2801,9 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 
         sspec += "\n";
 
-        _sspec = ssp;
-        _rev   = InMessage->Buffer.DSt.Message[1];
+        //  set the dynamic info for use later
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)InMessage->Buffer.DSt.Message[1]);
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
