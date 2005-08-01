@@ -1208,6 +1208,11 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
             }
         }
 
+        if(!(CmdStr.match(" channels")).isNull())
+        {
+            _cmd["channels"] = CtiParseValue(TRUE);
+        }
+
         if(!(CmdStr.match(" codes")).isNull())
         {
             _cmd["codes"] = CtiParseValue(TRUE);
