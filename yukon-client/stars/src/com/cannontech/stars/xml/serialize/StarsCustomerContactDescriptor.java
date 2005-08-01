@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContactDescriptor.java,v 1.94 2005/01/20 00:37:05 yao Exp $
+ * $Id: StarsCustomerContactDescriptor.java,v 1.95 2005/08/01 23:03:12 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.exolab.castor.xml.validators.*;
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:05 $
+ * @version $Revision: 1.95 $ $Date: 2005/08/01 23:03:12 $
 **/
 public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -101,6 +101,42 @@ public class StarsCustomerContactDescriptor extends org.exolab.castor.xml.util.X
         desc.setValidator(fieldValidator);
         
         //-- initialize element descriptors
+        
+		//-- _loginID
+			  desc = new XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_loginID", "loginID", NodeType.Attribute);
+			  handler = (new XMLFieldHandler() {
+				  public java.lang.Object getValue( java.lang.Object object ) 
+					  throws IllegalStateException
+				  {
+					  StarsCustomerContact target = (StarsCustomerContact) object;
+					  return new Integer(target.getLoginID());
+				  }
+				  public void setValue( java.lang.Object object, java.lang.Object value) 
+					  throws IllegalStateException, IllegalArgumentException
+				  {
+					  try {
+						  StarsCustomerContact target = (StarsCustomerContact) object;
+						  target.setLoginID( ((Integer)value).intValue());
+					  }
+					  catch (Exception ex) {
+						  throw new IllegalStateException(ex.toString());
+					  }
+				  }
+				  public java.lang.Object newInstance( java.lang.Object parent ) {
+					  return null;
+				  }
+			  } );
+			  desc.setHandler(handler);
+			  addFieldDescriptor(desc);
+        
+			  //-- validation code for: _loginID
+			  fieldValidator = new FieldValidator();
+			  { //-- local scope
+				  IntegerValidator iv = new IntegerValidator();
+				  fieldValidator.setValidator(iv);
+			  }
+			  desc.setValidator(fieldValidator);
+                
         
         //-- _lastName
         desc = new XMLFieldDescriptorImpl(java.lang.String.class, "_lastName", "LastName", NodeType.Element);

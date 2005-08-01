@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.94 2005/01/20 00:37:07 yao Exp $
+ * $Id: StarsCustomerContact.java,v 1.95 2005/08/01 23:03:12 jdayton Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -25,7 +25,7 @@ import org.xml.sax.ContentHandler;
 /**
  * 
  * 
- * @version $Revision: 1.94 $ $Date: 2005/01/20 00:37:07 $
+ * @version $Revision: 1.95 $ $Date: 2005/08/01 23:03:12 $
 **/
 public abstract class StarsCustomerContact implements java.io.Serializable {
 
@@ -44,6 +44,8 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     private java.lang.String _lastName;
 
     private java.lang.String _firstName;
+
+	private int _loginID;
 
     private java.util.Vector _contactNotificationList;
 
@@ -108,6 +110,16 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
     {
         return this._contactID;
     } //-- int getContactID() 
+
+	/**
+	 * Returns the value of field 'loginID'.
+	 * 
+	 * @return the value of field 'loginID'.
+	**/
+	public int getLoginID()
+	{
+		return this._loginID;
+	} //-- int getLoginID() 
 
     /**
      * 
@@ -229,6 +241,16 @@ public abstract class StarsCustomerContact implements java.io.Serializable {
         this._contactID = contactID;
         this._has_contactID = true;
     } //-- void setContactID(int) 
+
+	/**
+	 * Sets the value of field 'loginID'.
+	 * 
+	 * @param contactID the value of field 'loginID'.
+	**/
+	public void setLoginID(int loginID)
+	{
+		this._loginID = loginID;
+	} //-- void setLoginID(int) 
 
     /**
      * 
