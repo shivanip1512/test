@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/06/28 19:59:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/08/01 21:25:16 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@ using namespace std;
 
 const string CtiTableDynamicPaoInfo::_empty_string = "(empty)";
 
+//  !!!  these strings MUST NOT CHANGE - this is what the DB keys on  !!!
 const string CtiTableDynamicPaoInfo::_owner_dispatch       = "dispatch";
 const string CtiTableDynamicPaoInfo::_owner_porter         = "porter";
 const string CtiTableDynamicPaoInfo::_owner_scanner        = "scanner";
@@ -32,9 +33,13 @@ const string CtiTableDynamicPaoInfo::_owner_capcontrol     = "capacitor control"
 const string CtiTableDynamicPaoInfo::_owner_loadmanagement = "load management";
 const string CtiTableDynamicPaoInfo::_owner_calc           = "calc and logic";
 
-const string CtiTableDynamicPaoInfo::_key_mct_sspec                = "mct sspec";
-const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_rate = "mct ied load profile rate";
-const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config   = "mct load profile config";
+//  !!!  these strings MUST NOT CHANGE - this is what the DB keys on  !!!
+const string CtiTableDynamicPaoInfo::_key_mct_sspec                    = "mct sspec";
+const string CtiTableDynamicPaoInfo::_key_mct_sspec_revision           = "mct sspec revision";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config       = "mct load profile config";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval     = "mct load profile interval";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2    = "mct load profile interval 2";
+const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval = "mct ied load profile rate";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
@@ -45,6 +50,8 @@ CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::init_owner_map()
     owner_map_t retval;
 
     retval.insert(make_pair(Application_Dispatch, &_owner_dispatch));
+    retval.insert(make_pair(Application_Porter,   &_owner_porter));
+    retval.insert(make_pair(Application_Scanner,  &_owner_scanner));
 
     return retval;
 }
@@ -54,9 +61,12 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
 {
     key_map_t retval;
 
-    retval.insert(make_pair(Key_MCTSSpec,              &_key_mct_sspec));
-    retval.insert(make_pair(Key_MCTIEDLoadProfileRate, &_key_mct_ied_loadprofile_rate));
-    retval.insert(make_pair(Key_MCTLoadProfileConfig,  &_key_mct_loadprofile_config));
+    retval.insert(make_pair(Key_MCT_SSpec,                  &_key_mct_sspec));
+    retval.insert(make_pair(Key_MCT_SSpecRevision,          &_key_mct_sspec_revision));
+    retval.insert(make_pair(Key_MCT_LoadProfileConfig,      &_key_mct_loadprofile_config));
+    retval.insert(make_pair(Key_MCT_LoadProfileInterval,    &_key_mct_loadprofile_interval));
+    retval.insert(make_pair(Key_MCT_LoadProfileInterval2,   &_key_mct_loadprofile_interval2));
+    retval.insert(make_pair(Key_MCT_IEDLoadProfileInterval, &_key_mct_ied_loadprofile_interval));
 
     return retval;
 }
@@ -104,11 +114,11 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::operator=(const CtiTableDynamicP
     {
         Inherited::operator=(aRef);
 
-        setEntryID(aRef.getEntryID());
-        setPaoID(aRef.getPaoID());
-        setOwner(aRef.getOwner());
-        setKey(aRef.getKey());
-        setValue(aRef.getValue());
+        _entry_id = aRef.getEntryID();
+        _pao_id   = aRef.getPaoID();
+        _owner_id = aRef.getOwner();
+        _key      = aRef.getKey();
+        _value    = aRef.getValue();
     }
 
     return *this;
@@ -213,7 +223,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - attempt to insert into " << getTableName << " with paoid == 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - invalid attempt to insert into " << getTableName() << " - paoid = " << getPaoID() << ", tmp_owner = \"" << tmp_owner << "\", and tmp_key = \"" << tmp_key << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -362,11 +372,11 @@ void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
     key_map_t::const_iterator k_itr;
     owner_map_t::const_iterator o_itr;
 
-    rdr["entryid"] >> tmp_entryid;
-    rdr["paobjectid"]   >> tmp_paoid;
-    rdr["owner"]   >> tmp_owner;
-    rdr["infokey"]     >> tmp_key;
-    rdr["value"]   >> tmp_value;
+    rdr["entryid"]    >> tmp_entryid;
+    rdr["paobjectid"] >> tmp_paoid;
+    rdr["owner"]      >> tmp_owner;
+    rdr["infokey"]    >> tmp_key;
+    rdr["value"]      >> tmp_value;
 
     setEntryID(tmp_entryid);
     setPaoID(tmp_paoid);

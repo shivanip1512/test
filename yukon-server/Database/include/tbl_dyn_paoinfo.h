@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/06/15 19:20:30 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/08/01 21:25:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,10 +38,14 @@ public:
 
     enum Keys
     {
-        Key_Invalid  =  -1,
-        Key_MCTSSpec = 100,
-        Key_MCTIEDLoadProfileRate,
-        Key_MCTLoadProfileConfig
+        //  this ordering can change without adverse effects - the strings are what the DB keys on
+        Key_Invalid   =  -1,
+        Key_MCT_SSpec = 100,
+        Key_MCT_SSpecRevision,
+        Key_MCT_LoadProfileConfig,
+        Key_MCT_LoadProfileInterval,
+        Key_MCT_LoadProfileInterval2,
+        Key_MCT_IEDLoadProfileInterval,
         //  make sure to add any new enum values to the string map
     };
 
@@ -55,8 +59,11 @@ protected:
     static const string _owner_calc;
 
     static const string _key_mct_sspec;
+    static const string _key_mct_sspec_revision;
     static const string _key_mct_loadprofile_config;
-    static const string _key_mct_ied_loadprofile_rate;
+    static const string _key_mct_loadprofile_interval;
+    static const string _key_mct_loadprofile_interval2;
+    static const string _key_mct_ied_loadprofile_interval;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
