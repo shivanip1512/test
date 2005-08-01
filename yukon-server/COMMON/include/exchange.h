@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/18 14:27:23 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/08/01 16:20:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ public:
                 dout << RWTime() << " oStream has BAD status " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            RWxmsg   err("Exchange has baggage in the outbound");
+            RWxmsg   err("EXCEPTION: Exchange's outbound socket has a BAD status.  It will be reset.");
             err.raise();
         }
         return *oStream;
