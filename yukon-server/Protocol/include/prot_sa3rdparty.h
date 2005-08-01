@@ -9,11 +9,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/08/01 16:20:45 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.15  2005/08/01 16:20:45  cplender
+* Added a method to rediscover the cycletime and switch timeout from stime/ctime.
+* Used by the rtm to convert the return to plain text.
+*
 * Revision 1.14  2005/07/29 16:26:02  cplender
 * Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
 *
@@ -177,6 +181,7 @@ public:
     static RWCString strategyAsString(const CtiSAData &sa);
     static RWCString functionAsString(const CtiSAData &sa);
     static pair< int, int > computeSnCTime(const int swTimeout, const int cycleTime);
+    static pair< int, int > computeSWnCTTime(const int sTime, const int cTime, bool gt105 = false);
 
     static string asString(const SA_CODE &sa);
     static string asString(const X205CMD &cmd);

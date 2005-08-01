@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/08/01 16:20:45 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.33  2005/08/01 16:20:45  cplender
+* Added a method to rediscover the cycletime and switch timeout from stime/ctime.
+* Used by the rtm to convert the return to plain text.
+*
 * Revision 1.32  2005/07/29 16:26:02  cplender
 * Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
 *
@@ -2010,11 +2014,12 @@ string CtiProtocolSA3rdParty::asString(const SA_CODE &sa)
         saData._function = sa.function;
         saData._repeats = sa.repeats;
 
-
         saData._commandType = ControlRequest;           // ACH This may not always be correct!!!
         saData._retransmit = 0;                         // This is not a retransmit.
-        saData._swTimeout = -1;                         // ACH  Should we rediscover this
-        saData._cycleTime = -1;                         // ACH  Should we rediscover this
+
+        pair< int, int > scTimePair = computeSWnCTTime(saData._sTime, saData._cTime, sa.type == SA105);
+        saData._swTimeout = scTimePair.first;
+        saData._cycleTime = scTimePair.second;
 
         switch(sa.type)
         {
@@ -2056,6 +2061,478 @@ string CtiProtocolSA3rdParty::asString(const X205CMD &cmd)
     string str;
 
     return str;
+}
+
+pair< int, int > CtiProtocolSA3rdParty::computeSWnCTTime(const int sTime, const int cTime, bool gt105)
+{
+    bool b205only = false;
+    int cycleTime = -1;
+    int swTimeout = -1;
+
+    switch(cTime)
+    {
+    case 0:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    swTimeout = 450;    // 100% DLC
+                    cycleTime = 450;
+                    break;
+                }
+            case 1:
+                {
+                    swTimeout = 450;
+                    cycleTime = 900;
+                    break;
+                }
+            case 2:
+                {
+                    swTimeout = 450;
+                    cycleTime = 1350;       // 22.5*60;
+                    break;
+                }
+            case 3:
+                {
+                    swTimeout = 450;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 4:
+                {
+                    swTimeout = 450;
+                    cycleTime = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 450;
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 450;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 450;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    case 1:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    swTimeout = 900;    // 100% DLC
+                    cycleTime = 900;
+                    break;
+                }
+            case 1:
+                {
+                    swTimeout = 900;
+                    cycleTime = 900;
+                    break;
+                }
+            case 2:
+                {
+                    swTimeout = 900;
+                    cycleTime = 1350;       // 22.5*60;
+                    break;
+                }
+            case 3:
+                {
+                    swTimeout = 900;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 4:
+                {
+                    swTimeout = 900;
+                    cycleTime = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 900;
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 900;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 900;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    case 2:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    swTimeout = 1350;    // 100% DLC
+                    cycleTime = 1350;
+                    break;
+                }
+            case 1:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 1350;
+                    break;
+                }
+            case 2:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 1350;       // 22.5*60;
+                    break;
+                }
+            case 3:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 4:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 1350;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    case 3:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 1:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 2:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 3:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 1800;
+                    break;
+                }
+            case 4:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 1800;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    case 4:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    cycleTime = 1800;    // 50% 30 min DI
+                    swTimeout = 900;
+                    b205only = true;
+                    break;
+                }
+            case 1:
+                {
+                    cycleTime = 1800;     // 75% 30 min DI
+                    swTimeout = 1350;
+                    b205only = true;
+                    break;
+                }
+            case 2:
+                {
+                    cycleTime = 3600;     // 33.33% 60 min DI
+                    swTimeout = 1200;
+                    b205only = true;
+                    break;
+                }
+            case 3:
+                {
+                    cycleTime = 3600;   // 66.67% 60 min DI
+                    swTimeout = 2400;
+                    b205only = true;
+                    break;
+                }
+            case 4:
+                {
+                    swTimeout = 2250;   // 100% DLC
+                    cycleTime = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 2250;
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 2250;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 2250;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+
+            if(gt105 && b205only)
+            {
+                swTimeout = 2250;   // 100% DLC
+                cycleTime = 2250;
+            }
+
+            break;
+        }
+    case 5:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    cycleTime = 900;    // 100% 15 min DI
+                    swTimeout = 900;
+                    break;
+                }
+            case 1:
+                {
+                    cycleTime = 1800;   // 100% 30 min DI
+                    swTimeout = 1800;
+                    break;
+                }
+            case 2:
+                {
+                    cycleTime = 3600;   // 100% 60 min DI
+                    swTimeout = 3600;
+                    break;
+                }
+            case 3:
+                {
+                    cycleTime = 450;    // 100% 7.5 min DI
+                    swTimeout = 450;
+                    break;
+                }
+            case 4:
+                {
+                    cycleTime = 1800;   // 41.7% 30 min DI
+                    swTimeout = 750;
+                    b205only = true;
+                    break;
+                }
+            case 5:
+                {
+                    swTimeout = 2700;   // 100% DLC Control
+                    cycleTime = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 2700;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 2700;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+
+            if(gt105 && b205only)
+            {
+                swTimeout = 2700;   // 100% DLC Control
+                cycleTime = 2700;
+            }
+
+            break;
+        }
+    case 6:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    cycleTime = 1800;   // 25% of 30 min DI
+                    swTimeout = 450;
+                    break;
+                }
+            case 1:
+                {
+                    cycleTime = 1800;   // 33.33% of 30 min DI
+                    swTimeout = 600;
+                    break;
+                }
+            case 2:
+                {
+                    cycleTime = 900;    // 50% of 15 min DI
+                    swTimeout = 450;
+                    break;
+                }
+            case 3:
+                {
+                    cycleTime = 900;    // 66.67% of 15 min DI
+                    swTimeout = 600;
+                    break;
+                }
+            case 4:
+                {
+                    cycleTime = 900;    // 73.30% of 15 min DI
+                    swTimeout = 660;
+                    break;
+                }
+            case 5:
+                {
+                    cycleTime = 900;    // 80% of 15 min DI
+                    swTimeout = 720;
+                    break;
+                }
+            case 6:
+                {
+                    swTimeout = 3150;
+                    cycleTime = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 3150;
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    case 7:
+        {
+            switch(sTime)
+            {
+            case 0:
+                {
+                    cycleTime = 3600;   // 12.50% of 60 min DI
+                    swTimeout = 450;
+                    break;
+                }
+            case 1:
+                {
+                    cycleTime = 3600;   // 25% of 60 min DI
+                    swTimeout = 900;
+                    break;
+                }
+            case 2:
+                {
+                    cycleTime = 3600;   // 37.5% of 60 min DI
+                    swTimeout = 1350;
+                    break;
+                }
+            case 3:
+                {
+                    cycleTime = 3600;   // 50% of 60 min DI
+                    swTimeout = 1800;
+                    break;
+                }
+            case 4:
+                {
+                    cycleTime = 3600;   // 62.50% of 60 min DI
+                    swTimeout = 2250;
+                    break;
+                }
+            case 5:
+                {
+                    cycleTime = 3600;   // 75% of 60 min DI
+                    swTimeout = 2700;
+                    break;
+                }
+            case 6:
+                {
+                    cycleTime = 3600;   // 87.5% of 60 min DI
+                    swTimeout = 3150;
+                    break;
+                }
+            case 7:
+                {
+                    swTimeout = 3600;   // 100% DLC
+                    cycleTime = 3600;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
+    return make_pair( sTime, cTime );
 }
 
 
