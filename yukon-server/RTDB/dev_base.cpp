@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/06/15 19:22:55 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/08/01 21:32:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,7 @@
 
 
 #include <rw/tpslist.h>
+#include <limits>
 
 #include "cparms.h"
 #include "dev_base.h"
@@ -914,6 +915,14 @@ bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long &destina
 bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const
 {
     return getInfo(_paoInfo, getID(), k, destination);
+}
+long CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const
+{
+    long l = numeric_limits<long>::min();
+
+    getInfo(_paoInfo, getID(), k, l);
+
+    return l;
 }
 
 bool CtiDeviceBase::getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info)

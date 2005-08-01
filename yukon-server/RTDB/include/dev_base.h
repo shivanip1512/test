@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/06/15 19:22:55 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/08/01 21:32:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,6 +240,8 @@ public:
     bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &destination) const;
     bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long   &destination) const;
     bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const;
+    //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
+    long getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const;
 
     bool getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info);
 
