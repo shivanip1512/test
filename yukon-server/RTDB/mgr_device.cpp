@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2005/07/08 18:21:28 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2005/08/01 22:00:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -896,24 +896,24 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
-    
+
                         RWDBTable   keyTable;
                         RWDBSelector selector = db.selector();
-    
+
                         if(DebugLevel & 0x00020000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Tnpp Devices" << endl;
                         }
                         CtiDeviceTnppPagingTerminal().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-    
+
                         RWDBReader rdr = selector.reader(conn);
                         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
                         }
                         refreshDevices(rowFound, rdr, Factory);
-    
+
                         if(DebugLevel & 0x00020000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Tnpp Devices" << endl;
@@ -925,7 +925,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load TNPP Devices" << endl;
                     }
-    
+
                     //END JESS
 
 
@@ -2246,6 +2246,12 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
         RWDBDatabase db       = getDatabase();
         RWDBSelector selector = db.selector();
         RWDBTable configTbl   = db.table("devicemct400series");
+        /*
+        RWDBTable touDayMapping      = db.table("toudaymapping"),
+                  touDayRateSwitches = db.table("toudayrateswitches"),
+                  touSchedule        = db.table("touschedule");
+        */
+
         //RWDBTable tblPAObject = db.table("yukonpaobject");
         RWDBReader rdr;
 
@@ -2432,7 +2438,7 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load MCT 400 Configs" << endl;
     }
-/*
+
     start = start.now();
     refreshDynamicPaoInfo(paoID);
     stop = stop.now();
@@ -2441,7 +2447,7 @@ void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load Dynamic PAO Info" << endl;
     }
-*/
+
 
     if(_includeScanInfo)
     {
@@ -2498,76 +2504,84 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
         dev_itr->second->getDirtyInfo(dirty_info);
     }
 
-    try
+    if( dirty_info.size() > 0 )
     {
-        RWDBConnection conn = getConnection();
-        RWDBReader rdr;
-        RWDBStatus status;
-
-        RWBoolean prev_autocommit = conn.autoCommit();
-
-        //  just in case two applications are writing at once - if we make this an atomic
-        //    operation, the select-maxid-before-write will be safe
-        conn.autoCommit(false);
-
-        conn.beginTransaction(dynamic_info);
-
-        rdr = ExecuteQuery(conn, sql);
-
-        if(rdr() && rdr.isValid())
+        try
         {
-            rdr >> max_entryid;
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint: invalid reader, unable to select max_entryid, attempting to use " << max_entryid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+            RWDBConnection conn = getConnection();
+            RWDBReader rdr;
+            RWDBStatus status;
 
-        vector<CtiTableDynamicPaoInfo *>::iterator itr;
-        for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
-        {
-            (*itr)->setOwner(_app_id);
+            rdr = ExecuteQuery(conn, sql);
 
-            if( (*itr)->hasRow() )
+            if(rdr() && rdr.isValid())
             {
-                status = (*itr)->Update(conn);
+                rdr >> max_entryid;
             }
             else
             {
-                (*itr)->setEntryID(max_entryid + 1);
-
-                status = (*itr)->Insert(conn).errorCode();
-
-                if( status.errorCode() == RWDBStatus::ok )
-                {
-                    max_entryid++;  //  increments the reference
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** Checkpoint: invalid reader, unable to select max_entryid, attempting to use " << max_entryid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            if( status.errorCode() != RWDBStatus::ok )
+            //  just in case two applications are writing at once - if we make this an atomic
+            //    operation, the select-maxid-before-write will be safe
+            conn.beginTransaction(dynamic_info);
+
+            vector<CtiTableDynamicPaoInfo *>::iterator itr;
+            for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
             {
+                (*itr)->setOwner(_app_id);
+
+                if( (*itr)->hasRow() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - error (" << status.errorCode() << ") inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    status = (*itr)->Update(conn);
+                }
+                else
+                {
+                    (*itr)->setEntryID(max_entryid + 1);
+
+                    status = (*itr)->Insert(conn).errorCode();
+
+                    if( status.errorCode() == RWDBStatus::ok )
+                    {
+                        max_entryid++;  //  increments the reference
+                    }
                 }
 
-                (*itr)->dump();
+                if( status.errorCode() != RWDBStatus::ok )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - error (" << status.errorCode() << ") inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    (*itr)->dump();
+                }
+
+                //  if the insert fails, this needs to keep the records around so it can write them in the future
+                delete *itr;
             }
 
-            delete *itr;
+            conn.commitTransaction(dynamic_info);
+
+            /*
+            if( conn.commitTransaction(dynamic_info).errorCode() == RWDBStatus::ok )
+            {
+                //  clear it out if it was successfully inserted
+                for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
+                {
+                    delete *itr;
+                }
+            }
+            */
         }
-
-        conn.commitTransaction(dynamic_info);
-
-        //  set autocommit back to whatever it was
-        conn.autoCommit(prev_autocommit);
-    }
-    catch(...)
-    {
+        catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
 }
