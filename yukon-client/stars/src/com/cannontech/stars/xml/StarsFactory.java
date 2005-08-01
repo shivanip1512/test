@@ -16,6 +16,7 @@ import com.cannontech.database.db.stars.report.CallReportBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.user.UserUtils;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
@@ -357,6 +358,7 @@ public class StarsFactory {
 			newContact.setContactID( CtiUtilities.NONE_ZERO_ID );
 			newContact.setLastName( "" );
 			newContact.setFirstName( "" );
+			newContact.setLoginID(UserUtils.USER_DEFAULT_ID);
 			return newContact;
 		}
 		catch (Exception e) {
@@ -372,6 +374,7 @@ public class StarsFactory {
 			newContact.setContactID( contact.getContactID() );
 			newContact.setLastName( contact.getLastName() );
 			newContact.setFirstName( contact.getFirstName() );
+			newContact.setLoginID( contact.getLoginID() );
 			
 			for (int i = 0; i < contact.getContactNotificationCount(); i++) {
 				com.cannontech.stars.xml.serialize.ContactNotification notif = new com.cannontech.stars.xml.serialize.ContactNotification();
@@ -394,6 +397,7 @@ public class StarsFactory {
 		//contact.setContactID( new Integer(starsContact.getContactID()) );
 		contact.getContact().setContLastName( starsContact.getLastName() );
 		contact.getContact().setContFirstName( starsContact.getFirstName() );
+		contact.getContact().setLogInID( new Integer(starsContact.getLoginID()) );
         
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
 			ContactNotification notif = (ContactNotification) contact.getContactNotifVect().get(i);

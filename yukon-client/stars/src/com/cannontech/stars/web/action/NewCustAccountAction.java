@@ -11,17 +11,21 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.UserUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -135,6 +139,9 @@ public class NewCustAccountAction implements ActionBase {
 			 
 			account.setPrimaryContact( primContact );
             
+			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+			com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+            
 			for (int i = 2; i <= 4; i++) {
 				String lastName = req.getParameter("LastName" + i);
 				String firstName = req.getParameter("FirstName" + i);
@@ -153,6 +160,20 @@ public class NewCustAccountAction implements ActionBase {
 							req.getParameter("WorkPhone" + i), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE );
 					if (workPhone2 != null) contact.addContactNotification( workPhone2 );
 					
+					/*very hackish...should not be hitting the DB in the build method...
+					 * this is part of the whole HECO development rush...some day we will pay
+					 */
+					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
+					String firstInitial= "";
+					if(firstName != null)
+						firstInitial = firstName.toLowerCase().substring(0,1);
+					login.getYukonUser().setUsername(firstInitial + lastName.toLowerCase());
+					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+					login = (YukonUser)
+							Transaction.createTransaction(Transaction.INSERT, login).execute();
+					contact.setLoginID(login.getUserID().intValue());
 					account.addAdditionalContact( contact );
 				}
 			}
@@ -161,14 +182,33 @@ public class NewCustAccountAction implements ActionBase {
 			
 			String username = req.getParameter( "Username" );
 			String password = req.getParameter( "Password" );
+			StarsUpdateLogin login = new StarsUpdateLogin();
 			if (username != null && username.trim().length() > 0) {
-				StarsUpdateLogin login = new StarsUpdateLogin();
 				login.setUsername( username );
 				login.setPassword( password );
 				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
-				newAccount.setStarsUpdateLogin( login );
+			}
+			else
+			{
+				String lastName = primContact.getLastName();
+				String firstName = primContact.getFirstName();
+				String firstInitial = "#";
+				if(lastName == null)
+					lastName = account.getAccountNumber();
+				if(firstName != null)
+					firstInitial = firstName.toLowerCase().substring(0,1);
+				login.setUsername(firstInitial + lastName.toLowerCase());
+				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
+				/*String groupIDs = EnergyCompanyFuncs.getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
+				Integer defaultGroupID = new Integer(0);
+				if(groupIDs != null)
+					groupIDs.*/
+				login.setGroupID(custGroups[0].getGroupID());
+				//login.setStatus(UserUtils.STATUS_ENABLED);
+
 			}
 			
+			newAccount.setStarsUpdateLogin(login);
 			session.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 			
 			// Format the phone number after the information has been saved

@@ -1169,6 +1169,7 @@ public class StarsLiteFactory {
 		starsContact.setContactID( liteContact.getContactID() );
 		starsContact.setLastName( StarsUtils.forceNotNull(liteContact.getContLastName()) );
 		starsContact.setFirstName( StarsUtils.forceNotNull(liteContact.getContFirstName()) );
+		starsContact.setLoginID( liteContact.getLoginID() );
 		
 		starsContact.removeAllContactNotification();
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
