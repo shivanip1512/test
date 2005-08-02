@@ -21,6 +21,7 @@ import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -28,6 +29,7 @@ import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.UserUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
@@ -44,6 +46,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
 import com.cannontech.stars.xml.serialize.StarsUpdateContactsResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.database.data.lite.LiteFactory;
 
 
 /**
@@ -79,6 +82,8 @@ public class UpdateContactsAction implements ActionBase {
 			
 			if (command.equalsIgnoreCase("Update") || command.equalsIgnoreCase("New")) {
 				StarsCustomerContact contact = null;
+				String lastName = req.getParameter("LastName");
+				String firstName = req.getParameter("FirstName");
 				if (command.equalsIgnoreCase("Update")) {
 					if (updateContacts.getPrimaryContact().getContactID() == contactID) {
 						contact = updateContacts.getPrimaryContact();
@@ -95,11 +100,28 @@ public class UpdateContactsAction implements ActionBase {
 				else {
 					contact = new AdditionalContact();
 					contact.setContactID( -1 );
+					
+					/*very hackish...should not be hitting the DB in the build method...
+					 * this is part of the whole HECO development rush...some day we will pay
+					 */
+					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
+					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+					com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+					String firstInitial= "";
+					if(firstName != null)
+						firstInitial = firstName.toLowerCase().substring(0,1);
+					login.getYukonUser().setUsername(firstInitial + lastName.toLowerCase());
+					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
+					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+					//login.setEnergyCompany()
+					login = (YukonUser)
+						Transaction.createTransaction(Transaction.INSERT, login).execute();
+					contact.setLoginID(login.getUserID().intValue());
 					updateContacts.addAdditionalContact( (AdditionalContact)contact );
-				}
-				
-				contact.setLastName( req.getParameter("LastName") );
-				contact.setFirstName( req.getParameter("FirstName") );
+				}				
+				contact.setLastName( lastName );
+				contact.setFirstName( firstName );
 				
 				contact.removeAllContactNotification();
 				

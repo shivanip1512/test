@@ -171,6 +171,7 @@ public class NewCustAccountAction implements ActionBase {
 					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
 					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
 					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+					//login.setEnergyCompany()
 					login = (YukonUser)
 							Transaction.createTransaction(Transaction.INSERT, login).execute();
 					contact.setLoginID(login.getUserID().intValue());
@@ -204,6 +205,7 @@ public class NewCustAccountAction implements ActionBase {
 				if(groupIDs != null)
 					groupIDs.*/
 				login.setGroupID(custGroups[0].getGroupID());
+				//how do I set energy company id for this type of login?????
 				//login.setStatus(UserUtils.STATUS_ENABLED);
 
 			}
