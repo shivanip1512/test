@@ -85,6 +85,7 @@
         <ant dir="${tools}" target="${dotarget}" />
         <ant dir="${stars}" target="${dotarget}"/>
 		<ant dir="${report}" target="${dotarget}"/>        
+		<ant dir="${multispeak}" target="${dotarget}"/>
 		<ant dir="${servlet}" target="${dotarget}"/>
         <ant dir="${notification}" target="${dotarget}"/>
         <ant dir="${resource}" target="${dotarget}"/>
