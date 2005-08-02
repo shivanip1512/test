@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/08/02 22:09:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -491,6 +491,8 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "formatError", formatError, NULL, NULL);
 
     Tcl_CreateCommand( interp, "getYukonBaseDir", getYukonBaseDir, NULL, NULL);
+
+    Tcl_CreateCommand( interp, "createProcess", CTICreateProcess, NULL, NULL);
 
     /* Load up the initialization script */
     RWCString init_script;
@@ -1897,3 +1899,72 @@ int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     return TCL_OK;
 }
 
+int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
+{
+    string cmd;
+    for(int i = 1; i < argc; i++)
+    {
+	cmd += argv[i];
+	cmd += " ";
+    } 
+
+    DWORD exitcode = -1;
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    ZeroMemory(&pi, sizeof(pi));
+    DWORD dwFlags = 0;
+
+    string cmdExe(getenv("SystemRoot"));
+    cmdExe += "\\system32\\cmd.exe";
+    char szCmd[MAX_PATH];
+    strcpy(szCmd,"/c ");
+    strcat(szCmd,cmd.c_str());
+
+    if (!CreateProcess(cmdExe.c_str(),(char *)szCmd,
+                       NULL, NULL, FALSE,
+                       dwFlags,
+                       NULL, NULL, &si, &pi))
+    {
+	LPVOID lpMsgBuf;
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+		      FORMAT_MESSAGE_IGNORE_INSERTS,NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL,
+										   SUBLANG_DEFAULT),(LPTSTR)&lpMsgBuf,0,NULL);
+        printf("Error creating job object: %s\n",(char*)lpMsgBuf);
+        LocalFree(lpMsgBuf); 	
+        return TCL_ERROR;
+    }
+    CloseHandle(pi.hThread);
+    if (WAIT_OBJECT_0== WaitForSingleObject(pi.hProcess, INFINITE)) {
+       GetExitCodeProcess(pi.hProcess, (DWORD *)&exitcode);
+    } else {
+       printf("error with wait\n");
+    }
+    CloseHandle(pi.hProcess);
+    return TCL_OK;
+    
+/*    
+    if(!CreateProcess(NULL, (char*) cmd.c_str(), NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, si, pi))
+    {
+	TCHAR szBuf[80]; 
+	LPVOID lpMsgBuf;
+	DWORD dw = GetLastError();
+    
+	FormatMessage(
+	    FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+	    FORMAT_MESSAGE_FROM_SYSTEM,
+	    NULL,
+	    dw,
+	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+	    (LPTSTR) &lpMsgBuf,
+	    0, NULL );
+
+	string err("CreateProcess failed with error: ");
+	err += (char*) lpMsgBuf;
+	WriteOutput(err.c_str());
+	return TCL_ERROR;
+    }
+
+    return TCL_OK;
+*/     
+}

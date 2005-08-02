@@ -129,6 +129,8 @@ static int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char
 /* Get the base directory yukon is installed in */
 static int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
 
+static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]);
+    
 //MORE............
 
 static int DoOneWayRequest(Tcl_Interp* interp, RWCString& cmd_line);
