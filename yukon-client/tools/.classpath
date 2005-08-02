@@ -5,6 +5,7 @@
     <classpathentry exported="true" kind="lib" path="/third-party/acme.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/j2ee.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jaxm-api.jar"/>
+    <classpathentry exported="true" kind="lib" path="/third-party/saaj.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jcchart401K.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jcfield401K.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jcpagelayout450K.jar"/>
@@ -16,7 +17,7 @@
     <classpathentry exported="true" kind="lib" path="/third-party/castor-xml.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/commons-logging.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/dom4j.jar"/>
-    <classpathentry exported="true" kind="lib" path="/third-party/jaxm-client.jar"/>
+    <classpathentry exported="true" kind="lib" path="/third-party/jaxm-runtime.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jruntags.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/struts.jar"/>
     <classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>

@@ -14,7 +14,7 @@
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
-    <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
     <classpathentry kind="lib" path="/third-party/jruntags.jar"/>
     <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
@@ -24,5 +24,6 @@
     <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
     <classpathentry kind="src" path="/dbeditor"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="lib" path="/third-party/saaj.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
