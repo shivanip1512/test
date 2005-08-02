@@ -38,6 +38,7 @@ import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.*;
+import com.cannontech.roles.yukon.BillingRole;
 
 public class DatabaseEditor
 	implements
