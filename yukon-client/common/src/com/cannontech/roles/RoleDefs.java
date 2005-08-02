@@ -1,5 +1,7 @@
 package com.cannontech.roles;
 
+import com.cannontech.database.cache.functions.AuthFuncs;
+
 /**
  * Base role and property ids for each category of roles, keep this in sync with the database scripts or there will be trouble, shurley.
  * 
@@ -9,7 +11,6 @@ package com.cannontech.roles;
  * @author Aaron Lauinger
  */
 interface RoleDefs {
-	
 	/* 
 	* The base roleids for each category
 	*/	 
@@ -18,7 +19,6 @@ interface RoleDefs {
 	static final int OPERATOR_ROLEID_BASE = -200;
 	static final int CICUSTOMER_ROLEID_BASE = -300;
 	static final int CONSUMER_ROLEID_BASE = -400;	
-	static final int AMR_ROLEID_BASE = -500;
 	static final int ANALYSIS_ROLEID_BASE = -600;
 	static final int CBC_ROLEID_BASE = -700;
 	static final int IVR_ROLEID_BASE = -800;
@@ -33,7 +33,6 @@ interface RoleDefs {
 	static final int CICUSTOMER_PROPERTYID_BASE = -30000;
 	static final int CONSUMER_PROPERTYID_BASE = -40000;
 	
-	static final int AMR_PROPERTYID_BASE = -50000;
 	static final int ANALYSIS_PROPERTYID_BASE = -60000;
 	static final int CBC_PROPERTYID_BASE = -70000;
 	static final int IVR_PROPERTYID_BASE = -80000;
