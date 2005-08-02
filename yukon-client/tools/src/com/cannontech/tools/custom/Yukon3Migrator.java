@@ -23,7 +23,7 @@ import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.roles.application.BillingRole;
+import com.cannontech.roles.yukon.BillingRole;
 import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.roles.application.WebGraphRole;
 import com.cannontech.roles.yukon.SystemRole;

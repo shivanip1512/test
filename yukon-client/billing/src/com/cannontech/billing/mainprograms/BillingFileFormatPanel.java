@@ -12,7 +12,7 @@ import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.roles.application.BillingRole;
+import com.cannontech.roles.yukon.BillingRole;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
