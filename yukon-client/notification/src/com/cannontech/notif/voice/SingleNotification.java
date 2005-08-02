@@ -62,16 +62,19 @@ public class SingleNotification implements PropertyChangeListener {
             contactNotif = (LiteContactNotification)_phoneIterator.next();
         }
         LiteContact contact = ContactFuncs.getContact(contactNotif.getContactID());
-        if (contact.getLoginID() != UserUtils.USER_DEFAULT_ID) {
+        if (contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
+            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
+            return createNewCall();
+        } else if (!ContactFuncs.hasPin(contact.getContactID())){
+            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated PIN.");
+            return createNewCall();
+        } else {
             PhoneNumber phoneNumber = new PhoneNumber(contactNotif.getNotification());
             ContactPhone contactPhone = new ContactPhone(phoneNumber, contactNotif.getContactID());
     		_nextCall = new Call(contactPhone, _message);
             _nextCall.addPropertyChangeListener(this);
             CTILogger.info("Created " + _nextCall + " for " + this);
             return _nextCall;
-        } else {
-            CTILogger.warn("Unable to contact " + contactNotif + " of " + _contactable + " because there is no associated YukonUser.");
-            return createNewCall();
         }
 	}
 	
