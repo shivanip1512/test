@@ -4,14 +4,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.BillingRole;
 import com.cannontech.roles.application.DBEditorRole;
 
 /**
