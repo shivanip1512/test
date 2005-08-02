@@ -4,7 +4,8 @@
     <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
     <classpathentry kind="lib" path="/third-party/classes12.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-    <classpathentry kind="lib" path="/third-party/jaxm-client.jar"/>
+    <classpathentry kind="lib" path="/third-party/saaj.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="lib" path="/third-party/batik.jar"/>
@@ -21,6 +22,12 @@
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging.jar"/>
     <classpathentry kind="src" path="/tools"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="src" path="/cbc"/>
+    <classpathentry kind="src" path="/cttp"/>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/struts.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
+    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxpath.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.8.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.0.jar"/>
@@ -31,10 +38,5 @@
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.0.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-el.jar"/>
-    <classpathentry kind="src" path="/cbc"/>
-    <classpathentry kind="src" path="/cttp"/>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/struts.jar"/>
-    <classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
     <classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

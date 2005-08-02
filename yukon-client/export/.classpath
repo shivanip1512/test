@@ -11,6 +11,7 @@
     <classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
     <classpathentry kind="lib" path="/third-party/led.jar"/>
     <classpathentry kind="lib" path="/third-party/rwav.jar"/>
+	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
     <classpathentry kind="lib" path="/third-party/xerces.jar"/>
     <classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
     <classpathentry kind="lib" path="/third-party/junit.jar"/>

@@ -11,6 +11,7 @@
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
+	<classpathentry kind="lib" path="/third-party/saaj.jar"/>	
 	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
 		<attributes>
 			<attribute value="http://logging.apache.org/log4j/docs/api/" name="javadoc_location"/>
