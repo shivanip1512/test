@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tomcatProjectProperties>
-    <rootDir>/WebConten</rootDir>
+    <rootDir>/WebContent</rootDir>
     <exportSource>false</exportSource>
     <reloadable>true</reloadable>
     <redirectLogger>false</redirectLogger>
@@ -8,25 +8,41 @@
     <warLocation></warLocation>
     <webPath></webPath>
     <webClassPathEntries>
+        <webClassPathEntry>/billing/bin</webClassPathEntry>
         <webClassPathEntry>/cbc/bin</webClassPathEntry>
+        <webClassPathEntry>/commander/bin</webClassPathEntry>
         <webClassPathEntry>/common/bin</webClassPathEntry>
+        <webClassPathEntry>/dbeditor/bin</webClassPathEntry>
+        <webClassPathEntry>/esub/bin</webClassPathEntry>
+        <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
+        <webClassPathEntry>/macs/bin</webClassPathEntry>
+        <webClassPathEntry>/report/bin</webClassPathEntry>
+        <webClassPathEntry>/resource</webClassPathEntry>
+        <webClassPathEntry>/servlet/bin</webClassPathEntry>
+        <webClassPathEntry>/stars/bin</webClassPathEntry>
         <webClassPathEntry>/tdc/bin</webClassPathEntry>
         <webClassPathEntry>/third-party/SqlServer.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/acme.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/batik.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/bsh.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/classes12.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-fileupload.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-logging.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/dom4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/jaxm-client.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jaxm-runtime.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcchart401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcfield401K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcommon.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcpagelayout450K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jfreechart.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jfreereport.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jloox30.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jtds.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/junit.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/led.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/log4j-1.2.4.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
@@ -34,15 +50,16 @@
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/xerces.jar</webClassPathEntry>
+        <webClassPathEntry>/tools/bin</webClassPathEntry>
         <webClassPathEntry>/trending/bin</webClassPathEntry>
         <webClassPathEntry>/yukonappserver/bin</webClassPathEntry>
-        <webClassPathEntry>/esub/bin</webClassPathEntry>
-        <webClassPathEntry>/servlet/bin</webClassPathEntry>
-        <webClassPathEntry>/stars/bin</webClassPathEntry>
-        <webClassPathEntry>/commander/bin</webClassPathEntry>
-        <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
-        <webClassPathEntry>/billing/bin</webClassPathEntry>
-        <webClassPathEntry>/tools/bin</webClassPathEntry>
-        <webClassPathEntry>/cttp/bin</webClassPathEntry>
+        <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/activation.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/axis.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jaxrpc.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>
