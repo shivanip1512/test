@@ -151,7 +151,9 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             CTILogger.info("Started Notification server: " + server);
         } catch (Exception e) {
             try {
-                server.close();
+                if (server != null) {
+                    server.close();
+                }
             } catch (IOException e1) {}
             throw new RuntimeException(e);
         }
