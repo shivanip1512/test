@@ -4,7 +4,7 @@
 	 **/
 %>
 
-<%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
+<%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.BillingRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>

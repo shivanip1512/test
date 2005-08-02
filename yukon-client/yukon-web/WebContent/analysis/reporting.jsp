@@ -4,7 +4,7 @@
 <%@ include file="../operator/Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.analysis.*" %>
-<%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
+<%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.analysis.ReportTypes"%>
 <%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>

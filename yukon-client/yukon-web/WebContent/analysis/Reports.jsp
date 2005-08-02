@@ -7,7 +7,7 @@
 <%@ page import="com.cannontech.database.model.ModelFactory"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
-<%@ page import="com.cannontech.roles.analysis.ReportingRole" %>
+<%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
