@@ -24,6 +24,7 @@
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _SEND_TRIES;
+extern BOOL _USE_FLIP_FLAG;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -129,6 +130,7 @@ void CtiCCCommandExecutor::Execute()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - unknown command type in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
+        break;
 
     }
 
@@ -163,6 +165,22 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                 additional += currentSubstationBus->getPAOName();
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_subVerificationMsg->getUser()));
             }
+            else
+            {
+                if (currentSubstationBus->getPerformingVerificationFlag() &&
+                    _subVerificationMsg->getStrategy() < currentSubstationBus->getVerificationStrategy())
+                {
+                    currentSubstationBus->setOverlappingVerificationFlag( TRUE );
+                    currentSubstationBus->setVerificationStrategy(_subVerificationMsg->getStrategy());
+                    currentSubstationBus->setCapBankInactivityTime(_subVerificationMsg->getInactivityTime());
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                   //store->UpdateBusVerificationFlagInDB(currentSubstationBus);
+                    RWCString text = RWCString("Substation Bus Verification Enabled");
+                    RWCString additional = RWCString("Bus: ");
+                    additional += currentSubstationBus->getPAOName();
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_subVerificationMsg->getUser()));
+                }
+            }
             break;
         }
     }
@@ -187,6 +205,8 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
         {
             currentSubstationBus->setVerificationFlag(FALSE);
             currentSubstationBus->setPerformingVerificationFlag(FALSE);
+            currentSubstationBus->setOverlappingVerificationFlag( FALSE );
+
             currentSubstationBus->setBusUpdatedFlag(TRUE);
 
             RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();

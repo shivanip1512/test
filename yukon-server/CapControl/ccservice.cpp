@@ -24,6 +24,7 @@ ULONG _CC_DEBUG;
 //Boolean if we ignore non normal qualities
 BOOL _IGNORE_NOT_NORMAL_FLAG;
 ULONG _SEND_TRIES;
+BOOL _USE_FLIP_FLAG;
 
 RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
 ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
@@ -181,6 +182,25 @@ void CtiCCService::Init()
     {
         _SEND_TRIES = atoi(str.data())+1;
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << RWTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _USE_FLIP_FLAG = FALSE;
+
+    strcpy(var, "CAP_CONTROL_USE_FLIP");
+    if ( !(str = gConfigParms.getValueAsString(var)).isNull() )
+    {
+        str.toLower();
+        _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - " << var << ":  " << str << endl;

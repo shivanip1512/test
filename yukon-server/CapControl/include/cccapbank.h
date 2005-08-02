@@ -48,7 +48,7 @@ class CtiCCCapBank : public RWCollectable
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiCCCapBank )
+  RWDECLARE_COLLECTABLE( CtiCCCapBank )
 
     CtiCCCapBank(RWDBReader& rdr);
     CtiCCCapBank(const CtiCCCapBank& cap);
@@ -69,6 +69,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     const RWCString& getControllerType() const;
     LONG getControlDeviceId() const;
     LONG getControlPointId() const;
+    const RWCString& getControlDeviceType() const;
     LONG getBankSize() const;
     const RWCString& getTypeOfSwitch() const;
     const RWCString& getSwitchManufacture() const;
@@ -108,6 +109,7 @@ RWDECLARE_COLLECTABLE( CtiCCCapBank )
     CtiCCCapBank& setControllerType(const RWCString& controllertype);
     CtiCCCapBank& setControlDeviceId(LONG controldevice);
     CtiCCCapBank& setControlPointId(LONG controlpoint);
+    CtiCCCapBank& setControlDeviceType(const RWCString& controlDeviceType);
     CtiCCCapBank& setBankSize(LONG size);
     CtiCCCapBank& setTypeOfSwitch(const RWCString& switchtype);
     CtiCCCapBank& setSwitchManufacture(const RWCString& manufacture);
@@ -190,6 +192,7 @@ private:
     RWCString _controllertype;
     LONG _controldeviceid;
     LONG _controlpointid;
+    RWCString _controlDeviceType;
     LONG _banksize;
     RWCString _typeofswitch;
     RWCString _switchmanufacture;

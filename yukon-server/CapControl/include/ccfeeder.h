@@ -28,6 +28,7 @@
 #include "observe.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
+#include "ccstrategy.h"
 
 template<class T>
 struct FeederVARComparison
@@ -74,15 +75,30 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
+    LONG getStrategyId() const;
+    const RWCString& getStrategyName() const;
+    const RWCString& getControlMethod() const;
+    LONG getMaxDailyOperation() const;
+    BOOL getMaxOperationDisableFlag() const;
     DOUBLE getPeakSetPoint() const;
     DOUBLE getOffPeakSetPoint() const;
-    DOUBLE getUpperBandwidth() const;
+    LONG getPeakStartTime() const;
+    LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
+    DOUBLE getUpperBandwidth() const;
+    LONG getControlInterval() const;
+    LONG getMaxConfirmTime() const;
+    LONG getMinConfirmPercent() const;
+    LONG getFailurePercent() const;
+    const RWCString& getDaysOfWeek() const;
     const RWCString& getMapLocationId() const;
     DOUBLE getLowerBandwidth() const;
+    const RWCString& getControlUnits() const;
+    LONG getControlDelayTime() const;
+    LONG getControlSendRetries() const;
     LONG getDisplayOrder() const;
     BOOL getNewPointDataReceivedFlag() const;
     const RWDBDateTime& getLastCurrentVarPointUpdateTime() const;
@@ -117,15 +133,30 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPAODescription(const RWCString& description);
     CtiCCFeeder& setDisableFlag(BOOL disable);
     CtiCCFeeder& setParentId(LONG parentId);
+    CtiCCFeeder& setStrategyId(LONG strategyId);
+    CtiCCFeeder& setStrategyName(const RWCString& strategyName);
+    CtiCCFeeder& setControlMethod(const RWCString& method);
+    CtiCCFeeder& setMaxDailyOperation(LONG max);
+    CtiCCFeeder& setMaxOperationDisableFlag(BOOL maxopdisable);
     CtiCCFeeder& setPeakSetPoint(DOUBLE peak);
     CtiCCFeeder& setOffPeakSetPoint(DOUBLE offpeak);
-    CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
+    CtiCCFeeder& setPeakStartTime(LONG starttime);
+    CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
+    CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
+    CtiCCFeeder& setControlInterval(LONG interval);
+    CtiCCFeeder& setMaxConfirmTime(LONG confirm);
+    CtiCCFeeder& setMinConfirmPercent(LONG confirm);
+    CtiCCFeeder& setFailurePercent(LONG failure);
+    CtiCCFeeder& setDaysOfWeek(const RWCString& days);
     CtiCCFeeder& setMapLocationId(const RWCString& maplocation);
     CtiCCFeeder& setLowerBandwidth(DOUBLE bandwidth);
+    CtiCCFeeder& setControlUnits(const RWCString& contunit);
+    CtiCCFeeder& setControlDelayTime(LONG delay);
+    CtiCCFeeder& setControlSendRetries(LONG retries);
     CtiCCFeeder& setDisplayOrder(LONG order);
     CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const RWDBDateTime& lastpointupdate);
@@ -198,6 +229,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
 
     void setDynamicData(RWDBReader& rdr);
+    void setStrategyValues(CtiCCStrategyPtr strategy);
 
     //Possible states
     /*static const RWCString Enabled;
@@ -216,15 +248,30 @@ private:
     RWCString _paodescription;
     BOOL _disableflag;
     LONG _parentId; //subBusId
+    LONG _strategyId;
+    RWCString _strategyName;
+    RWCString _controlmethod;
+    LONG _maxdailyoperation;
+    BOOL _maxoperationdisableflag;
     DOUBLE _peaksetpoint;
     DOUBLE _offpeaksetpoint;
-    DOUBLE _upperbandwidth;
+    LONG _peakstarttime;
+    LONG _peakstoptime;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
+    DOUBLE _upperbandwidth;
+    LONG _controlinterval;
+    LONG _maxconfirmtime;
+    LONG _minconfirmpercent;
+    LONG _failurepercent;
+    RWCString _daysofweek;
     RWCString _maplocationid;
     DOUBLE _lowerbandwidth;
+    RWCString _controlunits;
+    LONG _controldelaytime;
+    LONG _controlsendretries;
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;
     RWDBDateTime _lastcurrentvarpointupdatetime;

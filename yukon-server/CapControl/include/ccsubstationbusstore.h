@@ -66,6 +66,7 @@ public:
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
+    CtiCCStrategyPtr findStrategyByStrategyID(long strategy_id);
 
     long findSubBusIDbyFeederID(long feederId);
     long findSubBusIDbyCapBankID(long capBankId);
@@ -149,6 +150,8 @@ private:
     map< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
     map< long, CtiCCFeederPtr > _pointid_feeder_map;
     map< long, CtiCCCapBankPtr > _pointid_capbank_map;
+
+    map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
 
     map< long, long > _feeder_subbus_map; 
     map< long, long > _capbank_subbus_map;

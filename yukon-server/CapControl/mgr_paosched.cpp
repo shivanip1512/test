@@ -278,15 +278,15 @@ int CtiPAOScheduleManager::parseEvent(RWCString command, int &strategy, long &se
     {
         strategy = 0;
     }
-    else if (!command.compareTo("Verify Failed CapBanks",RWCString::ignoreCase))
+    else if (!command.compareTo("Verify Failed and Questionable CapBanks",RWCString::ignoreCase))
     {
         strategy = 1;
     }
-    else if (!command.compareTo("Verify Questionable CapBanks",RWCString::ignoreCase))
+    else if (!command.compareTo("Verify Failed CapBanks",RWCString::ignoreCase))
     {
         strategy = 2;
     }
-    else if (!command.compareTo("Verify Failed and Questionable CapBanks",RWCString::ignoreCase))
+    else if (!command.compareTo("Verify Questionable CapBanks",RWCString::ignoreCase))
     {
         strategy = 3;
     }
@@ -379,6 +379,16 @@ bool CtiPAOScheduleManager::updateSchedule(const CtiPAOSchedule &sched)
 bool CtiPAOScheduleManager::deleteSchedule(long schedId)
 {
     bool retVal = false;
+
+    CtiPAOSchedule sched;
+    if (!_schedules.empty())
+    {
+        if (findSchedule(schedId, sched))
+        {
+            _schedules.remove(&sched);
+            retVal = true;
+        }
+    }
 
     return retVal;
 }
@@ -511,6 +521,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                     {
                         RWDBSelector selector = db.selector();
                         selector << paoScheduleTable["scheduleid"]
+                        << paoScheduleTable["schedulename"]
                         << paoScheduleTable["nextruntime"]
                         << paoScheduleTable["lastruntime"]
                         << paoScheduleTable["intervalrate"];

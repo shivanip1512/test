@@ -48,6 +48,7 @@
 
 extern ULONG _CC_DEBUG;
 extern ULONG _SEND_TRIES;
+extern BOOL _USE_FLIP_FLAG;
 
 /* The singleton instance of CtiCapController */
 CtiCapController* CtiCapController::_instance = NULL;
@@ -383,7 +384,7 @@ void CtiCapController::controlLoop()
                                         currentSubstationBus->setVerificationFlag(FALSE);
                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         CtiCCExecutorFactory f;
-                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, currentSubstationBus->getCapBankInactivityTime()));
+                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, -1));
                                         executor->Execute();
                                         delete executor;
                                         {

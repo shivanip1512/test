@@ -22,6 +22,7 @@
 #include "resolvers.h"
 
 extern ULONG _CC_DEBUG;
+extern BOOL _USE_FLIP_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
@@ -191,6 +192,11 @@ LONG CtiCCCapBank::getControlPointId() const
     return _controlpointid;
 }
 
+
+const RWCString& CtiCCCapBank::getControlDeviceType() const
+{
+    return _controlDeviceType;
+}
 /*---------------------------------------------------------------------------
     getBankSize
 
@@ -597,6 +603,15 @@ CtiCCCapBank& CtiCCCapBank::setControlPointId(LONG controlpoint)
     return *this;
 }
 
+
+
+CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const RWCString& controlDeviceType)
+{
+    _controlDeviceType = controlDeviceType;
+
+    return *this;
+
+}
 /*---------------------------------------------------------------------------
     setBankSize
 
@@ -730,86 +745,107 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     case 1:
         {
             setPreviousVerificationControlStatus(getControlStatus());
-            //_prevVerificationControlStatus = getControlStatus();
-            _verificationDoneFlag = FALSE;
-            ctrlIdx++;
+            if ( getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) &&
+                  _USE_FLIP_FLAG == TRUE &&
+                  (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
+            {  
+                _verificationDoneFlag = TRUE;
+                ctrlIdx = 5;
+            }
+            else
+            {
+                _verificationDoneFlag = FALSE;
+                _retryFlag = FALSE;
+                ctrlIdx++;
+            }
             break;
         }
     case 2:
         {
-            if ( (getControlStatus() == Open || getControlStatus() == Close) &&
-                  getControlStatus() != _assumedOrigCapBankPos )
+            if (!getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && 
+                _USE_FLIP_FLAG == TRUE)
             {
-                _verificationDoneFlag = TRUE;
-                ctrlIdx = 5;
-                _retryFlag = FALSE;
-            }
-            else
-            {
-                if ( _prevVerificationControlStatus == OpenFail ||
-                     //_prevVerificationControlStatus == OpenQuestionable ||
-                     _prevVerificationControlStatus == CloseFail /*||
-                     _prevVerificationControlStatus == CloseQuestionable */)
+
+                if ( (getControlStatus() == Open || getControlStatus() == Close) &&
+                      getControlStatus() != _assumedOrigCapBankPos )
                 {
-                    if (getControlStatus() == OpenFail ||
-                        //getControlStatus() == OpenQuestionable ||
-                        getControlStatus() == CloseFail /*||       
-                        getControlStatus() == CloseQuestionable */) 
-                    {
-                        _verificationDoneFlag = TRUE;
-                        ctrlIdx = 5;
-                        _retryFlag = FALSE;
-                    }
-                    else
-                    {
-                        ctrlIdx++;
-                        _retryFlag = FALSE;
-                        //_prevVerificationControlStatus = getControlStatus();
-                        setPreviousVerificationControlStatus(getControlStatus());
-                    }
+                    _verificationDoneFlag = TRUE;
+                    ctrlIdx = 5;
+                    _retryFlag = FALSE;
                 }
-                else //_prevVerificationControlStatus == Questionable, Open or Close (Success)!!!
+                else
                 {
-                    if (getControlStatus() == OpenFail ||
-                        //getControlStatus() == OpenQuestionable ||
-                        getControlStatus() == CloseFail /*||       
-                        getControlStatus() == CloseQuestionable*/ ) 
+                    if ( _prevVerificationControlStatus == OpenFail ||
+                         _prevVerificationControlStatus == CloseFail )
                     {
-                        if (_retryFlag)
+                        if (getControlStatus() == OpenFail ||
+                            getControlStatus() == CloseFail ) 
                         {
-                            _retryFlag = FALSE;
-                            ctrlIdx = 5;
                             _verificationDoneFlag = TRUE;
+                            ctrlIdx = 5;
+                            _retryFlag = FALSE;
                         }
                         else
                         {
-                            _retryFlag = TRUE;
-
+                            ctrlIdx++;
+                            _retryFlag = FALSE;
+                            setPreviousVerificationControlStatus(getControlStatus());
                         }
                     }
-                    else // getControlStatus() == Open or Close (Success)!!   MUST HAVE BEEN A RETRY!
+                    else //_prevVerificationControlStatus == Questionable, Open or Close (Success)!!!
                     {
-                         _retryFlag = FALSE; 
-                         ctrlIdx = 5;
-                         _verificationDoneFlag = TRUE;
-                         /*{
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                         }*/
+                        if (getControlStatus() == OpenFail ||
+                            getControlStatus() == CloseFail ) 
+                        {
+                            if (_retryFlag)
+                            {
+                                _retryFlag = FALSE;
+                                ctrlIdx = 5;
+                                _verificationDoneFlag = TRUE;
+                            }
+                            else
+                            {
+                                _retryFlag = TRUE;
+
+                            }
+                        }
+                        else // getControlStatus() == Open or Close (Success)!!   MUST HAVE BEEN A RETRY!
+                        {
+                             _retryFlag = FALSE; 
+                             ctrlIdx = 5;
+                             _verificationDoneFlag = TRUE;
+                        }
                     }
                 }
             }
-
+            else // CBC 7000 Flip Verification...
+            {
+                /*if ( (getControlStatus() == Open || getControlStatus() == Close) &&
+                      getControlStatus() != _assumedOrigCapBankPos )
+                { */
+                    _verificationDoneFlag = TRUE;
+                    ctrlIdx = 5;
+                    _retryFlag = FALSE;
+                /*}
+                else
+                {
+                } */
+            }
             break;
         }
     case 3:
         {
             if (getControlStatus() == OpenFail ||
-                //getControlStatus() == OpenQuestionable ||
-                getControlStatus() == CloseFail /*||       
-                getControlStatus() == CloseQuestionable*/ ) 
+                getControlStatus() == CloseFail ) 
             {
-                if (_retryFlag)
+                if (!getControlDeviceType().contains("CBC 70", RWCString::ignoreCase) && 
+                    _USE_FLIP_FLAG == TRUE)
+                {
+                    ctrlIdx = 5; 
+                    _verificationDoneFlag = TRUE;
+                    _retryFlag = FALSE;
+                }
+                else if (_retryFlag)
                 {
                     _retryFlag = FALSE;
                     ctrlIdx = 5;
@@ -832,8 +868,8 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         }
     default:
         {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         break;
     }
@@ -1161,13 +1197,14 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-   //     _parentId = right._parentId;
+        _parentId = right._parentId;
         _alarminhibitflag = right._alarminhibitflag;
         _controlinhibitflag = right._controlinhibitflag;
         _operationalstate = right._operationalstate;
         _controllertype = right._controllertype;
         _controldeviceid = right._controldeviceid;
         _controlpointid = right._controlpointid;
+        _controlDeviceType = right._controlDeviceType;
         _banksize = right._banksize;
         _typeofswitch = right._typeofswitch;
         _switchmanufacture = right._switchmanufacture;
@@ -1269,6 +1306,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
         _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
         _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+        _controlDeviceType = "";
 
         _insertDynamicDataFlag = FALSE;
         _dirty = FALSE;

@@ -41,14 +41,18 @@ public:
     CtiPAOSchedule(RWDBReader& rdr);
 
     long getScheduleId();
+    RWCString getScheduleName();
     RWDBDateTime getNextRunTime();
     RWDBDateTime getLastRunTime();
     long getIntervalRate();
 
     void setScheduleId(long schedId);
+    void setScheduleName(RWCString schedName);
     void setNextRunTime(RWDBDateTime nextTime);
     void setLastRunTime(RWDBDateTime lastTime);
     void setIntervalRate(long intervalRate);
+
+    void printSchedule();
 
     CtiPAOSchedule& operator=(const CtiPAOSchedule& right);
     int operator==(const CtiPAOSchedule& right) const;
@@ -64,6 +68,7 @@ private:
     BOOL _dirty;
 
     long         _scheduleId;
+    RWCString    _scheduleName;
     RWDBDateTime _nextRunTime;
     RWDBDateTime _lastRunTime;
     long _intervalRate; //in seconds!

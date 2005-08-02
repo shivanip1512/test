@@ -19,6 +19,7 @@
 //#include <fstream>
 
 #include "ccsubstationbusstore.h"
+#include "ccstrategy.h"
 #include "ccsubstationbus.h"
 #include "ccfeeder.h"
 #include "cccapbank.h"
@@ -176,6 +177,14 @@ CtiCCCapBankPtr CtiCCSubstationBusStore::findCapBankByPAObjectID(long paobject_i
     map< long, CtiCCCapBankPtr >::iterator iter = _paobject_capbank_map.find(paobject_id);
     return (iter == _paobject_capbank_map.end() ? CtiCCCapBankPtr() : iter->second);
 }
+
+
+CtiCCStrategyPtr CtiCCSubstationBusStore::findStrategyByStrategyID(long strategy_id)
+{
+    map< long, CtiCCStrategyPtr >::iterator iter = _strategyid_strategy_map.find(strategy_id);
+    return (iter == _strategyid_strategy_map.end() ? CtiCCStrategyPtr() : iter->second);
+}
+
 long CtiCCSubstationBusStore::findSubBusIDbyFeederID(long feederId)
 {
     map< long, long >::iterator iter = _feeder_subbus_map.find(feederId);
@@ -191,6 +200,8 @@ long CtiCCSubstationBusStore::findFeederIDbyCapBankID(long capBankId)
     map< long, long >::iterator iter = _capbank_feeder_map.find(capBankId);
     return (iter == _capbank_feeder_map.end() ? NULL : iter->second);
 }
+
+
 
 
 
@@ -324,6 +335,7 @@ void CtiCCSubstationBusStore::reset()
         map< long, CtiCCSubstationBusPtr > temp_point_subbus_map;
         map< long, CtiCCFeederPtr > temp_point_feeder_map;
         map< long, CtiCCCapBankPtr > temp_point_capbank_map;
+        map< long, CtiCCStrategyPtr > temp_strategyid_strategy_map;
 
         map< long, long > temp_capbank_subbus_map;
         map< long, long > temp_capbank_feeder_map;
@@ -360,16 +372,7 @@ void CtiCCSubstationBusStore::reset()
                         if ( _ccSubstationBuses->entries() > 0 )
                         {
                             dumpAllDynamicData();
-                            /*_ccSubstationBuses->clearAndDestroy();
-                            if (!_paobject_subbus_map.empty())
-                                _paobject_subbus_map.clear();
 
-                            if (!_paobject_feeder_map.empty())
-                                _paobject_feeder_map.clear();
-
-                            if (!_paobject_capbank_map.empty())
-                                _paobject_capbank_map.clear();
-                           */
                             wasAlreadyRunning = true;
                         }
                         if ( _ccCapBankStates->entries() > 0 )
@@ -389,6 +392,60 @@ void CtiCCSubstationBusStore::reset()
                     RWDBTable pointTable = db.table("point");
                     RWDBTable pointUnitTable = db.table("pointunit");
                     RWDBTable dynamicCCSubstationBusTable = db.table("dynamicccsubstationbus");
+                    RWDBTable capControlStrategy = db.table("capcontrolstrategy");
+
+                    /************************************************************** 
+                    ******  Loading Strategies                               ****** 
+                    **************************************************************/ 
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - DataBase Reload Begin - " << endl;
+                    }
+
+                    {
+                        RWDBSelector selector = db.selector();
+                        selector << capControlStrategy["strategyid"]
+                        << capControlStrategy["strategyname"]
+                        << capControlStrategy["controlmethod"]
+                        << capControlStrategy["maxdailyoperation"]
+                        << capControlStrategy["maxoperationdisableflag"]
+                        << capControlStrategy["peaksetpoint"]
+                        << capControlStrategy["offpeaksetpoint"]
+                        << capControlStrategy["peakstarttime"]
+                        << capControlStrategy["peakstoptime"]
+                        << capControlStrategy["upperbandwidth"]
+                        << capControlStrategy["controlinterval"]
+                        << capControlStrategy["minresponsetime"]//will become "minconfirmtime" in the DB in 3.1
+                        << capControlStrategy["minconfirmpercent"]
+                        << capControlStrategy["failurepercent"]
+                        << capControlStrategy["daysofweek"]
+                        << capControlStrategy["lowerbandwidth"]
+                        << capControlStrategy["controlunits"]
+                        << capControlStrategy["controldelaytime"]
+                        << capControlStrategy["controlsendretries"] ;
+
+                        selector.from(capControlStrategy);
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - " << selector.asString().data() << endl;
+                        }
+                        RWDBReader rdr = selector.reader(conn);
+
+                        CtiCCStrategyPtr currentCCStrategy;
+
+
+                        while ( rdr() )
+                        {                
+                            currentCCStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
+                            temp_strategyid_strategy_map.insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
+                        }
+                    }
+
+                    /************************************************************
+                    *******  Loading SubBuses                              ******
+                    ************************************************************/
 
                     {
                         RWDBSelector selector = db.selector();
@@ -399,32 +456,11 @@ void CtiCCSubstationBusStore::reset()
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
                         << yukonPAObjectTable["disableflag"]
-                        << capControlSubstationBusTable["controlmethod"]
-                        << capControlSubstationBusTable["maxdailyoperation"]
-                        << capControlSubstationBusTable["maxoperationdisableflag"]
-                        << capControlSubstationBusTable["peaksetpoint"]
-                        << capControlSubstationBusTable["offpeaksetpoint"]
-                        << capControlSubstationBusTable["peakstarttime"]
-                        << capControlSubstationBusTable["peakstoptime"]
                         << capControlSubstationBusTable["currentvarloadpointid"]
                         << capControlSubstationBusTable["currentwattloadpointid"]
-                        << capControlSubstationBusTable["upperbandwidth"]
-                        << capControlSubstationBusTable["controlinterval"]
-                        << capControlSubstationBusTable["minresponsetime"]//will become "minconfirmtime" in the DB in 3.1
-                        << capControlSubstationBusTable["minconfirmpercent"]
-                        << capControlSubstationBusTable["failurepercent"]
-                        << capControlSubstationBusTable["daysofweek"]
                         << capControlSubstationBusTable["maplocationid"]
-                        << capControlSubstationBusTable["lowerbandwidth"]
-                        << capControlSubstationBusTable["controlunits"]
-                        << capControlSubstationBusTable["controldelaytime"]
-                        << capControlSubstationBusTable["controlsendretries"] ;
+                        << capControlSubstationBusTable["strategyid"];
 
-                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - DataBase Reload Begin - " << endl;
-                        }
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
                         selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] );
@@ -435,11 +471,8 @@ void CtiCCSubstationBusStore::reset()
                         }
                         RWDBReader rdr = selector.reader(conn);
 
-                        //CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
                         CtiCCSubstationBusPtr currentCCSubstationBus;
-
-
-                        //RWDBNullIndicator isNull;
+                        CtiCCStrategyPtr currentCCStrategy = NULL;
                         while ( rdr() )
                         {
                             currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr));
@@ -448,13 +481,13 @@ void CtiCCSubstationBusStore::reset()
 
                             temp_point_subbus_map.insert(make_pair(currentCCSubstationBus->getCurrentVarLoadPointId(), currentCCSubstationBus));
                             temp_point_subbus_map.insert(make_pair(currentCCSubstationBus->getCurrentWattLoadPointId(), currentCCSubstationBus));
-
-
-                            //_ccSubstationBuses->insert( currentCCSubstationBus );
-
+                            currentCCStrategy = temp_strategyid_strategy_map.find(currentCCSubstationBus->getStrategyId())->second;
+                            if (currentCCStrategy != NULL)
+                            {
+                                currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                            }
                         }
                     }
-
                     {
                         RWDBSelector selector = db.selector();
                         selector << capControlSubstationBusTable["substationbusid"]
@@ -475,23 +508,10 @@ void CtiCCSubstationBusStore::reset()
                             long tempDecimalPlaces;
                             rdr["substationbusid"] >> currentSubBusId;
 
-
-                            /* map< long, CtiCCSubstationBusPtr >::iterator iter = temp_paobject_subbus_map.find(currentSubBusId);
-                             if(iter != temp_paobject_subbus_map.end())
-                             {
-                                  CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*) iter->second.get();
-                                  rdr["decimalplaces"] >> tempDecimalPlaces;
-                                  currentCCSubstationBus->setDecimalPlaces(tempDecimalPlaces);
-                             }
-                             else
-                             {
-                                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                                 dout << RWTime() << " **Checkpoint** " <<  " Rows exist in the CtiCCSubstationBus table exist but do not correspond with any substationsBuses already loaded.  Either subBuses didn't get loaded correctly or the CtiCCSubstationBus table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                             }
-                             */
                             CtiCCSubstationBusPtr currentCCSubstationBus = temp_paobject_subbus_map.find(currentSubBusId)->second;
                             rdr["decimalplaces"] >> tempDecimalPlaces;
                             currentCCSubstationBus->setDecimalPlaces(tempDecimalPlaces);
+                            currentCCSubstationBus->setParentId(0);
 
                         }
 
@@ -539,34 +559,7 @@ void CtiCCSubstationBusStore::reset()
                         while ( rdr() )
                         {
                             long currentSubBusId;
-                            /*double tempCurrentVarPointValue;
-                            double tempCurrentWattPointValue;
-                            RWDBDateTime tempNextCheckTime;
-                            bool tempNewPointDataReceivedFlag;
-                            bool tempBusUpdatedFlag;
-                            RWDBDateTime tempLastCurrentVarPointUpdateTime;
-                            double tempEstimatedVarLoadPointValue;
-
-                            LONG _dailyoperationsanalogpointid;
-                            LONG _powerfactorpointid;
-                            LONG _estimatedpowerfactorpointid;
                             
-                            long tempCurrentDailyOperations;
-                            bool tempPeakTimeFlag;
-                            bool tempRecentlyControlledFlag;
-                            RWDBDateTime tempLastOperationTime;
-                            double tempVarValueBeforeControl;
-                            long tempLastFeederControlledPAOid;
-                            long tempLastFeederControlledPosition;
-                            RWDBDateTime tempDynamicTimeStamp; //not used;
-                            double tempPowerFactorValue;
-                            double tempKVARSolution;
-                            double tempEstimatedPowerFactorValue;
-                            long tempCurretnVarPointQuality;
-                            bool tempWaiveControlFlag;
-
-                            RWCString tempBoolString;
-                            */
                             rdr["substationbusid"] >> currentSubBusId;
                             CtiCCSubstationBusPtr currentCCSubstationBus = temp_paobject_subbus_map.find(currentSubBusId)->second;
 
@@ -574,64 +567,8 @@ void CtiCCSubstationBusStore::reset()
                             {
                                  currentCCSubstationBus->setDynamicData(rdr);
                             }
-                            /*
 
-                            rdr["currentvarpointvalue"] >> tempCurrentVarPointValue;
-                            rdr["currentwattpointvalue"] >> tempCurrentWattPointValue;   
-                            rdr["nextchecktime"] >> tempNextCheckTime;
-                            rdr["newpointdatareceivedflag"] >> tempBoolString;
-                            tempBoolString.toLower();
-                            tempNewPointDataReceivedFlag = (tempBoolString=="y"?TRUE:FALSE);
-                            rdr["busupdatedflag"] >> tempBoolString;
-                            tempBoolString.toLower();
-                            tempBusUpdatedFlag = (tempBoolString=="y"?TRUE:FALSE);         
-                            rdr["lastcurrentvarupdatetime"]  >> tempLastCurrentVarPointUpdateTime;
-                            rdr["estimatedvarpointvalue"] >> tempEstimatedVarLoadPointValue;  
-                            rdr["currentdailyoperations"] >> tempCurrentDailyOperations;  
-                            rdr["peaktimeflag"] >> tempBoolString;
-                            tempBoolString.toLower();
-                            tempPeakTimeFlag = (tempBoolString=="y"?TRUE:FALSE);            
-                            rdr["recentlycontrolledflag"] >> tempBoolString;
-                            tempBoolString.toLower();
-                            tempRecentlyControlledFlag = (tempBoolString=="y"?TRUE:FALSE);  
-                            rdr["lastoperationtime"]  >> tempLastOperationTime;      
-                            rdr["varvaluebeforecontrol"] >> tempVarValueBeforeControl;  
-                            rdr["lastfeederpaoid"] >> tempLastFeederControlledPAOid;        
-                            rdr["lastfeederposition"]  >>  tempLastFeederControlledPosition;   
-                            rdr["ctitimestamp"]  >>  tempDynamicTimeStamp;         
-                            rdr["powerfactorvalue"] >> tempPowerFactorValue;       
-                            rdr["kvarsolution"]  >> tempKVARSolution;          
-                            rdr["estimatedpfvalue"]  >> tempEstimatedPowerFactorValue;      
-                            rdr["currentvarpointquality"] >> tempCurretnVarPointQuality; 
-                            rdr["waivecontrolflag"] >> tempBoolString;
-                            tempBoolString.toLower();
-                            tempWaiveControlFlag = (tempBoolString=="y"?TRUE:FALSE);       
-
-                            //initialize dynamic data members
-                            currentCCSubstationBus->setCurrentVarLoadPointValue(tempCurrentVarPointValue);
-                            currentCCSubstationBus->setCurrentWattLoadPointValue(tempCurrentWattPointValue);
-                            //THIS NEEDS TO BE SET
-                            //currentCCSubstationBus->figureNextCheckTime(tempNextCheckTime);
-                            currentCCSubstationBus->setNewPointDataReceivedFlag(tempNewPointDataReceivedFlag);
-                            currentCCSubstationBus->setBusUpdatedFlag(tempBusUpdatedFlag);
-                            currentCCSubstationBus->setLastCurrentVarPointUpdateTime(tempLastCurrentVarPointUpdateTime);
-                            currentCCSubstationBus->setEstimatedVarLoadPointValue(tempEstimatedVarLoadPointValue);
-                            currentCCSubstationBus->setCurrentDailyOperations(tempCurrentDailyOperations);
-                            currentCCSubstationBus->setPeakTimeFlag(tempPeakTimeFlag);
-                            currentCCSubstationBus->setRecentlyControlledFlag(tempRecentlyControlledFlag);
-                            currentCCSubstationBus->setLastOperationTime(tempLastOperationTime);
-                            currentCCSubstationBus->setVarValueBeforeControl(tempVarValueBeforeControl);
-                            currentCCSubstationBus->setLastFeederControlledPAOId(tempLastFeederControlledPAOid);
-                            currentCCSubstationBus->setLastFeederControlledPosition(tempLastFeederControlledPosition);
-                            currentCCSubstationBus->setPowerFactorValue(tempPowerFactorValue);
-                            currentCCSubstationBus->setKVARSolution(tempKVARSolution);
-                            currentCCSubstationBus->setEstimatedPowerFactorValue(tempEstimatedPowerFactorValue);
-                            currentCCSubstationBus->setCurrentVarPointQuality(tempCurretnVarPointQuality);
-                            currentCCSubstationBus->setWaiveControlFlag(tempWaiveControlFlag);
-                             */
                         }
-
-
                     }
                     {
                         RWDBSelector selector = db.selector();
@@ -707,20 +644,7 @@ void CtiCCSubstationBusStore::reset()
                         }
 
                     }
-                    /*if (!wasAlreadyRunning)
-                    {
-                        CtiCCExecutorFactory f;
-                        ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(tempCCSubstationBuses,msgBitMask));
-                        executor->Execute();
-                        delete executor;
 
-                    }  */
-
-                    /*{
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Done loading Sub Buses, now loading Feeders" << endl;
-                    }*/
                     /************************************************************
                     *******  Loading Feeders                              *******
                     ************************************************************/
@@ -730,7 +654,6 @@ void CtiCCSubstationBusStore::reset()
                     RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
                     RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
 
-                    //if ( _ccSubstationBuses->entries() > 0 )
                     if (tempCCSubstationBuses.entries() > 0)
                     {
                         {
@@ -742,53 +665,21 @@ void CtiCCSubstationBusStore::reset()
                             << yukonPAObjectTable["type"]
                             << yukonPAObjectTable["description"]
                             << yukonPAObjectTable["disableflag"]
-                            << capControlFeederTable["peaksetpoint"]
-                            << capControlFeederTable["offpeaksetpoint"]
-                            << capControlFeederTable["upperbandwidth"]
+                            //<< capControlFeederTable["peaksetpoint"]
+                           // << capControlFeederTable["offpeaksetpoint"]
+                           // << capControlFeederTable["upperbandwidth"]
                             << capControlFeederTable["currentvarloadpointid"]
                             << capControlFeederTable["currentwattloadpointid"]
                             << capControlFeederTable["maplocationid"]
-                            << capControlFeederTable["lowerbandwidth"] ;
-                           /* << ccFeederSubAssignmentTable["substationbusid"]
-                            << ccFeederSubAssignmentTable["displayorder"] ;
-                            */
-                            /* ******************************** 
-                            << dynamicCCFeederTable["currentvarpointvalue"]
-                             << dynamicCCFeederTable["currentwattpointvalue"]
-                             << dynamicCCFeederTable["newpointdatareceivedflag"]
-                             << dynamicCCFeederTable["lastcurrentvarupdatetime"]
-                             << dynamicCCFeederTable["estimatedvarpointvalue"]
-                             << dynamicCCFeederTable["currentdailyoperations"]
-                             << dynamicCCFeederTable["recentlycontrolledflag"]
-                             << dynamicCCFeederTable["lastoperationtime"]
-                             << dynamicCCFeederTable["varvaluebeforecontrol"]
-                             << dynamicCCFeederTable["lastcapbankdeviceid"]
-                             << dynamicCCFeederTable["busoptimizedvarcategory"]
-                             << dynamicCCFeederTable["busoptimizedvaroffset"]
-                             << dynamicCCFeederTable["ctitimestamp"]
-                             << dynamicCCFeederTable["powerfactorvalue"]
-                             << dynamicCCFeederTable["kvarsolution"]
-                             << dynamicCCFeederTable["estimatedpfvalue"]
-                             << dynamicCCFeederTable["currentvarpointquality"]
-                             << dynamicCCFeederTable["waivecontrolflag"]
-                             << pointTable["pointid"]
-                             << pointTable["pointoffset"]
-                             << pointTable["pointtype"];
-                             /* *********************************** */
-
-
-
+                            << capControlFeederTable["strategyid"];
+                           //<< capControlFeederTable["lowerbandwidth"] ;
 
                             /********************* JULIE ********* */
                             selector.from(yukonPAObjectTable);
                             selector.from(capControlFeederTable);
-                          //  selector.from(ccFeederSubAssignmentTable);
 
-                            selector.where( yukonPAObjectTable["paobjectid"]==//ccFeederSubAssignmentTable["feederid"] &&
-                                            capControlFeederTable["feederid"]/*==ccFeederSubAssignmentTable["feederid"]*/);
-                            /*selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
-                            selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
-                             */
+                            selector.where( yukonPAObjectTable["paobjectid"]==capControlFeederTable["feederid"]);
+
                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -797,24 +688,22 @@ void CtiCCSubstationBusStore::reset()
                             RWDBReader rdr = selector.reader(conn);
 
                             CtiCCFeederPtr currentCCFeeder;
+                            CtiCCStrategyPtr currentCCStrategy = NULL;
                             RWDBNullIndicator isNull;
                             while ( rdr() )
                             {
 
-                                long currentSubBusId;
                                 currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr));
                                 temp_paobject_feeder_map.insert(make_pair(currentCCFeeder->getPAOId(),currentCCFeeder));
-                                /*rdr["substationbusid"] >> currentSubBusId;
-                                CtiCCSubstationBus* currentCCSubstationBus = temp_paobject_subbus_map.find(currentSubBusId)->second;
-                                //if ((CtiCCSubstationBus*)currentCCSubstationBus != NULL)
-                                //{                                 
-                                currentCCSubstationBus->getCCFeeders().insert( currentCCFeeder );
-                                //}  */
 
                                 temp_point_feeder_map.insert(make_pair(currentCCFeeder->getCurrentVarLoadPointId(), currentCCFeeder));
                                 temp_point_feeder_map.insert(make_pair(currentCCFeeder->getCurrentWattLoadPointId(), currentCCFeeder));
-
-
+                                currentCCStrategy = findStrategyByStrategyID(currentCCFeeder->getStrategyId());
+                                // currentCCStrategy = temp_strategyid_strategy_map.find(currentCCFeeder->getStrategyId())->second;
+                                if (currentCCStrategy != NULL)
+                                {
+                                    currentCCFeeder->setStrategyValues(currentCCStrategy);
+                                }
                             }
                         }
                         /*********************************************/
@@ -847,6 +736,7 @@ void CtiCCSubstationBusStore::reset()
                                 rdr["substationbusid"] >> currentSubBusId;
                                 rdr["displayorder"] >>displayOrder;
                                 currentCCFeeder = temp_paobject_feeder_map.find(currentFeederId)->second;
+                                currentCCFeeder->setParentId(currentSubBusId);
                                 currentCCFeeder->setDisplayOrder(displayOrder);
                                 CtiCCSubstationBusPtr currentCCSubstationBus = temp_paobject_subbus_map.find(currentSubBusId)->second;
                                 //if ((CtiCCSubstationBus*)currentCCSubstationBus != NULL)
@@ -857,7 +747,6 @@ void CtiCCSubstationBusStore::reset()
                                 //}  */
                             }
                         }
-                        //selector.from(ccFeederSubAssignmentTable);
                         {
 
                             RWDBSelector selector = db.selector();
@@ -932,7 +821,6 @@ void CtiCCSubstationBusStore::reset()
 
                             RWDBReader rdr = selector.reader(conn);
 
-                           // CtiCCFeederPtr currentCCFeeder = NULL;
                             RWDBNullIndicator isNull;
                             while ( rdr() )
                             {
@@ -943,7 +831,6 @@ void CtiCCSubstationBusStore::reset()
 
                                 LONG tempPAObjectId = 0;
                                 rdr["paobjectid"] >> tempPAObjectId;
-                                // if( currentCCFeeder != NULL &&
                                 if (    tempPAObjectId == currentCCFeeder->getPAOId() )
                                 {
                                     rdr["pointid"] >> isNull;
@@ -993,43 +880,10 @@ void CtiCCSubstationBusStore::reset()
                             }
                         }
 
-
-
-
-                        /*
-
-                            else
-                            {
-                                currentCCFeeder = new CtiCCFeeder(rdr);
-
-                                /************************************************************
-                                *******  Inserting Feeder into the correct Bus        *******
-                                ************************************************************/
-                        /*
-                                LONG tempSubstationBusId = 0;
-                                rdr["substationbusid"] >> tempSubstationBusId;
-                                for(LONG i=0;i<_ccSubstationBuses->entries();i++)
-                                {
-                                    CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)((*_ccSubstationBuses)[i]);
-                                    if( currentCCSubstationBus->getPAOId() == tempSubstationBusId )
-                                    {
-                                        currentCCSubstationBus->getCCFeeders().insert( currentCCFeeder );
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        */
-                        /*{
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Done loading Feeder, now loading Cap Banks" << endl;
-                        }*/
-                        /************************************************************
+                       /************************************************************
                         ********    Loading Cap Banks                        ********
                         ************************************************************/
                         {
-
-                            //map< long, CtiCCCapBankPtr > temp_paobject_capbank_map;
 
                             RWDBTable deviceTable = db.table("device");
                             RWDBTable capBankTable = db.table("capbank");
@@ -1045,8 +899,6 @@ void CtiCCSubstationBusStore::reset()
                                 << yukonPAObjectTable["type"]
                                 << yukonPAObjectTable["description"]
                                 << yukonPAObjectTable["disableflag"]
-                              //  << deviceTable["alarminhibit"]
-                               // << deviceTable["controlinhibit"]
                                 << capBankTable["operationalstate"]
                                 << capBankTable["controllertype"]
                                 << capBankTable["controldeviceid"]
@@ -1056,40 +908,11 @@ void CtiCCSubstationBusStore::reset()
                                 << capBankTable["switchmanufacture"]
                                 << capBankTable["maplocationid"]
                                 << capBankTable["reclosedelay"];
-                              //  << ccFeederBankListTable["feederid"]
-                              //  << ccFeederBankListTable["controlorder"];
 
-                                /*
-                                         << dynamicCCCapBankTable["controlstatus"]
-                                         << dynamicCCCapBankTable["currentdailyoperations"]
-                                         << dynamicCCCapBankTable["laststatuschangetime"]
-                                         << dynamicCCCapBankTable["tagscontrolstatus"]
-                                         << dynamicCCCapBankTable["ctitimestamp"]
-                                         << dynamicCCCapBankTable["originalfeederid"]
-                                         << dynamicCCCapBankTable["originalswitchingorder"]
-                                         << pointTable["pointid"]
-                                         << pointTable["pointoffset"]
-                                         << pointTable["pointtype"];
-                                */
                                 selector.from(yukonPAObjectTable);
-                               // selector.from(deviceTable);
                                 selector.from(capBankTable);
-                                //selector.from(dynamicCCCapBankTable);
-                                //selector.from(pointTable);
-                                // selector.from(ccFeederSubAssignmentTable);
-                               // selector.from(ccFeederBankListTable);
 
-                                selector.where(yukonPAObjectTable["paobjectid"]==capBankTable["deviceid"]);//deviceTable["deviceid"]==capBankTable["deviceid"] &&
-                                               //yukonPAObjectTable["paobjectid"]==deviceTable["deviceid"] &&
-                                               //ccFeederSubAssignmentTable["feederid"]==ccFeederBankListTable["feederid"] &&
-                                               //capBankTable["deviceid"]==ccFeederBankListTable["deviceid"]);
-                                /* &&
-                                               capBankTable["deviceid"].leftOuterJoin(dynamicCCCapBankTable["capbankid"]) &&
-                                               capBankTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-                                */
-                                // selector.orderBy(ccFeederSubAssignmentTable["substationbusid"]);
-                                // selector.orderBy(ccFeederSubAssignmentTable["displayorder"]);
-                                //selector.orderBy(ccFeederBankListTable["controlorder"]);
+                                selector.where(yukonPAObjectTable["paobjectid"]==capBankTable["deviceid"]);
 
                                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                                 {
@@ -1102,15 +925,8 @@ void CtiCCSubstationBusStore::reset()
                                 RWDBNullIndicator isNull;
                                 while ( rdr() )
                                 {
-                                    //long currentFeederId;
                                     CtiCCCapBankPtr currentCCCapBank = CtiCCCapBankPtr(new CtiCCCapBank(rdr));
                                     temp_paobject_capbank_map.insert(make_pair(currentCCCapBank->getPAOId(),currentCCCapBank));
-                                   // rdr["feederid"] >> currentFeederId;
-                                    //CtiCCFeeder* currentCCFeeder = temp_paobject_feeder_map.find(currentFeederId)->second;
-                                    //if ((CtiCCSubstationBus*)currentCCSubstationBus != NULL)
-                                    //{                                 
-                                   // currentCCFeeder->getCCCapBanks().insert( currentCCCapBank );
-                                    //}
                                 }
                             }
                             {
@@ -1129,7 +945,6 @@ void CtiCCSubstationBusStore::reset()
                                 }
 
                                 RWDBReader rdr = selector.reader(conn);
-                                //CtiCCCapBankPtr currentCCCapBank = NULL;
                                 RWDBNullIndicator isNull;
                                 while ( rdr() )
                                 {
@@ -1148,6 +963,47 @@ void CtiCCSubstationBusStore::reset()
                                     currentCCCapBank->setControlInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
                                 }
                             }
+
+
+                            {
+                                RWDBSelector selector = db.selector();
+                                selector << capBankTable["deviceid"]
+                                         <<  capBankTable["controldeviceid"]
+                                         <<  yukonPAObjectTable["type"]
+                                         <<  yukonPAObjectTable["paobjectid"];
+
+                                selector.from(capBankTable);
+                                selector.from(yukonPAObjectTable);
+                                selector.where(yukonPAObjectTable["paobjectid"]==capBankTable["controldeviceid"] );
+                                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << RWTime() << " - " << selector.asString().data() << endl;
+                                }
+
+                                RWDBReader rdr = selector.reader(conn);
+                                RWDBNullIndicator isNull;
+                                while ( rdr() )
+                                {
+                                    long capBankId;
+                                    long controlDeviceId;
+                                    RWCString controlDeviceType;
+                                    
+                                    rdr["deviceid"] >> capBankId;
+                                    CtiCCCapBankPtr currentCCCapBank = temp_paobject_capbank_map.find(capBankId)->second;
+
+                                    rdr["controldeviceid"] >> controlDeviceId;
+
+                                    if (currentCCCapBank->getControlDeviceId() == controlDeviceId)
+                                    {
+                                        rdr["type"] >> controlDeviceType;
+                                        currentCCCapBank->setControlDeviceType(controlDeviceType);
+
+                                    }
+                                }
+                            }
+
+
                             {
                                 RWDBSelector selector = db.selector();
                                 selector << ccFeederBankListTable["deviceid"]
@@ -1165,7 +1021,6 @@ void CtiCCSubstationBusStore::reset()
                                 }
 
                                 RWDBReader rdr = selector.reader(conn);
-                                //CtiCCCapBank* currentCCCapBank = NULL;
                                 RWDBNullIndicator isNull;
                                 long subbusid;
                                 long tempFeederId;
@@ -1182,17 +1037,14 @@ void CtiCCSubstationBusStore::reset()
 
                                     CtiCCCapBankPtr currentCCCapBank = temp_paobject_capbank_map.find(deviceid)->second;
                                     currentCCCapBank->setControlOrder(controlOrder);
+                                    currentCCCapBank->setParentId(feederid);
                                     CtiCCFeederPtr currentCCFeeder = temp_paobject_feeder_map.find(feederid)->second;
-                                    //CtiCCCapBank *capBankCopy = currentCCCapBank->replicate();
-                                    //currentCCFeeder->getCCCapBanks().insert(capBankCopy);
 
                                     //DON'T ADD !... Supposed to be !=UninstalledState...
                                     if (currentCCCapBank->getOperationalState().compareTo(CtiCCCapBank::UninstalledState, RWCString::ignoreCase))
                                     {
                                         currentCCFeeder->getCCCapBanks().insert(currentCCCapBank);
                                         temp_capbank_feeder_map.insert(make_pair(deviceid,feederid));
-                                        //long *subbusid = temp_feeder_subbus_map.find(feederid)->second;
-                                        // subbusid = temp_feeder_subbus_map.find(feederid)->second;
                                         if ( temp_feeder_subbus_map.find(feederid) != temp_feeder_subbus_map.end() )
                                         {
                                             subbusid = temp_feeder_subbus_map.find(feederid)->second;
@@ -1238,7 +1090,6 @@ void CtiCCSubstationBusStore::reset()
 
                                     currentCCCapBank->setDynamicData(rdr);
                                 }
-
                             }
                             {
                                 RWDBSelector selector = db.selector();
@@ -1386,43 +1237,6 @@ void CtiCCSubstationBusStore::reset()
                             }
                         }
 
-                        /*{
-                            if ( _ccSchedules->entries() > 0 )
-                            {
-                                _ccSchedules->clearAndDestroy();
-                            }
-
-                            RWDBSelector selector = db.selector();
-                            selector << stateTable["text"]
-                            << stateTable["foregroundcolor"]
-                            << stateTable["backgroundcolor"];
-                                                        selector << ccScheduleTable["scheduleid"];
-
-                            selector.from(ccScheduleTable);
-                            selector.from(ccScheduleAssignmentTable);
-
-                            selector.where(ccScheduleTable["scheduleid"]==ccScheduleAssignmentTable["scheduleid"]);
-
-
-                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - " << selector.asString().data() << endl;
-                            }
-
-                            RWDBReader rdr = selector.reader(conn);
-
-                            while ( rdr() )
-                            {
-                                long tempScheduleId;
-                                rdr["scheduleid"] >> tempScheduleId;
-
-
-                                _ccSchedules->insert( areaString );
-                            }
-                        }  */
-
-                      
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1438,12 +1252,10 @@ void CtiCCSubstationBusStore::reset()
 
                         if (!_paobject_capbank_map.empty())
                             _paobject_capbank_map.clear();
-                        
-                        /*_paobject_subbus_map.clear();
-                        _paobject_feeder_map.clear(); 
-                        _paobject_capbank_map.clear();
-                        */
 
+                        if (!_strategyid_strategy_map.empty())
+                            _strategyid_strategy_map.clear();
+                        
                         if (!_pointid_subbus_map.empty())
                            _pointid_subbus_map.clear();
                         if (!_pointid_feeder_map.empty())
@@ -1462,6 +1274,7 @@ void CtiCCSubstationBusStore::reset()
                         _paobject_subbus_map = temp_paobject_subbus_map;
                         _paobject_feeder_map = temp_paobject_feeder_map;
                         _paobject_capbank_map = temp_paobject_capbank_map;
+                        _strategyid_strategy_map = temp_strategyid_strategy_map;
                         _pointid_subbus_map = temp_point_subbus_map;
                         _pointid_feeder_map = temp_point_feeder_map;
                         _pointid_capbank_map = temp_point_capbank_map;

@@ -28,12 +28,13 @@
 #include "ccfeeder.h"
 #include "cccapbank.h"
 #include "msg_pcrequest.h"
+#include "ccstrategy.h"
 
 
 #define ALLBANKS 0
-#define FAILEDBANKS 1
-#define QUESTIONABLEBANKS 2
-#define FAILEDANDQUESTIONABLEBANKS 3
+#define FAILEDANDQUESTIONABLEBANKS 1
+#define FAILEDBANKS 2
+#define QUESTIONABLEBANKS 3
 #define SELECTEDFORVERIFICATIONBANKS 4
 #define BANKSINACTIVEFORXTIME 5
 
@@ -59,6 +60,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const RWCString& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getParentId() const;
+    LONG getStrategyId() const;
+    const RWCString& getStrategyName() const;
     const RWCString& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
@@ -109,6 +112,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCurrentVerificationFeederId() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
+    BOOL getOverlappingVerificationFlag() const;
 
 
     RWOrdered& getCCFeeders();
@@ -121,6 +125,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPAODescription(const RWCString& description);
     CtiCCSubstationBus& setDisableFlag(BOOL disable);
     CtiCCSubstationBus& setParentId(LONG parentId);
+    CtiCCSubstationBus& setStrategyId(LONG strategyId);
+    CtiCCSubstationBus& setStrategyName(const RWCString& strategyName);
     CtiCCSubstationBus& setControlMethod(const RWCString& method);
     CtiCCSubstationBus& setMaxDailyOperation(LONG max);
     CtiCCSubstationBus& setMaxOperationDisableFlag(BOOL maxopdisable);
@@ -165,6 +171,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setEstimatedPowerFactorValue(DOUBLE epfval);
     CtiCCSubstationBus& setCurrentVarPointQuality(LONG cvpq);
     CtiCCSubstationBus& setWaiveControlFlag(BOOL waive);
+    CtiCCSubstationBus& setOverlappingVerificationFlag( BOOL overlapFlag);
 
     BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime);
     BOOL isVarCheckNeeded(const RWDBDateTime& currentDateTime);
@@ -220,6 +227,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
     void setDynamicData(RWDBReader& rdr);
+    void setStrategyValues(CtiCCStrategyPtr strategy);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -255,6 +263,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     RWCString _paodescription;
     BOOL _disableflag;
     LONG _parentId;
+    LONG _strategyId;
+    RWCString _strategyName;
     RWCString _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
@@ -308,6 +318,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
     BOOL _verificationDoneFlag;
+    BOOL _overlappingSchedulesVerificationFlag;
 
     BOOL _startVerificationFlag;
     BOOL _verificationAlreadyStartedFlag;

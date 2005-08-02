@@ -29,6 +29,7 @@
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _SEND_TRIES;
+extern BOOL _USE_FLIP_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -140,6 +141,54 @@ LONG CtiCCFeeder::getParentId() const
 }
 
 /*---------------------------------------------------------------------------
+    getStrategyId
+
+    Returns the strategyID of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getStrategyId() const
+{
+    return _strategyId;
+}
+/*-------------------------------------------------------------------------
+    getStrategyName
+
+    Returns the strategyName of the feeder
+---------------------------------------------------------------------------*/
+const RWCString& CtiCCFeeder::getStrategyName() const
+{
+    return _strategyName;
+}
+/*---------------------------------------------------------------------------
+    getControlMethod
+
+    Returns the controlMethod of the feeder
+---------------------------------------------------------------------------*/
+const RWCString& CtiCCFeeder::getControlMethod() const
+{
+    return _controlmethod;
+}
+/*---------------------------------------------------------------------------
+    getMaxDailyOperation
+
+    Returns the MaxDailyOperation limit of the feeder
+---------------------------------------------------------------------------*/
+
+LONG CtiCCFeeder::getMaxDailyOperation() const
+{
+    return _maxdailyoperation;
+}
+/*---------------------------------------------------------------------------
+    getMaxOperationDisableFlag
+
+    Returns the maxOperationDisableFlag of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getMaxOperationDisableFlag() const
+{
+    return _maxoperationdisableflag;
+}
+
+    
+/*---------------------------------------------------------------------------
     getPeakSetPoint
 
     Returns the peak set point of the feeder
@@ -158,7 +207,26 @@ DOUBLE CtiCCFeeder::getOffPeakSetPoint() const
 {
     return _offpeaksetpoint;
 }
+/*---------------------------------------------------------------------------
+    getPeakStartTime
 
+    Returns the PeakStartTime of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getPeakStartTime() const
+{
+    return _peakstarttime;
+
+}
+/*---------------------------------------------------------------------------
+    getPeakStopTime
+
+    Returns the PeakStopTime of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getPeakStopTime() const
+{
+    return _peakstoptime;
+}
+    
 /*---------------------------------------------------------------------------
     getUpperBandwidth
 
@@ -228,7 +296,80 @@ DOUBLE CtiCCFeeder::getLowerBandwidth() const
 {
     return _lowerbandwidth;
 }
+/*---------------------------------------------------------------------------
+    getControlInterval
 
+    Returns the ControlInterval of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getControlInterval() const
+{
+    return _controlinterval;
+}
+/*---------------------------------------------------------------------------
+    getMaxConfirmTime
+
+    Returns the MaxConfirmTime of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getMaxConfirmTime() const
+{
+    return _maxconfirmtime;
+}
+/*---------------------------------------------------------------------------
+    getMinConfirmPercent
+
+    Returns the MinConfirmPercent of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getMinConfirmPercent() const
+{
+    return _minconfirmpercent;
+}
+/*---------------------------------------------------------------------------
+    getFailurePercent
+
+    Returns the FailurePercent of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getFailurePercent() const
+{
+    return _failurepercent;
+}
+
+/*---------------------------------------------------------------------------
+    getDaysOfWeek
+
+    Returns the DaysOfWeek of the feeder
+---------------------------------------------------------------------------*/
+const RWCString& CtiCCFeeder::getDaysOfWeek() const
+{
+    return _daysofweek;
+}
+/*---------------------------------------------------------------------------
+    getControlUnits
+
+    Returns the ControlUnits of the feeder
+---------------------------------------------------------------------------*/
+const RWCString& CtiCCFeeder::getControlUnits() const
+{
+    return _controlunits;
+}
+/*---------------------------------------------------------------------------
+    getControlDelayTime
+
+    Returns the ControlDelayTime of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getControlDelayTime() const
+{
+    return _controldelaytime;
+}
+/*---------------------------------------------------------------------------
+    getControlSendRetries
+
+    Returns the # of ControlSendRetries of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getControlSendRetries() const
+{
+    return _controlsendretries;
+}
+    
 /*---------------------------------------------------------------------------
     getDisplayOrder
 
@@ -558,7 +699,137 @@ CtiCCFeeder& CtiCCFeeder::setParentId(LONG parentId)
     _parentId = parentId;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setStrategyId
 
+    Sets the StrategyId of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setStrategyId(LONG strategyId)
+{
+    _strategyId = strategyId;
+    return *this;           
+}
+/*---------------------------------------------------------------------------
+    setStrategyName
+
+    Sets the StrategyName of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setStrategyName(const RWCString& strategyName)
+{
+    _strategyName = strategyName;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlMethod
+
+    Sets the ControlMethod of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setControlMethod(const RWCString& method)
+{
+    _controlmethod = method;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setMaxDailyOperation
+
+    Sets the MaxDailyOperation of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setMaxDailyOperation(LONG max)
+{
+    _maxdailyoperation = max;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setMaxOperationDisableFlag
+
+    Sets the MaxOperationDisableFlag of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setMaxOperationDisableFlag(BOOL maxopdisable)
+{
+    _maxoperationdisableflag = maxopdisable;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlInterval
+
+    Sets the ControlInterval of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setControlInterval(LONG interval)
+{
+    _controlinterval = interval;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setMaxConfirmTime
+
+    Sets the MaxConfirmTime of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setMaxConfirmTime(LONG confirm)
+{
+    _maxconfirmtime = confirm;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setMinConfirmPercent
+
+    Sets the MinConfirmPercent of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setMinConfirmPercent(LONG confirm)
+{
+    _minconfirmpercent = confirm;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setFailurePercent
+
+    Sets the FailurePercent of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setFailurePercent(LONG failure)
+{
+    _failurepercent = failure;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setDaysOfWeek
+
+    Sets the DaysOfWeek of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setDaysOfWeek(const RWCString& days)
+{
+    _daysofweek = days;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlUnits
+
+    Sets the ControlUnits of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setControlUnits(const RWCString& contunit)
+{
+    _controlunits = contunit;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlDelayTime
+
+    Sets the ControlDelayTime of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setControlDelayTime(LONG delay)
+{
+    _controldelaytime = delay;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlSendRetries
+
+    Sets the ControlSendRetries of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setControlSendRetries(LONG retries)
+{
+    _controlsendretries = retries;
+    return *this;
+}
+    
 /*---------------------------------------------------------------------------
     setPeakSetPoint
 
@@ -578,6 +849,27 @@ CtiCCFeeder& CtiCCFeeder::setPeakSetPoint(DOUBLE peak)
 CtiCCFeeder& CtiCCFeeder::setOffPeakSetPoint(DOUBLE offpeak)
 {
     _offpeaksetpoint = offpeak;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPeakStartTime
+
+    Sets the PeakStartTime of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPeakStartTime(LONG starttime)
+{
+    _peakstarttime = starttime;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPeakStopTime
+
+    Sets the PeakStopTime of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPeakStopTime(LONG stoptime)
+{
+    _peakstoptime = stoptime;
     return *this;
 }
 
@@ -1166,7 +1458,11 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
         }  
 
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+        if  (capBank->getControllerType().contains("CBC 70",RWCString::ignoreCase) &&
+             _USE_FLIP_FLAG == TRUE)
+            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+        else
+            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
         reqMsg->setSOE(4);
     }
 
@@ -1217,7 +1513,11 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
         }  
 
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
+        if  (capBank->getControllerType().contains("CBC 70",RWCString::ignoreCase) &&
+             _USE_FLIP_FLAG == TRUE)
+            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+        else
+            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
         reqMsg->setSOE(4);
     }
 
@@ -1270,7 +1570,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOr
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
         }
 
-        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
+        //if  (capBank->getControllerType().contains("CBC 70",RWCString::ignoreCase))
+       //     reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+       // else
+            reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
         reqMsg->setSOE(4);
     }
 
@@ -1776,10 +2079,11 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                 if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
                 {
-                    if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                    if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
+                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
                         DOUBLE change = newVarValue - oldVarValue;
-                        DOUBLE ratio = change/currentCapBank->getBankSize();
+                        DOUBLE ratio = abs(change/currentCapBank->getBankSize());
                         if( ratio >= minConfirmPercent*.01 )
                         {
                             returnBoolean = TRUE;
@@ -1789,7 +2093,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                             returnBoolean = FALSE;
                         }
                     }
-                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                    /*else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
                         DOUBLE change = oldVarValue - newVarValue;
                         DOUBLE ratio = change/currentCapBank->getBankSize();
@@ -1801,7 +2105,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                         {
                             returnBoolean = FALSE;
                         }
-                    }
+                    }   */
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1847,7 +2151,8 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
     for(LONG i=0;i<_cccapbanks.entries();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-        if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() )
+        if( currentCapBank->getPAOId() == getLastCapBankControlledDeviceId() &&
+            !(_USE_FLIP_FLAG && currentCapBank->getControlDeviceType().contains("CBC 70", RWCString::ignoreCase)) )
         {
             if( currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + maxConfirmTime )
             {
@@ -2364,16 +2669,31 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-        //_parentId = right._parentId;
+        _parentId = right._parentId;
+        _strategyId = right._strategyId;
+        _strategyName = right._strategyName;
+        _controlmethod = right._controlmethod;
+        _maxdailyoperation = right._maxdailyoperation;
+        _maxoperationdisableflag = right._maxoperationdisableflag;
         _peaksetpoint = right._peaksetpoint;
         _offpeaksetpoint = right._offpeaksetpoint;
-        _upperbandwidth = right._upperbandwidth;
+        _peakstarttime = right._peakstarttime;
+        _peakstoptime = right._peakstoptime;
         _currentvarloadpointid = right._currentvarloadpointid;
         _currentvarloadpointvalue = right._currentvarloadpointvalue;
         _currentwattloadpointid = right._currentwattloadpointid;
         _currentwattloadpointvalue = right._currentwattloadpointvalue;
+        _upperbandwidth = right._upperbandwidth;
+        _controlinterval = right._controlinterval;
+        _maxconfirmtime = right._maxconfirmtime;
+        _minconfirmpercent = right._minconfirmpercent;
+        _failurepercent = right._failurepercent;
+        _daysofweek = right._daysofweek;
         _maplocationid = right._maplocationid;
         _lowerbandwidth = right._lowerbandwidth;
+        _controlunits = right._controlunits;
+        _controldelaytime = right._controldelaytime;
+        _controlsendretries = right._controlsendretries;
         _displayorder = right._displayorder;
         _newpointdatareceivedflag = right._newpointdatareceivedflag;
         _lastcurrentvarpointupdatetime = right._lastcurrentvarpointupdatetime;
@@ -2599,14 +2919,32 @@ void CtiCCFeeder::restoreFeederTableValues(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
-    rdr["peaksetpoint"] >> _peaksetpoint;
-    rdr["offpeaksetpoint"] >> _offpeaksetpoint;
-    rdr["upperbandwidth"] >> _upperbandwidth;
     rdr["currentvarloadpointid"] >> _currentvarloadpointid;
     rdr["currentwattloadpointid"] >> _currentwattloadpointid;
     rdr["maplocationid"] >> _maplocationid;
-    rdr["lowerbandwidth"] >> _lowerbandwidth;
     //rdr["displayorder"] >> _displayorder;
+    rdr["strategyid"] >> _strategyId;
+
+
+    //initialize strategy members
+    setStrategyName("default");
+    setControlMethod("SubstationBus");
+    setMaxDailyOperation(0);
+    setMaxOperationDisableFlag(FALSE);
+    setPeakSetPoint(0);
+    setOffPeakSetPoint(0);
+    setPeakStartTime(0);
+    setPeakStopTime(0);
+    setUpperBandwidth(0);
+    setControlInterval(0);
+    setMaxConfirmTime(0);
+    setMinConfirmPercent(0);
+    setFailurePercent(0);
+    setDaysOfWeek("NNNNNNNN");
+    setLowerBandwidth(0);
+    setControlUnits("KVAR");
+    setControlDelayTime(0);
+    setControlSendRetries(0);
 
 
     _displayorder = 0;
@@ -2652,6 +2990,29 @@ void CtiCCFeeder::restoreFeederTableValues(RWDBReader& rdr)
     }
 }
 
+void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
+{
+    RWCString tempBoolString;
+
+    _strategyName = strategy->getStrategyName();
+    _controlmethod = strategy->getControlMethod();           
+    _maxdailyoperation = strategy->getMaxDailyOperation();
+    _maxoperationdisableflag = strategy->getMaxOperationDisableFlag();
+    _peaksetpoint = strategy->getPeakSetPoint();
+    _offpeaksetpoint = strategy->getOffPeakSetPoint();       
+    _peakstarttime = strategy->getPeakStartTime();           
+    _peakstoptime = strategy->getPeakStopTime();
+    _upperbandwidth = strategy->getUpperBandwidth();         
+    _controlinterval = strategy->getControlInterval();       
+    _maxconfirmtime = strategy->getMaxConfirmTime();
+    _minconfirmpercent = strategy->getMinConfirmPercent();   
+    _failurepercent = strategy->getFailurePercent();         
+    _daysofweek = strategy->getDaysOfWeek();                 
+    _lowerbandwidth = strategy->getLowerBandwidth();         
+    _controlunits = strategy->getControlUnits();             
+    _controldelaytime = strategy->getControlDelayTime();     
+    _controlsendretries = strategy->getControlSendRetries(); 
+}
 void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 {
 

@@ -30,6 +30,7 @@ CtiPAOSchedule::CtiPAOSchedule()
 CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
 {                                            
     rdr["scheduleid"] >> _scheduleId;
+    rdr["schedulename"] >> _scheduleName;
     rdr["nextruntime"] >> _nextRunTime;
     rdr["lastruntime"] >> _lastRunTime;
     rdr["intervalrate"] >> _intervalRate;
@@ -49,6 +50,7 @@ CtiPAOSchedule::~CtiPAOSchedule()
 CtiPAOSchedule& CtiPAOSchedule::operator=(const CtiPAOSchedule& right)
 {
     _scheduleId   = right._scheduleId;
+    _scheduleName = right._scheduleName;
     _nextRunTime  = right._nextRunTime;
     _lastRunTime  = right._lastRunTime;
     _intervalRate = right._intervalRate;
@@ -71,6 +73,10 @@ long CtiPAOSchedule::getScheduleId()
 {
     return _scheduleId;
 }
+RWCString CtiPAOSchedule::getScheduleName()
+{
+    return _scheduleName;
+}
 RWDBDateTime CtiPAOSchedule::getNextRunTime()
 {
     return _nextRunTime;
@@ -91,6 +97,15 @@ void CtiPAOSchedule::setScheduleId(long schedId)
         _dirty = true;
     }
     _scheduleId = schedId;
+    return;
+}
+void CtiPAOSchedule::setScheduleName(RWCString schedName)
+{
+    if (_scheduleName != schedName)
+    {
+        _dirty = true;
+    }
+    _scheduleName = schedName;
     return;
 }
 void CtiPAOSchedule::setNextRunTime(RWDBDateTime nextTime)
@@ -128,4 +143,10 @@ BOOL CtiPAOSchedule::isDirty()
 void CtiPAOSchedule::setDirty(BOOL flag)
 {
     _dirty = flag;
+}
+
+void CtiPAOSchedule::printSchedule()
+{
+    CtiLockGuard<CtiLogger> logger_guard(dout);
+    dout << RWTime() << " " <<_scheduleName<<" id: "<<_scheduleId<<" nextRunTime: "<<RWTime(_nextRunTime.seconds())<<" intvlRate: "<<_intervalRate<<" secs."<< endl;
 }
