@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="C:/axis1_2/src"/>
+    <classpathentry kind="lib" path="/third-party/activation.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-logging.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
+    <classpathentry kind="lib" path="/third-party/wsdl4j.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
+    <classpathentry kind="lib" path="/third-party/mail.jar"/>
+    <classpathentry kind="lib" path="/third-party/xerces.jar"/>
+    <classpathentry kind="lib" path="/third-party/j2ee.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
+    <classpathentry kind="lib" path="/third-party/saaj.jar"/>
+    <classpathentry kind="src" path="/common"/>
+    <classpathentry kind="src" path="/yukonappserver"/>
+    <classpathentry kind="src" path="/third-party"/>
+    <classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar" sourcepath="D:/jakarta-log4j-1.2/src/java/log4j12.jar"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>

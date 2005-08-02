@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.cannontech.emulator.OD_OA_Test
+Class-Path: ./ jradius-client.jar common.jar yukonappserver.jar j2ee.jar rwav.jar log4j-1.2.4.jar batik.jar junit.jar jtds.jar SqlServer.jar classes12.jar axis.jar activation.jar commons-discovery.jar commons-httpclient.jar commons-logging.jar jaxrpc.jar wsdl4j.jar commons-fileupload.jar mail.jar xerces.jar jaxm-api.jar saaj.jar ../log/ ../export/
+
