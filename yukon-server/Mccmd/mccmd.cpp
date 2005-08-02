@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/08/02 22:09:39 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/08/02 22:13:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -493,6 +493,8 @@ int Mccmd_Init(Tcl_Interp* interp)
     Tcl_CreateCommand( interp, "getYukonBaseDir", getYukonBaseDir, NULL, NULL);
 
     Tcl_CreateCommand( interp, "createProcess", CTICreateProcess, NULL, NULL);
+    Tcl_CreateCommand( interp, "CREATEPROCESS", CTICreateProcess, NULL, NULL);
+    Tcl_CreateCommand( interp, "createprocess", CTICreateProcess, NULL, NULL);    
 
     /* Load up the initialization script */
     RWCString init_script;
@@ -1942,29 +1944,4 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     }
     CloseHandle(pi.hProcess);
     return TCL_OK;
-    
-/*    
-    if(!CreateProcess(NULL, (char*) cmd.c_str(), NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, si, pi))
-    {
-	TCHAR szBuf[80]; 
-	LPVOID lpMsgBuf;
-	DWORD dw = GetLastError();
-    
-	FormatMessage(
-	    FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-	    FORMAT_MESSAGE_FROM_SYSTEM,
-	    NULL,
-	    dw,
-	    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-	    (LPTSTR) &lpMsgBuf,
-	    0, NULL );
-
-	string err("CreateProcess failed with error: ");
-	err += (char*) lpMsgBuf;
-	WriteOutput(err.c_str());
-	return TCL_ERROR;
-    }
-
-    return TCL_OK;
-*/     
 }
