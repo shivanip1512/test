@@ -145,4 +145,52 @@ public static LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID)
     }
     return null;
 }
+
+/**
+ * This returns a LiteYukonPaobject for the meterNumber.
+ * WARNING: This is a "BEST GUESS" (or the first one in the deviceMeterNumber cache) as
+ *  MeterNumber is NOT distinct for all general purposes, but may be a utilities distinct field.
+ * @param deviceID
+ * @return
+ */
+public static LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber)
+{
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	List allDevMtrGrps = cache.getAllDeviceMeterGroups();
+    
+	LiteDeviceMeterNumber ldmn = null;
+	for (int i = 0; i < allDevMtrGrps.size(); i++)
+	{
+		ldmn = (LiteDeviceMeterNumber)allDevMtrGrps.get(i);
+		if (ldmn.getMeterNumber().equals(meterNumber))
+		{
+			LiteYukonPAObject lPao = (LiteYukonPAObject)cache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID()));
+			return lPao;
+		}
+	}
+	return null;
+}
+
+/**
+ * This returns a LiteYukonPaobject for the PaoName.
+ * WARNING: This is a "BEST GUESS" (or the first one in the DEVICE cache) as
+ *  PaoName is NOT necessarily distinct for all general purposes, but may be a utilities distinct field.
+ * @param deviceID
+ * @return
+ */
+public static LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName)
+{
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	List allDevices = cache.getAllDevices();
+    
+	LiteYukonPAObject lPao = null;
+	for (int i = 0; i < allDevices.size(); i++)
+	{
+		lPao = (LiteYukonPAObject)allDevices.get(i);
+		if (lPao.getPaoName().equals(deviceName))
+			return lPao;
+	}
+	return null;
+}
+
 }
