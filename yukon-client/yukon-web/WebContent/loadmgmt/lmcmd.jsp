@@ -52,18 +52,21 @@ function update()
 	/* Post to the actual servlet to do the work (must do first to ensure the command gets out) */
 	document.cmdForm.attributes["action"].value = "<%=request.getContextPath()%>/servlet/LCConnectionServlet";
 	document.cmdForm.submit();
-	document.cmdForm.attributes["action"].value = "";
-	
-	self.close();
-	opener.location.reload(true);
-	return true;
+
+    /* Give some time for the above submit call to arrive at its destination */
+    sleep(250);
+    self.close();
+    opener.location.reload(true);
+    return true;
 }
 
-function setStartAble( radioChk )
+function sleep(millis)
 {
-	var val = radioChk.value == "startat" && radioChk.checked;	
-	document.cmdForm.startdate.disabled = !val;
-	document.cmdForm.startTime1.disabled = !val;
+    date = new Date();
+    var curDate = null;
+    
+    do { var curDate = new Date(); } 
+    while(curDate-date < millis);
 }
 
 function setStopAble( radioChk )
