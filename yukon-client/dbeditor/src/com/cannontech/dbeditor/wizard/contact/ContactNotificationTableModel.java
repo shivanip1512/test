@@ -87,7 +87,7 @@ public String getColumnName(int index) {
 public ContactNotification getContactNotificationRow(int row) 
 {
 
-	if( row <= getRows().size() )
+	if( row < getRows().size() )
 	{
 		return ((RowValue)getRows().elementAt(row)).getContactNotification();
 	}
@@ -119,7 +119,7 @@ private java.util.Vector getRows()
 public Object getValueAt(int row, int col) 
 {
 
-	if( row <= getRows().size() )
+	if( row < getRows().size() )
 	{
 		ContactNotification cntNotif = getContactNotificationRow(row);
 		
@@ -202,7 +202,7 @@ public void setRowValue(int rowNumber, ContactNotification cntNotif)
 
 public void setValueAt(Object value, int row, int col) 
 {
-	if( row <= getRows().size() && col < getColumnCount() )
+	if( row < getRows().size() && col < getColumnCount() )
 	{
 		ContactNotification cntNotif = getContactNotificationRow(row);
 				
