@@ -276,6 +276,7 @@ public class UpdateContactsAction implements ActionBase {
 		            
 					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
 					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
+					ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 					
 					StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
 					resp.addAdditionalContact( starsContact );
@@ -294,6 +295,7 @@ public class UpdateContactsAction implements ActionBase {
             	
             	energyCompany.getContactAccountIDMap().remove( new Integer(liteContact.getContactID()) );
             	ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+            	
 			}
             
 			liteCustomer.setAdditionalContacts( newContactList );
