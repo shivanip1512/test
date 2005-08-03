@@ -2,9 +2,9 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-alter table capbank alter column maplocationid varchar(64) not null;
-alter table capcontrolfeeder alter column maplocationid varchar(64) not null;
-alter table capcontrolsubstationbus alter column maplocationid varchar(64) not null;
+alter table capbank alter column maplocationid varchar(64);
+alter table capcontrolfeeder alter column maplocationid varchar(64);
+alter table capcontrolsubstationbus alter column maplocationid varchar(64);
 go
 
 

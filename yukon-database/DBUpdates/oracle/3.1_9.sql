@@ -2,9 +2,9 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-alter table capbank modify maplocationid varchar2(64) not null;
-alter table capcontrolfeeder modify maplocationid varchar2(64) not null;
-alter table capcontrolsubstationbus modify maplocationid varchar2(64) not null;
+alter table capbank modify maplocationid varchar2(64);
+alter table capcontrolfeeder modify maplocationid varchar2(64);
+alter table capcontrolsubstationbus modify maplocationid varchar2(64);
 
 
 
