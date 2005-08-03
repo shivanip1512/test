@@ -7,7 +7,7 @@
 # Wrapper parameters
 #********************************************************************
 # Java Application
-wrapper.java.command=java
+wrapper.java.command=../../Runtime/bin/java
 
 # Java Main class
 wrapper.java.mainclass=com.silveregg.wrapper.WrapperSimpleApp
