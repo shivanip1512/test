@@ -117,6 +117,8 @@ public class UpdateContactsAction implements ActionBase {
 					//login.setEnergyCompany()
 					login = (YukonUser)
 						Transaction.createTransaction(Transaction.INSERT, login).execute();
+					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
 					contact.setLoginID(login.getUserID().intValue());
 					updateContacts.addAdditionalContact( (AdditionalContact)contact );
 				}				

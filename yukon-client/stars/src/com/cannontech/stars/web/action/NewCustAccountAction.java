@@ -17,6 +17,7 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -174,6 +175,8 @@ public class NewCustAccountAction implements ActionBase {
 					//login.setEnergyCompany()
 					login = (YukonUser)
 							Transaction.createTransaction(Transaction.INSERT, login).execute();
+					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		
 					contact.setLoginID(login.getUserID().intValue());
 					account.addAdditionalContact( contact );
 				}
@@ -205,6 +208,7 @@ public class NewCustAccountAction implements ActionBase {
 				if(groupIDs != null)
 					groupIDs.*/
 				login.setGroupID(custGroups[0].getGroupID());
+				//login.setStatus(UserUtils.STATUS_ENABLED);
 				//how do I set energy company id for this type of login?????
 				//login.setStatus(UserUtils.STATUS_ENABLED);
 
