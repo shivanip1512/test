@@ -14,7 +14,8 @@
       <all-permissions/>
    </security>
    <resources>
-      <j2se version="1.4.2+"/>
+      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4.2_08"/>
+      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4+"/>
       <jar href="graph.jar"/>
       <jar href="common.jar"/>
       <jar href="dbeditor.jar"/>
