@@ -530,7 +530,7 @@ proc runBatchProgram { args } {
             # run an external program
             set batFileName [lindex $args 0]
     
-            dout [exec cmd.exe /c $batFileName]
+            dout [createProcess $batFileName]
             
         } else {
             dout "Invalid number of Args: runBatchProgram"
@@ -592,7 +592,7 @@ proc exportBillingFile { args } {
             if { $argCount < 4 } {
                 # export the file with 2-3 parameters
                 
-                dout [exec cmd.exe /c "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat]
+                dout [createProcess "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat]
                 return
             }
 
@@ -607,7 +607,7 @@ proc exportBillingFile { args } {
 
             if { $argCount < 6 } {
                 # export the file with 5 parameters
-                dout [exec cmd.exe /c "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec]
+                dout [createProcess "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec]
                 return
             }
             
@@ -625,7 +625,7 @@ proc exportBillingFile { args } {
 
 
             # export the file with 7 parameters
-            dout [exec cmd.exe /c "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec $energyDays $demandDays]
+            dout [createProcess "\\yukon\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec $energyDays $demandDays]
             
         } else {
             dout "No Args for exportBillingFile"
