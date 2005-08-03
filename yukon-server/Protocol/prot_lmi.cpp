@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/08/01 09:30:15 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/08/03 21:47:13 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -809,6 +809,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //  also, if we're out of time, stop loading codes
                                 if( _transmitting_until >= _completion_time )
                                 {
+                                    //  FIX: does this do the send?
                                     _transaction_complete = true;
                                 }
 
@@ -997,7 +998,7 @@ void CtiProtocolLMI::decodeStatuses(lmi_status statuses)
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
     pd->setId(LMIPointOffset_CodeVerification);
-    pd->setValue(!statuses.loadshed_verify_state || statuses.loadshed_verify_complete);
+    pd->setValue(statuses.loadshed_verify_state && !statuses.loadshed_verify_complete);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
