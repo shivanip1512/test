@@ -110,7 +110,8 @@ create table PAOSchedule  (
    ScheduleID           NUMBER                          not null,
    NextRunTime          DATE                            not null,
    LastRunTime          DATE                            not null,
-   IntervalRate         NUMBER                          not null
+   IntervalRate         NUMBER                          not null,
+   ScheduleName         VARCHAR2(64)                    not null
 );
 alter table PAOSchedule
    add constraint PK_PAOSCHEDULE primary key (ScheduleID);

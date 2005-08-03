@@ -144,7 +144,8 @@ create table PAOSchedule (
    ScheduleID           numeric              not null,
    NextRunTime          datetime             not null,
    LastRunTime          datetime             not null,
-   IntervalRate         numeric              not null
+   IntervalRate         numeric              not null,
+   ScheduleName         varchar(64)          not null
 );
 go
 alter table PAOSchedule
