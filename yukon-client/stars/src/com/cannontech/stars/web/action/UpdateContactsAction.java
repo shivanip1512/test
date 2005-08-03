@@ -300,7 +300,7 @@ public class UpdateContactsAction implements ActionBase {
 			liteCustomer.setAdditionalContacts( newContactList );
 			
 			respOper.setStarsUpdateContactsResponse( resp );
-			ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			//ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
