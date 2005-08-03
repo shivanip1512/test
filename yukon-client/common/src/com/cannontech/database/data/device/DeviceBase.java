@@ -2,6 +2,7 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DynamicDeviceScanData;
+import com.cannontech.database.db.device.DynamicVerification;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 
 
@@ -55,6 +56,10 @@ public void delete() throws java.sql.SQLException
 	DynamicDeviceScanData.deleteDynamicDeviceScanData( 
          getDevice().getDeviceID(), getDbConnection() );
 
+	delete( DynamicVerification.TABLE_NAME, 
+		DynamicVerification.CONSTRAINT_COLUMNS[0], 
+		getDevice().getDeviceID() );
+	
 	delete( DeviceCustomerList.TABLE_NAME, 
 		DeviceCustomerList.CONSTRAINT_COLUMNS[0], 
 		getDevice().getDeviceID() );
