@@ -276,7 +276,6 @@ public class UpdateContactsAction implements ActionBase {
 		            
 					liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
 					ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
-					ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 					
 					StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
 					resp.addAdditionalContact( starsContact );
@@ -301,6 +300,7 @@ public class UpdateContactsAction implements ActionBase {
 			liteCustomer.setAdditionalContacts( newContactList );
 			
 			respOper.setStarsUpdateContactsResponse( resp );
+			ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
 		catch (Exception e) {
