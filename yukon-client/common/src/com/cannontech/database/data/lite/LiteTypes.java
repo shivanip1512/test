@@ -1,10 +1,13 @@
 package com.cannontech.database.data.lite;
 
+
 /**
  * This type was created in VisualAge.
  */
 public final class LiteTypes 
 {
+	public final static int INVALID					= -1;
+
 	public final static int POINT					= 1;
 	public final static int STATEGROUP				= 2;
 	public final static int STATE					= 3;
