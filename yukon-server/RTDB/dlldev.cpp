@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/06/15 19:24:11 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/08/04 18:16:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,6 +105,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
             case RouteTypeVersacom:
             case RouteTypeTap:
             case RouteTypeWCTP:
+            case RouteTypeSNPP:
             case RouteTypeRTC:
             case RouteTypeSeriesVLMI:
                 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2005/07/13 16:09:04 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2005/08/04 18:16:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,10 @@ INT resolveRouteType(RWCString rwsTemp)
     else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
     {
         Ret = RouteTypeTap;
+    }
+    else if(rwsTemp == "snpp terminal")
+    {
+        Ret = RouteTypeSNPP;
     }
     else if(rwsTemp == "wctp terminal")
     {

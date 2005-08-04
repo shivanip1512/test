@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/07/11 18:28:38 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/08/04 18:16:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -631,6 +631,10 @@ RWCString Ret;
     else if(aType == RouteTypeWCTP)
     {
         Ret = "wctp paging";
+    }
+    else if(aType == RouteTypeSNPP)
+    {
+        Ret = "snpp terminal";//paging?
     }
     else if(aType == RouteTypeRTC)
     {
