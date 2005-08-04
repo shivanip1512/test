@@ -68,6 +68,13 @@ function sleep(millis)
     while(curDate-date < millis);
 }
 
+function setStartAble( radioChk )
+{
+	var val = radioChk.value == "startat" && radioChk.checked;	
+	document.cmdForm.startdate.disabled = !val;
+	document.cmdForm.startTime1.disabled = !val;
+}
+
 function setStopAble( radioChk )
 {
 	var val = radioChk.value == "stopat" && radioChk.checked;	
