@@ -51,7 +51,6 @@ function update()
 
 	/* Post to the actual servlet to do the work (must do first to ensure the command gets out) */
 	document.cmdForm.attributes["action"].value = "<%=request.getContextPath()%>/servlet/LCConnectionServlet";
-	document.cmdForm.submit();
 
     /* Give some time for the above submit call to arrive at its destination */
     sleep(250);
