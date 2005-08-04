@@ -53,7 +53,7 @@ function showElem( elemId, chkBox ) {
 <br>
 <table width="60%" border="1" align="center" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
   <tr> 
-    <td align = "center" height="51" valign = "bottom"><img src="<%= logo %>">
+    <td align = "center" height="51" valign = "bottom"><img src="<%=request.getContextPath()%><%= logo %>">
       <table width="100%" border="0" height="43">
         <tr> 
           <td align = "center"><span class="TableCell"><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#999999"><b><font face="Arial, Helvetica, sans-serif" color="#666666" size="4">
@@ -87,7 +87,7 @@ function showElem( elemId, chkBox ) {
 </table>
 <br>
 <div align="center" class="TableCell1">
-  <img src="/YukonLogo.gif" width="139" height="29">
+  <img src="<%=request.getContextPath()%>/YukonLogo.gif" width="139" height="29">
 </div>
 </body>
 
