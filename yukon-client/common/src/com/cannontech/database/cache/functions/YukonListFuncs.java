@@ -321,7 +321,9 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	public static boolean isEmail( int listEntryID )
 	{
 		return
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL;
+			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL
+			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_CELL
+			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_PAGER;
 	}
 
 	/**
@@ -347,8 +349,8 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	 */
 	public static boolean isPager( int listEntryID )
 	{
-		return 
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
+		return false;
+			 //listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
 	}	
 	/**
 	 * Get the selection list name based on the specified list entry yukon definition ID 
