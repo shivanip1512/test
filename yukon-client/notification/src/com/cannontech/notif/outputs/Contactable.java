@@ -38,8 +38,8 @@ public class Contactable {
      *            a Set of contact notification types
      * @return A List of LiteContactNotification
      */
-    public List getNotifications(Set types) {
-        return _contactableBase.getNotifications(types);
+    public List getNotifications(NotificationTypeChecker checker) {
+        return _contactableBase.getNotifications(checker);
     }
 
     /**

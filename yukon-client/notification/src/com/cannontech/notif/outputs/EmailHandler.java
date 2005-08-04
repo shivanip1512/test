@@ -1,13 +1,14 @@
 package com.cannontech.notif.outputs;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
 import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifMap;
 import com.cannontech.tools.email.SimpleEmailMessage;
@@ -19,11 +20,14 @@ import com.cannontech.tools.email.SimpleEmailMessage;
 public class EmailHandler extends OutputHandler
 {
 
-    public static final Set EMAIL_NOTIFICATION_TYPES = new HashSet(1);
+    //public static final Set EMAIL_NOTIFICATION_TYPES = new HashSet(1);
+    static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
+        public boolean validNotifcationType(int notificationCategoryId) {
+            return YukonListFuncs.isEmail(notificationCategoryId);
+        };
+    };
     
-    static {
-        EMAIL_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL));
-    }
+
 
     public EmailHandler() {
         super("email");
@@ -45,7 +49,7 @@ public class EmailHandler extends OutputHandler
             emailMsg.setSubject(emailSubject);
             emailMsg.setBody(emailBody);
             
-            List emailList = contact.getNotifications(EMAIL_NOTIFICATION_TYPES);
+            List emailList = contact.getNotifications(checker);
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
                 LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();

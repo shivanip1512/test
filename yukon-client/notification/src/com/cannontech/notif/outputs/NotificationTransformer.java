@@ -50,7 +50,8 @@ public class NotificationTransformer {
     public Document transform(Notification notif) throws TransformException {
         try {
             CTILogger.debug("Transforming notification");
-
+            //CTILogger.debug("javax.xml: " + System.getProperty("javax.xml.transform.TransformerFactory"));
+            System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.processor.TransformerFactoryImpl");
             Document result;
             InputStream styleSheet = getStyleSheet(notif.getMessageType(),
                                                    _outputType);

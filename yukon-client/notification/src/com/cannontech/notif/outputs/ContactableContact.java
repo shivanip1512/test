@@ -30,11 +30,11 @@ public class ContactableContact extends ContactableBase {
         return _customer;
     }
     
-    public List getNotifications(Set notifTypes) {
+    public List getNotifications(NotificationTypeChecker checker) {
         List result = new LinkedList();
         for (Iterator iter = _notifList.iterator(); iter.hasNext();) {
             ContactableBase contactable = (ContactableBase) iter.next();
-            result.addAll(contactable.getNotifications(notifTypes));
+            result.addAll(contactable.getNotifications(checker));
         };
         return result;
     }

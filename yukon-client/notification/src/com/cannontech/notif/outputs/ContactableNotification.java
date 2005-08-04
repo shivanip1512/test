@@ -26,10 +26,9 @@ public class ContactableNotification extends ContactableBase {
         return _customer;
     }
     
-    public List getNotifications(Set notifTypes) {
+    public List getNotifications(NotificationTypeChecker checker) {
         List result;
-        Integer type = new Integer(_liteNotif.getNotificationCategoryID());
-        if (notifTypes.contains(type)) {
+        if (checker.validNotifcationType(_liteNotif.getNotificationCategoryID())) {
             result = new ArrayList(1);
             result.add(_liteNotif);
         } else {

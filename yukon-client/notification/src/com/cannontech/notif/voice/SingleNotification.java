@@ -2,16 +2,15 @@ package com.cannontech.notif.voice;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.cache.functions.ContactFuncs;
+import com.cannontech.database.cache.functions.YukonListFuncs;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.notif.outputs.ContactPhone;
-import com.cannontech.notif.outputs.Contactable;
+import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.voice.callstates.*;
 import com.cannontech.user.UserUtils;
 
@@ -28,13 +27,12 @@ public class SingleNotification implements PropertyChangeListener {
     public static final String STATE_FAILED = "Failed";
     public static final String NOTIFICATION_STATE = "notifstate";
     
-    public static final Set VOICE_NOTIFICATION_TYPES = new HashSet(3);
-    static {
-        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_PHONE));
-        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
-        VOICE_NOTIFICATION_TYPES.add(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-    }
-    
+    static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
+        public boolean validNotifcationType(int notificationCategoryId) {
+            return YukonListFuncs.isPhoneNumber(notificationCategoryId);
+        };
+    };
+        
 	PropertyChangeMulticaster _listeners = new PropertyChangeMulticaster(this);
 	String _state = STATE_INITIAL;
 	private Iterator _phoneIterator;
@@ -47,7 +45,7 @@ public class SingleNotification implements PropertyChangeListener {
 	
 	public SingleNotification(Contactable contactable, Object message) {
 		_contactable = contactable;
-        _phoneIterator = contactable.getNotifications(VOICE_NOTIFICATION_TYPES).iterator();
+        _phoneIterator = contactable.getNotifications(checker).iterator();
 		_message = message;
         _token = "NOTIF-" + _nextToken.incrementAndGet();
 

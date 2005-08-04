@@ -22,11 +22,11 @@ public class ContactableCustomer extends ContactableBase {
         }        
     }
     
-    public List getNotifications(Set notifTypes) {
+    public List getNotifications(NotificationTypeChecker checker) {
         List result = new LinkedList();
         for (Iterator iter = _contactList.iterator(); iter.hasNext();) {
             ContactableBase contactable = (ContactableBase) iter.next();
-            result.addAll(contactable.getNotifications(notifTypes));
+            result.addAll(contactable.getNotifications(checker));
         }
         return result;
     }

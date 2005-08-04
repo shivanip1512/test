@@ -36,7 +36,7 @@ public class CustomerEmailMessageHandler extends MessageHandler {
             emailMsg.setSubject(msg.getSubject());
             emailMsg.setBody(msg.getBody());
             
-            for (Iterator iter = customer.getNotifications(EMAIL_NOTIFICATION_TYPES).iterator(); iter.hasNext();) {
+            for (Iterator iter = customer.getNotifications(EmailHandler.checker).iterator(); iter.hasNext();) {
                 LiteContactNotification addr = (LiteContactNotification) iter.next();
                 String emailTo = addr.getNotification();
                 try {
