@@ -147,7 +147,7 @@ public class UpdateContactsAction implements ActionBase {
 							if (email != null)
 								contNotif.setDisabled( email.getDisabled() );
 							else
-								contNotif.setDisabled( true );
+								contNotif.setDisabled( false );
 						}
 						
 						contact.addContactNotification( contNotif );

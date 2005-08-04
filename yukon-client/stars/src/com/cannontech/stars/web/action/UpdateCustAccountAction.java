@@ -138,7 +138,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (homePhone != null) 
 			{
 				if(homeIndex != -1)
-					primContact.addContactNotification(homeIndex, homePhone);
+					primContact.getContactNotification()[homeIndex] = homePhone;
 				else
 					primContact.addContactNotification( homePhone );
 			} 
@@ -148,7 +148,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			if (workPhone != null)
 			{
 				if(workIndex != -1)
-					primContact.addContactNotification(workIndex, workPhone);
+					primContact.getContactNotification()[workIndex] = workPhone;
 				else
 					primContact.addContactNotification( workPhone );
 			} 
@@ -159,7 +159,7 @@ public class UpdateCustAccountAction implements ActionBase {
 			{
 				email.setDisabled( req.getParameter("NotifyControl") == null );
 				if(emailIndex != -1)
-					primContact.addContactNotification(emailIndex, email);
+					primContact.getContactNotification()[emailIndex] = email;
 				else
 					primContact.addContactNotification( email );
 			} 
