@@ -31,7 +31,7 @@ public class SOAPUtil {
 
     private static MessageFactory msgFac = null;
 
-    private static String SOAP_ENV_PREFIX = "soap-env";
+    private static String SOAP_ENV_PREFIX = "soapenv";
     private static String SOAP_ENV_NSURL = "http://schemas.xmlsoap.org/soap/envelope/";
 
     public SOAPUtil() {
@@ -90,10 +90,8 @@ public class SOAPUtil {
         Name hdrName = header.getElementName();
 
         if (hdrName.getPrefix() == null || hdrName.getPrefix().length() == 0) {
-//			soapHdrHeader = "<soapenv:" + hdrName.getLocalName();
-//			soapHdrTrailer = "</soapenv:" + hdrName.getLocalName() + ">";
-			soapHdrHeader = "<" + hdrName.getLocalName();
-			soapHdrTrailer = "</" + hdrName.getLocalName() + ">";
+			soapHdrHeader = "<" + SOAP_ENV_PREFIX + ":" + hdrName.getLocalName();
+			soapHdrTrailer = "<" + SOAP_ENV_PREFIX + ":" + hdrName.getLocalName() + ">";
         }
         else {
             soapHdrHeader = "<" + hdrName.getPrefix() + ":" + hdrName.getLocalName();
@@ -123,10 +121,8 @@ public class SOAPUtil {
         Name bodyName = body.getElementName();
 
         if (bodyName.getPrefix() == null || bodyName.getPrefix().length() == 0) {
-//			soapBodyHeader = "<soapenv:" + bodyName.getLocalName();
-//			soapBodyTrailer = "</soapenv:" + bodyName.getLocalName() + ">";
-            soapBodyHeader = "<" + bodyName.getLocalName();
-            soapBodyTrailer = "</" + bodyName.getLocalName() + ">";
+			soapBodyHeader = "<" + SOAP_ENV_PREFIX + ":" + bodyName.getLocalName();
+			soapBodyTrailer = "</" + SOAP_ENV_PREFIX + ":" + bodyName.getLocalName() + ">";
         }
         else {
             soapBodyHeader = "<" + bodyName.getPrefix() + ":" + bodyName.getLocalName();
@@ -153,11 +149,8 @@ public class SOAPUtil {
         String soapElemTrailer = null;
 
         if (elemName.getPrefix() == null || elemName.getPrefix().length() == 0) {
-//			soapElemHeader = "<soapenv:" + elemName.getLocalName();
-//			soapElemTrailer = "</soapenv:" + elemName.getLocalName() + ">";
-
-            soapElemHeader = "<" + elemName.getLocalName();
-            soapElemTrailer = "</" + elemName.getLocalName() + ">";
+			soapElemHeader = "<" + SOAP_ENV_PREFIX + ":" + elemName.getLocalName();
+			soapElemTrailer = "</" + SOAP_ENV_PREFIX + ":" + elemName.getLocalName() + ">";
         }
         else {
             soapElemHeader = "<" + elemName.getPrefix() + ":" + elemName.getLocalName();
