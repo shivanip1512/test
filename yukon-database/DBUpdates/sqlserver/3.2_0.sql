@@ -310,7 +310,6 @@ update YukonListEntry set EntryText = 'Email to Pager'  where EntryText = 'Pager
 go
 
 update YukonListEntry set YukonDefinitionID = 5 where EntryText = 'Fax Number';
-update YukonListEntry set YukonDefinitionID = 4 where EntryText = 'Email to Pager';
 insert into YukonListEntry values(8,1,0,'Cell Phone',2);
 go
 
