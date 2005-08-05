@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/08/03 18:35:33 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/08/05 20:01:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ using namespace std;
 #include "msg_lmcontrolhistory.h"
 #include "cmdparse.h"
 #include "dev_modbus.h"
+#include "prot_modbus.h"
 #include "device.h"
 #include "logger.h"
 #include "numstr.h"
@@ -51,7 +52,7 @@ using namespace std;
 namespace Cti       {
 namespace Device    {
 
-Modbus::Modbus()
+Modbus::Modbus(void)
 {
 }
 

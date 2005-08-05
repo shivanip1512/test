@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/08/03 18:35:33 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/08/05 20:01:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ public:
 
     typedef CtiDeviceRemote Inherited;
 
-    Modbus();
+    Modbus(void);
     Modbus(const Modbus& aRef);
     virtual ~Modbus();
 

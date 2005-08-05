@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/08/03 18:35:33 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/08/05 20:01:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,6 +76,7 @@ void Modbus::setAddresses( unsigned short slaveAddress )
 }*/
 
 
+//Should we use non-blocking reads? It could cause problems with serial over IP and other applications...
 int Modbus::generate( CtiXfer &xfer )
 {
     _asciiOutput = false;
@@ -185,6 +186,16 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 retVal = UnknownError;//some error code should be set!
+                                
+                                if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
+                                {
+                                    clearPoints();
+                                    _status = End;
+                                }
+                                else
+                                {
+                                    _status = Continue;
+                                }
                                 break;
                             }
 
@@ -199,6 +210,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 {
                                     _status = End;
                                     retVal = NoError;
+                                    clearPoints();
                                 }
                                 break;
                                 
@@ -207,7 +219,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                             {
                                 //this means error code was set, but response was right. Report the error code
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                _string_results.push_back(CTIDBG_new string("There is a read starting at point " + CtiNumStr((*_points_start).pointOffset) +
+                                _string_results.push_back(CTIDBG_new string("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
                                                                             " that cannot be read."));
                                 retVal = UnknownError;//some error code should be set!
 
@@ -217,6 +229,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 {
                                     _status = End;
                                     retVal = NoError;//I dont want to repeat!
+                                    clearPoints();
                                 }
                                 break;
                             }
@@ -228,9 +241,14 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 retVal = UnknownError;//some error code should be set, we can retry!
 
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
+                                {
+                                    clearPoints();
                                     _status = End;
+                                }
                                 else
+                                {
                                     _status = Continue;
+                                }
                                 break;
                             }
 
@@ -241,6 +259,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                             dout << RWTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             retVal = UnknownError;//some error code should be set!
                             _status = End;
+                            clearPoints();
                             break;                            
                         }
                     
@@ -249,6 +268,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
+                        clearPoints();
                         _status = End;
                         break;
                     }
@@ -348,10 +368,10 @@ bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
                 {
                     base = (*_points_finish).pointOffset;
                     _points_finish++;
-                    function = (*_points_start).pointType;
+                    function = (*_points_start).pointType==Command_DecomposeReadHoldingRegisters ? Command_ReadHoldingRegisters : Command_ReadInputRegisters;
                     current = base;
     
-                    while((function == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadStatusMaxBits)
+                    while(((*_points_start).pointType == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadStatusMaxBits)
                            && (((*_points_finish).pointOffset - current)<=ReadStatusGapBitLimit) && (_points_finish != _points.end()))
                     {
                         current = (*_points_finish).pointOffset;
@@ -398,7 +418,13 @@ void Modbus::assemblePointData(CtiXfer &xfer)
                 dataPoint.pointType = (*_points_start).pointType;
                 if(!_asciiOutput)
                 {
-                    for(int i=0;i<(8*xfer.getInBuffer()[2]);i++)//byte count
+                    int maxCount = 8*xfer.getInBuffer()[2];//bits!
+                    if((*_points_start).pointType == Command_DecomposeReadHoldingRegisters || (*_points_start).pointType == Command_DecomposeReadInputRegisters)
+                    {//Basically this makes sure the decomposed reads dont try to read bits beyond what they contain.
+                        maxCount -= ((*_points_start).pointOffset%8);
+                    }
+
+                    for(int i=0;i<(maxCount);i++)//bit count
                     {
                         dataPoint.pointOffset = i+(*_points_start).pointOffset;//first point
                         if(_points.count(dataPoint))
@@ -450,7 +476,7 @@ void Modbus::assemblePointData(CtiXfer &xfer)
                         dataPoint.pointOffset = i+(*_points_start).pointOffset;//first point
                         if(_points.count(dataPoint))
                         {
-                            pointMessage.setValue(((int)xfer.getInBuffer()[3+2*i])<<8 + (int)xfer.getInBuffer()[4+2*i]);
+                            pointMessage.setValue((((int)xfer.getInBuffer()[3+2*i])<<8) + ((int)xfer.getInBuffer()[4+2*i]));
 
                             if(dataPoint.pointType == Command_ReadHoldingRegisters)
                             {
@@ -461,7 +487,7 @@ void Modbus::assemblePointData(CtiXfer &xfer)
                                 pointMessage.setId(dataPoint.pointOffset + SecondStartPoint);
                             }
 
-                            pointMessage.setType(StatusPointType);
+                            pointMessage.setType(AnalogPointType);
                             pointPointer = CTIDBG_new CtiPointDataMsg(pointMessage);
                             _point_results.push_back(pointPointer);
                         }
@@ -535,8 +561,9 @@ void Modbus::addAnalogPoint(int point)
     _points_start = _points.begin();
 } 
 
-void Modbus::clearPoints()
+void Modbus::clearPoints()//ok, this does more than clear points. Sue me.
 {
+    _retries = 0;//reset retry count
     _points.clear();
     _points_start = _points.begin();
     _command = Command_Error;
