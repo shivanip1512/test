@@ -304,6 +304,17 @@ alter table DeviceTNPPSettings
       references DEVICE (DEVICEID);
 go
 
+insert into YukonListEntry values(9,1,0,'Email to Cell', 1);
+update YukonListEntry set YukonDefinitionID = 1 where EntryText = 'Pager Number';
+update YukonListEntry set EntryText = 'Email to Pager'  where EntryText = 'Pager Number';
+go
+
+update YukonListEntry set YukonDefinitionID = 5 where EntryText = 'Fax Number';
+update YukonListEntry set YukonDefinitionID = 4 where EntryText = 'Email to Pager';
+insert into YukonListEntry values(8,1,0,'Cell Phone',2);
+go
+
+
 
 
 
