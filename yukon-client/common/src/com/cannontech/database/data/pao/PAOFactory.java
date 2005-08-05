@@ -1,5 +1,7 @@
 package com.cannontech.database.data.pao;
 
+import com.cannontech.database.cache.functions.PAOFuncs;
+
 /**
  * Insert the type's description here.
  * Creation date: (9/12/2001 2:49:48 PM)
@@ -19,7 +21,7 @@ private PAOFactory() {
  * Creation date: (9/12/2001 2:51:30 PM)
  * @param paoType java.lang.String
  */
-public static YukonPAObject createPAObject( com.cannontech.database.data.lite.LiteYukonPAObject litePAObject ) throws java.sql.SQLException
+public static YukonPAObject createPAObject( com.cannontech.database.data.lite.LiteYukonPAObject litePAObject )
 {
 	YukonPAObject returnObject = null;
 
@@ -72,4 +74,14 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	
 	return returnObject;
 }
+
+
+/**
+ * Creates a fat PAObject with a given PAOid
+ */
+public static YukonPAObject createPAObject( int paoID )
+{
+	return createPAObject( PAOFuncs.getLiteYukonPAO(paoID) );
+}
+
 }
