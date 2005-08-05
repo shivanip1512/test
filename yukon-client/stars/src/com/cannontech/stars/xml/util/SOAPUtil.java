@@ -90,8 +90,10 @@ public class SOAPUtil {
         Name hdrName = header.getElementName();
 
         if (hdrName.getPrefix() == null || hdrName.getPrefix().length() == 0) {
-            soapHdrHeader = "<" + hdrName.getLocalName();
-            soapHdrTrailer = "</" + hdrName.getLocalName() + ">";
+//			soapHdrHeader = "<soapenv:" + hdrName.getLocalName();
+//			soapHdrTrailer = "</soapenv:" + hdrName.getLocalName() + ">";
+			soapHdrHeader = "<" + hdrName.getLocalName();
+			soapHdrTrailer = "</" + hdrName.getLocalName() + ">";
         }
         else {
             soapHdrHeader = "<" + hdrName.getPrefix() + ":" + hdrName.getLocalName();
@@ -121,6 +123,8 @@ public class SOAPUtil {
         Name bodyName = body.getElementName();
 
         if (bodyName.getPrefix() == null || bodyName.getPrefix().length() == 0) {
+//			soapBodyHeader = "<soapenv:" + bodyName.getLocalName();
+//			soapBodyTrailer = "</soapenv:" + bodyName.getLocalName() + ">";
             soapBodyHeader = "<" + bodyName.getLocalName();
             soapBodyTrailer = "</" + bodyName.getLocalName() + ">";
         }
@@ -149,6 +153,9 @@ public class SOAPUtil {
         String soapElemTrailer = null;
 
         if (elemName.getPrefix() == null || elemName.getPrefix().length() == 0) {
+//			soapElemHeader = "<soapenv:" + elemName.getLocalName();
+//			soapElemTrailer = "</soapenv:" + elemName.getLocalName() + ">";
+
             soapElemHeader = "<" + elemName.getLocalName();
             soapElemTrailer = "</" + elemName.getLocalName() + ">";
         }
@@ -186,29 +193,33 @@ public class SOAPUtil {
     
     public static void mergeSOAPMsgOfOperation(SOAPMessage msg1, SOAPMessage msg2) throws Exception {
     	SOAPEnvelope env1 = msg1.getSOAPPart().getEnvelope();
-    	Iterator it = env1.getBody().getChildElements( env1.createName(StarsConstants.STARS_OPERATION) );
+    	Iterator it = env1.getBody().getChildElements();// env1.createName(StarsConstants.STARS_OPERATION) ); SN - Get all child elements and then parse through them.
     	if (it.hasNext()) {
     		SOAPElement operElmt1 = (SOAPElement) it.next();
-    		
-			SOAPEnvelope env2 = msg2.getSOAPPart().getEnvelope();
-			it = env2.getBody().getChildElements( env1.createName(StarsConstants.STARS_OPERATION) );
-			if (it.hasNext()) {
-				SOAPElement operElmt2 = (SOAPElement) it.next();
-				
-				it = operElmt2.getChildElements();
-				while (it.hasNext()) {
-					SOAPElement elmt = (SOAPElement) it.next();
-					
-					// Remove all the existing nodes with the same name first
-					Iterator it1 = operElmt1.getChildElements( elmt.getElementName() );
-					while (it1.hasNext()) {
-						SOAPElement elmt1 = (SOAPElement) it1.next();
-						elmt1.detachNode();
+    		if( operElmt1.getLocalName() == StarsConstants.STARS_OPERATION)
+    		{
+				SOAPEnvelope env2 = msg2.getSOAPPart().getEnvelope();
+				it = env2.getBody().getChildElements( );// env1.createName(StarsConstants.STARS_OPERATION) );SN - Get all child elements and then parse through them.
+				if (it.hasNext()) {
+					SOAPElement operElmt2 = (SOAPElement) it.next();
+					if( operElmt2.getLocalName() == StarsConstants.STARS_OPERATION)
+					{
+						it = operElmt2.getChildElements();
+						while (it.hasNext()) {
+							SOAPElement elmt = (SOAPElement) it.next();
+							
+							// Remove all the existing nodes with the same name first
+							Iterator it1 = operElmt1.getChildElements( elmt.getElementName() );
+							while (it1.hasNext()) {
+								SOAPElement elmt1 = (SOAPElement) it1.next();
+								elmt1.detachNode();
+							}
+							
+							operElmt1.addChildElement( elmt );
+						}
 					}
-					
-					operElmt1.addChildElement( elmt );
 				}
-			}
+    		}
     	}
     }
     
