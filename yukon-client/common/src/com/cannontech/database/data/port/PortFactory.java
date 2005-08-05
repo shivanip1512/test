@@ -13,7 +13,7 @@ public final class PortFactory {
  * @return DBPersistentData
  * @param typeOfPort int
  */
-public static DirectPort createPort( int typeOfPort ) throws java.sql.SQLException 
+public static DirectPort createPort( int typeOfPort ) 
 {
 	DirectPort port;
 	

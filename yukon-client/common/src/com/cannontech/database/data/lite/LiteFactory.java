@@ -23,221 +23,213 @@ public final class LiteFactory {
  */
 public final static com.cannontech.database.db.DBPersistent createDBPersistent(LiteBase liteObject) {
 
-	try
-	{ 
-		com.cannontech.database.db.DBPersistent returnObject = null;
+	com.cannontech.database.db.DBPersistent returnObject = null;
 
-		int liteType = liteObject.getLiteType();
-		
-		switch( liteType )
-		{
-			case LiteTypes.YUKON_PAOBJECT:
-				returnObject = com.cannontech.database.data.pao.PAOFactory.createPAObject( (LiteYukonPAObject)liteObject );
-
-				if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
-				{
-					((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonID()) );
-					((com.cannontech.database.data.device.DeviceBase)returnObject).setPAOName( ((LiteYukonPAObject)liteObject).getPaoName());
-				}
-				else if( returnObject instanceof com.cannontech.database.data.port.DirectPort )
-				{	
-					((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
-					((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( ((LiteYukonPAObject)liteObject).getPaoName() );
-				}
-				else if( returnObject instanceof com.cannontech.database.data.route.RouteBase )
-				{	
-					((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
-					((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( ((LiteYukonPAObject)liteObject).getPaoName() );
-				}
-				else if( returnObject instanceof com.cannontech.database.data.capcontrol.CapControlYukonPAOBase )
-				{	
-					((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
-					((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( ((LiteYukonPAObject)liteObject).getPaoName() );
-				}
-				break;
-				
-			case LiteTypes.CUSTOMER_CI:
-				returnObject = new CICustomerBase(); 
-				((CICustomerBase)returnObject).setCustomerID( new Integer(((LiteCICustomer)liteObject).getCustomerID()) );
-				((CICustomerBase)returnObject).getCiCustomerBase().setCompanyName( ((LiteCICustomer)liteObject).getCompanyName() );
-				((CICustomerBase)returnObject).getCiCustomerBase().setCurtailAmount( new Double(((LiteCICustomer)liteObject).getCurtailAmount()) );
-				((CICustomerBase)returnObject).getCiCustomerBase().setCustDmdLevel( new Double(((LiteCICustomer)liteObject).getDemandLevel()) );
-				((CICustomerBase)returnObject).getCiCustomerBase().setMainAddressID( new Integer(((LiteCICustomer)liteObject).getMainAddressID()) );
-				((CICustomerBase)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCICustomer)liteObject).getPrimaryContactID()) );
-				((CICustomerBase)returnObject).getCustomer().setTimeZone( ((LiteCICustomer)liteObject).getTimeZone() );
-				break;
-			case LiteTypes.CUSTOMER:
-				returnObject = new Customer(); 
-				((Customer)returnObject).setCustomerID( new Integer(((LiteCustomer)liteObject).getCustomerID()) );
-				((Customer)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCustomer)liteObject).getPrimaryContactID()) );
-				((Customer)returnObject).getCustomer().setTimeZone( ((LiteCustomer)liteObject).getTimeZone() );
-				break;
-			case LiteTypes.POINT:
-				returnObject = com.cannontech.database.data.point.PointFactory.createPoint(((LitePoint)liteObject).getPointType());
-				((com.cannontech.database.data.point.PointBase)returnObject).setPointID(new Integer(((LitePoint)liteObject).getPointID()));
-				((com.cannontech.database.data.point.PointBase)returnObject).getPoint().setPointName(((LitePoint)liteObject).getPointName());
-				break;
-			case LiteTypes.STATEGROUP:
-				returnObject = com.cannontech.database.data.state.StateFactory.createGroupState();
-				((com.cannontech.database.data.state.GroupState)returnObject).setStateGroupID(new Integer(((LiteStateGroup)liteObject).getStateGroupID()));
-				((com.cannontech.database.data.state.GroupState)returnObject).getStateGroup().setName(((LiteStateGroup)liteObject).getStateGroupName());
-				break;
-			case LiteTypes.GRAPHDEFINITION:
-				returnObject = new com.cannontech.database.data.graph.GraphDefinition();
-				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setGraphDefinitionID(new Integer(((LiteGraphDefinition)liteObject).getGraphDefinitionID()));
-				((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setName(((LiteGraphDefinition)liteObject).getName());
-				break;
-			case LiteTypes.GRAPH_CUSTOMER_LIST:
-				returnObject = new com.cannontech.database.db.graph.GraphCustomerList();
-				((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setCustomerID(new Integer(((LiteGraphCustomerList)liteObject).getCustomerID()));
-				((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setGraphDefinitionID(new Integer(((LiteGraphCustomerList)liteObject).getGraphDefinitionID()));
-				break;
-			case LiteTypes.NOTIFICATION_GROUP:
-				returnObject = new com.cannontech.database.data.notification.NotificationGroup();
-				((com.cannontech.database.data.notification.NotificationGroup)returnObject).setNotificatoinGroupID(new Integer(((LiteNotificationGroup)liteObject).getNotificationGroupID()));
-				((com.cannontech.database.data.notification.NotificationGroup)returnObject).getNotificationGroup().setGroupName(((LiteNotificationGroup)liteObject).getNotificationGroupName());
-				break;
-			case LiteTypes.ALARM_CATEGORIES:
-				returnObject = new com.cannontech.database.db.notification.AlarmCategory();
-				((com.cannontech.database.db.notification.AlarmCategory)returnObject).setAlarmCategoryID(new Integer(((LiteAlarmCategory)liteObject).getAlarmStateID()));
-				((com.cannontech.database.db.notification.AlarmCategory)returnObject).setCategoryName(((LiteAlarmCategory)liteObject).getCategoryName());
-				((com.cannontech.database.db.notification.AlarmCategory)returnObject).setNotificationGroupID( new Integer( ((LiteAlarmCategory)liteObject).getNotificationGroupID()) );
-				break;
-			case LiteTypes.CONTACT:
-				returnObject = new com.cannontech.database.data.customer.Contact();
-				((com.cannontech.database.data.customer.Contact)returnObject).setContactID( new Integer(((LiteContact)liteObject).getContactID()) );
-				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContFirstName( ((LiteContact)liteObject).getContFirstName() );
-				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContLastName( ((LiteContact)liteObject).getContLastName() );
-				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setLogInID( new Integer( ((LiteContact)liteObject).getLoginID() ) );
-				((com.cannontech.database.data.customer.Contact)returnObject).getContact().setAddressID( new Integer(((LiteContact)liteObject).getAddressID()) );				
-				break;
-			case LiteTypes.DEVICE_METERNUMBER:
-				returnObject = new com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase();
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setDeviceID(new Integer(((LiteDeviceMeterNumber)liteObject).getDeviceID()) );
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setMeterNumber(((LiteDeviceMeterNumber)liteObject).getMeterNumber() );
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setCollectionGroup(((LiteDeviceMeterNumber)liteObject).getCollGroup() );
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setTestCollectionGroup(((LiteDeviceMeterNumber)liteObject).getTestCollGroup() );
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setBillingGroup(((LiteDeviceMeterNumber)liteObject).getBillGroup() );
-				break;				
-			case LiteTypes.HOLIDAY_SCHEDULE:
-				returnObject = new com.cannontech.database.data.holiday.HolidaySchedule();
-				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleID(new Integer(((LiteHolidaySchedule)liteObject).getHolidayScheduleID()) );
-				((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleName( ((LiteHolidaySchedule)liteObject).getHolidayScheduleName() );
-				break;
-			case LiteTypes.SEASON_SCHEDULE:
-				returnObject = new com.cannontech.database.data.season.SeasonSchedule();
-				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleID(new Integer(((LiteSeasonSchedule)liteObject).getScheduleID()) );
-				((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleName( ((LiteSeasonSchedule)liteObject).getScheduleName() );
-				break;
-			case LiteTypes.TOU_SCHEDULE:
-				returnObject = new com.cannontech.database.data.tou.TOUSchedule();
-				((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleID(new Integer(((LiteTOUSchedule)liteObject).getScheduleID()) );
-				((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleName( ((LiteTOUSchedule)liteObject).getScheduleName() );
-				break;
-			case LiteTypes.BASELINE:
-				returnObject = new com.cannontech.database.data.baseline.Baseline();
-				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineID(new Integer(((LiteBaseline)liteObject).getBaselineID()) );
-				((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineName( ((LiteBaseline)liteObject).getBaselineName() );
-				break;
-			case LiteTypes.CONFIG:
-				returnObject = new com.cannontech.database.data.config.ConfigTwoWay();
-				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigID(new Integer(((LiteConfig)liteObject).getConfigID()) );
-				((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigName( ((LiteConfig)liteObject).getConfigName() );
-				break;
-			case LiteTypes.LMCONSTRAINT:
-				returnObject = new com.cannontech.database.db.device.lm.LMProgramConstraint();
-				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintID(new Integer(((LiteLMConstraint)liteObject).getConstraintID()));
-				((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintName(((LiteLMConstraint)liteObject).getConstraintName());
-				break;
-			case LiteTypes.GEAR:
-				returnObject = LMProgramDirectGear.createGearFactory(((LiteGear)liteObject).getGearType());
-				((LMProgramDirectGear)returnObject).setGearID(new Integer(liteObject.getLiteID()));
-				((LMProgramDirectGear)returnObject).setGearName(((LiteGear)liteObject).getGearName());
-				break;
-			/*case LiteTypes.LMSCENARIO:
-				returnObject = new com.cannontech.database.db.device.lm.LMControlScenarioProgram();
-				((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioID(new Integer(((LiteLMScenario)liteObject).getScenarioID()));
-				((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioName(((LiteLMScenario)liteObject).getScenarioName());
-				break;*/
-			case LiteTypes.TAG:
-				returnObject = new com.cannontech.database.db.tags.Tag();
-				((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagID()) );
-				((com.cannontech.database.db.tags.Tag)returnObject).setTagName( ((LiteTag)liteObject).getTagName() );
-				((com.cannontech.database.db.tags.Tag)returnObject).setTagLevel( new Integer(((LiteTag)liteObject).getTagLevel()));
-				Character inhibit = new Character('N');
-				if(((LiteTag)liteObject).isInhibit())
-					inhibit = new Character('Y');
-				((com.cannontech.database.db.tags.Tag)returnObject).setInhibit( inhibit );
-				((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorID()) );
-				((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageID()) );
-				break;							
-         case LiteTypes.STATE_IMAGE:
-            returnObject = new com.cannontech.database.db.state.YukonImage();
-            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
-            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageValue( ((LiteYukonImage)liteObject).getImageValue() );
-            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageName( ((LiteYukonImage)liteObject).getImageName() );
-            ((com.cannontech.database.db.state.YukonImage)returnObject).setImageCategory( ((LiteYukonImage)liteObject).getImageCategory() );
-            break;            
-         
-			case LiteTypes.YUKON_USER:
-				returnObject = new com.cannontech.database.data.user.YukonUser();
-		 		((com.cannontech.database.data.user.YukonUser)returnObject).setUserID( new Integer(((LiteYukonUser)liteObject).getUserID()) );
-		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
-		 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
-		 		break;
-			case LiteTypes.YUKON_GROUP:
-				returnObject = new com.cannontech.database.data.user.YukonGroup();
-				((com.cannontech.database.data.user.YukonGroup)returnObject).setGroupID( new Integer(((LiteYukonGroup)liteObject).getGroupID()) );
-				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupName( ((LiteYukonGroup)liteObject).getGroupName() );
-				((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
-				break;
-			case LiteTypes.DEVICE_TYPE_COMMAND:
-				returnObject = new DeviceTypeCommand();
-				((DeviceTypeCommand)returnObject).setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
-				((DeviceTypeCommand)returnObject).setCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getCommandID()));				
-				((DeviceTypeCommand)returnObject).setDeviceType(((LiteDeviceTypeCommand)liteObject).getDeviceType());
-				((DeviceTypeCommand)returnObject).setDisplayOrder(new Integer(((LiteDeviceTypeCommand)liteObject).getDisplayOrder()));
-				((DeviceTypeCommand)returnObject).setVisibleFlag(new Character(((LiteDeviceTypeCommand)liteObject).getVisibleFlag()));
-				break;
-			case LiteTypes.COMMAND:
-				returnObject = new Command();
-				((Command)returnObject).setCommandID(new Integer(((LiteCommand)liteObject).getCommandID()));				
-				((Command)returnObject).setCommand(((LiteCommand)liteObject).getCommand());
-				((Command)returnObject).setLabel(((LiteCommand)liteObject).getLabel());
-				((Command)returnObject).setCategory(((LiteCommand)liteObject).getCategory());
-				break;
-	/* TODO add SystemRole,YukonRoleProperty */		 		
-		 	case LiteTypes.ENERGY_COMPANY:
-		 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
-		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
-		 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
-		 		break;
-	/* TODO: add LiteTypes.TAG? */
-			case LiteTypes.RAWPOINTHISTORY:
-				returnObject = new RawPointHistory();
-				((RawPointHistory)returnObject).setChangeID(new Integer(((LiteRawPointHistory)liteObject).getLiteID()));
-				((RawPointHistory)returnObject).setPointID(new Integer(((LiteRawPointHistory)liteObject).getPointID()));
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTimeInMillis( ((LiteRawPointHistory)liteObject).getTimeStamp());
-				((RawPointHistory)returnObject).setTimeStamp(cal);
-				((RawPointHistory)returnObject).setValue(new Double(((LiteRawPointHistory)liteObject).getValue()));
-				((RawPointHistory)returnObject).setQuality(new Integer(((LiteRawPointHistory)liteObject).getQuality()));					 		
-				break;
-			default:
-				returnObject = null;
-				break;
-		}
-
-		if( returnObject == null )
-			throw new IllegalArgumentException("*** Unable to create a DBPersistant object from a givent Lite object in: createDBPersistent(LiteBase liteObject)");
-		else
-			return returnObject;
-	}
-	catch(java.sql.SQLException e)
+	int liteType = liteObject.getLiteType();
+	
+	switch( liteType )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		return null;
+		case LiteTypes.YUKON_PAOBJECT:
+			returnObject = com.cannontech.database.data.pao.PAOFactory.createPAObject( (LiteYukonPAObject)liteObject );
+
+			if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
+			{
+				((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonID()) );
+				((com.cannontech.database.data.device.DeviceBase)returnObject).setPAOName( ((LiteYukonPAObject)liteObject).getPaoName());
+			}
+			else if( returnObject instanceof com.cannontech.database.data.port.DirectPort )
+			{	
+				((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
+				((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( ((LiteYukonPAObject)liteObject).getPaoName() );
+			}
+			else if( returnObject instanceof com.cannontech.database.data.route.RouteBase )
+			{	
+				((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
+				((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( ((LiteYukonPAObject)liteObject).getPaoName() );
+			}
+			else if( returnObject instanceof com.cannontech.database.data.capcontrol.CapControlYukonPAOBase )
+			{	
+				((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
+				((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( ((LiteYukonPAObject)liteObject).getPaoName() );
+			}
+			break;
+			
+		case LiteTypes.CUSTOMER_CI:
+			returnObject = new CICustomerBase(); 
+			((CICustomerBase)returnObject).setCustomerID( new Integer(((LiteCICustomer)liteObject).getCustomerID()) );
+			((CICustomerBase)returnObject).getCiCustomerBase().setCompanyName( ((LiteCICustomer)liteObject).getCompanyName() );
+			((CICustomerBase)returnObject).getCiCustomerBase().setCurtailAmount( new Double(((LiteCICustomer)liteObject).getCurtailAmount()) );
+			((CICustomerBase)returnObject).getCiCustomerBase().setCustDmdLevel( new Double(((LiteCICustomer)liteObject).getDemandLevel()) );
+			((CICustomerBase)returnObject).getCiCustomerBase().setMainAddressID( new Integer(((LiteCICustomer)liteObject).getMainAddressID()) );
+			((CICustomerBase)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCICustomer)liteObject).getPrimaryContactID()) );
+			((CICustomerBase)returnObject).getCustomer().setTimeZone( ((LiteCICustomer)liteObject).getTimeZone() );
+			break;
+		case LiteTypes.CUSTOMER:
+			returnObject = new Customer(); 
+			((Customer)returnObject).setCustomerID( new Integer(((LiteCustomer)liteObject).getCustomerID()) );
+			((Customer)returnObject).getCustomer().setPrimaryContactID( new Integer(((LiteCustomer)liteObject).getPrimaryContactID()) );
+			((Customer)returnObject).getCustomer().setTimeZone( ((LiteCustomer)liteObject).getTimeZone() );
+			break;
+		case LiteTypes.POINT:
+			returnObject = com.cannontech.database.data.point.PointFactory.createPoint(((LitePoint)liteObject).getPointType());
+			((com.cannontech.database.data.point.PointBase)returnObject).setPointID(new Integer(((LitePoint)liteObject).getPointID()));
+			((com.cannontech.database.data.point.PointBase)returnObject).getPoint().setPointName(((LitePoint)liteObject).getPointName());
+			break;
+		case LiteTypes.STATEGROUP:
+			returnObject = com.cannontech.database.data.state.StateFactory.createGroupState();
+			((com.cannontech.database.data.state.GroupState)returnObject).setStateGroupID(new Integer(((LiteStateGroup)liteObject).getStateGroupID()));
+			((com.cannontech.database.data.state.GroupState)returnObject).getStateGroup().setName(((LiteStateGroup)liteObject).getStateGroupName());
+			break;
+		case LiteTypes.GRAPHDEFINITION:
+			returnObject = new com.cannontech.database.data.graph.GraphDefinition();
+			((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setGraphDefinitionID(new Integer(((LiteGraphDefinition)liteObject).getGraphDefinitionID()));
+			((com.cannontech.database.data.graph.GraphDefinition)returnObject).getGraphDefinition().setName(((LiteGraphDefinition)liteObject).getName());
+			break;
+		case LiteTypes.GRAPH_CUSTOMER_LIST:
+			returnObject = new com.cannontech.database.db.graph.GraphCustomerList();
+			((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setCustomerID(new Integer(((LiteGraphCustomerList)liteObject).getCustomerID()));
+			((com.cannontech.database.db.graph.GraphCustomerList)returnObject).setGraphDefinitionID(new Integer(((LiteGraphCustomerList)liteObject).getGraphDefinitionID()));
+			break;
+		case LiteTypes.NOTIFICATION_GROUP:
+			returnObject = new com.cannontech.database.data.notification.NotificationGroup();
+			((com.cannontech.database.data.notification.NotificationGroup)returnObject).setNotificatoinGroupID(new Integer(((LiteNotificationGroup)liteObject).getNotificationGroupID()));
+			((com.cannontech.database.data.notification.NotificationGroup)returnObject).getNotificationGroup().setGroupName(((LiteNotificationGroup)liteObject).getNotificationGroupName());
+			break;
+		case LiteTypes.ALARM_CATEGORIES:
+			returnObject = new com.cannontech.database.db.notification.AlarmCategory();
+			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setAlarmCategoryID(new Integer(((LiteAlarmCategory)liteObject).getAlarmStateID()));
+			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setCategoryName(((LiteAlarmCategory)liteObject).getCategoryName());
+			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setNotificationGroupID( new Integer( ((LiteAlarmCategory)liteObject).getNotificationGroupID()) );
+			break;
+		case LiteTypes.CONTACT:
+			returnObject = new com.cannontech.database.data.customer.Contact();
+			((com.cannontech.database.data.customer.Contact)returnObject).setContactID( new Integer(((LiteContact)liteObject).getContactID()) );
+			((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContFirstName( ((LiteContact)liteObject).getContFirstName() );
+			((com.cannontech.database.data.customer.Contact)returnObject).getContact().setContLastName( ((LiteContact)liteObject).getContLastName() );
+			((com.cannontech.database.data.customer.Contact)returnObject).getContact().setLogInID( new Integer( ((LiteContact)liteObject).getLoginID() ) );
+			((com.cannontech.database.data.customer.Contact)returnObject).getContact().setAddressID( new Integer(((LiteContact)liteObject).getAddressID()) );				
+			break;
+		case LiteTypes.DEVICE_METERNUMBER:
+			returnObject = new com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase();
+			((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setDeviceID(new Integer(((LiteDeviceMeterNumber)liteObject).getDeviceID()) );
+			((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setMeterNumber(((LiteDeviceMeterNumber)liteObject).getMeterNumber() );
+			((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setCollectionGroup(((LiteDeviceMeterNumber)liteObject).getCollGroup() );
+			((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setTestCollectionGroup(((LiteDeviceMeterNumber)liteObject).getTestCollGroup() );
+			((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)returnObject).getDeviceMeterGroup().setBillingGroup(((LiteDeviceMeterNumber)liteObject).getBillGroup() );
+			break;				
+		case LiteTypes.HOLIDAY_SCHEDULE:
+			returnObject = new com.cannontech.database.data.holiday.HolidaySchedule();
+			((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleID(new Integer(((LiteHolidaySchedule)liteObject).getHolidayScheduleID()) );
+			((com.cannontech.database.data.holiday.HolidaySchedule)returnObject).setHolidayScheduleName( ((LiteHolidaySchedule)liteObject).getHolidayScheduleName() );
+			break;
+		case LiteTypes.SEASON_SCHEDULE:
+			returnObject = new com.cannontech.database.data.season.SeasonSchedule();
+			((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleID(new Integer(((LiteSeasonSchedule)liteObject).getScheduleID()) );
+			((com.cannontech.database.data.season.SeasonSchedule)returnObject).setScheduleName( ((LiteSeasonSchedule)liteObject).getScheduleName() );
+			break;
+		case LiteTypes.TOU_SCHEDULE:
+			returnObject = new com.cannontech.database.data.tou.TOUSchedule();
+			((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleID(new Integer(((LiteTOUSchedule)liteObject).getScheduleID()) );
+			((com.cannontech.database.data.tou.TOUSchedule)returnObject).setScheduleName( ((LiteTOUSchedule)liteObject).getScheduleName() );
+			break;
+		case LiteTypes.BASELINE:
+			returnObject = new com.cannontech.database.data.baseline.Baseline();
+			((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineID(new Integer(((LiteBaseline)liteObject).getBaselineID()) );
+			((com.cannontech.database.data.baseline.Baseline)returnObject).setBaselineName( ((LiteBaseline)liteObject).getBaselineName() );
+			break;
+		case LiteTypes.CONFIG:
+			returnObject = new com.cannontech.database.data.config.ConfigTwoWay();
+			((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigID(new Integer(((LiteConfig)liteObject).getConfigID()) );
+			((com.cannontech.database.data.config.ConfigTwoWay)returnObject).setConfigName( ((LiteConfig)liteObject).getConfigName() );
+			break;
+		case LiteTypes.LMCONSTRAINT:
+			returnObject = new com.cannontech.database.db.device.lm.LMProgramConstraint();
+			((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintID(new Integer(((LiteLMConstraint)liteObject).getConstraintID()));
+			((com.cannontech.database.db.device.lm.LMProgramConstraint)returnObject).setConstraintName(((LiteLMConstraint)liteObject).getConstraintName());
+			break;
+		case LiteTypes.GEAR:
+			returnObject = LMProgramDirectGear.createGearFactory(((LiteGear)liteObject).getGearType());
+			((LMProgramDirectGear)returnObject).setGearID(new Integer(liteObject.getLiteID()));
+			((LMProgramDirectGear)returnObject).setGearName(((LiteGear)liteObject).getGearName());
+			break;
+		/*case LiteTypes.LMSCENARIO:
+			returnObject = new com.cannontech.database.db.device.lm.LMControlScenarioProgram();
+			((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioID(new Integer(((LiteLMScenario)liteObject).getScenarioID()));
+			((com.cannontech.database.db.device.lm.LMControlScenarioProgram)returnObject).setScenarioName(((LiteLMScenario)liteObject).getScenarioName());
+			break;*/
+		case LiteTypes.TAG:
+			returnObject = new com.cannontech.database.db.tags.Tag();
+			((com.cannontech.database.db.tags.Tag)returnObject).setTagID(new Integer(((LiteTag)liteObject).getTagID()) );
+			((com.cannontech.database.db.tags.Tag)returnObject).setTagName( ((LiteTag)liteObject).getTagName() );
+			((com.cannontech.database.db.tags.Tag)returnObject).setTagLevel( new Integer(((LiteTag)liteObject).getTagLevel()));
+			Character inhibit = new Character('N');
+			if(((LiteTag)liteObject).isInhibit())
+				inhibit = new Character('Y');
+			((com.cannontech.database.db.tags.Tag)returnObject).setInhibit( inhibit );
+			((com.cannontech.database.db.tags.Tag)returnObject).setColorID(new Integer(((LiteTag)liteObject).getColorID()) );
+			((com.cannontech.database.db.tags.Tag)returnObject).setImageID(new Integer(((LiteTag)liteObject).getImageID()) );
+			break;							
+     case LiteTypes.STATE_IMAGE:
+        returnObject = new com.cannontech.database.db.state.YukonImage();
+        ((com.cannontech.database.db.state.YukonImage)returnObject).setImageID(new Integer(((LiteYukonImage)liteObject).getImageID()) );
+        ((com.cannontech.database.db.state.YukonImage)returnObject).setImageValue( ((LiteYukonImage)liteObject).getImageValue() );
+        ((com.cannontech.database.db.state.YukonImage)returnObject).setImageName( ((LiteYukonImage)liteObject).getImageName() );
+        ((com.cannontech.database.db.state.YukonImage)returnObject).setImageCategory( ((LiteYukonImage)liteObject).getImageCategory() );
+        break;            
+     
+		case LiteTypes.YUKON_USER:
+			returnObject = new com.cannontech.database.data.user.YukonUser();
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).setUserID( new Integer(((LiteYukonUser)liteObject).getUserID()) );
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
+	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setPassword( ((LiteYukonUser)liteObject).getPassword() );
+	 		break;
+		case LiteTypes.YUKON_GROUP:
+			returnObject = new com.cannontech.database.data.user.YukonGroup();
+			((com.cannontech.database.data.user.YukonGroup)returnObject).setGroupID( new Integer(((LiteYukonGroup)liteObject).getGroupID()) );
+			((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupName( ((LiteYukonGroup)liteObject).getGroupName() );
+			((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
+			break;
+		case LiteTypes.DEVICE_TYPE_COMMAND:
+			returnObject = new DeviceTypeCommand();
+			((DeviceTypeCommand)returnObject).setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
+			((DeviceTypeCommand)returnObject).setCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getCommandID()));				
+			((DeviceTypeCommand)returnObject).setDeviceType(((LiteDeviceTypeCommand)liteObject).getDeviceType());
+			((DeviceTypeCommand)returnObject).setDisplayOrder(new Integer(((LiteDeviceTypeCommand)liteObject).getDisplayOrder()));
+			((DeviceTypeCommand)returnObject).setVisibleFlag(new Character(((LiteDeviceTypeCommand)liteObject).getVisibleFlag()));
+			break;
+		case LiteTypes.COMMAND:
+			returnObject = new Command();
+			((Command)returnObject).setCommandID(new Integer(((LiteCommand)liteObject).getCommandID()));				
+			((Command)returnObject).setCommand(((LiteCommand)liteObject).getCommand());
+			((Command)returnObject).setLabel(((LiteCommand)liteObject).getLabel());
+			((Command)returnObject).setCategory(((LiteCommand)liteObject).getCategory());
+			break;
+/* TODO add SystemRole,YukonRoleProperty */		 		
+	 	case LiteTypes.ENERGY_COMPANY:
+	 		returnObject = new com.cannontech.database.data.company.EnergyCompanyBase();
+	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setEnergyCompanyID(new Integer(((LiteEnergyCompany)liteObject).getLiteID()));
+	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
+	 		break;
+/* TODO: add LiteTypes.TAG? */
+		case LiteTypes.RAWPOINTHISTORY:
+			returnObject = new RawPointHistory();
+			((RawPointHistory)returnObject).setChangeID(new Integer(((LiteRawPointHistory)liteObject).getLiteID()));
+			((RawPointHistory)returnObject).setPointID(new Integer(((LiteRawPointHistory)liteObject).getPointID()));
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeInMillis( ((LiteRawPointHistory)liteObject).getTimeStamp());
+			((RawPointHistory)returnObject).setTimeStamp(cal);
+			((RawPointHistory)returnObject).setValue(new Double(((LiteRawPointHistory)liteObject).getValue()));
+			((RawPointHistory)returnObject).setQuality(new Integer(((LiteRawPointHistory)liteObject).getQuality()));					 		
+			break;
+		default:
+			returnObject = null;
+			break;
 	}
+
+	if( returnObject == null )
+		throw new IllegalArgumentException("*** Unable to create a DBPersistant object from a givent Lite object in: createDBPersistent(LiteBase liteObject)");
+	else
+		return returnObject;
 }
 /**
  * This method was created in VisualAge.
