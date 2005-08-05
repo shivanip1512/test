@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/08/05 20:03:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,14 @@ const char *CtiDeviceTnppPagingTerminal::_RS                  = "\x030";
 const char *CtiDeviceTnppPagingTerminal::_CAN                 = "\x024";
 const char *CtiDeviceTnppPagingTerminal::_zero_origin         = "0000";
 const char *CtiDeviceTnppPagingTerminal::_zero_serial         = "00";
+const char *CtiDeviceTnppPagingTerminal::_type_golay          = "G";
+const char *CtiDeviceTnppPagingTerminal::_type_flex           = "F";
+const char *CtiDeviceTnppPagingTerminal::_type_pocsag         = "P";
+const char *CtiDeviceTnppPagingTerminal::_type_pocsag_1200    = "p";
+const char *CtiDeviceTnppPagingTerminal::_type_pocsag_2400    = "Q";
+const char *CtiDeviceTnppPagingTerminal::_type_numeric        = "N";
+const char *CtiDeviceTnppPagingTerminal::_type_alphanumeric   = "A";
+const char *CtiDeviceTnppPagingTerminal::_type_beep           = "B";
 
 //*****************************************************************************
 /* NOTE! The tnpp device must be set to immediatelly send all messages
@@ -312,8 +320,8 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     if((char)*_table.getIdentifierFormat()=='A')
                     {   //CAP PAGE
                         strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
-                        strncat((char*)xfer.getOutBuffer(),_table.getPagerProtocol(),10);
-                        strncat((char*)xfer.getOutBuffer(),_table.getPagerDataFormat(),10);
+                        strncat((char*)xfer.getOutBuffer(),getPagerProtocol(),1);
+                        strncat((char*)xfer.getOutBuffer(),getPagerDataFormat(),10);
                         strncat((char*)xfer.getOutBuffer(),_table.getChannel(),10);
                         strncat((char*)xfer.getOutBuffer(),_table.getZone(),10);
                     }
@@ -322,8 +330,19 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                         strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
                     }
                     strncat((char*)xfer.getOutBuffer(),_table.getFunctionCode(),10);
-                    strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
-                    strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,20);
+                    if(_outMessage.Sequence == TnppPublicProtocolGolay)
+                    {
+
+                        if((char)*_table.getIdentifierFormat()=='B')//FIX ME JESS
+                        {   //ID PAGE
+                            strncat((char*)xfer.getOutBuffer(),_zero_serial,2);                        
+                        }
+                        strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
+                        strncat((char*)xfer.getOutBuffer(),_outMessage.Buffer.SASt._codeSimple,6);
+                    }
+                    else
+                        strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
+                    strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,30);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 
                     unsigned int crc = crc16((const unsigned char *)xfer.getOutBuffer(),strlen((char *)xfer.getOutBuffer()));
@@ -467,6 +486,41 @@ void CtiDeviceTnppPagingTerminal::resetStates()
     _previousState = StateHandshakeInitialize;
     _command = Normal;
 }
+
+const char* CtiDeviceTnppPagingTerminal::getPagerProtocol()
+{
+    if(_outMessage.Sequence == TnppPublicProtocolGolay)
+    {
+        if(strstr(_table.getPagerProtocol(),_type_golay) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return _type_golay;
+    }
+    else
+    {
+        return _table.getPagerProtocol();
+    }
+}
+
+const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
+{
+    if(_outMessage.Sequence == TnppPublicProtocolGolay)
+    {
+        if(strstr(_table.getPagerProtocol(),_type_golay) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        return _type_beep;
+    }
+    else
+    {
+        return _table.getPagerDataFormat();
+    }
+}
+
 
 //Database Functions
 void CtiDeviceTnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)

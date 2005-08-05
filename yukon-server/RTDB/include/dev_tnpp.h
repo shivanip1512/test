@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/07/12 14:35:05 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/08/05 20:03:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -73,6 +73,11 @@ public:
        Complete
    };
 
+   enum protocol
+   {
+       TnppPublicProtocolGolay = 6487
+   };
+
    enum StateMachine
    {
        StateHandshakeInitialize = 0,
@@ -103,6 +108,8 @@ private:
    void setCurrentState(StateMachine newCurrentState);
    void setPreviousState(StateMachine newPreviousState);
    char* getSerialNumber();
+   const char* getPagerProtocol();
+   const char* getPagerDataFormat();
 
    unsigned int crc16( const unsigned char *data, int length );
 
@@ -119,7 +126,15 @@ static const char *_RS;
 static const char *_CAN;
 static const char *_zero_origin;
 static const char *_zero_serial;
+static const char *_type_golay;    
+static const char *_type_flex;      
+static const char *_type_pocsag;
+static const char *_type_pocsag_1200;
+static const char *_type_pocsag_2400;
+static const char *_type_numeric;
+static const char *_type_alphanumeric;
+static const char *_type_beep;
 
-};
-
-#endif // #ifndef __DEV_TNPP_H__
+};                                
+                                  
+#endif // #ifndef __DEV_TNPP_H__  
