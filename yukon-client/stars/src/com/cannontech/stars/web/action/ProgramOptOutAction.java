@@ -102,7 +102,7 @@ public class ProgramOptOutAction implements ActionBase {
 					// Start date is today
 					Calendar cal = Calendar.getInstance();
 					cal.setTime( today );
-					cal.add( Calendar.DATE, duration );
+					cal.add( Calendar.HOUR, duration );
 					optOut.setPeriod( (int)((cal.getTimeInMillis() - System.currentTimeMillis()) * 0.001 / 3600 + 0.5) );
 				}
 				else {
