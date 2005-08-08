@@ -196,10 +196,13 @@ public class NewCustAccountAction implements ActionBase {
 			{
 				String lastName = primContact.getLastName();
 				String firstName = primContact.getFirstName();
-				String firstInitial = "#";
+				String firstInitial = "";
 				if(lastName == null)
+				{
 					lastName = account.getAccountNumber();
-				if(firstName != null)
+					firstInitial = "#";
+				}
+				if(firstName != null && firstName.length() > 0)
 					firstInitial = firstName.toLowerCase().substring(0,1);
 				login.setUsername(firstInitial + lastName.toLowerCase());
 				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
