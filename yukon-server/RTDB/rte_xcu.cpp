@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/07/11 13:58:49 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/08/08 20:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -964,6 +964,20 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
 
     switch(_transmitterDevice->getType())
     {
+    case TYPE_TNPP:
+        {
+            OutMessage->Sequence = CtiDeviceTnppPagingTerminal::TnppPublicProtocolGolay;
+            string tempString = parse.getsValue("sa_codesimple").data();
+            for(int z=0;z<6;z++)
+            {
+                OutMessage->Buffer.SASt._codeSimple[z] = tempString[z];
+            }
+
+            outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
+
+            resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
+            break;
+        }
     case TYPE_SERIESVLMIRTU:
         {
             OutMessage->EventCode = RESULT | ENCODED;
