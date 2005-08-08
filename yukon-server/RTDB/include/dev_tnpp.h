@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/08/05 20:03:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/08/08 20:46:09 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,6 +110,8 @@ private:
    char* getSerialNumber();
    const char* getPagerProtocol();
    const char* getPagerDataFormat();
+   const char* getFunctionCode();
+   const char* getGolayCapcode();
 
    unsigned int crc16( const unsigned char *data, int length );
 
@@ -134,6 +136,10 @@ static const char *_type_pocsag_2400;
 static const char *_type_numeric;
 static const char *_type_alphanumeric;
 static const char *_type_beep;
+static const char *_function_1;
+static const char *_function_2;
+static const char *_function_3;
+static const char *_function_4;
 
 };                                
                                   

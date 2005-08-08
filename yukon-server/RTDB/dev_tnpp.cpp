@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/08/05 20:03:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/08/08 20:46:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,10 @@ const char *CtiDeviceTnppPagingTerminal::_type_pocsag_2400    = "Q";
 const char *CtiDeviceTnppPagingTerminal::_type_numeric        = "N";
 const char *CtiDeviceTnppPagingTerminal::_type_alphanumeric   = "A";
 const char *CtiDeviceTnppPagingTerminal::_type_beep           = "B";
+const char *CtiDeviceTnppPagingTerminal::_function_1          = "D";
+const char *CtiDeviceTnppPagingTerminal::_function_2          = "C";
+const char *CtiDeviceTnppPagingTerminal::_function_3          = "B";
+const char *CtiDeviceTnppPagingTerminal::_function_4          = "A";
 
 //*****************************************************************************
 /* NOTE! The tnpp device must be set to immediatelly send all messages
@@ -329,7 +333,8 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     {   //ID PAGE
                         strncat((char*)xfer.getOutBuffer(),_table.getIdentifierFormat(),10);
                     }
-                    strncat((char*)xfer.getOutBuffer(),_table.getFunctionCode(),10);
+                    strncat((char*)xfer.getOutBuffer(),getFunctionCode(),10);
+
                     if(_outMessage.Sequence == TnppPublicProtocolGolay)
                     {
 
@@ -338,7 +343,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                             strncat((char*)xfer.getOutBuffer(),_zero_serial,2);                        
                         }
                         strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
-                        strncat((char*)xfer.getOutBuffer(),_outMessage.Buffer.SASt._codeSimple,6);
+                        strncat((char*)xfer.getOutBuffer(),getGolayCapcode(),6);
                     }
                     else
                         strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
@@ -521,6 +526,79 @@ const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
     }
 }
 
+/******************************************************************************
+    Golay capcode:
+
+    The Golay capcode comes to us in the format BBAABB, where AA is the group
+    ID and BBBB is the device ID. The output format for TNPP is much more
+    complicated. Why, I dont know. The output field is eight decimal characters
+    of which we only use 5. To some extent it can be thought of as AABBB, but
+    this is not correct. In the TNPP format, almost everything is multiplied
+    by two, which means that AA(TNPP) needs not be above 50. Anything above 50 is a
+    special code which means add 100 to the final BBBB(Golay) value. The two lowest BB(TNPP)
+    characters are also multiplied by two to get the tens and ones portion
+    of the BBBB code. There is another offset value, where, 50 is added to the BB field
+    to shift the BBBB value by 100. Additionally if this 50 is added, an extra 100
+    is added (so the offset effectively adds 200). Finally the first B in the AABBB basically
+    is an add 400 character. If it is 2, the real value of BBBB is increased by 800.
+
+    Examples! in format AABBB = AA BBBB (TNPP format then modified standard format)
+
+    15048 = 30 0096  (96 = 48*2)                (30 = 15*2)
+    65048 = 30 0196  (196 = 48*2+100)           (30 = 15*2)
+    15148 = 30 0496  (496 = 48*2+400)           (30 = 15*2)
+    15098 = 30 0296  (296 = 98*2+100)           (30 = 15*2)
+    Combined!
+    65198 = 30 0796  (796 = 98*2+100+100+400)   (30 = 15*2)
+
+    The maximum value for AA is 64 and is always even. BBBB is also always even.
+
+    Finally, the function code in TNPP may be appropriate for standard Golay,
+    but for 2312D it is inverted (function 4 in TNPP = Function 1 in 2312D)
+    
+******************************************************************************/
+const char* CtiDeviceTnppPagingTerminal::getGolayCapcode()
+{
+    //BBAABB
+    _outMessage.Buffer.SASt._codeSimple[7] = '\0';
+    int capcode = atoi(_outMessage.Buffer.SASt._codeSimple);
+    //parse out values
+    int bHigh = capcode/10000;
+    int bLow = capcode%100;
+    int bTotal = bHigh*100 + bLow;
+    int a = (capcode%10000-capcode%100)/100;
+
+    int returnValue = a/2;
+    if(bHigh % 2)//odd so we need the +100 shift from AA(TNPP)
+    {
+        returnValue += 50;
+    }
+    returnValue *= 1000;//shift AA to the appropriate location! AABBB
+
+    returnValue += 100*(bTotal/400); //Number of 400's we need * 100 to place the value in the correct location
+
+    returnValue += bLow/2;//No shifting for this one!
+    if((bTotal%400-bLow)>=200)//This can only be 100, 200, 300, 0 
+    {
+        //if there is more than 200 remaining, the AA offset +50 is not enough, we need +200!
+        returnValue += 50;//give me a 50 offset, adds 200 to final as noted above!
+    }
+
+    return CtiNumStr(returnValue).zpad(6);
+}
+
+const char* CtiDeviceTnppPagingTerminal::getFunctionCode()
+{
+    if(_outMessage.Sequence == TnppPublicProtocolGolay)
+    {
+        return _function_1;
+    }
+    else
+    {
+        return _table.getFunctionCode();
+    }
+
+}
 
 //Database Functions
 void CtiDeviceTnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
