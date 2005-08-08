@@ -37,7 +37,7 @@ public class ScriptTemplate implements ScriptParameters
 	        return buildMeterReadCode(template);
 	    else if(template == ScriptTemplateTypes.METER_READ_RETRY_SCRIPT
 	            || template == ScriptTemplateTypes.IED_METER_READ_RETRY_SCRIPT)
-	        return buildIEDMeterReadRetryCode();
+	        return buildMeterReadRetryCode(template);
 	    return "";
 	}
 	
@@ -288,10 +288,6 @@ public class ScriptTemplate implements ScriptParameters
 	    code += COMMENT + "Log info events with counts" + ENDLINE;
 	    code += "LogEvent \"\" $Message $" + SCHEDULE_NAME_PARAM + ENDLINE + ENDLINE;
 	    return code;
-	}
-	private static String buildIEDMeterReadRetryCode()
-	{
-	    return "TODO";
 	}
 
 	public static String buildScriptHeaderCode()
