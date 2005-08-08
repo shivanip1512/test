@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <%@page import="com.cannontech.util.ServletUtil" %>
 <%@page import="com.cannontech.yukon.conns.NotifRequestException" %>
 <%@page import="com.cannontech.servlet.ConnServlet" %>
