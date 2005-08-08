@@ -1,13 +1,19 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%
+	int delay = 10;
+	if (request.getParameter("delay") != null)
+		delay = Integer.parseInt(request.getParameter("delay"));
+	
 	String nextURL = (String)
-		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_REDIRECT2) : session.getAttribute(ServletUtils.ATT_REFERRER2));
+		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT) : session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="Refresh" content="10; url=<%= nextURL %>">
+<% if (delay > 0) { %>
+<meta http-equiv="Refresh" content="<%= delay %>; url=<%= nextURL %>">
+<% } %>
 <link rel="stylesheet" href="../../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
