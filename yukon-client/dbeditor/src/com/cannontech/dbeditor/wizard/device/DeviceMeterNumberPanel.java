@@ -7,6 +7,7 @@ import com.cannontech.database.data.device.IEDMeter;
 import com.cannontech.database.data.device.Ion7700;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
  
 /**
  * This type was created in VisualAge.
@@ -17,7 +18,7 @@ public class DeviceMeterNumberPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JLabel ivjMeterNumberLabel = null;
 	private javax.swing.JTextField ivjMeterNumberTextField = null;
 	
-	private boolean is410 = false;
+	private int mctType = 0;
 /**
  * Constructor
  */
@@ -257,7 +258,8 @@ public static void main(java.lang.String[] args) {
  */
 public void setDefaultMeterNumber(String address) {
 	
-	if(is410)
+	if(DeviceTypesFuncs.isCL(mctType)) getMeterNumberTextField().setText("");
+	else if(DeviceTypesFuncs.isMCT410(mctType))
 		getMeterNumberTextField().setText(address);
 	else
 		getMeterNumberTextField().setText("10" + address);
@@ -272,9 +274,9 @@ public void setValue(Object val)
 			new String(com.cannontech.common.util.CtiUtilities.STRING_DEFAULT) );
 }
 
-public void setIs410(boolean truth)
+public void setMCT400Type(int truth)
 {
-	is410 = truth;
+	mctType = truth;
 }
 
 /**

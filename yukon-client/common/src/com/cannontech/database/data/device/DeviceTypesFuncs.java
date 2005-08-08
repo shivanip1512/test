@@ -595,6 +595,18 @@ public static boolean isMCT410( int type )
 
 }
 
+public static boolean isCL( int type )
+{
+	switch (type)
+	{
+		case MCT410CL:
+			return true;
+		default :
+			return false;
+	}
+
+}
+
 public static boolean isDisconnectMCT( int type)
 {
 	switch (type)

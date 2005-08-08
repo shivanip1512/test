@@ -21,6 +21,7 @@ public interface IPointOffsets
    public static final int PT_OFFSET_MAX_VOLT_DEMAND 		= 14;
    public static final int PT_OFFSET_MIN_VOLT_DEMAND 		= 15;
    public static final int PT_OFFSET_LP_KW_DEMAND			= 15;
+   public static final int PT_OFFSET_BLINK_COUNT			= 20;
    public static final int PT_OFFSET_FROZEN_PEAK_DEMAND		= 21;
    public static final int PT_OFFSET_TOTAL_KVARH			= 21;
    public static final int PT_OFFSET_FROZEN_MAX_VOLT		= 24;
@@ -51,7 +52,7 @@ public interface IPointOffsets
 		//Offsets for DEVICES
 		new PointOffset( PAOGroups.MCT410IL, PointTypes.PULSE_ACCUMULATOR_POINT,
 					new int[]{1,20},
-					new String[] {"kWh","Power Fail Count"} ),
+					new String[] {"kWh","Blink Count"} ),
 		new PointOffset( PAOGroups.MCT410IL, PointTypes.DEMAND_ACCUMULATOR_POINT, 
 					new int[]{1,4,11,14,15,21,24,25,101,104},
 					new String[] {"kW","Voltage","Peak kW","Max Volts","Min Volts",

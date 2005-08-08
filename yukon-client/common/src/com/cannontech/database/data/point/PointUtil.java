@@ -12,6 +12,7 @@ import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.device.MCT310IDL;
 import com.cannontech.database.data.device.MCT310IL;
 import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCT410_KWH_Only;
 import com.cannontech.database.data.device.MCT400SeriesBase;
@@ -34,7 +35,8 @@ public class PointUtil {
 			 || val instanceof MCT310IDL
 			 || val instanceof MCT410IL
 			 || val instanceof MCT470
-			 || val instanceof MCT410_KWH_Only )
+			 || val instanceof MCT410_KWH_Only
+			 || val instanceof MCT410CL )
 		{
 			if(val instanceof MCT400SeriesBase)
 			{
@@ -55,7 +57,7 @@ public class PointUtil {
 
 			double multiplier = 0.01;
 			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
-			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL)
+			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL || val instanceof MCT410CL)
 				multiplier = 0.1;
 			
 			//always create the PulseAccum point
@@ -67,11 +69,21 @@ public class PointUtil {
 				   PointTypes.PT_OFFSET_TOTAL_KWH,
 				   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
 				   multiplier) );
+				   
+			newVal.getDBPersistentVector().add( 
+				PointFactory.createPulseAccumPoint(
+				   "Blink Count",
+				   ((DeviceBase) val).getDevice().getDeviceID(),
+				   new Integer(++pointID),
+				   PointTypes.PT_OFFSET_BLINK_COUNT,
+				   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
+				   multiplier) );
 
 			//only certain devices get this DemandAccum point auto created
 			if( val instanceof MCT310IL
 				 || val instanceof MCT310IDL
-				 || val instanceof MCT410IL)
+				 || val instanceof MCT410IL
+				 || val instanceof MCT410CL)
 			{
 				newVal.getDBPersistentVector().add( 
 					PointFactory.createDmdAccumPoint(
@@ -84,7 +96,7 @@ public class PointUtil {
 			}
 			
 			//only the 410 gets all these points auto-created
-			if( val instanceof MCT410IL ) 
+			if( val instanceof MCT410IL || val instanceof MCT410CL ) 
 			{
 				newVal.getDBPersistentVector().add( 
 					PointFactory.createDmdAccumPoint(
