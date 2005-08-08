@@ -137,6 +137,8 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 		connEtoC3(e);
 	if (e.getSource() == getJTextFieldSlaveAddress()) 
 		connEtoC6(e);
+	if (e.getSource() == getSerialNumberTextField())
+		connEtoC6(e);
 	if (e.getSource() == getJTextFieldPostCommWait()) 
 		connEtoC7(e);
 	// user code begin {2}
@@ -1085,6 +1087,7 @@ private void initConnections() throws java.lang.Exception {
 	getCommunicationRouteComboBox().addActionListener(this);
 	getJTextFieldSlaveAddress().addCaretListener(this);
 	getJTextFieldPostCommWait().addCaretListener(this);
+	getSerialNumberTextField().addCaretListener(this);
 }
 
 
