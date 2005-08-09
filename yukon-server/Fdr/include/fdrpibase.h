@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.2 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *    REVISION     :  $Revision: 1.3 $
+ *    DATE         :  $Date: 2005/08/09 22:36:02 $
  * 
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
@@ -99,7 +99,8 @@ protected:
 
   virtual void readThisConfig();
 
-  class PiException : exception {
+public:
+  class PiException : public exception {
   public:
     PiException(int err) : exception("PiException") {}
   };

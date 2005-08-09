@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.2 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.3 $
+ * DATE         :  $Date: 2005/08/09 22:36:01 $
  */
 
 #include <windows.h>
@@ -224,7 +224,6 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
   PiPointInfo info;
   info.ctiPoint = ctiPoint;
 
-
   // we're interested in the first (and only) destination
   RWCString tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
 
@@ -305,6 +304,13 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
   }
 
   processNewPiPoint(info);
+
+  if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
+  {
+    CtiLockGuard<CtiLogger> doubt_guard( dout );
+    logNow() << "Added point " << info.ctiPoint->getPointID() << " and tag " << tagName << endl;
+  }
+
 }
 
 /**

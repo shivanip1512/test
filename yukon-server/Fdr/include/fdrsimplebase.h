@@ -16,8 +16,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.1 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *    REVISION     :  $Revision: 1.2 $
+ *    DATE         :  $Date: 2005/08/09 22:36:02 $
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
@@ -92,7 +92,8 @@ protected:
   virtual void readThisConfig();
 
 
-  class FdrException : exception {
+public:
+  class FdrException : public exception {
   public:
     FdrException(int err) : exception("FdrException") {}
     FdrException() : exception("FdrException") {}

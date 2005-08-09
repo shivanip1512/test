@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.2 $
- * DATE         :  $Date: 2005/04/15 16:55:33 $
+ * REVISION     :  $Revision: 1.3 $
+ * DATE         :  $Date: 2005/08/09 22:36:01 $
  */
 
 #include <windows.h>
@@ -150,7 +150,7 @@ void CtiFDRSimple::threadFunctionGetData()
           }
           doUpdates();
         }
-        catch (FdrException& e)
+        catch (exception& e)
         {
           setConnected(false);
         }        
@@ -186,6 +186,11 @@ void CtiFDRSimple::threadFunctionGetData()
     }
     return;
   }
+  catch (...)
+  {
+    CtiLockGuard<CtiLogger> doubt_guard( dout );
+    logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << endl;
+  }
 }
  
 
@@ -205,7 +210,9 @@ bool CtiFDRSimple::loadTranslationLists()
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       logNow() << "Skipping loadTranslationLists(), not connected " << endl;
     }
-    return false;
+    // Returning false would cause the caller to keep attempting to reload the
+    // translation lists. When we get reconnected, they'll be reloaded anyway.
+    return true;
   }
 
   CtiFDRPointList &aList = getReceiveFromList();
@@ -216,7 +223,10 @@ bool CtiFDRSimple::loadTranslationLists()
     CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
                                                    RWCString (FDR_INTERFACE_RECEIVE));
 
-    if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+
+    RWDBStatus dbStatus = pointList->loadPointList();
+
+    if (dbStatus.errorCode() == (RWDBStatus::ok))
     {
       const int minExpectedOld = 2; // somewhat arbitrary, see note in fdrsinglesocket.cpp
       if (pointList->entries() == 0 && aList.getPointList()->entries() > minExpectedOld)
