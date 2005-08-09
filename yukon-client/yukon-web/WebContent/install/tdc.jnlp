@@ -6,7 +6,7 @@
      <homepage href="start.html"/>
      <description>Yukon client application to view tabular data</description>
      <description kind="short">View Tabular Data</description>
-     <icon href="images\tdcIcon.gif"/>
+     <icon href="images\tdcIcon64.gif" width="64" height="64"/>
      <icon kind="splash" href="images\cannonlogo.gif"/>
      <offline-allowed/>
    </information>
@@ -14,9 +14,9 @@
       <all-permissions/>
    </security>
    <resources>
-      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4.2_05"/>
-      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4+"/>
-      <j2se version="1.4+"/>
+      <j2se href="http://java.sun.com/products/autodl/j2se" version="1.4.2_08"/>
+      
+      
       <jar href="tdc.jar"/>
       <jar href="common.jar"/>
       <jar href="dbeditor.jar"/>
