@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -43,8 +44,9 @@ public class MeterReadModel extends ReportModelBase
 	public final static int PHYSICAL_ADDRESS_COLUMN = 3;
 	public final static int POINT_NAME_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
-	public final static int GROUP_NAME_1_COLUMN = 6;
-	public final static int GROUP_NAME_2_COLUMN = 7;
+	public final static int GROUP_NAME_1_OR_TIMESTAMP_COLUMN = 6;
+	public final static int GROUP_NAME_2_OR_VALUE_COLUMN = 7;
+	//Alternate columns for a successful meter report
 
 	/** String values for column representation */
 	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
@@ -53,8 +55,12 @@ public class MeterReadModel extends ReportModelBase
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String ALT_GROUP_NAME_STRING = "Alternate Group";
-	public final static String BILLING_GROUP_NAME_STRING = "Billing Group";
+	public final static String ALT_GROUP_NAME_STRING = "Alternate\nGroup";
+	public final static String BILLING_GROUP_NAME_STRING = "Billing\nGroup";
+	//Alternate columns for a successful meter report
+	public final static String TIMESTAMP_STRING= "Timestamp";
+	public final static String VALUE_STRING = "Value";
+	
 	/** Class fields */
 	public final static int MISSED_METER_READ_TYPE = 2;
 	public  final static int SUCCESS_METER_READ_TYPE = 1;
@@ -177,9 +183,18 @@ public class MeterReadModel extends ReportModelBase
 	{
 		try
 		{
+		    
 			Integer paobjectID = new Integer(rset.getInt(1));
 			Integer pointID = new Integer(rset.getInt(2));
-			MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, null, null);
+			Date ts = null;
+			Double value = null;
+			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
+			{
+			    Timestamp timestamp = rset.getTimestamp(3);
+			    ts = new Date(timestamp.getTime());
+			    value = new Double(rset.getDouble(4));
+			}
+			MeterAndPointData mpData = new MeterAndPointData(paobjectID, pointID, ts, value);
 
 			getData().add(mpData);
 		}
@@ -195,17 +210,24 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, P.POINTID " +
-			" FROM YUKONPAOBJECT PAO, POINT P, POINTUNIT PU, UNITMEASURE UM ");
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, P.POINTID ");
 		
-			if( getBillingGroups() != null && getBillingGroups().length > 0)
-			    sql.append(", DEVICEMETERGROUP DMG ");
+		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+		    sql.append(", TIMESTAMP, VALUE ");
 			
-			sql.append(" WHERE PAO.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER + "' " +
-			" AND P.POINTID = PU.POINTID " +
-			" AND PU.UOMID = UM.UOMID " +
-			" AND UM.FORMULA ='usage' " +	//TODO - how to choose which points to show.
-			" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+		sql.append(" FROM YUKONPAOBJECT PAO, POINT P, POINTUNIT PU, UNITMEASURE UM ");
+
+		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+		    sql.append(", RAWPOINTHISTORY RPH1");
+		
+		if( getBillingGroups() != null && getBillingGroups().length > 0)
+		    sql.append(", DEVICEMETERGROUP DMG ");
+			
+		sql.append(" WHERE PAO.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER + "' " +
+		" AND P.POINTID = PU.POINTID " +
+		" AND PU.UOMID = UM.UOMID " +
+		" AND UM.FORMULA ='usage' " +	//TODO - how to choose which points to show.
+		" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 			
 		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
@@ -216,8 +238,15 @@ public class MeterReadModel extends ReportModelBase
 			sql.append("') ");
 		}
 
-	 
-		sql.append(" AND P.POINTID " + getInclusiveSQLString() +
+		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+		    sql.append( " AND RPH1.POINTID = P.POINTID " +
+		    		" AND RPH1.TIMESTAMP = (SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2" +
+		    		" WHERE RPH1.POINTID = RPH2.POINTID " +
+		    		" AND TIMESTAMP > ? AND TIMESTAMP <= ?)" +
+		    		" AND RPH1.POINTID = P.POINTID ");
+		    		 
+		else if (getMeterReadType() == MISSED_METER_READ_TYPE)
+		    sql.append(" AND P.POINTID " + getInclusiveSQLString() +
 				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
 //		sql.append(" ORDER BY ");
 //		if( getBillingGroups() != null && getBillingGroups().length > 0)
@@ -232,7 +261,7 @@ public class MeterReadModel extends ReportModelBase
 //		
 ////		if (getOrderBy() == ORDER_BY_DEVICE_NAME)
 //			sql.append(" PAO.PAONAME, P.POINTNAME " );
-
+		
 		return sql;
 	}
 	
@@ -247,7 +276,7 @@ public class MeterReadModel extends ReportModelBase
 				
 		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
+		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
 		
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
@@ -356,8 +385,11 @@ public class MeterReadModel extends ReportModelBase
 				case ROUTE_NAME_COLUMN:
 					return PAOFuncs.getYukonPAOName(lPao.getRouteID());
 					
-				case GROUP_NAME_1_COLUMN:
+				case GROUP_NAME_1_OR_TIMESTAMP_COLUMN:
 				{
+				    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+				        return mpData.getTimeStamp();
+				        
 				    if( ldmn == null)
 				        return null;
 				    if( getFilterModelType() == ModelFactory.COLLECTIONGROUP)
@@ -365,8 +397,11 @@ public class MeterReadModel extends ReportModelBase
 				    else 
 				        return ldmn.getCollGroup();
 				}				    
-				case GROUP_NAME_2_COLUMN:
+				case GROUP_NAME_2_OR_VALUE_COLUMN:
 				{
+				    if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
+				        return mpData.getValue();
+				    
 				    if( ldmn == null)
 				        return null;
 				    if( getFilterModelType() == ModelFactory.BILLING_GROUP)
@@ -386,45 +421,47 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if( columnNames == null)
 		{
+		    String tempStr1;
+		    String tempStr2;
+		    String tempStr3;
+		    
 		    if(getFilterModelType() == ModelFactory.TESTCOLLECTIONGROUP)
 		    {
-				columnNames = new String[]{
-					ALT_GROUP_NAME_STRING,
-					DEVICE_NAME_STRING,
-					METER_NUMBER_STRING,
-					PHYSICAL_ADDRESS_STRING,
-					POINT_NAME_STRING,
-					ROUTE_NAME_STRING,
-					COLL_GROUP_NAME_STRING,
-					BILLING_GROUP_NAME_STRING
-				};
+		        tempStr1 = ALT_GROUP_NAME_STRING;
+		    	tempStr2 = COLL_GROUP_NAME_STRING;
+		    	tempStr3 = BILLING_GROUP_NAME_STRING;
 		    }
-		    else if(getFilterModelType() == ModelFactory.BILLING_GROUP)
+			else if(getFilterModelType() == ModelFactory.BILLING_GROUP)
+			{
+			    tempStr1 = BILLING_GROUP_NAME_STRING;
+		        tempStr2 = ALT_GROUP_NAME_STRING;
+		    	tempStr3 = COLL_GROUP_NAME_STRING;
+		    }
+			else //if(getFilterModelType() == ModelFactory.COLLECTIONGROUP)
+			{
+			    tempStr1 = COLL_GROUP_NAME_STRING;
+		        tempStr2 = ALT_GROUP_NAME_STRING;
+		        tempStr3 = BILLING_GROUP_NAME_STRING;
+		    }			
+		    
+		    //Reupdate the string values if success meter model
+		    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    {
-				columnNames = new String[]{
-					BILLING_GROUP_NAME_STRING,
-					DEVICE_NAME_STRING,
-					METER_NUMBER_STRING,
-					PHYSICAL_ADDRESS_STRING,
-					POINT_NAME_STRING,
-					ROUTE_NAME_STRING,
-					COLL_GROUP_NAME_STRING,
-					ALT_GROUP_NAME_STRING
-				};
+		        tempStr2 = TIMESTAMP_STRING;
+		        tempStr3 = VALUE_STRING;
 		    }
-		    else //if(getFilterModelType() == DeviceMeterGroup.COLLECTION_GROUP)
-		    {
-				columnNames = new String[]{
-					COLL_GROUP_NAME_STRING,
-					DEVICE_NAME_STRING,
-					METER_NUMBER_STRING,
-					PHYSICAL_ADDRESS_STRING,
-					POINT_NAME_STRING,
-					ROUTE_NAME_STRING,
-					ALT_GROUP_NAME_STRING,
-					BILLING_GROUP_NAME_STRING
-				};
-		    }
+
+		    columnNames = new String[]{
+				tempStr1,
+				DEVICE_NAME_STRING,
+				METER_NUMBER_STRING,
+				PHYSICAL_ADDRESS_STRING,
+				POINT_NAME_STRING,
+				ROUTE_NAME_STRING,
+				tempStr2,
+				tempStr3
+			};
+		    
 		}
 		return columnNames;
 	}
@@ -436,16 +473,32 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if( columnTypes == null)
 		{
-			columnTypes = new Class[]{
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class
-			};
+		    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
+		    {
+				columnTypes = new Class[]{
+					String.class,
+					String.class,
+					String.class,
+					String.class,
+					String.class,
+					String.class,
+					Date.class,
+					Double.class
+				};
+		    }
+		    else
+		    {
+				columnTypes = new Class[]{
+						String.class,
+						String.class,
+						String.class,
+						String.class,
+						String.class,
+						String.class,
+						String.class,
+						String.class
+					};
+		    }
 		}
 		return columnTypes;
 	}
@@ -457,17 +510,34 @@ public class MeterReadModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
-			columnProperties = new ColumnProperties[]{
-				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(0, 1, 180, null),
-				new ColumnProperties(180, 1, 65, null),
-				new ColumnProperties(245, 1, 60, null),
-				new ColumnProperties(305, 1, 90, null),
-				new ColumnProperties(395, 1, 165, null),
-				new ColumnProperties(560, 1, 77, null),
-				new ColumnProperties(637, 1, 75, null)
-			};
+		    if (getMeterReadType() == SUCCESS_METER_READ_TYPE)
+		    {
+				columnProperties = new ColumnProperties[]{
+					//posX, posY, width, height, numberFormatString
+					new ColumnProperties(0, 1, 200, null),
+					new ColumnProperties(0, 1, 180, null),
+					new ColumnProperties(180, 1, 65, null),
+					new ColumnProperties(245, 1, 60, null),
+					new ColumnProperties(305, 1, 90, null),
+					new ColumnProperties(395, 1, 165, null),
+					new ColumnProperties(560, 1, 92, "MM/dd/yyyy HH:mm:ss"),
+					new ColumnProperties(652, 1, 75, "0.000")
+				};
+		    }
+		    else
+		    {
+		    	columnProperties = new ColumnProperties[]{
+					//posX, posY, width, height, numberFormatString
+					new ColumnProperties(0, 1, 200, null),
+					new ColumnProperties(0, 1, 180, null),
+					new ColumnProperties(180, 1, 65, null),
+					new ColumnProperties(245, 1, 60, null),
+					new ColumnProperties(305, 1, 90, null),
+					new ColumnProperties(395, 1, 165, null),
+					new ColumnProperties(560, 1, 77, null),
+					new ColumnProperties(637, 1, 75, null)
+				};
+			}
 		}
 		return columnProperties;
 	}
