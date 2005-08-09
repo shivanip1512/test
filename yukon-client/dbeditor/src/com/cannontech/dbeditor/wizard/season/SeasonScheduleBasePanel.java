@@ -488,7 +488,7 @@ private javax.swing.JTextField getJTextFieldSeasonScName() {
 			ivjJTextFieldSeasonScName.setHighlighter(new javax.swing.plaf.basic.BasicTextUI.BasicHighlighter());
 			ivjJTextFieldSeasonScName.setMinimumSize(new java.awt.Dimension(150, 21));
 			// user code begin {1}
-			ivjJTextFieldSeasonScName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_SEASON_SCHEDULE_NAME_LENGTH));
+			ivjJTextFieldSeasonScName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(40));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

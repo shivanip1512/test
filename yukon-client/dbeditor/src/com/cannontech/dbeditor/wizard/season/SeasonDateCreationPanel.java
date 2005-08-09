@@ -683,7 +683,7 @@ private javax.swing.JTextField getJTextFieldSeasonName() {
 			ivjJTextFieldSeasonName.setPreferredSize(new java.awt.Dimension(150, 21));
 			ivjJTextFieldSeasonName.setMinimumSize(new java.awt.Dimension(150, 21));
 			// user code begin {1}
-			ivjJTextFieldSeasonName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_SEASON_SCHEDULE_NAME_LENGTH));
+			ivjJTextFieldSeasonName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(20));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
