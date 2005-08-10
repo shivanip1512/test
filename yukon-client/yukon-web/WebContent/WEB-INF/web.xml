@@ -300,6 +300,29 @@
     </servlet>
     <!-- END JNLP servlets -->
 	
+	<!-- AXIS servlets -->
+	<servlet>
+    	<servlet-name>AxisServlet</servlet-name>
+    	<display-name>Apache-Axis Servlet</display-name>
+    	<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>AdminServlet</servlet-name>
+		<display-name>Axis Admin Servlet</display-name>
+    	<servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
+		<load-on-startup>100</load-on-startup>
+	</servlet>
+	<servlet>
+    	<servlet-name>SOAPMonitorService</servlet-name>
+	    <display-name>SOAPMonitorService</display-name>
+    	<servlet-class>org.apache.axis.monitor.SOAPMonitorService</servlet-class>
+		<init-param>
+			<param-name>SOAPMonitorPort</param-name>
+			<param-value>5001</param-value>
+		</init-param>
+		<load-on-startup>100</load-on-startup>
+	</servlet>
+	<!-- END AXIS servlets -->	
 	<servlet-mapping>
 		<servlet-name>svgGenerator</servlet-name>
 		<url-pattern>*.svg</url-pattern>
@@ -325,6 +348,34 @@
 	    <servlet-name>DynamicJNLPServlet</servlet-name>
 		<url-pattern>*.jnlp</url-pattern>
 	</servlet-mapping>
+	<!-- ASIX Servlet Mappings -->
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/servlet/AxisServlet</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>*.jws</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AxisServlet</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SOAPMonitorService</servlet-name>
+    <url-pattern>/multispeak/monitor/SOAPMonitor</url-pattern>
+  </servlet-mapping>
+ <!-- uncomment this if you want the admin servlet -->
+ <!--
+  <servlet-mapping>
+    <servlet-name>AdminServlet</servlet-name>
+    <url-pattern>/servlet/AdminServlet</url-pattern>
+  </servlet-mapping>
+ -->	
+	<!-- END AXIS Servlet mappings-->
 
     <!-- Faces extension mapping -->
     <servlet-mapping>
@@ -352,6 +403,14 @@
 		<extension>svgz</extension>
 		<mime-type>image/svg+xml</mime-type>
 	</mime-mapping>	
+	<mime-mapping>
+    	<extension>wsdl</extension>
+     	<mime-type>text/xml</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+    	<extension>xsd</extension>
+		<mime-type>text/xml</mime-type>
+	</mime-mapping>
 
 	<welcome-file-list>
 		<welcome-file>login.jsp</welcome-file>
