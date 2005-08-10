@@ -269,21 +269,18 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 	private LocalSharedPort createDirectPort(Integer portID) {
 		LocalSharedPort port = null;
 
-		try {
-			//this createPort() call actually queries the database for a new unique portID!!
-			// let this happen for now, but, a performance issue may occur
-			port =
-				(LocalSharedPort) PortFactory.createPort(
-					PortTypes.LOCAL_SHARED);
+		//this createPort() call actually queries the database for a new unique portID!!
+		// let this happen for now, but, a performance issue may occur
+		port =
+			(LocalSharedPort) PortFactory.createPort(
+				PortTypes.LOCAL_SHARED);
 
-			//set our own unique portID
-			port.setPortName("Port #" + (portID.intValue() - PORTID_OFFSET));
-			port.setPortID(portID);
+		//set our own unique portID
+		port.setPortName("Port #" + (portID.intValue() - PORTID_OFFSET));
+		port.setPortID(portID);
 
-			handleLocalDialupPort((LocalDirectPort) port);
-		} catch (java.sql.SQLException e) {
-			CTILogger.error(e.getMessage(), e);
-		}
+		handleLocalDialupPort((LocalDirectPort) port);
+
 
 		return port;
 

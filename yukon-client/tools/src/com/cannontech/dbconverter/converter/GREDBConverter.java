@@ -971,23 +971,16 @@ private DirectPort createDirectPort( Integer portID )
 {
 	DirectPort port = null;
 
-	try
-	{
-		//this createPort() call actually queries the database for a new unique portID!!
-		// let this happen for now, but, a performance issue may occur
-		port = PortFactory.createPort( PortTypes.LOCAL_SHARED );
+	//this createPort() call actually queries the database for a new unique portID!!
+	// let this happen for now, but, a performance issue may occur
+	port = PortFactory.createPort( PortTypes.LOCAL_SHARED );
 
 
-		//set our unique own portID
-		port.setPortName( "Port #" + (portID.intValue() - PORTID_OFFSET) );
-		port.setPortID(portID);
+	//set our unique own portID
+	port.setPortName( "Port #" + (portID.intValue() - PORTID_OFFSET) );
+	port.setPortID(portID);
 
-		handleLocalDirectPort( (LocalDirectPort)port );
-	}
-	catch( java.sql.SQLException e )
-	{
-		CTILogger.error( e.getMessage(), e );
-	}
+	handleLocalDirectPort( (LocalDirectPort)port );
 
 	
 	return port;

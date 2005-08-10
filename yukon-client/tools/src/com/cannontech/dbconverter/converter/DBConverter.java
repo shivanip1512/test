@@ -1237,16 +1237,9 @@ public boolean processPortFile()
 		Integer portID = new Integer( Integer.parseInt(tokenizer.nextElement().toString()) );
 		com.cannontech.database.data.port.DirectPort port = null;
 		
-		try
-		{
-			//this createPort() call actually queries the database for a new unique portID!!
-			// let this happen for now, but, a performance issue may occur
-			port = com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.pao.PAOGroups.getPortType( tokenizer.nextElement().toString()) );
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
+		//this createPort() call actually queries the database for a new unique portID!!
+		// let this happen for now, but, a performance issue may occur
+		port = com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.pao.PAOGroups.getPortType( tokenizer.nextElement().toString()) );
 
 		//set our unique own portID
 		port.setPortID(portID);
