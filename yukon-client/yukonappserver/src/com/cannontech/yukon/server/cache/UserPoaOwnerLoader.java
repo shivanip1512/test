@@ -107,7 +107,7 @@ public class UserPoaOwnerLoader implements Runnable
         NativeIntVector niv = new NativeIntVector(32);
         Integer userID = null;
         
-    	while(rset.next()) 
+    	while( rset.next() )
         {
     		userID = new Integer(rset.getInt(1));
     		int paoID = rset.getInt(2);
@@ -115,15 +115,13 @@ public class UserPoaOwnerLoader implements Runnable
             if( userID.equals(lastUserID) )
             {
                 niv.add( paoID );
-            }
+            } 	
             else
             {
                 if( lastUserID != null )
-                {
                     allUsersToPAObjects.put(
-                            (LiteYukonUser)allUsersMap.get(userID),
+                            (LiteYukonUser)allUsersMap.get(lastUserID),
                             niv.toArray() );
-                }
 
                 niv = new NativeIntVector(32);
                 lastUserID = userID;
@@ -132,13 +130,11 @@ public class UserPoaOwnerLoader implements Runnable
             }
     	}
         
-        //get the last element if needed
-        if( lastUserID != null )
-        {
-            allUsersToPAObjects.put(
-                    (LiteYukonUser)allUsersMap.get(userID),
-                    niv.toArray() );
-        }
+        //add the last set of paoIDs to the array
+        if( niv.size() > 0 )
+        	allUsersToPAObjects.put(
+                (LiteYukonUser)allUsersMap.get(userID),
+                niv.toArray() );
         
     }
    
