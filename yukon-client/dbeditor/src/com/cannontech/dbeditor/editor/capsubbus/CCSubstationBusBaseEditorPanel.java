@@ -451,6 +451,7 @@ private javax.swing.JTextField getJTextFieldGeoName() {
 			ivjJTextFieldGeoName.setPreferredSize(new java.awt.Dimension(33, 20));
 			ivjJTextFieldGeoName.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjJTextFieldGeoName.setMinimumSize(new java.awt.Dimension(33, 20));
+			ivjJTextFieldGeoName.setDocument( new StringRangeDocument(60) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -503,6 +504,7 @@ private javax.swing.JTextField getJTextFieldSubName() {
 			ivjJTextFieldSubName.setPreferredSize(new java.awt.Dimension(132, 20));
 			ivjJTextFieldSubName.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjJTextFieldSubName.setMinimumSize(new java.awt.Dimension(132, 20));
+			ivjJTextFieldSubName.setDocument( new StringRangeDocument(60) );
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
