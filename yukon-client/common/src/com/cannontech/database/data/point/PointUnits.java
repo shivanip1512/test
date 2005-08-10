@@ -88,18 +88,6 @@ public final class PointUnits
       UOMID_MW
    };
    
-   public static final boolean isInSet( int[] idSet, int uomid )
-   {
-   	if( idSet == null )
-   		return false;
-   	
-   	for( int i = 0; i < idSet.length; i++ )
-   		if( idSet[i] == uomid )
-   			return true;
-   			
-   	return false;
-   }
-   
 	/**
 	 * Constructor for PointUnit.
 	 */

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -776,7 +777,7 @@ private boolean isValidVarPoint( LitePoint lPoint )
 		return 
 			(currentVarUofMIDset == null 
 			? true
-			: PointUnits.isInSet( currentVarUofMIDset, lPoint.getUofmID() ) );
+			: CtiUtilities.isInSet( currentVarUofMIDset, lPoint.getUofmID() ) );
 }
 
 /**
@@ -792,7 +793,7 @@ private boolean isValidWattPoint( LitePoint lPoint )
 		return 
 			(currentWattUofMIDset == null 
 			? true
-			: PointUnits.isInSet( currentWattUofMIDset, lPoint.getUofmID() ) );
+			: CtiUtilities.isInSet( currentWattUofMIDset, lPoint.getUofmID() ) );
 }
 
 
