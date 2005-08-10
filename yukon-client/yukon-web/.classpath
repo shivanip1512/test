@@ -10,7 +10,6 @@
     <classpathentry kind="lib" path="/third-party/dom4j.jar"/>
     <classpathentry kind="lib" path="/third-party/batik.jar"/>
     <classpathentry kind="lib" path="/third-party/jtds.jar"/>
-    <classpathentry kind="lib" path="/third-party/struts.jar"/>
     <classpathentry kind="src" path="/common"/>
     <classpathentry kind="src" path="/loadcontrol"/>
     <classpathentry kind="src" path="/servlet"/>
@@ -37,5 +36,8 @@
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-fileupload-1.0.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.6.1.jar"/>
     <classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-el.jar"/>
+    <classpathentry kind="lib" path="/third-party/activation.jar"/>
+    <classpathentry kind="lib" path="/third-party/mail.jar"/>
+    <classpathentry kind="src" path="/multispeak"/>
     <classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

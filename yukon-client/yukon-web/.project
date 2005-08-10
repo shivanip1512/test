@@ -10,6 +10,7 @@
 		<project>cttp</project>
 		<project>esub</project>
 		<project>loadcontrol</project>
+		<project>multispeak</project>
 		<project>report</project>
 		<project>servlet</project>
 		<project>stars</project>
