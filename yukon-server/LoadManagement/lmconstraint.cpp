@@ -508,7 +508,7 @@ bool CtiLMConstraintChecker::checkNotifyActiveOffset(const CtiLMProgramDirect& l
         result += RWTime(proposed_start_from_1901).asString();
         result += " because that is only ";
         result += CtiNumStr((proposed_start_from_1901 - now)/60.0);
-        result += " minutes from now and the program's notification offset (notify active offset) is set to";
+        result += " minutes from now and the program's notification offset (notify active offset) is set to ";
         result += CtiNumStr(lm_program.getNotifyActiveOffset() / 60.0);
         result += " minutes.";
         if(results != 0)
