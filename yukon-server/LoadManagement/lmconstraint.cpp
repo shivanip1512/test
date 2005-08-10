@@ -20,7 +20,7 @@ CtiLMConstraintChecker::CtiLMConstraintChecker()
  */
 bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_program,
                                               ULONG proposed_gear,
-					      ULONG now,
+                                              ULONG now,
                                               ULONG proposed_start_from_1901,
                                               ULONG proposed_stop_from_1901,
                                               vector<string>& results)
@@ -40,7 +40,7 @@ bool CtiLMConstraintChecker::checkConstraints(const CtiLMProgramDirect& lm_progr
     ret_val = (checkControlWindows(lm_program, proposed_gear, proposed_start_from_1901, proposed_stop_from_1901, &results) && ret_val);
     ret_val = (checkMasterActive(lm_program, &results) && ret_val);
     ret_val = (checkNotifyActiveOffset(lm_program, now, proposed_start_from_1901, &results) && ret_val);
-	       
+               
     if( _LM_DEBUG & LM_DEBUG_CONSTRAINTS )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -354,9 +354,9 @@ bool CtiLMConstraintChecker::checkMinRestartTime(const CtiLMProgramDirect& lm_pr
         CtiLMGroupPtr lm_group  = *i;
         if(lm_group->getControlCompleteTime().seconds() + lm_program.getMinRestartTime() > proposed_start_from_1901)
         {
-	    string result = "Load group: " + lm_group->getPAOName() + " might violate its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours.";
+            string result = "Load group: " + lm_group->getPAOName() + " might violate its minimum restart time, which is " + CtiNumStr((double)lm_program.getMinRestartTime()/60.0/60.0) + " hours.";
             results->push_back(result);
-	    found_violation = true;
+            found_violation = true;
         }
     }
     return !found_violation;
@@ -377,14 +377,14 @@ bool CtiLMConstraintChecker::checkMaxDailyOps(const CtiLMProgramDirect& lm_progr
     for(CtiLMGroupIter i = groups.begin(); i != groups.end(); i++)
     {
         CtiLMGroupPtr lm_group  = *i;
-	if(lm_group->getDailyOps() >= lm_program.getMaxDailyOps())
-	{
-	    string result = "Load group: " +
-		lm_group->getPAOName() +
-		" has reached its maximum daily operations which is " + CtiNumStr(lm_program.getMaxDailyOps());
-	    results->push_back(result);
-	    found_violation = true;
-	}
+        if(lm_group->getDailyOps() >= lm_program.getMaxDailyOps())
+        {
+            string result = "Load group: " +
+                lm_group->getPAOName() +
+                " has reached its maximum daily operations which is " + CtiNumStr(lm_program.getMaxDailyOps());
+            results->push_back(result);
+            found_violation = true;
+        }
     }
     return !found_violation;
 }
@@ -497,24 +497,29 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
  */
 bool CtiLMConstraintChecker::checkNotifyActiveOffset(const CtiLMProgramDirect& lm_program, ULONG now, ULONG proposed_start_from_1901, vector<string>* results)
 {
+    if(proposed_start_from_1901 < now)
+    {
+        proposed_start_from_1901 = now;
+    }
+    
     if((proposed_start_from_1901 - now) < lm_program.getNotifyActiveOffset())
     {
-	string result = "The program cannot start at the proposed start time of ";
+        string result = "The program cannot start at the proposed start time of ";
         result += RWTime(proposed_start_from_1901).asString();
-	result += " because that is only ";
-	result += CtiNumStr((proposed_start_from_1901 - now)/60.0);
-	result += " minutes from now and the program's notification offset (notify active offset) is set to";
-	result += CtiNumStr(lm_program.getNotifyActiveOffset() / 60.0);
-	result += " minutes.";
-	if(results != 0)
-	{
-	    results->push_back(result);
-	}
-	return false;
+        result += " because that is only ";
+        result += CtiNumStr((proposed_start_from_1901 - now)/60.0);
+        result += " minutes from now and the program's notification offset (notify active offset) is set to";
+        result += CtiNumStr(lm_program.getNotifyActiveOffset() / 60.0);
+        result += " minutes.";
+        if(results != 0)
+        {
+            results->push_back(result);
+        }
+        return false;
     }
     else
     {
-	return true;
+        return true;
     }
     
 }
