@@ -296,16 +296,15 @@ public class RequestPword
 			{
                 handleUserName();
 			}
-				
+
+			//remove for now since search by first name / last name is not safe.
+			/*
 			if( getState() != RET_SUCCESS )
-			{
                 handleFName();
-			}
 				
 			if( getState() != RET_SUCCESS )
-			{
                 handleLName();
-			}
+            */
 
 
 		}
