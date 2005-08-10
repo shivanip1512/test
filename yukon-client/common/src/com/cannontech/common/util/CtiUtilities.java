@@ -1069,6 +1069,21 @@ public static final boolean isDisabled(String disableStr) {
 }
 
 /**
+ * Returns true of the given id is in the given array
+ */
+public static final boolean isInSet( int[] idSet, int id )
+{
+	if( idSet == null )
+		return false;
+   	
+	for( int i = 0; i < idSet.length; i++ )
+		if( idSet[i] == id )
+			return true;
+
+	return false;
+}
+
+/**
  * This method was created in VisualAge.
  * @param cBox javax.swing.JCheckBox
  * @param state java.lang.Integer
