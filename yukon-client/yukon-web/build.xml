@@ -13,6 +13,8 @@
 		*  Compile the JSP files into java files
 		*   This is to ensure that all the JSPs will "work"
 		*****************************************************-->
+<!-- Removed since valid JSP lines are flag as errors -->
+<!--
 		<jspc srcdir="${yukon-web}"
 			destdir="jspbuild"
 			compiler="jasper41"
@@ -30,7 +32,7 @@
 		         </fileset>
 		    </classpath>
 		</jspc>
-
+-->
 		<!--*********************************************************
 		*  Compile the JSP generated java files into class files
 		*  This is not done for now since the generated java files 
@@ -151,8 +153,8 @@
 	depends="jspc_preparse" -->
     <target name="jspc" >
     
-<delete quiet="true"> <fileset dir="tempbuild"/> </delete>
-<delete quiet="true"> <fileset dir="jspbuild"/> </delete>
+		<delete quiet="true"> <fileset dir="tempbuild"/> </delete>
+		<delete quiet="true"> <fileset dir="jspbuild"/> </delete>
 
 		<foreach target="jspc_preparse" param="param.jspdir" >
 			<path>
