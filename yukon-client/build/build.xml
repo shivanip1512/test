@@ -92,7 +92,7 @@
         <ant dir="${services}" target="${dotarget}"/>
         <ant dir="${yukonappserver}" target="${dotarget}"/>
         <ant dir="${cttp}" target="${dotarget}"/>
-<!--        <ant dir="${yukon-web}" target="${dotarget}"/> -->
+        <ant dir="${yukon-web}" target="${dotarget}"/>
 
     </target>
 
