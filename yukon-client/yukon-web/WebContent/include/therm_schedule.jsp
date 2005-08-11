@@ -1,6 +1,6 @@
 <%
 /* Required predefined variables:
- * thermoProgram: StarsThermotatProgram
+ * thermoProgram: StarsThermostatProgram
  * invID: int
  * invIDs: int[]
  * allTherm: boolean
@@ -8,6 +8,8 @@
  */
 	boolean isOperator = StarsUtils.isOperator(user);
 	boolean isRecommended = (invID < 0);
+	
+	String thermType = request.getParameter("type");
 	
 	StarsThermostatProgram dftThermoProgram = null;
 	if (!isRecommended) {
@@ -138,8 +140,8 @@ function prepareSubmit(form) {
 	form.tempval4.value = document.getElementById('temp4').innerHTML.substr(0,2);
 }
 
-function switchSettings(day, mode) {
-	location.href = "<%= request.getRequestURI() %>?<%= thermNoStr %>&day=" + day + "&mode=" + mode;
+function switchSettings(day, mode, thermType) {
+	location.href = "<%= request.getRequestURI() %>?<%= thermNoStr %>&day=" + day + "&mode=" + mode + "&type=" + thermType;
 }
 
 function setToDefault() {
@@ -219,8 +221,8 @@ function init() {
 			  <input type="hidden" name="type" value="<%= StarsThermostatTypes.EXPRESSSTAT.toString() %>">
 			  <input type="hidden" name="day" value="<%= daySetting.toString() %>">
 			  <input type="hidden" name="mode" value="<%= modeSetting.toString() %>">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
 			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 			  <input type="hidden" name="tempval1">
 			  <input type="hidden" name="tempval2">
@@ -243,19 +245,19 @@ function init() {
                             <% if (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE) { %>
                             <b><span class="Header2">Weekday</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeSetting.toString() %>')">Weekday</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Weekday</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
                             <b><span class="Header2">Saturday</span> </b>
                             <% } else { %>
-                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeSetting.toString() %>')">Saturday</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Saturday</span> 
                             <% } %>
                             &nbsp;&nbsp; 
                             <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
                             <b><span class="Header2">Sunday</span></b> 
                             <% } else { %>
-                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>')">Sunday</span> 
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Sunday</span> 
                             <% } %>
                           <td class = "Background" align = "right" width="46%"> 
 <%
@@ -314,10 +316,10 @@ function init() {
                               </span> </div>
                           </td>
                           <td width="31"><span class="TableCell"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>')"<% } %>>
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>', '<%= thermType %>')"<% } %>>
                             </span></td>
 						  <td width="20"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>')"<% } %>>
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>', '<%= thermType %>')"<% } %>>
                           </td>
                           <td width="56"><img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif"> 
                             <span class="TableCell"><font color="FF0000">Heating</font></span></td>
