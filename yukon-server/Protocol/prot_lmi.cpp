@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/08/03 21:47:13 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/08/12 14:18:46 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -426,6 +426,13 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
     RWTime NowTime;
     RWDate NowDate;
 
+/*
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        slog << RWTime() << " **** prot_lmi generating with command = " << _command << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+*/
+
     if( _in_total > 0 )
     {
         lmi_message &packet = *((lmi_message *)&_inbound);
@@ -454,10 +461,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         {
             _status_read = true;  //  set here instead of the decode to prevent looping
 
-            _outbound.length  = 2;
+            _outbound.length  = 3;
             _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
             _outbound.data[0] = _status.c;
             _outbound.data[1] = 0;
+            _outbound.data[2] = 0;
         }
         else
         {
@@ -650,10 +658,11 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                     case Command_Loopback:
                     {
-                        _outbound.length  = 2;
+                        _outbound.length  = 3;
                         _outbound.body_header.message_type = Opcode_ClearAndReadStatus;
                         _outbound.data[0] = 0;
                         _outbound.data[1] = 0;
+                        _outbound.data[2] = 0;
 
                         break;
                     }
@@ -782,9 +791,19 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                         decodeStatuses(_status.s);
 
-                        //  this needs to be handled more intelligently - we've just gotten a "questionable" response - we need
-                        //    to handle this instead of just quitting
-                        _transaction_complete = true;
+                        if( _status.s.questionable_request )
+                        {
+                            //  this needs to be handled more intelligently - we've just gotten a "questionable" response - we need
+                            //    to handle this instead of just quitting
+                            _transaction_complete = true;
+
+                        }
+
+                        if( _command == Command_ReadEchoedCodes )
+                        {
+                            //  we had an error while retrieving codes; we're done
+                            _verification_pending = false;
+                        }
                     }
                     else
                     {
