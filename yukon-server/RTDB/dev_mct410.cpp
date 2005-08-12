@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/08/01 21:59:37 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/08/12 14:33:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1587,10 +1587,10 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
             pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
 
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
+            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
                                                                                      ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-            if( pData = makePointDataMsg(pPoint, pi, resultString) )
+            if( pData = makePointDataMsg(pPoint, pi, pointString) )
             {
                 ReturnMsg->PointData().insert(pData);
                 pData = NULL;  // We just put it on the list...
@@ -1633,6 +1633,34 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** TOU/Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+
+    /*
+
+        pulse accumulators:
+
+        kwh rate a: 101
+        kwh rate b: 121
+        kwh rate c: 141
+        kwh rate d: 161
+
+        frozen kwh rate a:  111
+        frozen kwh rate b:  131
+        frozen kwh rate c:  151
+        frozen kwh rate d:  171
+
+        demand accumulators:
+
+        peak kw rate a: 111
+        peak kw rate b: 131
+        peak kw rate c: 151
+        peak kw rate d: 171
+
+        peak frozen kw rate a:  121
+        peak frozen kw rate b:  141
+        peak frozen kw rate c:  161
+        peak frozen kw rate d:  181
+
+    */
 
     pointoffset = 1;
 
