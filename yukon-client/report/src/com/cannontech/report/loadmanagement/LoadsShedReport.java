@@ -188,22 +188,34 @@ public boolean retrieveReportData(String dbAlias)
 		for(int i=0;i<controlAreaVector.size();i++)
 		{
 			StringBuffer sqlString2 = new StringBuffer("select pao.paobjectid, startdatetime, paoname, soe_tag, controltype, currentdailytime, " +
-				"currentmonthlytime, currentseasonaltime, currentannualtime, activerestore, reductionvalue, stopdatetime " +
-				"from yukonpaobject pao, lmcontrolhistory ch " +
-				"where pao.paobjectid = ch.paobjectid and " +
-				"(ch.activerestore = 'M' or ch.activerestore = 'T' or ch.activerestore = 'O') and " +
-				"STARTDATETIME > ? and STARTDATETIME <= ? and " +
-				"pao.paobjectid in (select paobjectid from lmgroupmacroexpander_view " +
-				"where (childid IS NULL AND paobjectid = lmgroupdeviceid OR " +
-				"NOT childid IS NULL AND paobjectid = childid) and " +
-				"deviceid in (select lmprogramdeviceid from lmcontrolareaprogram " +
-				"where deviceid = ?)) " +
-				"order by paoname, startdatetime, stopdatetime desc");
+				" currentmonthlytime, currentseasonaltime, currentannualtime, activerestore, reductionvalue, stopdatetime " +
+				" from yukonpaobject pao, lmcontrolhistory ch " +
+				" where pao.paobjectid = ch.paobjectid " +
+				" and (ch.activerestore = 'M' or ch.activerestore = 'T' or ch.activerestore = 'O') " +
+				" and STARTDATETIME > ? and STARTDATETIME <= ? " +
+				" and (pao.paobjectid in (select distinct lmgroupdeviceid " +
+				" from lmcontrolareaprogram lmcap, lmprogramdirectgroup lmpdg " +
+				" where lmcap.lmprogramdeviceid = lmpdg.deviceid " +
+				" and lmcap.deviceid = ?) or " +
+				" pao.paobjectid in (select childID from lmcontrolareaprogram lmcap, lmprogramdirectgroup lmpdg, genericmacro gm " +
+				" where lmcap.lmprogramdeviceid = lmpdg.deviceid " +
+				" and lmpdg.lmgroupdeviceid = gm.ownerid " +
+				" and lmcap.deviceid = ?) ) " +
+				" order by paoname, startdatetime, stopdatetime desc");
+				
+				//Deprecated query with the loss of the lmgroupmacroexpander_view
+//				"(select paobjectid from lmgroupmacroexpander_view " +
+//				"where (childid IS NULL AND paobjectid = lmgroupdeviceid OR " +
+//				"NOT childid IS NULL AND paobjectid = childid) and " +
+//				"deviceid in (select lmprogramdeviceid from lmcontrolareaprogram " +
+//				"where deviceid = ?)) " +
+				
 
 			java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
 			pstmt2.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTimeInMillis()));			
 			pstmt2.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTimeInMillis()));
 			pstmt2.setInt(3,((TempControlAreaIdNameObject)controlAreaVector.get(i)).getControlAreaId().intValue());
+			pstmt2.setInt(4,((TempControlAreaIdNameObject)controlAreaVector.get(i)).getControlAreaId().intValue());
 			java.sql.ResultSet rset2 = null;
 
 			{
