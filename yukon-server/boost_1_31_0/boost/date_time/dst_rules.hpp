@@ -6,7 +6,7 @@
  * Boost Software License, Version 1.0. (See accompanying
  * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
  * Author: Jeff Garland 
- * $Date: 2004/05/17 21:12:06 $
+ * $Date: 2005/08/12 19:54:19 $
  */
 
 /*! @file dst_rules.hpp
@@ -296,6 +296,11 @@ namespace boost {
       static time_duration_type dst_offset()
       {
         return time_duration_type(0,dst_length_minutes,0);
+      }
+
+      static time_duration_type dst_start_offset()
+      {
+        return time_duration_type(0,dst_start_offset_minutes,0);
       }
 
 
