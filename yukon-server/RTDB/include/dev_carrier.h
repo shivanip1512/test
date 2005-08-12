@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/03/13 19:36:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/08/12 14:08:07 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,7 @@ public:
    virtual bool isMeter() const;
    virtual RWCString getMeterGroupName() const;
    virtual RWCString getAlternateMeterGroupName() const;
+   virtual RWCString getBillingGroupName() const;
 };
 
 

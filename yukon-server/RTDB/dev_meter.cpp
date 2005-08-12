@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/08/12 14:08:07 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,9 @@ CtiDeviceMeter &CtiDeviceMeter::operator=(const CtiDeviceMeter& aRef)
 
 
 inline bool CtiDeviceMeter::isMeter() const   { return true; }
-inline RWCString CtiDeviceMeter::getMeterGroupName() const            { return getMeterGroup().getCollectionGroup();}
-inline RWCString CtiDeviceMeter::getAlternateMeterGroupName() const   { return getMeterGroup().getTestCollectionGroup();}
+inline RWCString CtiDeviceMeter::getMeterGroupName() const              { return getMeterGroup().getCollectionGroup();}
+inline RWCString CtiDeviceMeter::getAlternateMeterGroupName() const     { return getMeterGroup().getTestCollectionGroup();}
+inline RWCString CtiDeviceMeter::getBillingGroupName() const            { return getMeterGroup().getBillingGroup();}
 
 CtiTableDeviceMeterGroup  CtiDeviceMeter::getMeterGroup() const     {  return MeterGroup;  }
 CtiTableDeviceMeterGroup& CtiDeviceMeter::getMeterGroup()           {  return MeterGroup;  }

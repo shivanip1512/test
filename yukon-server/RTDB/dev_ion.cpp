@@ -79,6 +79,12 @@ RWCString CtiDeviceION::getAlternateMeterGroupName() const
 }
 
 
+RWCString CtiDeviceION::getBillingGroupName() const
+{
+    return _billingGroup;
+}
+
+
 void CtiDeviceION::setMeterGroupData( const RWCString &collectionGroup, const RWCString &testCollectionGroup, const RWCString &meterNumber, const RWCString &billingGroup)
 {
     _collectionGroup     = collectionGroup;

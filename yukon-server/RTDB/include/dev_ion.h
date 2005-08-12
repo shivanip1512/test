@@ -69,6 +69,7 @@ public:
     //-------  these functions are copied from dev_meter to prevent nasty inheritance/decode problems.
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
+    virtual RWCString getBillingGroupName() const;
 
     CtiTableDeviceMeterGroup  getMeterGroup() const;
     CtiTableDeviceMeterGroup& getMeterGroup();

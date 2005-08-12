@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_meter.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/23 12:54:28 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/08/12 14:08:07 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -105,6 +105,7 @@ public:
    virtual bool isMeter() const;
    virtual RWCString getMeterGroupName() const;
    virtual RWCString getAlternateMeterGroupName() const;
+   virtual RWCString getBillingGroupName() const;
 
 };
 

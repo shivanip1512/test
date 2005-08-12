@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/08/12 14:08:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,5 +122,10 @@ inline RWCString CtiDeviceCarrier::getMeterGroupName() const
 inline RWCString CtiDeviceCarrier::getAlternateMeterGroupName() const
 {
     return getMeterGroup().getTestCollectionGroup();
+}
+
+inline RWCString CtiDeviceCarrier::getBillingGroupName() const
+{
+    return getMeterGroup().getBillingGroup();
 }
 

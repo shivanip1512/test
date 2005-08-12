@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/08/01 21:32:03 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/08/12 14:07:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,6 +140,7 @@ public:
     virtual RWCString getPassword() const;
     virtual RWCString getMeterGroupName() const;
     virtual RWCString getAlternateMeterGroupName() const;
+    virtual RWCString getBillingGroupName() const;
     virtual RWCString getPhoneNumber() const;
     virtual LONG getMinConnectTime() const;
     virtual LONG getMaxConnectTime() const;
@@ -323,8 +324,9 @@ inline LONG CtiDeviceBase::getDemandInterval() const     { return LONG_MAX;}
 inline Protocol::Interface *CtiDeviceBase::getProtocol() { return NULL;}
 inline void CtiDeviceBase::invalidateScanRates()         { return;}
 inline void CtiDeviceBase::deleteNonUpdatedScanRates()   { return;}
-inline RWCString CtiDeviceBase::getMeterGroupName() const   { return RWCString();}
-inline RWCString CtiDeviceBase::getAlternateMeterGroupName() const    { return RWCString();}
+inline RWCString CtiDeviceBase::getMeterGroupName() const           { return RWCString();}
+inline RWCString CtiDeviceBase::getAlternateMeterGroupName() const  { return RWCString();}
+inline RWCString CtiDeviceBase::getBillingGroupName() const         { return RWCString();}
 
 inline INT CtiDeviceBase::getCommFailCount() const       { LockGuard guard(monitor()); return _commFailCount;}
 inline INT CtiDeviceBase::getAttemptCount() const        { LockGuard guard(monitor()); return _attemptCount;}
