@@ -9,24 +9,15 @@ package com.cannontech.custom.pss2ws;
 import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
-import javax.net.ssl.SSLSession;
-
-import sun.util.calendar.Gregorian;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.util.ServletUtil;
 
 
 /**
@@ -114,12 +105,8 @@ public class PriceServer implements Runnable{
 	
 	public static void main(String [] args)
 	{
-		CTILogger.info("PriceServer - Yukon Version: " + VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +VersionTools.getDatabaseVersion());
-		System.setProperty("cti.app.name", "PriceServer");
 		PriceServer priceServer = new PriceServer();
-
 		priceServer.loadParameters(args);
-		priceServer.init();
 		
 		//start the process
 		priceServer.start();
@@ -138,7 +125,7 @@ public class PriceServer implements Runnable{
 			outputFileWriter.write( getPricePoint().toString() );
 			outputFileWriter.flush();
 			outputFileWriter.close();
-			CTILogger.info("Exported PricePoint(" + getPricePoint().toString() + ") to File: " + writeToFileName);
+			CTILogger.debug("Exported PricePoint(" + getPricePoint().toString() + ") to File: " + writeToFileName);
 		}
 		catch (java.io.IOException ioe)
 		{
@@ -152,7 +139,7 @@ public class PriceServer implements Runnable{
 	public void run() {
 		
 		java.util.Date now = null;
-//		figureNextRunTime();
+		figureNextRunTime();
 		
 		try
 		{
@@ -244,6 +231,7 @@ public class PriceServer implements Runnable{
 	{
 //		retrieveParameters();
 //		loadParameters();
+		init();
 		priceThread = new Thread( this, "PriceServer" );
 		priceThread.start();
 	}
@@ -283,17 +271,20 @@ public class PriceServer implements Runnable{
 
 	public void init()
 	{
+		CTILogger.info("PriceServer - Yukon Version: " + VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +VersionTools.getDatabaseVersion());
+		System.setProperty("cti.app.name", "PriceServer");
+
 		// set up ssl
 		System.setProperty("javax.net.ssl.trustStore", certFileName);
 		System.setProperty("javax.net.ssl.trustStorePassword", certPassword);
-		HostnameVerifier hv = new HostnameVerifier() {
-			public boolean verify(String urlHostName, SSLSession session) {
-				System.out.println("Warning: URL Host: " + urlHostName +
-				  " vs. " + session.getPeerHost());
-				return true;
-			}
-		};
-		HttpsURLConnection.setDefaultHostnameVerifier(hv);
+//		HostnameVerifier hv = new HostnameVerifier() {
+//			public boolean verify(String urlHostName, SSLSession session) {
+//				System.out.println("Warning: URL Host: " + urlHostName +
+//				  " vs. " + session.getPeerHost());
+//				return true;
+//			}
+//		};
+//		HttpsURLConnection.setDefaultHostnameVerifier(hv);
 
 
 		try {
