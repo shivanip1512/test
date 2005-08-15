@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/05/27 02:36:27 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/08/15 15:13:35 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1177,7 +1177,7 @@ INT CtiProtocolExpresscom::parseSchedule(CtiCommandParser &parse)
     BYTE dow;
     BYTE pod;
 
-    vector< BYTE > schedule;
+    vector< BYTE > schedule(1024);
 
     schedule.push_back(0);      // This is the number of schedule points!
 

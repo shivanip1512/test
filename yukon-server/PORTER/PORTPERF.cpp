@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/01 16:19:50 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/08/15 15:12:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -371,7 +371,11 @@ void statisticsRecord()
     {
         try
         {
-            vector< CtiStatistics > dirtyStatCol;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Start statisticsRecord() " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            vector< CtiStatistics > dirtyStatCol( gDeviceStatMap.size() );
             vector< CtiStatistics >::iterator dirtyStatItr;
             CtiStatisticsIterator_t dstatitr;
 
@@ -379,6 +383,10 @@ void statisticsRecord()
             {
                 pair< CtiStatisticsMap_t::iterator, bool > resultpair;
                 CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);    // Lock the global list for a minimal amount of time
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " statisticsRecord() acquired exclusion object " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
 
                 for(dstatitr = gDeviceStatMap.begin(); dstatitr != gDeviceStatMap.end(); dstatitr++)
                 {
@@ -386,9 +394,7 @@ void statisticsRecord()
                     if(dStats.isDirty())
                     {
                         cnt++;
-
-                        // Try to insert. Return indicates success.
-                        dirtyStatCol.push_back(dStats);        // Copy and insert!
+                        dirtyStatCol.push_back(dStats);     // Copy and insert!
                         dStats.resetDirty();                // It has been cleaned up now...
                     }
                 }
@@ -396,6 +402,10 @@ void statisticsRecord()
                 gDeviceStatDirty = false;
             }
 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " statisticsRecord() generated table candidates. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
             // Ok, now we stuff the dirtyStatCol out on the DB.  WITHOUT BLOCKING OPERATIONS!
             {
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -413,6 +423,11 @@ void statisticsRecord()
                     }
                     conn.commitTransaction();
                 }
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << endl;
             }
 
             if(cnt)
@@ -499,7 +514,7 @@ void statisticsReport( CtiDeviceSPtr pDevice )
 
         CtiStatistics &dStats = (*dStatItr).second;
 
-        for(int i = 0; i < CtiStatistics::FinalCounterSlot; i++)
+        for(int i = 0; i < CtiStatistics::FinalCounterBin; i++)
         {
             if(pDevice->getDevicePointOffsetTypeEqual(STATISTICS_OFFSET_COMPLETIONRATIO, AnalogPointType))
             {
@@ -512,7 +527,6 @@ void statisticsReport( CtiDeviceSPtr pDevice )
             eprot   = dStats.get( i, CtiStatistics::ProtocolErrors);
             esystem = dStats.get( i, CtiStatistics::SystemErrors);
             compratio = dStats.getCompletionRatio( i );
-
         }
     }
 }
