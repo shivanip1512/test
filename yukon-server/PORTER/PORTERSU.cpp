@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/05/24 00:39:41 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/08/15 15:13:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -162,13 +162,13 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
         /* send message back to originating process */
         if(InMessage.ReturnNexus != NULL)
         {
-            INT writeResult = InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 5L);
+            INT writeResult = InMessage.ReturnNexus->CTINexusWrite(&InMessage, sizeof (InMessage), &BytesWritten, 30L);
 
             if(writeResult || BytesWritten == 0)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
+                    dout << RWTime()  << " TID: " << GetCurrentThreadId() << " Error \"" << writeResult << "\" returning error condition to client " << endl;
                     dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
                 }
 

@@ -459,7 +459,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                         if( !(++wbLoops % 10) )  //  gripe every 5 seconds
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
+                            dout << RWTime() << " TID: " << GetCurrentThreadId() << " reports outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
                         }
                         Sleep(500);
                     }
