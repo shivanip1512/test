@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/08/01 16:20:45 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/08/15 15:13:19 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.34  2005/08/15 15:13:19  cplender
+* Minor change for the verification log table writes.
+*
 * Revision 1.33  2005/08/01 16:20:45  cplender
 * Added a method to rediscover the cycletime and switch timeout from stime/ctime.
 * Used by the rtm to convert the return to plain text.
@@ -2032,6 +2035,7 @@ string CtiProtocolSA3rdParty::asString(const SA_CODE &sa)
         case SADIG:
             {
                 memcpy(saData._codeSimple, sa.code, 7);
+                saData._codeSimple[6] = '\0';
                 break;
             }
         default:

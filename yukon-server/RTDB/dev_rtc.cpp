@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/08/15 15:12:17 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.32  2005/08/15 15:12:17  cplender
+* Minor change for the verification log table writes.
+*
 * Revision 1.31  2005/07/29 16:26:02  cplender
 * Making slight adjustments to better serve GRE's simple protocols.  Need to verify and have a plain text decode to review.
 *
@@ -706,6 +709,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 strncpy(codestr, CtiNumStr(OutMessage->Buffer.SASt._code205), 12);
                 codestr[12] = 0;
                 cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
@@ -717,6 +721,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 strncpy(codestr, OutMessage->Buffer.SASt._codeSimple, 6);
                 codestr[6] = 0;
                 cmdStr = CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt);
+                if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
@@ -730,6 +735,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 if( OutMessage->OutLength + 10 + rtcOutMessage->OutLength <= sizeof(OutMessage->Buffer.OutMessage) )     // 10 is for the time slot message.
                 {
+                    work = 0;
                     if( !rtcOutMessage->VerificationSequence )
                     {
                         rtcOutMessage->VerificationSequence = VerificationSequenceGen();
@@ -737,22 +743,35 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
                     if( rtcOutMessage->Buffer.SASt._code305[0] != '\0' )
                     {
-                        strncpy(codestr, rtcOutMessage->Buffer.SASt._code305, rtcOutMessage->Buffer.SASt._bufferLen);
+                        memcpy((void*)codestr, (void*)(rtcOutMessage->Buffer.SASt._code305), rtcOutMessage->Buffer.SASt._bufferLen);
                         codestr[rtcOutMessage->Buffer.SASt._bufferLen + 1] = 0;
                     }
                     else if( rtcOutMessage->Buffer.SASt._code205 )
                     {
-                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 255);
+                        strncpy(codestr, CtiNumStr(rtcOutMessage->Buffer.SASt._code205), 12);
                         codestr[12] = 0;
+                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
+                        }
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
                     else
                     {
                         strncpy(codestr, rtcOutMessage->Buffer.SASt._codeSimple, 6);
                         codestr[6] = 0;
+                        cmdStr = CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt);
+                        if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
+                        }
+                        work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, cmdStr, codestr, seconds(60));
                     }
 
-                    CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *rtcOutMessage, rtcOutMessage->Request.CommandStr, codestr, seconds(60));
-                    _verification_objects.push(work);
+                    if(work) _verification_objects.push(work);
 
                     now = now.now();
                     codecount++;
@@ -798,6 +817,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 }
                 else
                 {
+                    if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -814,7 +834,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** MEMORY LEAK Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
