@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/08/15 15:12:06 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.11  2005/08/15 15:12:06  cplender
+* Altered the protocol to do a reverse decode on RTM receipts.
+*
 * Revision 1.10  2005/02/10 23:24:00  alauinger
 * Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 *
@@ -544,6 +547,8 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                     int tms_result;
                     bool bad_code = false;
 
+                    memset((void*)&sacode, 0, sizeof(SA_CODE));
+
                     try
                     {
                         tms_result = CtiProtocolSA3rdParty::procTMSmsg(_inbound, _code_len + 8, &sacode, &x205cmd);
@@ -563,10 +568,27 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                     {
                         if( !bad_code )
                         {
+                            string codestr("-");
+                            string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
+                            CtiVerificationBase::Protocol prot_type;
+                            switch(sacode.type)
+                            {
+                            case GOLAY:
+                                prot_type = CtiVerificationBase::Protocol_Golay;
+                                codestr = sacode.code;
+                                break;
+                            case SA205:
+                                prot_type = CtiVerificationBase::Protocol_SA205;
+                                codestr = CtiNumStr(sacode.code);
+                                break;
+                            }
+
                             _codes_received++;
-
-                            report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SA205, getID(), sacode.code, second_clock::universal_time());
-
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** VReport Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << cmdStr << endl;
+                            }
+                            report = CTIDBG_new CtiVerificationReport(prot_type, getID(), codestr, second_clock::universal_time(), cmdStr);
                             _verification_objects.push(report);
                         }
 
