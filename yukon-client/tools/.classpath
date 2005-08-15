@@ -29,5 +29,10 @@
     <classpathentry exported="true" kind="src" path="/common"/>
     <classpathentry kind="src" path="/esub"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
+    <classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
+    <classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
+    <classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="C:/axis1_2/src"/>
+    <classpathentry kind="lib" path="/third-party/wsdl4j.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
