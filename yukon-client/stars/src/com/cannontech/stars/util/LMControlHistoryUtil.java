@@ -471,9 +471,10 @@ public class LMControlHistoryUtil {
 		
 		LiteStarsLMControlHistory liteCtrlHist = getActiveControlHistory( groupID );
 		if (liteCtrlHist == null || needUpdate(liteCtrlHist, startDate)) {
-			liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, startDate );
+			liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, null );
 			addActiveControlHistory( liteCtrlHist );
 		}
+		
 		
 		ControlHistory hist = null;
 		Date lastStartTime = null;
