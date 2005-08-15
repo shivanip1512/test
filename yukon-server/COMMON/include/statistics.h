@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/07/25 16:41:24 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/08/15 15:15:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,9 @@
 
 #include "counter.h"
 #include "yukon.h"
+
+// Uncomment this to execute the code with the old CtiCounters instead of arrays.
+// #define CTISTATUSECOUNTERS FALSE
 
 class IM_EX_CTIBASE CtiStatistics
 {
@@ -59,7 +62,7 @@ public:
         Monthly,
         LastMonth,
 
-        FinalCounterSlot               // Leave this guy last!
+        FinalCounterBin               // Leave this guy last!
     };
 
     enum CtiStatisticsCounters_t
@@ -69,7 +72,9 @@ public:
         Attempts,
         CommErrors,
         ProtocolErrors,
-        SystemErrors
+        SystemErrors,
+
+        FinalStatType
     };
 
 
@@ -119,13 +124,17 @@ public:
 protected:
 
     long _pid;                   // paoid.
-    static RWCString _counterName[FinalCounterSlot];
+    static RWCString _counterName[FinalCounterBin];
 
-    bool        _dirtyCounter[FinalCounterSlot];
-    CtiCounter  _counter[FinalCounterSlot];
-    int         _threshold[FinalCounterSlot];
-    bool        _thresholdAlarm[FinalCounterSlot];
-    pair<RWTime, RWTime> _startStopTimePairs[FinalCounterSlot];
+    bool        _dirtyCounter[FinalCounterBin];
+    #ifdef CTISTATUSECOUNTERS
+    CtiCounter  _counter[FinalCounterBin];
+    #else
+    int        _counter[FinalStatType][FinalCounterBin];
+    #endif
+    int         _threshold[FinalCounterBin];
+    bool        _thresholdAlarm[FinalCounterBin];
+    pair<RWTime, RWTime> _startStopTimePairs[FinalCounterBin];
 
     void        verifyThresholds();
 
@@ -148,6 +157,79 @@ private:
     void incrementFail(const RWTime &stattime, CtiStatisticsCounters_t failtype);
     void incrementSuccess(const RWTime &stattime);
 
+    inline void incrementCounter( int statTypeIndex, int statBinIndex, int bump = 1 )      // Bump MAY be negative for a decrement!
+    {
+        #ifdef CTISTATUSECOUNTERS
+        _counter[ statBinIndex ].inc( statTypeIndex, bump );
+        #else
+        if(statTypeIndex < FinalStatType && statBinIndex < FinalCounterBin)
+        {
+            _counter[statTypeIndex][statBinIndex] += bump;
+        }
+        #endif
+        _dirtyCounter[ statBinIndex ] = true;
+    }
+
+    inline void resetCounter( int statBinIndex )
+    {
+        #ifdef CTISTATUSECOUNTERS
+        _counter[statBinIndex].resetAll( );
+        #else
+        if(statBinIndex < FinalCounterBin)
+        {
+            for(int i = 0; i < FinalStatType; i++)
+            {
+                _counter[i][statBinIndex] = 0;
+            }
+        }
+        #endif
+        _dirtyCounter[ statBinIndex ] = true;
+    }
+
+    inline void setCounter( int statTypeIndex, int statBinIndex, int value )
+    {
+        #ifdef CTISTATUSECOUNTERS
+        _counter[statBinIndex].set( value );
+        #else
+        if(statTypeIndex < FinalStatType && statBinIndex < FinalCounterBin)
+        {
+            _counter[statTypeIndex][statBinIndex] = value;
+        }
+        #endif
+        _dirtyCounter[ statBinIndex ] = true;
+    }
+
+    inline int getCounter( int statTypeIndex, int statBinIndex ) const
+    {
+        int retval = 0;
+
+        #ifdef CTISTATUSECOUNTERS
+        retval = _counter[statBinIndex].get( statTypeIndex );
+        #else
+        if(statTypeIndex < FinalStatType && statBinIndex < FinalCounterBin)
+        {
+            retval = _counter[statTypeIndex][statBinIndex];
+        }
+        #endif
+
+        return retval;
+    }
+
+    inline void copyCounter( int destBinIndex, int srcBinIndex )
+    {
+        #ifdef CTISTATUSECOUNTERS
+        _counter[ destBinIndex ] = _counter[ srcBinIndex ];
+        #else
+        if(destBinIndex < FinalCounterBin && srcBinIndex < FinalCounterBin)
+        {
+            for(int i = 0; i < FinalStatType; i++)
+            {
+                _counter[i][destBinIndex] = _counter[i][srcBinIndex];
+            }
+        }
+        #endif
+        _dirtyCounter[ destBinIndex ] = true;
+    }
 
 };
 #endif // #ifndef __STATISTICS_H__
