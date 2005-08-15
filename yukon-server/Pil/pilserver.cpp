@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2005/05/04 20:28:01 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2005/08/15 15:14:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1103,7 +1103,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     while( (i = retList.entries()) > 0 )
     {
         pcRet = (CtiReturnMsg*)retList.removeFirst();
-        pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
+
+        if(pcRet->Status() == NORMAL || i > 1) pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
 
         CtiPILConnectionManager *CM = (CtiPILConnectionManager *)pReq->getConnectionHandle();
 
