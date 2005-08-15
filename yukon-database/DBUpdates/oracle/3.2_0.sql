@@ -224,7 +224,7 @@ create table DeviceTNPPSettings  (
    DestinationAddress   NUMBER                          not null,
    OriginAddress        NUMBER                          not null,
    IdentifierFormat     CHAR(1)                         not null,
-   Protocol             CHAR(1)                         not null,
+   Protocol             VARCHAR2(32)                    not null,
    DataFormat           CHAR(1)                         not null,
    Channel              CHAR(1)                         not null,
    Zone                 CHAR(1)                         not null,
@@ -245,6 +245,32 @@ go
 update YukonListEntry set YukonDefinitionID = 5 where EntryText = 'Fax Number';
 insert into YukonListEntry values(8,1,0,'Cell Phone',2);
 go
+
+create table DevicePagingReceiverSettings  (
+   DeviceID             NUMBER                          not null,
+   CapCode1             NUMBER                          not null,
+   CapCode2             NUMBER                          not null,
+   CapCode3             NUMBER                          not null,
+   CapCode4             NUMBER                          not null,
+   CapCode5             NUMBER                          not null,
+   CapCode6             NUMBER                          not null,
+   CapCode7             NUMBER                          not null,
+   CapCode8             NUMBER                          not null,
+   CapCode9             NUMBER                          not null,
+   CapCode10            NUMBER                          not null,
+   CapCode11            NUMBER                          not null,
+   CapCode12            NUMBER                          not null,
+   CapCode13            NUMBER                          not null,
+   CapCode14            NUMBER                          not null,
+   CapCode15            NUMBER                          not null,
+   CapCode16            NUMBER                          not null,
+   Frequency            FLOAT                           not null
+);
+alter table DevicePagingReceiverSettings
+   add constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID);
+alter table DevicePagingReceiverSettings
+   add constraint FK_DevPaRec_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
 
 
 

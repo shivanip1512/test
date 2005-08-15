@@ -288,7 +288,7 @@ create table DeviceTNPPSettings (
    DestinationAddress   numeric              not null,
    OriginAddress        numeric              not null,
    IdentifierFormat     char(1)              not null,
-   Protocol             char(1)              not null,
+   Protocol             varchar(32)          not null,
    DataFormat           char(1)              not null,
    Channel              char(1)              not null,
    Zone                 char(1)              not null,
@@ -314,6 +314,34 @@ insert into YukonListEntry values(8,1,0,'Cell Phone',2);
 go
 
 
+create table DevicePagingReceiverSettings (
+   DeviceID             numeric              not null,
+   CapCode1             numeric              not null,
+   CapCode2             numeric              not null,
+   CapCode3             numeric              not null,
+   CapCode4             numeric              not null,
+   CapCode5             numeric              not null,
+   CapCode6             numeric              not null,
+   CapCode7             numeric              not null,
+   CapCode8             numeric              not null,
+   CapCode9             numeric              not null,
+   CapCode10            numeric              not null,
+   CapCode11            numeric              not null,
+   CapCode12            numeric              not null,
+   CapCode13            numeric              not null,
+   CapCode14            numeric              not null,
+   CapCode15            numeric              not null,
+   CapCode16            numeric              not null,
+   Frequency            float                not null
+);
+go
+alter table DevicePagingReceiverSettings
+   add constraint PK_DEVICEPAGINGRECEIVERSETTING primary key  (DeviceID);
+go
+alter table DevicePagingReceiverSettings
+   add constraint FK_DevPaRec_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+go
 
 
 
