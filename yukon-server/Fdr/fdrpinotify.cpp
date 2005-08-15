@@ -9,8 +9,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.2 $
- * DATE         :  $Date: 2005/04/15 15:34:41 $
+ * REVISION     :  $Revision: 1.3 $
+ * DATE         :  $Date: 2005/08/15 19:04:08 $
  */
 
 #include <windows.h>
@@ -89,6 +89,9 @@ void CtiFDRPiNotify::endNewPoints()
         << " point notications from Pi, pisn_evmestablish returned "
         << getPiErrorDescription(err, "pisn_evmestablish") << endl;
   }
+
+  forceUpdate();
+
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
@@ -218,8 +221,72 @@ void CtiFDRPiNotify::doUpdates()
   }
 }
 
+/**
+ * Get the current value of all of the points.
+ */ 
+void CtiFDRPiNotify::forceUpdate()
+{
+  int32 pointCount = _registerList.size();
+  if (pointCount > 0) {
+    PiPointId *piIdArray = &_registerList[0];
+  
+    if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Forcing update of " << pointCount
+        << " points." << endl;
+    }
+  
+    vector<float> rvalList;
+    rvalList.reserve(pointCount);
+    float *rvalArray = &rvalList[0];
 
+    vector<int32> istatList;
+    istatList.reserve(pointCount);
+    int32 *istatArray = &istatList[0];
 
+    vector<int32> timeList;
+    timeList.reserve(pointCount);
+    int32 *timeArray = &timeList[0];
+
+    vector<int32> errorList;
+    errorList.reserve(pointCount);
+    int32 *errorArray = &errorList[0];
+  
+    int err = pisn_getsnapshots(piIdArray, rvalArray, istatArray, timeArray, errorArray, pointCount);
+    if (err != 0)
+    {
+      if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+      {
+        CtiLockGuard<CtiLogger> doubt_guard( dout );
+        logNow() << "Unable to update values from Pi, pisn_getsnapshots returned "
+          << getPiErrorDescription(err, "pisn_getsnapshots") << endl;
+      }
+    }
+  
+    for (int i = 0; i < pointCount; ++i)
+    {
+      // remove local offset (might not be thread-safe)
+      time_t timeToSend = mktime(gmtime(&timeArray[i]));
+
+      PiPointId thisPoint = piIdArray[i];
+
+      // Find all entries that match this Pi Point (probably one, but multiple points could 
+      // be linked to a single Pi Point).
+      pair<PiPointMap::const_iterator,PiPointMap::const_iterator> result = _pointMap.equal_range(thisPoint);
+
+      for (PiPointMap::const_iterator myIter = result.first;
+            myIter != result.second;
+            ++myIter)
+      {
+        const PiPointInfo &info = (*myIter).second;
+        handlePiUpdate(info, rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
+      }
+
+      //handlePiUpdate(infoList[i], rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
+    }
+  }
+}
 
 
 
