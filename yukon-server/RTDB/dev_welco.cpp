@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/02/10 23:24:01 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/08/15 15:11:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -348,6 +348,9 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
 INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
+    bool continue_required = false;             // This is not the last report from this device for the previous request.
+    bool accums_spill_frame = false;            // The accumulator block spills across this frame into the next one.
+    bool last_sectn;
     LONG  PointOffset;
 
     CHAR  tStr[128];
@@ -389,6 +392,12 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
     MyInMessage = InMessage->Buffer.InMessage - 2;
 
+    /* Check if we need to do a continue */
+    if(!((*(InMessage->Buffer.InMessage - 3)) & 0x01))      // This must be the IDLC header frame STATUS byte.  LSB is the FIN bit.
+    {
+        continue_required = true;
+    }
+
     /* Check to see if this is a null response */
     if((*(InMessage->Buffer.InMessage - 3)) & 0x80)
     {
@@ -410,6 +419,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     /* Walk through the sectins */
     do
     {
+        last_sectn = (MyInMessage[0] & 0x80);   // Is this the last sectn of this frame/message?
+
         /* decode whatever message this is */
         switch(MyInMessage[0] & 0x7f)
         {
@@ -542,6 +553,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_ACCUM32DUMP:
             {
+                accums_spill_frame = continue_required && last_sectn;
+
                 CtiPointAccumulator *pAccumPoint;
 
                 StartPoint = MyInMessage[2] + 1;
@@ -581,18 +594,21 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
                     }
 
-                    /* This is catastrophic so zero out previous freeze's */
-                    setPrevFreezeNumber(0);
+                    if(!accums_spill_frame)
+                    {
+                        /* This is catastrophic so zero out previous freeze's */
+                        setPrevFreezeNumber(0);
 
-                    /* if it was just a reset let this one be */
-                    if(isScanFrozen() && !isScanFreezeFailed())
-                        setLastFreezeNumber(!0);
-                    else
-                        setLastFreezeNumber(0);
+                        /* if it was just a reset let this one be */
+                        if(isScanFrozen() && !isScanFreezeFailed())
+                            setLastFreezeNumber(!0);
+                        else
+                            setLastFreezeNumber(0);
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
-                    resetScanFreezePending();
+                        resetScanFrozen();
+                        resetScanFreezeFailed();
+                        resetScanFreezePending();
+                    }
                 }
                 else if(isScanFrozen() || !useScanFlags())
                 {
@@ -685,14 +701,19 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
                     }
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
+                    if(!accums_spill_frame)
+                    {
+                        resetScanFrozen();
+                        resetScanFreezeFailed();
+                    }
                 }
 
                 break;
             }
         case IDLC_ACCUMDUMP:
             {
+                accums_spill_frame = continue_required && last_sectn;
+
                 CtiPointAccumulator *pAccumPoint;
 
                 StartPoint = MyInMessage[2] + 1;
@@ -729,18 +750,21 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
                     }
 
-                    /* This is catastrophic so zero out previous freeze's */
-                    setPrevFreezeNumber(0);
+                    if(!accums_spill_frame)
+                    {
+                        /* This is catastrophic so zero out previous freeze's */
+                        setPrevFreezeNumber(0);
 
-                    /* if it was just a reset let this one be */
-                    if(isScanFrozen() && !isScanFreezeFailed())
-                        setLastFreezeNumber(!0);
-                    else
-                        setLastFreezeNumber(0);
+                        /* if it was just a reset let this one be */
+                        if(isScanFrozen() && !isScanFreezeFailed())
+                            setLastFreezeNumber(!0);
+                        else
+                            setLastFreezeNumber(0);
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
-                    resetScanFreezePending();
+                        resetScanFrozen();
+                        resetScanFreezeFailed();
+                        resetScanFreezePending();
+                    }
                 }
                 else if(isScanFrozen() || !useScanFlags())
                 {
@@ -851,8 +875,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
                     }
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
+                    if(!accums_spill_frame)
+                    {
+                        resetScanFrozen();
+                        resetScanFreezeFailed();
+                    }
                 }
 
                 break;
@@ -1195,8 +1222,11 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     } while(!(SaveInMessage[0] & 0x80));
 
     /* Check if we need to do a continue */
-    if(!((*(InMessage->Buffer.InMessage - 3)) & 0x01))
+    if( continue_required )
     {
+        if(ReturnMsg)                                       // Let clients know there is more data coming.
+            ReturnMsg->setExpectMore(true);
+
         OutMessage = CTIDBG_new OUTMESS;
 
         if(OutMessage != NULL)
