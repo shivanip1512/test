@@ -1,0 +1,49 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from PSS2WS WSDL service -->
+
+  <service name="PSS2WSSEIPort" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="http://pss2.lbl.gov"/>
+      <parameter name="wsdlServiceElement" value="PSS2WS"/>
+      <parameter name="wsdlServicePort" value="PSS2WSSEIPort"/>
+      <parameter name="className" value="com.cannontech.priceresponse.PSS2WSSEIBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="PSS2WSSEI"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+
+      <typeMapping
+        xmlns:ns="http://pss2.lbl.gov"
+        qname="ns:PriceScheduleEntry"
+        type="java:com.cannontech.priceresponse.PriceScheduleEntry"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://pss2.lbl.gov"
+        qname="ns:ArrayOfPriceScheduleEntry"
+        type="java:com.cannontech.priceresponse.PriceScheduleEntry[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="http://pss2.lbl.gov"
+        qname="ns:PriceSchedule"
+        type="java:com.cannontech.priceresponse.PriceSchedule"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+</deployment>

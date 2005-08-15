@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PSS2WS" targetNamespace="http://pss2.lbl.gov" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://pss2.lbl.gov" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <schema targetNamespace="http://pss2.lbl.gov" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:soap11-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://pss2.lbl.gov" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <complexType name="PriceSchedule">
+        <sequence>
+          <element name="currentPriceDPKWH" type="double"/>
+          <element name="entries" type="tns:ArrayOfPriceScheduleEntry"/></sequence></complexType>
+      <complexType name="ArrayOfPriceScheduleEntry">
+        <complexContent>
+          <restriction base="soap11-enc:Array">
+            <attribute ref="soap11-enc:arrayType" wsdl:arrayType="tns:PriceScheduleEntry[]"/></restriction></complexContent></complexType>
+      <complexType name="PriceScheduleEntry">
+        <sequence>
+          <element name="date" type="dateTime"/>
+          <element name="priceDPKWH" type="double"/></sequence></complexType></schema>
+  </types>
+  <message name="PSS2WSSEI_getPriceScheduleResponse">
+    <part name="result" type="tns:PriceSchedule"/>
+  </message>
+  <message name="PSS2WSSEI_getPriceSchedule">
+    <part name="PriceSchedule_1" type="tns:PriceSchedule"/>
+  </message>
+  <portType name="PSS2WSSEI">
+    <operation name="getPriceSchedule" parameterOrder="PriceSchedule_1">
+      <input message="tns:PSS2WSSEI_getPriceSchedule"/>
+      <output message="tns:PSS2WSSEI_getPriceScheduleResponse"/>
+    </operation>
+  </portType>
+  <binding name="PSS2WSSEIBinding" type="tns:PSS2WSSEI">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getPriceSchedule">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://pss2.lbl.gov" use="encoded"/>
+      </input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://pss2.lbl.gov" use="encoded"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="PSS2WS">
+    <port binding="tns:PSS2WSSEIBinding" name="PSS2WSSEIPort">
+      <soap:address location="http://www.electricprice.net/PSS2WS/PSS2WS"/>
+    </port>
+  </service>
+</definitions>
