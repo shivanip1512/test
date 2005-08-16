@@ -139,7 +139,7 @@
 			{%>
 				<%@ include file="AdvancedCommander410.jsp"%>
 			<%}
-			else if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
+			else if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) && !manual)
 			{
 			%>
 				<%@ include file="Commander410.jsp"%>
