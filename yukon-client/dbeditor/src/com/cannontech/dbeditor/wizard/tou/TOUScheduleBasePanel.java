@@ -197,7 +197,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		theWeekCombos[Calendar.FRIDAY] = getJComboBoxFriday();
 		theWeekCombos[Calendar.SATURDAY] = getJComboBoxSaturday();
 		theWeekCombos[HOLIDAY] = getJComboBoxHoliday();
-		
+		 
 		for(int j = 0; j < daFourRates.length; j++)
 		{
 			getJComboBoxDefaultRate().addItem(daFourRates[j]);
@@ -219,28 +219,145 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		
 		refreshDayCombos();
         
-        this.setLayout(null);
-        this.add(getJTextFieldScheduleName(), null);
-        this.add(getJComboBoxDefaultRate(), null);
-        this.add(getJComboBoxTuesday(), null);
-        this.add(getJComboBoxWednesday(), null);
-        this.add(getJComboBoxFriday(), null);
-        this.add(getJComboBoxHoliday(), null);
-        this.add(getJComboBoxSunday(), null);
-        this.add(getJComboBoxMonday(), null);
-        this.add(getJComboBoxThursday(), null);
-        this.add(getJLabelScheduleName(), null);
-        this.add(getJLabelDefaultRate(), null);
-        this.add(getJComboBoxSaturday(), null);
-        this.add(getJLabelSunday(), null);
-        this.add(getJLabelMonday(), null);
-        this.add(getJLabelTuesday(), null);
-        this.add(getJLabelWednesday(), null);
-        this.add(getJLabelFriday(), null);
-        this.add(getJLabelSaturday(), null);
-        this.add(getJLabelHoliday(), null);
-        this.add(getJLabelThursday(), null);
-        this.add(getJPanelDayEditor(), null);
+        java.awt.GridBagConstraints consGridBagConstraints22 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints23 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints24 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints26 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints25 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints28 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints31 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints27 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints32 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints33 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints34 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints35 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints36 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints37 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints38 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints40 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints41 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints42 = new java.awt.GridBagConstraints();
+        java.awt.GridBagConstraints consGridBagConstraints39 = new java.awt.GridBagConstraints();
+        consGridBagConstraints37.insets = new java.awt.Insets(4,9,4,5);
+        consGridBagConstraints37.gridy = 6;
+        consGridBagConstraints37.gridx = 1;
+        consGridBagConstraints29.insets = new java.awt.Insets(5,5,3,6);
+        consGridBagConstraints29.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints29.weightx = 1.0;
+        consGridBagConstraints29.gridy = 4;
+        consGridBagConstraints29.gridx = 2;
+        consGridBagConstraints30.insets = new java.awt.Insets(5,5,5,6);
+        consGridBagConstraints30.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints30.weightx = 1.0;
+        consGridBagConstraints30.gridy = 7;
+        consGridBagConstraints30.gridx = 2;
+        consGridBagConstraints31.insets = new java.awt.Insets(13,9,8,17);
+        consGridBagConstraints31.ipady = 4;
+        consGridBagConstraints31.ipadx = 30;
+        consGridBagConstraints31.gridwidth = 2;
+        consGridBagConstraints31.gridy = 1;
+        consGridBagConstraints31.gridx = 1;
+        consGridBagConstraints24.insets = new java.awt.Insets(4,5,3,6);
+        consGridBagConstraints24.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints24.weightx = 1.0;
+        consGridBagConstraints24.gridy = 5;
+        consGridBagConstraints24.gridx = 2;
+        consGridBagConstraints25.insets = new java.awt.Insets(4,5,4,6);
+        consGridBagConstraints25.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints25.weightx = 1.0;
+        consGridBagConstraints25.gridy = 6;
+        consGridBagConstraints25.gridx = 2;
+        consGridBagConstraints26.insets = new java.awt.Insets(5,5,4,6);
+        consGridBagConstraints26.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints26.weightx = 1.0;
+        consGridBagConstraints26.gridy = 8;
+        consGridBagConstraints26.gridx = 2;
+        consGridBagConstraints28.insets = new java.awt.Insets(7,5,4,6);
+        consGridBagConstraints28.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints28.weightx = 1.0;
+        consGridBagConstraints28.gridy = 3;
+        consGridBagConstraints28.gridx = 2;
+        consGridBagConstraints22.insets = new java.awt.Insets(13,11,6,38);
+        consGridBagConstraints22.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints22.weightx = 1.0;
+        consGridBagConstraints22.gridy = 1;
+        consGridBagConstraints22.gridx = 3;
+        consGridBagConstraints27.ipady = -21;
+        consGridBagConstraints27.ipadx = -92;
+        consGridBagConstraints27.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints27.weightx = 1.0;
+        consGridBagConstraints27.gridheight = -1;
+        consGridBagConstraints27.gridwidth = -1;
+        consGridBagConstraints27.gridy = 1;
+        consGridBagConstraints27.gridx = 1;
+        consGridBagConstraints23.insets = new java.awt.Insets(6,11,6,126);
+        consGridBagConstraints23.ipadx = 64;
+        consGridBagConstraints23.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints23.weightx = 1.0;
+        consGridBagConstraints23.gridy = 2;
+        consGridBagConstraints23.gridx = 3;
+        consGridBagConstraints33.insets = new java.awt.Insets(5,5,121,6);
+        consGridBagConstraints33.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        consGridBagConstraints33.weightx = 1.0;
+        consGridBagConstraints33.gridy = 9;
+        consGridBagConstraints33.gridx = 2;
+        consGridBagConstraints36.insets = new java.awt.Insets(4,9,3,5);
+        consGridBagConstraints36.gridy = 5;
+        consGridBagConstraints36.gridx = 1;
+        consGridBagConstraints34.insets = new java.awt.Insets(7,9,4,5);
+        consGridBagConstraints34.gridy = 3;
+        consGridBagConstraints34.gridx = 1;
+        consGridBagConstraints32.insets = new java.awt.Insets(6,9,11,17);
+        consGridBagConstraints32.gridwidth = 2;
+        consGridBagConstraints32.gridy = 2;
+        consGridBagConstraints32.gridx = 1;
+        consGridBagConstraints38.insets = new java.awt.Insets(5,9,4,5);
+        consGridBagConstraints38.gridy = 8;
+        consGridBagConstraints38.gridx = 1;
+        consGridBagConstraints40.ipady = -21;
+        consGridBagConstraints40.ipadx = -31;
+        consGridBagConstraints40.gridheight = -1;
+        consGridBagConstraints40.gridwidth = -1;
+        consGridBagConstraints40.gridy = 1;
+        consGridBagConstraints40.gridx = 1;
+        consGridBagConstraints41.insets = new java.awt.Insets(5,9,5,5);
+        consGridBagConstraints41.gridy = 7;
+        consGridBagConstraints41.gridx = 1;
+        consGridBagConstraints42.insets = new java.awt.Insets(7,6,91,6);
+        consGridBagConstraints42.ipady = -84;
+        consGridBagConstraints42.gridheight = 7;
+        consGridBagConstraints42.gridy = 3;
+        consGridBagConstraints42.gridx = 3;
+        consGridBagConstraints39.insets = new java.awt.Insets(5,9,121,5);
+        consGridBagConstraints39.gridy = 9;
+        consGridBagConstraints39.gridx = 1;
+        consGridBagConstraints35.insets = new java.awt.Insets(5,9,3,5);
+        consGridBagConstraints35.gridy = 4;
+        consGridBagConstraints35.gridx = 1;
+        this.setLayout(new java.awt.GridBagLayout());
+        this.add(getJTextFieldScheduleName(), consGridBagConstraints22);
+        this.add(getJComboBoxDefaultRate(), consGridBagConstraints23);
+        this.add(getJComboBoxTuesday(), consGridBagConstraints24);
+        this.add(getJComboBoxWednesday(), consGridBagConstraints25);
+        this.add(getJComboBoxFriday(), consGridBagConstraints26);
+        this.add(getJComboBoxHoliday(), consGridBagConstraints27);
+        this.add(getJComboBoxSunday(), consGridBagConstraints28);
+        this.add(getJComboBoxMonday(), consGridBagConstraints29);
+        this.add(getJComboBoxThursday(), consGridBagConstraints30);
+        this.add(getJLabelScheduleName(), consGridBagConstraints31);
+        this.add(getJLabelDefaultRate(), consGridBagConstraints32);
+        this.add(getJComboBoxSaturday(), consGridBagConstraints33);
+        this.add(getJLabelSunday(), consGridBagConstraints34);
+        this.add(getJLabelMonday(), consGridBagConstraints35);
+        this.add(getJLabelTuesday(), consGridBagConstraints36);
+        this.add(getJLabelWednesday(), consGridBagConstraints37);
+        this.add(getJLabelFriday(), consGridBagConstraints38);
+        this.add(getJLabelSaturday(), consGridBagConstraints39);
+        this.add(getJLabelHoliday(), consGridBagConstraints40);
+        this.add(getJLabelThursday(), consGridBagConstraints41);
+        this.add(getJPanelDayEditor(), consGridBagConstraints42);
         this.setSize(383, 404);
         
         initConnections();
@@ -370,7 +487,10 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JTextField getJTextFieldScheduleName() {
 		if(jTextFieldScheduleName == null) {
 			jTextFieldScheduleName = new javax.swing.JTextField();
-			jTextFieldScheduleName.setBounds(162, 13, 183, 22);
+			jTextFieldScheduleName.setMaximumSize(new java.awt.Dimension(183,22));
+			jTextFieldScheduleName.setMinimumSize(new java.awt.Dimension(183,22));
+			jTextFieldScheduleName.setPreferredSize(new java.awt.Dimension(183,22));
+			jTextFieldScheduleName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(30));
 		}
 		return jTextFieldScheduleName;
 	}
@@ -382,7 +502,6 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxDefaultRate() {
 		if(jComboBoxDefaultRate == null) {
 			jComboBoxDefaultRate = new javax.swing.JComboBox();
-			jComboBoxDefaultRate.setBounds(162, 47, 95, 25);
 		}
 		return jComboBoxDefaultRate;
 	}
@@ -394,11 +513,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxTuesday() {
 		if(jComboBoxTuesday == null) {
 			jComboBoxTuesday = new javax.swing.JComboBox();
-			jComboBoxTuesday.setSize(92, 21);
 			jComboBoxTuesday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxTuesday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxTuesday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxTuesday.setLocation(53, 143);
 		}
 		return jComboBoxTuesday;
 	}
@@ -410,11 +527,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxWednesday() {
 		if(jComboBoxWednesday == null) {
 			jComboBoxWednesday = new javax.swing.JComboBox();
-			jComboBoxWednesday.setSize(92, 21);
 			jComboBoxWednesday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxWednesday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxWednesday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxWednesday.setLocation(53, 171);
 		}
 		return jComboBoxWednesday;
 	}
@@ -426,11 +541,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxFriday() {
 		if(jComboBoxFriday == null) {
 			jComboBoxFriday = new javax.swing.JComboBox();
-			jComboBoxFriday.setSize(92, 21);
 			jComboBoxFriday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxFriday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxFriday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxFriday.setLocation(53, 232);
 		}
 		return jComboBoxFriday;
 	}
@@ -442,11 +555,10 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxHoliday() {
 		if(jComboBoxHoliday == null) {
 			jComboBoxHoliday = new javax.swing.JComboBox();
-			jComboBoxHoliday.setSize(92, 21);
 			jComboBoxHoliday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxHoliday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxHoliday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxHoliday.setLocation(53, 292);
+			jComboBoxHoliday.setVisible(false);
 		}
 		return jComboBoxHoliday;
 	}
@@ -458,7 +570,6 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxSunday() {
 		if(jComboBoxSunday == null) {
 			jComboBoxSunday = new javax.swing.JComboBox();
-			jComboBoxSunday.setBounds(53, 85, 92, 21);
 			jComboBoxSunday.setPreferredSize(new java.awt.Dimension(92,21));
 			jComboBoxSunday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxSunday.setMaximumSize(new java.awt.Dimension(92,21));
@@ -473,7 +584,6 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxMonday() {
 		if(jComboBoxMonday == null) {
 			jComboBoxMonday = new javax.swing.JComboBox();
-			jComboBoxMonday.setBounds(53, 115, 92, 21);
 			jComboBoxMonday.setPreferredSize(new java.awt.Dimension(92,21));
 			jComboBoxMonday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxMonday.setMaximumSize(new java.awt.Dimension(92,21));
@@ -488,11 +598,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxThursday() {
 		if(jComboBoxThursday == null) {
 			jComboBoxThursday = new javax.swing.JComboBox();
-			jComboBoxThursday.setSize(92, 21);
 			jComboBoxThursday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxThursday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxThursday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxThursday.setLocation(53, 201);
 		}
 		return jComboBoxThursday;
 	}
@@ -504,9 +612,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelScheduleName() {
 		if(jLabelScheduleName == null) {
 			jLabelScheduleName = new javax.swing.JLabel();
-			jLabelScheduleName.setBounds(9, 13, 125, 20);
 			jLabelScheduleName.setText("Schedule Name: ");
 			jLabelScheduleName.setName("jLabelScheduleName");
+			jLabelScheduleName.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelScheduleName;
 	}
@@ -518,11 +626,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelDefaultRate() {
 		if(jLabelDefaultRate == null) {
 			jLabelDefaultRate = new javax.swing.JLabel();
-			jLabelDefaultRate.setBounds(9, 47, 125, 20);
 			jLabelDefaultRate.setText("Default Rate: ");
 			jLabelDefaultRate.setPreferredSize(new java.awt.Dimension(125,20));
 			jLabelDefaultRate.setMaximumSize(new java.awt.Dimension(125,20));
 			jLabelDefaultRate.setMinimumSize(new java.awt.Dimension(125,20));
+			jLabelDefaultRate.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelDefaultRate;
 	}
@@ -534,11 +642,9 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JComboBox getJComboBoxSaturday() {
 		if(jComboBoxSaturday == null) {
 			jComboBoxSaturday = new javax.swing.JComboBox();
-			jComboBoxSaturday.setSize(92, 21);
 			jComboBoxSaturday.setMinimumSize(new java.awt.Dimension(92,21));
 			jComboBoxSaturday.setMaximumSize(new java.awt.Dimension(92,21));
 			jComboBoxSaturday.setPreferredSize(new java.awt.Dimension(92,21));
-			jComboBoxSaturday.setLocation(53, 262);
 		}
 		return jComboBoxSaturday;
 	}
@@ -550,13 +656,12 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelSunday() {
 		if(jLabelSunday == null) {
 			jLabelSunday = new javax.swing.JLabel();
-			jLabelSunday.setSize(31, 21);
-			jLabelSunday.setText("Sun");
+			jLabelSunday.setText("Sun: ");
 			jLabelSunday.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-			jLabelSunday.setMaximumSize(new java.awt.Dimension(31,21));
-			jLabelSunday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelSunday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelSunday.setLocation(9, 85);
+			jLabelSunday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelSunday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelSunday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelSunday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelSunday;
 	}
@@ -568,12 +673,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelMonday() {
 		if(jLabelMonday == null) {
 			jLabelMonday = new javax.swing.JLabel();
-			jLabelMonday.setSize(31, 21);
-			jLabelMonday.setText("Mon");
-			jLabelMonday.setMaximumSize(new java.awt.Dimension(31,21));
-			jLabelMonday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelMonday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelMonday.setLocation(9, 115);
+			jLabelMonday.setText("Mon: ");
+			jLabelMonday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelMonday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelMonday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelMonday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelMonday;
 	}
@@ -585,11 +689,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelTuesday() {
 		if(jLabelTuesday == null) {
 			jLabelTuesday = new javax.swing.JLabel();
-			jLabelTuesday.setBounds(9, 143, 31, 21);
-			jLabelTuesday.setText("Tue");
-			jLabelTuesday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelTuesday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelTuesday.setMaximumSize(new java.awt.Dimension(31,21));
+			jLabelTuesday.setText("Tue: ");
+			jLabelTuesday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelTuesday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelTuesday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelTuesday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelTuesday;
 	}
@@ -601,12 +705,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelWednesday() {
 		if(jLabelWednesday == null) {
 			jLabelWednesday = new javax.swing.JLabel();
-			jLabelWednesday.setSize(31, 21);
-			jLabelWednesday.setText("Wed");
-			jLabelWednesday.setMaximumSize(new java.awt.Dimension(31,21));
-			jLabelWednesday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelWednesday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelWednesday.setLocation(9, 171);
+			jLabelWednesday.setText("Wed: ");
+			jLabelWednesday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelWednesday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelWednesday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelWednesday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelWednesday;
 	}
@@ -618,12 +721,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelFriday() {
 		if(jLabelFriday == null) {
 			jLabelFriday = new javax.swing.JLabel();
-			jLabelFriday.setSize(31, 21);
-			jLabelFriday.setText("Fri");
-			jLabelFriday.setMaximumSize(new java.awt.Dimension(31,21));
-			jLabelFriday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelFriday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelFriday.setLocation(9, 232);
+			jLabelFriday.setText("Fri: ");
+			jLabelFriday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelFriday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelFriday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelFriday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelFriday;
 	}
@@ -635,12 +737,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelSaturday() {
 		if(jLabelSaturday == null) {
 			jLabelSaturday = new javax.swing.JLabel();
-			jLabelSaturday.setSize(31, 21);
-			jLabelSaturday.setText("Sat");
-			jLabelSaturday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelSaturday.setLocation(9, 262);
-			jLabelSaturday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelSaturday.setMaximumSize(new java.awt.Dimension(31,21));
+			jLabelSaturday.setText("Sat: ");
+			jLabelSaturday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelSaturday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelSaturday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelSaturday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelSaturday;
 	}
@@ -652,12 +753,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelHoliday() {
 		if(jLabelHoliday == null) {
 			jLabelHoliday = new javax.swing.JLabel();
-			jLabelHoliday.setSize(31, 21);
 			jLabelHoliday.setText("Hol");
 			jLabelHoliday.setMaximumSize(new java.awt.Dimension(31,21));
 			jLabelHoliday.setMinimumSize(new java.awt.Dimension(31,21));
 			jLabelHoliday.setPreferredSize(new java.awt.Dimension(31,21));
-			jLabelHoliday.setLocation(9, 292);
+			jLabelHoliday.setVisible(false);
 		}
 		return jLabelHoliday;
 	}
@@ -669,11 +769,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	private javax.swing.JLabel getJLabelThursday() {
 		if(jLabelThursday == null) {
 			jLabelThursday = new javax.swing.JLabel();
-			jLabelThursday.setBounds(9, 201, 31, 21);
-			jLabelThursday.setText("Thu");
-			jLabelThursday.setMaximumSize(new java.awt.Dimension(31,21));
-			jLabelThursday.setMinimumSize(new java.awt.Dimension(31,21));
-			jLabelThursday.setPreferredSize(new java.awt.Dimension(31,21));
+			jLabelThursday.setText("Thu: ");
+			jLabelThursday.setMaximumSize(new java.awt.Dimension(34,21));
+			jLabelThursday.setMinimumSize(new java.awt.Dimension(34,21));
+			jLabelThursday.setPreferredSize(new java.awt.Dimension(34,21));
+			jLabelThursday.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelThursday;
 	}
@@ -690,11 +790,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 			jPanelDayEditor.add(getJTextFieldDayName(), null);
 			jPanelDayEditor.add(getJTableMadTOUDisease(), null);
 			jPanelDayEditor.add(getJButtonSaveDay(), null);
-			jPanelDayEditor.setBounds(157, 85, 220, 228);
 			jPanelDayEditor.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "TOU Day Editor", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, null, null));
 			jPanelDayEditor.setPreferredSize(new java.awt.Dimension(220,312));
 			jPanelDayEditor.setMinimumSize(new java.awt.Dimension(220,312));
 			jPanelDayEditor.setMaximumSize(new java.awt.Dimension(220,312));
+			jPanelDayEditor.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jPanelDayEditor;
 	}
@@ -710,6 +810,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 			jLabelDayName.setText("Name: ");
 			jLabelDayName.setMaximumSize(new java.awt.Dimension(55,17));
 			jLabelDayName.setMinimumSize(new java.awt.Dimension(55,17));
+			jLabelDayName.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 		}
 		return jLabelDayName;
 	}
@@ -725,6 +826,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 			jTextFieldDayName.setPreferredSize(new java.awt.Dimension(127,20));
 			jTextFieldDayName.setMinimumSize(new java.awt.Dimension(127,20));
 			jTextFieldDayName.setMaximumSize(new java.awt.Dimension(127,20));
+			jTextFieldDayName.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(30));
 		}
 		return jTextFieldDayName;
 	}
@@ -830,8 +932,11 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 					theWeekCombos[u].addItem(day);
 				}
 			}
+			
 			if(selectedDay == null)
 				theWeekCombos[u].setSelectedItem((TOUDay)tempDays.elementAt(0));
+			else if(currentlySelected != null && currentlySelected.getDayID().intValue() == selectedDay.getDayID().intValue())
+				theWeekCombos[u].setSelectedItem(currentlySelected);
 			else
 				theWeekCombos[u].setSelectedItem(selectedDay);
 				
@@ -949,6 +1054,17 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	public void setIsNewSchedule(boolean truth)
 	{
 		isNewSched = truth;
+	}
+	
+	public boolean isInputValid() 
+	{
+	   if( getJTextFieldScheduleName().getText().length() <= 0 )
+	   {
+		  setErrorString("A name should be specified for this schedule.");
+		  return false;
+	   }
+	   else
+		  return true;
 	}
 
 }  //  @jve:visual-info  decl-index=0 visual-constraint="10,10"
