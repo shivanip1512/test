@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/06/15 23:57:21 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/08/17 17:42:48 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport_enh.cpp,v $
+      Revision 1.8  2005/08/17 17:42:48  jrichter
+      Merged  changes from 3.1.  handled massive point data with list of multimsg.  handled white space in data record for optional interval time field, handled massively long file format (extended workbuffer to 1500 bytes)
+
       Revision 1.7  2005/06/15 23:57:21  jrichter
       Corrected DST issue with file that ran over Spring Ahead timeframe...
 
@@ -267,7 +270,12 @@ const CHAR * CtiFDR_EnhancedLodeStar::getKeyRenameSave()
 }
 int CtiFDR_EnhancedLodeStar::getSubtractValue()
 {
-    return 1;
+    if (_lsStartTime.second() == 0)
+    {
+        return 60;
+    }
+    else // == 59 seconds...
+        return 1;
 }
 int CtiFDR_EnhancedLodeStar::getExpectedNumOfEntries()
 {
@@ -410,6 +418,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(RWCString& aLine, int file
                         if( tempString1 != "00000001" )
                         {
                             isFirstHeaderFlag = false;
+                            fieldNumber = 100;
                         }
                         break;
                     }
@@ -558,6 +567,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(RWCString& aLine)
                         if( tempString1 != "00000002" )
                         {
                             isSecondHeaderFlag = false;
+                            fieldNumber = 100;
                         }
                         break;
                     }
@@ -733,6 +743,7 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(RWCString& aLine)
                         if( tempString1 != "00000003" )
                         {
                             isThirdHeaderFlag = false;
+                            fieldNumber = 100;
                         }
                         break;
                     }
@@ -800,21 +811,28 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(RWCString& aLine)
                     }
                 case 2:
                     {
-                        _lsTimeStamp = ForeignToYukonTime(tempString1,'A');
-                        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                        if( tempString1.length() > 0 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ENH: TimeStamp: " <<_lsTimeStamp << "..."<<endl;
+                            RWTime optionalTime = ForeignToYukonTime(tempString1,'A');
+                            _lsTimeStamp = ForeignToYukonTime(tempString1,'A');
+                            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " ENH: TimeStamp: " <<_lsTimeStamp << "..."<<endl;
+                            }
                         }
                         break;
                     }
                 case 3:
                     {
-                        _lsOrigin = tempString1;
-                        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                        if( tempString1.length() > 0 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " ENH: Origin: " <<_lsOrigin << "..."<<endl;
+                            _lsOrigin = tempString1;
+                            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " ENH: Origin: " <<_lsOrigin << "..."<<endl;
+                            }
                         }
                         break;
                     }
@@ -891,7 +909,7 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(RWCString& aLine, CtiMultiMsg* mu
             else if( fieldNumber == 4 )
             {
                 CtiPointDataMsg* pointData = new CtiPointDataMsg(_pointId,intervalValue,importedQuality,fdrPoint.getPointType());
-                if( tempString1.length() > 0 )
+                if( tempString1.length() > 0 && tempString1 != " ")
                 {
                     RWTime optionalTime = ForeignToYukonTime(tempString1,'A');
                     if( optionalTime == rwEpoch )

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2004/08/18 21:46:01 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/08/17 17:42:48 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.8  2005/08/17 17:42:48  jrichter
+      Merged  changes from 3.1.  handled massive point data with list of multimsg.  handled white space in data record for optional interval time field, handled massively long file format (extended workbuffer to 1500 bytes)
+
       Revision 1.7  2004/08/18 21:46:01  jrichter
       1.  Added try{} catch(..) blocks to threadReadFromFile function to try and pinpoint where thread was killed.
       2.  Cleared out fileInfoList to get a fresh list of files upon each loadTranslationList call (so files aren't read once the point they reference is deleted from database).
@@ -104,8 +107,8 @@ public:
     USHORT ForeignToYukonQuality (RWCString aQuality);
     RWTime ForeignToYukonTime (RWCString aTime, CHAR aDstFlag);
 
-    
-    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg,const RWTime& savedStartTime,const RWTime& savedStopTime,long lsSecondsPerInterval);
+    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, RWTPtrSlist< CtiMultiMsg > &dispatchList, const RWTime& savedStartTime,const RWTime& savedStopTime,long stdLsSecondsPerInterval);
+    //bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg,const RWTime& savedStartTime,const RWTime& savedStopTime,long lsSecondsPerInterval);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);
