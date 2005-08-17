@@ -95,6 +95,8 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 				handleWeekEvents(HOLIDAY);
 			if( e.getSource() == getJButtonSaveDay())
 				saveCurrentDaySettings(currentlySelected.getDayID());
+			if( e.getSource() == getJComboBoxDefaultRate())
+				fireInputUpdate();
 
 		};
 		public void caretUpdate(javax.swing.event.CaretEvent e) {
@@ -179,6 +181,10 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		}
 		
 		getJButtonSaveDay().addActionListener(ivjEventHandler);
+		
+		getJTextFieldScheduleName().addCaretListener(ivjEventHandler);
+		getJTextFieldDayName().addCaretListener(ivjEventHandler);
+		getJComboBoxDefaultRate().addActionListener(ivjEventHandler);
 	}
 	
 	private void initialize() {
@@ -1021,6 +1027,12 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 			Integer offset = JTextFieldTimeEntry.getTimeTotalSeconds(getTableModel().getOffsetAt(j));
 			if(offset.intValue() != 0 || j == 0)
 			{
+				//we will save in five minute increments of time only
+				int mod = offset.intValue() % 300;
+				if(mod >= 180)
+					offset = new Integer(offset.intValue() + (300 - mod));
+				else if(mod < 180)
+					offset = new Integer(offset.intValue() - mod);
 				tempSwitch.setSwitchOffset(offset);
 				tempSwitch.setSwitchRate(getTableModel().getRateAt(j));
 			
@@ -1037,6 +1049,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		//getJTableMadTOUDisease().removeAll();
 			
 		refreshDayCombos();
+		fireInputUpdate();
 	}
 		
 	/**
