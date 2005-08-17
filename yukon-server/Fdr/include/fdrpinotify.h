@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.2 $
- *    DATE         :  $Date: 2005/04/15 15:34:41 $
+ *    REVISION     :  $Revision: 1.3 $
+ *    DATE         :  $Date: 2005/08/17 18:36:16 $
  *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
@@ -56,6 +56,7 @@ protected:
   void unregisterPoints();
 
   void doUpdates();
+  void forceUpdate();
 
 private:
   PiPointMap _pointMap;
