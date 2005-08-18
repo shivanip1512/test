@@ -212,7 +212,7 @@ LONG VerificationSequenceGen(bool force)
         int trycnt = 0;
         while(!guard.isAcquired() && trycnt++ < 50)
         {
-            if(trycnt > 5)
+            if(!(trycnt%10))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << " **** Checkpoint: unable to acquire mux in verificationsequencegen, trycnt = " << trycnt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
