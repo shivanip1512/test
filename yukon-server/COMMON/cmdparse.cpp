@@ -2388,6 +2388,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
 
                             if(!vcrangestr.isNull())
                             {
+                                int loopcnt = 0;
                                 while(!vcrangestr.isNull())
                                 {
                                     RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
@@ -2419,6 +2420,15 @@ void  CtiCommandParser::doParsePutConfigVersacom(const RWCString &CmdStr)
                                     }
 
                                     vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+
+                                    if(loopcnt++ > 256)
+                                    {
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_EXTENDED_TSERVICE_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES") << "\"" << endl;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -2982,6 +2992,7 @@ RWTValSlist< RWCString >& CtiCommandParser::getActionItems()
 
 void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
 {
+    int loopcnt;
     RWCString         token;
 
     /*
@@ -3046,6 +3057,7 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
 
                 if(!vcrangestr.isNull() || !xcrangestr.isNull())
                 {
+                    loopcnt = 0;
                     while(!vcrangestr.isNull())
                     {
                         RWCString str = vcrangestr.match("[0-9]*-[0-9]*,?");
@@ -3077,8 +3089,18 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         }
 
                         vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+
+                        if(loopcnt++ > 256)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_RANGES") << "\"" << endl;
+                                break;
+                            }
+                        }
                     }
 
+                    loopcnt = 0;
                     while(!isKeyValid("type") && !xcrangestr.isNull())
                     {
                         RWCString str = xcrangestr.match("[0-9]*-[0-9]*,?");
@@ -3110,6 +3132,15 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         }
 
                         xcrangestr.replace("[0-9]*-[0-9]*,?", "");
+
+                        if(loopcnt++ > 256)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES") << "\"" << endl;
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -3123,6 +3154,7 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
             {
                 int serialnumber = getiValue("serial", 0);
                 RWCString xcprefixrange = gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES");
+                loopcnt = 0;
                 if(!xcprefixrange.isNull())
                 {
                     while(!xcprefixrange.isNull())
@@ -3152,6 +3184,15 @@ void CtiCommandParser::resolveProtocolType(const RWCString &CmdStr)
                         }
 
                         xcprefixrange.replace("[0-9]*-[0-9]*,?", "");
+
+                        if(loopcnt++ > 256)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES") << "\"" << endl;
+                                break;
+                            }
+                        }
                     }
                 }
             }
