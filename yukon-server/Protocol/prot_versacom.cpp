@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/06/24 16:13:51 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/08/18 22:09:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2027,6 +2027,7 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
 
         if(!vcrangestr.isNull())
         {
+            int loopcnt = 0;
             while(!vcrangestr.isNull())
             {
                 RWCString rstr = vcrangestr.match("[0-9]*-[0-9]*,?");
@@ -2053,6 +2054,14 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                 }
 
                 vcrangestr.replace("[0-9]*-[0-9]*,?", "");
+                if(loopcnt++ > 256)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** ERROR **** Problem found with configuration item VERSACOM_FULL_ADDRESS_SERIAL_RANGES : \"" << gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES") << "\"" << endl;
+                        break;
+                    }
+                }
             }
         }
     }
