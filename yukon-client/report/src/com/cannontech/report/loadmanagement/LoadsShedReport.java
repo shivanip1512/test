@@ -8,6 +8,7 @@ package com.cannontech.report.loadmanagement;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.report.ReportBase;
 import com.cannontech.report.ReportTypes;
 public class LoadsShedReport extends ReportBase
@@ -200,6 +201,7 @@ public boolean retrieveReportData(String dbAlias)
 				" pao.paobjectid in (select childID from lmcontrolareaprogram lmcap, lmprogramdirectgroup lmpdg, genericmacro gm " +
 				" where lmcap.lmprogramdeviceid = lmpdg.deviceid " +
 				" and lmpdg.lmgroupdeviceid = gm.ownerid " +
+				" and gm.macrotype = '" + MacroTypes.GROUP + "' " +				
 				" and lmcap.deviceid = ?) ) " +
 				" order by paoname, startdatetime, stopdatetime desc");
 				
