@@ -10,8 +10,8 @@
 
 #include "dlldefs.h"
 
-#define MAX_CONFIG_BUFFER  256
-#define MAX_CONFIG_KEY     80
+#define MAX_CONFIG_BUFFER  1024
+#define MAX_CONFIG_KEY     256
 #define MAX_CONFIG_VALUE   ((MAX_CONFIG_BUFFER) - (MAX_CONFIG_KEY))
 
 // Forward decls.

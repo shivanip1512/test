@@ -35,12 +35,12 @@ CtiConfigParameters& CtiConfigParameters::setConfigFile(RWCString strName)
 
 RWCString CtiConfigParameters::getYukonBaseDir() const
 {
-    char buf[1000] = "c:\\yukon";
+    char buf[2048] = "c:\\yukon";
     char* pos;
 
     //Assume the master.cfg is in the normal place
     //x:\\yukon\\server\\config\\master.cfg
-    int n = GetFullPathName(FileName, 1000, buf, &pos);
+    int n = GetFullPathName(FileName, 2048, buf, &pos);
     if(n != 0 && n < 1000)
     {
         for(int i = 0; i < 3; i++)
@@ -60,7 +60,6 @@ int CtiConfigParameters::RefreshConfigParameters()
 
     int   i;
     char  key;
-    char  valstr[80];
 
     char        Buffer[MAX_CONFIG_BUFFER];
     char        chKey[MAX_CONFIG_KEY];
@@ -118,9 +117,7 @@ int CtiConfigParameters::RefreshConfigParameters()
 #ifdef DEBUGLEVEL100
                                 else
                                 {
-                                    cout << "Key/Value = " <<
-                                    width(30) << Key->getKey() << " : " <<
-                                    width(48) << Val->getValue() << endl;
+                                    cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
                                 }
 #endif
                             }
