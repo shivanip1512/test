@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/08/15 15:13:19 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/08/19 21:11:49 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.35  2005/08/19 21:11:49  cplender
+* Altered the protocol to get restores to work correctly for GRE.  May need to remove a section of code once tested
+*
 * Revision 1.34  2005/08/15 15:13:19  cplender
 * Minor change for the verification log table writes.
 *
@@ -427,17 +430,31 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             }
         }
 
-        // Graceful sends the last control interval information
-        if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+        if(gConfigParms.getValueAsULong("PROTOCOL_SA_TELVENT", 0) & CTIPROT_ABRUPT_RESTORE)
         {
-            _sa._sTime = parse.getiValue("sa205_last_stime", 0);
-            _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
-            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
+            // Graceful sends the last control interval information
+            if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+            {
+                _sa._sTime = parse.getiValue("sa205_last_stime", 0);
+                _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
+                _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
+            }
+            else
+            {
+                _sa._sTime = 0;
+                _sa._cTime = 0;
+            }
         }
         else
         {
-            _sa._sTime = 0;
-            _sa._cTime = 0;
+            _sa._sTime = parse.getiValue("sa205_last_stime", 0);
+            _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
+
+            // Graceful sends the last control interval information
+            if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+            {
+                _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
+            }
         }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)

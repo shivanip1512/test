@@ -9,11 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/08/01 16:20:45 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/08/19 21:11:49 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.16  2005/08/19 21:11:49  cplender
+* Altered the protocol to get restores to work correctly for GRE.  May need to remove a section of code once tested
+*
 * Revision 1.15  2005/08/01 16:20:45  cplender
 * Added a method to rediscover the cycletime and switch timeout from stime/ctime.
 * Used by the rtm to convert the return to plain text.
@@ -83,6 +86,9 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
 #define MAX_SAERR_MSG_SIZE 256
 
 #define GRP_SA_RTM 100              // Must be greater than any REAL grouptype.
+
+// CPARMS for setting "PROTOCOL_SA_TELVENT"
+#define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
 class IM_EX_PROT CtiProtocolSA3rdParty : public Protocol::Interface
 {
