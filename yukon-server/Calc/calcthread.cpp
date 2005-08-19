@@ -223,6 +223,9 @@ void CtiCalculateThread::periodicLoop( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime( ) << " - Calc periodicLoop interrupted" << endl;
         }
+
+        CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc periodic", CtiThreadRegData::LogOut );
+        ThreadMonitor.tickle( data );
     }
     catch(...)
     {
@@ -433,6 +436,9 @@ void CtiCalculateThread::onUpdateLoop( void )
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime( ) << " - Calc onUpdateLoop interrupted" << endl;
         }
+
+        CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc onUpdate", CtiThreadRegData::LogOut );
+        ThreadMonitor.tickle( data );
     }
     catch(...)
     {
@@ -462,6 +468,9 @@ void CtiCalculateThread::calcLoop( void )
        _self.sleep( 1000 );
 
     }
+
+    CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc calcThread", CtiThreadRegData::LogOut );
+    ThreadMonitor.tickle( data );
 
     //  scream at the other threads, tell them it's time for dinner
     interruptThreads( CtiCalcThreadInterruptReason::Shutdown );
