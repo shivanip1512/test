@@ -110,7 +110,10 @@ public class UpdateContactsAction implements ActionBase {
 					String firstInitial= "";
 					if(firstName != null)
 						firstInitial = firstName.toLowerCase().substring(0,1);
-					login.getYukonUser().setUsername(firstInitial + lastName.toLowerCase());
+					String newUserName = firstInitial + lastName.toLowerCase();
+					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
+						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+					login.getYukonUser().setUsername(newUserName);
 					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
 					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
 					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);

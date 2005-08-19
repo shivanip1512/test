@@ -168,7 +168,10 @@ public class NewCustAccountAction implements ActionBase {
 					String firstInitial= "";
 					if(firstName != null)
 						firstInitial = firstName.toLowerCase().substring(0,1);
-					login.getYukonUser().setUsername(firstInitial + lastName.toLowerCase());
+					String newUserName = firstInitial + lastName.toLowerCase();
+					if (YukonUserFuncs.getLiteYukonUser( newUserName ) != null)
+						newUserName = firstName.toLowerCase() + lastName.toLowerCase();
+					login.getYukonUser().setUsername(newUserName);
 					login.getYukonUser().setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString()); 
 					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
 					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
@@ -197,14 +200,19 @@ public class NewCustAccountAction implements ActionBase {
 				String lastName = primContact.getLastName();
 				String firstName = primContact.getFirstName();
 				String firstInitial = "";
+
+				if(firstName != null && firstName.length() > 0)
+					firstInitial = firstName.toLowerCase().substring(0,1);
+					
 				if(lastName == null)
 				{
 					lastName = account.getAccountNumber();
 					firstInitial = "#";
 				}
-				if(firstName != null && firstName.length() > 0)
-					firstInitial = firstName.toLowerCase().substring(0,1);
-				login.setUsername(firstInitial + lastName.toLowerCase());
+				if(YukonUserFuncs.getLiteYukonUser( firstInitial + lastName ) != null)
+					login.setUsername(firstName.toLowerCase() + lastName.toLowerCase());	
+				else
+					login.setUsername(firstInitial + lastName.toLowerCase());
 				login.setPassword(new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString());
 				/*String groupIDs = EnergyCompanyFuncs.getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
 				Integer defaultGroupID = new Integer(0);
