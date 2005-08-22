@@ -2,6 +2,12 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+/* @error ignore */
+alter table YukonImage alter column ImageValue image null;
+go
+
+
+
 
 
 

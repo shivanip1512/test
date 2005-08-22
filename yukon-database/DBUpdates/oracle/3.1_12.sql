@@ -2,6 +2,11 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+/* @error ignore */
+alter table YukonImage modify ImageValue long raw;
+
+
+
 
 
 
