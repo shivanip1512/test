@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/08/15 15:15:24 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/08/22 20:27:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -600,10 +600,6 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
 
             updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << updater.asString() << endl;
-            }
             stat = updater.execute(conn).status();
 
             if( stat.errorCode() != RWDBStatus::ok )
