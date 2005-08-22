@@ -2,6 +2,10 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+/* @error ignore */
+sp_rename 'dynamicpaoinfo.info', 'Infokey', 'column'
+go
+
 alter table DynamicPAOInfo drop constraint AK_DYNPAO_OWNKYUQ;
 go
 

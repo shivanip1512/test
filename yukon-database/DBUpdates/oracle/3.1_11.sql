@@ -2,6 +2,9 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+/* @error ignore */
+alter table dynamicpaoinfo rename column info to InfoKey;
+
 alter table DynamicPAOInfo drop constraint AK_DYNPAO_OWNKYUQ;
 
 alter table DynamicPAOInfo
