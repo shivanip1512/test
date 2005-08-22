@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/08/08 20:46:09 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/08/22 18:24:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,7 +338,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     if(_outMessage.Sequence == TnppPublicProtocolGolay)
                     {
 
-                        if((char)*_table.getIdentifierFormat()=='B')//FIX ME JESS
+                        if((char)*_table.getIdentifierFormat()=='B')//This really isnt allowed..
                         {   //ID PAGE
                             strncat((char*)xfer.getOutBuffer(),_zero_serial,2);                        
                         }
