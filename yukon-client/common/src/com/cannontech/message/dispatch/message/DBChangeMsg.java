@@ -1,5 +1,7 @@
 package com.cannontech.message.dispatch.message;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
 * This type was created by Cannon Technologies Inc.
 */
@@ -49,6 +51,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_DEVICETYPE_COMMAND_DB = 22;
 	public static final int CHANGE_COMMAND_DB = 23;
 	public static final int CHANGE_TOU_SCHEDULE_DB = 24;
+	public static final int CHANGE_CBC_STRATEGY_DB = 25;
 	
 
 
@@ -75,6 +78,10 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_DEVICETYPE_COMMAND = "DeviceType Command";
 	public static final String CAT_COMMAND = "Command";
 	public static final String CAT_TOU_SCHEDULE = "TOU Schedule";
+	public static final String CAT_CBC_STRATEGY = "CBC Strategy";
+
+
+
 	
 	// Categories used by stars
 	public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";
@@ -116,6 +123,16 @@ public DBChangeMsg( int id_, int database_, String category_, String objectType_
 	setPriority(15);
 
 }
+
+/**
+ * Defaults the ObjectType to a (none) string
+ * 
+ */
+public DBChangeMsg( int id_, int database_, String category_, int typeOfChange_ )
+{
+	this( id_, database_, category_, CtiUtilities.STRING_NONE, typeOfChange_ );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (12/19/2001 11:08:45 AM)
