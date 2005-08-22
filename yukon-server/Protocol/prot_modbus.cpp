@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/08/05 20:01:42 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/08/22 18:14:22 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -240,7 +240,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 dout << RWTime() << " **** Checkpoint - unknown data received " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 retVal = UnknownError;//some error code should be set, we can retry!
 
-                                if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
+                                if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
                                     clearPoints();
                                     _status = End;
