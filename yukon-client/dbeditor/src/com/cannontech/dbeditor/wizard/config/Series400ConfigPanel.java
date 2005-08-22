@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.wizard.config;
 
 import java.awt.Dimension;
 
+import javax.swing.border.EtchedBorder;
+
 import com.cannontech.database.data.config.ConfigTwoWay;
 
 /**
@@ -11,101 +13,106 @@ import com.cannontech.database.data.config.ConfigTwoWay;
 public class Series400ConfigPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjNameLabel = null;
 	private javax.swing.JTextField ivjNameTextField = null;
-	private javax.swing.JRadioButton ivjMinMaxModeButton = null;
-	private javax.swing.JRadioButton ivjpeakModeButton = null;
-	private javax.swing.JRadioButton ivjKY2WireButton = null;
-	private javax.swing.JRadioButton ivjKYZ3WireButton = null;
-	private javax.swing.JLabel ivjMpLabel = null;
-	private javax.swing.JPanel ivjMultiplierPanel = null;
-	private javax.swing.JLabel ivjTimesLabel = null;
-	private javax.swing.JLabel ivjMpLabel2 = null;
-	private javax.swing.JLabel ivjKeLabel = null;
-	private javax.swing.JLabel ivjKeLabel2 = null;
-	private javax.swing.JLabel ivjKeLabel3 = null;
-	private javax.swing.JTextField ivjKeTextField = null;
-	private javax.swing.JTextField ivjKeTextField2 = null;
-	private javax.swing.JTextField ivjKeTextField3 = null;
-	private javax.swing.JLabel ivjKhLabel = null;
-	private javax.swing.JLabel ivjKhLabel2 = null;
-	private javax.swing.JLabel ivjKhLabel3 = null;
-	private javax.swing.JTextField ivjKhTextField = null;
-	private javax.swing.JTextField ivjKhTextField2 = null;
-	private javax.swing.JTextField ivjKhTextField3 = null;
-	private javax.swing.JRadioButton ivjKY2WireButton2 = null;
-	private javax.swing.JRadioButton ivjKY2WireButton3 = null;
-	private javax.swing.JRadioButton ivjKYZ3WireButton2 = null;
-	private javax.swing.JRadioButton ivjKYZ3WireButton3 = null;
-	private javax.swing.JLabel ivjMpLabel3 = null;
-	private javax.swing.JTextField ivjMpTextField = null;
-	private javax.swing.JTextField ivjMpTextField2 = null;
-	private javax.swing.JTextField ivjMpTextField3 = null;
-	private javax.swing.JPanel ivjMultiplierPanel2 = null;
-	private javax.swing.JPanel ivjMultiplierPanel3 = null;
-	private javax.swing.JLabel ivjTimesLabel2 = null;
-	private javax.swing.JLabel ivjTimesLabel3 = null;
-	javax.swing.ButtonGroup modeButtonGroup = new javax.swing.ButtonGroup();
-	javax.swing.ButtonGroup channel1ButtonGroup = new javax.swing.ButtonGroup();
-	javax.swing.ButtonGroup channel2ButtonGroup = new javax.swing.ButtonGroup();
-	javax.swing.ButtonGroup channel3ButtonGroup = new javax.swing.ButtonGroup();
+	private javax.swing.JCheckBox ivjTOUCheckBox = null;
+	private javax.swing.JPanel ivjTOUPanel = null;
+	private javax.swing.JComboBox ivjTOUCombobox = null;
+	private javax.swing.JButton ivjTOUNewButton = null;
+	private javax.swing.JLabel ivjTOUScheduleLabel = null;
+//	private javax.swing.JRadioButton ivjMinMaxModeButton = null;
+//	private javax.swing.JRadioButton ivjpeakModeButton = null;
+//	private javax.swing.JRadioButton ivjKY2WireButton = null;
+//	private javax.swing.JRadioButton ivjKYZ3WireButton = null;
+//	private javax.swing.JLabel ivjMpLabel = null;
+//	private javax.swing.JPanel ivjMultiplierPanel = null;
+//	private javax.swing.JLabel ivjTimesLabel = null;
+//	private javax.swing.JLabel ivjMpLabel2 = null;
+//	private javax.swing.JLabel ivjKeLabel = null;
+//	private javax.swing.JLabel ivjKeLabel2 = null;
+//	private javax.swing.JLabel ivjKeLabel3 = null;
+//	private javax.swing.JTextField ivjKeTextField = null;
+//	private javax.swing.JTextField ivjKeTextField2 = null;
+//	private javax.swing.JTextField ivjKeTextField3 = null;
+//	private javax.swing.JLabel ivjKhLabel = null;
+//	private javax.swing.JLabel ivjKhLabel2 = null;
+//	private javax.swing.JLabel ivjKhLabel3 = null;
+//	private javax.swing.JTextField ivjKhTextField = null;
+//	private javax.swing.JTextField ivjKhTextField2 = null;
+//	private javax.swing.JTextField ivjKhTextField3 = null;
+//	private javax.swing.JRadioButton ivjKY2WireButton2 = null;
+//	private javax.swing.JRadioButton ivjKY2WireButton3 = null;
+//	private javax.swing.JRadioButton ivjKYZ3WireButton2 = null;
+//	private javax.swing.JRadioButton ivjKYZ3WireButton3 = null;
+//	private javax.swing.JLabel ivjMpLabel3 = null;
+//	private javax.swing.JTextField ivjMpTextField = null;
+//	private javax.swing.JTextField ivjMpTextField2 = null;
+//	private javax.swing.JTextField ivjMpTextField3 = null;
+//	private javax.swing.JPanel ivjMultiplierPanel2 = null;
+//	private javax.swing.JPanel ivjMultiplierPanel3 = null;
+//	private javax.swing.JLabel ivjTimesLabel2 = null;
+//	private javax.swing.JLabel ivjTimesLabel3 = null;
+//	javax.swing.ButtonGroup modeButtonGroup = new javax.swing.ButtonGroup();
+//	javax.swing.ButtonGroup channel1ButtonGroup = new javax.swing.ButtonGroup();
+//	javax.swing.ButtonGroup channel2ButtonGroup = new javax.swing.ButtonGroup();
+//	javax.swing.ButtonGroup channel3ButtonGroup = new javax.swing.ButtonGroup();
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
-	private javax.swing.JCheckBox ivjChannel1EnableJCheckBox = null;
-	private javax.swing.JCheckBox ivjChannel2EnableJCheckBox = null;
-	private javax.swing.JCheckBox ivjChannel3EnableJCheckBox1 = null;
-	private javax.swing.JButton ivjRecalculateJButton1 = null;
-	private javax.swing.JButton ivjRecalculateJButton2 = null;
-	private javax.swing.JButton ivjRecalculateJButton3 = null;
+//	private javax.swing.JCheckBox ivjChannel1EnableJCheckBox = null;
+//	private javax.swing.JCheckBox ivjChannel2EnableJCheckBox = null;
+//	private javax.swing.JCheckBox ivjChannel3EnableJCheckBox1 = null;
+//	private javax.swing.JButton ivjRecalculateJButton1 = null;
+//	private javax.swing.JButton ivjRecalculateJButton2 = null;
+//	private javax.swing.JButton ivjRecalculateJButton3 = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == Series400ConfigPanel.this.getMinMaxModeButton()) 
-				connEtoC2(e);
-			if (e.getSource() == Series400ConfigPanel.this.getpeakModeButton()) 
-				connEtoC3(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton()) 
-				connEtoC4(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton()) 
-				connEtoC5(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton2()) 
-				connEtoC6(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton2()) 
-				connEtoC7(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton3()) 
-				connEtoC8(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton3()) 
-				connEtoC9(e);
-			if (e.getSource() == Series400ConfigPanel.this.getChannel2EnableJCheckBox()) 
-				connEtoC13(e);
-			if (e.getSource() == Series400ConfigPanel.this.getChannel3EnableJCheckBox1()) 
-				connEtoC14(e);
-			if (e.getSource() == Series400ConfigPanel.this.getChannel1EnableJCheckBox()) 
-				connEtoC15(e);
-			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton1()) 
-				connEtoC16(e);
-			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton2()) 
-				connEtoC17(e);
-			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton3()) 
-				connEtoC18(e);
-			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton1()) 
-				connEtoC19(e);
-			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton2()) 
-				connEtoC20(e);
-			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton3()) 
-				connEtoC21(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getMinMaxModeButton()) 
+//				connEtoC2(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getpeakModeButton()) 
+//				connEtoC3(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton()) 
+//				connEtoC4(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton()) 
+//				connEtoC5(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton2()) 
+//				connEtoC6(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton2()) 
+//				connEtoC7(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKYZ3WireButton3()) 
+//				connEtoC8(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKY2WireButton3()) 
+//				connEtoC9(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getChannel2EnableJCheckBox()) 
+//				connEtoC13(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getChannel3EnableJCheckBox1()) 
+//				connEtoC14(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getChannel1EnableJCheckBox()) 
+//				connEtoC15(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton1()) 
+//				connEtoC16(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton2()) 
+//				connEtoC17(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getRecalculateJButton3()) 
+//				connEtoC18(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton1()) 
+//				connEtoC19(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton2()) 
+//				connEtoC20(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getEqualsJButton3()) 
+//				connEtoC21(e);
 		};
 		public void caretUpdate(javax.swing.event.CaretEvent e) {
 			if (e.getSource() == Series400ConfigPanel.this.getNameTextField()) 
 				connEtoC1(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKeTextField()) 
-				connEtoC10(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKeTextField2()) 
-				connEtoC11(e);
-			if (e.getSource() == Series400ConfigPanel.this.getKeTextField3()) 
-				connEtoC12(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKeTextField()) 
+//				connEtoC10(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKeTextField2()) 
+//				connEtoC11(e);
+//			if (e.getSource() == Series400ConfigPanel.this.getKeTextField3()) 
+//				connEtoC12(e);
 		};
 	};
-	private javax.swing.JButton ivjEqualsJButton1 = null;
-	private javax.swing.JButton ivjEqualsJButton2 = null;
-	private javax.swing.JButton ivjEqualsJButton3 = null;
+//	private javax.swing.JButton ivjEqualsJButton1 = null;
+//	private javax.swing.JButton ivjEqualsJButton2 = null;
+//	private javax.swing.JButton ivjEqualsJButton3 = null;
 /**
  * Constructor
  */
@@ -123,45 +130,45 @@ public void actionPerformed(java.awt.event.ActionEvent actionEvent) {
 /**
  * Comment
  */
-public void channel1EnableJCheckBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	boolean isSelected = getChannel1EnableJCheckBox().isSelected();
-	getKeTextField().setEnabled(isSelected);
-	getMpTextField().setEnabled(isSelected);
-	getKhTextField().setEnabled(isSelected);
-	getEqualsJButton1().setEnabled(isSelected);
-	getKY2WireButton().setEnabled(isSelected);
-	getKYZ3WireButton().setEnabled(isSelected);
-	getRecalculateJButton1().setEnabled(isSelected);
-	return;
-}
-/**
- * Comment
- */
-public void channel2EnableJCheckBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	boolean isSelected = getChannel2EnableJCheckBox().isSelected();
-	getKeTextField2().setEnabled(isSelected);
-	getMpTextField2().setEnabled(isSelected);
-	getKhTextField2().setEnabled(isSelected);
-	getEqualsJButton2().setEnabled(isSelected);
-	getKY2WireButton2().setEnabled(isSelected);
-	getKYZ3WireButton2().setEnabled(isSelected);
-	getRecalculateJButton2().setEnabled(isSelected);
-	return;
-}
-/**
- * Comment
- */
-public void channel3EnableJCheckBox1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	boolean isSelected = getChannel3EnableJCheckBox1().isSelected();
-	getKeTextField3().setEnabled(isSelected);
-	getMpTextField3().setEnabled(isSelected);
-	getKhTextField3().setEnabled(isSelected);
-	getEqualsJButton3().setEnabled(isSelected);
-	getKY2WireButton3().setEnabled(isSelected);
-	getKYZ3WireButton3().setEnabled(isSelected);
-	getRecalculateJButton3().setEnabled(isSelected);
-	return;
-}
+//public void channel1EnableJCheckBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	boolean isSelected = getChannel1EnableJCheckBox().isSelected();
+//	getKeTextField().setEnabled(isSelected);
+//	getMpTextField().setEnabled(isSelected);
+//	getKhTextField().setEnabled(isSelected);
+//	getEqualsJButton1().setEnabled(isSelected);
+//	getKY2WireButton().setEnabled(isSelected);
+//	getKYZ3WireButton().setEnabled(isSelected);
+//	getRecalculateJButton1().setEnabled(isSelected);
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void channel2EnableJCheckBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	boolean isSelected = getChannel2EnableJCheckBox().isSelected();
+//	getKeTextField2().setEnabled(isSelected);
+//	getMpTextField2().setEnabled(isSelected);
+//	getKhTextField2().setEnabled(isSelected);
+//	getEqualsJButton2().setEnabled(isSelected);
+//	getKY2WireButton2().setEnabled(isSelected);
+//	getKYZ3WireButton2().setEnabled(isSelected);
+//	getRecalculateJButton2().setEnabled(isSelected);
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void channel3EnableJCheckBox1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	boolean isSelected = getChannel3EnableJCheckBox1().isSelected();
+//	getKeTextField3().setEnabled(isSelected);
+//	getMpTextField3().setEnabled(isSelected);
+//	getKhTextField3().setEnabled(isSelected);
+//	getEqualsJButton3().setEnabled(isSelected);
+//	getKY2WireButton3().setEnabled(isSelected);
+//	getKYZ3WireButton3().setEnabled(isSelected);
+//	getRecalculateJButton3().setEnabled(isSelected);
+//	return;
+//}
 /**
  * connEtoC1:  (NameTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> Series400ConfigPanel.nameTextField_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -185,412 +192,412 @@ private void connEtoC1(javax.swing.event.CaretEvent arg1) {
  * @param arg1 javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC10(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.keTextField_CaretUpdate(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC10(javax.swing.event.CaretEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.keTextField_CaretUpdate(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC11:  (KeTextField2.caret.caretUpdate(javax.swing.event.CaretEvent) --> Series400ConfigPanel.keTextField2_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
  * @param arg1 javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC11(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.keTextField2_CaretUpdate(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC11(javax.swing.event.CaretEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.keTextField2_CaretUpdate(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC12:  (KeTextField3.caret.caretUpdate(javax.swing.event.CaretEvent) --> Series400ConfigPanel.keTextField3_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
  * @param arg1 javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC12(javax.swing.event.CaretEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.keTextField3_CaretUpdate(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC12(javax.swing.event.CaretEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.keTextField3_CaretUpdate(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC13:  (Channel2EnableJCheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.channel2EnableJCheckBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC13(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.channel2EnableJCheckBox_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC13(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.channel2EnableJCheckBox_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC14:  (Channel3EnableJCheckBox1.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.channel3EnableJCheckBox1_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC14(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.channel3EnableJCheckBox1_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC14(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.channel3EnableJCheckBox1_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC15:  (Channel1EnableJCheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.channel1EnableJCheckBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC15(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.channel1EnableJCheckBox_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC15(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.channel1EnableJCheckBox_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC16:  (RecalculateJButton1.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.recalculateJButton1_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC16(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.recalculateJButton1_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC16(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.recalculateJButton1_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC17:  (RecalculateJButton2.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.recalculateJButton2_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC17(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.recalculateJButton2_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC17(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.recalculateJButton2_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC18:  (RecalculateJButton3.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.recalculateJButton3_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC18(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.recalculateJButton3_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC18(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.recalculateJButton3_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC19:  (EqualsJButton1.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.equalsJButton1_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC19(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.equalsJButton1_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC19(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.equalsJButton1_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC2:  (MinMaxModeButton.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.minMaxModeButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC2(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.minMaxModeButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC2(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.minMaxModeButton_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC20:  (EqualsJButton2.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.equalsJButton2_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC20(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.equalsJButton2_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC20(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.equalsJButton2_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC21:  (EqualsJButton3.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.equalsJButton3_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC21(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.equalsJButton3_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC21(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.equalsJButton3_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC3:  (peakModeButton.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.peakModeButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC3(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.peakModeButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC3(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.peakModeButton_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC4:  (KY2WireButton.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kY2WireButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC4(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kY2WireButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC4(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kY2WireButton_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC5:  (KYZ3WireButton.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kYZ3WireButton_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC5(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kYZ3WireButton_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC5(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kYZ3WireButton_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC6:  (KY2WireButton2.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kY2WireButton2_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC6(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kY2WireButton2_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC6(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kY2WireButton2_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC7:  (KYZ3WireButton2.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kYZ3WireButton2_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC7(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kYZ3WireButton2_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC7(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kYZ3WireButton2_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC8:  (KYZ3WireButton3.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kYZ3WireButton3_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC8(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kYZ3WireButton3_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC8(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kYZ3WireButton3_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * connEtoC9:  (KY2WireButton3.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.kY2WireButton3_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
  * @param arg1 java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC9(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.kY2WireButton3_ActionPerformed(arg1);
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+//private void connEtoC9(java.awt.event.ActionEvent arg1) {
+//	try {
+//		// user code begin {1}
+//		// user code end
+//		this.kY2WireButton3_ActionPerformed(arg1);
+//		// user code begin {2}
+//		// user code end
+//	} catch (java.lang.Throwable ivjExc) {
+//		// user code begin {3}
+//		// user code end
+//		handleException(ivjExc);
+//	}
+//}
 /**
  * Comment
  */
-public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	Double mpValue = new Double(getMpTextField().getText());
-	Double khValue = new Double(getKhTextField().getText());
-	getKeTextField().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
-	getMpTextField().setVisible(false);
-	getMpLabel().setVisible(false);
-	getKhLabel().setVisible(false);
-	getKhTextField().setVisible(false);
-	getTimesLabel().setVisible(false);
-	getEqualsJButton1().setVisible(false);
-	getRecalculateJButton1().setVisible(true);
-	fireInputUpdate();
-	return;
-}
+//public void equalsJButton1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	Double mpValue = new Double(getMpTextField().getText());
+//	Double khValue = new Double(getKhTextField().getText());
+//	getKeTextField().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
+//	getMpTextField().setVisible(false);
+//	getMpLabel().setVisible(false);
+//	getKhLabel().setVisible(false);
+//	getKhTextField().setVisible(false);
+//	getTimesLabel().setVisible(false);
+//	getEqualsJButton1().setVisible(false);
+//	getRecalculateJButton1().setVisible(true);
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * Comment
  */
-public void equalsJButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	Double mpValue = new Double(getMpTextField2().getText());
-	Double khValue = new Double(getKhTextField2().getText());
-	getKeTextField2().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
-	getMpTextField2().setVisible(false);
-	getMpLabel2().setVisible(false);
-	getKhLabel2().setVisible(false);
-	getKhTextField2().setVisible(false);
-	getTimesLabel2().setVisible(false);
-	getEqualsJButton2().setVisible(false);
-	getRecalculateJButton2().setVisible(true);
-	fireInputUpdate();
-	return;
-}
+//public void equalsJButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	Double mpValue = new Double(getMpTextField2().getText());
+//	Double khValue = new Double(getKhTextField2().getText());
+//	getKeTextField2().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
+//	getMpTextField2().setVisible(false);
+//	getMpLabel2().setVisible(false);
+//	getKhLabel2().setVisible(false);
+//	getKhTextField2().setVisible(false);
+//	getTimesLabel2().setVisible(false);
+//	getEqualsJButton2().setVisible(false);
+//	getRecalculateJButton2().setVisible(true);
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * Comment
  */
-public void equalsJButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	Double mpValue = new Double(getMpTextField3().getText());
-	Double khValue = new Double(getKhTextField3().getText());
-	getKeTextField3().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
-	getMpTextField3().setVisible(false);
-	getMpLabel3().setVisible(false);
-	getKhLabel3().setVisible(false);
-	getKhTextField3().setVisible(false);
-	getTimesLabel3().setVisible(false);
-	getEqualsJButton3().setVisible(false);
-	getRecalculateJButton3().setVisible(true);
-	fireInputUpdate();
-	return;
-}
+//public void equalsJButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	Double mpValue = new Double(getMpTextField3().getText());
+//	Double khValue = new Double(getKhTextField3().getText());
+//	getKeTextField3().setText(new Double(mpValue.doubleValue() * khValue.doubleValue()).toString());
+//	getMpTextField3().setVisible(false);
+//	getMpLabel3().setVisible(false);
+//	getKhLabel3().setVisible(false);
+//	getKhTextField3().setVisible(false);
+//	getTimesLabel3().setVisible(false);
+//	getEqualsJButton3().setVisible(false);
+//	getRecalculateJButton3().setVisible(true);
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * 
  */
@@ -661,540 +668,636 @@ private static void getBuilderData() {
 	341948FA462A4BEED9D9B37B85DD2067C2991E4957C0515F3F3820AA735FD0CB8788CE08950054AEGGB02AGGD0CB818294G94G88G88G21F3F9B0CE08950054AEGGB02AGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGG8EAFGGGG
 **end of data**/
 }
+
+/**
+ * Return the ivjTOUCheckBox property value.
+ * @return javax.swing.JCheckBox
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JCheckBox getTOUCheckBox() {
+	if (ivjTOUCheckBox == null) {
+		try {
+			ivjTOUCheckBox = new javax.swing.JCheckBox();
+			ivjTOUCheckBox.setName("TOUCheckBox");
+			ivjTOUCheckBox.setText("Enable TOU Schedule");
+			ivjTOUCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+			ivjTOUCheckBox.setSelected(false);
+			ivjTOUCheckBox.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+			ivjTOUCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+			ivjTOUCheckBox.setEnabled(true);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTOUCheckBox;
+}
+
+/**
+ * Return the ivjTOUCombobox property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JComboBox getTOUComboBox() {
+	if (ivjTOUCombobox == null) {
+		try {
+			ivjTOUCombobox = new javax.swing.JComboBox();
+			ivjTOUCombobox.setName("TOUComboBox");
+			ivjTOUCombobox.setSelectedIndex(0);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTOUCombobox;
+}
+
+/**
+ * Return the ivjTOUNewButton property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getTOUNewButton() {
+	if (ivjTOUNewButton == null) {
+		try {
+			ivjTOUNewButton = new javax.swing.JButton();
+			ivjTOUNewButton.setName("TOUNewButton");
+			ivjTOUNewButton.setText("New");
+			ivjTOUNewButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTOUNewButton;
+}
+
+/**
+ * Return the ivjTOUScheduleLabel property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getTOUScheduleLabel() {
+	if (ivjTOUScheduleLabel == null) {
+		try {
+			ivjTOUScheduleLabel = new javax.swing.JLabel();
+			ivjTOUScheduleLabel.setName("TOUScheduleLabel");
+			ivjTOUScheduleLabel.setText("TOU Schedules:");
+			//ivjTOUScheduleLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTOUScheduleLabel;
+}
+
 /**
  * Return the Channel1EnableJCheckBox property value.
  * @return javax.swing.JCheckBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JCheckBox getChannel1EnableJCheckBox() {
-	if (ivjChannel1EnableJCheckBox == null) {
-		try {
-			ivjChannel1EnableJCheckBox = new javax.swing.JCheckBox();
-			ivjChannel1EnableJCheckBox.setName("Channel1EnableJCheckBox");
-			ivjChannel1EnableJCheckBox.setText("Channel 1");
-			ivjChannel1EnableJCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			ivjChannel1EnableJCheckBox.setSelected(true);
-			ivjChannel1EnableJCheckBox.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjChannel1EnableJCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-			ivjChannel1EnableJCheckBox.setEnabled(false);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjChannel1EnableJCheckBox;
-}
+//private javax.swing.JCheckBox getChannel1EnableJCheckBox() {
+//	if (ivjChannel1EnableJCheckBox == null) {
+//		try {
+//			ivjChannel1EnableJCheckBox = new javax.swing.JCheckBox();
+//			ivjChannel1EnableJCheckBox.setName("Channel1EnableJCheckBox");
+//			ivjChannel1EnableJCheckBox.setText("Channel 1");
+//			ivjChannel1EnableJCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			ivjChannel1EnableJCheckBox.setSelected(true);
+//			ivjChannel1EnableJCheckBox.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+//			ivjChannel1EnableJCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+//			ivjChannel1EnableJCheckBox.setEnabled(false);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjChannel1EnableJCheckBox;
+//}
 /**
  * Return the Channel2EnableJCheckBox property value.
  * @return javax.swing.JCheckBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JCheckBox getChannel2EnableJCheckBox() {
-	if (ivjChannel2EnableJCheckBox == null) {
-		try {
-			ivjChannel2EnableJCheckBox = new javax.swing.JCheckBox();
-			ivjChannel2EnableJCheckBox.setName("Channel2EnableJCheckBox");
-			ivjChannel2EnableJCheckBox.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjChannel2EnableJCheckBox.setText("Channel 2");
-			ivjChannel2EnableJCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-			ivjChannel2EnableJCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjChannel2EnableJCheckBox;
-}
+//private javax.swing.JCheckBox getChannel2EnableJCheckBox() {
+//	if (ivjChannel2EnableJCheckBox == null) {
+//		try {
+//			ivjChannel2EnableJCheckBox = new javax.swing.JCheckBox();
+//			ivjChannel2EnableJCheckBox.setName("Channel2EnableJCheckBox");
+//			ivjChannel2EnableJCheckBox.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+//			ivjChannel2EnableJCheckBox.setText("Channel 2");
+//			ivjChannel2EnableJCheckBox.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+//			ivjChannel2EnableJCheckBox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjChannel2EnableJCheckBox;
+//}
 /**
  * Return the Channel3EnableJCheckBox1 property value.
  * @return javax.swing.JCheckBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JCheckBox getChannel3EnableJCheckBox1() {
-	if (ivjChannel3EnableJCheckBox1 == null) {
-		try {
-			ivjChannel3EnableJCheckBox1 = new javax.swing.JCheckBox();
-			ivjChannel3EnableJCheckBox1.setName("Channel3EnableJCheckBox1");
-			ivjChannel3EnableJCheckBox1.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjChannel3EnableJCheckBox1.setText("Channel 3");
-			ivjChannel3EnableJCheckBox1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-			ivjChannel3EnableJCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjChannel3EnableJCheckBox1;
-}
+//private javax.swing.JCheckBox getChannel3EnableJCheckBox1() {
+//	if (ivjChannel3EnableJCheckBox1 == null) {
+//		try {
+//			ivjChannel3EnableJCheckBox1 = new javax.swing.JCheckBox();
+//			ivjChannel3EnableJCheckBox1.setName("Channel3EnableJCheckBox1");
+//			ivjChannel3EnableJCheckBox1.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+//			ivjChannel3EnableJCheckBox1.setText("Channel 3");
+//			ivjChannel3EnableJCheckBox1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+//			ivjChannel3EnableJCheckBox1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjChannel3EnableJCheckBox1;
+//}
 /**
  * Return the EqualsJButton1 property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getEqualsJButton1() {
-	if (ivjEqualsJButton1 == null) {
-		try {
-			ivjEqualsJButton1 = new javax.swing.JButton();
-			ivjEqualsJButton1.setName("EqualsJButton1");
-			ivjEqualsJButton1.setText("=");
-			ivjEqualsJButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjEqualsJButton1;
-}
+//private javax.swing.JButton getEqualsJButton1() {
+//	if (ivjEqualsJButton1 == null) {
+//		try {
+//			ivjEqualsJButton1 = new javax.swing.JButton();
+//			ivjEqualsJButton1.setName("EqualsJButton1");
+//			ivjEqualsJButton1.setText("=");
+//			ivjEqualsJButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjEqualsJButton1;
+//}
 /**
  * Return the EqualsJButton2 property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getEqualsJButton2() {
-	if (ivjEqualsJButton2 == null) {
-		try {
-			ivjEqualsJButton2 = new javax.swing.JButton();
-			ivjEqualsJButton2.setName("EqualsJButton2");
-			ivjEqualsJButton2.setText("=");
-			ivjEqualsJButton2.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjEqualsJButton2;
-}
+//private javax.swing.JButton getEqualsJButton2() {
+//	if (ivjEqualsJButton2 == null) {
+//		try {
+//			ivjEqualsJButton2 = new javax.swing.JButton();
+//			ivjEqualsJButton2.setName("EqualsJButton2");
+//			ivjEqualsJButton2.setText("=");
+//			ivjEqualsJButton2.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjEqualsJButton2;
+//}
 /**
  * Return the EqualsJButton3 property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getEqualsJButton3() {
-	if (ivjEqualsJButton3 == null) {
-		try {
-			ivjEqualsJButton3 = new javax.swing.JButton();
-			ivjEqualsJButton3.setName("EqualsJButton3");
-			ivjEqualsJButton3.setText("=");
-			ivjEqualsJButton3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjEqualsJButton3;
-}
+//private javax.swing.JButton getEqualsJButton3() {
+//	if (ivjEqualsJButton3 == null) {
+//		try {
+//			ivjEqualsJButton3 = new javax.swing.JButton();
+//			ivjEqualsJButton3.setName("EqualsJButton3");
+//			ivjEqualsJButton3.setText("=");
+//			ivjEqualsJButton3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjEqualsJButton3;
+//}
 /**
  * Return the JLabel2 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKeLabel() {
-	if (ivjKeLabel == null) {
-		try {
-			ivjKeLabel = new javax.swing.JLabel();
-			ivjKeLabel.setName("KeLabel");
-			ivjKeLabel.setPreferredSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel.setText("Ke: ");
-			ivjKeLabel.setMinimumSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel.setMaximumSize(new java.awt.Dimension(27, 14));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeLabel;
-}
+//private javax.swing.JLabel getKeLabel() {
+//	if (ivjKeLabel == null) {
+//		try {
+//			ivjKeLabel = new javax.swing.JLabel();
+//			ivjKeLabel.setName("KeLabel");
+//			ivjKeLabel.setPreferredSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel.setText("Ke: ");
+//			ivjKeLabel.setMinimumSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel.setMaximumSize(new java.awt.Dimension(27, 14));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeLabel;
+//}
 /**
  * Return the KeLabel2 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKeLabel2() {
-	if (ivjKeLabel2 == null) {
-		try {
-			ivjKeLabel2 = new javax.swing.JLabel();
-			ivjKeLabel2.setName("KeLabel2");
-			ivjKeLabel2.setPreferredSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel2.setText("Ke: ");
-			ivjKeLabel2.setMaximumSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel2.setMinimumSize(new java.awt.Dimension(27, 14));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeLabel2;
-}
+//private javax.swing.JLabel getKeLabel2() {
+//	if (ivjKeLabel2 == null) {
+//		try {
+//			ivjKeLabel2 = new javax.swing.JLabel();
+//			ivjKeLabel2.setName("KeLabel2");
+//			ivjKeLabel2.setPreferredSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel2.setText("Ke: ");
+//			ivjKeLabel2.setMaximumSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel2.setMinimumSize(new java.awt.Dimension(27, 14));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeLabel2;
+//}
 /**
  * Return the KeLabel3 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKeLabel3() {
-	if (ivjKeLabel3 == null) {
-		try {
-			ivjKeLabel3 = new javax.swing.JLabel();
-			ivjKeLabel3.setName("KeLabel3");
-			ivjKeLabel3.setText("Ke: ");
-			ivjKeLabel3.setMaximumSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-			ivjKeLabel3.setPreferredSize(new java.awt.Dimension(27, 14));
-			ivjKeLabel3.setMinimumSize(new java.awt.Dimension(27, 14));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeLabel3;
-}
+//private javax.swing.JLabel getKeLabel3() {
+//	if (ivjKeLabel3 == null) {
+//		try {
+//			ivjKeLabel3 = new javax.swing.JLabel();
+//			ivjKeLabel3.setName("KeLabel3");
+//			ivjKeLabel3.setText("Ke: ");
+//			ivjKeLabel3.setMaximumSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+//			ivjKeLabel3.setPreferredSize(new java.awt.Dimension(27, 14));
+//			ivjKeLabel3.setMinimumSize(new java.awt.Dimension(27, 14));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeLabel3;
+//}
 /**
  * Return the JTextField12 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKeTextField() {
-	if (ivjKeTextField == null) {
-		try {
-			ivjKeTextField = new javax.swing.JTextField();
-			ivjKeTextField.setName("KeTextField");
-			// user code begin {1}
-			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeTextField;
-}
+//private javax.swing.JTextField getKeTextField() {
+//	if (ivjKeTextField == null) {
+//		try {
+//			ivjKeTextField = new javax.swing.JTextField();
+//			ivjKeTextField.setName("KeTextField");
+//			// user code begin {1}
+//			ivjKeTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeTextField;
+//}
 /**
  * Return the KeTextField2 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKeTextField2() {
-	if (ivjKeTextField2 == null) {
-		try {
-			ivjKeTextField2 = new javax.swing.JTextField();
-			ivjKeTextField2.setName("KeTextField2");
-			// user code begin {1}
-			ivjKeTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeTextField2;
-}
+//private javax.swing.JTextField getKeTextField2() {
+//	if (ivjKeTextField2 == null) {
+//		try {
+//			ivjKeTextField2 = new javax.swing.JTextField();
+//			ivjKeTextField2.setName("KeTextField2");
+//			// user code begin {1}
+//			ivjKeTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeTextField2;
+//}
 /**
  * Return the KeTextField3 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKeTextField3() {
-	if (ivjKeTextField3 == null) {
-		try {
-			ivjKeTextField3 = new javax.swing.JTextField();
-			ivjKeTextField3.setName("KeTextField3");
-			// user code begin {1}
-			ivjKeTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKeTextField3;
-}
+//private javax.swing.JTextField getKeTextField3() {
+//	if (ivjKeTextField3 == null) {
+//		try {
+//			ivjKeTextField3 = new javax.swing.JTextField();
+//			ivjKeTextField3.setName("KeTextField3");
+//			// user code begin {1}
+//			ivjKeTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKeTextField3;
+//}
 /**
  * Return the MpLabel1 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKhLabel() {
-	if (ivjKhLabel == null) {
-		try {
-			ivjKhLabel = new javax.swing.JLabel();
-			ivjKhLabel.setName("KhLabel");
-			ivjKhLabel.setText("Kh:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhLabel;
-}
+//private javax.swing.JLabel getKhLabel() {
+//	if (ivjKhLabel == null) {
+//		try {
+//			ivjKhLabel = new javax.swing.JLabel();
+//			ivjKhLabel.setName("KhLabel");
+//			ivjKhLabel.setText("Kh:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhLabel;
+//}
 /**
  * Return the KhLabel2 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKhLabel2() {
-	if (ivjKhLabel2 == null) {
-		try {
-			ivjKhLabel2 = new javax.swing.JLabel();
-			ivjKhLabel2.setName("KhLabel2");
-			ivjKhLabel2.setText("Kh:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhLabel2;
-}
+//private javax.swing.JLabel getKhLabel2() {
+//	if (ivjKhLabel2 == null) {
+//		try {
+//			ivjKhLabel2 = new javax.swing.JLabel();
+//			ivjKhLabel2.setName("KhLabel2");
+//			ivjKhLabel2.setText("Kh:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhLabel2;
+//}
 /**
  * Return the KhLabel3 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getKhLabel3() {
-	if (ivjKhLabel3 == null) {
-		try {
-			ivjKhLabel3 = new javax.swing.JLabel();
-			ivjKhLabel3.setName("KhLabel3");
-			ivjKhLabel3.setText("Kh:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhLabel3;
-}
+//private javax.swing.JLabel getKhLabel3() {
+//	if (ivjKhLabel3 == null) {
+//		try {
+//			ivjKhLabel3 = new javax.swing.JLabel();
+//			ivjKhLabel3.setName("KhLabel3");
+//			ivjKhLabel3.setText("Kh:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhLabel3;
+//}
 /**
  * Return the JTextField11 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKhTextField() {
-	if (ivjKhTextField == null) {
-		try {
-			ivjKhTextField = new javax.swing.JTextField();
-			ivjKhTextField.setName("KhTextField");
-			ivjKhTextField.setText("");
-			// user code begin {1}
-			ivjKhTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhTextField;
-}
+//private javax.swing.JTextField getKhTextField() {
+//	if (ivjKhTextField == null) {
+//		try {
+//			ivjKhTextField = new javax.swing.JTextField();
+//			ivjKhTextField.setName("KhTextField");
+//			ivjKhTextField.setText("");
+//			// user code begin {1}
+//			ivjKhTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhTextField;
+//}
 /**
  * Return the KhTextField2 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKhTextField2() {
-	if (ivjKhTextField2 == null) {
-		try {
-			ivjKhTextField2 = new javax.swing.JTextField();
-			ivjKhTextField2.setName("KhTextField2");
-			ivjKhTextField2.setText("");
-			// user code begin {1}
-			ivjKhTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhTextField2;
-}
+//private javax.swing.JTextField getKhTextField2() {
+//	if (ivjKhTextField2 == null) {
+//		try {
+//			ivjKhTextField2 = new javax.swing.JTextField();
+//			ivjKhTextField2.setName("KhTextField2");
+//			ivjKhTextField2.setText("");
+//			// user code begin {1}
+//			ivjKhTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhTextField2;
+//}
 /**
  * Return the KhTextField3 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getKhTextField3() {
-	if (ivjKhTextField3 == null) {
-		try {
-			ivjKhTextField3 = new javax.swing.JTextField();
-			ivjKhTextField3.setName("KhTextField3");
-			ivjKhTextField3.setText("");
-			// user code begin {1}
-			ivjKhTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKhTextField3;
-}
+//private javax.swing.JTextField getKhTextField3() {
+//	if (ivjKhTextField3 == null) {
+//		try {
+//			ivjKhTextField3 = new javax.swing.JTextField();
+//			ivjKhTextField3.setName("KhTextField3");
+//			ivjKhTextField3.setText("");
+//			// user code begin {1}
+//			ivjKhTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKhTextField3;
+//}
 /**
  * Return the KY2WireButton property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKY2WireButton() {
-	if (ivjKY2WireButton == null) {
-		try {
-			ivjKY2WireButton = new javax.swing.JRadioButton();
-			ivjKY2WireButton.setName("KY2WireButton");
-			ivjKY2WireButton.setText("2-Wire (KY)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKY2WireButton;
-}
+//private javax.swing.JRadioButton getKY2WireButton() {
+//	if (ivjKY2WireButton == null) {
+//		try {
+//			ivjKY2WireButton = new javax.swing.JRadioButton();
+//			ivjKY2WireButton.setName("KY2WireButton");
+//			ivjKY2WireButton.setText("2-Wire (KY)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKY2WireButton;
+//}
 /**
  * Return the KY2WireButton2 property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKY2WireButton2() {
-	if (ivjKY2WireButton2 == null) {
-		try {
-			ivjKY2WireButton2 = new javax.swing.JRadioButton();
-			ivjKY2WireButton2.setName("KY2WireButton2");
-			ivjKY2WireButton2.setText("2-Wire (KY)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKY2WireButton2;
-}
+//private javax.swing.JRadioButton getKY2WireButton2() {
+//	if (ivjKY2WireButton2 == null) {
+//		try {
+//			ivjKY2WireButton2 = new javax.swing.JRadioButton();
+//			ivjKY2WireButton2.setName("KY2WireButton2");
+//			ivjKY2WireButton2.setText("2-Wire (KY)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKY2WireButton2;
+//}
 /**
  * Return the KY2WireButton3 property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKY2WireButton3() {
-	if (ivjKY2WireButton3 == null) {
-		try {
-			ivjKY2WireButton3 = new javax.swing.JRadioButton();
-			ivjKY2WireButton3.setName("KY2WireButton3");
-			ivjKY2WireButton3.setText("2-Wire (KY)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKY2WireButton3;
-}
+//private javax.swing.JRadioButton getKY2WireButton3() {
+//	if (ivjKY2WireButton3 == null) {
+//		try {
+//			ivjKY2WireButton3 = new javax.swing.JRadioButton();
+//			ivjKY2WireButton3.setName("KY2WireButton3");
+//			ivjKY2WireButton3.setText("2-Wire (KY)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKY2WireButton3;
+//}
 /**
  * Return the KYZ3WireButton property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKYZ3WireButton() {
-	if (ivjKYZ3WireButton == null) {
-		try {
-			ivjKYZ3WireButton = new javax.swing.JRadioButton();
-			ivjKYZ3WireButton.setName("KYZ3WireButton");
-			ivjKYZ3WireButton.setSelected(true);
-			ivjKYZ3WireButton.setText("3-Wire (KYZ)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKYZ3WireButton;
-}
+//private javax.swing.JRadioButton getKYZ3WireButton() {
+//	if (ivjKYZ3WireButton == null) {
+//		try {
+//			ivjKYZ3WireButton = new javax.swing.JRadioButton();
+//			ivjKYZ3WireButton.setName("KYZ3WireButton");
+//			ivjKYZ3WireButton.setSelected(true);
+//			ivjKYZ3WireButton.setText("3-Wire (KYZ)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKYZ3WireButton;
+//}
 /**
  * Return the KYZ3WireButton2 property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKYZ3WireButton2() {
-	if (ivjKYZ3WireButton2 == null) {
-		try {
-			ivjKYZ3WireButton2 = new javax.swing.JRadioButton();
-			ivjKYZ3WireButton2.setName("KYZ3WireButton2");
-			ivjKYZ3WireButton2.setSelected(true);
-			ivjKYZ3WireButton2.setText("3-Wire (KYZ)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKYZ3WireButton2;
-}
+//private javax.swing.JRadioButton getKYZ3WireButton2() {
+//	if (ivjKYZ3WireButton2 == null) {
+//		try {
+//			ivjKYZ3WireButton2 = new javax.swing.JRadioButton();
+//			ivjKYZ3WireButton2.setName("KYZ3WireButton2");
+//			ivjKYZ3WireButton2.setSelected(true);
+//			ivjKYZ3WireButton2.setText("3-Wire (KYZ)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKYZ3WireButton2;
+//}
 /**
  * Return the KYZ3WireButton3 property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getKYZ3WireButton3() {
-	if (ivjKYZ3WireButton3 == null) {
-		try {
-			ivjKYZ3WireButton3 = new javax.swing.JRadioButton();
-			ivjKYZ3WireButton3.setName("KYZ3WireButton3");
-			ivjKYZ3WireButton3.setSelected(true);
-			ivjKYZ3WireButton3.setText("3-Wire (KYZ)");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjKYZ3WireButton3;
-}
+//private javax.swing.JRadioButton getKYZ3WireButton3() {
+//	if (ivjKYZ3WireButton3 == null) {
+//		try {
+//			ivjKYZ3WireButton3 = new javax.swing.JRadioButton();
+//			ivjKYZ3WireButton3.setName("KYZ3WireButton3");
+//			ivjKYZ3WireButton3.setSelected(true);
+//			ivjKYZ3WireButton3.setText("3-Wire (KYZ)");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjKYZ3WireButton3;
+//}
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -1207,439 +1310,490 @@ public Dimension getMinimumSize() {
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getMinMaxModeButton() {
-	if (ivjMinMaxModeButton == null) {
-		try {
-			ivjMinMaxModeButton = new javax.swing.JRadioButton();
-			ivjMinMaxModeButton.setName("MinMaxModeButton");
-			ivjMinMaxModeButton.setText("Min/Max Mode");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMinMaxModeButton;
-}
+//private javax.swing.JRadioButton getMinMaxModeButton() {
+//	if (ivjMinMaxModeButton == null) {
+//		try {
+//			ivjMinMaxModeButton = new javax.swing.JRadioButton();
+//			ivjMinMaxModeButton.setName("MinMaxModeButton");
+//			ivjMinMaxModeButton.setText("Min/Max Mode");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMinMaxModeButton;
+//}
 /**
  * Return the MpLabel property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getMpLabel() {
-	if (ivjMpLabel == null) {
-		try {
-			ivjMpLabel = new javax.swing.JLabel();
-			ivjMpLabel.setName("MpLabel");
-			ivjMpLabel.setText("Mp:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMpLabel;
-}
+//private javax.swing.JLabel getMpLabel() {
+//	if (ivjMpLabel == null) {
+//		try {
+//			ivjMpLabel = new javax.swing.JLabel();
+//			ivjMpLabel.setName("MpLabel");
+//			ivjMpLabel.setText("Mp:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpLabel;
+//}
 /**
  * Return the MpLabel2 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getMpLabel2() {
-	if (ivjMpLabel2 == null) {
-		try {
-			ivjMpLabel2 = new javax.swing.JLabel();
-			ivjMpLabel2.setName("MpLabel2");
-			ivjMpLabel2.setText("Mp:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMpLabel2;
-}
+//private javax.swing.JLabel getMpLabel2() {
+//	if (ivjMpLabel2 == null) {
+//		try {
+//			ivjMpLabel2 = new javax.swing.JLabel();
+//			ivjMpLabel2.setName("MpLabel2");
+//			ivjMpLabel2.setText("Mp:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpLabel2;
+//}
 /**
  * Return the MpLabel3 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getMpLabel3() {
-	if (ivjMpLabel3 == null) {
-		try {
-			ivjMpLabel3 = new javax.swing.JLabel();
-			ivjMpLabel3.setName("MpLabel3");
-			ivjMpLabel3.setText("Mp:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMpLabel3;
-}
+//private javax.swing.JLabel getMpLabel3() {
+//	if (ivjMpLabel3 == null) {
+//		try {
+//			ivjMpLabel3 = new javax.swing.JLabel();
+//			ivjMpLabel3.setName("MpLabel3");
+//			ivjMpLabel3.setText("Mp:");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpLabel3;
+//}
 /**
  * Return the JTextField1 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getMpTextField() {
-	if (ivjMpTextField == null) {
-		try {
-			ivjMpTextField = new javax.swing.JTextField();
-			ivjMpTextField.setName("MpTextField");
-			ivjMpTextField.setText("");
-			// user code begin {1}
-			ivjMpTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMpTextField;
-}
+//private javax.swing.JTextField getMpTextField() {
+//	if (ivjMpTextField == null) {
+//		try {
+//			ivjMpTextField = new javax.swing.JTextField();
+//			ivjMpTextField.setName("MpTextField");
+//			ivjMpTextField.setText("");
+//			// user code begin {1}
+//			ivjMpTextField.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpTextField;
+//}
 /**
  * Return the MpTextField2 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getMpTextField2() {
-	if (ivjMpTextField2 == null) {
-		try {
-			ivjMpTextField2 = new javax.swing.JTextField();
-			ivjMpTextField2.setName("MpTextField2");
-			ivjMpTextField2.setText("");
-			// user code begin {1}
-			ivjMpTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMpTextField2;
-}
+//private javax.swing.JTextField getMpTextField2() {
+//	if (ivjMpTextField2 == null) {
+//		try {
+//			ivjMpTextField2 = new javax.swing.JTextField();
+//			ivjMpTextField2.setName("MpTextField2");
+//			ivjMpTextField2.setText("");
+//			// user code begin {1}
+//			ivjMpTextField2.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpTextField2;
+//}
 /**
  * Return the MpTextField3 property value.
  * @return javax.swing.JTextField
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTextField getMpTextField3() {
-	if (ivjMpTextField3 == null) {
+//private javax.swing.JTextField getMpTextField3() {
+//	if (ivjMpTextField3 == null) {
+//		try {
+//			ivjMpTextField3 = new javax.swing.JTextField();
+//			ivjMpTextField3.setName("MpTextField3");
+//			ivjMpTextField3.setText("");
+//			// user code begin {1}
+//			ivjMpTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMpTextField3;
+//}
+
+  /**
+   * Return the MultiplierPanel property value.
+   * @return javax.swing.JPanel
+   */
+  /* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getTOUPanel() {
+	if (ivjTOUPanel == null) {
 		try {
-			ivjMpTextField3 = new javax.swing.JTextField();
-			ivjMpTextField3.setName("MpTextField3");
-			ivjMpTextField3.setText("");
-			// user code begin {1}
-			ivjMpTextField3.setDocument(new com.cannontech.common.gui.unchanging.DoubleRangeDocument(0.000, 10.0, 3) );
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
+			ivjTOUPanel = new javax.swing.JPanel();
+			
+			
+			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
+			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
+			ivjLocalBorder.setTitleFont(new java.awt.Font("Arial", 1, 14));
+			ivjLocalBorder.setTitle("TOU");
+			ivjTOUPanel.setName("TOUPanel");
+			ivjTOUPanel.setBorder(ivjLocalBorder);
+			ivjTOUPanel.setLayout(new java.awt.GridBagLayout());
+			ivjTOUPanel.setVisible(true);
+			
+			java.awt.GridBagConstraints constraintsTOUScheduleLabel = new java.awt.GridBagConstraints();
+			constraintsTOUScheduleLabel.gridx = 1; constraintsTOUScheduleLabel.gridy = 1;
+			constraintsTOUScheduleLabel.gridwidth = 4;
+			constraintsTOUScheduleLabel.ipadx = 20;
+			constraintsTOUScheduleLabel.insets = new java.awt.Insets(7, 10, 2, 10);
+			getTOUPanel().add(getTOUScheduleLabel(), constraintsTOUScheduleLabel);
+			
+			java.awt.GridBagConstraints constraintsTOUComboBox = new java.awt.GridBagConstraints();
+			constraintsTOUComboBox.gridx = 5; constraintsTOUComboBox.gridy = 1;
+			constraintsTOUComboBox.gridwidth = 4;
+			constraintsTOUComboBox.ipadx = 100;
+			constraintsTOUComboBox.insets = new java.awt.Insets(7, 10, 2, 10);
+			getTOUPanel().add(getTOUComboBox(), constraintsTOUComboBox);
+			
+			java.awt.GridBagConstraints constraintsTOUNewButton = new java.awt.GridBagConstraints();
+			constraintsTOUNewButton.gridx = 10; constraintsTOUNewButton.gridy = 1;
+			constraintsTOUNewButton.gridwidth = 4;
+			constraintsTOUNewButton.ipadx = 20;
+			constraintsTOUNewButton.insets = new java.awt.Insets(7, 10, 2, 10);
+			getTOUPanel().add(getTOUNewButton(), constraintsTOUNewButton);
+			
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {2}
+		// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjMpTextField3;
+	return ivjTOUPanel;
 }
+
 /**
  * Return the MultiplierPanel property value.
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getMultiplierPanel() {
-	if (ivjMultiplierPanel == null) {
-		try {
-			ivjMultiplierPanel = new javax.swing.JPanel();
-			ivjMultiplierPanel.setName("MultiplierPanel");
-			ivjMultiplierPanel.setLayout(new java.awt.GridBagLayout());
-
-			java.awt.GridBagConstraints constraintsKYZ3WireButton = new java.awt.GridBagConstraints();
-			constraintsKYZ3WireButton.gridx = 1; constraintsKYZ3WireButton.gridy = 1;
-			constraintsKYZ3WireButton.gridwidth = 4;
-			constraintsKYZ3WireButton.ipadx = 20;
-			constraintsKYZ3WireButton.insets = new java.awt.Insets(7, 21, 2, 10);
-			getMultiplierPanel().add(getKYZ3WireButton(), constraintsKYZ3WireButton);
-
-			java.awt.GridBagConstraints constraintsKY2WireButton = new java.awt.GridBagConstraints();
-			constraintsKY2WireButton.gridx = 5; constraintsKY2WireButton.gridy = 1;
-			constraintsKY2WireButton.gridwidth = 4;
-			constraintsKY2WireButton.ipadx = 30;
-			constraintsKY2WireButton.insets = new java.awt.Insets(7, 10, 2, 65);
-			getMultiplierPanel().add(getKY2WireButton(), constraintsKY2WireButton);
-
-			java.awt.GridBagConstraints constraintsMpTextField = new java.awt.GridBagConstraints();
-			constraintsMpTextField.gridx = 2; constraintsMpTextField.gridy = 2;
-			constraintsMpTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsMpTextField.weightx = 1.0;
-			constraintsMpTextField.ipadx = 39;
-			constraintsMpTextField.insets = new java.awt.Insets(6, 1, 13, 3);
-			getMultiplierPanel().add(getMpTextField(), constraintsMpTextField);
-
-			java.awt.GridBagConstraints constraintsKhTextField = new java.awt.GridBagConstraints();
-			constraintsKhTextField.gridx = 4; constraintsKhTextField.gridy = 2;
-			constraintsKhTextField.gridwidth = 2;
-			constraintsKhTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKhTextField.weightx = 1.0;
-			constraintsKhTextField.ipadx = 39;
-			constraintsKhTextField.insets = new java.awt.Insets(6, 28, 13, 2);
-			getMultiplierPanel().add(getKhTextField(), constraintsKhTextField);
-
-			java.awt.GridBagConstraints constraintsKeTextField = new java.awt.GridBagConstraints();
-			constraintsKeTextField.gridx = 8; constraintsKeTextField.gridy = 2;
-			constraintsKeTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKeTextField.weightx = 1.0;
-			constraintsKeTextField.ipadx = 46;
-			constraintsKeTextField.insets = new java.awt.Insets(6, 2, 13, 21);
-			getMultiplierPanel().add(getKeTextField(), constraintsKeTextField);
-
-			java.awt.GridBagConstraints constraintsMpLabel = new java.awt.GridBagConstraints();
-			constraintsMpLabel.gridx = 1; constraintsMpLabel.gridy = 2;
-			constraintsMpLabel.ipadx = 7;
-			constraintsMpLabel.insets = new java.awt.Insets(8, 12, 17, 0);
-			getMultiplierPanel().add(getMpLabel(), constraintsMpLabel);
-
-			java.awt.GridBagConstraints constraintsTimesLabel = new java.awt.GridBagConstraints();
-			constraintsTimesLabel.gridx = 3; constraintsTimesLabel.gridy = 2;
-			constraintsTimesLabel.ipadx = 5;
-			constraintsTimesLabel.insets = new java.awt.Insets(8, 4, 17, 2);
-			getMultiplierPanel().add(getTimesLabel(), constraintsTimesLabel);
-
-			java.awt.GridBagConstraints constraintsKhLabel = new java.awt.GridBagConstraints();
-			constraintsKhLabel.gridx = 4; constraintsKhLabel.gridy = 2;
-			constraintsKhLabel.ipadx = 10;
-			constraintsKhLabel.insets = new java.awt.Insets(8, 3, 17, 11);
-			getMultiplierPanel().add(getKhLabel(), constraintsKhLabel);
-
-			java.awt.GridBagConstraints constraintsKeLabel = new java.awt.GridBagConstraints();
-			constraintsKeLabel.gridx = 7; constraintsKeLabel.gridy = 2;
-			constraintsKeLabel.insets = new java.awt.Insets(8, 3, 17, 1);
-			getMultiplierPanel().add(getKeLabel(), constraintsKeLabel);
-
-			java.awt.GridBagConstraints constraintsRecalculateJButton1 = new java.awt.GridBagConstraints();
-			constraintsRecalculateJButton1.gridx = 1; constraintsRecalculateJButton1.gridy = 2;
-			constraintsRecalculateJButton1.gridwidth = 6;
-			constraintsRecalculateJButton1.insets = new java.awt.Insets(2, 24, 11, 3);
-			getMultiplierPanel().add(getRecalculateJButton1(), constraintsRecalculateJButton1);
-
-			java.awt.GridBagConstraints constraintsEqualsJButton1 = new java.awt.GridBagConstraints();
-			constraintsEqualsJButton1.gridx = 6; constraintsEqualsJButton1.gridy = 2;
-			constraintsEqualsJButton1.ipadx = 14;
-			constraintsEqualsJButton1.ipady = -5;
-			constraintsEqualsJButton1.insets = new java.awt.Insets(6, 2, 13, 2);
-			getMultiplierPanel().add(getEqualsJButton1(), constraintsEqualsJButton1);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMultiplierPanel;
-}
+//private javax.swing.JPanel getMultiplierPanel() {
+//	if (ivjMultiplierPanel == null) {
+//		try {
+//			ivjMultiplierPanel = new javax.swing.JPanel();
+//			ivjMultiplierPanel.setName("MultiplierPanel");
+//			ivjMultiplierPanel.setLayout(new java.awt.GridBagLayout());
+//
+//			java.awt.GridBagConstraints constraintsKYZ3WireButton = new java.awt.GridBagConstraints();
+//			constraintsKYZ3WireButton.gridx = 1; constraintsKYZ3WireButton.gridy = 1;
+//			constraintsKYZ3WireButton.gridwidth = 4;
+//			constraintsKYZ3WireButton.ipadx = 20;
+//			constraintsKYZ3WireButton.insets = new java.awt.Insets(7, 21, 2, 10);
+//			getMultiplierPanel().add(getKYZ3WireButton(), constraintsKYZ3WireButton);
+//
+//			java.awt.GridBagConstraints constraintsKY2WireButton = new java.awt.GridBagConstraints();
+//			constraintsKY2WireButton.gridx = 5; constraintsKY2WireButton.gridy = 1;
+//			constraintsKY2WireButton.gridwidth = 4;
+//			constraintsKY2WireButton.ipadx = 30;
+//			constraintsKY2WireButton.insets = new java.awt.Insets(7, 10, 2, 65);
+//			getMultiplierPanel().add(getKY2WireButton(), constraintsKY2WireButton);
+//
+//			java.awt.GridBagConstraints constraintsMpTextField = new java.awt.GridBagConstraints();
+//			constraintsMpTextField.gridx = 2; constraintsMpTextField.gridy = 2;
+//			constraintsMpTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsMpTextField.weightx = 1.0;
+//			constraintsMpTextField.ipadx = 39;
+//			constraintsMpTextField.insets = new java.awt.Insets(6, 1, 13, 3);
+//			getMultiplierPanel().add(getMpTextField(), constraintsMpTextField);
+//
+//			java.awt.GridBagConstraints constraintsKhTextField = new java.awt.GridBagConstraints();
+//			constraintsKhTextField.gridx = 4; constraintsKhTextField.gridy = 2;
+//			constraintsKhTextField.gridwidth = 2;
+//			constraintsKhTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKhTextField.weightx = 1.0;
+//			constraintsKhTextField.ipadx = 39;
+//			constraintsKhTextField.insets = new java.awt.Insets(6, 28, 13, 2);
+//			getMultiplierPanel().add(getKhTextField(), constraintsKhTextField);
+//
+//			java.awt.GridBagConstraints constraintsKeTextField = new java.awt.GridBagConstraints();
+//			constraintsKeTextField.gridx = 8; constraintsKeTextField.gridy = 2;
+//			constraintsKeTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKeTextField.weightx = 1.0;
+//			constraintsKeTextField.ipadx = 46;
+//			constraintsKeTextField.insets = new java.awt.Insets(6, 2, 13, 21);
+//			getMultiplierPanel().add(getKeTextField(), constraintsKeTextField);
+//
+//			java.awt.GridBagConstraints constraintsMpLabel = new java.awt.GridBagConstraints();
+//			constraintsMpLabel.gridx = 1; constraintsMpLabel.gridy = 2;
+//			constraintsMpLabel.ipadx = 7;
+//			constraintsMpLabel.insets = new java.awt.Insets(8, 12, 17, 0);
+//			getMultiplierPanel().add(getMpLabel(), constraintsMpLabel);
+//
+//			java.awt.GridBagConstraints constraintsTimesLabel = new java.awt.GridBagConstraints();
+//			constraintsTimesLabel.gridx = 3; constraintsTimesLabel.gridy = 2;
+//			constraintsTimesLabel.ipadx = 5;
+//			constraintsTimesLabel.insets = new java.awt.Insets(8, 4, 17, 2);
+//			getMultiplierPanel().add(getTimesLabel(), constraintsTimesLabel);
+//
+//			java.awt.GridBagConstraints constraintsKhLabel = new java.awt.GridBagConstraints();
+//			constraintsKhLabel.gridx = 4; constraintsKhLabel.gridy = 2;
+//			constraintsKhLabel.ipadx = 10;
+//			constraintsKhLabel.insets = new java.awt.Insets(8, 3, 17, 11);
+//			getMultiplierPanel().add(getKhLabel(), constraintsKhLabel);
+//
+//			java.awt.GridBagConstraints constraintsKeLabel = new java.awt.GridBagConstraints();
+//			constraintsKeLabel.gridx = 7; constraintsKeLabel.gridy = 2;
+//			constraintsKeLabel.insets = new java.awt.Insets(8, 3, 17, 1);
+//			getMultiplierPanel().add(getKeLabel(), constraintsKeLabel);
+//
+//			java.awt.GridBagConstraints constraintsRecalculateJButton1 = new java.awt.GridBagConstraints();
+//			constraintsRecalculateJButton1.gridx = 1; constraintsRecalculateJButton1.gridy = 2;
+//			constraintsRecalculateJButton1.gridwidth = 6;
+//			constraintsRecalculateJButton1.insets = new java.awt.Insets(2, 24, 11, 3);
+//			getMultiplierPanel().add(getRecalculateJButton1(), constraintsRecalculateJButton1);
+//
+//			java.awt.GridBagConstraints constraintsEqualsJButton1 = new java.awt.GridBagConstraints();
+//			constraintsEqualsJButton1.gridx = 6; constraintsEqualsJButton1.gridy = 2;
+//			constraintsEqualsJButton1.ipadx = 14;
+//			constraintsEqualsJButton1.ipady = -5;
+//			constraintsEqualsJButton1.insets = new java.awt.Insets(6, 2, 13, 2);
+//			getMultiplierPanel().add(getEqualsJButton1(), constraintsEqualsJButton1);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMultiplierPanel;
+//}
 /**
  * Return the MultiplierPanel2 property value.
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getMultiplierPanel2() {
-	if (ivjMultiplierPanel2 == null) {
-		try {
-			ivjMultiplierPanel2 = new javax.swing.JPanel();
-			ivjMultiplierPanel2.setName("MultiplierPanel2");
-			ivjMultiplierPanel2.setLayout(new java.awt.GridBagLayout());
-
-			java.awt.GridBagConstraints constraintsKYZ3WireButton2 = new java.awt.GridBagConstraints();
-			constraintsKYZ3WireButton2.gridx = 1; constraintsKYZ3WireButton2.gridy = 1;
-			constraintsKYZ3WireButton2.gridwidth = 4;
-			constraintsKYZ3WireButton2.ipadx = 20;
-			constraintsKYZ3WireButton2.insets = new java.awt.Insets(7, 21, 2, 10);
-			getMultiplierPanel2().add(getKYZ3WireButton2(), constraintsKYZ3WireButton2);
-
-			java.awt.GridBagConstraints constraintsKY2WireButton2 = new java.awt.GridBagConstraints();
-			constraintsKY2WireButton2.gridx = 5; constraintsKY2WireButton2.gridy = 1;
-			constraintsKY2WireButton2.gridwidth = 4;
-			constraintsKY2WireButton2.ipadx = 30;
-			constraintsKY2WireButton2.insets = new java.awt.Insets(7, 10, 2, 65);
-			getMultiplierPanel2().add(getKY2WireButton2(), constraintsKY2WireButton2);
-
-			java.awt.GridBagConstraints constraintsMpTextField2 = new java.awt.GridBagConstraints();
-			constraintsMpTextField2.gridx = 2; constraintsMpTextField2.gridy = 2;
-			constraintsMpTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsMpTextField2.weightx = 1.0;
-			constraintsMpTextField2.ipadx = 39;
-			constraintsMpTextField2.insets = new java.awt.Insets(6, 1, 13, 3);
-			getMultiplierPanel2().add(getMpTextField2(), constraintsMpTextField2);
-
-			java.awt.GridBagConstraints constraintsKhTextField2 = new java.awt.GridBagConstraints();
-			constraintsKhTextField2.gridx = 4; constraintsKhTextField2.gridy = 2;
-			constraintsKhTextField2.gridwidth = 2;
-			constraintsKhTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKhTextField2.weightx = 1.0;
-			constraintsKhTextField2.ipadx = 39;
-			constraintsKhTextField2.insets = new java.awt.Insets(6, 28, 13, 2);
-			getMultiplierPanel2().add(getKhTextField2(), constraintsKhTextField2);
-
-			java.awt.GridBagConstraints constraintsKeTextField2 = new java.awt.GridBagConstraints();
-			constraintsKeTextField2.gridx = 8; constraintsKeTextField2.gridy = 2;
-			constraintsKeTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKeTextField2.weightx = 1.0;
-			constraintsKeTextField2.ipadx = 46;
-			constraintsKeTextField2.insets = new java.awt.Insets(6, 2, 13, 21);
-			getMultiplierPanel2().add(getKeTextField2(), constraintsKeTextField2);
-
-			java.awt.GridBagConstraints constraintsMpLabel2 = new java.awt.GridBagConstraints();
-			constraintsMpLabel2.gridx = 1; constraintsMpLabel2.gridy = 2;
-			constraintsMpLabel2.ipadx = 7;
-			constraintsMpLabel2.insets = new java.awt.Insets(8, 12, 17, 0);
-			getMultiplierPanel2().add(getMpLabel2(), constraintsMpLabel2);
-
-			java.awt.GridBagConstraints constraintsTimesLabel2 = new java.awt.GridBagConstraints();
-			constraintsTimesLabel2.gridx = 3; constraintsTimesLabel2.gridy = 2;
-			constraintsTimesLabel2.ipadx = 5;
-			constraintsTimesLabel2.insets = new java.awt.Insets(8, 4, 17, 2);
-			getMultiplierPanel2().add(getTimesLabel2(), constraintsTimesLabel2);
-
-			java.awt.GridBagConstraints constraintsKhLabel2 = new java.awt.GridBagConstraints();
-			constraintsKhLabel2.gridx = 4; constraintsKhLabel2.gridy = 2;
-			constraintsKhLabel2.ipadx = 10;
-			constraintsKhLabel2.insets = new java.awt.Insets(8, 3, 17, 11);
-			getMultiplierPanel2().add(getKhLabel2(), constraintsKhLabel2);
-
-			java.awt.GridBagConstraints constraintsKeLabel2 = new java.awt.GridBagConstraints();
-			constraintsKeLabel2.gridx = 7; constraintsKeLabel2.gridy = 2;
-			constraintsKeLabel2.insets = new java.awt.Insets(8, 3, 17, 1);
-			getMultiplierPanel2().add(getKeLabel2(), constraintsKeLabel2);
-
-			java.awt.GridBagConstraints constraintsRecalculateJButton2 = new java.awt.GridBagConstraints();
-			constraintsRecalculateJButton2.gridx = 1; constraintsRecalculateJButton2.gridy = 2;
-			constraintsRecalculateJButton2.gridwidth = 6;
-			constraintsRecalculateJButton2.insets = new java.awt.Insets(2, 24, 11, 3);
-			getMultiplierPanel2().add(getRecalculateJButton2(), constraintsRecalculateJButton2);
-
-			java.awt.GridBagConstraints constraintsEqualsJButton2 = new java.awt.GridBagConstraints();
-			constraintsEqualsJButton2.gridx = 6; constraintsEqualsJButton2.gridy = 2;
-			constraintsEqualsJButton2.ipadx = 14;
-			constraintsEqualsJButton2.ipady = -5;
-			constraintsEqualsJButton2.insets = new java.awt.Insets(6, 2, 13, 2);
-			getMultiplierPanel2().add(getEqualsJButton2(), constraintsEqualsJButton2);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMultiplierPanel2;
-}
+//private javax.swing.JPanel getMultiplierPanel2() {
+//	if (ivjMultiplierPanel2 == null) {
+//		try {
+//			ivjMultiplierPanel2 = new javax.swing.JPanel();
+//			ivjMultiplierPanel2.setName("MultiplierPanel2");
+//			ivjMultiplierPanel2.setLayout(new java.awt.GridBagLayout());
+//
+//			java.awt.GridBagConstraints constraintsKYZ3WireButton2 = new java.awt.GridBagConstraints();
+//			constraintsKYZ3WireButton2.gridx = 1; constraintsKYZ3WireButton2.gridy = 1;
+//			constraintsKYZ3WireButton2.gridwidth = 4;
+//			constraintsKYZ3WireButton2.ipadx = 20;
+//			constraintsKYZ3WireButton2.insets = new java.awt.Insets(7, 21, 2, 10);
+//			getMultiplierPanel2().add(getKYZ3WireButton2(), constraintsKYZ3WireButton2);
+//
+//			java.awt.GridBagConstraints constraintsKY2WireButton2 = new java.awt.GridBagConstraints();
+//			constraintsKY2WireButton2.gridx = 5; constraintsKY2WireButton2.gridy = 1;
+//			constraintsKY2WireButton2.gridwidth = 4;
+//			constraintsKY2WireButton2.ipadx = 30;
+//			constraintsKY2WireButton2.insets = new java.awt.Insets(7, 10, 2, 65);
+//			getMultiplierPanel2().add(getKY2WireButton2(), constraintsKY2WireButton2);
+//
+//			java.awt.GridBagConstraints constraintsMpTextField2 = new java.awt.GridBagConstraints();
+//			constraintsMpTextField2.gridx = 2; constraintsMpTextField2.gridy = 2;
+//			constraintsMpTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsMpTextField2.weightx = 1.0;
+//			constraintsMpTextField2.ipadx = 39;
+//			constraintsMpTextField2.insets = new java.awt.Insets(6, 1, 13, 3);
+//			getMultiplierPanel2().add(getMpTextField2(), constraintsMpTextField2);
+//
+//			java.awt.GridBagConstraints constraintsKhTextField2 = new java.awt.GridBagConstraints();
+//			constraintsKhTextField2.gridx = 4; constraintsKhTextField2.gridy = 2;
+//			constraintsKhTextField2.gridwidth = 2;
+//			constraintsKhTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKhTextField2.weightx = 1.0;
+//			constraintsKhTextField2.ipadx = 39;
+//			constraintsKhTextField2.insets = new java.awt.Insets(6, 28, 13, 2);
+//			getMultiplierPanel2().add(getKhTextField2(), constraintsKhTextField2);
+//
+//			java.awt.GridBagConstraints constraintsKeTextField2 = new java.awt.GridBagConstraints();
+//			constraintsKeTextField2.gridx = 8; constraintsKeTextField2.gridy = 2;
+//			constraintsKeTextField2.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKeTextField2.weightx = 1.0;
+//			constraintsKeTextField2.ipadx = 46;
+//			constraintsKeTextField2.insets = new java.awt.Insets(6, 2, 13, 21);
+//			getMultiplierPanel2().add(getKeTextField2(), constraintsKeTextField2);
+//
+//			java.awt.GridBagConstraints constraintsMpLabel2 = new java.awt.GridBagConstraints();
+//			constraintsMpLabel2.gridx = 1; constraintsMpLabel2.gridy = 2;
+//			constraintsMpLabel2.ipadx = 7;
+//			constraintsMpLabel2.insets = new java.awt.Insets(8, 12, 17, 0);
+//			getMultiplierPanel2().add(getMpLabel2(), constraintsMpLabel2);
+//
+//			java.awt.GridBagConstraints constraintsTimesLabel2 = new java.awt.GridBagConstraints();
+//			constraintsTimesLabel2.gridx = 3; constraintsTimesLabel2.gridy = 2;
+//			constraintsTimesLabel2.ipadx = 5;
+//			constraintsTimesLabel2.insets = new java.awt.Insets(8, 4, 17, 2);
+//			getMultiplierPanel2().add(getTimesLabel2(), constraintsTimesLabel2);
+//
+//			java.awt.GridBagConstraints constraintsKhLabel2 = new java.awt.GridBagConstraints();
+//			constraintsKhLabel2.gridx = 4; constraintsKhLabel2.gridy = 2;
+//			constraintsKhLabel2.ipadx = 10;
+//			constraintsKhLabel2.insets = new java.awt.Insets(8, 3, 17, 11);
+//			getMultiplierPanel2().add(getKhLabel2(), constraintsKhLabel2);
+//
+//			java.awt.GridBagConstraints constraintsKeLabel2 = new java.awt.GridBagConstraints();
+//			constraintsKeLabel2.gridx = 7; constraintsKeLabel2.gridy = 2;
+//			constraintsKeLabel2.insets = new java.awt.Insets(8, 3, 17, 1);
+//			getMultiplierPanel2().add(getKeLabel2(), constraintsKeLabel2);
+//
+//			java.awt.GridBagConstraints constraintsRecalculateJButton2 = new java.awt.GridBagConstraints();
+//			constraintsRecalculateJButton2.gridx = 1; constraintsRecalculateJButton2.gridy = 2;
+//			constraintsRecalculateJButton2.gridwidth = 6;
+//			constraintsRecalculateJButton2.insets = new java.awt.Insets(2, 24, 11, 3);
+//			getMultiplierPanel2().add(getRecalculateJButton2(), constraintsRecalculateJButton2);
+//
+//			java.awt.GridBagConstraints constraintsEqualsJButton2 = new java.awt.GridBagConstraints();
+//			constraintsEqualsJButton2.gridx = 6; constraintsEqualsJButton2.gridy = 2;
+//			constraintsEqualsJButton2.ipadx = 14;
+//			constraintsEqualsJButton2.ipady = -5;
+//			constraintsEqualsJButton2.insets = new java.awt.Insets(6, 2, 13, 2);
+//			getMultiplierPanel2().add(getEqualsJButton2(), constraintsEqualsJButton2);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMultiplierPanel2;
+//}
 /**
  * Return the MultiplierPanel3 property value.
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JPanel getMultiplierPanel3() {
-	if (ivjMultiplierPanel3 == null) {
-		try {
-			ivjMultiplierPanel3 = new javax.swing.JPanel();
-			ivjMultiplierPanel3.setName("MultiplierPanel3");
-			ivjMultiplierPanel3.setLayout(new java.awt.GridBagLayout());
-
-			java.awt.GridBagConstraints constraintsKYZ3WireButton3 = new java.awt.GridBagConstraints();
-			constraintsKYZ3WireButton3.gridx = 1; constraintsKYZ3WireButton3.gridy = 1;
-			constraintsKYZ3WireButton3.gridwidth = 4;
-			constraintsKYZ3WireButton3.ipadx = 20;
-			constraintsKYZ3WireButton3.insets = new java.awt.Insets(7, 21, 2, 10);
-			getMultiplierPanel3().add(getKYZ3WireButton3(), constraintsKYZ3WireButton3);
-
-			java.awt.GridBagConstraints constraintsKY2WireButton3 = new java.awt.GridBagConstraints();
-			constraintsKY2WireButton3.gridx = 5; constraintsKY2WireButton3.gridy = 1;
-			constraintsKY2WireButton3.gridwidth = 4;
-			constraintsKY2WireButton3.ipadx = 30;
-			constraintsKY2WireButton3.insets = new java.awt.Insets(7, 10, 2, 65);
-			getMultiplierPanel3().add(getKY2WireButton3(), constraintsKY2WireButton3);
-
-			java.awt.GridBagConstraints constraintsMpTextField3 = new java.awt.GridBagConstraints();
-			constraintsMpTextField3.gridx = 2; constraintsMpTextField3.gridy = 2;
-			constraintsMpTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsMpTextField3.weightx = 1.0;
-			constraintsMpTextField3.ipadx = 39;
-			constraintsMpTextField3.insets = new java.awt.Insets(6, 1, 13, 3);
-			getMultiplierPanel3().add(getMpTextField3(), constraintsMpTextField3);
-
-			java.awt.GridBagConstraints constraintsKhTextField3 = new java.awt.GridBagConstraints();
-			constraintsKhTextField3.gridx = 4; constraintsKhTextField3.gridy = 2;
-			constraintsKhTextField3.gridwidth = 2;
-			constraintsKhTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKhTextField3.weightx = 1.0;
-			constraintsKhTextField3.ipadx = 39;
-			constraintsKhTextField3.insets = new java.awt.Insets(6, 28, 13, 2);
-			getMultiplierPanel3().add(getKhTextField3(), constraintsKhTextField3);
-
-			java.awt.GridBagConstraints constraintsKeTextField3 = new java.awt.GridBagConstraints();
-			constraintsKeTextField3.gridx = 8; constraintsKeTextField3.gridy = 2;
-			constraintsKeTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsKeTextField3.weightx = 1.0;
-			constraintsKeTextField3.ipadx = 46;
-			constraintsKeTextField3.insets = new java.awt.Insets(6, 2, 13, 21);
-			getMultiplierPanel3().add(getKeTextField3(), constraintsKeTextField3);
-
-			java.awt.GridBagConstraints constraintsMpLabel3 = new java.awt.GridBagConstraints();
-			constraintsMpLabel3.gridx = 1; constraintsMpLabel3.gridy = 2;
-			constraintsMpLabel3.ipadx = 7;
-			constraintsMpLabel3.insets = new java.awt.Insets(8, 12, 17, 0);
-			getMultiplierPanel3().add(getMpLabel3(), constraintsMpLabel3);
-
-			java.awt.GridBagConstraints constraintsTimesLabel3 = new java.awt.GridBagConstraints();
-			constraintsTimesLabel3.gridx = 3; constraintsTimesLabel3.gridy = 2;
-			constraintsTimesLabel3.ipadx = 5;
-			constraintsTimesLabel3.insets = new java.awt.Insets(8, 4, 17, 2);
-			getMultiplierPanel3().add(getTimesLabel3(), constraintsTimesLabel3);
-
-			java.awt.GridBagConstraints constraintsKhLabel3 = new java.awt.GridBagConstraints();
-			constraintsKhLabel3.gridx = 4; constraintsKhLabel3.gridy = 2;
-			constraintsKhLabel3.ipadx = 10;
-			constraintsKhLabel3.insets = new java.awt.Insets(8, 3, 17, 11);
-			getMultiplierPanel3().add(getKhLabel3(), constraintsKhLabel3);
-
-			java.awt.GridBagConstraints constraintsKeLabel3 = new java.awt.GridBagConstraints();
-			constraintsKeLabel3.gridx = 7; constraintsKeLabel3.gridy = 2;
-			constraintsKeLabel3.insets = new java.awt.Insets(8, 3, 17, 1);
-			getMultiplierPanel3().add(getKeLabel3(), constraintsKeLabel3);
-
-			java.awt.GridBagConstraints constraintsRecalculateJButton3 = new java.awt.GridBagConstraints();
-			constraintsRecalculateJButton3.gridx = 1; constraintsRecalculateJButton3.gridy = 2;
-			constraintsRecalculateJButton3.gridwidth = 6;
-			constraintsRecalculateJButton3.insets = new java.awt.Insets(2, 24, 11, 3);
-			getMultiplierPanel3().add(getRecalculateJButton3(), constraintsRecalculateJButton3);
-
-			java.awt.GridBagConstraints constraintsEqualsJButton3 = new java.awt.GridBagConstraints();
-			constraintsEqualsJButton3.gridx = 6; constraintsEqualsJButton3.gridy = 2;
-			constraintsEqualsJButton3.ipadx = 14;
-			constraintsEqualsJButton3.ipady = -5;
-			constraintsEqualsJButton3.insets = new java.awt.Insets(6, 2, 13, 2);
-			getMultiplierPanel3().add(getEqualsJButton3(), constraintsEqualsJButton3);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjMultiplierPanel3;
-}
+//private javax.swing.JPanel getMultiplierPanel3() {
+//	if (ivjMultiplierPanel3 == null) {
+//		try {
+//			ivjMultiplierPanel3 = new javax.swing.JPanel();
+//			ivjMultiplierPanel3.setName("MultiplierPanel3");
+//			ivjMultiplierPanel3.setLayout(new java.awt.GridBagLayout());
+//
+//			java.awt.GridBagConstraints constraintsKYZ3WireButton3 = new java.awt.GridBagConstraints();
+//			constraintsKYZ3WireButton3.gridx = 1; constraintsKYZ3WireButton3.gridy = 1;
+//			constraintsKYZ3WireButton3.gridwidth = 4;
+//			constraintsKYZ3WireButton3.ipadx = 20;
+//			constraintsKYZ3WireButton3.insets = new java.awt.Insets(7, 21, 2, 10);
+//			getMultiplierPanel3().add(getKYZ3WireButton3(), constraintsKYZ3WireButton3);
+//
+//			java.awt.GridBagConstraints constraintsKY2WireButton3 = new java.awt.GridBagConstraints();
+//			constraintsKY2WireButton3.gridx = 5; constraintsKY2WireButton3.gridy = 1;
+//			constraintsKY2WireButton3.gridwidth = 4;
+//			constraintsKY2WireButton3.ipadx = 30;
+//			constraintsKY2WireButton3.insets = new java.awt.Insets(7, 10, 2, 65);
+//			getMultiplierPanel3().add(getKY2WireButton3(), constraintsKY2WireButton3);
+//
+//			java.awt.GridBagConstraints constraintsMpTextField3 = new java.awt.GridBagConstraints();
+//			constraintsMpTextField3.gridx = 2; constraintsMpTextField3.gridy = 2;
+//			constraintsMpTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsMpTextField3.weightx = 1.0;
+//			constraintsMpTextField3.ipadx = 39;
+//			constraintsMpTextField3.insets = new java.awt.Insets(6, 1, 13, 3);
+//			getMultiplierPanel3().add(getMpTextField3(), constraintsMpTextField3);
+//
+//			java.awt.GridBagConstraints constraintsKhTextField3 = new java.awt.GridBagConstraints();
+//			constraintsKhTextField3.gridx = 4; constraintsKhTextField3.gridy = 2;
+//			constraintsKhTextField3.gridwidth = 2;
+//			constraintsKhTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKhTextField3.weightx = 1.0;
+//			constraintsKhTextField3.ipadx = 39;
+//			constraintsKhTextField3.insets = new java.awt.Insets(6, 28, 13, 2);
+//			getMultiplierPanel3().add(getKhTextField3(), constraintsKhTextField3);
+//
+//			java.awt.GridBagConstraints constraintsKeTextField3 = new java.awt.GridBagConstraints();
+//			constraintsKeTextField3.gridx = 8; constraintsKeTextField3.gridy = 2;
+//			constraintsKeTextField3.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//			constraintsKeTextField3.weightx = 1.0;
+//			constraintsKeTextField3.ipadx = 46;
+//			constraintsKeTextField3.insets = new java.awt.Insets(6, 2, 13, 21);
+//			getMultiplierPanel3().add(getKeTextField3(), constraintsKeTextField3);
+//
+//			java.awt.GridBagConstraints constraintsMpLabel3 = new java.awt.GridBagConstraints();
+//			constraintsMpLabel3.gridx = 1; constraintsMpLabel3.gridy = 2;
+//			constraintsMpLabel3.ipadx = 7;
+//			constraintsMpLabel3.insets = new java.awt.Insets(8, 12, 17, 0);
+//			getMultiplierPanel3().add(getMpLabel3(), constraintsMpLabel3);
+//
+//			java.awt.GridBagConstraints constraintsTimesLabel3 = new java.awt.GridBagConstraints();
+//			constraintsTimesLabel3.gridx = 3; constraintsTimesLabel3.gridy = 2;
+//			constraintsTimesLabel3.ipadx = 5;
+//			constraintsTimesLabel3.insets = new java.awt.Insets(8, 4, 17, 2);
+//			getMultiplierPanel3().add(getTimesLabel3(), constraintsTimesLabel3);
+//
+//			java.awt.GridBagConstraints constraintsKhLabel3 = new java.awt.GridBagConstraints();
+//			constraintsKhLabel3.gridx = 4; constraintsKhLabel3.gridy = 2;
+//			constraintsKhLabel3.ipadx = 10;
+//			constraintsKhLabel3.insets = new java.awt.Insets(8, 3, 17, 11);
+//			getMultiplierPanel3().add(getKhLabel3(), constraintsKhLabel3);
+//
+//			java.awt.GridBagConstraints constraintsKeLabel3 = new java.awt.GridBagConstraints();
+//			constraintsKeLabel3.gridx = 7; constraintsKeLabel3.gridy = 2;
+//			constraintsKeLabel3.insets = new java.awt.Insets(8, 3, 17, 1);
+//			getMultiplierPanel3().add(getKeLabel3(), constraintsKeLabel3);
+//
+//			java.awt.GridBagConstraints constraintsRecalculateJButton3 = new java.awt.GridBagConstraints();
+//			constraintsRecalculateJButton3.gridx = 1; constraintsRecalculateJButton3.gridy = 2;
+//			constraintsRecalculateJButton3.gridwidth = 6;
+//			constraintsRecalculateJButton3.insets = new java.awt.Insets(2, 24, 11, 3);
+//			getMultiplierPanel3().add(getRecalculateJButton3(), constraintsRecalculateJButton3);
+//
+//			java.awt.GridBagConstraints constraintsEqualsJButton3 = new java.awt.GridBagConstraints();
+//			constraintsEqualsJButton3.gridx = 6; constraintsEqualsJButton3.gridy = 2;
+//			constraintsEqualsJButton3.ipadx = 14;
+//			constraintsEqualsJButton3.ipady = -5;
+//			constraintsEqualsJButton3.insets = new java.awt.Insets(6, 2, 13, 2);
+//			getMultiplierPanel3().add(getEqualsJButton3(), constraintsEqualsJButton3);
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjMultiplierPanel3;
+//}
 /**
  * Return the NameLabel property value.
  * @return javax.swing.JLabel
@@ -1690,45 +1844,45 @@ private javax.swing.JTextField getNameTextField() {
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getpeakModeButton() {
-	if (ivjpeakModeButton == null) {
-		try {
-			ivjpeakModeButton = new javax.swing.JRadioButton();
-			ivjpeakModeButton.setName("peakModeButton");
-			ivjpeakModeButton.setSelected(true);
-			ivjpeakModeButton.setText("On-Peak/Off-Peak Mode");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjpeakModeButton;
-}
+//private javax.swing.JRadioButton getpeakModeButton() {
+//	if (ivjpeakModeButton == null) {
+//		try {
+//			ivjpeakModeButton = new javax.swing.JRadioButton();
+//			ivjpeakModeButton.setName("peakModeButton");
+//			ivjpeakModeButton.setSelected(true);
+//			ivjpeakModeButton.setText("On-Peak/Off-Peak Mode");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjpeakModeButton;
+//}
 /**
  * Return the peakModeButton property value.
  * @return javax.swing.JRadioButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JRadioButton getPeakModeButton() {
-	if (ivjpeakModeButton == null) {
-		try {
-			ivjpeakModeButton = new javax.swing.JRadioButton();
-			ivjpeakModeButton.setName("peakModeButton");
-			ivjpeakModeButton.setSelected(true);
-			ivjpeakModeButton.setText("On-Peak/Off-Peak Mode");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjpeakModeButton;
-}
+//private javax.swing.JRadioButton getPeakModeButton() {
+//	if (ivjpeakModeButton == null) {
+//		try {
+//			ivjpeakModeButton = new javax.swing.JRadioButton();
+//			ivjpeakModeButton.setName("peakModeButton");
+//			ivjpeakModeButton.setSelected(true);
+//			ivjpeakModeButton.setText("On-Peak/Off-Peak Mode");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjpeakModeButton;
+//}
 /**
  * This method was created in VisualAge.
  * @return java.awt.Dimension
@@ -1741,139 +1895,139 @@ public Dimension getPreferredSize() {
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getRecalculateJButton1() {
-	if (ivjRecalculateJButton1 == null) {
-		try {
-			ivjRecalculateJButton1 = new javax.swing.JButton();
-			ivjRecalculateJButton1.setName("RecalculateJButton1");
-			ivjRecalculateJButton1.setText("Recalculate");
-			ivjRecalculateJButton1.setVisible(false);
-			ivjRecalculateJButton1.setMaximumSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton1.setPreferredSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton1.setMinimumSize(new java.awt.Dimension(210, 26));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjRecalculateJButton1;
-}
+//private javax.swing.JButton getRecalculateJButton1() {
+//	if (ivjRecalculateJButton1 == null) {
+//		try {
+//			ivjRecalculateJButton1 = new javax.swing.JButton();
+//			ivjRecalculateJButton1.setName("RecalculateJButton1");
+//			ivjRecalculateJButton1.setText("Recalculate");
+//			ivjRecalculateJButton1.setVisible(false);
+//			ivjRecalculateJButton1.setMaximumSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton1.setPreferredSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton1.setMinimumSize(new java.awt.Dimension(210, 26));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjRecalculateJButton1;
+//}
 /**
  * Return the RecalculateJButton2 property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getRecalculateJButton2() {
-	if (ivjRecalculateJButton2 == null) {
-		try {
-			ivjRecalculateJButton2 = new javax.swing.JButton();
-			ivjRecalculateJButton2.setName("RecalculateJButton2");
-			ivjRecalculateJButton2.setText("Recalculate");
-			ivjRecalculateJButton2.setVisible(false);
-			ivjRecalculateJButton2.setMaximumSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton2.setPreferredSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton2.setMinimumSize(new java.awt.Dimension(210, 26));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjRecalculateJButton2;
-}
+//private javax.swing.JButton getRecalculateJButton2() {
+//	if (ivjRecalculateJButton2 == null) {
+//		try {
+//			ivjRecalculateJButton2 = new javax.swing.JButton();
+//			ivjRecalculateJButton2.setName("RecalculateJButton2");
+//			ivjRecalculateJButton2.setText("Recalculate");
+//			ivjRecalculateJButton2.setVisible(false);
+//			ivjRecalculateJButton2.setMaximumSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton2.setPreferredSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton2.setMinimumSize(new java.awt.Dimension(210, 26));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjRecalculateJButton2;
+//}
 /**
  * Return the RecalculateJButton3 property value.
  * @return javax.swing.JButton
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JButton getRecalculateJButton3() {
-	if (ivjRecalculateJButton3 == null) {
-		try {
-			ivjRecalculateJButton3 = new javax.swing.JButton();
-			ivjRecalculateJButton3.setName("RecalculateJButton3");
-			ivjRecalculateJButton3.setText("Recalculate");
-			ivjRecalculateJButton3.setVisible(false);
-			ivjRecalculateJButton3.setMaximumSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton3.setPreferredSize(new java.awt.Dimension(210, 26));
-			ivjRecalculateJButton3.setMinimumSize(new java.awt.Dimension(210, 26));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjRecalculateJButton3;
-}
+//private javax.swing.JButton getRecalculateJButton3() {
+//	if (ivjRecalculateJButton3 == null) {
+//		try {
+//			ivjRecalculateJButton3 = new javax.swing.JButton();
+//			ivjRecalculateJButton3.setName("RecalculateJButton3");
+//			ivjRecalculateJButton3.setText("Recalculate");
+//			ivjRecalculateJButton3.setVisible(false);
+//			ivjRecalculateJButton3.setMaximumSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton3.setPreferredSize(new java.awt.Dimension(210, 26));
+//			ivjRecalculateJButton3.setMinimumSize(new java.awt.Dimension(210, 26));
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjRecalculateJButton3;
+//}
 /**
  * Return the TimesLabel property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getTimesLabel() {
-	if (ivjTimesLabel == null) {
-		try {
-			ivjTimesLabel = new javax.swing.JLabel();
-			ivjTimesLabel.setName("TimesLabel");
-			ivjTimesLabel.setText("X");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjTimesLabel;
-}
+//private javax.swing.JLabel getTimesLabel() {
+//	if (ivjTimesLabel == null) {
+//		try {
+//			ivjTimesLabel = new javax.swing.JLabel();
+//			ivjTimesLabel.setName("TimesLabel");
+//			ivjTimesLabel.setText("X");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjTimesLabel;
+//}
 /**
  * Return the TimesLabel2 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getTimesLabel2() {
-	if (ivjTimesLabel2 == null) {
-		try {
-			ivjTimesLabel2 = new javax.swing.JLabel();
-			ivjTimesLabel2.setName("TimesLabel2");
-			ivjTimesLabel2.setText("X");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjTimesLabel2;
-}
+//private javax.swing.JLabel getTimesLabel2() {
+//	if (ivjTimesLabel2 == null) {
+//		try {
+//			ivjTimesLabel2 = new javax.swing.JLabel();
+//			ivjTimesLabel2.setName("TimesLabel2");
+//			ivjTimesLabel2.setText("X");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjTimesLabel2;
+//}
 /**
  * Return the TimesLabel3 property value.
  * @return javax.swing.JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getTimesLabel3() {
-	if (ivjTimesLabel3 == null) {
-		try {
-			ivjTimesLabel3 = new javax.swing.JLabel();
-			ivjTimesLabel3.setName("TimesLabel3");
-			ivjTimesLabel3.setText("X");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjTimesLabel3;
-}
+//private javax.swing.JLabel getTimesLabel3() {
+//	if (ivjTimesLabel3 == null) {
+//		try {
+//			ivjTimesLabel3 = new javax.swing.JLabel();
+//			ivjTimesLabel3.setName("TimesLabel3");
+//			ivjTimesLabel3.setText("X");
+//			// user code begin {1}
+//			// user code end
+//		} catch (java.lang.Throwable ivjExc) {
+//			// user code begin {2}
+//			// user code end
+//			handleException(ivjExc);
+//		}
+//	}
+//	return ivjTimesLabel3;
+//}
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
@@ -1891,40 +2045,40 @@ public java.lang.Object getValue(java.lang.Object o) {
 		
 	conMan.setConfigType(ConfigTwoWay.SERIES_400_TYPE); 
 		 
-	if(getMinMaxModeButton().isSelected())
-		conMan.setConfigMode(ConfigTwoWay.MODE_MINMAX);
-	else
-		conMan.setConfigMode(ConfigTwoWay.MODE_PEAKOFFPEAK);
-	
-	//first channel
-	if(getKY2WireButton().isSelected())
-		conMan.setMCTWire1(ConfigTwoWay.TWOWIRE);
-	else
-		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);
-	
-	conMan.setKe1(new Double( Double.parseDouble(getKeTextField().getText())) );
-	
-	//second channel
-	if(getChannel2EnableJCheckBox().isSelected())
-	{
-		if(getKY2WireButton2().isSelected())
-			conMan.setMCTWire2(ConfigTwoWay.TWOWIRE);
-		else
-			conMan.setMCTWire2(ConfigTwoWay.THREEWIRE);
-	
-		conMan.setKe2(new Double( Double.parseDouble(getKeTextField2().getText())) );
-	}
-		
-	//third channel
-	if(getChannel3EnableJCheckBox1().isSelected())
-	{
-		if(getKY2WireButton3().isSelected())
-			conMan.setMCTWire3(ConfigTwoWay.TWOWIRE);
-		else
-			conMan.setMCTWire3(ConfigTwoWay.THREEWIRE);
-	
-		conMan.setKe3(new Double( Double.parseDouble(getKeTextField3().getText())) );
-	}	
+//	if(getMinMaxModeButton().isSelected())
+//		conMan.setConfigMode(ConfigTwoWay.MODE_MINMAX);
+//	else
+//		conMan.setConfigMode(ConfigTwoWay.MODE_PEAKOFFPEAK);
+//	
+//	//first channel
+//	if(getKY2WireButton().isSelected())
+//		conMan.setMCTWire1(ConfigTwoWay.TWOWIRE);
+//	else
+//		conMan.setMCTWire1(ConfigTwoWay.THREEWIRE);
+//	
+//	conMan.setKe1(new Double( Double.parseDouble(getKeTextField().getText())) );
+//	
+//	//second channel
+//	if(getChannel2EnableJCheckBox().isSelected())
+//	{
+//		if(getKY2WireButton2().isSelected())
+//			conMan.setMCTWire2(ConfigTwoWay.TWOWIRE);
+//		else
+//			conMan.setMCTWire2(ConfigTwoWay.THREEWIRE);
+//	
+//		conMan.setKe2(new Double( Double.parseDouble(getKeTextField2().getText())) );
+//	}
+//		
+//	//third channel
+//	if(getChannel3EnableJCheckBox1().isSelected())
+//	{
+//		if(getKY2WireButton3().isSelected())
+//			conMan.setMCTWire3(ConfigTwoWay.TWOWIRE);
+//		else
+//			conMan.setMCTWire3(ConfigTwoWay.THREEWIRE);
+//	
+//		conMan.setKe3(new Double( Double.parseDouble(getKeTextField3().getText())) );
+//	}	
 	return conMan;
 }
 /**
@@ -1946,26 +2100,26 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	// user code end
 	getNameTextField().addCaretListener(ivjEventHandler);
-	getMinMaxModeButton().addActionListener(ivjEventHandler);
-	getpeakModeButton().addActionListener(ivjEventHandler);
-	getKY2WireButton().addActionListener(ivjEventHandler);
-	getKYZ3WireButton().addActionListener(ivjEventHandler);
-	getKY2WireButton2().addActionListener(ivjEventHandler);
-	getKYZ3WireButton2().addActionListener(ivjEventHandler);
-	getKYZ3WireButton3().addActionListener(ivjEventHandler);
-	getKY2WireButton3().addActionListener(ivjEventHandler);
-	getKeTextField().addCaretListener(ivjEventHandler);
-	getKeTextField2().addCaretListener(ivjEventHandler);
-	getKeTextField3().addCaretListener(ivjEventHandler);
-	getChannel2EnableJCheckBox().addActionListener(ivjEventHandler);
-	getChannel3EnableJCheckBox1().addActionListener(ivjEventHandler);
-	getChannel1EnableJCheckBox().addActionListener(ivjEventHandler);
-	getRecalculateJButton1().addActionListener(ivjEventHandler);
-	getRecalculateJButton2().addActionListener(ivjEventHandler);
-	getRecalculateJButton3().addActionListener(ivjEventHandler);
-	getEqualsJButton1().addActionListener(ivjEventHandler);
-	getEqualsJButton2().addActionListener(ivjEventHandler);
-	getEqualsJButton3().addActionListener(ivjEventHandler);
+//	getMinMaxModeButton().addActionListener(ivjEventHandler);
+//	getpeakModeButton().addActionListener(ivjEventHandler);
+//	getKY2WireButton().addActionListener(ivjEventHandler);
+//	getKYZ3WireButton().addActionListener(ivjEventHandler);
+//	getKY2WireButton2().addActionListener(ivjEventHandler);
+//	getKYZ3WireButton2().addActionListener(ivjEventHandler);
+//	getKYZ3WireButton3().addActionListener(ivjEventHandler);
+//	getKY2WireButton3().addActionListener(ivjEventHandler);
+//	getKeTextField().addCaretListener(ivjEventHandler);
+//	getKeTextField2().addCaretListener(ivjEventHandler);
+//	getKeTextField3().addCaretListener(ivjEventHandler);
+//	getChannel2EnableJCheckBox().addActionListener(ivjEventHandler);
+//	getChannel3EnableJCheckBox1().addActionListener(ivjEventHandler);
+//	getChannel1EnableJCheckBox().addActionListener(ivjEventHandler);
+//	getRecalculateJButton1().addActionListener(ivjEventHandler);
+//	getRecalculateJButton2().addActionListener(ivjEventHandler);
+//	getRecalculateJButton3().addActionListener(ivjEventHandler);
+//	getEqualsJButton1().addActionListener(ivjEventHandler);
+//	getEqualsJButton2().addActionListener(ivjEventHandler);
+//	getEqualsJButton3().addActionListener(ivjEventHandler);
 }
 /**
  * Initialize the class.
@@ -1993,155 +2147,170 @@ private void initialize() {
 		constraintsNameTextField.insets = new java.awt.Insets(15, 4, 6, 9);
 		add(getNameTextField(), constraintsNameTextField);
 
-		java.awt.GridBagConstraints constraintspeakModeButton = new java.awt.GridBagConstraints();
-		constraintspeakModeButton.gridx = 1; constraintspeakModeButton.gridy = 2;
-		constraintspeakModeButton.gridwidth = 2;
-		constraintspeakModeButton.insets = new java.awt.Insets(6, 21, 2, 7);
-		add(getpeakModeButton(), constraintspeakModeButton);
+		java.awt.GridBagConstraints constraintTOUCheckBox = new java.awt.GridBagConstraints();
+		constraintTOUCheckBox.gridx = 1; constraintTOUCheckBox.gridy = 2;
+		constraintTOUCheckBox.gridwidth = 2;
+		constraintTOUCheckBox.insets = new java.awt.Insets(6, 21, 2, 7);
+		add(getTOUCheckBox(), constraintTOUCheckBox);
+		
+		java.awt.GridBagConstraints constraintsTOUPanel = new java.awt.GridBagConstraints();
+		constraintsTOUPanel.gridx = 1; constraintsTOUPanel.gridy = 4;
+		constraintsTOUPanel.gridwidth = 3;
+		constraintsTOUPanel.fill = java.awt.GridBagConstraints.BOTH;
+		constraintsTOUPanel.weightx = 1.0;
+		constraintsTOUPanel.weighty = 1.0;
+		constraintsTOUPanel.insets = new java.awt.Insets(1, 5, 10, 4);
+		add(getTOUPanel(), constraintsTOUPanel);
 
-		java.awt.GridBagConstraints constraintsMinMaxModeButton = new java.awt.GridBagConstraints();
-		constraintsMinMaxModeButton.gridx = 3; constraintsMinMaxModeButton.gridy = 2;
-		constraintsMinMaxModeButton.ipadx = 13;
-		constraintsMinMaxModeButton.insets = new java.awt.Insets(6, 8, 2, 34);
-		add(getMinMaxModeButton(), constraintsMinMaxModeButton);
+//		java.awt.GridBagConstraints constraintspeakModeButton = new java.awt.GridBagConstraints();
+//		constraintspeakModeButton.gridx = 1; constraintspeakModeButton.gridy = 2;
+//		constraintspeakModeButton.gridwidth = 2;
+//		constraintspeakModeButton.insets = new java.awt.Insets(6, 21, 2, 7);
+//		add(getpeakModeButton(), constraintspeakModeButton);
+//
+//		java.awt.GridBagConstraints constraintsMinMaxModeButton = new java.awt.GridBagConstraints();
+//		constraintsMinMaxModeButton.gridx = 3; constraintsMinMaxModeButton.gridy = 2;
+//		constraintsMinMaxModeButton.ipadx = 13;
+//		constraintsMinMaxModeButton.insets = new java.awt.Insets(6, 8, 2, 34);
+//		add(getMinMaxModeButton(), constraintsMinMaxModeButton);
+//
+//		java.awt.GridBagConstraints constraintsMultiplierPanel = new java.awt.GridBagConstraints();
+//		constraintsMultiplierPanel.gridx = 1; constraintsMultiplierPanel.gridy = 4;
+//		constraintsMultiplierPanel.gridwidth = 3;
+//		constraintsMultiplierPanel.fill = java.awt.GridBagConstraints.BOTH;
+//		constraintsMultiplierPanel.weightx = 1.0;
+//		constraintsMultiplierPanel.weighty = 1.0;
+//		constraintsMultiplierPanel.insets = new java.awt.Insets(1, 5, 10, 4);
+//		add(getMultiplierPanel(), constraintsMultiplierPanel);
+//
+//		java.awt.GridBagConstraints constraintsMultiplierPanel2 = new java.awt.GridBagConstraints();
+//		constraintsMultiplierPanel2.gridx = 1; constraintsMultiplierPanel2.gridy = 5;
+//		constraintsMultiplierPanel2.gridwidth = 3;
+//		constraintsMultiplierPanel2.fill = java.awt.GridBagConstraints.BOTH;
+//		constraintsMultiplierPanel2.weightx = 1.0;
+//		constraintsMultiplierPanel2.weighty = 1.0;
+//		constraintsMultiplierPanel2.insets = new java.awt.Insets(10, 5, 0, 4);
+//		add(getMultiplierPanel2(), constraintsMultiplierPanel2);
+//
+//		java.awt.GridBagConstraints constraintsMultiplierPanel3 = new java.awt.GridBagConstraints();
+//		constraintsMultiplierPanel3.gridx = 1; constraintsMultiplierPanel3.gridy = 6;
+//		constraintsMultiplierPanel3.gridwidth = 3;
+//		constraintsMultiplierPanel3.fill = java.awt.GridBagConstraints.BOTH;
+//		constraintsMultiplierPanel3.weightx = 1.0;
+//		constraintsMultiplierPanel3.weighty = 1.0;
+//		constraintsMultiplierPanel3.insets = new java.awt.Insets(20, 5, 7, 4);
+//		add(getMultiplierPanel3(), constraintsMultiplierPanel3);
+//
+//		java.awt.GridBagConstraints constraintsChannel1EnableJCheckBox = new java.awt.GridBagConstraints();
+//		constraintsChannel1EnableJCheckBox.gridx = 1; constraintsChannel1EnableJCheckBox.gridy = 3;
+//		constraintsChannel1EnableJCheckBox.ipadx = 16;
+//		constraintsChannel1EnableJCheckBox.insets = new java.awt.Insets(3, 7, 0, 39);
+//		add(getChannel1EnableJCheckBox(), constraintsChannel1EnableJCheckBox);
 
-		java.awt.GridBagConstraints constraintsMultiplierPanel = new java.awt.GridBagConstraints();
-		constraintsMultiplierPanel.gridx = 1; constraintsMultiplierPanel.gridy = 4;
-		constraintsMultiplierPanel.gridwidth = 3;
-		constraintsMultiplierPanel.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsMultiplierPanel.weightx = 1.0;
-		constraintsMultiplierPanel.weighty = 1.0;
-		constraintsMultiplierPanel.insets = new java.awt.Insets(1, 5, 10, 4);
-		add(getMultiplierPanel(), constraintsMultiplierPanel);
+//		java.awt.GridBagConstraints constraintsChannel2EnableJCheckBox = new java.awt.GridBagConstraints();
+//		constraintsChannel2EnableJCheckBox.gridx = 1; constraintsChannel2EnableJCheckBox.gridy = 4;
+//constraintsChannel2EnableJCheckBox.gridheight = 2;
+//		constraintsChannel2EnableJCheckBox.ipadx = 16;
+//		constraintsChannel2EnableJCheckBox.insets = new java.awt.Insets(70, 7, 69, 39);
+//		add(getChannel2EnableJCheckBox(), constraintsChannel2EnableJCheckBox);
 
-		java.awt.GridBagConstraints constraintsMultiplierPanel2 = new java.awt.GridBagConstraints();
-		constraintsMultiplierPanel2.gridx = 1; constraintsMultiplierPanel2.gridy = 5;
-		constraintsMultiplierPanel2.gridwidth = 3;
-		constraintsMultiplierPanel2.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsMultiplierPanel2.weightx = 1.0;
-		constraintsMultiplierPanel2.weighty = 1.0;
-		constraintsMultiplierPanel2.insets = new java.awt.Insets(10, 5, 0, 4);
-		add(getMultiplierPanel2(), constraintsMultiplierPanel2);
-
-		java.awt.GridBagConstraints constraintsMultiplierPanel3 = new java.awt.GridBagConstraints();
-		constraintsMultiplierPanel3.gridx = 1; constraintsMultiplierPanel3.gridy = 6;
-		constraintsMultiplierPanel3.gridwidth = 3;
-		constraintsMultiplierPanel3.fill = java.awt.GridBagConstraints.BOTH;
-		constraintsMultiplierPanel3.weightx = 1.0;
-		constraintsMultiplierPanel3.weighty = 1.0;
-		constraintsMultiplierPanel3.insets = new java.awt.Insets(20, 5, 7, 4);
-		add(getMultiplierPanel3(), constraintsMultiplierPanel3);
-
-		java.awt.GridBagConstraints constraintsChannel1EnableJCheckBox = new java.awt.GridBagConstraints();
-		constraintsChannel1EnableJCheckBox.gridx = 1; constraintsChannel1EnableJCheckBox.gridy = 3;
-		constraintsChannel1EnableJCheckBox.ipadx = 16;
-		constraintsChannel1EnableJCheckBox.insets = new java.awt.Insets(3, 7, 0, 39);
-		add(getChannel1EnableJCheckBox(), constraintsChannel1EnableJCheckBox);
-
-		java.awt.GridBagConstraints constraintsChannel2EnableJCheckBox = new java.awt.GridBagConstraints();
-		constraintsChannel2EnableJCheckBox.gridx = 1; constraintsChannel2EnableJCheckBox.gridy = 4;
-constraintsChannel2EnableJCheckBox.gridheight = 2;
-		constraintsChannel2EnableJCheckBox.ipadx = 16;
-		constraintsChannel2EnableJCheckBox.insets = new java.awt.Insets(70, 7, 69, 39);
-		add(getChannel2EnableJCheckBox(), constraintsChannel2EnableJCheckBox);
-
-		java.awt.GridBagConstraints constraintsChannel3EnableJCheckBox1 = new java.awt.GridBagConstraints();
-		constraintsChannel3EnableJCheckBox1.gridx = 1; constraintsChannel3EnableJCheckBox1.gridy = 6;
-		constraintsChannel3EnableJCheckBox1.ipadx = 16;
-		constraintsChannel3EnableJCheckBox1.insets = new java.awt.Insets(0, 7, 75, 39);
-		add(getChannel3EnableJCheckBox1(), constraintsChannel3EnableJCheckBox1);
+//		java.awt.GridBagConstraints constraintsChannel3EnableJCheckBox1 = new java.awt.GridBagConstraints();
+//		constraintsChannel3EnableJCheckBox1.gridx = 1; constraintsChannel3EnableJCheckBox1.gridy = 6;
+//		constraintsChannel3EnableJCheckBox1.ipadx = 16;
+//		constraintsChannel3EnableJCheckBox1.insets = new java.awt.Insets(0, 7, 75, 39);
+//		add(getChannel3EnableJCheckBox1(), constraintsChannel3EnableJCheckBox1);
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	modeButtonGroup.add( getMinMaxModeButton());
-	modeButtonGroup.add( getPeakModeButton());
-	channel1ButtonGroup.add( getKY2WireButton());
-	channel1ButtonGroup.add( getKYZ3WireButton());
-	channel2ButtonGroup.add( getKY2WireButton2());
-	channel2ButtonGroup.add( getKYZ3WireButton2());
-	channel3ButtonGroup.add( getKY2WireButton3());
-	channel3ButtonGroup.add( getKYZ3WireButton3());
-	getKeTextField2().setEnabled(false);
-	getMpTextField2().setEnabled(false);
-	getKhTextField2().setEnabled(false);
-	getEqualsJButton2().setEnabled(false);
-	getKY2WireButton2().setEnabled(false);
-	getKYZ3WireButton2().setEnabled(false);
-	getRecalculateJButton2().setEnabled(false);
-	getKeTextField3().setEnabled(false);
-	getMpTextField3().setEnabled(false);
-	getKhTextField3().setEnabled(false);
-	getEqualsJButton3().setEnabled(false);
-	getKY2WireButton3().setEnabled(false);
-	getKYZ3WireButton3().setEnabled(false);
-	getRecalculateJButton3().setEnabled(false);
+//	modeButtonGroup.add( getMinMaxModeButton());
+//	modeButtonGroup.add( getPeakModeButton());
+//	channel1ButtonGroup.add( getKY2WireButton());
+//	channel1ButtonGroup.add( getKYZ3WireButton());
+//	channel2ButtonGroup.add( getKY2WireButton2());
+//	channel2ButtonGroup.add( getKYZ3WireButton2());
+//	channel3ButtonGroup.add( getKY2WireButton3());
+//	channel3ButtonGroup.add( getKYZ3WireButton3());
+//	getKeTextField2().setEnabled(false);
+//	getMpTextField2().setEnabled(false);
+//	getKhTextField2().setEnabled(false);
+//	getEqualsJButton2().setEnabled(false);
+//	getKY2WireButton2().setEnabled(false);
+//	getKYZ3WireButton2().setEnabled(false);
+//	getRecalculateJButton2().setEnabled(false);
+//	getKeTextField3().setEnabled(false);
+//	getMpTextField3().setEnabled(false);
+//	getKhTextField3().setEnabled(false);
+//	getEqualsJButton3().setEnabled(false);
+//	getKY2WireButton3().setEnabled(false);
+//	getKYZ3WireButton3().setEnabled(false);
+//	getRecalculateJButton3().setEnabled(false);
 	// user code end
 }
 /**
  * Comment
  */
-public void keTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void keTextField2_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void keTextField3_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kY2WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kY2WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kY2WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kYZ3WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kYZ3WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
-/**
- * Comment
- */
-public void kYZ3WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
+//public void keTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void keTextField2_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void keTextField3_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kY2WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kY2WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kY2WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kYZ3WireButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kYZ3WireButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
+///**
+// * Comment
+// */
+//public void kYZ3WireButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
@@ -2162,10 +2331,10 @@ public static void main(java.lang.String[] args) {
 /**
  * Comment
  */
-public void minMaxModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
+//public void minMaxModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * Comment
  */
@@ -2176,49 +2345,49 @@ public void nameTextField_CaretUpdate(javax.swing.event.CaretEvent caretEvent) {
 /**
  * Comment
  */
-public void peakModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	fireInputUpdate();
-	return;
-}
+//public void peakModeButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	fireInputUpdate();
+//	return;
+//}
 /**
  * Comment
  */
-public void recalculateJButton1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	getRecalculateJButton1().setVisible(false);
-	getEqualsJButton1().setVisible(true);
-	getMpTextField().setVisible(true);
-	getMpLabel().setVisible(true);
-	getKhLabel().setVisible(true);
-	getKhTextField().setVisible(true);
-	getTimesLabel().setVisible(true);
-	return;
-}
+//public void recalculateJButton1_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	getRecalculateJButton1().setVisible(false);
+//	getEqualsJButton1().setVisible(true);
+//	getMpTextField().setVisible(true);
+//	getMpLabel().setVisible(true);
+//	getKhLabel().setVisible(true);
+//	getKhTextField().setVisible(true);
+//	getTimesLabel().setVisible(true);
+//	return;
+//}
 /**
  * Comment
  */
-public void recalculateJButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	getRecalculateJButton2().setVisible(false);
-	getEqualsJButton2().setVisible(true);
-	getMpTextField2().setVisible(true);
-	getMpLabel2().setVisible(true);
-	getKhLabel2().setVisible(true);
-	getKhTextField2().setVisible(true);
-	getTimesLabel2().setVisible(true);
-	return;
-}
+//public void recalculateJButton2_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	getRecalculateJButton2().setVisible(false);
+//	getEqualsJButton2().setVisible(true);
+//	getMpTextField2().setVisible(true);
+//	getMpLabel2().setVisible(true);
+//	getKhLabel2().setVisible(true);
+//	getKhTextField2().setVisible(true);
+//	getTimesLabel2().setVisible(true);
+//	return;
+//}
 /**
  * Comment
  */
-public void recalculateJButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
-	getRecalculateJButton3().setVisible(false);
-	getEqualsJButton3().setVisible(true);
-	getMpTextField3().setVisible(true);
-	getMpLabel3().setVisible(true);
-	getKhLabel3().setVisible(true);
-	getKhTextField3().setVisible(true);
-	getTimesLabel3().setVisible(true);
-	return;
-}
+//public void recalculateJButton3_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+//	getRecalculateJButton3().setVisible(false);
+//	getEqualsJButton3().setVisible(true);
+//	getMpTextField3().setVisible(true);
+//	getMpLabel3().setVisible(true);
+//	getKhLabel3().setVisible(true);
+//	getKhTextField3().setVisible(true);
+//	getTimesLabel3().setVisible(true);
+//	return;
+//}
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object
@@ -2237,108 +2406,108 @@ public void setValue(Object val ) {
 		getNameTextField().setText(name);
 	}
 	
-	String mode = conMan.getConfigMode();
-	if( mode != null)
-	{
-		if(mode.compareTo(ConfigTwoWay.MODE_MINMAX) == 0)
-			getMinMaxModeButton().setSelected(true);
-		else
-			getPeakModeButton().setSelected(true);
-	}
-	
-	//channel 1
-	Integer temp = conMan.getMCTWire1();
-	if( temp != null )
-	{
-		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
-			getKY2WireButton().setSelected(true);
-		else
-			getKYZ3WireButton().setSelected(true);
-		temp = null;
-	}		
-	
-	Double temp2 = conMan.getKe1();
-	if( temp2 != null )
-	{
-		getKeTextField().setText( temp2.toString() );
-		getRecalculateJButton1().setVisible(true);
-		getMpTextField().setVisible(false);
-		getMpLabel().setVisible(false);
-		getKhLabel().setVisible(false);
-		getKhTextField().setVisible(false);
-		getTimesLabel().setVisible(false);
-		getEqualsJButton1().setVisible(false);
-	}
-	
-	//channel 2
-	temp = conMan.getMCTWire2();
-	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
-	{
-		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
-			getKY2WireButton2().setSelected(true);
-		else
-			getKYZ3WireButton2().setSelected(true);
-		temp = null;
-	}		
-	
-	temp2 = conMan.getKe2();
-	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
-	{
-		getKeTextField2().setText( temp2.toString() );
-		getChannel2EnableJCheckBox().setSelected(true);
-		getKY2WireButton2().setEnabled(true);
-		getKYZ3WireButton2().setEnabled(true);
-		getRecalculateJButton2().setEnabled(true);
-		getKeTextField2().setEnabled(true);
-		getMpTextField2().setEnabled(true);
-		getKhTextField2().setEnabled(true);
-		getEqualsJButton2().setEnabled(true);
-		getKY2WireButton2().setEnabled(true);
-		getKYZ3WireButton2().setEnabled(true);
-		
-		getRecalculateJButton2().setVisible(true);
-		getMpTextField2().setVisible(false);
-		getMpLabel2().setVisible(false);
-		getKhLabel2().setVisible(false);
-		getKhTextField2().setVisible(false);
-		getTimesLabel2().setVisible(false);
-		getEqualsJButton2().setVisible(false);
-		
-	}
-	  
-	//channel 3
-	temp = conMan.getMCTWire3();
-	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
-	{
-		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
-			  getKY2WireButton3().setSelected(true);
-		else
-			  getKYZ3WireButton3().setSelected(true);
-		temp = null;
-    }		
-	
-	temp2 = conMan.getKe3();
-	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
-	{
-		getKeTextField3().setText( temp2.toString() );
-		getChannel3EnableJCheckBox1().setSelected(true);
-		getKeTextField3().setEnabled(true);
-		getMpTextField3().setEnabled(true);
-		getKhTextField3().setEnabled(true);
-		getEqualsJButton3().setEnabled(true);
-		getKY2WireButton3().setEnabled(true);
-		getKYZ3WireButton3().setEnabled(true);
-		getRecalculateJButton3().setEnabled(true);
-		
-		getMpTextField3().setVisible(false);
-		getMpLabel3().setVisible(false);
-		getKhLabel3().setVisible(false);
-		getKhTextField3().setVisible(false);
-		getTimesLabel3().setVisible(false);
-		getEqualsJButton3().setVisible(false);
-		getRecalculateJButton3().setVisible(true);
-
-	}
+//	String mode = conMan.getConfigMode();
+//	if( mode != null)
+//	{
+//		if(mode.compareTo(ConfigTwoWay.MODE_MINMAX) == 0)
+//			getMinMaxModeButton().setSelected(true);
+//		else
+//			getPeakModeButton().setSelected(true);
+//	}
+//	
+//	//channel 1
+//	Integer temp = conMan.getMCTWire1();
+//	if( temp != null )
+//	{
+//		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
+//			getKY2WireButton().setSelected(true);
+//		else
+//			getKYZ3WireButton().setSelected(true);
+//		temp = null;
+//	}		
+//	
+//	Double temp2 = conMan.getKe1();
+//	if( temp2 != null )
+//	{
+//		getKeTextField().setText( temp2.toString() );
+//		getRecalculateJButton1().setVisible(true);
+//		getMpTextField().setVisible(false);
+//		getMpLabel().setVisible(false);
+//		getKhLabel().setVisible(false);
+//		getKhTextField().setVisible(false);
+//		getTimesLabel().setVisible(false);
+//		getEqualsJButton1().setVisible(false);
+//	}
+//	
+//	//channel 2
+//	temp = conMan.getMCTWire2();
+//	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
+//	{
+//		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
+//			getKY2WireButton2().setSelected(true);
+//		else
+//			getKYZ3WireButton2().setSelected(true);
+//		temp = null;
+//	}		
+//	
+//	temp2 = conMan.getKe2();
+//	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
+//	{
+//		getKeTextField2().setText( temp2.toString() );
+//		getChannel2EnableJCheckBox().setSelected(true);
+//		getKY2WireButton2().setEnabled(true);
+//		getKYZ3WireButton2().setEnabled(true);
+//		getRecalculateJButton2().setEnabled(true);
+//		getKeTextField2().setEnabled(true);
+//		getMpTextField2().setEnabled(true);
+//		getKhTextField2().setEnabled(true);
+//		getEqualsJButton2().setEnabled(true);
+//		getKY2WireButton2().setEnabled(true);
+//		getKYZ3WireButton2().setEnabled(true);
+//		
+//		getRecalculateJButton2().setVisible(true);
+//		getMpTextField2().setVisible(false);
+//		getMpLabel2().setVisible(false);
+//		getKhLabel2().setVisible(false);
+//		getKhTextField2().setVisible(false);
+//		getTimesLabel2().setVisible(false);
+//		getEqualsJButton2().setVisible(false);
+//		
+//	}
+//	  
+//	//channel 3
+//	temp = conMan.getMCTWire3();
+//	if(! (temp == null || temp.compareTo(ConfigTwoWay.NONVALUE) == 0) )
+//	{
+//		if(temp.compareTo(ConfigTwoWay.TWOWIRE) == 0)
+//			  getKY2WireButton3().setSelected(true);
+//		else
+//			  getKYZ3WireButton3().setSelected(true);
+//		temp = null;
+//    }		
+//	
+//	temp2 = conMan.getKe3();
+//	if(! (temp2 == null || temp2.compareTo(ConfigTwoWay.NOVALUE) == 0) )
+//	{
+//		getKeTextField3().setText( temp2.toString() );
+//		getChannel3EnableJCheckBox1().setSelected(true);
+//		getKeTextField3().setEnabled(true);
+//		getMpTextField3().setEnabled(true);
+//		getKhTextField3().setEnabled(true);
+//		getEqualsJButton3().setEnabled(true);
+//		getKY2WireButton3().setEnabled(true);
+//		getKYZ3WireButton3().setEnabled(true);
+//		getRecalculateJButton3().setEnabled(true);
+//		
+//		getMpTextField3().setVisible(false);
+//		getMpLabel3().setVisible(false);
+//		getKhLabel3().setVisible(false);
+//		getKhTextField3().setVisible(false);
+//		getTimesLabel3().setVisible(false);
+//		getEqualsJButton3().setVisible(false);
+//		getRecalculateJButton3().setVisible(true);
+//
+//	}
 	
 	return;
 }
