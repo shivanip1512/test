@@ -116,6 +116,7 @@ prot_sa305.obj \
 prot_sixnet.obj \
 prot_base.obj \
 prot_dnp.obj \
+prot_modbus.obj \
 $(DNPOBJS) \
 prot_ion.obj \
 $(IONOBJS) \
@@ -583,9 +584,9 @@ transdata_tracker.obj:	transdata_tracker.h xfer.h dsm2.h mutex.h \
 		prot_ymodem.h logger.h thread.h
 #UPDATE#
 ansi_application.obj:	yukon.h precompiled.h ctidbgmem.h guard.h \
-		dlldefs.h logger.h thread.h mutex.h ansi_application.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		ansi_datalink.h xfer.h dialup.h
+		dlldefs.h logger.h thread.h mutex.h configparms.h cparms.h \
+		ansi_application.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h ansi_datalink.h xfer.h dialup.h
 ansi_billing_table.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ansi_billing_table.h dlldefs.h dsm2.h mutex.h guard.h \
 		ctitypes.h types.h std_ansi_tbl_base.h
@@ -610,62 +611,62 @@ dnp_application.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h logger.h thread.h numstr.h dnp_application.h \
 		message.h collectable.h dnp_objects.h msg_pdata.h pointdefs.h \
-		msg_signal.h pointtypes.h prot_base.h xfer.h dialup.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h
+		pointtypes.h prot_base.h xfer.h dialup.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h
 dnp_datalink.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h logger.h thread.h porter.h dsm2err.h devicetypes.h \
 		queues.h prot_dnp.h pointtypes.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h msg_signal.h xfer.h \
-		dialup.h dnp_application.h dnp_objects.h dnp_transport.h \
+		pointdefs.h message.h collectable.h xfer.h dialup.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h
 dnp_objects.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h logger.h thread.h dnp_objects.h msg_pdata.h \
-		pointdefs.h message.h collectable.h msg_signal.h pointtypes.h \
-		prot_base.h xfer.h dialup.h dnp_object_analoginput.h \
-		dnp_object_time.h dnp_object_analogoutput.h \
-		dnp_object_binaryinput.h dnp_object_binaryoutput.h \
-		dnp_object_class.h dnp_object_counter.h
+		pointdefs.h message.h collectable.h pointtypes.h prot_base.h \
+		xfer.h dialup.h dnp_object_analoginput.h dnp_object_time.h \
+		dnp_object_analogoutput.h dnp_object_binaryinput.h \
+		dnp_object_binaryoutput.h dnp_object_class.h \
+		dnp_object_counter.h
 dnp_object_analoginput.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_analoginput.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h dnp_object_time.h \
-		logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h dnp_object_time.h logger.h \
+		thread.h
 dnp_object_analogoutput.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_analogoutput.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h logger.h thread.h
 dnp_object_binaryinput.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_binaryinput.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h dnp_object_time.h \
-		logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h dnp_object_time.h logger.h \
+		thread.h
 dnp_object_binaryoutput.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_binaryoutput.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h logger.h thread.h
 dnp_object_class.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_class.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h logger.h thread.h
 dnp_object_counter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_counter.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h dnp_object_time.h \
-		logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h dnp_object_time.h logger.h \
+		thread.h
 dnp_object_time.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dnp_object_time.h dnp_objects.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		pointtypes.h prot_base.h xfer.h dialup.h logger.h thread.h
+		msg_pdata.h pointdefs.h message.h collectable.h pointtypes.h \
+		prot_base.h xfer.h dialup.h logger.h thread.h
 dnp_transport.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h logger.h thread.h dnp_transport.h dnp_datalink.h \
@@ -804,22 +805,22 @@ prot_711.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h os2_2w32.h \
 		dlldefs.h types.h prot_711.h porter.h dsm2.h mutex.h guard.h \
 		dsm2err.h devicetypes.h queues.h logger.h thread.h dllbase.h
 prot_ansi.obj:	yukon.h precompiled.h ctidbgmem.h guard.h dlldefs.h \
-		logger.h thread.h mutex.h pointdefs.h prot_ansi.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h ansi_application.h \
-		ansi_datalink.h xfer.h dialup.h ansi_billing_table.h \
-		ctitypes.h std_ansi_tbl_base.h std_ansi_tbl_zero_zero.h \
-		std_ansi_tbl_zero_one.h std_ansi_tbl_zero_eight.h \
-		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
-		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
-		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
-		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
-		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
-		std_ansi_tbl_two_seven.h std_ansi_tbl_two_eight.h \
-		std_ansi_tbl_three_one.h std_ansi_tbl_three_two.h \
-		std_ansi_tbl_three_three.h std_ansi_tbl_five_one.h \
-		std_ansi_tbl_five_two.h std_ansi_tbl_six_one.h \
-		std_ansi_tbl_six_two.h std_ansi_tbl_six_three.h \
-		std_ansi_tbl_six_four.h
+		configparms.h cparms.h logger.h thread.h mutex.h pointdefs.h \
+		prot_ansi.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		ansi_application.h ansi_datalink.h xfer.h dialup.h \
+		ansi_billing_table.h ctitypes.h std_ansi_tbl_base.h \
+		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
+		std_ansi_tbl_zero_eight.h std_ansi_tbl_one_zero.h \
+		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
+		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
+		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
+		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
+		std_ansi_tbl_two_three.h std_ansi_tbl_two_seven.h \
+		std_ansi_tbl_two_eight.h std_ansi_tbl_three_one.h \
+		std_ansi_tbl_three_two.h std_ansi_tbl_three_three.h \
+		std_ansi_tbl_five_one.h std_ansi_tbl_five_two.h \
+		std_ansi_tbl_six_one.h std_ansi_tbl_six_two.h \
+		std_ansi_tbl_six_three.h std_ansi_tbl_six_four.h
 prot_ansi_kv2.obj:	yukon.h precompiled.h ctidbgmem.h guard.h dlldefs.h \
 		logger.h thread.h mutex.h prot_ansi_kv2.h prot_ansi.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
@@ -859,14 +860,13 @@ prot_ansi_sentinel.obj:	yukon.h precompiled.h ctidbgmem.h guard.h \
 prot_base.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h dsm2.h porter.h dsm2err.h \
 		devicetypes.h queues.h types.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h msg_signal.h xfer.h \
-		dialup.h
+		pointdefs.h message.h collectable.h xfer.h dialup.h
 prot_dnp.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h dsm2.h numstr.h prot_dnp.h \
 		pointtypes.h prot_base.h msg_pdata.h pointdefs.h message.h \
-		collectable.h msg_signal.h xfer.h dialup.h dnp_application.h \
-		dnp_objects.h dllbase.h os2_2w32.h types.h cticalls.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		collectable.h xfer.h dialup.h dnp_application.h dnp_objects.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h \
 		dnp_object_binaryoutput.h dnp_object_class.h \
 		dnp_object_analogoutput.h dnp_object_time.h
 prot_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
@@ -880,12 +880,13 @@ prot_fpcbc.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h dlldefs.h \
 		utility.h
 prot_ion.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h dsm2.h porter.h dsm2err.h \
-		devicetypes.h queues.h types.h cparms.h prot_ion.h dllbase.h \
-		os2_2w32.h cticalls.h pointtypes.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h msg_signal.h xfer.h \
-		dialup.h ion_datastream.h ion_value.h ion_serializable.h \
-		numstr.h ion_value_fixed.h ion_value_numeric.h ctitypes.h \
-		ion_value_variable.h ion_value_variable_fixedarray.h \
+		devicetypes.h queues.h types.h cparms.h msg_signal.h \
+		message.h collectable.h prot_ion.h dllbase.h os2_2w32.h \
+		cticalls.h pointtypes.h prot_base.h msg_pdata.h pointdefs.h \
+		xfer.h dialup.h ion_datastream.h ion_value.h \
+		ion_serializable.h numstr.h ion_value_fixed.h \
+		ion_value_numeric.h ctitypes.h ion_value_variable.h \
+		ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
@@ -897,18 +898,26 @@ prot_ion.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 prot_lmi.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h porter.h dsm2.h dsm2err.h \
 		devicetypes.h queues.h types.h msg_pdata.h pointdefs.h \
-		message.h collectable.h msg_signal.h prot_lmi.h dllbase.h \
-		os2_2w32.h cticalls.h prot_seriesv.h prot_base.h xfer.h \
-		dialup.h pointtypes.h verification_objects.h boost_time.h \
+		message.h collectable.h prot_lmi.h dllbase.h os2_2w32.h \
+		cticalls.h prot_seriesv.h prot_base.h xfer.h dialup.h \
+		pointtypes.h verification_objects.h boost_time.h \
+		prot_sa3rdparty.h cmdparse.h parsevalue.h protocol_sa.h \
 		utility.h numstr.h cparms.h
+prot_modbus.obj:	yukon.h precompiled.h ctidbgmem.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h utility.h dsm2.h numstr.h \
+		prot_modbus.h pointtypes.h prot_base.h msg_pdata.h \
+		pointdefs.h message.h collectable.h xfer.h dialup.h \
+		dnp_application.h dnp_objects.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_object_binaryoutput.h
 prot_sa105.obj:	yukon.h precompiled.h ctidbgmem.h prot_sa105.h \
 		cmdparse.h dlldefs.h parsevalue.h dsm2.h mutex.h guard.h \
 		pointtypes.h prot_base.h msg_pdata.h pointdefs.h message.h \
-		collectable.h msg_signal.h xfer.h dialup.h
+		collectable.h xfer.h dialup.h
 prot_sa205.obj:	yukon.h precompiled.h ctidbgmem.h prot_sa205.h \
 		cmdparse.h dlldefs.h parsevalue.h dsm2.h mutex.h guard.h \
 		pointtypes.h prot_base.h msg_pdata.h pointdefs.h message.h \
-		collectable.h msg_signal.h xfer.h dialup.h
+		collectable.h xfer.h dialup.h
 prot_sa305.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
 		devicetypes.h logger.h thread.h mutex.h guard.h numstr.h \
 		prot_sa305.h cmdparse.h parsevalue.h dllbase.h os2_2w32.h \
@@ -917,13 +926,13 @@ prot_sa3rdparty.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h numstr.h \
 		prot_sa3rdparty.h cmdparse.h parsevalue.h dllbase.h \
 		os2_2w32.h types.h cticalls.h dsm2.h pointtypes.h prot_base.h \
-		msg_pdata.h pointdefs.h message.h collectable.h msg_signal.h \
-		xfer.h dialup.h protocol_sa.h
+		msg_pdata.h pointdefs.h message.h collectable.h xfer.h \
+		dialup.h protocol_sa.h
 prot_sasimple.obj:	yukon.h precompiled.h ctidbgmem.h
 prot_seriesv.obj:	yukon.h precompiled.h ctidbgmem.h prot_seriesv.h \
 		dlldefs.h prot_base.h msg_pdata.h pointdefs.h message.h \
-		collectable.h msg_signal.h xfer.h dsm2.h mutex.h guard.h \
-		dialup.h pointtypes.h logger.h thread.h porter.h dsm2err.h \
+		collectable.h xfer.h dsm2.h mutex.h guard.h dialup.h \
+		pointtypes.h logger.h thread.h porter.h dsm2err.h \
 		devicetypes.h queues.h types.h
 prot_sixnet.obj:	yukon.h precompiled.h ctidbgmem.h guard.h dlldefs.h \
 		logger.h thread.h mutex.h prot_sixnet.h cmdparse.h \
