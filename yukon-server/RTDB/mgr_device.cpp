@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2005/08/01 22:00:33 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2005/08/23 20:12:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include "dev_carrier.h"
 #include "dev_mct.h"
 #include "dev_mct410.h"
+#include "dev_modbus.h"
 #include "dev_repeater.h"
 #include "dev_rtc.h"
 #include "dev_rtm.h"
