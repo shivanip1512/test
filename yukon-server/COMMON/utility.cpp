@@ -846,6 +846,36 @@ LONG GetPAOIdOfPoint(long pid)
     return id;
 }
 
+INT GetPIDFromDeviceAndOffset(int device, int offset)
+{
+    RWCString sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
+    INT id = 0;
+
+    sql += CtiNumStr(device);
+    sql += " AND POINTOFFSET = ";
+    sql += CtiNumStr(offset);
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+
+    return id;
+}
+
 /*
  *  Checks if sockets are available in the system.
  */

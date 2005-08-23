@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/07/19 22:48:52 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/08/23 19:57:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,7 @@ IM_EX_CTIBASE bool isLCU(INT type);
 IM_EX_CTIBASE bool isION(INT type);
 IM_EX_CTIBASE int generateTransmissionID();
 IM_EX_CTIBASE LONG GetPAOIdOfPoint(long pid);
+IM_EX_CTIBASE INT GetPIDFromDeviceAndOffset(int device, int offset);
 IM_EX_CTIBASE INT EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE bool CheckSocketSubsystem();
