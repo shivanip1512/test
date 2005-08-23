@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2005/08/01 22:02:43 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2005/08/23 20:07:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,6 +131,7 @@ using namespace std;
 #include "elogger.h"
 #include "alarmlog.h"
 #include "drp.h"
+#include "thread_monitor.h"
 
 #include "perform.h"
 #include "das08.h"
@@ -867,6 +868,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         PorterVerificationThread.start();
     }
 
+    ThreadMonitor.start();//Start the thread monitor thread!
+
     /*
      *  Now start up the ports' thread
      */
@@ -1048,6 +1051,8 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
+    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
+
     if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
     if(_dnpudpThread.isValid())             _dnpudpThread.requestCancellation(200);
     if(_pilThread.isValid())                _pilThread.requestCancellation(200);
@@ -1062,6 +1067,8 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     if(_kickerCCU711Thread.isValid())       _kickerCCU711Thread.requestCancellation(200);
 
     if(PorterVerificationThread.isRunning())    PorterVerificationThread.interrupt(CtiPorterVerification::SHUTDOWN);
+
+    ThreadMonitor.join();
 
     if(_connThread.isValid())
     {
