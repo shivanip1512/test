@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/08/15 15:12:41 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/08/23 20:10:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,6 +65,7 @@
 #include "mgr_port.h"
 #include "mgr_device.h"
 #include "port_base.h"
+#include "thread_monitor.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -82,6 +83,7 @@ bool statisticsDoTargetId(long deviceid, long targetid);
 VOID PerfUpdateThread (PVOID Arg)
 {
     ULONG PerfUpdateRate = 3600L;
+    UINT sanity;
 
     ULONG PostCount;
     USHORT i;
@@ -107,6 +109,19 @@ VOID PerfUpdateThread (PVOID Arg)
                     PerfUpdateRate = 3600L;
                 }
             }
+
+            //Thread Monitor Begins here**************************************************
+            if(!(++sanity % SANITY_RATE))
+            {
+                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
+                }
+          
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, 400 );
+                ThreadMonitor.tickle( data );
+            }
+            //End Thread Monitor Section
 
             now = now.now();
 
