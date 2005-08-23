@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/05/04 20:28:01 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/08/23 20:09:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dlldefs.h"
 #include "connection.h"
 #include "numstr.h"
+#include "thread_monitor.h"
+#include "mgr_point.h"
+#include "pt_base.h"
 
 #include "portglob.h"
 #include "ctibase.h"
@@ -75,10 +78,16 @@ void DispatchMsgHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     RWTime         TimeNow;
+    RWTime         LastThreadMonitorTime;
+    CtiThreadMonitor::State previous;
     RWTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
     CtiMessage     *MsgPtr              = NULL;
     UINT           changeCnt = 0;
+    UCHAR          checkCount = 0;
     CtiDBChangeMsg *pChg = NULL;
+    CtiPointDataMsg pointMessage;
+
+    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter));
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -88,6 +97,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
     VanGoghConnection.setName("Porter to Dispatch");
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), FALSE));
+
+    LastThreadMonitorTime = LastThreadMonitorTime.now();
 
     RWTime nowTime;
     RWTime nextTime = nowTime + 30;
@@ -265,6 +276,33 @@ void DispatchMsgHandlerThread(VOID *Arg)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " DispatchMsgHandlerThd done reloading" << endl;
+                }
+            }
+
+            //Check thread watcher status
+            if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
+            {
+                if(pointMessage.getId()!=0)
+                {
+                    CtiThreadMonitor::State next;
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    {
+                        previous = next;
+                        checkCount = 0;
+                        
+                        pointMessage.setType(StatusPointType);
+                        pointMessage.setValue(next);
+    
+                        pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
+    
+                        VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+                    }
+                }
+                else
+                {
+                    ThreadMonitor.recalculatePointIDList();
+                    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter));
                 }
             }
         }
