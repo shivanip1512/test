@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.149 $
-* DATE         :  $Date: 2005/07/25 19:22:38 $
+* REVISION     :  $Revision: 1.150 $
+* DATE         :  $Date: 2005/08/23 20:06:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,6 @@ using namespace std;
 #include <stdio.h>
 #include <string.h>
 
-
 #include "cparms.h"
 #include "color.h"
 #include "queues.h"
@@ -78,6 +77,7 @@ using namespace std;
 #include "dev_lcu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
+#include "dev_modbus.h"
 #include "dev_pagingreceiver.h"
 #include "dev_tnpp.h"
 #include "dev_rtc.h"
@@ -1210,6 +1210,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_SNPP:
                 case TYPE_PAGING_RECEIVER:
                 case TYPE_TNPP:
+                case TYPE_MODBUS:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
                         int protocolStatus = NoError;
@@ -2062,6 +2063,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPECBC6510:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
+                    case TYPE_MODBUS:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:
