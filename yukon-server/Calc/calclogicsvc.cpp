@@ -635,16 +635,36 @@ void CtiCalcLogicService::_inputThread( void )
         RWRunnableSelf  _pSelf = rwRunnable( );
         RWCollectable   *incomingMsg;
         BOOL            interrupted = FALSE;
-        RWTime rwnow, announceTime;
+        RWTime rwnow, announceTime, LastThreadMonitorTime;
+        CtiPointDataMsg pointMessage;
+
+        pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
+        LastThreadMonitorTime = LastThreadMonitorTime.now();
 
         while( !interrupted )
         {
             //  while i'm not getting anything
             while( !_conxion || (NULL == (incomingMsg = _conxion->ReadConnQue( 200 )) && !interrupted) )
             {
-                //ecs 1/5/2005
-                CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 210, &CtiCalcLogicService::inComplain, 0 , 0, 0 );
-                ThreadMonitor.tickle( data );
+
+                if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
+                {
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if(pointMessage.getId()!=0)
+                    {
+                        pointMessage.setType(StatusPointType);
+                        pointMessage.setValue(ThreadMonitor.getState());
+    
+                        pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
+    
+                        _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+                    }
+                    else
+                    {
+                        ThreadMonitor.recalculatePointIDList();
+                        pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
+                    }
+                }
 
                 if( _pSelf.serviceInterrupt( ) )
                 {
@@ -675,7 +695,7 @@ void CtiCalcLogicService::_inputThread( void )
                     dout << RWTime() << " _inputThread active" << endl;
                 }
             }
-
+       
             // Just in case we have lots of messages inbound.
             if( _pSelf.serviceInterrupt( ) )
             {
@@ -687,9 +707,6 @@ void CtiCalcLogicService::_inputThread( void )
                 //  dump out if we're being called
                 if( !interrupted )
                 {
-                    //ecs 1/5/2005
-                    CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 1000, &CtiCalcLogicService::inComplain, 0 , 0, 0 );
-                    ThreadMonitor.tickle( data );
 
                     //  common variable, but this is the only place that writes to it, so i think it's okay.
                     parseMessage( incomingMsg, calcThread );
@@ -698,9 +715,6 @@ void CtiCalcLogicService::_inputThread( void )
                 incomingMsg = 0;
             }
         }
-        //ecs 1/5/2005
-        CtiThreadRegData *data = new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::LogOut );//, 210, &CtiCalcLogicService::inComplain, 0 , 0, 0 );
-        ThreadMonitor.tickle( data );
     }
     catch(...)
     {
