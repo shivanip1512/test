@@ -3,7 +3,7 @@
 /******************************************/
 
 /* @error ignore */
-sp_rename 'dynamicpaoinfo.info', 'Infokey', 'column'
+sp_rename 'dynamicpaoinfo.info', 'Infokey', 'column';
 go
 
 alter table DynamicPAOInfo drop constraint AK_DYNPAO_OWNKYUQ;
