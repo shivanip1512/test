@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/06/13 19:07:11 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/08/23 20:05:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,6 +89,7 @@ using namespace std;
 #include "guard.h"
 #include "trx_info.h"
 #include "trx_711.h"
+#include "thread_monitor.h"
 
 #include "prot_welco.h"
 
@@ -643,6 +644,7 @@ VOID TimeSyncThread (PVOID Arg)
     DWORD dwWait = 0;
     RWTime nowTime;
     RWTime nextTime;
+    UINT sanity = 0;
 
     /* See if we should even be running */
     if(TimeSyncRate <= 0)
@@ -690,6 +692,19 @@ VOID TimeSyncThread (PVOID Arg)
     /* loop doing time sync at 150 seconds after the hour */
     for(; PorterQuit != TRUE ;)
     {
+        //Thread Monitor Begins here**************************************************
+        if(!(++sanity % SANITY_RATE))
+        {
+            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
+            }
+      
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, 400 );
+            ThreadMonitor.tickle( data );
+        }
+        //End Thread Monitor Section
+        
         /* Figure out how long to wait */
         nowTime = nowTime.now();
 

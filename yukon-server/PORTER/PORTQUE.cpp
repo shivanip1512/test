@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/08/01 16:20:07 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/08/23 20:05:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,7 @@
 #include "routes.h"
 #include "porter.h"
 #include "elogger.h"
+#include "thread_monitor.h"
 
 #include "portglob.h"
 #include "portdecl.h"
@@ -1151,6 +1152,7 @@ VOID KickerThread (VOID *Arg)
 {
     USHORT Port, Remote;
     ULONG i;
+    UINT sanity = 0;
 
     /* make it clear who isn't the boss */
     CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -15, 0);
@@ -1181,6 +1183,19 @@ VOID KickerThread (VOID *Arg)
             CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager!
             DeviceManager.apply( applyKick, NULL );
         }
+
+        //Thread Monitor Begins here**************************************************
+        if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " CCU Kicker thread active. TID:  " << rwThreadId() << endl;
+            }
+
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "CCU Kicker Thread", CtiThreadRegData::None, 300 );
+            ThreadMonitor.tickle( data );
+        }
+
     }
 }
 

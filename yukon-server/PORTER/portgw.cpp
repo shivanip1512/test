@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:55 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/08/23 20:06:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@ using namespace std;
 #include "portglob.h"
 #include "port_base.h"
 #include "queue.h"
+#include "thread_monitor.h"
 
 extern CtiPortManager PortManager;
 extern CtiDeviceManager DeviceManager;
@@ -75,11 +76,26 @@ void GWTimeSyncThread (void *Dummy)
     RWTime now;
     RWTime midnightnext = now + 60;
     RWTime querynext = now + 60;
+    UINT sanity = 0;
 
     while(!PorterQuit)
     {
         now = now.now();
 
+        //Thread Monitor Begins here**************************************************
+        //This thing can sleep for quite a while (15-30s), so we probably dont want to wait this long!!
+        if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+        {
+            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
+            }
+      
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, 300 );
+            ThreadMonitor.tickle( data );
+        }
+        //End Thread Monitor Section
+        
         if(now > querynext && gwMap.size() > 0)
         {
             CtiLockGuard< CtiMutex > guard(gwmux, 15000);
@@ -153,9 +169,23 @@ void GWTimeSyncThread (void *Dummy)
 void KeepAliveThread (void *Dummy)
 {
     RWTime now;
+    UINT sanity = 0;
 
     while(!PorterQuit)
     {
+        //Thread Monitor Begins here**************************************************
+        if(!(++sanity % SANITY_RATE))
+        {
+            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
+            }
+      
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, 300 );
+            ThreadMonitor.tickle( data );
+        }
+        //End Thread Monitor Section
+        
         now = now.now();
 
         if(!(now.seconds() % 60))
@@ -365,6 +395,7 @@ VOID PorterGWThread(void *pid)
 {
     extern CtiConnection    VanGoghConnection;
 
+    UINT sanity=0;
     INT status;
     OUTMESS        *OutMessage;
     REQUESTDATA    ReadResult;
@@ -412,6 +443,19 @@ VOID PorterGWThread(void *pid)
     {
         try
         {
+            //Thread Monitor Begins here**************************************************
+            if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+            {
+                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
+                }
+          
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, 300 );
+                ThreadMonitor.tickle( data );
+            }
+            //End Thread Monitor Section
+             
             OutMessage = GatewayOutMessageQueue.getQueue( 2500 );
 
             if(OutMessage)
@@ -550,6 +594,7 @@ int ExecuteParse( CtiCommandParser &parse, CtiOutMessage *&OutMessage )
 
 void GWResultThread (void *Dummy)
 {
+    UINT sanity = 0;
 
     HANDLE  hArray[] = {
         hPorterEvents[P_QUIT_EVENT],
@@ -562,6 +607,20 @@ void GWResultThread (void *Dummy)
 
     while(!PorterQuit)
     {
+        //Thread Monitor Begins here**************************************************
+        //This thing can sleep for quite a while (30s), so we probably dont want to wait this long!!
+        if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
+        {
+            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
+            }
+      
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, 400 );
+            ThreadMonitor.tickle( data );
+        }
+        //End Thread Monitor Section
+            
         DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, dwSleepTime);
 
         if(dwWait != WAIT_TIMEOUT)

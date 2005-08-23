@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/17 23:29:52 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/08/23 20:06:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,7 @@
 #include "master.h"
 #include "ilex.h"
 #include "perform.h"
+#include "thread_monitor.h"
 
 #include "portglob.h"
 #include "color.h"
@@ -74,6 +75,7 @@ VOID PorterGUIConnectionThread (VOID *Arg)
 {
    INT   iNexus   = 0;
    INT   nRet     = 0;
+   INT   sanity   = 0;
 
    CTINEXUS  ListenNexus;
    CTINEXUS  *NewNexus;
@@ -95,6 +97,20 @@ VOID PorterGUIConnectionThread (VOID *Arg)
    {
       for(;;)
       {
+
+         //Thread Monitor Begins here**************************************************
+         if(!(++sanity % SANITY_RATE))
+         {
+             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                 dout << RWTime() << " Porter GUI Connection Thread. TID:  " << rwThreadId() << endl;
+             }
+   
+             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Porter GUI Connection Thread", CtiThreadRegData::None, 400 );
+             ThreadMonitor.tickle( data );
+         }
+         //End Thread Monitor Section
+        
          NewNexus = (CTINEXUS*) CTIDBG_new CTINEXUS;
 
          if(NewNexus == NULL)
