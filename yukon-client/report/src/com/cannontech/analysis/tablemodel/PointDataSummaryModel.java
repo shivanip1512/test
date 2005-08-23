@@ -296,7 +296,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT PAO.PAOBJECTID, RPH.POINTID, TIMESTAMP, VALUE ");
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID, RPH.POINTID, TIMESTAMP, VALUE ");
 		
 		if(getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)
 			sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");

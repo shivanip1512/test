@@ -32,6 +32,9 @@ import com.cannontech.database.model.ModelFactory;
  *  String routeName		- YukonPaobject.paoName (route)
  *  String collGroup		- DeviceMeterGroup.collectionGroup
  *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
+ * 
+ *  WARNING!!! LiteRawPointHistory objects created in this report are NOT intended to be changed into RawPointHistory DBPersistent objects
+ *  due to the changeID (primary key) value is not set in order to retrieve distinct values!!!
  */
 public class PointDataIntervalModel extends ReportModelBase
 {
@@ -140,15 +143,15 @@ public class PointDataIntervalModel extends ReportModelBase
 	{
 		try
 		{
-			int changeID = rset.getInt(1);
-			int pointID = rset.getInt(2);
-			Timestamp ts = rset.getTimestamp(3);
+			int pointID = rset.getInt(1);
+			Timestamp ts = rset.getTimestamp(2);
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTimeInMillis(ts.getTime());
-			int quality = rset.getInt(4);
-			double value = rset.getDouble(5);
+			int quality = rset.getInt(3);
+			double value = rset.getDouble(4);
 					
-			LiteRawPointHistory rph = new LiteRawPointHistory(changeID, pointID, cal.getTimeInMillis(), quality, value);
+			//NOTE *** We are using -1 as the changeID since we want to collect distinct pao, point, timestamp, value values from RPH, changeid is NOT used in this report but LiteRawPointHistory constructor requires it
+			LiteRawPointHistory rph = new LiteRawPointHistory(-1, pointID, cal.getTimeInMillis(), quality, value);
 			getData().add(rph);	
 		}
 		catch(java.sql.SQLException e)
@@ -163,7 +166,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT RPH.CHANGEID, RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME " + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME " + 
 			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 			
 			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
