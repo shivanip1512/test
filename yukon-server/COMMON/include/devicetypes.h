@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/07/11 18:26:59 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/08/23 19:59:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,6 +124,7 @@
 #define TYPE_RTM                             1911
 #define TYPE_SERIESVRTU                      1915
 #define TYPE_SERIESVLMIRTU                   1920
+#define TYPE_MODBUS                          1930 //modbus!!!!!!!!!
 
 
 #define TYPE_LMGROUP_EMETCON                 2000  // Group type devices...
