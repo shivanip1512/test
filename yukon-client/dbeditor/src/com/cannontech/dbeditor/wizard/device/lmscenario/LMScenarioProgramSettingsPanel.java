@@ -964,7 +964,7 @@ public void setValue(Object o)
 		models.addElement(comboModel);
 		
 		//add the new row
-		getTableModel().addRowValue( thePAO, JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStartOffset()), JTextFieldTimeEntry.setTimeTextForField(lightProgram.getStopOffset()),
+		getTableModel().addRowValue( thePAO, JTextFieldTimeEntry.getTimeTextForField(lightProgram.getStartOffset()), JTextFieldTimeEntry.getTimeTextForField(lightProgram.getStopOffset()),
 			startingGear);
 				
 		//make sure that the available programs list is not showing these assigned programs

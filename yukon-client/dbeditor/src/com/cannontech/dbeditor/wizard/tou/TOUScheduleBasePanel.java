@@ -1000,7 +1000,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		for(int x = 0; x < vectSize; x++)
 		{
 			TOUDayRateSwitches tempSwitch = (TOUDayRateSwitches) dayRateOffsets.elementAt(x);
-			getTableModel().addRowValue( JTextFieldTimeEntry.setTimeTextForField(tempSwitch.getSwitchOffset()), tempSwitch.getSwitchRate());
+			getTableModel().addRowValue( JTextFieldTimeEntry.getTimeTextForField(tempSwitch.getSwitchOffset()), tempSwitch.getSwitchRate());
     	}
     	//populate up to the the proper 6 possible
     	int tableSize = getTableModel().getRowCount();
@@ -1009,7 +1009,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
     		for(int g = tableSize; g < 6; g++ )
     		{
 				if(g == 0)
-					getTableModel().addRowValue( JTextFieldTimeEntry.setTimeTextForField(new Integer(0)), daFourRates[0]);
+					getTableModel().addRowValue( JTextFieldTimeEntry.getTimeTextForField(new Integer(0)), daFourRates[0]);
 				else
 					getTableModel().addRowValue( ":", daFourRates[0]);
     		}
