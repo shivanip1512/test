@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/02/17 19:02:59 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/08/23 19:56:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -29,7 +29,9 @@ CtiThreadRegData::CtiThreadRegData( int id,
                                      void *args1,
                                      behaviourFuncPtr ptr2,
                                      void *args2 ) :
-   _tickledTime( second_clock::local_time() )
+    _tickledTime( second_clock::local_time() ),
+    _critical(true),
+    _actionTaken(false)
 {
    _id = id;
    _name = name;
@@ -138,6 +140,38 @@ ULONG CtiThreadRegData::getTickleFreq( void )
 bool CtiThreadRegData::getReported( void )
 {
    return( _reported );
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void CtiThreadRegData::setCritical( const bool in )
+{
+   _critical = in;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+bool CtiThreadRegData::getCritical( void )
+{
+   return( _critical );
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+void CtiThreadRegData::setActionTaken (const bool in )
+{
+    _actionTaken = in;
+}
+
+//===========================================================================================================
+//===========================================================================================================
+
+bool CtiThreadRegData::getActionTaken (void )
+{
+    return ( _actionTaken );
 }
 
 //===========================================================================================================

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/05/05 17:34:03 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/08/23 19:56:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ class IM_EX_CTIBASE CtiThreadMonitor : public CtiThread
 public:
 
    typedef map < int, CtiThreadRegData > ThreadData;
+   typedef vector < int > PointIDList;
 
    CtiThreadMonitor();
    virtual ~CtiThreadMonitor();
@@ -38,6 +39,31 @@ public:
 //   void tickle( const CtiThreadRegData *in );
    void tickle( CtiThreadRegData *in );
    void dump( void );
+
+   enum State//These are considered internal states, who cares what the point value is, I dont deal with that!!!
+   {
+       Normal = 0,
+       NonCriticalFailure,
+       CriticalFailure,
+       Dead
+   };
+
+   string getString();
+
+   enum PointOffsets
+   {
+       FirstPoint = 1000,//This must always match the first offset
+       Porter = 1000,    //and offsets must be sequential!
+       Dispatch = 1001,
+       Scanner = 1002,
+       Calc = 1003,
+       LastPoint
+   };
+
+   State getState(void);
+   PointIDList getPointIDList();
+   void recalculatePointIDList(void);
+   int getPointIDFromOffset(int offset);
 
 protected:
 
@@ -53,9 +79,14 @@ private:
    string timeString( ptime in );
    void messageOut( const char *fmt, ... );
 
-   mutable CtiMutex                                         _collMux;
+   State _currentState;//status point!
+
+   mutable CtiMutex                                         _monitorMux;
+   mutable CtiMutex                                         _vectorMux;//for the pointID list
    CtiQueue < CtiThreadRegData, less< CtiThreadRegData > >  _queue;
    ThreadData                                               _threadData;
+   PointIDList                                              _pointIDList;
+   string                                                   _output;
 
 };
 

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/10/07 16:58:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/08/23 19:56:52 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -83,6 +83,12 @@ public:
    bool getReported( void );
    void setReported( const bool in );
 
+   bool getCritical( void );
+   void setCritical( const bool in );
+
+   void setActionTaken(const bool in);
+   bool getActionTaken(void);
+
 protected:
 
 private:
@@ -90,6 +96,8 @@ private:
 //   CtiThreadRegData();
 
    bool                 _reported;
+   bool                 _critical;//is it critical or not (default true)
+   bool                 _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
    ptime                _tickledTime;
 
    //

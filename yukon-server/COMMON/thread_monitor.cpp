@@ -8,20 +8,74 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/05/05 17:08:43 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/08/23 19:56:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
 #include "yukon.h"
 #include "dllbase.h"
 #include "logger.h"
+#include "utility.h"
 #include "thread_monitor.h"
 
+/*********************************************************************************************
+        Example usage of thread_monitor. 
+        To find current implementations search for ThreadMonitor.getState() and ThreadMonitor.tickle( data );
+        
+        //Thread Monitor (code for thread) Any thread that is to be monitored needs code similar to this.
+        if(!(++sanity % SANITY_RATE))//SANITY_RATE is used to slow reporting, but must be low enough to allow for the 300 seconds defined below
+        {                            //SANITY_RATE currently defined as 300 in most applications
+        
+            {
+                //This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                //It should be included or excluded based on thread. Every thread can be implemented differently
+                
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
+            }
+
+            //Replace DNP Inbound Thread with whatever thread you want to use
+            
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DNP Inbound Thread", CtiThreadRegData::None, 300 );
+            ThreadMonitor.tickle( data ); 
+        }
+        //End Thread Monitor Section (thread specific)
+
+        Now each application needs a polling and reporting section. 
+        This example was in the DispatchMsgHandlerThread thread. This is a good choice for several reasons, but
+        one good reason is that if the communication to dispatch is down, reporting cannot happen anyway, so this thread really
+        cannot be monitored. It also uses the connection to dispatch a lot, and so it was a natural fit for our function
+
+        if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1) //Wait at least 1 minute before each report
+        {
+            CtiThreadMonitor::State next;
+            LastThreadMonitorTime = LastThreadMonitorTime.now();
+            if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3) //This means if the value has changed, report every minute, else report every 3
+            {
+                previous = next;
+                checkCount = 0;
+                
+                pointMessage.setType(StatusPointType);
+                pointMessage.setValue(next);
+
+                pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
+
+                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+            }
+        }
+
+************************************************************************************************/
+
+
+
+
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadMonitor::CtiThreadMonitor()
+CtiThreadMonitor::CtiThreadMonitor() :
+_currentState(Normal),
+_output("")
 {
 }
 
@@ -58,7 +112,7 @@ void CtiThreadMonitor::run( void )
 
       processExpired();
 
-      _queue.clearAndDestroy();
+     // _queue.clearAndDestroy();
    }
 
    messageOut( "ts", "Monitor Shutdown" );
@@ -119,6 +173,7 @@ void CtiThreadMonitor::processQueue( void )
 
       ThreadData::iterator i = _threadData.find( tempId );
 
+      //Note that currently you are set critical or not at initialization and never again.
       if( i != _threadData.end() )
       {
          //update the reg data
@@ -136,8 +191,10 @@ void CtiThreadMonitor::processQueue( void )
       //note that we heard from a particular thread
       (*insertpair.first).second.setReported( true );
 
-      //update the time so we know when we heard last
-      (*insertpair.first).second.setTickledTime( second_clock::local_time() );
+      (*insertpair.first).second.setActionTaken( false );
+
+      (*insertpair.first).second.setTickledTime( temp->getTickledTime() );
+      //(*insertpair.first).second.setTickledTime( second_clock::local_time() ); //I dont think this is a good idea (JESS)
 
       delete temp;
    }
@@ -149,67 +206,95 @@ void CtiThreadMonitor::processQueue( void )
 
 void CtiThreadMonitor::processExpired( void )
 {
+    State nextState = Normal;
+    string nextOutput = "";
    try
    {
-      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end(); )
+      for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end();i++ )
       {
-         if( !i->second.getReported() )
+         if( !i->second.getReported())
          {
-            messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is UNREPORTED" );
+             if(!i->second.getActionTaken())
+             {
 
-            int reaction_type = i->second.getBehaviour();
+                 i->second.setActionTaken(true);//trying to ensure we dont act twice on an object that does not go away
+                 
+                 messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is UNREPORTED" );
 
-            switch( reaction_type )
+                 int reaction_type = i->second.getBehaviour();
+    
+                 switch( reaction_type )
+                 {
+                 case CtiThreadRegData::None:
+                 case CtiThreadRegData::LogOut:
+                    {
+                    }
+                    break;
+               
+                 case CtiThreadRegData::Action1:
+                    {
+                       CtiThreadRegData::behaviourFuncPtr action1 = i->second.getAlternateFunc();
+                       void* action1_args = i->second.getAlternateArgs();
+               
+                       if( action1 )
+                       {
+                          //it doesn't matter if the args are null
+                          action1( action1_args );
+                       }
+                    }
+                    break;
+               
+                 case CtiThreadRegData::Action2:
+                    {
+                       CtiThreadRegData::behaviourFuncPtr action2 = i->second.getShutdownFunc();
+                       void* action2_args = i->second.getShutdownArgs();
+               
+                       if( action2 )
+                       {
+                          //it doesn't matter if the args are null
+                          action2( action2_args );
+                       }
+                    }
+                    break;
+               
+                 default:
+                    {
+                       messageOut( "tsi", "Illegal Behaviour For ID", i->first );
+                    }
+                    break;
+                 }
+             }
+
+            if(i->second.getCritical())
             {
-            case CtiThreadRegData::None:
-            case CtiThreadRegData::LogOut:
-               {
-               }
-               break;
+                //messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is Critical!" ); //Used for testing
+                nextState = CriticalFailure;
 
-            case CtiThreadRegData::Action1:
-               {
-                  CtiThreadRegData::behaviourFuncPtr action1 = i->second.getAlternateFunc();
-                  void* action1_args = i->second.getAlternateArgs();
+                nextOutput.append("Failure in thread named ");
+                nextOutput.append(i->second.getName());
+                nextOutput.append(" (Critical)\n");
+            }
+            else
+            {
+                nextOutput.append("Failure in thread named ");
+                nextOutput.append(i->second.getName());
+                nextOutput.append(" (Non-Critical)\n");
 
-                  if( action1 )
-                  {
-                     //it doesn't matter if the args are null
-                     action1( action1_args );
-                  }
-               }
-               break;
+                if(nextState != CriticalFailure)
+                    nextState = NonCriticalFailure;
 
-            case CtiThreadRegData::Action2:
-               {
-                  CtiThreadRegData::behaviourFuncPtr action2 = i->second.getShutdownFunc();
-                  void* action2_args = i->second.getShutdownArgs();
-
-                  if( action2 )
-                  {
-                     //it doesn't matter if the args are null
-                     action2( action2_args );
-                  }
-               }
-               break;
-
-            default:
-               {
-                  messageOut( "tsi", "Illegal Behaviour For ID", i->first );
-               }
-               break;
             }
 
             if( getDebugLevel() & DEBUGLEVEL_THREAD_SPEW )
                messageOut( "tsisv", "Removing Thread ID", i->first, " ", i->second.getName() );
-
-            i = _threadData.erase( i );
-         }
-         else
-         {
-            i++;
          }
       }
+      if(nextOutput.length()>1)
+          nextOutput.erase(nextOutput.length()-1,1);//erase last carriage return!
+
+      CtiLockGuard<CtiMutex> guard(_monitorMux);
+      _currentState = nextState;
+      _output = nextOutput;
    }
    catch( ... )
    {
@@ -374,8 +459,85 @@ void CtiThreadMonitor::messageOut( const char *fmt, ... )
 }
 
 //===========================================================================================================
+// Return current state 
 //===========================================================================================================
+CtiThreadMonitor::State CtiThreadMonitor::getState( void)
+{
+    State returnState;
+    {
+        CtiLockGuard<CtiMutex> guard(_monitorMux);
+        returnState = _currentState;
+    }
+    return returnState;
+}
 
+//===========================================================================================================
+// Return current string data
+//===========================================================================================================
+string CtiThreadMonitor::getString( void)
+{
+
+    CtiLockGuard<CtiMutex> guard(_monitorMux);
+    
+    return _output;
+}
+
+//===========================================================================================================
+// Return point ID associated with given offset
+//===========================================================================================================
+int CtiThreadMonitor::getPointIDFromOffset(int offset)
+{
+    if(_pointIDList.empty())
+    {
+        PointIDList tempList;
+        for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+        {                                                                //the enumerated list!
+            tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
+        }
+        CtiLockGuard<CtiMutex> guard(_vectorMux);
+        _pointIDList = tempList;
+    }
+    
+    if(_pointIDList.size()>(offset-FirstPoint))
+        return _pointIDList[offset-FirstPoint]; //return by value.
+    else
+        return 0;
+}
+
+//===========================================================================================================
+// Return all point ID's
+// The Point ID will == 0 if the point does not exist. If this is so, do not use this point!
+//===========================================================================================================
+CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
+{
+    if(_pointIDList.empty())
+    {
+        PointIDList tempList;
+        for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+        {                                                                //the enumerated list!
+            tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
+        }
+        CtiLockGuard<CtiMutex> guard(_vectorMux);
+        _pointIDList = tempList;
+    }
+    return _pointIDList; //return by value.
+}
+
+//===========================================================================================================
+// Re-fills the _pointIDList vector with new information.
+//===========================================================================================================
+void CtiThreadMonitor::recalculatePointIDList(void)
+{
+    PointIDList tempList;
+    for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+    {                                                                //the enumerated list!
+        tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
+    }
+    CtiLockGuard<CtiMutex> guard(_vectorMux);
+    _pointIDList = tempList;
+}
+//===========================================================================================================
+//===========================================================================================================
 string CtiThreadMonitor::now( void )
 {
    return( to_simple_string( second_clock::local_time() ) );
