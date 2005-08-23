@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/07/19 22:48:53 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/08/23 20:02:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,6 +106,7 @@ private:
     RWThreadFunction  _dbThread;
     RWThreadFunction  _dbSigThread;
     RWThreadFunction  _dbSigEmailThread;
+    RWThreadFunction  _appMonitorThread;
 
     CtiQueue< CtiSignalMsg, less<CtiSignalMsg> > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
@@ -177,6 +178,7 @@ public:
     void  VGDBSignalWriterThread();
     void  VGDBSignalEmailThread();
     void  VGRPHWriterThread();
+    void  VGAppMonitorThread();
 
     INT   archivePointDataMessage(const CtiPointDataMsg &aPD);
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);

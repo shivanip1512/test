@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2005/07/25 16:41:56 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2005/08/23 20:02:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -309,6 +309,9 @@ void CtiVanGogh::VGMainThread()
 
         _dbSigEmailThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalEmailThread);
         _dbSigEmailThread.start();
+
+        _appMonitorThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGAppMonitorThread);
+        _appMonitorThread.start();
 
         // all that is good and ready has been started, open up for business from clients
         ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
@@ -4965,6 +4968,99 @@ void CtiVanGogh::VGDBWriterThread()
     return;
 }
 
+/******************************************************************************
+*   Monitor the applications that are registered in thread_monitor.h and MUST
+*   have those system points defined. Function will wait for 15 minutes then
+*   make sure it has heard from every device every 15 minutes or so.
+******************************************************************************/
+void CtiVanGogh::VGAppMonitorThread()
+{
+    CtiPointDataMsg vgStatusPoint;
+    vgStatusPoint.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Dispatch));
+    vgStatusPoint.setType(StatusPointType);
+
+    //on startup wait for 15 minutes!
+    for(int i=0;i<180;i++)
+    {
+        //5*180 = 900 seconds = 15 minutes
+        rwSleep(5000);//5 second sleep
+
+        if(!(i%18))
+        {
+            vgStatusPoint.setValue(ThreadMonitor.getState());
+            vgStatusPoint.setString(RWCString(ThreadMonitor.getString().c_str()));
+            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(vgStatusPoint));
+        }
+
+        if(bGCtrlC)//someone did a Control-C, we need to exit!
+            i=180;
+    }
+
+    //First find all of my point ID's so I dont ever have to look them up again.
+
+    CtiThreadMonitor::PointIDList pointIDList = ThreadMonitor.getPointIDList();
+    CtiThreadMonitor::PointIDList::iterator pointListWalker;
+    CtiPoint *pPt;
+    CtiDynamicPointDispatch *pDynPt;
+    RWTime compareTime;
+
+    while(!bGCtrlC)
+    {
+        compareTime = RWTime::now();
+        compareTime -= 900;//take away 15 minutes
+        
+        for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
+        {
+            if(*pointListWalker !=0)
+            {
+                pPt = PointMgr.getEqual(*pointListWalker);
+                pDynPt = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                if((pDynPt->getTimeStamp()).seconds()<(compareTime))
+                {
+                    //its been more than 15 minutes, set the alarms!!!
+                    CtiPointDataMsg pointMessage;
+                    pointMessage.setId(*pointListWalker);
+                    pointMessage.setType(StatusPointType);
+                    pointMessage.setValue(CtiThreadMonitor::State::Dead);
+                    MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointMessage));
+                    
+                }
+            }
+        }
+
+        int zeroCheck = 1;
+        for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
+        {
+            if(*pointListWalker == 0)
+                zeroCheck = 0;
+        }
+
+        if(!zeroCheck)
+        {
+            ThreadMonitor.recalculatePointIDList();
+            pointIDList = ThreadMonitor.getPointIDList();
+            zeroCheck = 1;
+        }
+
+        //no need to process very often, wait say.... randomly ill pick 3 minutes or so
+        for(i=0;i<=36;i++)
+        {
+            rwSleep(5000);//5 second sleep
+            
+            if(!(i%18))
+            {
+                vgStatusPoint.setValue(ThreadMonitor.getState());
+                vgStatusPoint.setString(RWCString(ThreadMonitor.getString().c_str()));
+                MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(vgStatusPoint));
+            }
+           
+            if(bGCtrlC)//someone did a Control-C, we need to exit!
+                i=180;
+        }
+    }
+
+}
+
 
 /*----------------------------------------------------------------------------*
  * This FUNCTION is used to apply against the MainQueue_ with the expectation
@@ -6881,6 +6977,7 @@ void CtiVanGogh::stopDispatch()
     if(RW_THR_TIMEOUT == _dbThread.join(30000)) _dbThread.terminate();
     if(RW_THR_TIMEOUT == _dbSigThread.join(30000)) _dbSigThread.terminate();
     if(RW_THR_TIMEOUT == _dbSigEmailThread.join(30000)) _dbSigEmailThread.terminate();
+    if(RW_THR_TIMEOUT == _appMonitorThread.join(30000)) _appMonitorThread.terminate();
     ThreadMonitor.join();
 
     PointMgr.storeDirtyRecords();
