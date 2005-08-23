@@ -197,6 +197,23 @@ public Integer getTimeTotalSeconds()
 		return new Integer( (hour * 3600) + (minute * 60) );
 }
 
+public static String getSecondsAsString( Integer seconds )
+{
+	int hours = seconds.intValue() / 3600;
+	int minutes = (seconds.intValue() % 3600) / 60;
+
+	String hrStr = String.valueOf(hours);
+	String minStr = String.valueOf(minutes);
+	
+	if( minutes <= 9 )
+		minStr = "0" + minutes;
+
+	if( hours <= 9 )
+		hrStr = "0" + hours;
+		
+	return hrStr + ":" + minStr;
+}
+
 public static Integer getTimeTotalSeconds(String time) 
 {
 
