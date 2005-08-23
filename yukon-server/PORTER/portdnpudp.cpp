@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/04/07 20:55:14 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/08/23 20:08:12 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,7 @@ using namespace std;
 #include "queue.h"
 #include "numstr.h"
 #include "sema.h"
+#include "thread_monitor.h"
 
 
 #ifdef VSLICK_TAG_WORKAROUND
@@ -100,6 +101,7 @@ void DNPUDPExecuteThread ( void *Dummy );
 
 void DNPUDPInboundThread( void *Dummy )
 {
+    UINT sanity = 0;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " DNPUDPInboundThread started as TID  " << CurrentTID() << endl;
@@ -154,6 +156,19 @@ void DNPUDPInboundThread( void *Dummy )
 
     while( !PorterQuit )
     {
+        //Thread Monitor Begins here**************************************************
+        if(!(++sanity % SANITY_RATE))
+        {
+            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
+            }
+
+            CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DNP Inbound Thread", CtiThreadRegData::None, 300 );
+            ThreadMonitor.tickle( data );
+        }
+        //End Thread Monitor Section
+
         recv_len = recvfrom(udp_socket, recv_buf, 16000, 0, (sockaddr *)&from, 0);
 
         if(recv_len == SOCKET_ERROR)
@@ -337,6 +352,7 @@ void DNPUDPInboundThread( void *Dummy )
 VOID DNPUDPOutboundThread(void *Dummy)
 {
     extern CtiConnection VanGoghConnection;
+    UINT sanity=0;
 
     dnp_om_queuemap::iterator dev_om_itr;
 
@@ -353,6 +369,19 @@ VOID DNPUDPOutboundThread(void *Dummy)
     {
         try
         {
+            //Thread Monitor Begins here**************************************************
+            if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+            {
+                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " DNP Outbound thread active. TID:  " << rwThreadId() << endl;
+                }
+    
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DNP Outbound Thread", CtiThreadRegData::None, 300 );
+                ThreadMonitor.tickle( data );
+            }
+            //End Thread Monitor Section
+            
             if( !work_flag.acquire(2000) && (getDebugLevel() & DEBUGLEVEL_LUDICROUS) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -535,6 +564,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
 VOID DNPUDPExecuteThread(void *Dummy)
 {
     OUTMESS *om;
+    UINT sanity = 0;
     shared_ptr<CtiDeviceSingle> dev_single;
 
     {
@@ -546,6 +576,19 @@ VOID DNPUDPExecuteThread(void *Dummy)
     {
         try
         {
+            //Thread Monitor Begins here**************************************************
+            if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
+            {
+                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " DNP Execute thread active. TID:  " << rwThreadId() << endl;
+                }
+    
+                CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "DNP Execute Thread", CtiThreadRegData::None, 300 );
+                ThreadMonitor.tickle( data );
+            }
+            //End Thread Monitor Section
+            
             om = DNPUDPOutMessageQueue.getQueue( 2500 );
 
             if( om )
