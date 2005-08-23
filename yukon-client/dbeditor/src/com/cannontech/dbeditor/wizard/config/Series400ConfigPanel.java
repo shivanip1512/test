@@ -2,8 +2,7 @@ package com.cannontech.dbeditor.wizard.config;
 
 import java.awt.Dimension;
 
-import javax.swing.border.EtchedBorder;
-
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.config.ConfigTwoWay;
 
 /**
@@ -18,6 +17,9 @@ public class Series400ConfigPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JComboBox ivjTOUCombobox = null;
 	private javax.swing.JButton ivjTOUNewButton = null;
 	private javax.swing.JLabel ivjTOUScheduleLabel = null;
+	private javax.swing.JEditorPane ivjJEditorPaneSchedule = null;
+	private javax.swing.JScrollPane ivjJScrollPaneSchedule = null;
+	private javax.swing.JButton ivjTOUViewButton = null;
 //	private javax.swing.JRadioButton ivjMinMaxModeButton = null;
 //	private javax.swing.JRadioButton ivjpeakModeButton = null;
 //	private javax.swing.JRadioButton ivjKY2WireButton = null;
@@ -742,6 +744,29 @@ private javax.swing.JButton getTOUNewButton() {
 }
 
 /**
+ * Return the ivjTOUNewButton property value.
+ * @return javax.swing.JRadioButton
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JButton getTOUViewButton() {
+	if (ivjTOUViewButton == null) {
+		try {
+			ivjTOUViewButton = new javax.swing.JButton();
+			ivjTOUViewButton.setName("TOUViewButton");
+			ivjTOUViewButton.setText("View");
+			ivjTOUViewButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjTOUViewButton;
+}
+
+/**
  * Return the ivjTOUScheduleLabel property value.
  * @return javax.swing.JRadioButton
  */
@@ -762,6 +787,58 @@ private javax.swing.JLabel getTOUScheduleLabel() {
 		}
 	}
 	return ivjTOUScheduleLabel;
+}
+
+/**
+ * Return the JEditorPaneDesc property value.
+ * @return javax.swing.JEditorPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JEditorPane getJEditorPaneSchedule() {
+	if (ivjJEditorPaneSchedule == null) {
+		try {
+			ivjJEditorPaneSchedule = new javax.swing.JEditorPane();
+			ivjJEditorPaneSchedule.setName("JEditorPaneDesc");
+			//ivjJEditorPaneSchedule.setPreferredSize(new java.awt.Dimension(137, 56));
+			//ivjJEditorPaneSchedule.setBounds(0, 0, 137, 56);
+			//ivjJEditorPaneSchedule.setMinimumSize(new java.awt.Dimension(137, 56));
+			ivjJEditorPaneSchedule.setDocument( new TextFieldDocument(200));
+			// user code begin {1}
+			
+			ivjJEditorPaneSchedule.setText("Select a schedule to use");
+
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJEditorPaneSchedule;
+}
+
+/**
+ * Return the JScrollPaneDesc property value.
+ * @return javax.swing.JScrollPane
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JScrollPane getJScrollPaneSchedule() {
+	if (ivjJScrollPaneSchedule == null) {
+		try {
+			ivjJScrollPaneSchedule = new javax.swing.JScrollPane();
+			ivjJScrollPaneSchedule.setName("JScrollPaneDesc");
+			//ivjJScrollPaneSchedule.setPreferredSize(new java.awt.Dimension(366, 58));
+			//ivjJScrollPaneSchedule.setMinimumSize(new java.awt.Dimension(366, 58));
+			getJScrollPaneSchedule().setViewportView(getJEditorPaneSchedule());
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJScrollPaneSchedule;
 }
 
 /**
@@ -1496,6 +1573,21 @@ private javax.swing.JPanel getTOUPanel() {
 			constraintsTOUNewButton.ipadx = 20;
 			constraintsTOUNewButton.insets = new java.awt.Insets(7, 10, 2, 10);
 			getTOUPanel().add(getTOUNewButton(), constraintsTOUNewButton);
+			
+			java.awt.GridBagConstraints constraintsTOUViewButton = new java.awt.GridBagConstraints();
+			constraintsTOUViewButton.gridx = 10; constraintsTOUViewButton.gridy = 2;
+			constraintsTOUViewButton.gridwidth = 4;
+			constraintsTOUViewButton.ipadx = 20;
+			constraintsTOUViewButton.insets = new java.awt.Insets(7, 10, 2, 10);
+			getTOUPanel().add(getTOUViewButton(), constraintsTOUViewButton);
+			
+			java.awt.GridBagConstraints constraintsTOUSchedulePane = new java.awt.GridBagConstraints();
+			constraintsTOUSchedulePane.gridx = 1; constraintsTOUSchedulePane.gridy = 3;
+			constraintsTOUSchedulePane.gridwidth = 14;
+			constraintsTOUSchedulePane.ipadx = 300;
+			constraintsTOUSchedulePane.ipady = 100;
+			constraintsTOUSchedulePane.insets = new java.awt.Insets(7, 10, 2, 10);
+			getTOUPanel().add(getJScrollPaneSchedule(), constraintsTOUSchedulePane);
 			
 	} catch (java.lang.Throwable ivjExc) {
 		// user code begin {2}
