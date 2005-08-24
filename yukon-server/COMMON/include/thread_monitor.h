@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/08/23 19:56:52 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/08/24 13:40:08 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -57,6 +57,9 @@ public:
        Dispatch = 1001,
        Scanner = 1002,
        Calc = 1003,
+       CapControl = 1004,
+       FDR = 1005,
+       Macs = 1006,
        LastPoint
    };
 
