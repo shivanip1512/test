@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/08/23 20:09:34 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/08/24 13:59:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,11 +298,6 @@ void DispatchMsgHandlerThread(VOID *Arg)
     
                         VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
                     }
-                }
-                else
-                {
-                    ThreadMonitor.recalculatePointIDList();
-                    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter));
                 }
             }
         }

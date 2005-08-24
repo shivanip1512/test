@@ -659,11 +659,6 @@ void CtiCalcLogicService::_inputThread( void )
     
                         _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
                     }
-                    else
-                    {
-                        ThreadMonitor.recalculatePointIDList();
-                        pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
-                    }
                 }
 
                 if( _pSelf.serviceInterrupt( ) )

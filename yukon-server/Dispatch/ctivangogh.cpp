@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.107 $
-* DATE         :  $Date: 2005/08/23 20:02:55 $
+* REVISION     :  $Revision: 1.108 $
+* DATE         :  $Date: 2005/08/24 13:59:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5026,20 +5026,6 @@ void CtiVanGogh::VGAppMonitorThread()
                     
                 }
             }
-        }
-
-        int zeroCheck = 1;
-        for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
-        {
-            if(*pointListWalker == 0)
-                zeroCheck = 0;
-        }
-
-        if(!zeroCheck)
-        {
-            ThreadMonitor.recalculatePointIDList();
-            pointIDList = ThreadMonitor.getPointIDList();
-            zeroCheck = 1;
         }
 
         //no need to process very often, wait say.... randomly ill pick 3 minutes or so
