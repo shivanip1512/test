@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/08/18 22:05:30 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/08/24 20:48:49 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.34  2005/08/24 20:48:49  cplender
+* Improved some debug output.
+*
 * Revision 1.33  2005/08/18 22:05:30  cplender
 * Reformat the printouts
 *
@@ -584,7 +587,7 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  ET = " << RWTime(OutMessage->ExpirationTime) << " Targeted PAOId = " << OutMessage->TargetID << endl;
+                    dout << RWTime() << " Expired command on " << getName() << "'s device queue.  Expired at " << RWTime(OutMessage->ExpirationTime) << "  Targeted PAOId = " << OutMessage->TargetID << " Cmd: " << OutMessage->Request.CommandStr << endl;
                 }
                 delete OutMessage;
                 OutMessage = 0;
@@ -715,7 +718,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << cmdStr << endl;
+                    dout << RWTime() << " " << getName() << ": " << cmdStr << endl;
                 }
                 work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SA205, *OutMessage, cmdStr, codestr, seconds(60));
             }
@@ -727,7 +730,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                 if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << cmdStr << endl;
+                    dout << RWTime() << " " << getName() << ": " << cmdStr << endl;
                 }
                 work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_Golay, *OutMessage, cmdStr, codestr, seconds(60));
             }
@@ -792,6 +795,11 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
                                 slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                            }
+                            if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
                             }
                             break;
                         }
