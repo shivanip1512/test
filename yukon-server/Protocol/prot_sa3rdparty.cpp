@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/08/19 21:11:49 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/08/24 20:49:15 $
 *
 * HISTORY      :
 * $Log: prot_sa3rdparty.cpp,v $
+* Revision 1.36  2005/08/24 20:49:15  cplender
+* Getting restores to work right on 205s
+*
 * Revision 1.35  2005/08/19 21:11:49  cplender
 * Altered the protocol to get restores to work correctly for GRE.  May need to remove a section of code once tested
 *
@@ -138,6 +141,8 @@
 #include "prot_sa3rdparty.h"
 #include "protocol_sa.h"
 
+
+#define SA_PROTOCOL_COMPLETE TRUE
 
 CtiProtocolSA3rdParty::CtiProtocolSA3rdParty() :
 _onePeriodTime(YUKONEOT),
@@ -430,31 +435,13 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
             }
         }
 
-        if(gConfigParms.getValueAsULong("PROTOCOL_SA_TELVENT", 0) & CTIPROT_ABRUPT_RESTORE)
-        {
-            // Graceful sends the last control interval information
-            if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
-            {
-                _sa._sTime = parse.getiValue("sa205_last_stime", 0);
-                _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
-                _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
-            }
-            else
-            {
-                _sa._sTime = 0;
-                _sa._cTime = 0;
-            }
-        }
-        else
-        {
-            _sa._sTime = parse.getiValue("sa205_last_stime", 0);
-            _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
+        _sa._sTime = parse.getiValue("sa205_last_stime", 0);
+        _sa._cTime = parse.getiValue("sa205_last_ctime", 0);
 
-            // Graceful sends the last control interval information
-            if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
-            {
-                _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
-            }
+        // Graceful sends the last control interval information
+        if(parse.getCommandStr().contains(" graceful", RWCString::ignoreCase))
+        {
+            _onePeriodTime = RWTime( (UINT)(parse.getdValue("sa205_one_period_time", YUKONEOT)) );
         }
     }
     else if(CtlReq == CMD_FLAG_CTL_TERMINATE)
@@ -840,14 +827,20 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 33)
                 {
                     _sa._swTimeout = 450;
+                    _sa._sTime = 2;
+                    _sa._cTime = 0;
                 }
                 else if(cycle_percent <= 67)
                 {
                     _sa._swTimeout = 900;
+                    _sa._sTime = 2;
+                    _sa._cTime = 1;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 1350;
+                    _sa._sTime = 2;
+                    _sa._cTime = 2;
                 }
                 else
                 {
@@ -942,22 +935,32 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 20)
                 {
                     _sa._swTimeout = 450;
+                    _sa._sTime = 4;
+                    _sa._cTime = 0;
                 }
                 else if(cycle_percent <= 40)
                 {
                     _sa._swTimeout = 900;
+                    _sa._sTime = 4;
+                    _sa._cTime = 1;
                 }
                 else if(cycle_percent <= 60)
                 {
                     _sa._swTimeout = 1350;
+                    _sa._sTime = 4;
+                    _sa._cTime = 2;
                 }
                 else if(cycle_percent <= 80)
                 {
                     _sa._swTimeout = 1800;
+                    _sa._sTime = 4;
+                    _sa._cTime = 3;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 2250;
+                    _sa._sTime = 4;
+                    _sa._cTime = 4;
                 }
                 else
                 {
@@ -975,26 +978,38 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 17)
                 {
                     _sa._swTimeout = 450;
+                    _sa._sTime = 5;
+                    _sa._cTime = 0;
                 }
                 else if(cycle_percent <= 33)
                 {
                     _sa._swTimeout = 900;
+                    _sa._sTime = 5;
+                    _sa._cTime = 1;
                 }
                 else if(cycle_percent <= 50)
                 {
                     _sa._swTimeout = 1350;
+                    _sa._sTime = 5;
+                    _sa._cTime = 2;
                 }
                 else if(cycle_percent <= 67)
                 {
                     _sa._swTimeout = 1800;
+                    _sa._sTime = 5;
+                    _sa._cTime = 3;
                 }
                 else if(cycle_percent <= 83)
                 {
                     _sa._swTimeout = 2250;
+                    _sa._sTime = 5;
+                    _sa._cTime = 4;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 2700;
+                    _sa._sTime = 5;
+                    _sa._cTime = 5;
                 }
                 else
                 {
@@ -1012,30 +1027,44 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 if(cycle_percent <= 14)
                 {
                     _sa._swTimeout = 450;
+                    _sa._sTime = 6;
+                    _sa._cTime = 0;
                 }
                 else if(cycle_percent <= 29)
                 {
                     _sa._swTimeout = 900;
+                    _sa._sTime = 6;
+                    _sa._cTime = 1;
                 }
                 else if(cycle_percent <= 43)
                 {
                     _sa._swTimeout = 1350;
+                    _sa._sTime = 6;
+                    _sa._cTime = 2;
                 }
                 else if(cycle_percent <= 57)
                 {
                     _sa._swTimeout = 1800;
+                    _sa._sTime = 6;
+                    _sa._cTime = 3;
                 }
                 else if(cycle_percent <= 71)
                 {
                     _sa._swTimeout = 2250;
+                    _sa._sTime = 6;
+                    _sa._cTime = 4;
                 }
                 else if(cycle_percent <= 86)
                 {
                     _sa._swTimeout = 2700;
+                    _sa._sTime = 6;
+                    _sa._cTime = 5;
                 }
                 else if(cycle_percent <= 100)
                 {
                     _sa._swTimeout = 3150;
+                    _sa._sTime = 6;
+                    _sa._cTime = 6;
                 }
                 else
                 {
@@ -1293,6 +1322,8 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
 
 #ifdef SA_PROTOCOL_COMPLETE
     int ctimes[] = { 450, 900, 1350, 1800, 2250, 2700, 3150, 3600 };        // These are the available cycle times in seconds
+    int oactime[] = { 0, 1, 2, 3, 4, 5, 6, 7 };    // These are the available timeout times in "matrix"
+    int oastime[] = { 0, 1, 2, 3, 4, 5, 6, 7  };   // These are the available cycle times in "matrix"
 #elif SA_USE_DI_ONLY
     int ctimes[] = { 450, 900, 1800, 3600 };        // These are the available cycle times in seconds
     int oactime[] = { 3, 0, 1, 2 };                 // These are the available timeout times in "matrix"
