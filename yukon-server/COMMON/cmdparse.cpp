@@ -4385,7 +4385,7 @@ void CtiCommandParser::doParseControlSA(const RWCString &CmdStr)
     bool abrupt = false;
 
     // DEFAULT CHOICES BASED UPON COMMANDS.  NOTE that abrupt is set true if restore!
-    if( (abrupt = CmdStr.contains(" restore")) || CmdStr.contains(" shed"))
+    if( CmdStr.contains(" restore") || CmdStr.contains(" shed"))
     {
         abrupt = true;
         _cmd["sa_dlc_mode"] = TRUE;
