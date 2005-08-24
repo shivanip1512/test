@@ -661,8 +661,12 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             double p = _calcpoint->pop();
             if(q != 0)
             {
+                #if 0
                 double temp = p/q;
                 retVal = cos(temp);
+                #else
+                retVal = p/q;               // Why anyone would ask for this function as a function is beyond me!  Maybe because the original code couldn't mix functions with operations at all.
+                #endif
             }
             else
             {
@@ -673,7 +677,32 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
                 }
             }
         }
-        else if( !functionName.compareTo("ArcTan",RWCString::ignoreCase) )
+        else if( !functionName.compareTo("sin",RWCString::ignoreCase) )
+        {
+            double temp = _calcpoint->pop();
+            retVal = sin(temp);
+        }
+        else if( !functionName.compareTo("cos",RWCString::ignoreCase) )
+        {
+            double temp = _calcpoint->pop();
+            retVal = cos(temp);
+        }
+        else if( !functionName.compareTo("tan",RWCString::ignoreCase) )
+        {
+            double temp = _calcpoint->pop();
+            retVal = tan(temp);
+        }
+        else if( !functionName.compareTo("arcsin",RWCString::ignoreCase) )
+        {
+            double componentPointValue = _calcpoint->pop( );;
+            retVal = asin(componentPointValue);
+        }
+        else if( !functionName.compareTo("arccos",RWCString::ignoreCase) )
+        {
+            double componentPointValue = _calcpoint->pop( );;
+            retVal = acos(componentPointValue);
+        }
+        else if( !functionName.compareTo("arctan",RWCString::ignoreCase) )
         {
             double componentPointValue = _calcpoint->pop( );;
             retVal = atan(componentPointValue);
