@@ -17,7 +17,8 @@ public class CalcComponentTypes
 	public static final String PUSH_OPERATION = "PUSH";
 	
 	public static final String LABEL_KVAR = "kVAr";
-	
+	public static final String LABEL_VOLTS = "VOLTS";
+
 	
 	
 	/*** START OF CALC FUNCTIONS  ***/
