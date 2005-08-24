@@ -17,4 +17,12 @@ public TransactionException() {
 public TransactionException(String s) {
 	super(s);
 }
+/**
+ * TransactionException constructor comment.
+ * @param s java.lang.String
+ */
+public TransactionException(String s, Throwable t) {
+	super(s,t);
+}
+
 }

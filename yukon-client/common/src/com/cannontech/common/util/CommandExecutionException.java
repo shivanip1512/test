@@ -17,4 +17,11 @@ public CommandExecutionException() {
 public CommandExecutionException(String s) {
 	super(s);
 }
+/**
+ * CommandExecutionException constructor comment.
+ * @param s java.lang.String
+ */
+public CommandExecutionException(String s, Throwable t) {
+	super(s,t);
+}
 }
