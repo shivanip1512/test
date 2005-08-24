@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/06/13 19:10:21 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/08/24 20:49:00 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,6 +156,8 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     CtiRouteSPtr Route;
     RWTime now;
 
+    ULONG etime = 0;
+
     // These are stored and forwarded in case there is a restore or terminate operation required.
     parse.setValue("sa205_last_stime", _lastSTime);
     parse.setValue("sa205_last_ctime", _lastCTime);
@@ -229,7 +231,6 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             dout << resultString << endl;
         }
 
-
         nRet = BADPARAM;
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), RWCString(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
         retList.insert( pRet );
@@ -261,8 +262,9 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         if(shed_seconds >= 0)
         {
             // Add these two items to the list for control accounting!
-            parse.setValue("control_interval", parse.getiValue("shed"));
+            parse.setValue("control_interval", shed_seconds);
             parse.setValue("control_reduction", 100 );
+            etime = now.seconds() + shed_seconds;
         }
         else
             nRet = BADPARAM;
@@ -276,6 +278,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * (repeat+1));
+        etime = now.seconds() + (60 * period * (repeat+1));
     }
     else
     {
@@ -292,7 +295,7 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->TargetID = getID();
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
-        OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
+        OutMessage->ExpirationTime = etime;
 
         reportActionItemsToDispatch(pReq, parse, vgList);
 

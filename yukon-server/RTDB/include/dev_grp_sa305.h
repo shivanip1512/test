@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/03/18 19:46:43 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/08/24 20:49:00 $
 * HISTORY      :
 * $Log: dev_grp_sa305.h,v $
+* Revision 1.2  2005/08/24 20:49:00  cplender
+* Restore commands were expiring inappropriately.
+*
 * Revision 1.1  2004/03/18 19:46:43  cplender
 * Added code to support the SA305 protocol and load group
 *
@@ -33,13 +36,24 @@
 
 class IM_EX_DEVDB CtiDeviceGroupSA305 : public CtiDeviceGroupBase
 {
+public:
+    typedef enum
+    {
+        SA305_DI_Control = 1,
+        SA305_DLC_Control = 2
+    } CtiSACommand_t;
+
 protected:
 
     CtiTableSA305LoadGroup _loadGroup;
 
 private:
 
+    CtiSACommand_t _lastSACommandType;
+
+
 public:
+
 
     typedef CtiDeviceGroupBase Inherited;
 
@@ -52,6 +66,8 @@ public:
     CtiTableSA305LoadGroup getLoadGroup() const;
     CtiTableSA305LoadGroup& getLoadGroup();
     CtiDeviceGroupSA305& setLoadGroup(const CtiTableSA305LoadGroup& aRef);
+
+    CtiSACommand_t getLastSACommandType() const { return _lastSACommandType; }
 
     virtual LONG getRouteID();
     virtual RWCString getDescription(const CtiCommandParser & parse) const;

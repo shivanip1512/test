@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/06/13 19:10:21 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/08/24 20:49:00 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.16  2005/08/24 20:49:00  cplender
+* Restore commands were expiring inappropriately.
+*
 * Revision 1.15  2005/06/13 19:10:21  cplender
 * Working to get the correct messages sent for control history to work right.
 *
@@ -77,7 +80,8 @@
 #include "numstr.h"
 #include "utility.h"
 
-CtiDeviceGroupSA305::CtiDeviceGroupSA305()
+CtiDeviceGroupSA305::CtiDeviceGroupSA305() :
+_lastSACommandType(SA305_DI_Control)
 {
 }
 
@@ -96,6 +100,7 @@ CtiDeviceGroupSA305& CtiDeviceGroupSA305::operator=(const CtiDeviceGroupSA305& a
     {
         Inherited::operator=(aRef);
         _loadGroup = aRef.getLoadGroup();
+        _lastSACommandType = aRef.getLastSACommandType();
     }
 
     return *this;
@@ -160,6 +165,7 @@ void CtiDeviceGroupSA305::DecodeDatabaseReader(RWDBReader &rdr)
 INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT   nRet = NoError;
+    ULONG etime = 0;
     RWCString resultString;
 
     CtiRouteSPtr Route;
@@ -169,6 +175,12 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
      *   That method prepares an outmessage for submission to the internals..
      */
     parse.setValue("type", ProtocolSA305Type);
+    bool control = (parse.getFlags() & (CMD_FLAG_CTL_SHED | CMD_FLAG_CTL_CYCLE));
+
+    if(control)
+    {
+        _lastSACommandType =  ( parse.getiValue("sa_f0bit", 1) ? SA305_DI_Control: SA305_DLC_Control );
+    }
 
     if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) == CMD_FLAG_CTL_SHED)
     {
@@ -178,6 +190,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             // Add these two items to the list for control accounting!
             parse.setValue("control_interval", parse.getiValue("shed"));
             parse.setValue("control_reduction", 100 );
+            etime = RWTime().seconds() + shed_seconds;
         }
         else
             nRet = BADPARAM;
@@ -191,9 +204,16 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // Add these two items to the list for control accounting!
         parse.setValue("control_reduction", parse.getiValue("cycle", 0) );
         parse.setValue("control_interval", 60 * period * (repeat+1));
+
+        etime = RWTime().seconds() + (60 * period * (repeat+1));
     }
     else if((CMD_FLAG_CTL_ALIASMASK & parse.getFlags()) & (CMD_FLAG_CTL_RESTORE | CMD_FLAG_CTL_TERMINATE))
     {
+        if(!(parse.getCommandStr().contains(" dlc") || parse.getCommandStr().contains(" di")))
+        {
+            // We were not explicitly told how to do it.  Must restore the same as was sent last.
+            parse.setValue("sa_f0bit", (_lastSACommandType == SA305_DI_Control ? 1 : 0));
+        }
         parse.setValue("control_reduction", 0 );
         parse.setValue("control_interval", 0);
     }
@@ -237,7 +257,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         OutMessage->MessageFlags |= MSGFLG_APPLY_EXCLUSION_LOGIC;
         // OutMessage->Retry = 0;
         OutMessage->Retry = gConfigParms.getValueAsInt("PORTER_SA_REPEATS", 1);
-        OutMessage->ExpirationTime = RWTime().seconds() + parse.getiValue("control_interval", 300); // Time this out in 5 minutes or the setting.
+        OutMessage->ExpirationTime = etime;
 
         int serial = (int)(getLoadGroup().getIndividual());
 
