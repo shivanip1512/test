@@ -1,5 +1,10 @@
 package com.cannontech.database.db.capcontrol;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.PoolManager;
+
 /**
  * This type was created in VisualAge.
  */
@@ -134,6 +139,7 @@ public java.lang.String getTypeOfSwitch() {
 public Integer getRecloseDelay() {
 	return recloseDelay;
 }
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -199,6 +205,58 @@ public static CapBank[] getUnassignedCapBanksList()
 	CapBank[] banks = new CapBank[returnVector.size()];
 	return (CapBank[])returnVector.toArray( banks );
 }
+
+/**
+ * This method returns all the CapBank IDs that are not assgined
+ *  to a Feeder.
+ */
+public static int[] getUnassignedCapBankIDs()
+{
+	NativeIntVector intVect = new NativeIntVector(16);
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+
+	String sql = "SELECT DeviceID FROM " + TABLE_NAME + " where " +
+					 " deviceid not in (select deviceid from " + CCFeederBankList.TABLE_NAME +
+					 ") ORDER BY deviceid";
+
+	try
+	{		
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+		if( conn == null ) {
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else {
+			pstmt = conn.prepareStatement(sql.toString());
+			
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() ) {				
+				intVect.add( rset.getInt(1) );
+			}
+					
+		}		
+	}
+	catch( java.sql.SQLException e ) {
+		CTILogger.error( e.getMessage(), e );
+	}
+	finally {
+		try {
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 ) {
+			CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+	return intVect.toArray();
+}
+
+
 /**
  * retrieve method comment.
  */
@@ -333,6 +391,59 @@ public static boolean isSwitchedBank( Integer paoID )
 	}
 
 	return isSwitched;
+}
+
+/**
+ * This method returns the Feeder ID that owns the given capbank ID.
+ * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
+ * 
+ */
+public static int getParentFeederID( int capBankID )
+{
+	int feederID = CtiUtilities.NONE_ZERO_ID;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	
+	
+	String sql = "SELECT FeederID FROM " +
+					CCFeederBankList.TABLE_NAME +
+					" where DeviceID = ?";	
+	try
+	{		
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setInt( 1, capBankID );				
+			rset = pstmt.executeQuery();
+
+			if( rset.next() ) {				
+				feederID = rset.getInt(1);
+			}						
+		}		
+	}
+	catch( java.sql.SQLException e ) {
+		CTILogger.error( e.getMessage(), e );
+	}
+	finally {
+		try {
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+	
+	
+	return feederID;
 }
 
 }
