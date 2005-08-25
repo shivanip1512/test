@@ -67,7 +67,6 @@ function showControlWindow(pointID) {
 	popUp.setSize(800,480);
 	popUp.autoHide();
 	popUp.setUrl(url);
-	popUp.controlURL = null;
 	popUp.showPopup("popupanchor");
 }
 
