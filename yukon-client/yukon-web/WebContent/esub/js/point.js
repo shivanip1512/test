@@ -67,14 +67,16 @@ function showControlWindow(pointID) {
 	popUp.setSize(800,480);
 	popUp.autoHide();
 	popUp.setUrl(url);
+	popUp.controlURL = null;
 	popUp.showPopup("popupanchor");
 }
 
 /**
- * Submit a control request to the server
+ * Submit a control request to the server via xmlHTTP
+ * TODO better error handling
  */
 function submitControl(pointid, rawstate) {
 	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
-	opener.requestURL = url;
+	loadXMLDoc(url, null);
 	self.close();
 }

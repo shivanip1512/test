@@ -131,6 +131,7 @@
   <link rel="stylesheet" href="CannonStyle.css" type="text/css">
   <title><% if(!controlConfirm) { %>Control<% } else { %>Confirm Control<% } %></title>
   <script langauge = "Javascript" src= "point.js"></script>
+  <script langauge = "Javascript" src= "xmlhttp.js"></script>
   <script type="text/javascript">
 
 
