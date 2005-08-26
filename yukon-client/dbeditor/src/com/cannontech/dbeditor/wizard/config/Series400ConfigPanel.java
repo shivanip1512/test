@@ -66,6 +66,8 @@ public class Series400ConfigPanel extends com.cannontech.common.gui.util.DataInp
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == Series400ConfigPanel.this.getTOUCheckBox())
+				connEtoC2(e);
 //			if (e.getSource() == Series400ConfigPanel.this.getMinMaxModeButton()) 
 //				connEtoC2(e);
 //			if (e.getSource() == Series400ConfigPanel.this.getpeakModeButton()) 
@@ -129,6 +131,14 @@ public Series400ConfigPanel() {
 public void actionPerformed(java.awt.event.ActionEvent actionEvent) {
 	return;
 }
+
+public void TOUJCheckBox_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	
+	boolean isSelected = getTOUCheckBox().isSelected();
+	getTOUPanel().setEnabled(isSelected);
+	return;
+}
+
 /**
  * Comment
  */
@@ -189,6 +199,26 @@ private void connEtoC1(javax.swing.event.CaretEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+/**
+ * connEtoC13:  (Channel2EnableJCheckBox.action.actionPerformed(java.awt.event.ActionEvent) --> Series400ConfigPanel.channel2EnableJCheckBox_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
+ * @param arg1 java.awt.event.ActionEvent
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private void connEtoC2(java.awt.event.ActionEvent arg1) {
+	try {
+		// user code begin {1}
+		// user code end
+		this.TOUJCheckBox_ActionPerformed(arg1);
+		// user code begin {2}
+		// user code end
+	} catch (java.lang.Throwable ivjExc) {
+		// user code begin {3}
+		// user code end
+		handleException(ivjExc);
+	}
+}
+
 /**
  * connEtoC10:  (KeTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> Series400ConfigPanel.keTextField_CaretUpdate(Ljavax.swing.event.CaretEvent;)V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -2192,6 +2222,7 @@ private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	// user code end
 	getNameTextField().addCaretListener(ivjEventHandler);
+	getTOUCheckBox().addActionListener(ivjEventHandler);
 //	getMinMaxModeButton().addActionListener(ivjEventHandler);
 //	getpeakModeButton().addActionListener(ivjEventHandler);
 //	getKY2WireButton().addActionListener(ivjEventHandler);
