@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -10,8 +12,6 @@ public class SubBus extends StreamableCapObject
 	private String controlMethod = null;
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
-	private Double peakSetPoint = null;
-	private Double offPeakSetPoint = null;
 	private Integer peakStartTime = null;
 	private Integer peakStopTime = null;
 	private Integer currentVarLoadPointID = null;
@@ -19,7 +19,6 @@ public class SubBus extends StreamableCapObject
 
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
-	private Double upperBandWidth = null;
 	private Integer controlInterval = null;
 	private Integer minRepsonseTime = null;
 	private Integer minConfirmPercent = null;
@@ -27,7 +26,6 @@ public class SubBus extends StreamableCapObject
 	private String daysOfWeek = null;
 	private String mapLocationID = null;
 	private Integer decimalPlaces = null;
-	private Double lowerBandWidth = null;
 	private String controlUnits = null;
 	private java.util.Date nextCheckTime = null;
 	private Boolean newPointDataReceivedFlag = null;
@@ -56,16 +54,19 @@ public class SubBus extends StreamableCapObject
 	private Boolean waiveControlFlag = null;
 	private String additionalFlags = null;
 
+	private Double peakLag = new Double(0.0);
+	private Double offPkLag = new Double(0.0);
+	private Double peakLead = new Double(0.0);
+	private Double offPkLead = new Double(0.0);
+	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Double currentVoltLoadPointValue = null;
+
 	//should only contain objects of type Feeder
 	private java.util.Vector ccFeeders = null;	
 	
 	
-	// Possible values for ControlMethod
-	//com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_INDIVIDUAL_FEEDER;
-	//com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_SUBSTATION_BUS;
-	//com.cannontech.database.db.capcontrol.CapControlSubstationBus.CNTRL_BUSOPTIMIZED_FEEDER;
 /**
- * CapBankDevice constructor comment.
+ * constructor comment.
  */
 public SubBus() {
 	super();
@@ -298,22 +299,6 @@ public java.lang.Boolean getNewPointDataReceivedFlag() {
  */
 public java.util.Date getNextCheckTime() {
 	return nextCheckTime;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getOffPeakSetPoint() {
-	return offPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getPeakSetPoint() {
-	return peakSetPoint;
 }
 /**
  * Insert the method's description here.
@@ -566,22 +551,6 @@ public void setNextCheckTime(java.util.Date newNextCheckTime) {
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 12:01:28 PM)
- * @param newOffPeakSetPoint java.lang.Double
- */
-public void setOffPeakSetPoint(java.lang.Double newOffPeakSetPoint) {
-	offPeakSetPoint = newOffPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
- * @param newPeakSetPoint java.lang.Double
- */
-public void setPeakSetPoint(java.lang.Double newPeakSetPoint) {
-	peakSetPoint = newPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 12:01:28 PM)
  * @param newPeakStartTime java.lang.Integer
  */
 public void setPeakStartTime(java.lang.Integer newPeakStartTime) {
@@ -628,16 +597,6 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	{
 		return controlUnits;
 	}
-
-	/**
-	 * Returns the lowerBandWidth.
-	 * @return Double
-	 */
-	public Double getLowerBandWidth()
-	{
-		return lowerBandWidth;
-	}
-
 	/**
 	 * Returns the powerFactorValue.
 	 * @return Double
@@ -645,15 +604,6 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public Double getPowerFactorValue()
 	{
 		return powerFactorValue;
-	}
-
-	/**
-	 * Returns the upperBandWidth.
-	 * @return Double
-	 */
-	public Double getUpperBandWidth()
-	{
-		return upperBandWidth;
 	}
 
 	/**
@@ -666,30 +616,12 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	}
 
 	/**
-	 * Sets the lowerBandWidth.
-	 * @param lowerBandWidth The lowerBandWidth to set
-	 */
-	public void setLowerBandWidth(Double lowerBandWidth)
-	{
-		this.lowerBandWidth = lowerBandWidth;
-	}
-
-	/**
 	 * Sets the powerFactorValue.
 	 * @param powerFactorValue The powerFactorValue to set
 	 */
 	public void setPowerFactorValue(Double powerFactorValue)
 	{
 		this.powerFactorValue = powerFactorValue;
-	}
-
-	/**
-	 * Sets the upperBandWidth.
-	 * @param upperBandWidth The upperBandWidth to set
-	 */
-	public void setUpperBandWidth(Double upperBandWidth)
-	{
-		this.upperBandWidth = upperBandWidth;
 	}
 
 	/**
@@ -822,6 +754,90 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setAdditionalFlags(String string)
 	{
 		additionalFlags = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getCurrentVoltLoadPointID() {
+		return currentVoltLoadPointID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getCurrentVoltLoadPointValue() {
+		return currentVoltLoadPointValue;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getOffPkLag() {
+		return offPkLag;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getOffPkLead() {
+		return offPkLead;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getPeakLag() {
+		return peakLag;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getPeakLead() {
+		return peakLead;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setCurrentVoltLoadPointID(Integer integer) {
+		currentVoltLoadPointID = integer;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setCurrentVoltLoadPointValue(Double double1) {
+		currentVoltLoadPointValue = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setOffPkLag(Double double1) {
+		offPkLag = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setOffPkLead(Double double1) {
+		offPkLead = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setPeakLag(Double double1) {
+		peakLag = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setPeakLead(Double double1) {
+		peakLead = double1;
 	}
 
 }

@@ -58,8 +58,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
 	
-	subBus.setPeakSetPoint( new Double( vstr.extractDouble() ) );
-	subBus.setOffPeakSetPoint( new Double( vstr.extractDouble() ) );
 	subBus.setPeakStartTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setPeakStopTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -67,17 +65,13 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setCurrentWattLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setCurrentWattLoadPointValue( new Double( vstr.extractDouble() ) );
 	
-	subBus.setUpperBandWidth( new Double( vstr.extractDouble() ) );
 	subBus.setControlInterval( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setMinRepsonseTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setMinConfirmPercent( new Integer( (int)vstr.extractUnsignedInt() ) );	
 	subBus.setFailurePercent( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setDaysOfWeek( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	subBus.setMapLocationID( (String) vstr.restoreObject( SimpleMappings.CString ) );
-   
-   subBus.setLowerBandWidth( new Double( vstr.extractDouble() ) );
-   subBus.setControlUnits( (String) vstr.restoreObject( SimpleMappings.CString ) );
-
+	subBus.setControlUnits( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	subBus.setControlDelayTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 	subBus.setControlSendRetries( new Integer( (int)vstr.extractUnsignedInt() ) );
    
@@ -124,6 +118,14 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		? new Boolean(true) : new Boolean(false) );
 	subBus.setAdditionalFlags( (String) vstr.restoreObject( SimpleMappings.CString ) );
 
+	subBus.setPeakLag( new Double( vstr.extractDouble() ) );
+	subBus.setOffPkLag( new Double( vstr.extractDouble() ) );
+	subBus.setPeakLead( new Double( vstr.extractDouble() ) );
+	subBus.setOffPkLead( new Double( vstr.extractDouble() ) );
+	subBus.setCurrentVoltLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	subBus.setCurrentVoltLoadPointValue( new Double( vstr.extractDouble() ) );
+
+
 
 	subBus.setCcFeeders( (java.util.Vector)vstr.restoreObject(polystr) );
 }
@@ -142,15 +144,12 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 		(subBus.getMaxOperationDisableFlag().booleanValue() == true)
 		? 1 : 0 );
 	
-	vstr.insertDouble( subBus.getPeakSetPoint().doubleValue() );
-	vstr.insertDouble( subBus.getOffPeakSetPoint().doubleValue() );
 	vstr.insertUnsignedInt( subBus.getPeakStartTime().intValue() );
 	vstr.insertUnsignedInt( subBus.getPeakStopTime().intValue() );
 	vstr.insertUnsignedInt( subBus.getCurrentVarLoadPointID().intValue() );
 	vstr.insertDouble( subBus.getCurrentVarLoadPointValue().doubleValue() );
 	vstr.insertUnsignedInt( subBus.getCurrentWattLoadPointID().intValue() );
 	vstr.insertDouble( subBus.getCurrentWattLoadPointValue().doubleValue() );
-	vstr.insertDouble( subBus.getUpperBandWidth().doubleValue() );
 	vstr.insertUnsignedInt( subBus.getControlInterval().intValue() );
 	vstr.insertUnsignedInt( subBus.getMinRepsonseTime().intValue() );
 	vstr.insertUnsignedInt( subBus.getMinConfirmPercent().intValue() );
@@ -158,10 +157,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	
 	vstr.saveObject( subBus.getDaysOfWeek(), SimpleMappings.CString );
 	vstr.saveObject( subBus.getMapLocationID(), SimpleMappings.CString );
-   
-   vstr.insertDouble( subBus.getLowerBandWidth().doubleValue() );
-   vstr.saveObject( subBus.getControlUnits(), SimpleMappings.CString );
-
+	vstr.saveObject( subBus.getControlUnits(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( subBus.getControlDelayTime().intValue() );
 	vstr.insertUnsignedInt( subBus.getControlSendRetries().intValue() );
    
@@ -206,6 +202,16 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 		(subBus.getWaiveControlFlag().booleanValue() == true)
 		? 1 : 0 );
 	vstr.saveObject( subBus.getAdditionalFlags(), SimpleMappings.CString );
+
+	vstr.insertDouble( subBus.getPeakLag().doubleValue() );
+	vstr.insertDouble( subBus.getOffPkLag().doubleValue() );
+	vstr.insertDouble( subBus.getPeakLead().doubleValue() );
+	vstr.insertDouble( subBus.getOffPkLead().doubleValue() );
+	vstr.insertUnsignedInt( subBus.getCurrentVoltLoadPointID().intValue() );
+	vstr.insertDouble( subBus.getCurrentVoltLoadPointValue().doubleValue() );
+
+
+
    
 	vstr.saveObject( ((java.util.Vector)subBus.getCcFeeders()), polystr );
 }

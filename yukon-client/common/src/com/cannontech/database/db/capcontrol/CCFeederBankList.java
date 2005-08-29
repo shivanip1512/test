@@ -103,9 +103,9 @@ public static boolean deleteCapBanksFromFeederList(Integer feederId, Integer cap
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public static java.util.Vector getCapBanksOnFeederList(Integer feederId, java.sql.Connection conn ) 
+public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java.sql.Connection conn ) 
 {
-	java.util.Vector returnVector = null;
+	java.util.ArrayList returnList = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
@@ -124,11 +124,11 @@ public static java.util.Vector getCapBanksOnFeederList(Integer feederId, java.sq
 			pstmt.setInt( 1, feederId.intValue() );
 			
 			rset = pstmt.executeQuery();
-			returnVector = new java.util.Vector(5); //rset.getFetchSize()
+			returnList = new java.util.ArrayList(8); //rset.getFetchSize()
 	
 			while( rset.next() )
 			{				
-				returnVector.addElement( 
+				returnList.add( 
 						new CCFeederBankList(
 							feederId, 
 							new Integer( rset.getInt("DeviceID") ),
@@ -154,7 +154,7 @@ public static java.util.Vector getCapBanksOnFeederList(Integer feederId, java.sq
 	}
 
 
-	return returnVector;
+	return returnList;
 }
 /**
  * This method was created in VisualAge.

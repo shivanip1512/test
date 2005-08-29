@@ -1,5 +1,8 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/18/00 4:23:32 PM)
@@ -7,15 +10,11 @@ package com.cannontech.yukon.cbc;
  */
 public class Feeder extends StreamableCapObject
 {
-	private Double peakSetPoint = null;
-	private Double offPeakSetPoint = null;
-	private Double upperBandWidth = null;
 	private Integer currentVarLoadPointID = null;
 	private Double currentVarLoadPointValue = null;
 	private Integer currentWattLoadPointID = null;
 	private Double currentWattLoadPointValue = null;
 	private String mapLocationID = null;
-	private Double lowerBandWidth = null;
    
 	private Integer displayOrder = null;
 	private Boolean newPointDataReceivedFlag = null;
@@ -38,10 +37,16 @@ public class Feeder extends StreamableCapObject
 	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
 
-	private String subControlUnits = "P-Factor kW/kVAr";
-	private int subDecimalPlaces = 0;
-	private Boolean subPeakTimeFlag = Boolean.TRUE;
-   
+	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
+	private int decimalPlaces = 0;
+	private Boolean peakTimeFlag = Boolean.TRUE;
+
+	private Double peakLag = new Double(0.0);
+	private Double offPkLag = new Double(0.0);
+	private Double peakLead = new Double(0.0);
+	private Double offPkLead = new Double(0.0);
+	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Double currentVoltLoadPointValue = null;
 
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
@@ -197,22 +202,6 @@ public java.lang.Boolean getNewPointDataReceivedFlag() {
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getOffPeakSetPoint() {
-	return offPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @return java.lang.Double
- */
-public java.lang.Double getPeakSetPoint() {
-	return peakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
  * @return java.lang.Boolean
  */
 public java.lang.Boolean getRecentlyControlledFlag() {
@@ -359,22 +348,6 @@ public void setNewPointDataReceivedFlag(java.lang.Boolean newNewPointDataReceive
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)
- * @param newOffPeakSetPoint java.lang.Double
- */
-public void setOffPeakSetPoint(java.lang.Double newOffPeakSetPoint) {
-	offPeakSetPoint = newOffPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @param newPeakSetPoint java.lang.Double
- */
-public void setPeakSetPoint(java.lang.Double newPeakSetPoint) {
-	peakSetPoint = newPeakSetPoint;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
  * @param newRecentlyControlledFlag java.lang.Boolean
  */
 public void setRecentlyControlledFlag(java.lang.Boolean newRecentlyControlledFlag) {
@@ -391,15 +364,6 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	varValueBeforeControl = newVarValueBeforeControl;
 }
 	/**
-	 * Returns the lowerBandWidth.
-	 * @return Double
-	 */
-	public Double getLowerBandWidth()
-	{
-		return lowerBandWidth;
-	}
-
-	/**
 	 * Returns the powerFactorValue.
 	 * @return Double
 	 */
@@ -409,39 +373,12 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	}
 
 	/**
-	 * Returns the upperBandWidth.
-	 * @return Double
-	 */
-	public Double getUpperBandWidth()
-	{
-		return upperBandWidth;
-	}
-
-	/**
-	 * Sets the lowerBandWidth.
-	 * @param lowerBandWidth The lowerBandWidth to set
-	 */
-	public void setLowerBandWidth(Double lowerBandWidth)
-	{
-		this.lowerBandWidth = lowerBandWidth;
-	}
-
-	/**
 	 * Sets the powerFactorValue.
 	 * @param powerFactorValue The powerFactorValue to set
 	 */
 	public void setPowerFactorValue(Double powerFactorValue)
 	{
 		this.powerFactorValue = powerFactorValue;
-	}
-
-	/**
-	 * Sets the upperBandWidth.
-	 * @param upperBandWidth The upperBandWidth to set
-	 */
-	public void setUpperBandWidth(Double upperBandWidth)
-	{
-		this.upperBandWidth = upperBandWidth;
 	}
 
 	/**
@@ -531,49 +468,133 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	/**
 	 * @return
 	 */
-	public String getSubControlUnits()
+	public String getControlUnits()
 	{
-		return subControlUnits;
+		return controlUnits;
 	}
 
 	/**
 	 * @return
 	 */
-	public int getSubDecimalPlaces()
+	public int getDecimalPlaces()
 	{
-		return subDecimalPlaces;
+		return decimalPlaces;
 	}
 
 	/**
 	 * @return
 	 */
-	public Boolean getSubPeakTimeFlag()
+	public Boolean getPeakTimeFlag()
 	{
-		return subPeakTimeFlag;
+		return peakTimeFlag;
 	}
 
 	/**
 	 * @param string
 	 */
-	public void setSubControlUnits(String string)
+	public void setControlUnits(String string)
 	{
-		subControlUnits = string;
+		controlUnits = string;
 	}
 
 	/**
 	 * @param i
 	 */
-	public void setSubDecimalPlaces(int i)
+	public void setDecimalPlaces(int i)
 	{
-		subDecimalPlaces = i;
+		decimalPlaces = i;
 	}
 
 	/**
 	 * @param boolean1
 	 */
-	public void setSubPeakTimeFlag(Boolean boolean1)
+	public void setPeakTimeFlag(Boolean boolean1)
 	{
-		subPeakTimeFlag = boolean1;
+		peakTimeFlag = boolean1;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getCurrentVoltLoadPointID() {
+		return currentVoltLoadPointID;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getCurrentVoltLoadPointValue() {
+		return currentVoltLoadPointValue;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getOffPkLag() {
+		return offPkLag;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getOffPkLead() {
+		return offPkLead;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getPeakLag() {
+		return peakLag;
+	}
+
+	/**
+	 * @return
+	 */
+	public Double getPeakLead() {
+		return peakLead;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setCurrentVoltLoadPointID(Integer integer) {
+		currentVoltLoadPointID = integer;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setCurrentVoltLoadPointValue(Double double1) {
+		currentVoltLoadPointValue = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setOffPkLag(Double double1) {
+		offPkLag = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setOffPkLead(Double double1) {
+		offPkLead = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setPeakLag(Double double1) {
+		peakLag = double1;
+	}
+
+	/**
+	 * @param double1
+	 */
+	public void setPeakLead(Double double1) {
+		peakLead = double1;
 	}
 
 }

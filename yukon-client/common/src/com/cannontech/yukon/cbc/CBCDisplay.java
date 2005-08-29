@@ -222,32 +222,35 @@ public class CBCDisplay
 
             case SUB_TARGET_COLUMN:
             {
-                // decide which set Point we are to use
-                if( CBCUtils.isPowerFactorControlled(subBus.getControlUnits()) )
-                {
-                    return getPowerFactorText(subBus.getPeakSetPoint().doubleValue(), false);
-                }
-                else if( subBus.getLowerBandWidth().doubleValue() == 0
-                             && subBus.getUpperBandWidth().doubleValue() == 0 )
-                {
-                    return STR_NA;
-                }
-                else if( subBus.getPeakTimeFlag().booleanValue() )
-                {
-                    return
-                        CommonUtils.formatDecimalPlaces(subBus.getPeakSetPoint().doubleValue() - subBus.getLowerBandWidth().doubleValue(), 0) +
-                        " to " + 
-                        CommonUtils.formatDecimalPlaces(subBus.getUpperBandWidth().doubleValue() + subBus.getPeakSetPoint().doubleValue(), 0) + 
-                        " Pk";
-                }
-                else
-                {
-                    return
-                        CommonUtils.formatDecimalPlaces(subBus.getOffPeakSetPoint().doubleValue() - subBus.getLowerBandWidth().doubleValue(), 0) +
-                        " to " + 
-                        CommonUtils.formatDecimalPlaces(subBus.getUpperBandWidth().doubleValue() + subBus.getOffPeakSetPoint().doubleValue(), 0) + 
-                        " OffPk";
-                }
+				// decide which set Point we are to use
+				if( subBus.getPeakTimeFlag().booleanValue() ) {
+                	
+					if( CBCUtils.isPowerFactorControlled(subBus.getControlUnits()) ) {
+						
+						return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(), 0) + "% close, " +
+								CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(), 0) + "% trip";
+					}
+					else
+						return
+							CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(), 0) +
+							" to " + 
+							CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(), 0) + 
+							" Pk";
+				}
+				else {
+					if( CBCUtils.isPowerFactorControlled(subBus.getControlUnits()) ) {
+						
+						return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(), 0) + "% close, " +
+								CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(), 0) + "% trip";
+					}
+					else
+						return
+							CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(), 0) +
+							" to " + 
+							CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(), 0) + 
+							" OffPk";
+				}
+
             }
                 
             case SUB_DAILY_OPERATIONS_COLUMN:
@@ -429,28 +432,34 @@ public class CBCDisplay
             case FDR_TARGET_COLUMN:
             {
                 // decide which set Point we are to use
-                if( CBCUtils.isPowerFactorControlled(feeder.getSubControlUnits()) )
-                {
-                    return getPowerFactorText(feeder.getPeakSetPoint().doubleValue(), false) + " Pk";
-                }
-                else if( feeder.getLowerBandWidth().doubleValue() == 0
-							&& feeder.getUpperBandWidth().doubleValue() == 0 )
-                {
-                    return STR_NA;
-                }
+                if( feeder.getPeakTimeFlag().booleanValue() ) {
+                	
+					if( CBCUtils.isPowerFactorControlled(feeder.getControlUnits()) ) {
+						
+						return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) + "% close, " +
+								CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) + "% trip";
+					}
+					else
+						return
+							CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) +
+							" to " + 
+							CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) + 
+							" Pk";
+				}
+                else {
+					if( CBCUtils.isPowerFactorControlled(feeder.getControlUnits()) ) {
+						
+						return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) + "% close, " +
+								CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) + "% trip";
+					}
+					else
+	                    return
+	                        CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) +
+	                        " to " + 
+	                        CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) + 
+	                        " OffPk";
+				}
 
-                if( feeder.getSubPeakTimeFlag().booleanValue() )
-                    return
-						CommonUtils.formatDecimalPlaces(feeder.getPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-						" to " + 
-						CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getPeakSetPoint().doubleValue(), 0) + 
-						" Pk";
-                else
-                    return
-                        CommonUtils.formatDecimalPlaces(feeder.getOffPeakSetPoint().doubleValue() - feeder.getLowerBandWidth().doubleValue(), 0) +
-                        " to " + 
-                        CommonUtils.formatDecimalPlaces(feeder.getUpperBandWidth().doubleValue() + feeder.getOffPeakSetPoint().doubleValue(), 0) + 
-                        " OffPk";
             }
 
             case FDR_POWER_FACTOR_COLUMN:
@@ -473,14 +482,14 @@ public class CBCDisplay
 					retVal = DASH_LINE;
                 else
 					retVal = CommonUtils.formatDecimalPlaces( 
-						        feeder.getCurrentVarLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() );
+						        feeder.getCurrentVarLoadPointValue().doubleValue(), feeder.getDecimalPlaces() );
 
                 retVal += " / ";
                 if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
 					retVal += DASH_LINE;
                 else
 					retVal += CommonUtils.formatDecimalPlaces( 
-								feeder.getEstimatedVarLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() );
+								feeder.getEstimatedVarLoadPointValue().doubleValue(), feeder.getDecimalPlaces() );
 
                 return retVal;
             }
@@ -490,12 +499,12 @@ public class CBCDisplay
                 if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
                     return DASH_LINE;
                   else {
-                    if( feeder.getSubDecimalPlaces() == 0 )
+                    if( feeder.getDecimalPlaces() == 0 )
                         return new Integer( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() ) );           
+                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getDecimalPlaces() ) );           
                     else
                         return new Double( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getSubDecimalPlaces() ) );
+                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getDecimalPlaces() ) );
                   }
             }
 

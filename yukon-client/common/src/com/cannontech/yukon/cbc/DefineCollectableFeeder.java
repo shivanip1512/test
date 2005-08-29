@@ -29,7 +29,7 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
  * getCxxClassId method comment.
  */
 public int getCxxClassId() {
-	return this.CTI_CCFEEDER_ID;
+	return CTI_CCFEEDER_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -52,18 +52,13 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	Feeder feeder = (Feeder)obj;
 	
-	feeder.setPeakSetPoint( new Double( vstr.extractDouble() ) );
-	feeder.setOffPeakSetPoint( new Double( vstr.extractDouble() ) );
-	feeder.setUpperBandWidth( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentVarLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentWattLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentWattLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setMapLocationID( (String) vstr.restoreObject( SimpleMappings.CString ) );
    
-   feeder.setLowerBandWidth( new Double( vstr.extractDouble() ) );
-   
-	/**/feeder.setDisplayOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setDisplayOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setNewPointDataReceivedFlag( 
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
@@ -94,11 +89,21 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 		((int)vstr.extractUnsignedInt() == 1)
 		? new Boolean(true) : new Boolean(false) );
 
-//	feeder.setSubControlUnits( (String)vstr.restoreObject(SimpleMappings.CString) );
-//	feeder.setSubDecimalPlaces( (int)vstr.extractUnsignedInt() );
-//	feeder.setSubPeakTimeFlag(
-//		 ((int)vstr.extractUnsignedInt() == 1)
-//		 ? new Boolean(true) : new Boolean(false) );
+	feeder.setControlUnits( (String)vstr.restoreObject(SimpleMappings.CString) );
+	feeder.setDecimalPlaces( (int)vstr.extractUnsignedInt() );
+	feeder.setPeakTimeFlag(
+		 ((int)vstr.extractUnsignedInt() == 1)
+		 ? new Boolean(true) : new Boolean(false) );
+
+	feeder.setPeakLag( new Double( vstr.extractDouble() ) );
+	feeder.setOffPkLag( new Double( vstr.extractDouble() ) );
+	feeder.setPeakLead( new Double( vstr.extractDouble() ) );
+	feeder.setOffPkLead( new Double( vstr.extractDouble() ) );
+	feeder.setCurrentVoltLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setCurrentVoltLoadPointValue( new Double( vstr.extractDouble() ) );
+
+
+
 
 
 
@@ -122,16 +127,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	Feeder feeder = (Feeder)obj;
 
-	vstr.insertDouble( feeder.getPeakSetPoint().doubleValue() );
-	vstr.insertDouble( feeder.getOffPeakSetPoint().doubleValue() );
-	vstr.insertDouble( feeder.getUpperBandWidth().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentVarLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentVarLoadPointValue().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentWattLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentWattLoadPointValue().doubleValue() );
 	vstr.saveObject( feeder.getMapLocationID(), SimpleMappings.CString );
-   
-   vstr.insertDouble( feeder.getLowerBandWidth().doubleValue() );
    
 	vstr.insertUnsignedInt( feeder.getDisplayOrder().intValue() );
 	vstr.insertUnsignedInt( 
@@ -164,11 +164,24 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 		(feeder.getWaiveControlFlag().booleanValue() == true)
 		? 1 : 0 );
 
-//	vstr.saveObject( feeder.getSubControlUnits(), SimpleMappings.CString );
-//	vstr.insertUnsignedInt( feeder.getSubDecimalPlaces() );
-//	vstr.insertUnsignedInt( 
-//		(feeder.getSubPeakTimeFlag().booleanValue() == true)
-//		? 1 : 0 );
+	vstr.saveObject( feeder.getControlUnits(), SimpleMappings.CString );
+	vstr.insertUnsignedInt( feeder.getDecimalPlaces() );
+	vstr.insertUnsignedInt( 
+		(feeder.getPeakTimeFlag().booleanValue() == true)
+		? 1 : 0 );
+
+	vstr.insertDouble( feeder.getPeakLag().doubleValue() );
+	vstr.insertDouble( feeder.getOffPkLag().doubleValue() );
+	vstr.insertDouble( feeder.getPeakLead().doubleValue() );
+	vstr.insertDouble( feeder.getOffPkLead().doubleValue() );
+	vstr.insertUnsignedInt( feeder.getCurrentVoltLoadPointID().intValue() );
+	vstr.insertDouble( feeder.getCurrentVoltLoadPointValue().doubleValue() );
+
+
+
+
+
+
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
