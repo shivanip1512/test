@@ -45,9 +45,7 @@ public class DatabaseEditor
 		com.cannontech.common.editor.PropertyPanelListener,
 		com.cannontech.common.wizard.WizardPanelListener,
 		ActionListener,
-//		ItemListener,
 		WindowListener,
-//		TreeSelectionListener,
 		java.util.Observer,
 		com.cannontech.clientutils.popup.PopUpEventListener,
 		javax.swing.event.PopupMenuListener,
@@ -74,7 +72,7 @@ public class DatabaseEditor
 	private CoreCreateMenu coreCreateMenu;
 	private LMCreateMenu lmCreateMenu;
 	private SystemCreateMenu systemCreateMenu;
-	private CapControlCreateMenu capControlCreateMenu;
+//	private CapControlCreateMenu capControlCreateMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
 	private ToolsMenu toolsMenu;
@@ -253,6 +251,7 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	}
 	else
+/*
 	if( item == viewMenu.capControlRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.CAP_CONTROL_DB )
 	{
@@ -277,6 +276,7 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	}
 	else
+*/
 	if( item == viewMenu.systemRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.SYSTEM_DB )
 	{
@@ -625,6 +625,7 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioWizardPanel());
 	}
+/*
 	else if (item == capControlCreateMenu.capBankMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.device.capcontrol.CapBankWizardPanel());
@@ -659,6 +660,7 @@ private void displayAWizardPanel(JMenuItem item)
 		else //selectedItem == null  will go here
 			showWizardPanel( new com.cannontech.dbeditor.wizard.point.capcontrol.CapControlPointWizardPanel() );
 	}
+*/
 	else if (item == systemCreateMenu.notificationGroupMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel());
@@ -1680,11 +1682,11 @@ private JMenuBar getMenuBar(int whichDatabase) {
 		editMenu = new EditMenu();
 		coreCreateMenu = new CoreCreateMenu();
 		lmCreateMenu = new LMCreateMenu();
-		capControlCreateMenu = new CapControlCreateMenu();
+		//capControlCreateMenu = new CapControlCreateMenu();
 		systemCreateMenu = new SystemCreateMenu();
 		viewMenu = new ViewMenu();
 		helpMenu = new HelpMenu();
-      toolsMenu = new ToolsMenu();
+      	toolsMenu = new ToolsMenu();
 		
 		JMenuItem item;
 		
@@ -1719,7 +1721,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				lmCreateMenu.getItem(i).addActionListener(this);
 		}
-		
+/*
 		for( int i = 0; i < capControlCreateMenu.getItemCount(); i++ )
 		{
 			item = capControlCreateMenu.getItem(i);
@@ -1727,7 +1729,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				capControlCreateMenu.getItem(i).addActionListener(this);
 		}
-		
+*/		
 		for( int i = 0; i < systemCreateMenu.getItemCount(); i++ )
 		{
 			item = systemCreateMenu.getItem(i);
@@ -1768,7 +1770,7 @@ private JMenuBar getMenuBar(int whichDatabase) {
 
 	this.menuBar.remove( coreCreateMenu );
 	this.menuBar.remove( lmCreateMenu );
-	this.menuBar.remove( capControlCreateMenu );
+	//this.menuBar.remove( capControlCreateMenu );
 	this.menuBar.remove( systemCreateMenu );
 	this.menuBar.remove( helpMenu );				
 
@@ -1782,10 +1784,12 @@ private JMenuBar getMenuBar(int whichDatabase) {
 	{
 		item = lmCreateMenu;
 	}
+/*
 	else if( whichDatabase == DatabaseTypes.CAP_CONTROL_DB )
 	{
 		item = capControlCreateMenu;
 	}
+*/
 	else if( whichDatabase == DatabaseTypes.SYSTEM_DB )
 	{
 		item = systemCreateMenu;
@@ -2396,9 +2400,11 @@ private void readConfigParameters()
 
 	if( !showLm )
 		viewMenu.remove( viewMenu.lmRadioButtonMenuItem );
-	
+
+/*	
 	if( !showCapControl )
 		viewMenu.remove( viewMenu.capControlRadioButtonMenuItem );
+*/
 
 	if( !showSystem )
 		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
@@ -2737,12 +2743,14 @@ public void setDatabase(int whichDatabase)
 					models = LM_MODELS_WITH_SA;
 				else
 					models = LM_MODELS;
-				break;		
+				break;
+/*
 		case DatabaseTypes.CAP_CONTROL_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.capControlRadioButtonMenuItem.setSelected(true);
 				models = CAP_CONTROL_MODELS;
 				break;
+*/
 		case DatabaseTypes.SYSTEM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.systemRadioButtonMenuItem.setSelected(true);
