@@ -85,8 +85,8 @@ update yukonuserrole set rolepropertyid = -10918, roleid = -109 where roleproper
 update yukonuserrole set rolepropertyid = -10919, roleid = -109 where rolepropertyid = -60019 and roleid = -600;
 update yukonuserrole set rolepropertyid = -10920, roleid = -109 where rolepropertyid = -60020 and roleid = -600;
 
-delete yukonroleproperty where roleid = -600;
-delete yukonrole where roleid = -600;
+delete from yukonroleproperty where roleid = -600;
+delete from yukonrole where roleid = -600;
 
 insert into YukonRoleProperty values(-10202, -102, 'Trending Disclaimer',' ','The disclaimer that appears with trends.');
 insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 'Controls access to retrieve meter data on demand.');
@@ -173,10 +173,10 @@ insert into YukonUserRole values(-169,-1,-102,-10219,'(none)');
 insert into YukonUserRole values(-149,-1,-102,-10220,'(none)');
 insert into YukonUserRole values(-148,-1,-102,-10221,'(none)');
 
-delete yukonuserrole where roleid = -601;
-delete yukongrouprole where roleid = -601;
-delete yukonroleproperty where roleid = -601;
-delete yukonrole where roleid = -601;
+delete from yukonuserrole where roleid = -601;
+delete from yukongrouprole where roleid = -601;
+delete from yukonroleproperty where roleid = -601;
+delete from yukonrole where roleid = -601;
 
 insert into YukonRole values(-6,'Billing Configuration','Yukon','Billing. Edit this role from the Yukon SetUp page.');
 
@@ -191,7 +191,7 @@ insert into YukonRoleProperty values(-1508,-6,'Coop ID - CADP Only','(none)','CA
 
 update yukongrouprole set rolepropertyid = -1500, roleid= -6 where rolepropertyid = -10600 and roleid = -106;
 update yukongrouprole set rolepropertyid = -1501, roleid= -6 where rolepropertyid = -10601 and roleid = -106;
-delete yukongrouprole where rolepropertyid = -10602;
+delete from yukongrouprole where rolepropertyid = -10602;
 update yukongrouprole set rolepropertyid = -1503, roleid= -6 where rolepropertyid = -10603 and roleid = -106;
 update yukongrouprole set rolepropertyid = -1504, roleid= -6 where rolepropertyid = -10604 and roleid = -106;
 update yukongrouprole set rolepropertyid = -1505, roleid= -6 where rolepropertyid = -10605 and roleid = -106;
@@ -201,7 +201,7 @@ update yukongrouprole set rolepropertyid = -1508, roleid= -6 where rolepropertyi
 
 update yukonuserrole set rolepropertyid = -1500, roleid= -6 where rolepropertyid = -10600 and roleid = -106;
 update yukonuserrole set rolepropertyid = -1501, roleid= -6 where rolepropertyid = -10601 and roleid = -106;
-delete yukonuserrole where rolepropertyid = -10602;
+delete from yukonuserrole where rolepropertyid = -10602;
 update yukonuserrole set rolepropertyid = -1503, roleid= -6 where rolepropertyid = -10603 and roleid = -106;
 update yukonuserrole set rolepropertyid = -1504, roleid= -6 where rolepropertyid = -10604 and roleid = -106;
 update yukonuserrole set rolepropertyid = -1505, roleid= -6 where rolepropertyid = -10605 and roleid = -106;
@@ -209,7 +209,7 @@ update yukonuserrole set rolepropertyid = -1506, roleid= -6 where rolepropertyid
 update yukonuserrole set rolepropertyid = -1507, roleid= -6 where rolepropertyid = -10607 and roleid = -106;
 update yukonuserrole set rolepropertyid = -1508, roleid= -6 where rolepropertyid = -10608 and roleid = -106;
 
-delete yukonroleproperty where roleid = -106;
+delete from yukonroleproperty where roleid = -106;
 
 update yukonrole set category = 'Application' where roleid = -106;
 insert into YukonRoleProperty values(-10600,-106,'Header Label','Billing','The header label for billing.');

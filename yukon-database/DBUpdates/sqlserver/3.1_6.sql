@@ -127,8 +127,8 @@ update yukonroleproperty set description = 'The NCDC format takes in an input fi
 
 delete from yukongrouprole where roleid = -500;
 delete from yukonuserrole where roleid = -500;
-delete yukonroleproperty where rolepropertyid in (-50000, -50001, -50002, -50003, -50004, -50005, -50006, -50007);
-delete yukonrole where roleid = -500;
+delete from yukonroleproperty where rolepropertyid in (-50000, -50001, -50002, -50003, -50004, -50005, -50006, -50007);
+delete from yukonrole where roleid = -500;
 
 insert into YukonGroupRole values(-232,-1,-106,-10602,'(none)');
 insert into YukonGroupRole values(-233,-1,-106,-10603,'(none)');
