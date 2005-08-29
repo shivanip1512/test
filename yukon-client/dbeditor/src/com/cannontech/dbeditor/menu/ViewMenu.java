@@ -19,7 +19,7 @@ public class ViewMenu extends javax.swing.JMenu
 {
 	public JRadioButtonMenuItem coreRadioButtonMenuItem;
 	public JRadioButtonMenuItem lmRadioButtonMenuItem;
-	public JRadioButtonMenuItem capControlRadioButtonMenuItem;
+//	public JRadioButtonMenuItem capControlRadioButtonMenuItem;
 	public JRadioButtonMenuItem systemRadioButtonMenuItem;
 	private ButtonGroup radioButtonGroup;
 
@@ -57,13 +57,14 @@ public class ViewMenu extends javax.swing.JMenu
 														java.awt.event.KeyEvent.VK_L,
 														java.awt.Event.CTRL_MASK));
 		
+/*		
 		capControlRadioButtonMenuItem = new JRadioButtonMenuItem("Cap Control");
 		capControlRadioButtonMenuItem.setFont(font);
 		capControlRadioButtonMenuItem.setMnemonic('t');
 		capControlRadioButtonMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke( 
 														java.awt.event.KeyEvent.VK_T,
 														java.awt.Event.CTRL_MASK));
-	
+*/	
 		systemRadioButtonMenuItem = new JRadioButtonMenuItem("System");
 		systemRadioButtonMenuItem.setFont(font);
 		systemRadioButtonMenuItem.setMnemonic('y');	
@@ -74,7 +75,7 @@ public class ViewMenu extends javax.swing.JMenu
 		radioButtonGroup = new ButtonGroup();
 		radioButtonGroup.add(coreRadioButtonMenuItem);
 		radioButtonGroup.add(lmRadioButtonMenuItem);
-		radioButtonGroup.add(capControlRadioButtonMenuItem); // ADDED THIS LATE??!!
+//		radioButtonGroup.add(capControlRadioButtonMenuItem);
 		radioButtonGroup.add(systemRadioButtonMenuItem);
 		
 		separator = new JSeparator();
@@ -101,7 +102,7 @@ public class ViewMenu extends javax.swing.JMenu
 	
 		add( coreRadioButtonMenuItem );
 		add( lmRadioButtonMenuItem );
-		add( capControlRadioButtonMenuItem );
+//		add( capControlRadioButtonMenuItem );
 		add( systemRadioButtonMenuItem );
 		
 		add( separator );
@@ -133,11 +134,13 @@ public class ViewMenu extends javax.swing.JMenu
 						lmRadioButtonMenuItem.doClick();
 						return true;
 					}
+/*
 					else if( e.getKeyCode() == KeyEvent.VK_T && e.isControlDown() )
 					{
 						capControlRadioButtonMenuItem.doClick();
 						return true;
 					}
+*/
 					else if( e.getKeyCode() == KeyEvent.VK_Y && e.isControlDown() )
 					{
 						systemRadioButtonMenuItem.doClick();

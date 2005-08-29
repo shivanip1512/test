@@ -483,7 +483,7 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val) 
 {
 	CapControlFeeder subFeeder = (CapControlFeeder)val;
-
+/*
 	subFeeder.getCapControlFeeder().setPeakSetPoint( 
 		stringToDouble(getPeakSetPointTextField().getText()) );
 
@@ -495,7 +495,7 @@ public Object getValue(Object val)
 
 	subFeeder.getCapControlFeeder().setLowerBandwidth(
 		stringToDouble(getJTextFieldLowerBandwidth().getText()) );
-
+*/
 	
 	return val;
 }
@@ -602,7 +602,7 @@ public void setValue(Object val )
 	if( val != null )
 	{
 		CapControlFeeder subFeeder = (CapControlFeeder)val;
-		
+/*
 		getPeakSetPointTextField().setText( 
 			subFeeder.getCapControlFeeder().getPeakSetPoint().toString() ); 
 
@@ -614,6 +614,7 @@ public void setValue(Object val )
 
 		getJTextFieldLowerBandwidth().setText( 
 			subFeeder.getCapControlFeeder().getLowerBandwidth().toString() );
+*/
 	}
 
 	return;

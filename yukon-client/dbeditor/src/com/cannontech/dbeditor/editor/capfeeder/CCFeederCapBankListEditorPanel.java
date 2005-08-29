@@ -217,23 +217,23 @@ public Object getValue(Object val)
 {
 	CapControlFeeder ccFeeder = (com.cannontech.database.data.capcontrol.CapControlFeeder)val;
 	
-	java.util.Vector ccBankVector = new java.util.Vector( getCCCapBankListAddRemovePanel().rightListGetModel().getSize() );
+	java.util.ArrayList ccBankList = new java.util.ArrayList( getCCCapBankListAddRemovePanel().rightListGetModel().getSize() );
 	Integer deviceID = null;
 
 	for( int i = 0; i < getCCCapBankListAddRemovePanel().rightListGetModel().getSize(); i++ )
 	{
 		deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getCCCapBankListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID());
 
-		com.cannontech.database.db.capcontrol.CCFeederBankList ccBankList = new com.cannontech.database.db.capcontrol.CCFeederBankList(
+		com.cannontech.database.db.capcontrol.CCFeederBankList ccFeederBankLIst = new com.cannontech.database.db.capcontrol.CCFeederBankList(
 																		  ccFeeder.getCapControlPAOID(),
 																		  deviceID,
 																		  new Integer(i+1) );
 		
-		ccBankVector.addElement(ccBankList);
+		ccBankList.add(ccFeederBankLIst);
 	}
 
 //	if( ccStrategyBankListVector.size() > 0 ) Dont know why this was here, anyone???
-	ccFeeder.setCcBankListVector( ccBankVector );
+	ccFeeder.setCcBankList( ccBankList );
 	
 	return val;
 }
@@ -476,7 +476,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 public void setValue(Object val) 
 {
 	CapControlFeeder ccFeeder = (com.cannontech.database.data.capcontrol.CapControlFeeder)val;
-	java.util.Vector ccBankListVector = ccFeeder.getCcBankListVector();
+	java.util.ArrayList ccBankList = ccFeeder.getCcBankList();
 	
 	initLeftListBanks();
 	java.util.Vector assignedBanks = new java.util.Vector();
@@ -488,7 +488,7 @@ public void setValue(Object val)
 		com.cannontech.database.data.lite.LiteYukonPAObject litePAO = null;
 		int bankID = 0;
 		
-		for( int i = 0; i < ccBankListVector.size(); i++)
+		for( int i = 0; i < ccBankList.size(); i++)
 		{
 			for( int j = 0; j < allPAOs.size(); j++)
 			{
@@ -496,7 +496,7 @@ public void setValue(Object val)
 				
 				if( litePAO.getType() == com.cannontech.database.data.pao.PAOGroups.CAPBANK )
 				{
-					bankID = ((com.cannontech.database.db.capcontrol.CCFeederBankList)ccBankListVector.get(i)).getDeviceID().intValue();
+					bankID = ((com.cannontech.database.db.capcontrol.CCFeederBankList)ccBankList.get(i)).getDeviceID().intValue();
 					if( bankID == litePAO.getYukonID() )
 					{
 						assignedBanks.addElement(litePAO);

@@ -532,8 +532,8 @@ public Object getValue(Object val)
 	subBus.setName(subName);
 	subBus.setGeoAreaName(geoName);
 	
-	subBus.getCapControlSubstationBus().setDaysOfWeek(
-				getJCheckBoxDayChooser().getSelectedDays8Chars() );
+//	subBus.getCapControlSubstationBus().setDaysOfWeek(
+//				getJCheckBoxDayChooser().getSelectedDays8Chars() );
 
 	subBus.setDisableFlag(
 			getDisableCheckBox().isSelected() 
@@ -734,12 +734,12 @@ public void setValue(Object val)
 
 	String subName = subBus.getPAOName();
 	String geoName = subBus.getGeoAreaName();
-	String daysOfWeek = subBus.getCapControlSubstationBus().getDaysOfWeek();
+//	String daysOfWeek = subBus.getCapControlSubstationBus().getDaysOfWeek();
 	
 	getJTextFieldSubName().setText(subName);
 	getJTextFieldGeoName().setText(geoName);
 
-	getJCheckBoxDayChooser().setSelectedCheckBoxes( daysOfWeek );
+//	getJCheckBoxDayChooser().setSelectedCheckBoxes( daysOfWeek );
 	
 	getDisableCheckBox().setSelected( subBus.getDisableFlag().charValue() == 'Y'
 						||  subBus.getDisableFlag().charValue() == 'y' );

@@ -7,6 +7,7 @@ import java.awt.Dimension;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  
@@ -530,16 +531,16 @@ private javax.swing.JComboBox getJComboBoxControlMethod() {
 			// user code begin {1}
 
 			ivjJComboBoxControlMethod.addItem( 
-				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_INDIVIDUAL_FEEDER ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER ) );
 
 			ivjJComboBoxControlMethod.addItem( 
-				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_BUSOPTIMIZED_FEEDER ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER ) );
 
 			ivjJComboBoxControlMethod.addItem( 
-				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_MANUAL_ONLY ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_MANUAL_ONLY ) );
 
 			ivjJComboBoxControlMethod.addItem( 
-				StringUtils.addCharBetweenWords( ' ', CapControlSubstationBus.CNTRL_SUBSTATION_BUS ) );
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS ) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1420,7 +1421,7 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val) 
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus subBus = ((com.cannontech.database.data.capcontrol.CapControlSubBus) val);
-
+/*
 	if( getJComboBoxControlInterval().getSelectedIndex() != 0 )
 		subBus.getCapControlSubstationBus().setControlInterval( 
 				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
@@ -1478,7 +1479,7 @@ public Object getValue(Object val)
 	subBus.getCapControlSubstationBus().setPeakStopTime( getJTextFieldStopTime().getTimeTotalSeconds() );
 
 	subBus.getCapControlSubstationBus().setControlUnits( getJComboBoxControlUnits().getSelectedItem().toString() );
-	
+*/	
 	return val;
 }
 
@@ -1725,7 +1726,7 @@ public void setValue(Object val )
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus subBus = ((com.cannontech.database.data.capcontrol.CapControlSubBus) val);
 
-
+/*
 	if( subBus.getCapControlSubstationBus().getControlInterval().intValue() == 0 )
 		getJComboBoxControlInterval().setSelectedIndex(0);
 	else
@@ -1784,6 +1785,7 @@ public void setValue(Object val )
 
    getJComboBoxControlUnits().setSelectedItem(
          subBus.getCapControlSubstationBus().getControlUnits().toString() );
+*/
 	
 	return;
 }

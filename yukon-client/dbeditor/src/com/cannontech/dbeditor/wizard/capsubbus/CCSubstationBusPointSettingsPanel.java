@@ -5,6 +5,9 @@ package com.cannontech.dbeditor.wizard.capsubbus;
  */
 
 import java.awt.Dimension;
+
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
  
 public class CCSubstationBusPointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener
 {
@@ -235,9 +238,9 @@ public void setValue(Object val )
 			new com.cannontech.common.util.NativeIntVector(10);
       
    if( val == null )
-      usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs( null, null );
+      usedVARPtIDs = CapControlSubstationBus.getUsedVARPointIDs( null, null );
    else
-      usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(
+      usedVARPtIDs = CapControlSubstationBus.getUsedVARPointIDs(
          ((com.cannontech.database.data.capcontrol.CapControlSubBus)val).getCapControlPAOID(),
          null );
    

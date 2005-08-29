@@ -685,6 +685,7 @@ public Object getValue(Object val)
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus subBus = ((com.cannontech.database.data.capcontrol.CapControlSubBus) val);
 
+/*
 	subBus.getCapControlSubstationBus().setPeakSetPoint( 
 		stringToDouble(getPeakSetPointTextField().getText()) );
 	
@@ -703,7 +704,7 @@ public Object getValue(Object val)
 	subBus.getCapControlSubstationBus().setPeakStopTime( getJTextFieldStopTime().getTimeTotalSeconds() );
 
 	subBus.getCapControlSubstationBus().setControlUnits( getJComboBoxControlUnits().getSelectedItem().toString() );
-
+*/
 	return val;
 }
 

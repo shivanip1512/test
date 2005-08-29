@@ -5,6 +5,8 @@ package com.cannontech.dbeditor.wizard.capfeeder;
 import java.awt.Dimension;
 
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
  
 public class CCFeederPointSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
 	private java.util.List points = null;
@@ -227,9 +229,9 @@ public void setValue(Object val )
 
    if( val == null )
       usedVARPtIDs = 
-         com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs( null, null );
+         CapControlSubstationBus.getUsedVARPointIDs( null, null );
    else
-      usedVARPtIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUsedVARPointIDs(
+      usedVARPtIDs = CapControlSubstationBus.getUsedVARPointIDs(
          null,
          ((com.cannontech.database.data.capcontrol.CapControlFeeder)val).getCapControlPAOID() );
    
