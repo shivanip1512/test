@@ -1,6 +1,8 @@
 package com.cannontech.database.cache.functions;
 
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.db.point.PointAlarming;
 
 /**
  * @author rneuharth
@@ -48,5 +50,26 @@ public final class AlarmCatFuncs
          return null;
       }	
    }
+   
+   
+	public static int getAlarmCategoryId( String categoryName ) {
+
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+      
+		synchronized( cache ) {
+
+		   java.util.List categories = cache.getAllAlarmCategories();
+         
+		   for( int j = 0; j < categories.size(); j++ )
+		   {
+			  LiteAlarmCategory alCat = (LiteAlarmCategory)categories.get(j);
+			  if( alCat.getCategoryName().equals(categoryName) )
+				 return alCat.getAlarmStateID();
+		   }
+   
+		   return PointAlarming.NONE_NOTIFICATIONID;
+		}	
+
+	}
 
 }
