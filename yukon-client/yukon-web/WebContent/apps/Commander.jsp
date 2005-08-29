@@ -1,10 +1,34 @@
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceTypeCommand"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
 <%@ page import="com.cannontech.database.cache.functions.CommandFuncs"%>
-
+<%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%
 //set the deviceID of the YC_BEAN
 YC_BEAN.setDeviceID(deviceID);
+
+if( serialType.equals("xcom"))
+{
+	YC_BEAN.setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
+	YC_BEAN.setSerialNumber(YC_BEAN.getDeviceType(), serialNum);
+}
+else if( serialType.equals("vcom"))
+{
+	YC_BEAN.setDeviceType(CommandCategory.STRING_CMD_VERSACOM_SERIAL);
+	YC_BEAN.setSerialNumber(YC_BEAN.getDeviceType(), serialNum);
+}
+else if( serialType.equals("sa205") )
+{
+	YC_BEAN.setDeviceType(CommandCategory.STRING_CMD_SA205_SERIAL);
+	YC_BEAN.setSerialNumber(YC_BEAN.getDeviceType(), serialNum);
+}
+else if( serialType.equals("sa305"))
+{
+	YC_BEAN.setDeviceType(CommandCategory.STRING_CMD_SA305_SERIAL);
+	YC_BEAN.setSerialNumber(YC_BEAN.getDeviceType(), serialNum);
+}
+
+else
+	YC_BEAN.setDeviceType(deviceID);	//default to the type of the deviceID selected
 %>          
 	<SCRIPT language="JavaScript">
 	function disableButton(x)
@@ -20,7 +44,7 @@ YC_BEAN.setDeviceID(deviceID);
 
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "METER - CONTROL COMMANDS"; %>
+              <% String header = "CONTROL COMMANDS"; %>
 			  <br>
 			<table width="100%" border="0" cellspacing="0" cellpadding="3">
 			  <tr>
@@ -29,14 +53,26 @@ YC_BEAN.setDeviceID(deviceID);
 			</table>
 
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-            <table width="575" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+            <table width="600" border="0" cellspacing="0" cellpadding="3" class="TableCell">
               <tr> 
-                <td width="30%" class="SubtitleHeader" align="right"> Meter Name:</td>
-                <td width="50%" class="TableCell"><%=liteYukonPao.getPaoName()%></td>
+                <td width="30%" class="SubtitleHeader" align="right">Name:</td>
+                <% String name;
+                if( serialType.equals("xcom"))
+                	name = "Expresscom";
+                else if( serialType.equals("vcom"))
+                	name = "Versacom";
+                else if( serialType.equals("sa205"))
+                	name = "DCU-205";
+                else if( serialType.equals("sa305"))
+                	name = "DCU-305";
+                else                
+                	 name = liteYukonPao.getPaoName();
+                %>
+                <td width="50%" class="TableCell"><%=name%></td>
               </tr>
               <tr> 
-                <td width="30%" class="SubtitleHeader" align="right">Meter Type:</td>
-                <td width="50%" class="TableCell"><%=PAOGroups.getPAOTypeString(liteYukonPao.getType())%></td>
+                <td width="30%" class="SubtitleHeader" align="right">Type:</td>
+                <td width="50%" class="TableCell"><%=YC_BEAN.getDeviceType()%></td>
               </tr>
  			  <form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
    			    <input type="hidden" name="deviceID" value="<%=deviceID%>">
@@ -44,6 +80,31 @@ YC_BEAN.setDeviceID(deviceID);
    			    <%--The jsp wrapping this page needs to tell us "redirect"s value --%>
 				<input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
 				<input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
+
+			  <% if( serialType.length() > 0) {%>
+			  <tr> 
+                <td width="30%" class="SubtitleHeader" align="right">Serial Number:</td>
+                <td width="50%">
+                  <input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
+				</td>
+			  </tr>
+              <tr> 
+                <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
+                <td width="70%" height="2"> 
+                  <select id="routeID" name="routeID">
+				    <OPTION VALUE="-1">Select a Route
+                    <%
+				  LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
+                  for (int i = 0; i < validRoutes.length; i++)
+                  {%>
+                      <OPTION VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>"><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
+                  <%}
+                  %>
+                  </select>
+                </td>
+              </tr>
+			  
+			  <%}%>
               <tr> 
                 <td width="30%" class="SubtitleHeader" align="right">Common Commands:</td>
                 <td width="50%">
@@ -69,7 +130,7 @@ YC_BEAN.setDeviceID(deviceID);
 				<td width="20%" rowspan=2 align='left'>
                   <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
                 </td>
-			  <tr>
+			  </tr>
               <tr align="left"> 
                 <td class="SubtitleHeader" colspan="2" valign="top">&nbsp;</td>
               </tr>
@@ -83,14 +144,16 @@ YC_BEAN.setDeviceID(deviceID);
                 </td>
               </tr>
 			  <tr>
-              	<% if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
-              	{%>
+			  	<% if (liteYukonPao != null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()))
+			  	{
+              	  if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
+              	  {%>
 				    <td colspan="3" width="90%" align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>' class="Link1">Go to Custom Commander</a>
-			    <%}
-			    else{%>
+			      <%}
+			      else{%>
 				    <td colspan="3" width="90%" align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>' class="Link1">Go to Custom Commander</a>			    
-			    <%}%>
-			    
+			      <%}
+			    }%>
 			    </td>
 			  </tr>
               <br>

@@ -8,6 +8,9 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
+<%@ page import="com.cannontech.database.db.command.CommandCategory"%>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
+<%@ page import="com.cannontech.roles.application.CommanderRole"%>
 <cti:checklogin/> 
 
 <script language='JavaScript' src='../JavaScript/ol/overlib_mini.js'></script>
@@ -34,7 +37,7 @@
 	}
 	
 	int invNo = -1;	//used for directing to different application starting points
-	int deviceID = 0;
+	int deviceID = PAOGroups.INVALID;
 	if( request.getParameter("deviceID") != null)
 	{
 		deviceID = Integer.parseInt(request.getParameter("deviceID"));
@@ -46,6 +49,25 @@
 
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+	
+	String serialNum = "";
+	String serialType = "";
+	if( request.getParameter("xcom") != null){
+		serialNum = request.getParameter("xcom");
+		serialType = "xcom";
+	}
+	else if( request.getParameter("vcom") != null){
+		serialNum = request.getParameter("vcom");
+		serialType = "vcom";
+	}
+	else if( request.getParameter("sa205") != null){
+		serialNum = request.getParameter("sa205");
+		serialType = "sa205";
+	}
+	else if( request.getParameter("sa305") != null){
+		serialNum = request.getParameter("sa305");
+		serialType = "sa305";
+	}
 %>
 <html>
 <head>
@@ -100,19 +122,138 @@
             <% String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;%>
             <%if( manual) redirect = redirect + "&manual";%>
             <%if( lp ) redirect = redirect + "&lp";%>
-            <% String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;%>            
+            <% String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;%>
             <% String pageName = "CommandDevice.jsp?deviceID=" + deviceID;%>
+            <% if( serialType.length() > 0 )
+            {
+            	redirect = redirect + "&" + serialType + "=" + serialNum;
+            	referrer = referrer + "&" + serialType + "=" + serialNum;
+            	pageName = pageName + "&" + serialType + "=" + serialNum;
+            }
+            %>
 			<table width="101" border="0" cellspacing="0" cellpadding="5">
 			  <tr> 
 			    <td> 
 			      <div align="left">
 				    <span class="NavHeader">Devices</span>
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-			          <tr> 
+					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
+ 					  <tr>
+					  	<% if (serialType.equals("sa205") ) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>DCU-205 Serial</span></td>
+						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>Back to List</span></a></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205' class='Link2'><span class='NavText'>DCU-205 Serial</span></a></td>
+						<%}%>						
 			          </tr>
-  					  <tr><td height="3"></td></tr>
+  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA205_SERIAL); 
+  					  if(serialNumbers != null)
+  					  {
+  			            for (int i = 0; i < serialNumbers.size(); i++)
+  			            {
+			          	  String sn = (String)serialNumbers.get(i);%>
+			          <tr>
+					  	<% if (sn.equals(serialNum)) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
+						<%}%>						
+			          </tr>
+			          <%}
+			          }%>
+  					  <tr><td height="5"></td></tr>
+					  </cti:checkProperty>
+					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
+					  <tr>
+					  	<% if (serialType.equals("sa305") ) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>DCU-305 Serial</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305' class='Link2'><span class='NavText'>DCU-305 Serial</span></a></td>
+						<%}%>						
+			          </tr>
+  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA305_SERIAL); 
+  					  if(serialNumbers != null)
+  					  {
+  			            for (int i = 0; i < serialNumbers.size(); i++)
+  			            {
+			          	  String sn = (String)serialNumbers.get(i);%>
+			          <tr>
+					  	<% if (sn.equals(serialNum)) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
+						<%}%>						
+			          </tr>
+			          <%}
+			          }%>
+  					  <tr><td height="5"></td></tr>
+					  </cti:checkProperty>
+			          <tr> 
+					  	<% if (serialType.equals("xcom") ) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>Expresscom Serial</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText'>Expresscom Serial</span></a></td>
+						<%}%>						
+			          </tr>
+  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL); 
+  					  if(serialNumbers != null)
+  					  {
+  			            for (int i = 0; i < serialNumbers.size(); i++)
+  			            {
+			          	  String sn = (String)serialNumbers.get(i);%>
+			          <tr>
+					  	<% if (sn.equals(serialNum)) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
+						<%}%>						
+			          </tr>
+			          <%}
+			          }%>
+  					  <tr><td height="5"></td></tr>			          
+			          <tr> 
+					  	<% if (serialType.equals("vcom") ) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>Versacom Serial</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom' class='Link2'><span class='NavText'>Versacom Serial</span></a></td>
+						<%}%>						
+			          </tr>
+  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_VERSACOM_SERIAL); 
+  					  if(serialNumbers != null)
+  					  {
+  			            for (int i = 0; i < serialNumbers.size(); i++)
+  			            {
+			          	  String sn = (String)serialNumbers.get(i);%>
+			          <tr>
+					  	<% if (sn.equals( serialNum)) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>' class='Link2'><span class='NavText'><%=sn%></span></a></td>
+						<%}%>						
+			          </tr>
+			          <%}
+			          }%>
+  					  <tr><td height="20"></td></tr>
+			          <tr>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>BACK TO LIST</span></a></td>
+			          </tr>
+  					  <tr><td height="5"></td></tr>			          
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();%>
@@ -139,7 +280,7 @@
 			{%>
 				<%@ include file="AdvancedCommander410.jsp"%>
 			<%}
-			else if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) && !manual)
+			else if (liteYukonPao != null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) && !manual)
 			{
 			%>
 				<%@ include file="Commander410.jsp"%>

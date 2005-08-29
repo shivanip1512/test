@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
+
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
@@ -31,7 +32,7 @@
 		YC_BEAN.setCommandString("");
 		
 	int invNo = -1;
-	int deviceID = -1;
+	int deviceID = PAOGroups.INVALID;
 	if( request.getParameter("InvNo") != null)
 	{
 		invNo = Integer.parseInt(request.getParameter("InvNo"));
@@ -45,6 +46,25 @@
 
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+
+	String serialNum = "";
+	String serialType = "";
+	if( request.getParameter("xcom") != null){
+		serialNum = request.getParameter("xcom");
+		serialType = "xcom";
+	}
+	else if( request.getParameter("vcom") != null){
+		serialNum = request.getParameter("vcom");
+		serialType = "vcom";
+	}
+	else if( request.getParameter("sa205") != null){
+		serialNum = request.getParameter("sa205");
+		serialType = "sa205";
+	}
+	else if( request.getParameter("sa305") != null){
+		serialNum = request.getParameter("sa305");
+		serialType = "sa305";
+	}	
 %>
 <html>
 <head>
@@ -78,6 +98,13 @@
             <%if( lp) redirect = redirect + "&lp";%>
             <% String referrer = request.getRequestURI()+ "?InvNo=" + invNo;%>
             <% String pageName = "CommandInv.jsp?InvNo=" + invNo;%>
+            <% if( serialType.length() > 0 )
+            {
+            	redirect = redirect + "&" + serialType + "=" + serialNum;
+            	referrer = referrer + "&" + serialType + "=" + serialNum;
+            	pageName = pageName + "&" + serialType + "=" + serialNum;
+            }
+            %>
             <%@ include file="include/Nav.jsp" %>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
