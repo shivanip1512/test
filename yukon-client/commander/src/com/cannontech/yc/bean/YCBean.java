@@ -30,7 +30,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.PointRegistration;
@@ -52,6 +54,8 @@ import com.cannontech.yc.gui.YC;
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
 {
 	private Vector deviceIDs = null;
+	private HashMap serialTypeToNumberMap = null;
+//	private Vector serialNumbers = null;
 	/** Singleton counter for pointRegistration messages sent to dispatch connection */
 	private volatile int pointRegCounter = 0;
 	
@@ -91,7 +95,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 * This vector of data should only live as long as a point and timestamp 
 	 * selected do not change, so clear it out on pointID or timestamp changes*/
 	private Vector currentRPHVector = new Vector();
-	
+
+	/** Valid route types for serial commands to be sent out on */
+	private int [] validRouteTypes = new int[]{
+		RouteTypes.ROUTE_CCU,
+		RouteTypes.ROUTE_MACRO
+		};	
 	/**
 	 * 
 	 */
@@ -112,8 +121,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		if( deviceID_ != getDeviceID())
 		{
 			super.setDeviceID(deviceID_);
-			setDeviceType(deviceID_);
-			if( !getDeviceIDs().contains(new Integer(deviceID_)))
+			if( deviceID_ > Device.SYSTEM_DEVICE_ID && !getDeviceIDs().contains(new Integer(deviceID_)))
 				getDeviceIDs().addElement(new Integer(deviceID_));
 			
 			//Remove data from other devices..we don't care about it anymore
@@ -130,6 +138,40 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		}
 	}
 
+	/**
+	 * Set the serialNumber
+	 * The serialNumber for the LCR commands
+	 * @param serialNumber_ java.lang.String
+	 */
+	public void setSerialNumber(String serialType_, String serialNumber_)
+	{
+		if( serialType_ != null && serialNumber_ != null)
+		{
+			super.setSerialNumber(serialNumber_);
+			if( serialNumber_.length() > 0)// && !getSerialNumbers().contains(serialNumber_))
+			{
+				Vector serialNumbers = (Vector)getSerialTypeToNumberMap().get(serialType_);
+				if( serialNumbers == null)
+					serialNumbers = new Vector();
+				
+				if( !serialNumbers.contains(serialNumber_))
+					serialNumbers.add(serialNumber_);
+					
+				getSerialTypeToNumberMap().put(serialType_, serialNumbers);
+			}
+			setErrorMsg("");
+		}
+	}
+
+	/**
+	 * Set the serialNumber
+	 * The serialNumber for the LCR commands
+	 * @param serialNumber_ java.lang.String
+	 */
+	public void setSerialNumber(String serialNumber_)
+	{
+		setSerialNumber(getDeviceType(), serialNumber_);
+	}	
 	/**
 	 * Returns the connToDispatch.
 	 * @return com.cannontech.message.util.ClientConnection
@@ -743,7 +785,26 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 			
 		return deviceIDs;
 	}
-		
+	
+	/**
+	 * Returns a vector of serialNumbers from the serialTypeToNumbersMap with key value of serialType_
+	 * @return
+	 */
+	public Vector getSerialNumbers(String serialType_)
+	{
+		return (Vector)getSerialTypeToNumberMap().get(serialType_);
+	}
+	/**
+	 * @return
+	 */
+	public HashMap getSerialTypeToNumberMap()
+	{
+		if( serialTypeToNumberMap == null)
+			serialTypeToNumberMap = new HashMap();
+	
+		return serialTypeToNumberMap;
+	}	
+	
 	public void setDeviceType(int devID)
 	{
 		LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(devID);
@@ -1099,5 +1160,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     {
         getCurrentRPHVector().clear();
     }
+    
+
+	public final LiteYukonPAObject[] getValidRoutes()
+	{
+		return PAOFuncs.getRoutesByType(validRouteTypes);
+	}
 }
 
