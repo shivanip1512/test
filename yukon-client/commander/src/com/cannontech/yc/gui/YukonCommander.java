@@ -174,9 +174,10 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		{
 			Object selected = getSerialRoutePanel().getRouteComboBox().getSelectedItem();
 			if( selected instanceof LiteYukonPAObject)
-			{
 				setRouteID(((LiteYukonPAObject)selected).getYukonID());
-			}
+			else
+				setRouteID(-1);	//set it to an invalid route
+				
 			CTILogger.info(selected);
 		}
 	
