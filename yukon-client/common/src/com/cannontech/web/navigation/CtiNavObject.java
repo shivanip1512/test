@@ -1,23 +1,18 @@
-/*
- * Created on Apr 22, 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.cannontech.web.navigation;
 
 /**
  * @author jdayton
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * Used to store navigation state between pages
  */
 public class CtiNavObject 
 {
 	private String currentPage;
 	private String previousPage;
+	private String moduleExitPage;
+	private String moduleLabel;
 	
-	/*
+	/**
 	 * This field is for use only in STARS.
 	 * It is used to aid in member management for Energy Company Administration.
 	 */
@@ -55,7 +50,7 @@ public class CtiNavObject
 		previousPage = page;
 	}
 	
-	/*
+	/**
 	 * This is the useful one.  Takes a new page string and sets
 	 * it as the current page, first moving the old current page to 
 	 * the previous field.
@@ -70,4 +65,32 @@ public class CtiNavObject
 	{
 		memberECAdmin = isManaging;
 	}
+	/**
+	 * @return
+	 */
+	public String getModuleExitPage() {
+		return moduleExitPage;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setModuleExitPage(String string) {
+		moduleExitPage = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getModuleLabel() {
+		return moduleLabel;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setModuleLabel(String string) {
+		moduleLabel = string;
+	}
+
 }
