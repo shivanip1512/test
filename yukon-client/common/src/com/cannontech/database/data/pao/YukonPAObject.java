@@ -295,7 +295,7 @@ public void setPAOClass( String newPAOClass)
  * Insert the method's description here.
  * Creation date: (9/12/2001 10:25:35 AM)
  */
-protected void setPAOName( String name )
+public void setPAOName( String name )
 {
 	getYukonPAObject().setPaoName( name );
 }
@@ -307,6 +307,16 @@ public void setPAOStatistics( String newStats )
 {
 	getYukonPAObject().setPaoStatistics( newStats );
 }
+
+public boolean isDisabled() {
+	return CtiUtilities.isTrue( getYukonPAObject().getDisableFlag() );
+}
+
+public void setDisabled( boolean val ) {
+	getYukonPAObject().setDisableFlag(
+		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+}
+
 
 /**
  * This method was created in VisualAge.
