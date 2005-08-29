@@ -16,6 +16,7 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.axis.MessageContext;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
@@ -29,13 +30,17 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.multispeak.ArrayOfErrorObject;
 import com.cannontech.multispeak.ArrayOfOutageDetectionEvent;
 import com.cannontech.multispeak.ErrorObject;
 import com.cannontech.multispeak.OA_OD;
 import com.cannontech.multispeak.OA_ODLocator;
 import com.cannontech.multispeak.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.OA_ODSoap_PortType;
+import com.cannontech.multispeak.OutageDetectDeviceType;
 import com.cannontech.multispeak.OutageDetectionEvent;
+import com.cannontech.multispeak.OutageEventType;
+import com.cannontech.multispeak.OutageLocation;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -120,38 +125,50 @@ public class Multispeak implements MessageListener, Observer {
 //						getRequestMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
 //					}
 //				}
-				CTILogger.info("A MESSAGE: " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+				CTILogger.debug("A MESSAGE: " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 				if( returnMsg.getExpectMore() == 0)
 				{
 					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 					ODEvent event = (ODEvent)getODEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-					if( returnMsg.getStatus() != 0)
+					if( event != null)
 					{
-						if( event != null)
+						String key = MultispeakFuncs.getUniqueKey();
+						String keyValue = null;
+						if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
 						{
-							String key = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_UNIQUE_KEY);
-							String keyValue = null;
-							if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-							{
-								LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(returnMsg.getDeviceID());
-								keyValue = (lPao == null ? null : lPao.getPaoName());
-							}
-							else if(key.toLowerCase().startsWith("meternum"))
-							{
-								LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(returnMsg.getDeviceID());
-								keyValue = (ldmn == null ? null : ldmn.getMeterNumber());
-							}
-
-							CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ")");
-							OutageDetectionEvent ode = new OutageDetectionEvent();
-							GregorianCalendar cal = new GregorianCalendar();
-							cal.setTime(returnMsg.getTimeStamp());
-							ode.setEventTime(cal);
-							ode.setObjectID(keyValue);
-							ode.setOutageDetectDeviceID(keyValue);
-							ode.setErrorString("Ping failed");
-							event.getODEvents().add(ode);
+							LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(returnMsg.getDeviceID());
+							keyValue = (lPao == null ? null : lPao.getPaoName());
 						}
+						else if(key.toLowerCase().startsWith("meternum"))
+						{
+							LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(returnMsg.getDeviceID());
+							keyValue = (ldmn == null ? null : ldmn.getMeterNumber());
+						}
+
+						OutageDetectionEvent ode = new OutageDetectionEvent();
+						GregorianCalendar cal = new GregorianCalendar();
+						cal.setTime(returnMsg.getTimeStamp());
+						ode.setEventTime(cal);
+						ode.setObjectID(keyValue);
+						ode.setOutageDetectDeviceID(keyValue);
+						ode.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
+						OutageLocation loc = new OutageLocation();
+						loc.setMeterNo(keyValue);
+						ode.setOutageLocation(loc);
+					    
+					    if( returnMsg.getStatus() != 0)
+						{
+					        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ")");
+							ode.setOutageEventType(OutageEventType.Outage);
+							//ode.setErrorString("Ping failed");	//Not Valid (info received from Luis @ Milsoft
+						}
+					    else
+					    {
+					        CTILogger.info("OutageDetectionEvent: Ping Successful (" + keyValue + ")");
+					    	ode.setOutageEventType(OutageEventType.Restoration);
+					    }
+					    
+					    event.getODEvents().add(ode);
 					}
 					event.setCompletedMeterCount(event.getCompletedMeterCount() + 1);
 				}
@@ -176,7 +193,7 @@ public class Multispeak implements MessageListener, Observer {
 		CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from OMS vendor");
 		for (int i = 0; i < meterNumbers.length; i++)
 		{
-			String key = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_UNIQUE_KEY);
+			String key = MultispeakFuncs.getUniqueKey();
 			LiteYukonPAObject lPao = null;
 			if( key == null )
 			{
@@ -199,6 +216,8 @@ public class Multispeak implements MessageListener, Observer {
 				err.setErrorString("MeterNumber: " + meterNumbers[i] + " - Was NOT found in Yukon.");
 				err.setObjectID(meterNumbers[i]);
 				errorObjects.add(err);
+				//Remove unknown meters from expected return message
+				event.setTotalMeterCount(event.getTotalMeterCount()-1);
 			}
 			else
 			{
@@ -214,7 +233,6 @@ public class Multispeak implements MessageListener, Observer {
 			errorObjects.toArray(errors);
 			return errors;
 		}
-		System.out.println("HERE");
 		return new ErrorObject[0];
 	}
 	
@@ -226,9 +244,10 @@ public class Multispeak implements MessageListener, Observer {
 	{
 		try
 		{
-			CTILogger.info("Responding to OMS ODEventNotification WebService with " + odEvents.length + " unsuccesfully ping'd meters."); 
 //			String endpointURL = "http://localhost:8080/head/services/OA_ODSoap";
-			String endpointURL = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_WEBSERVICE_URL);
+			String endpointURL = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_WEBSERVICE_URL) + RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_OA_OD_SERVICE_NAME);
+
+		    CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): " + odEvents.length + " events."); 
 	
 			OA_OD service = new OA_ODLocator();
 			((OA_ODLocator)service).setOA_ODSoapEndpointAddress(endpointURL);
@@ -239,7 +258,9 @@ public class Multispeak implements MessageListener, Observer {
 			((OA_ODSoap_BindingStub)port).setHeader(header);
 	
 			ArrayOfOutageDetectionEvent arrayODEvents = new ArrayOfOutageDetectionEvent(odEvents);
-			port.ODEventNotification(arrayODEvents);	
+			ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
+			if( errObjects != null)
+			    MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
 		}
 		catch (ServiceException e)
 		{
