@@ -53,7 +53,40 @@ public class LiteWrapper
 
 		return retVal.toLowerCase();
 	}
-	
+
+
+	/**
+	 * Returns the type for the current LiteBase object.  This is not the
+	 * liteType, but rather the specific type of the object.
+	 *
+	 */
+	public int getRawType()
+	{
+		//default the type to invalid
+		int retVal = PAOGroups.INVALID;
+		
+		if( _getLiteBase() instanceof LiteYukonPAObject )
+		{
+			retVal = ((LiteYukonPAObject)_getLiteBase()).getType();
+		}
+		else if( _getLiteBase() instanceof LitePoint )
+		{
+			retVal = ((LitePoint)_getLiteBase()).getPointType();
+		}
+
+		return retVal;
+	}
+
+
+	/**
+	 * Returns the lite type for the current LiteBase object.
+	 *
+	 */
+	public int getLiteType()
+	{
+		return _getLiteBase().getLiteType();
+	}
+
 	public String getParent()
 	{
 		if( _getLiteBase() instanceof LitePoint )
