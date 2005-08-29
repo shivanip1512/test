@@ -88,6 +88,14 @@ public final class PointUnits
       UOMID_MW
    };
    
+   public static final int[] CAP_CONTROL_VOLTS_UOMIDS =
+   {
+	  UOMID_KVOLTS,
+	  UOMID_VOLTS,
+	  UOMID_VOLTAMPS,
+	  UOMID_VOLTS_V2H
+   };
+
 	/**
 	 * Constructor for PointUnit.
 	 */
