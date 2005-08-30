@@ -1,10 +1,12 @@
 package com.cannontech.datagenerator;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
@@ -132,7 +134,6 @@ public class DataTools
    public void createCapControlDB( int routeID, int subCount )
    {
    		intParam1 = routeID;
-   		int subTotal = 1;
    		int feederTotal = 3; //per sub
    		int bankTotal = 4;  //per feeder
    		
@@ -140,7 +141,7 @@ public class DataTools
    		for( int i = 0; i < subCount; i++ )
    		{
    			Vector ccFeederVector = new Vector( feederTotal );
-   			Vector ccBankVector = new Vector( bankTotal );
+   			ArrayList ccBankList = new ArrayList( bankTotal );
    			
    			int[] feederIDs = new int[ feederTotal ];
    			for( int j = 0; j < feederTotal; j++ )
@@ -158,16 +159,16 @@ public class DataTools
 
    				feederIDs[j] = YukonPAObject.getNextYukonPAObjectID().intValue();
    				for( int x = 0; x < bankIDs.length; x++ )
-   					ccBankVector.add( new CCFeederBankList(
+					ccBankList.add( new CCFeederBankList(
    							new Integer(feederIDs[j]),
    							new Integer(bankIDs[x]),
 							new Integer(x+1)) );
 
    	   			CapControlFeeder f = createCBCFeeder( feederIDs[j] );
-   	   			f.setCcBankListVector( ccBankVector );
+   	   			f.setCcBankList( ccBankList );
    	   			writeToSQLDatabase( f );
    	   			
-   	   			ccBankVector.clear();
+				ccBankList.clear();
    			}
    			
 
@@ -195,27 +196,10 @@ public class DataTools
 		ccSubBus.setCapControlPAOID( new Integer(paoID) );
 		ccSubBus.setName( "SubBus " + paoID );
 		ccSubBus.setGeoAreaName( "Gen Area" );
-		ccSubBus.getCapControlSubstationBus().setDaysOfWeek( new String("NYYYYYNN") );
 		ccSubBus.setDisableFlag( new Character('N') );		
 		
 		ccSubBus.getCapControlSubstationBus().setCurrentVarLoadPointID( new Integer(0) );
 		ccSubBus.getCapControlSubstationBus().setCurrentWattLoadPointID( new Integer(0) );
-
-		ccSubBus.getCapControlSubstationBus().setPeakSetPoint(
-				new Double(getRandDbl(80, 100)) );
-		ccSubBus.getCapControlSubstationBus().setOffPeakSetPoint(
-				new Double(getRandDbl(50, 60)) );
-
-		//10 minutes
-		ccSubBus.getCapControlSubstationBus().setMinResponseTime(
-				new Integer(600));
-				
-		// 10am
-		ccSubBus.getCapControlSubstationBus().setPeakStartTime(
-				new Integer(36000) );
-		// 6pm
-		ccSubBus.getCapControlSubstationBus().setPeakStopTime(
-				new Integer(64800) );
 
 		return ccSubBus;
    }
@@ -232,11 +216,6 @@ public class DataTools
 		ccFeeder.getCapControlFeeder().setCurrentVarLoadPointID( new Integer(0) );
 		ccFeeder.getCapControlFeeder().setCurrentWattLoadPointID( new Integer(0) );
 
-		ccFeeder.getCapControlFeeder().setPeakSetPoint(
-				new Double(getRandDbl(40, 60)) );
-		ccFeeder.getCapControlFeeder().setOffPeakSetPoint(
-				new Double(getRandDbl(10, 30)) );
-		
 		return ccFeeder;
    }
    
