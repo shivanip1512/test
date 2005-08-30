@@ -147,7 +147,11 @@ void CtiCalcLogicService::Run( )
     time_t   timeNow;
 
     int conncnt= 0;
+    CtiPointDataMsg pointMessage;
+
     ThreadMonitor.start(); //ecs 1/4/2005
+    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
+    RWTime LastThreadMonitorTime;
 
     CALCVERSION = identifyProjectVersion(CompileInfo);
 
@@ -384,6 +388,19 @@ void CtiCalcLogicService::Run( )
                 try
                 {
                     rwnow = rwnow.now();
+                    if(rwnow > LastThreadMonitorTime)
+                    {
+                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 60 );;
+                        if(pointMessage.getId()!=0)
+                        {
+                            pointMessage.setType(StatusPointType);
+                            pointMessage.setValue(ThreadMonitor.getState());
+                            pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
+
+                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+                        }
+                    }
+
                     if(rwnow > announceTime)
                     {
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
@@ -660,30 +677,12 @@ void CtiCalcLogicService::_inputThread( void )
         RWCollectable   *incomingMsg;
         BOOL            interrupted = FALSE;
         RWTime rwnow, announceTime;
-        CtiPointDataMsg pointMessage;
-
-        pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
-        RWTime LastThreadMonitorTime;
 
         while( !interrupted )
         {
             //  while i'm not getting anything
             while( !_conxion || (NULL == (incomingMsg = _conxion->ReadConnQue( 1000 )) && !interrupted) )
             {
-                if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
-                {
-                    LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if(pointMessage.getId()!=0)
-                    {
-                        pointMessage.setType(StatusPointType);
-                        pointMessage.setValue(ThreadMonitor.getState());
-
-                        pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
-
-                        _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
-                    }
-                }
-
                 if( _pSelf.serviceInterrupt( ) )
                 {
                     interrupted = TRUE;
