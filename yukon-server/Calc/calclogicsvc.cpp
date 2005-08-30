@@ -663,14 +663,13 @@ void CtiCalcLogicService::_inputThread( void )
         CtiPointDataMsg pointMessage;
 
         pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
-        LastThreadMonitorTime = LastThreadMonitorTime.now();
+        RWTime LastThreadMonitorTime;
 
         while( !interrupted )
         {
             //  while i'm not getting anything
             while( !_conxion || (NULL == (incomingMsg = _conxion->ReadConnQue( 1000 )) && !interrupted) )
             {
-
                 if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
                 {
                     LastThreadMonitorTime = LastThreadMonitorTime.now();
