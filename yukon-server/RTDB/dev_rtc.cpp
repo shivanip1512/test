@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/08/24 20:48:49 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/08/30 19:34:12 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.35  2005/08/30 19:34:12  cplender
+* PutConfig requests were not being followed by a time slot message.
+*
 * Revision 1.34  2005/08/24 20:48:49  cplender
 * Improved some debug output.
 *
@@ -659,7 +662,8 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
 
     try
     {
-        if(OutMessage->Buffer.SASt._commandType == ControlRequest)
+        if(OutMessage->Buffer.SASt._commandType == ControlRequest ||
+           OutMessage->Buffer.SASt._commandType == PutConfigRequest)
         {
             char codestr[256];
             string cmdStr;
