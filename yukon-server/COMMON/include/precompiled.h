@@ -10,7 +10,6 @@
 #pragma warning( disable : 4786)
 
 #include <windows.h>
-#include <winsock.h>
 
 #include <stdlib.h>
 #include <stdio.h>
