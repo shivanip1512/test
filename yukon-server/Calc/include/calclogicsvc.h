@@ -53,6 +53,8 @@ private:
 
     void _registerForPoints();
 
+    time_t   _nextCheckTime;
+
 };
 
 #endif //  __CALC__LOGIC_H__

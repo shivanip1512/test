@@ -42,8 +42,8 @@ private:
     RWTPtrDeque<CtiMultiMsg> _outbox;
     RWMutexLock _pointDataMutex;
 
-    void periodicLoop( void );
-    void onUpdateLoop( void );
+    void periodicThread( void );
+    void onUpdateThread( void );
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 
@@ -62,7 +62,7 @@ public:
 
     RWMutexLock outboxMux;
 
-    void calcLoop( void );
+    void calcThread( void );
     bool appendPoint( long pointID, RWCString &updateType, int updateInterval );
     void appendPointComponent( long pointID, RWCString &componentType, long componentPointID,
                                RWCString &operationType, double constantValue, RWCString &functionName );
