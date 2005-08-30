@@ -694,9 +694,9 @@ public Object getValue(Object o) {
 	
 	Series5Base fiver = (Series5Base)o ;
 	
-	fiver.getSeries5RTU().setTickTime((Integer)getTickTimeSpinField().getValue());
+	fiver.getSeries5RTU().setTickTime(new Integer(getTickTimeSpinField().getValue().toString()));
 	
-	fiver.getSeries5RTU().setTransmitOffset((Integer)getTransmitOffsetSpinField().getValue());
+	fiver.getSeries5RTU().setTransmitOffset(new Integer(getTransmitOffsetSpinField().getValue().toString()));
 	
 	fiver.getSeries5RTU().setPowerValueHighLimit(new Integer(getJTextFieldHighLimit().getText()));
 	
