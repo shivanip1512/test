@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/08/23 19:56:32 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/08/30 19:48:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -24,7 +24,7 @@
 CtiThreadRegData::CtiThreadRegData( int id,
                                      string name,
                                      Behaviours type,
-                                     int tickle_freq,
+                                     int tickle_freq_sec,
                                      behaviourFuncPtr ptr1,
                                      void *args1,
                                      behaviourFuncPtr ptr2,
@@ -36,7 +36,7 @@ CtiThreadRegData::CtiThreadRegData( int id,
    _id = id;
    _name = name;
    _behaviourType = type;
-   _tickleFreq = tickle_freq;
+   _tickleFreq = tickle_freq_sec;
    _action_one = ptr1;
    _action_one_args = args1;
    _action_two = ptr2;
@@ -58,7 +58,7 @@ CtiThreadRegData::~CtiThreadRegData()
 
 bool CtiThreadRegData::operator<( const CtiThreadRegData& y ) const
 {
-   return( true );
+   return( _id < y._id );
 }
 
 //===========================================================================================================

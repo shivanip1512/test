@@ -7,19 +7,19 @@
 *
 * File:   thread_register_data
 *
-* Class:  
+* Class:
 * Date:   9/2/2004
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/08/23 19:56:52 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/08/30 19:48:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
- 
+
 #include <string>
 using namespace std;
 
@@ -32,18 +32,18 @@ public:
 
    enum Behaviours   //absence detect behaviour type
    {
-      None,          
-      Action1,       
-      Action2,       
+      None,
+      Action1,
+      Action2,
       LogOut
-   };                
+   };
 
    typedef void (*behaviourFuncPtr)( void *p );
 
    CtiThreadRegData( int id = 0,
                       string name = "default",
                       Behaviours type = None,
-                      int tickle_freq = 0,
+                      int tickle_freq_sec = 0,
                       behaviourFuncPtr ptr1 = 0,
                       void *args1 = 0,
                       behaviourFuncPtr ptr2 = 0,
