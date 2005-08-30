@@ -272,9 +272,17 @@ alter table DevicePagingReceiverSettings
    add constraint FK_DevPaRec_Dev foreign key (DeviceID)
       references DEVICE (DEVICEID);
 
+insert into command values(-100, 'scan general', 'General Meter Scan', 'SENTINEL');
+insert into command values(-101, 'scan general frozen', 'General Meter Scan Frozen', 'SENTINEL');
+insert into command values(-102, 'scan general update', 'General Meter Scan and DB Update', 'SENTINEL');
+insert into command values(-103, 'scan general frozen update', 'General Meter Scan Frozen and DB Update', 'SENTINEL');
+insert into command values(-104, 'putvalue reset', 'Reset Demand', 'SENTINEL');
 
-
-
+INSERT INTO DEVICETYPECOMMAND VALUES (-383, -100, 'SENTINEL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-384, -101, 'SENTINEL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-385, -102, 'SENTINEL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-386, -103, 'SENTINEL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-387, -104, 'SENTINEL', 5, 'Y');
 
 
 
