@@ -215,13 +215,13 @@ insert into YukonRole values(-7,'Multispeak','Yukon','Multispeak web services in
 
 insert into YukonRoleProperty values(-1600,-7,'OMS WebServices URL','(none)','The OMS vendor Webservices endpoint URL. (ex. http://127.0.0.1:80/soap/)');
 insert into YukonRoleProperty values(-1601,-7,'OMS unique key','meterNumber','The OMS and Yukon unique key field.  Valid values [meterNumber | deviceName]');
-insert into YukonRoleProperty values(-1602,-7,'OMS username','','The OMS username.');
-insert into YukonRoleProperty values(-1603,-7,'OMS password','','The OMS password.');
+insert into YukonRoleProperty values(-1602,-7,'OMS username','(none)','The OMS username.');
+insert into YukonRoleProperty values(-1603,-7,'OMS password','(none)','The OMS password.');
 insert into YukonRoleProperty values(-1604,-7,'OMS OA_OD Service','OA_ODSoap','The OMS OA_OD service name.');
 insert into YukonRoleProperty values(-1610,-7,'CIS WebServices URL','(none)','The CIS vendor Webservices endpoint URL. (ex. http://127.0.0.1:80/soap/)');
 insert into YukonRoleProperty values(-1611,-7,'CIS unique key','meterNumber','The CIS and Yukon unique key field.  Valid values [meterNumber | deviceName]');
-insert into YukonRoleProperty values(-1612,-7,'CIS username','','The CIS username.');
-insert into YukonRoleProperty values(-1613,-7,'CIS password','','The CIS password.');
+insert into YukonRoleProperty values(-1612,-7,'CIS username','(none)','The CIS username.');
+insert into YukonRoleProperty values(-1613,-7,'CIS password','(none)','The CIS password.');
 insert into YukonRoleProperty values(-1614,-7,'CIS CB_MR Service','CB_MRSoap','The CIS CB_MR service name.');
 
 insert into YukonGroupRole values(-270,-1,-7,-1600,'(none)');
