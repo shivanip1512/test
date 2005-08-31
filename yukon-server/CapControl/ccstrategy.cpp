@@ -69,20 +69,20 @@ void CtiCCStrategy::restoreGuts( RWvistream& istrm )
     >> _controlmethod
     >> _maxdailyoperation
     >> _maxoperationdisableflag
-    >> _peaksetpoint
-    >> _offpeaksetpoint
     >> _peakstarttime
     >> _peakstoptime
-    >> _upperbandwidth
     >> _controlinterval
     >> _maxconfirmtime
     >> _minconfirmpercent
     >> _failurepercent
     >> _daysofweek
-    >> _lowerbandwidth
     >> _controlunits
     >> _controldelaytime
-    >> _controlsendretries;
+    >> _controlsendretries
+    >> _peaklag
+    >> _peaklead
+    >> _offpklag
+    >> _offpklead;
 
 }
 void CtiCCStrategy::saveGuts( RWvostream& ostrm ) const
@@ -94,21 +94,20 @@ void CtiCCStrategy::saveGuts( RWvostream& ostrm ) const
     << _controlmethod
     << _maxdailyoperation
     << _maxoperationdisableflag
-    << _peaksetpoint
-    << _offpeaksetpoint
     << _peakstarttime
     << _peakstoptime
-    << _upperbandwidth
     << _controlinterval
     << _maxconfirmtime
     << _minconfirmpercent
     << _failurepercent
     << _daysofweek
-    << _lowerbandwidth
     << _controlunits
     << _controldelaytime
-    << _controlsendretries;
-
+    << _controlsendretries
+    << _peaklag    
+    << _peaklead   
+    << _offpklag   
+    << _offpklead; 
 }
 
 CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
@@ -120,20 +119,20 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _controlmethod = right._controlmethod;
         _maxdailyoperation = right._maxdailyoperation;
         _maxoperationdisableflag = right._maxoperationdisableflag;
-        _peaksetpoint = right._peaksetpoint;
-        _offpeaksetpoint = right._offpeaksetpoint;
         _peakstarttime = right._peakstarttime;
         _peakstoptime = right._peakstoptime;
-        _upperbandwidth = right._upperbandwidth;
         _controlinterval = right._controlinterval;
         _maxconfirmtime = right._maxconfirmtime;
         _minconfirmpercent = right._minconfirmpercent;
         _failurepercent = right._failurepercent;
         _daysofweek = right._daysofweek;
-        _lowerbandwidth = right._lowerbandwidth;
         _controlunits = right._controlunits;
         _controldelaytime = right._controldelaytime;
         _controlsendretries = right._controlsendretries;
+        _peaklag = right._peaklag;
+        _peaklead = right._peaklead;
+        _offpklag = right._offpklag;
+        _offpklead = right._offpklead;
     }
     return *this;
 
@@ -165,20 +164,25 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["maxoperationdisableflag"] >> tempBoolString;
     tempBoolString.toLower();
     _maxoperationdisableflag = (tempBoolString=="y"?TRUE:FALSE);
-    rdr["peaksetpoint"] >> _peaksetpoint;
-    rdr["offpeaksetpoint"] >> _offpeaksetpoint;
+    //rdr["peaksetpoint"] >> _peaksetpoint;
+    //rdr["offpeaksetpoint"] >> _offpeaksetpoint;
     rdr["peakstarttime"] >> _peakstarttime;
     rdr["peakstoptime"] >> _peakstoptime;
-    rdr["upperbandwidth"] >> _upperbandwidth;
+    //rdr["upperbandwidth"] >> _upperbandwidth;
     rdr["controlinterval"] >> _controlinterval;
     rdr["minresponsetime"] >> _maxconfirmtime;//will become "minconfirmtime" in the DB in 3.1
     rdr["minconfirmpercent"] >> _minconfirmpercent;
     rdr["failurepercent"] >> _failurepercent;
     rdr["daysofweek"] >> _daysofweek;
-    rdr["lowerbandwidth"] >> _lowerbandwidth;
+    //rdr["lowerbandwidth"] >> _lowerbandwidth;
     rdr["controlunits"] >> _controlunits;
     rdr["controldelaytime"] >> _controldelaytime;
     rdr["controlsendretries"] >> _controlsendretries;
+    rdr["peaklag"] >> _peaklag;
+    rdr["peaklead"] >> _peaklead;
+    rdr["offpklag"] >> _offpklag;
+    rdr["offpklead"] >> _offpklead;
+
 
 
 }
@@ -214,14 +218,24 @@ BOOL CtiCCStrategy::getMaxOperationDisableFlag() const
     return _maxoperationdisableflag;
 }
 
-DOUBLE CtiCCStrategy::getPeakSetPoint() const
+DOUBLE CtiCCStrategy::getPeakLag() const
 {
-    return _peaksetpoint;
+    return _peaklag;
 }
 
-DOUBLE CtiCCStrategy::getOffPeakSetPoint() const
+DOUBLE CtiCCStrategy::getOffPeakLag() const
 {
-    return _offpeaksetpoint;
+    return _offpklag;
+}
+
+DOUBLE CtiCCStrategy::getPeakLead() const
+{
+    return _peaklead;
+}
+
+DOUBLE CtiCCStrategy::getOffPeakLead() const
+{
+    return _offpklead;
 }
 
 LONG CtiCCStrategy::getPeakStartTime() const
@@ -232,11 +246,6 @@ LONG CtiCCStrategy::getPeakStartTime() const
 LONG CtiCCStrategy::getPeakStopTime() const
 {
     return _peakstoptime;
-}
-
-DOUBLE CtiCCStrategy::getUpperBandwidth() const
-{
-    return _upperbandwidth;
 }
 
 LONG CtiCCStrategy::getControlInterval() const
@@ -262,11 +271,6 @@ LONG CtiCCStrategy::getFailurePercent() const
 const RWCString& CtiCCStrategy::getDaysOfWeek() const
 {
     return _daysofweek;
-}
-
-DOUBLE CtiCCStrategy::getLowerBandwidth() const
-{
-    return _lowerbandwidth;
 }
 
 const RWCString& CtiCCStrategy::getControlUnits() const
@@ -316,15 +320,26 @@ CtiCCStrategy& CtiCCStrategy::setMaxOperationDisableFlag(BOOL maxopdisable)
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setPeakSetPoint(DOUBLE peak)
+CtiCCStrategy& CtiCCStrategy::setPeakLag(DOUBLE peak)
 {
-    _peaksetpoint = peak;
+    _peaklag = peak;
     return *this;
 }
 
-CtiCCStrategy& CtiCCStrategy::setOffPeakSetPoint(DOUBLE offpeak)
+CtiCCStrategy& CtiCCStrategy::setOffPeakLag(DOUBLE offpeak)
 {
-    _offpeaksetpoint = offpeak;
+    _offpklag = offpeak;
+    return *this;
+}
+CtiCCStrategy& CtiCCStrategy::setPeakLead(DOUBLE peak)
+{
+    _peaklead = peak;
+    return *this;
+}
+
+CtiCCStrategy& CtiCCStrategy::setOffPeakLead(DOUBLE offpeak)
+{
+    _offpklead = offpeak;
     return *this;
 }
 
@@ -339,13 +354,6 @@ CtiCCStrategy& CtiCCStrategy::setPeakStopTime(LONG stoptime)
     _peakstoptime = stoptime;
     return *this;
 }
-
-CtiCCStrategy& CtiCCStrategy::setUpperBandwidth(DOUBLE bandwidth)
-{
-    _upperbandwidth = bandwidth;
-    return *this;
-}
-
 CtiCCStrategy& CtiCCStrategy::setControlInterval(LONG interval)
 {
     _controlinterval = interval;
@@ -373,12 +381,6 @@ CtiCCStrategy& CtiCCStrategy::setFailurePercent(LONG failure)
 CtiCCStrategy& CtiCCStrategy::setDaysOfWeek(const RWCString& days)
 {
     _daysofweek = days;
-    return *this;
-}
-
-CtiCCStrategy& CtiCCStrategy::setLowerBandwidth(DOUBLE bandwidth)
-{
-    _lowerbandwidth = bandwidth;
     return *this;
 }
 

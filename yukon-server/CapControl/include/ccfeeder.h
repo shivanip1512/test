@@ -80,22 +80,24 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const RWCString& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakSetPoint() const;
-    DOUBLE getOffPeakSetPoint() const;
+    DOUBLE getPeakLag() const;
+    DOUBLE getOffPeakLag() const;
+    DOUBLE getPeakLead() const;
+    DOUBLE getOffPeakLead() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
-    DOUBLE getUpperBandwidth() const;
+    LONG getCurrentVoltLoadPointId() const;
+    DOUBLE getCurrentVoltLoadPointValue() const;
     LONG getControlInterval() const;
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
     const RWCString& getMapLocationId() const;
-    DOUBLE getLowerBandwidth() const;
     const RWCString& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
@@ -120,8 +122,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getCurrentVarPointQuality() const;
     BOOL getWaiveControlFlag() const;
     const RWCString& getParentControlUnits() const;
-    LONG getParentDecimalPlaces() const;
-    BOOL getParentPeakTimeFlag() const;
+    LONG getDecimalPlaces() const;
+    BOOL getPeakTimeFlag() const;
     
     RWSortedVector& getCCCapBanks();
 
@@ -138,22 +140,24 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setControlMethod(const RWCString& method);
     CtiCCFeeder& setMaxDailyOperation(LONG max);
     CtiCCFeeder& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCFeeder& setPeakSetPoint(DOUBLE peak);
-    CtiCCFeeder& setOffPeakSetPoint(DOUBLE offpeak);
+    CtiCCFeeder& setPeakLag(DOUBLE peak);
+    CtiCCFeeder& setOffPeakLag(DOUBLE offpeak);
+    CtiCCFeeder& setPeakLead(DOUBLE peak);
+    CtiCCFeeder& setOffPeakLead(DOUBLE offpeak);
     CtiCCFeeder& setPeakStartTime(LONG starttime);
     CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCFeeder& setUpperBandwidth(DOUBLE bandwidth);
+    CtiCCFeeder& setCurrentVoltLoadPointId(LONG currentvoltid);
+    CtiCCFeeder& setCurrentVoltLoadPointValue(DOUBLE currentvoltval);
     CtiCCFeeder& setControlInterval(LONG interval);
     CtiCCFeeder& setMaxConfirmTime(LONG confirm);
     CtiCCFeeder& setMinConfirmPercent(LONG confirm);
     CtiCCFeeder& setFailurePercent(LONG failure);
     CtiCCFeeder& setDaysOfWeek(const RWCString& days);
     CtiCCFeeder& setMapLocationId(const RWCString& maplocation);
-    CtiCCFeeder& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCFeeder& setControlUnits(const RWCString& contunit);
     CtiCCFeeder& setControlDelayTime(LONG delay);
     CtiCCFeeder& setControlSendRetries(LONG retries);
@@ -179,8 +183,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
     CtiCCFeeder& setWaiveControlFlag(BOOL waive);
     CtiCCFeeder& setParentControlUnits(RWCString parentControlUnits);
-    CtiCCFeeder& setParentDecimalPlaces(LONG parentDecimalPlaces);
-    CtiCCFeeder& setParentPeakTimeFlag(BOOL parentPeakTimeFlag);
+    CtiCCFeeder& setDecimalPlaces(LONG decimalPlaces);
+    CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
 
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
@@ -190,6 +194,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     //BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG subBusRetries);
     BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits);
+    DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
+    BOOL isPeakTime(const RWDBDateTime& currentDateTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
@@ -211,7 +217,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
 
     BOOL capBankVerificationStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
-
+    
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -253,25 +259,28 @@ private:
     RWCString _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
-    DOUBLE _peaksetpoint;
-    DOUBLE _offpeaksetpoint;
     LONG _peakstarttime;
     LONG _peakstoptime;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
-    DOUBLE _upperbandwidth;
+    LONG _currentvoltloadpointid;
+    DOUBLE _currentvoltloadpointvalue;
     LONG _controlinterval;
     LONG _maxconfirmtime;
     LONG _minconfirmpercent;
     LONG _failurepercent;
     RWCString _daysofweek;
     RWCString _maplocationid;
-    DOUBLE _lowerbandwidth;
     RWCString _controlunits;
     LONG _controldelaytime;
     LONG _controlsendretries;
+    DOUBLE _peaklag;
+    DOUBLE _offpklag;
+    DOUBLE _peaklead;
+    DOUBLE _offpklead;
+    
     LONG _displayorder;
     BOOL _newpointdatareceivedflag;
     RWDBDateTime _lastcurrentvarpointupdatetime;
@@ -294,8 +303,8 @@ private:
     BOOL _waivecontrolflag;
 
     RWCString _parentControlUnits;
-    LONG _parentDecimalPlaces;
-    BOOL _parentPeakTimeFlag;
+    LONG _decimalPlaces;
+    BOOL _peakTimeFlag;
 
     RWSortedVector _cccapbanks;
 

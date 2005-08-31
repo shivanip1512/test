@@ -1621,6 +1621,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
 const RWCString CtiCCCapBank::SwitchedOperationalState = "Switched";
 const RWCString CtiCCCapBank::FixedOperationalState = "Fixed";
 const RWCString CtiCCCapBank::UninstalledState = "Uninstalled";
+const RWCString CtiCCCapBank::StandAloneState = "Standalone";
 
 int CtiCCCapBank::Open = STATEZERO;
 int CtiCCCapBank::Close = STATEONE;

@@ -37,6 +37,7 @@
 #define QUESTIONABLEBANKS 3
 #define SELECTEDFORVERIFICATIONBANKS 4
 #define BANKSINACTIVEFORXTIME 5
+#define STANDALONEBANKS 6
 
 
 class CtiCCSubstationBus : public RWCollectable
@@ -65,22 +66,24 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const RWCString& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakSetPoint() const;
-    DOUBLE getOffPeakSetPoint() const;
+    DOUBLE getPeakLag() const;
+    DOUBLE getOffPeakLag() const;
+    DOUBLE getPeakLead() const;
+    DOUBLE getOffPeakLead() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     LONG getCurrentWattLoadPointId() const;
     DOUBLE getCurrentWattLoadPointValue() const;
-    DOUBLE getUpperBandwidth() const;
+    LONG getCurrentVoltLoadPointId() const;
+    DOUBLE getCurrentVoltLoadPointValue() const;
     LONG getControlInterval() const;
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
     const RWCString& getMapLocationId() const;
-    DOUBLE getLowerBandwidth() const;
     const RWCString& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
@@ -130,22 +133,24 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setControlMethod(const RWCString& method);
     CtiCCSubstationBus& setMaxDailyOperation(LONG max);
     CtiCCSubstationBus& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCSubstationBus& setPeakSetPoint(DOUBLE peak);
-    CtiCCSubstationBus& setOffPeakSetPoint(DOUBLE offpeak);
+    CtiCCSubstationBus& setPeakLag(DOUBLE peak);
+    CtiCCSubstationBus& setOffPeakLag(DOUBLE offpeak);
+    CtiCCSubstationBus& setPeakLead(DOUBLE peak);
+    CtiCCSubstationBus& setOffPeakLead(DOUBLE offpeak);
     CtiCCSubstationBus& setPeakStartTime(LONG starttime);
     CtiCCSubstationBus& setPeakStopTime(LONG stoptime);
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
     CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval);
     CtiCCSubstationBus& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCSubstationBus& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCSubstationBus& setUpperBandwidth(DOUBLE bandwidth);
+    CtiCCSubstationBus& setCurrentVoltLoadPointId(LONG currentvoltid);
+    CtiCCSubstationBus& setCurrentVoltLoadPointValue(DOUBLE currentvoltval);
     CtiCCSubstationBus& setControlInterval(LONG interval);
     CtiCCSubstationBus& setMaxConfirmTime(LONG confirm);
     CtiCCSubstationBus& setMinConfirmPercent(LONG confirm);
     CtiCCSubstationBus& setFailurePercent(LONG failure);
     CtiCCSubstationBus& setDaysOfWeek(const RWCString& days);
     CtiCCSubstationBus& setMapLocationId(const RWCString& maplocation);
-    CtiCCSubstationBus& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCSubstationBus& setControlUnits(const RWCString& contunit);
     CtiCCSubstationBus& setControlDelayTime(LONG delay);
     CtiCCSubstationBus& setControlSendRetries(LONG retries);
@@ -182,8 +187,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL isPeakTime(const RWDBDateTime& currentDateTime);
     void clearOutNewPointReceivedFlags();
     CtiCCSubstationBus& checkForAndProvideNeededControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
-    void regularSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
-    void optimizedSubstationBusControl(DOUBLE setpoint, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
+    void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     BOOL isAlreadyControlled();
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
@@ -247,6 +252,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static const RWCString ManualOnlyControlMethod;
 
     static const RWCString KVARControlUnits;
+    static const RWCString VoltControlUnits;
     static const RWCString PF_BY_KVARControlUnits;
     static const RWCString PF_BY_KQControlUnits;
     //static int PeakState;
@@ -263,30 +269,34 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     RWCString _paodescription;
     BOOL _disableflag;
     LONG _parentId;
-    LONG _strategyId;
-    RWCString _strategyName;
-    RWCString _controlmethod;
-    LONG _maxdailyoperation;
-    BOOL _maxoperationdisableflag;
-    DOUBLE _peaksetpoint;
-    DOUBLE _offpeaksetpoint;
-    LONG _peakstarttime;
-    LONG _peakstoptime;
+      LONG _strategyId;
+      RWCString _strategyName;
+      RWCString _controlmethod;
+      LONG _maxdailyoperation;
+      BOOL _maxoperationdisableflag;
+      LONG _peakstarttime;
+      LONG _peakstoptime;
     LONG _currentvarloadpointid;
     DOUBLE _currentvarloadpointvalue;
     LONG _currentwattloadpointid;
     DOUBLE _currentwattloadpointvalue;
-    DOUBLE _upperbandwidth;
-    LONG _controlinterval;
-    LONG _maxconfirmtime;
-    LONG _minconfirmpercent;
-    LONG _failurepercent;
-    RWCString _daysofweek;
-    RWCString _maplocationid;
-    DOUBLE _lowerbandwidth;
-    RWCString _controlunits;
-    LONG _controldelaytime;
-    LONG _controlsendretries;
+    LONG _currentvoltloadpointid;
+    DOUBLE _currentvoltloadpointvalue;
+    
+      LONG _controlinterval;
+      LONG _maxconfirmtime;
+      LONG _minconfirmpercent;
+      LONG _failurepercent;
+      RWCString _daysofweek;
+      RWCString _maplocationid;
+      RWCString _controlunits;
+      LONG _controldelaytime;
+      LONG _controlsendretries;
+      DOUBLE _peaklag;
+      DOUBLE _offpklag;
+      DOUBLE _peaklead;
+      DOUBLE _offpklead;
+
     LONG _decimalplaces;
     RWDBDateTime _nextchecktime;
     BOOL _newpointdatareceivedflag;

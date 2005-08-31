@@ -46,17 +46,17 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     const RWCString& getControlMethod() const;
     LONG getMaxDailyOperation() const;
     BOOL getMaxOperationDisableFlag() const;
-    DOUBLE getPeakSetPoint() const;
-    DOUBLE getOffPeakSetPoint() const;
+    DOUBLE getPeakLag() const;
+    DOUBLE getOffPeakLag() const;
+    DOUBLE getPeakLead() const;
+    DOUBLE getOffPeakLead() const;
     LONG getPeakStartTime() const;
     LONG getPeakStopTime() const;
-    DOUBLE getUpperBandwidth() const;
     LONG getControlInterval() const;
     LONG getMaxConfirmTime() const;
     LONG getMinConfirmPercent() const;
     LONG getFailurePercent() const;
     const RWCString& getDaysOfWeek() const;
-    DOUBLE getLowerBandwidth() const;
     const RWCString& getControlUnits() const;
     LONG getControlDelayTime() const;
     LONG getControlSendRetries() const;
@@ -66,20 +66,23 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setControlMethod(const RWCString& method);
     CtiCCStrategy& setMaxDailyOperation(LONG max);
     CtiCCStrategy& setMaxOperationDisableFlag(BOOL maxopdisable);
-    CtiCCStrategy& setPeakSetPoint(DOUBLE peak);
-    CtiCCStrategy& setOffPeakSetPoint(DOUBLE offpeak);
+    CtiCCStrategy& setPeakLag(DOUBLE peak);
+    CtiCCStrategy& setOffPeakLag(DOUBLE offpeak);
+    CtiCCStrategy& setPeakLead(DOUBLE peak);
+    CtiCCStrategy& setOffPeakLead(DOUBLE offpeak);
     CtiCCStrategy& setPeakStartTime(LONG starttime);
     CtiCCStrategy& setPeakStopTime(LONG stoptime);
-    CtiCCStrategy& setUpperBandwidth(DOUBLE bandwidth);
     CtiCCStrategy& setControlInterval(LONG interval);
     CtiCCStrategy& setMaxConfirmTime(LONG confirm);
     CtiCCStrategy& setMinConfirmPercent(LONG confirm);
     CtiCCStrategy& setFailurePercent(LONG failure);
     CtiCCStrategy& setDaysOfWeek(const RWCString& days);
-    CtiCCStrategy& setLowerBandwidth(DOUBLE bandwidth);
     CtiCCStrategy& setControlUnits(const RWCString& contunit);
     CtiCCStrategy& setControlDelayTime(LONG delay);
     CtiCCStrategy& setControlSendRetries(LONG retries);
+
+
+
 
     BOOL isDirty() const;
 
@@ -115,24 +118,27 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     RWCString _controlmethod;
     LONG _maxdailyoperation;
     BOOL _maxoperationdisableflag;
-    DOUBLE _peaksetpoint;
-    DOUBLE _offpeaksetpoint;
     LONG _peakstarttime;
     LONG _peakstoptime;
-    DOUBLE _upperbandwidth;
     LONG _controlinterval;
     LONG _maxconfirmtime;
     LONG _minconfirmpercent;
     LONG _failurepercent;
     RWCString _daysofweek;
-    DOUBLE _lowerbandwidth;
     RWCString _controlunits;
     LONG _controldelaytime;
     LONG _controlsendretries;
+    DOUBLE _peaklag;
+    DOUBLE _offpklag;
+    DOUBLE _peaklead;
+    DOUBLE _offpklead;
     
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
+
+    list <LONG> _subBusList;
+    list <LONG> _feederList;
 
     void restore(RWDBReader& rdr);
 };

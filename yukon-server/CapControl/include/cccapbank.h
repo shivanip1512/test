@@ -164,6 +164,7 @@ public:
     static const RWCString SwitchedOperationalState;
     static const RWCString FixedOperationalState;
     static const RWCString UninstalledState;
+    static const RWCString StandAloneState;
     
     //Possible states
     static int Open;

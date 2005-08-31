@@ -18,6 +18,7 @@
 #include "ccsubstationbusstore.h"
 #include "capcontroller.h"
 #include "ccid.h"
+#include "logger.h"
                      
 #include <rw/collstr.h>
 
@@ -718,10 +719,21 @@ void CtiCCCommandExecutor::OpenCapBank()
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            RWCString text = RWCString("Manual Open Sent");
+                            char tempchar[80] = "";
+                            char tempchar1[80] = "";
                             RWCString additional = RWCString("Sub: ");
                             additional += currentSubstationBus->getPAOName();
+                            additional += RWCString("  Feeder: ");
+                            additional += currentFeeder->getPAOName();
+
+                            RWCString text = RWCString("Manual Open Sent, Sub VarLoad = ");
+                            _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
+                            text += tempchar;
+                            text += RWCString(" Feeder VarLoad = ");
+                            _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
+                            text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
                                 (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
@@ -892,10 +904,21 @@ void CtiCCCommandExecutor::CloseCapBank()
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            RWCString text = RWCString("Manual Close Sent");
+                            char tempchar[80] = "";
+                            char tempchar1[80] = "";
                             RWCString additional = RWCString("Sub: ");
                             additional += currentSubstationBus->getPAOName();
+                            additional += RWCString("  Feeder: ");
+                            additional += currentFeeder->getPAOName();
+
+                            RWCString text = RWCString("Manual Close Sent, Sub VarLoad = ");
+                            _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
+                            text += tempchar;
+                            text += RWCString(" Feeder VarLoad = ");
+                            _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
+                            text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
                                 (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
@@ -1066,10 +1089,21 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            RWCString text = RWCString("Manual Confirm Open Sent");
+                            char tempchar[80] = "";
+                            char tempchar1[80] = "";
                             RWCString additional = RWCString("Sub: ");
                             additional += currentSubstationBus->getPAOName();
+                            additional += RWCString("  Feeder: ");
+                            additional += currentFeeder->getPAOName();
+
+                            RWCString text = RWCString("Manual Confirm Open Sent, Sub VarLoad = ");
+                            _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
+                            text += tempchar;
+                            text += RWCString(" Feeder VarLoad = ");
+                            _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
+                            text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
                                   (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&
@@ -1246,10 +1280,21 @@ void CtiCCCommandExecutor::ConfirmClose()
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            RWCString text = RWCString("Manual Confirm Close Sent");
+                            char tempchar[80] = "";
+                            char tempchar1[80] = "";
                             RWCString additional = RWCString("Sub: ");
                             additional += currentSubstationBus->getPAOName();
+                            additional += RWCString("  Feeder: ");
+                            additional += currentFeeder->getPAOName();
+
+                            RWCString text = RWCString("Manual Confirm Close Sent, Sub VarLoad = ");
+                            _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
+                            text += tempchar;
+                            text += RWCString(" Feeder VarLoad = ");
+                            _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
+                            text += tempchar1;
                             pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
                                   (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&

@@ -913,6 +913,10 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
             {
                 regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
             }
+            if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
+            {
+                regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
+            }
 
             RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
 
@@ -927,6 +931,10 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
                 if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                 {
                     regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
+                }
+                if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
+                {
+                    regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
                 }
 
                 RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -995,7 +1003,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         ( (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_CAP_CONTROL) ||
                           (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
                           dbChange->getDatabase() == ChangePointDb ||
-                          (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ) )
+                          (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ||
+                          dbChange->getDatabase() == ChangeCBCStrategyDb) )
                     {
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
@@ -1222,6 +1231,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
             found = TRUE;
            // break;
         }
+        else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
+        {
+
+            currentSubstationBus->setCurrentVoltLoadPointValue(value);
+            currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+            currentSubstationBus->setBusUpdatedFlag(TRUE);
+            found = TRUE;
+           // break;
+        }
         else if( !found )
         {
             RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -1308,6 +1326,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
+                    found = TRUE;
+                   // break;
+                }
+                else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
+                {
+                    currentFeeder->setCurrentVoltLoadPointValue(value);
+                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                    
                     found = TRUE;
                    // break;
                 }
@@ -1498,6 +1525,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
+                found = TRUE;
+               // break;
+            }
+            else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
+            {
+                currentFeeder->setCurrentVoltLoadPointValue(value);
+                currentSubstationBus->setBusUpdatedFlag(TRUE);
+
                 found = TRUE;
                // break;
             }

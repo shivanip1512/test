@@ -273,87 +273,97 @@ int CtiPAOScheduleManager::parseEvent(RWCString command, int &strategy, long &se
 {
     RWCString tempCommand, temp2;
     LONG multiplier = 0;
+    int retVal = 1; //0 capbank event...future use could include other devices??  dunno..open to expand on.
 
-    if (!command.compareTo("Verify ALL CapBanks",RWCString::ignoreCase))
+    if ( !command.contains("CapBanks", RWCString::ignoreCase))
     {
-        strategy = 0;
-    }
-    else if (!command.compareTo("Verify Failed and Questionable CapBanks",RWCString::ignoreCase))
-    {
-        strategy = 1;
-    }
-    else if (!command.compareTo("Verify Failed CapBanks",RWCString::ignoreCase))
-    {
-        strategy = 2;
-    }
-    else if (!command.compareTo("Verify Questionable CapBanks",RWCString::ignoreCase))
-    {
-        strategy = 3;
-    }
-    else if (!command.compareTo("Verify Selected CapBanks",RWCString::ignoreCase))
-    {
-        strategy = 4;
-    }
-    else if (command.contains("Verify CapBanks that have not operated in",RWCString::ignoreCase))
-    {
-        if (!(tempCommand = command.match(RWCRExpr("[0-9]+"))).isNull())
+        retVal = 0;
+        if (!command.compareTo("Verify ALL CapBanks",RWCString::ignoreCase))
         {
-            if (!(temp2 = command.match(RWCRExpr("minut(e|es)"))).isNull())
+            strategy = 0;
+        }
+        else if (!command.compareTo("Verify Failed and Questionable CapBanks",RWCString::ignoreCase))
+        {
+            strategy = 1;
+        }
+        else if (!command.compareTo("Verify Failed CapBanks",RWCString::ignoreCase))
+        {
+            strategy = 2;
+        }
+        else if (!command.compareTo("Verify Questionable CapBanks",RWCString::ignoreCase))
+        {
+            strategy = 3;
+        }
+        else if (!command.compareTo("Verify Selected CapBanks",RWCString::ignoreCase))
+        {
+            strategy = 4;
+        }
+        else if (command.contains("Verify CapBanks that have not operated in",RWCString::ignoreCase))
+        {
+            if (!(tempCommand = command.match(RWCRExpr("[0-9]+"))).isNull())
             {
-                multiplier = 60;
-            }
-            if (!(temp2 = command.match(RWCRExpr("hou(r|rs)"))).isNull())
-            {
-                multiplier = 3600;
-            }
-            if (!(temp2 = command.match(RWCRExpr("da(y|ys)"))).isNull())
-            {
-                multiplier = 86400;
-            }
-            if (!(temp2 = command.match(RWCRExpr("wee(k|ks)"))).isNull())
-            {
-                multiplier = 604800;
-            }
+                if (!(temp2 = command.match(RWCRExpr("minut(e|es)"))).isNull())
+                {
+                    multiplier = 60;
+                }
+                if (!(temp2 = command.match(RWCRExpr("hou(r|rs)"))).isNull())
+                {
+                    multiplier = 3600;
+                }
+                if (!(temp2 = command.match(RWCRExpr("da(y|ys)"))).isNull())
+                {
+                    multiplier = 86400;
+                }
+                if (!(temp2 = command.match(RWCRExpr("wee(k|ks)"))).isNull())
+                {
+                    multiplier = 604800;
+                }
 
-            secsSinceLastOperation = atol(tempCommand) * multiplier;
+                secsSinceLastOperation = atol(tempCommand) * multiplier;
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - multiplier "<<multiplier<< endl;
+                    dout << RWTime() << " - secsSinceLastOperation "<<secsSinceLastOperation<< endl;
+                }
+            }
+            strategy = 5;
+        }
+        else if (!(tempCommand = command.match(RWCRExpr("[0-9]+-[0-9]+-[0-9]+\ [0-9]+:[0-9]+:[0-9]+\.[0-9]+"))).isNull())
+        {
+            int year, month, day, hour, minute, second;
+            RWCTokenizer next(tempCommand);
+            RWCString token;
+            token = next("-");
+            year = atoi(token);
+            token = next("-");
+            month = atoi(token);
+            token = next("-");
+            day = atoi(token);
+            RWCTokenizer next1(tempCommand);
+            next1(" ");
+            token = next1(":");
+            hour = atoi(token);
+            token = next1(":");
+            minute = atoi(token);
+            token = next1(":");
+            second = atoi(token);
+            
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - multiplier "<<multiplier<< endl;
-                dout << RWTime() << " - secsSinceLastOperation "<<secsSinceLastOperation<< endl;
+                dout << RWTime() << " - PARSED Operated Since!  "<<tempCommand << endl;
+                dout << RWTime() << " - year:   "<<year<<" month: "<<month<<" day: "<<day << endl;
+                dout << RWTime() << " - hour:   "<<hour<<" minute: "<<minute<<" second: "<<second << endl;
             }
-        }
-        strategy = 5;
-    }
-    else if (!(tempCommand = command.match(RWCRExpr("[0-9]+-[0-9]+-[0-9]+\ [0-9]+:[0-9]+:[0-9]+\.[0-9]+"))).isNull())
-    {
-        int year, month, day, hour, minute, second;
-        RWCTokenizer next(tempCommand);
-        RWCString token;
-        token = next("-");
-        year = atoi(token);
-        token = next("-");
-        month = atoi(token);
-        token = next("-");
-        day = atoi(token);
-        RWCTokenizer next1(tempCommand);
-        next1(" ");
-        token = next1(":");
-        hour = atoi(token);
-        token = next1(":");
-        minute = atoi(token);
-        token = next1(":");
-        second = atoi(token);
-        
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - PARSED Operated Since!  "<<tempCommand << endl;
-            dout << RWTime() << " - year:   "<<year<<" month: "<<month<<" day: "<<day << endl;
-            dout << RWTime() << " - hour:   "<<hour<<" minute: "<<minute<<" second: "<<second << endl;
-        }
 
-        strategy = 5;
+            strategy = 5;
+        }
+        else if (!command.compareTo("Verify Standalone CapBanks",RWCString::ignoreCase))
+        {
+           // strategy = CtiCCSubstationBus::STANDALONEBANKS;
+           strategy = 6;
+        }
     }
-    return 0;
+    return retVal;
 }
 
 void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
@@ -362,7 +372,13 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
     currentTime.now();
         
     schedule->setLastRunTime(currentTime);
-    schedule->setNextRunTime(RWDBDateTime(RWTime(currentTime.seconds() + schedule->getIntervalRate())));
+    if (schedule->getIntervalRate() <= 0)
+    {                                   
+        schedule->setNextRunTime(RWDBDateTime(RWTime(currentTime.seconds() + 0)));
+    }
+    else
+        schedule->setNextRunTime(RWDBDateTime(RWTime(currentTime.seconds() + schedule->getIntervalRate())));
+
 
 }
 
@@ -563,6 +579,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
         }
         try
         {
+            _schedules.clear();
             _schedules.assign(tempSchedules.begin(), tempSchedules.end());
             setValid(true);
         }
@@ -608,7 +625,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                 if ( conn.isValid() )
                 {   
                     RWDBDatabase db = getDatabase();
-                    RWDBTable paoEventTable = db.table("paoassignment");
+                    RWDBTable paoEventTable = db.table("paoscheduleassignment");
                     {
                         RWDBSelector selector = db.selector();
                         selector << paoEventTable["eventid"]
@@ -653,6 +670,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
         }
         try
         {
+            _events.clear();
             _events.assign(tempEvents.begin(), tempEvents.end());
             setValid(true);
         }
