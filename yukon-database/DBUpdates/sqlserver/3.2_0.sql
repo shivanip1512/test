@@ -343,8 +343,6 @@ alter table DevicePagingReceiverSettings
       references DEVICE (DEVICEID);
 go
 
-
-
 insert into command values(-100, 'scan general', 'General Meter Scan', 'SENTINEL');
 insert into command values(-101, 'scan general frozen', 'General Meter Scan Frozen', 'SENTINEL');
 insert into command values(-102, 'scan general update', 'General Meter Scan and DB Update', 'SENTINEL');
@@ -356,6 +354,36 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-384, -101, 'SENTINEL', 2, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-385, -102, 'SENTINEL', 3, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-386, -103, 'SENTINEL', 4, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-387, -104, 'SENTINEL', 5, 'Y');
+
+
+insert into stategroup values(-7,'Thread Monitor','Status');
+insert into state values(-7,0,'Normal',0,6,0);
+insert into state values(-7,1,'NonCriticalFailure',1,6,0);
+insert into state values(-7,2,'CriticalFailure',2,6,0);
+insert into state values(-7,3,'Unresponsive',3,6,0);
+go
+
+insert into point values (-200,'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
+insert into point values (-200,'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
+update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+go
 
 
 
