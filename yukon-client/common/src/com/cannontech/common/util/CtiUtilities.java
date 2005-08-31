@@ -1028,8 +1028,18 @@ public final static String getUserName()
  * @param c java.lang.Character
  */
 public final static boolean isTrue(java.lang.Character c) {
-	return (trueChar.equals(c));
+	return trueChar.charValue() == Character.toUpperCase(c.charValue());
 }
+
+/**
+ * This method is used to determine whether a given java.lang.Character
+ * represents a boolean equal to true.  Use this to isolate the actual
+ * characters that represent true or false.
+ */
+public final static boolean isTrue(char c) {
+	return trueChar.charValue() == Character.toUpperCase(c);
+}
+
 
 /** 
  * Return true if the given string represents true.
