@@ -146,6 +146,7 @@ public class ImportManagerUtil {
 	public static final int IDX_ACCOUNT_NO = acct_idx++;
 	public static final int IDX_CUSTOMER_TYPE = acct_idx++;
 	public static final int IDX_COMPANY_NAME = acct_idx++;
+	public static final int IDX_CUSTOMER_NUMBER = acct_idx++;
 	public static final int IDX_LAST_NAME = acct_idx++;
 	public static final int IDX_FIRST_NAME = acct_idx++;
 	public static final int IDX_HOME_PHONE = acct_idx++;
@@ -164,6 +165,7 @@ public class ImportManagerUtil {
 	public static final int IDX_USERNAME = acct_idx++;
 	public static final int IDX_PASSWORD = acct_idx++;
 	public static final int IDX_LOGIN_GROUP = acct_idx++;
+	public static final int IDX_RATE_SCHEDULE = acct_idx++;
 	public static final int IDX_SUBSTATION = acct_idx++;
 	public static final int IDX_FEEDER = acct_idx++;
 	public static final int IDX_POLE = acct_idx++;
@@ -327,6 +329,8 @@ public class ImportManagerUtil {
 		{"OwnershipType", "Ownership Type", ""},
 		{"FuelType", "Main Fuel Type", "[Fuel Type]"},
 		{"WHLocation", "", "[Water Heater Location]"},
+		{"RateSchedule", "", "[Customer Rate Schedule]"}
+
 	};
 	
 	// Tables of index of lists(in LIST_NAMES) and index of fields(in corresponding field definition above)
@@ -455,6 +459,7 @@ public class ImportManagerUtil {
 	    account.setAccountNotes( fields[IDX_ACCOUNT_NOTES] );
 	    account.setPropertyNumber( fields[IDX_MAP_NO] );
 	    account.setPropertyNotes( fields[IDX_PROP_NOTES] );
+	    account.setCustomerNumber("");
 	
 	    StreetAddress propAddr = new StreetAddress();
 	    propAddr.setStreetAddr1( fields[IDX_STREET_ADDR1] );
