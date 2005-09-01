@@ -282,13 +282,24 @@ void CtiCalcLogicService::Run( )
 
             try
             {
-                if(calcThread)
+                try
+                {
+                    if(calcThread)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Pausing the calcThreads for reload" << endl;
+                        }
+                        calcThread->interruptThreads(CtiCalculateThread::DBReload);       // Make certain these threads are paused if they can be.
+                    }
+                }
+                catch(...)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Pausing the calcThreads for reload" << endl;
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                    calcThread->interruptThreads(CtiCalculateThread::DBReload);       // Make certain these threads are paused if they can be.
+                    calcThread = 0;
                 }
 
                 tempCalcThread = new CtiCalculateThread;
@@ -313,8 +324,6 @@ void CtiCalcLogicService::Run( )
                         {
                             delete tempCalcThread;
                             tempCalcThread = 0;
-                            delete calcThread;
-                            calcThread = 0;
 
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -337,29 +346,68 @@ void CtiCalcLogicService::Run( )
                     }
                 }
 
-                if(calcThread)
+                try
                 {
-                    delete calcThread;
-                    calcThread = 0;
-                }
-                calcThread = tempCalcThread;
+                    try
+                    {
+                        if(calcThread)
+                        {
+                            delete calcThread;
+                            calcThread = 0;
+                        }
+                    }
+                    catch(RWxmsg &msg)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << msg.why() << endl;
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
 
+                    calcThread = tempCalcThread;
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
+                    }
+
+                    try
+                    {
+                        _registerForPoints();
+                        calcThread->sendConstants();
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+
+                    //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
+                    //    commonly-accessed resources will be the calcThread's pointStore object and message
+                    //    queue (and during debug, the outstreams).  The calcThread object will be fed point
+                    //    data changes by the input thread.  The output thread will take the messages from the
+                    //    calcThread message queue and post them to Dispatch.
+                    calcThreadFunc = rwMakeThreadFunction( *calcThread, &CtiCalculateThread::calcThread );
+                    calcThreadFunc.start( );
+                }
+                catch(...)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
-
-                _registerForPoints();
-                calcThread->sendConstants();
-
-                //  Up until this point, nothing has needed a mutex.  Now I'm spawning threads, and the
-                //    commonly-accessed resources will be the calcThread's pointStore object and message
-                //    queue (and during debug, the outstreams).  The calcThread object will be fed point
-                //    data changes by the input thread.  The output thread will take the messages from the
-                //    calcThread message queue and post them to Dispatch.
-                calcThreadFunc = rwMakeThreadFunction( *calcThread, &CtiCalculateThread::calcThread );
-
-                calcThreadFunc.start( );
             }
             catch(...)
             {
@@ -368,9 +416,9 @@ void CtiCalcLogicService::Run( )
                     dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                delete tempCalcThread;
+                // delete tempCalcThread;
+                // delete calcThread;
                 tempCalcThread = 0;
-                delete calcThread;
                 calcThread = 0;
 
                 Sleep(5000);
@@ -541,9 +589,6 @@ void CtiCalcLogicService::Run( )
                 }
                 Sleep(5000);
             }
-
-            //  from this point out, i'm one thread again
-            // CGP do not loose the list if it can be helped. // delete calcThread;
         }
 
         SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
@@ -772,7 +817,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime()  << " - Database change - Point Added.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                            dout << RWTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
                         }
                     }
                     else
@@ -791,7 +836,7 @@ BOOL CtiCalcLogicService::parseMessage( RWCollectable *message, CtiCalculateThre
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime()  << " - Database change - Point Added.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
+                        dout << RWTime()  << " - Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
                     }
                 }
             }
@@ -1098,7 +1143,7 @@ void CtiCalcLogicService::dropDispatchConnection(  )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << msg.why() <<  " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " " << msg.why() <<  ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
         catch(...)
