@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/15 15:13:35 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/09/01 22:10:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1062,6 +1062,12 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         }
         else if(parse.isKeyValid("xctservicecancel"))
         {
+            if( parse.getCommandStr().contains(" restore") )
+            {
+                // This is special syntax to cause any controlled load to restore before going o.o.s.
+                restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
+            }
+
             status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
                                        (bool)parse.getiValue("xctservicecancel"),
                                        (bool)parse.getiValue("xctservicebitp"),
