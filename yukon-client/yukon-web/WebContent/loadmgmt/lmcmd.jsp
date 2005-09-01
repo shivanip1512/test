@@ -49,23 +49,12 @@ function update()
 		return false;
 	}
 
-	/* Post to the actual servlet to do the work (must do first to ensure the command gets out) */
-	document.cmdForm.attributes["action"].value = "<%=request.getContextPath()%>/servlet/LCConnectionServlet";
 
-    /* Give some time for the above submit call to arrive at its destination */
-    sleep(250);
     self.close();
-    opener.location.reload(true);
-    return true;
-}
 
-function sleep(millis)
-{
-    date = new Date();
-    var curDate = null;
-    
-    do { var curDate = new Date(); } 
-    while(curDate-date < millis);
+    //tell the parent screen to refresh in 1 second
+    opener.setTimeout("window.location.reload(true)", 1000)
+    return true;
 }
 
 function setStartAble( radioChk )
@@ -196,7 +185,7 @@ function setStopPixTime()
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
 
-	<form name="cmdForm" method="post" >
+	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
 		
@@ -284,28 +273,22 @@ function setStopPixTime()
                 <a href="javascript:openCalendar(cmdForm.startdate)"
 						onMouseOver="window.status='Start Date Calendar';return true;"
 						onMouseOut="window.status='';return true;"> 
-						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+				</td>
             </tr>
             <tr> 
               <td width="85" height="85">&nbsp; </td>
-  	            <td width="25" height="85">&nbsp;</td>
+	            <td width="25" height="85">&nbsp;</td>
               <td width="36" height="85" class="TableCell"> 
                 <div align="right">Time: </div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Parts/StartStopBG.gif" height="85" valign="top"> 
-                <table width="100" border="0" cellspacing="0" height="40" align="center">
-                  <tr> 
-                    <td valign = "top" align = "center"> 
-                      <div> 
-                        <input type="text" name="startTime1" value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>" size="5" onChange = "moveStartStopPtr('start')" disabled>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-                <img name = "startPtr" onload = "setStartPixTime()" 
-					onMouseDown = "beginDrag(event,0,0,152,9,'showStartTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/WebConfig/yukon/Parts/SliderShort.gif" width="17" height="19"
-					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
+              <td width="179" height="85" > 
+                  <div> 
+                    <input type="text" name="startTime1"
+                    	value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>"
+                    	size="5" disabled />
+                    	<font class="TableCell">(HH:mm)</font>
+                  </div>
               </td>
             </tr>
 			
@@ -374,18 +357,11 @@ function setStopPixTime()
               <td width="34" height="85"> 
                 <div align="right" class="TableCell">Time: </div>
               </td>
-              <td width="170" background="<%=request.getContextPath()%>/WebConfig/yukon/Parts/StartStopBG.gif" height="85" valign="top"> 
-                <table width="100" border="0" cellspacing="0" height="40" align = "center">
-                  <tr> 
-                    <td align = "center" valign = "top"> 
-                      <input type="text" name="stopTime1" value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5" onChange = "moveStartStopPtr('stop')"
-					  <%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %>>
-                    </td>
-                  </tr>
-                </table>
-                <img name = "stopPtr" src="<%=request.getContextPath()%>/WebConfig/yukon/Parts/SliderShort.gif" width="17" height="19"
-				onMouseDown = "beginDrag(event,0,0,152,9,'showStopTime1()','horizontal','')"
-				onLoad = "setStopPixTime()" style = "position:relative; top:0px; left:152px; cursor:pointer;"><br>
+              <td width="170" height="85" >
+	              <input type="text" name="stopTime1" 
+	              		value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5"
+						<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> />
+	              	<font class="TableCell">(HH:mm)</font>
               </td>
             </tr>
           </table>
@@ -823,7 +799,7 @@ function setStopPixTime()
 
 
 	  <BR>
-		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "update()">
+		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "return update();">
 <% }  /* Ending of the isPageGood check */ %>
 		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close()">
 	</form>
