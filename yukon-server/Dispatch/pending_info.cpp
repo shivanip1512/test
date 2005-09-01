@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pending_info.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:50 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/09/01 14:42:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,8 +52,17 @@ void CtiPendingPointOperations::dump() const
         switch(getType())
         {
         case pendingLimit:
+        case pendingLimit + 1:
+        case pendingLimit + 2:
+        case pendingLimit + 3:
+        case pendingLimit + 4:
+        case pendingLimit + 5:
+        case pendingLimit + 6:
+        case pendingLimit + 7:
+        case pendingLimit + 8:
+        case pendingLimit + 9:
             {
-                dout << " PPO Type                  pendingLimit" << endl;
+                dout << " PPO Type                  pendingLimit " << getType() - pendingLimit + 1 << endl;
                 dout << " PPO Limit Timed           " << getLimitBeingTimed() << endl;
                 break;
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2005/08/24 13:59:19 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2005/09/01 14:42:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3635,7 +3635,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     if(pSig != NULL)
                     {
                         pSig->setUser(pData->getUser());
-			pSig->setPointData((CtiPointDataMsg*) pData->replicateMessage());			
+            pSig->setPointData((CtiPointDataMsg*) pData->replicateMessage());
                         aWrap.getMulti()->insert( pSig );
                         pSig = NULL;
                     }
@@ -3683,10 +3683,6 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
 
                 if(pSig)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
                     delete pSig;
                     pSig = 0;
                 }
@@ -3705,30 +3701,30 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
     vector<int> group_ids;
     double value = 0.0;
     const CtiPointDataMsg* pData = sig.getPointData();
-    
+
     group_ids.push_back(grp.getGroupID());
     if(pData != NULL)
     {
-	value = pData->getValue();
+    value = pData->getValue();
     }
     else
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << RWTime() << " **Checkpoint** " << " signal is missing point data " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
-    
+
     CtiNotifAlarmMsg* alarm_msg = new CtiNotifAlarmMsg( group_ids,
-							sig.getId(),
-							sig.getCondition(),
-							value,
-							!(sig.getTags() & TAG_UNACKNOWLEDGED_ALARM),
-							sig.getTags() & TAG_ACTIVE_ALARM);
+                            sig.getId(),
+                            sig.getCondition(),
+                            value,
+                            !(sig.getTags() & TAG_UNACKNOWLEDGED_ALARM),
+                            sig.getTags() & TAG_ACTIVE_ALARM);
 
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_NOTIFICATION)
     {
-	dout << RWTime() << " Sending alarm notification" << endl;
-	alarm_msg->dump();
+    dout << RWTime() << " Sending alarm notification" << endl;
+    alarm_msg->dump();
     }
 
     if(!getNotificationConnection()->valid())
@@ -4651,7 +4647,7 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
             }
             theGroup.Restore();     // Clean the thing then!
         }
-        sendMail(sig, theGroup);	
+        sendMail(sig, theGroup);
 
     }
 }
@@ -5008,7 +5004,7 @@ void CtiVanGogh::VGAppMonitorThread()
     {
         compareTime = RWTime::now();
         compareTime -= 900;//take away 15 minutes
-        
+
         for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
         {
             if(*pointListWalker !=0)
@@ -5023,7 +5019,7 @@ void CtiVanGogh::VGAppMonitorThread()
                     pointMessage.setType(StatusPointType);
                     pointMessage.setValue(CtiThreadMonitor::State::Dead);
                     MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointMessage));
-                    
+
                 }
             }
         }
@@ -5032,14 +5028,14 @@ void CtiVanGogh::VGAppMonitorThread()
         for(i=0;i<=36;i++)
         {
             rwSleep(5000);//5 second sleep
-            
+
             if(!(i%18))
             {
                 vgStatusPoint.setValue(ThreadMonitor.getState());
                 vgStatusPoint.setString(RWCString(ThreadMonitor.getString().c_str()));
                 MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(vgStatusPoint));
             }
-           
+
             if(bGCtrlC)//someone did a Control-C, we need to exit!
                 i=180;
         }
@@ -5852,10 +5848,10 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                 }
 
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric.getID(), pData->getSOE(), text, getAlarmStateName( pointNumeric.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, pointNumeric.getAlarming().getAlarmCategory(alarm), pData->getUser());
-		if(pSig != NULL)
-		{
-		    pSig->setPointData((CtiPointDataMsg*)pData->replicateMessage());
-		}
+        if(pSig != NULL)
+        {
+            pSig->setPointData((CtiPointDataMsg*)pData->replicateMessage());
+        }
 
                 // This is an alarm if the alarm state indicates anything other than SignalEvent.
                 tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
@@ -5873,11 +5869,6 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     // If there is a limit duration, we modify the data message, so clients don't immediately know that this point is in a pending alarm.
                     pData->resetTags( TAG_ACTIVE_ALARM | TAG_UNACKNOWLEDGED_ALARM );
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " INSERT collision CANNOT update the time or it will never pop" << endl;
-                    }
                     addToPendingSet(pendingPointLimit);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -5896,7 +5887,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
             {
                 // Remove any possible pending limit violator.
                 CtiPendable *pPend = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_RemoveLimit);
-                pPend->_limit = CtiPendingPointOperations::pendingLimit + statelimit;
+                pPend->_limit = statelimit;
                 _pendingOpThread.push( pPend );
 
                 deactivatePointAlarm(alarm,aWrap,pointNumeric,pDyn);
@@ -6987,7 +6978,7 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
             {
                 _notificationConnection  = new CtiConnection( NotificationPort, NotificationMachine );
             }
-        } 
+        }
 
         return _notificationConnection;
     }
@@ -6997,5 +6988,5 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
-    }    
+    }
 }

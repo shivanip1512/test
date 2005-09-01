@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/07/25 16:40:53 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/09/01 14:42:52 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.20  2005/09/01 14:42:52  cplender
+* Made some changes to the limit timing code.  Earlier code would not properly track limit 2.
+*
 * Revision 1.19  2005/07/25 16:40:53  cplender
 * Working on lmcontrolhistory for Minnkota.
 *
@@ -667,7 +670,7 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
 
                 CtiPendingPointOperations &ppo = *it;
 
-                if(ppo.getType() == CtiPendingPointOperations::pendingLimit)    // we are a limit ppo.
+                if(CtiPendingPointOperations::pendingLimit <= ppo.getType() && ppo.getType() <= CtiPendingPointOperations::pendingLimit + 9)    // we are a limit ppo.
                 {
                     if(now.seconds() > ppo.getTime().seconds() + ppo.getLimitDuration())
                     {
@@ -1493,13 +1496,6 @@ bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
         {
             found = true;
 
-#if 0 // FIX CGP???
-            if(now <= (*itr).second.getStopTime())
-            {
-                lmch.setStopTime((*itr).second.getStopTime());      //
-            }
-#endif
-
             lmch.setCurrentDailyTime((*itr).second.getCurrentDailyTime());
             lmch.setCurrentMonthlyTime((*itr).second.getCurrentMonthlyTime());
             lmch.setCurrentSeasonalTime((*itr).second.getCurrentSeasonalTime());
@@ -1621,11 +1617,11 @@ void CtiPendingOpThread::removeLimit(CtiPendable *&pendable)
             CtiPendingPointOperations &ppo = *it;
 
             if(ppo.getPointID() == pendable->_pointID &&
-               ppo.getType() == CtiPendingPointOperations::pendingLimit)    // we are a limit ppo.
+               (CtiPendingPointOperations::pendingLimit <= ppo.getType() && ppo.getType() <= CtiPendingPointOperations::pendingLimit + 9))    // we are a limit ppo.
             {
                 if(pendable->_limit == ppo.getLimitBeingTimed())
                 {
-#if 0
+#ifdef CTI_REPORTPENDINGREMOVAL
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** removeLimit Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1648,7 +1644,7 @@ void CtiPendingOpThread::removePointData(CtiPendable *&pendable)
 
         if( it != _pendingPointData.end() )
         {
-#if 0
+#ifdef CTI_REPORTPENDINGREMOVAL
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** removePointData Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1803,8 +1799,16 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                 if(resultpair.second != true)
                 {
                     RWTime origTime = ppo.getTime();
-                    ppo = *pendable->_ppo;    // Copy it.
-                    ppo.setTime(origTime);              // Don't move the time.  The
+                    ppo = *pendable->_ppo;              // Copy it.
+                    ppo.setTime(origTime);              // Don't move the time.  The violation timer requires the initial time!
+                }
+                break;
+            }
+        default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
                 break;
             }
