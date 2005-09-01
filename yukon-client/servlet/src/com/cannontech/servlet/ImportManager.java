@@ -25,6 +25,7 @@ import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.util.task.ImportCustAccountsTask;
+import com.cannontech.stars.util.task.UploadGenericFileTask;
 import com.cannontech.stars.util.task.ImportDSMDataTask;
 import com.cannontech.stars.util.task.ImportStarsDataTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
@@ -36,6 +37,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.stars.util.ServerUtils;
 
 /**
  * @author yao
@@ -114,6 +116,8 @@ public class ImportManager extends HttpServlet {
 		
 		if (action.equalsIgnoreCase("ImportCustAccounts"))
 			importCustomerAccounts( items, user, req, session );
+		else if (action.equalsIgnoreCase("UploadGeneric"))
+			uploadGenericFile( items, user, req, session );
 		else if (action.equalsIgnoreCase("ImportINIData"))
 			importINIData( user, req, session );
 		else if (action.equalsIgnoreCase("PreprocessStarsData"))
@@ -143,6 +147,53 @@ public class ImportManager extends HttpServlet {
 				throw new WebClientException( "No import file is provided" );
 			
 			TimeConsumingTask task = new ImportCustAccountsTask( energyCompany, custFile, hwFile, email, preScan != null );
+			long id = ProgressChecker.addTask( task );
+			
+			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+			for (int i = 0; i < 5; i++) {
+				try {
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException e) {}
+				
+				task = ProgressChecker.getTask(id);
+				
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+					session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
+					ProgressChecker.removeTask( id );
+					return;
+				}
+				
+				if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
+					ProgressChecker.removeTask( id );
+					return;
+				}
+			}
+			
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			session.setAttribute(ServletUtils.ATT_REFERRER, redirect);
+			redirect = req.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
+		}
+		catch (WebClientException e) {
+			CTILogger.error( e.getMessage(), e );
+			session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+			redirect = referer;
+		}
+	}
+	
+	private void uploadGenericFile(List items, StarsYukonUser user, HttpServletRequest req, HttpSession session) 
+	{
+		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+		
+		try 
+		{
+			FileItem genericFile = getUploadFile( items, "GenericFile" );
+			
+			if (genericFile == null)
+				throw new WebClientException( "No file is provided" );
+			
+			TimeConsumingTask task = new UploadGenericFileTask( energyCompany, genericFile );
 			long id = ProgressChecker.addTask( task );
 			
 			// Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
