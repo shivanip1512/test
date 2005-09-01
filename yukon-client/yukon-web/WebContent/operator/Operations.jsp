@@ -95,6 +95,10 @@ function confirmDelete() {
 			importURI = "ImportDSM.jsp";
 			importLabel = "Import DSM";
 		}
+		else if (importID.equalsIgnoreCase("upload")) {
+			importURI = "GenericUpload.jsp";
+			importLabel = "Upload File";
+		}
 %>
             <div align = "center" style = "border:solid 1px #666999;">
 			  <a href="Consumer/<%= importURI %>" class = "Link1" style = "text-decoration:none;"><%= importLabel %></a>
