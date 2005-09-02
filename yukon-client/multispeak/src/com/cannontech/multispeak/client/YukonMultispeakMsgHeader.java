@@ -29,11 +29,9 @@ public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
 		setVersion("3.0");	//The Multispeak version?
 		setUserID("");		//TODO change to Multispeak webservice username?
 		setPwd("");		//TODO change to Multispeak webservice password?
-//		setAppName("Yukon Multispeak");
-		setAppName("Cannon Test App");
+		setAppName("Yukon");
 		setAppVersion(VersionTools.getYUKON_VERSION());
-//		setCompany("Cannon Technologies, Inc.");
-		setCompany("Cannon Test");
+		setCompany("Cannon");
 		setCSUnits(MessageHeaderCSUnits.feet);
 	}
 
