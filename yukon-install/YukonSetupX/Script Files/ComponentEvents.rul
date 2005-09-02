@@ -94,11 +94,33 @@ szCmdLine = '-uninstall "Yukon Web Applications Service"';
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
 
 
-//make sure any legacy .jars are gone so that Tomcat avoids confusion
+//make sure any legacy files are gone so that Tomcat avoids confusion
+//however, spare the esub directory and the webconfig\custom folder
 szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon";
 dirSearch =  ExistsDir (szPath);
 if(dirSearch = 0) then
-   	DeleteDir ( szPath , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\analysis" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\apps" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\bulk" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\capcontrol" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\cttp" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\demos" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\editor" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\include" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\install" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\JavaScript" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\loadmgmt" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\META-INF" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\operator" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\readmeter" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\template" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\test" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\user" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\voice" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WEB-INF" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\analysis" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WebConfig\\yukon", ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WebConfig\\CILC", ALLCONTENTS ); 
 endif;
 
 //set a system environment variable JAVA_HOME for use by the Tomcat service
@@ -187,7 +209,7 @@ end;
 export prototype Tomcat_UnInstalling();
 function Tomcat_UnInstalling()
 string szCmdLine, szServPath;
-string szAppPath;
+string szAppPath, szPath;
 number nvResult, dirSearch;
 
 begin
@@ -203,11 +225,33 @@ szServPath = TARGETDIR ^ "\\Server\\web\\bin\\";
 szCmdLine = '-uninstall "Yukon Web Applications Service"';
 LaunchAppAndWait ( szServPath ^ "tomcat.exe" , szCmdLine, WAIT );
 
-//make sure any legacy .jars are gone so that Tomcat avoids confusion
-szAppPath = TARGETDIR + "\\Server\\web\\webapps\\yukon\\";
-dirSearch =  ExistsDir (szAppPath);
+//make sure any legacy files are gone so that Tomcat avoids confusion
+//however, spare the esub directory and the webconfig\custom folder
+szPath = TARGETDIR + "\\Server\\web\\webapps\\yukon";
+dirSearch =  ExistsDir (szPath);
 if(dirSearch = 0) then
-   	DeleteDir ( szAppPath , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\analysis" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\apps" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\bulk" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\capcontrol" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\cttp" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\demos" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\editor" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\include" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\install" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\JavaScript" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\loadmgmt" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\META-INF" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\operator" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\readmeter" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\template" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\test" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\user" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\voice" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WEB-INF" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\analysis" , ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WebConfig\\yukon", ALLCONTENTS );
+   	DeleteDir ( szPath + "\\WebConfig\\CILC", ALLCONTENTS ); 
 endif;
 
 

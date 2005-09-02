@@ -721,6 +721,7 @@
 		<row><td>piltest.exe</td><td>Test Applications</td><td>piltest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\piltest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>plogtest.exe</td><td>Test Applications</td><td>plogtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\plogtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>poi.jar</td><td>Common Bin</td><td>poi.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\poi.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>pointcreate.bat</td><td>Common Bin</td><td>pointCreate.bat</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\pointCreate.bat</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>pointtest.exe</td><td>Test Applications</td><td>pointtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\pointtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>poker.exe</td><td>Test Applications</td><td>poker.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\poker.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>policytest.exe</td><td>Test Applications</td><td>policytest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\policytest.exe</td><td>1</td><td>NewSubFolder83</td></row>
@@ -1277,7 +1278,7 @@
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>Password</td><td>""</td></row>
 		<row><td>{0645FC8A-5296-48B6-92C2-69F337AA5D3D}</td><td>ServiceArg</td><td>""</td></row>
@@ -1296,7 +1297,7 @@
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>Password</td><td>""</td></row>
 		<row><td>{22CF50D9-22AE-487C-9D7A-EB8F74564743}</td><td>ServiceArg</td><td>""</td></row>
@@ -1315,7 +1316,7 @@
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>Password</td><td>""</td></row>
 		<row><td>{335CD448-4FDD-44DF-9DC5-E9E09FCFE879}</td><td>ServiceArg</td><td>""</td></row>
@@ -1334,7 +1335,7 @@
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>Password</td><td>""</td></row>
 		<row><td>{6F242179-A573-4344-B86F-07C5DA79E8F1}</td><td>ServiceArg</td><td>""</td></row>
@@ -1353,7 +1354,7 @@
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>Password</td><td>""</td></row>
 		<row><td>{82D7E225-7CA3-44DE-B18D-423C470E2629}</td><td>ServiceArg</td><td>""</td></row>
@@ -1372,7 +1373,7 @@
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>Password</td><td>""</td></row>
 		<row><td>{8D0897A6-B1C7-4085-88E6-64B0F670390A}</td><td>ServiceArg</td><td>""</td></row>
@@ -1391,7 +1392,7 @@
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>Password</td><td>""</td></row>
 		<row><td>{A65FE6F9-1C56-4EE9-B772-C37B7AC1EE65}</td><td>ServiceArg</td><td>""</td></row>
@@ -1410,7 +1411,7 @@
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>DomainUserName</td><td>""</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>ErrorControl</td><td>0,Long</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>InstallOnReboot</td><td>0,Bool</td></row>
-		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>LOADORDERGROUP</td><td>""</td></row>
+		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>LOADORDERGROUP</td><td>"YUKON GROUP"</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>LogOnAs</td><td>1,Long</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>Password</td><td>""</td></row>
 		<row><td>{EAD0CD5F-F093-42DE-84B9-4FEE393972DE}</td><td>ServiceArg</td><td>""</td></row>
