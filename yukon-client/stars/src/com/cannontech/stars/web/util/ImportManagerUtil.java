@@ -462,7 +462,7 @@ public class ImportManagerUtil {
 	    
 	    //set some defaults to prevent null pointers
 	    account.setCustomerNumber("");
-	    account.setRateScheduleID(-1);
+	    account.setRateScheduleID(0);
 	    account.setAltTrackingNumber("");
 	
 	    StreetAddress propAddr = new StreetAddress();
