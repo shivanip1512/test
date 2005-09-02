@@ -15,6 +15,8 @@ var graphy;
 var graphw;
 var graphh;
 
+var pendingUpdate = false;
+
 /**
  * Will display a graph settings pop up, pass in the 
  * click event.  
@@ -41,32 +43,56 @@ function updateGraphChange(evt) {
     		  	"&period=" + period +
     		  	"&start=" + start;
     
-    getURL(url, handleGraphSettingsReq);
+    loadXMLDoc(url, handleGraphSettingsReq);
 } //end updateGraphChange
 
-/**
- * Callback from call to getURL
- * Display a popup window with the results from hitting the server
- */
-function handleGraphSettingsReq(obj) {
-	graphSettingsPopup = new PopupWindow("graphsettings");
-	graphSettingsPopup.offsetX= graphx + (graphw/2) - 150;
-	graphSettingsPopup.offsetY= graphy + (graphh/2) - 88;
+// -------------------------------------------
+//Callback function for the xml HTTP request
+// to return XML
+// -------------------------------------------
+function handleGraphSettingsReq()
+{
+    var xmlHTTPreq = getReq(xmlHttp_msgId);
 
-	graphSettingsPopup.autoHide();
-	graphSettingsPopup.populate(obj.content);
+    // only if req shows "complete"
+    if( xmlHTTPreq != null
+    	&& getReq(xmlHttp_msgId).req != null
+    	&& getReq(xmlHttp_msgId).req.readyState == 4 )
+    {    
+    	var req = getReq(xmlHttp_msgId).req;
 
-    // A flag to tell the popup checker that the popup is showing
-    // TODO Should be moved into the popup code?
-	graphSettingsPopup.isShowing = true;
-	graphSettingsPopup.showPopup("popupanchor");
+        // only if "OK"
+        if( req.status == 200) 
+        {
+			//alert(xmlHTTPreq.responseText);
+
+			graphSettingsPopup = new PopupWindow("graphsettings");
+			graphSettingsPopup.offsetX= graphx + (graphw/2) - 150;
+			graphSettingsPopup.offsetY= graphy + (graphh/2) - 88;
+
+			graphSettingsPopup.autoHide();
+			graphSettingsPopup.populate(req.responseText);
+    		// A flag to tell the popup checker that the popup is showing
+    		// TODO Should be moved into the popup code?
+			graphSettingsPopup.isShowing = true;
+			graphSettingsPopup.showPopup("popupanchor");
 	
-	// Store the popup in the window.parent so the dynamically
-	// popped up jsp/html can communicate with us
-	window.parent.graphSettingsPopup = graphSettingsPopup;
+			// Store the popup in the window.parent so the dynamically
+			// popped up jsp/html can communicate with us
+			window.parent.graphSettingsPopup = graphSettingsPopup;
 	
-	// Fire up the popup checker
-	window.setTimeout('checkPopup()', 250);
+			// Fire up the popup checker
+			pendingUpdate = true;
+			window.setTimeout('checkPopup()', 250);
+				
+			//always do this
+			freeReq( xmlHttp_msgId );
+        }
+        else
+        {
+            alert("There was a problem retrieving the XML data:\n" + req.statusText);
+        }
+    }
 }
 
 /**
@@ -74,8 +100,19 @@ function handleGraphSettingsReq(obj) {
  * it is time to update the graph with whatever the user selected.
  */
 function checkPopup() {
+	// If the pendingUpdate flag is false stop checking
+	// This keeps multiple requests from building up
+	// not fool proof but good enough
+	if(pendingUpdate == false)
+	{
+		return;
+	}
+	
 	if(graphSettingsPopup.isShowing != null &&
 	   graphSettingsPopup.isShowing != true) {
+	    // Time to update the graph, don't let other callbacks
+	    // actually do an update.
+		pendingUpdate = false;
 		svgElement.setAttributeNS(null,'view',window.parent.graphSettingsPopup.graphType);
 		svgElement.setAttributeNS(null,'period',window.parent.graphSettingsPopup.period);
 		svgElement.setAttributeNS(null,'start',window.parent.graphSettingsPopup.startDate);	

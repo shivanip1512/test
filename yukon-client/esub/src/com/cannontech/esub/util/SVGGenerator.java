@@ -123,6 +123,11 @@ public class SVGGenerator {
 			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
 			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "point.js");
 			svgRoot.appendChild(scriptElem);
+			
+			scriptElem = doc.createElementNS(null, "script");	
+			scriptElem.setAttributeNS(null, "type", "text/ecmascript");
+			scriptElem.setAttributeNS(xlinkNS, "xlink:href", "xmlhttp.js");
+			svgRoot.appendChild(scriptElem);
 		}
 		
 		Element backRect = doc.createElementNS(svgNS, "rect");
