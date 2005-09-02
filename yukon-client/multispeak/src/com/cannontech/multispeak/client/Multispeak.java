@@ -7,6 +7,7 @@
 package com.cannontech.multispeak.client;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +17,22 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.MessageContext;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -35,12 +41,14 @@ import com.cannontech.multispeak.ArrayOfOutageDetectionEvent;
 import com.cannontech.multispeak.ErrorObject;
 import com.cannontech.multispeak.OA_OD;
 import com.cannontech.multispeak.OA_ODLocator;
+import com.cannontech.multispeak.OA_ODSoap_BindingImpl;
 import com.cannontech.multispeak.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.OA_ODSoap_PortType;
 import com.cannontech.multispeak.OutageDetectDeviceType;
 import com.cannontech.multispeak.OutageDetectionEvent;
 import com.cannontech.multispeak.OutageEventType;
 import com.cannontech.multispeak.OutageLocation;
+import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -51,7 +59,7 @@ import com.cannontech.yukon.conns.ConnPool;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class Multispeak implements MessageListener, Observer {
+public class Multispeak implements MessageListener, Observer, DBChangeListener {
 	
 	/** An instance of this */
 	private static Multispeak _mspInstance = null;
@@ -61,7 +69,12 @@ public class Multispeak implements MessageListener, Observer {
 
 	/** A map of Long(userMessageID) to ODEvent values */
 	private static Map ODEventsMap = new HashMap();
-		
+
+	/** A map of String<companyName> (from the MultispeakRole) to MultispeakVendor objects*/
+	private static Map mspRolesMap = null;
+	 
+	/** A connection to dispatch*/
+	private com.cannontech.message.dispatch.ClientConnection connToDispatch;		
 	/**
 	 * Get the static instance of Multispeak (this) object.
 	 * Adds a message listener to the pil connection instance. 
@@ -74,6 +87,7 @@ public class Multispeak implements MessageListener, Observer {
 			CTILogger.info("New MSP instance created");
 			_mspInstance = new Multispeak();
 			_mspInstance.getPilConn().addMessageListener(_mspInstance);
+			_mspInstance.getClientConnection();
 		}
 
 		return _mspInstance;
@@ -125,15 +139,17 @@ public class Multispeak implements MessageListener, Observer {
 //						getRequestMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
 //					}
 //				}
-				CTILogger.debug("A MESSAGE: " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+				CTILogger.debug("A MESSAGE: (ExpectMore=" + returnMsg.getExpectMore() + ") " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 				if( returnMsg.getExpectMore() == 0)
 				{
 					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 					ODEvent event = (ODEvent)getODEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 					if( event != null)
 					{
-						String key = MultispeakFuncs.getUniqueKey();
-						String keyValue = null;
+						MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
+						String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+						String keyValue = null;						
+							
 						if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
 						{
 							LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(returnMsg.getDeviceID());
@@ -180,20 +196,24 @@ public class Multispeak implements MessageListener, Observer {
 	 * @param meterNumbers
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
 	 */
-	public synchronized ErrorObject[] ODEvent(String[] meterNumbers)
+	public synchronized ErrorObject[] ODEvent(String companyName, String[] meterNumbers)
 	{
 		long id = generateMessageID();
 
 		Vector errorObjects = new Vector();
-		ODEvent event = new ODEvent(id, meterNumbers.length);
+		ODEvent event = new ODEvent(companyName, id, meterNumbers.length);
 		event.addObserver(this);
 		getODEventsMap().put(new Long(id), event);
 		
 		Request pilRequest = null;
 		CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from OMS vendor");
+		
+		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
+		
+		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+
 		for (int i = 0; i < meterNumbers.length; i++)
 		{
-			String key = MultispeakFuncs.getUniqueKey();
 			LiteYukonPAObject lPao = null;
 			if( key == null )
 			{
@@ -240,12 +260,19 @@ public class Multispeak implements MessageListener, Observer {
 	 * Send an ODEventNotification to the OMS webservice containing odEvents 
 	 * @param odEvents
 	 */
-	public static synchronized void ODEventNotification(OutageDetectionEvent [] odEvents)
+	public synchronized void ODEventNotification(ODEvent odEvent)//OutageDetectionEvent [] odEvents)
 	{
 		try
 		{
+			OutageDetectionEvent [] odEvents = new OutageDetectionEvent[odEvent.getODEvents().size()];
+			odEvent.getODEvents().toArray(odEvents);
+			
 //			String endpointURL = "http://localhost:8080/head/services/OA_ODSoap";
-			String endpointURL = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_WEBSERVICE_URL) + RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_OA_OD_SERVICE_NAME);
+			MultispeakVendor vendor = getMultispeakVendor(odEvent.getVendorName());
+			String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
+			String endpointURL = "";			
+			if( endpoint != null)
+				endpointURL = vendor.getUrl() + endpoint;
 
 		    CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): " + odEvents.length + " events."); 
 	
@@ -299,16 +326,92 @@ public class Multispeak implements MessageListener, Observer {
 		if( o instanceof ODEvent)
 		{
 			ODEvent odEvent = (ODEvent)o;
-
-			OutageDetectionEvent [] odEvents = new OutageDetectionEvent[odEvent.getODEvents().size()];
-			odEvent.getODEvents().toArray(odEvents);
-			
-			ODEventNotification(odEvents);
+			ODEventNotification(odEvent);
 
 			((ODEvent)ODEventsMap.get(new Long(odEvent.getPilMessageID()))).deleteObservers();
 			ODEventsMap.remove(new Long(odEvent.getPilMessageID()));
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.cannontech.database.cache.DBChangeListener#getClientConnection()
+	 */
+	public ClientConnection getClientConnection()
+	{
+		if( connToDispatch == null )
+		{
+			connToDispatch = com.cannontech.message.dispatch.ClientConnection.createDefaultConnection("Multispeak Webservices @" + CtiUtilities.getUserName());
+			connToDispatch.addObserver(this);
+		
+			try {
+				connToDispatch.connectWithoutWait();
+			} catch( Exception e ) {
+				// connectWithoutWait won't actually throw an exception
+			}
+		}
+
+		return connToDispatch;
+	}
+	/* (non-Javadoc)
+	 * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(com.cannontech.message.dispatch.message.DBChangeMsg, com.cannontech.database.data.lite.LiteBase)
+	 */
+	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
+	{
+		if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB)
+		{
+			mspRolesMap = null;
+			//Release the stored multispeak role/properties
+		}
+	}
+
+	public Map getMultispeakRolesMap()
+	{
+		if( mspRolesMap == null)
+		{
+			mspRolesMap = new HashMap(9);
+			DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+			Map groupRolePropMap = cache.getYukonGroupRolePropertyMap();
+			
+			//Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String(value)>>>			
+			Map groupMapToRoleMap = (Map)groupRolePropMap.get(AuthFuncs.getGroup(YukonGroupRoleDefs.GRP_YUKON));
+			Map roleMapToPropMap = (Map)groupMapToRoleMap.get(AuthFuncs.getRole(MultispeakRole.ROLEID));
+			Collection propValues = roleMapToPropMap.values();
+			String [] x = new String[propValues.size()];
+			propValues.toArray(x);
+			for (int i = 0; i < x.length; i++)
+			{
+				String [] fields = x[i].split(",");
+				
+				if(fields.length >= MultispeakVendor.URL_INDEX)
+				{
+					MultispeakVendor vendor = new MultispeakVendor(fields[MultispeakVendor.COMPANY_NAME_INDEX].trim(),
+																fields[MultispeakVendor.USERNAME_INDEX].trim(),
+																fields[MultispeakVendor.PASSWORD_INDEX].trim(),
+																fields[MultispeakVendor.UNIQUE_KEY_INDEX].trim(),
+																fields[MultispeakVendor.URL_INDEX].trim());
+																
+					for(int j = MultispeakVendor.FIRST_ENDPOINT_INDEX; j < fields.length; j++)
+					{
+						String[] services = fields[j].trim().split("=");
+						if(services.length == 2)	//0=service, 1=endpointName
+							vendor.getServiceToEndpointMap().put(services[0].trim(), services[1].trim());
+					}
+					//Put a lower case company name so we can be consistent and find the value in a get()
+					mspRolesMap.put(vendor.getCompanyName().toLowerCase(), vendor);
+				}
+			}  
+		}
+		return mspRolesMap;
+	}
+	/**
+	 * Returns the MultispeakVendor for the companyName (uses toLower() for the company name so we can ignore the case)
+	 * @param companyName
+	 * @return
+	 */
+	public MultispeakVendor getMultispeakVendor(String companyName)
+	{
+		return (MultispeakVendor)getMultispeakRolesMap().get(companyName.toLowerCase());
+	}
+			
 }
 
