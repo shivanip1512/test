@@ -21,6 +21,7 @@ import com.cannontech.multispeak.OutageDetectionEvent;
  */
 public class ODEvent extends Observable{
 	
+	private String vendorName = "";
 	/** The unique messageID for all of the commands sent to pil */
 	private long pilMessageID = -1;
 	/** The total number of meters tested */
@@ -33,8 +34,9 @@ public class ODEvent extends Observable{
 	/**
 	 * 
 	 */
-	public ODEvent(long pilMessageID_, int meterCount_) {
+	public ODEvent(String vendorName_, long pilMessageID_, int meterCount_) {
 		super();
+		vendorName = vendorName_;
 		pilMessageID = pilMessageID_;
 		totalMeterCount = meterCount_;
 	}
@@ -98,6 +100,22 @@ public class ODEvent extends Observable{
 			setChanged();
 			notifyObservers();
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public String getVendorName()
+	{
+		return vendorName;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setVendorName(String string)
+	{
+		vendorName = string;
 	}
 
 }
