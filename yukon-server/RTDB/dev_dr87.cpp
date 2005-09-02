@@ -284,10 +284,21 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
             }
         case StateHandshakeSendSecurity:
             {
-                // retrive the password
-                char * stopper;
-                BYTEULONG flipper;
-                flipper.ul = strtoul (getIED().getPassword().data(),&stopper,10);
+                /********************
+                * Xcel enters the password as the byte stream the DR-87 is expecting
+                * so before changing this code, make sure that remains true
+                * password = '00199200' should become 00 19 92 00 in the output stream
+                *********************
+                */
+                BYTE password[4] = {0x00,0x00,0x00,0x00};
+                int passwordLength=getIED().getPassword().length();
+
+                // auto pad the first byte(s) to zero if necessary
+                for (int z=0; z < passwordLength; z++)
+                {
+                    password[(8-passwordLength+z)/2] <<= 4;
+                    password[(8-passwordLength+z)/2] |= getIED().getPassword().data()[z]-'0'; 
+                }
 
                 /**************************
                 *  Send the login command
@@ -297,10 +308,10 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
                         "%c%c%c%c%c%c",
                         DR87_SYNC,
                         DR87_LOGIN,
-                        flipper.ch[3],
-                        flipper.ch[2],
-                        flipper.ch[1],
-                        flipper.ch[0]);
+                        password[0],
+                        password[1],
+                        password[2],
+                        password[3]);
 
                 Transfer.setOutCount (6);
                 Transfer.setInCountExpected (200);
