@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2005/08/15 15:14:12 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2005/09/02 16:19:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1454,6 +1454,12 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
     if(parse.getCommand() == PutConfigRequest)
     {
+        UINT modifier = 0;
+
+        if( parse.getCommandStr().contains(" force", RWCString::ignoreCase) ) modifier |= CtiDeviceBase::PutconfigAssignForce;
+        if( gConfigParms.getValueAsString("EXPRESSCOM_FORCE_FULL_CONFIG","false").contains("true", RWCString::ignoreCase) ) modifier |= CtiDeviceBase::PutconfigAssignForce;
+
+
         if(parse.isKeyValid("template") && INT_MIN != parse.getiValue("serial"))
         {
             /* OK, a serial number was specified in a putconfg, with a template......
@@ -1469,7 +1475,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
-                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(), service.data());
+                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier), service.data());
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1492,7 +1498,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
-                _snprintf(newparse, 255, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment());
+                _snprintf(newparse, 255, "%s %s", pReq->CommandString(), GrpDev->getPutConfigAssignment(modifier));
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

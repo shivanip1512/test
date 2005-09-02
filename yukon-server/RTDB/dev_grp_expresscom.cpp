@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/09/02 16:19:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -266,8 +266,9 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
     return nRet;
 }
 
-RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT level)
+RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT modifier)
 {
+    #if 0
     RWCString assign = RWCString("xcom assign") +
                        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +
                        " G" + CtiNumStr(_expresscomGroup.getGeo()) +
@@ -285,6 +286,45 @@ RWCString CtiDeviceGroupExpresscom::getPutConfigAssignment(UINT level)
             assign += CtiNumStr(i+1) + " ";
         }
     }
+
+    #else
+    /*
+     *  This putconfig assign should give us addressability only for the address components which are assigned to be controlled by the group.
+     *  Any additional addressing should not be affected.  This is what we would want for any STARS web configurations.
+     *
+     *  The command modifier "
+     */
+    bool forcefullconfig = (modifier & CtiDeviceBase::PutconfigAssignForce);
+
+    RWCString assign = RWCString("xcom assign");
+
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)           assign += " S" + CtiNumStr(_expresscomGroup.getServiceProvider());
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)            assign += " G" + CtiNumStr(_expresscomGroup.getGeo());
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)     assign += " B" + CtiNumStr(_expresscomGroup.getSubstation());
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)         assign += " F" + CtiNumStr(_expresscomGroup.getFeeder());
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)            assign += " Z" + CtiNumStr(_expresscomGroup.getZip());
+    if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)           assign += " U" + CtiNumStr(_expresscomGroup.getUda());
+
+    if(_expresscomGroup.getLoadMask() &&
+       ((forcefullconfig ||
+         getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram) ||
+        (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)) )  // We have enough to do some load addressing
+    {
+        if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)        assign += " P" + CtiNumStr(_expresscomGroup.getProgram());
+        if(forcefullconfig || getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)       assign += " R" + CtiNumStr(_expresscomGroup.getSplinter());
+
+        assign += " Load ";
+
+        for(int i = 0; i < 15; i++)
+        {
+            if(_expresscomGroup.getLoadMask() & (0x01 << i))
+            {
+                assign += CtiNumStr(i+1) + " ";
+            }
+        }
+    }
+
+    #endif
 
     return  assign;
 }
