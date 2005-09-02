@@ -459,6 +459,11 @@ public class ImportManagerUtil {
 	    account.setAccountNotes( fields[IDX_ACCOUNT_NOTES] );
 	    account.setPropertyNumber( fields[IDX_MAP_NO] );
 	    account.setPropertyNotes( fields[IDX_PROP_NOTES] );
+	    
+	    //set some defaults to prevent null pointers
+	    account.setCustomerNumber("");
+	    account.setRateScheduleID(-1);
+	    account.setAltTrackingNumber("");
 	
 	    StreetAddress propAddr = new StreetAddress();
 	    propAddr.setStreetAddr1( fields[IDX_STREET_ADDR1] );
