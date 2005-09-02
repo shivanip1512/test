@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/09/01 22:10:22 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/09/02 16:18:48 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1062,7 +1062,8 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         }
         else if(parse.isKeyValid("xctservicecancel"))
         {
-            if( parse.getCommandStr().contains(" restore") )
+            if( parse.getCommandStr().contains(" restore") ||
+                gConfigParms.getValueAsString("EXPRESSCOM_TOOS_RESTORE_FIRST", "false").contains("true", RWCString::ignoreCase) )
             {
                 // This is special syntax to cause any controlled load to restore before going o.o.s.
                 restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
@@ -1322,8 +1323,8 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     RWCString splinterStr   = parse.getsValue("xca_splinter");
     RWCString tStr;
 
-    int prog       = -1; // parse.getiValue("xca_program", 0);
-    int splinter   = -1; // parse.getiValue("xca_splinter", 0);
+    int prog       = -1;
+    int splinter   = -1;
     BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
     BYTE load;
 
@@ -1334,8 +1335,8 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     {
         if(loadmask & (0x01 << load))
         {
-            prog        = ( !(tStr = ptok(",")).isNull() ? atoi(tStr.data()) : prog);
-            splinter    = ( !(tStr = rtok(",")).isNull() ? atoi(tStr.data()) : splinter);
+            prog        = ( !(tStr = ptok(",")).isNull() ? atoi(tStr.data()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+            splinter    = ( !(tStr = rtok(",")).isNull() ? atoi(tStr.data()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
 
             length = 1;
             raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
