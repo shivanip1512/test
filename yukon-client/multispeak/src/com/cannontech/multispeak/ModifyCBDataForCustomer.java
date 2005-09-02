@@ -8,13 +8,13 @@
 package com.cannontech.multispeak;
 
 public class ModifyCBDataForCustomer  implements java.io.Serializable {
-    private com.cannontech.multispeak.Customer customerData;
+    private com.cannontech.multispeak.ArrayOfCustomer customerData;
 
     public ModifyCBDataForCustomer() {
     }
 
     public ModifyCBDataForCustomer(
-           com.cannontech.multispeak.Customer customerData) {
+           com.cannontech.multispeak.ArrayOfCustomer customerData) {
            this.customerData = customerData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
      * 
      * @return customerData
      */
-    public com.cannontech.multispeak.Customer getCustomerData() {
+    public com.cannontech.multispeak.ArrayOfCustomer getCustomerData() {
         return customerData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
      * 
      * @param customerData
      */
-    public void setCustomerData(com.cannontech.multispeak.Customer customerData) {
+    public void setCustomerData(com.cannontech.multispeak.ArrayOfCustomer customerData) {
         this.customerData = customerData;
     }
 
@@ -80,7 +80,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("customerData");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customerData"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCustomer"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

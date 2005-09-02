@@ -8,13 +8,13 @@
 package com.cannontech.multispeak;
 
 public class ModifyCBDataForMeter  implements java.io.Serializable {
-    private com.cannontech.multispeak.Meter meterData;
+    private com.cannontech.multispeak.ArrayOfMeter meterData;
 
     public ModifyCBDataForMeter() {
     }
 
     public ModifyCBDataForMeter(
-           com.cannontech.multispeak.Meter meterData) {
+           com.cannontech.multispeak.ArrayOfMeter meterData) {
            this.meterData = meterData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
      * 
      * @return meterData
      */
-    public com.cannontech.multispeak.Meter getMeterData() {
+    public com.cannontech.multispeak.ArrayOfMeter getMeterData() {
         return meterData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
      * 
      * @param meterData
      */
-    public void setMeterData(com.cannontech.multispeak.Meter meterData) {
+    public void setMeterData(com.cannontech.multispeak.ArrayOfMeter meterData) {
         this.meterData = meterData;
     }
 
@@ -80,7 +80,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("meterData");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterData"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meter"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeter"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

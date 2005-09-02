@@ -8,13 +8,13 @@
 package com.cannontech.multispeak;
 
 public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
-    private com.cannontech.multispeak.ServiceLocation serviceLocationData;
+    private com.cannontech.multispeak.ArrayOfServiceLocation serviceLocationData;
 
     public ModifyCBDataForServiceLocation() {
     }
 
     public ModifyCBDataForServiceLocation(
-           com.cannontech.multispeak.ServiceLocation serviceLocationData) {
+           com.cannontech.multispeak.ArrayOfServiceLocation serviceLocationData) {
            this.serviceLocationData = serviceLocationData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
      * 
      * @return serviceLocationData
      */
-    public com.cannontech.multispeak.ServiceLocation getServiceLocationData() {
+    public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationData() {
         return serviceLocationData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
      * 
      * @param serviceLocationData
      */
-    public void setServiceLocationData(com.cannontech.multispeak.ServiceLocation serviceLocationData) {
+    public void setServiceLocationData(com.cannontech.multispeak.ArrayOfServiceLocation serviceLocationData) {
         this.serviceLocationData = serviceLocationData;
     }
 
@@ -80,7 +80,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("serviceLocationData");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocationData"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfServiceLocation"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

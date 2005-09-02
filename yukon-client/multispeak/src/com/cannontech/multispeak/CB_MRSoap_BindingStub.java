@@ -16,7 +16,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[34];
+        _operations = new org.apache.axis.description.OperationDesc[35];
         _initOperationDesc1();
         _initOperationDesc2();
         _initOperationDesc3();
@@ -199,6 +199,17 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         _operations[14] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetServiceLocationByMeterNo");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"));
+        oper.setReturnClass(com.cannontech.multispeak.ServiceLocation.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByMeterNoResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[15] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByAccountNumber");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "accountNumber"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
@@ -207,7 +218,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByAccountNumberResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[15] = oper;
+        _operations[16] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByGridLocation");
@@ -218,7 +229,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByGridLocationResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[16] = oper;
+        _operations[17] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByPhaseCode");
@@ -231,7 +242,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByPhaseCodeResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[17] = oper;
+        _operations[18] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByLoadGroup");
@@ -244,8 +255,13 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByLoadGroupResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[18] = oper;
+        _operations[19] = oper;
 
+    }
+
+    private static void _initOperationDesc3(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByServiceType");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceType"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
@@ -257,13 +273,8 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByServiceTypeResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[19] = oper;
+        _operations[20] = oper;
 
-    }
-
-    private static void _initOperationDesc3(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetServiceLocationByShutOffDate");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "shutOffDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
@@ -273,7 +284,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByShutOffDateResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[20] = oper;
+        _operations[21] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetAllMeters");
@@ -284,7 +295,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetAllMetersResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[21] = oper;
+        _operations[22] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetModifiedMeters");
@@ -297,7 +308,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetModifiedMetersResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[22] = oper;
+        _operations[23] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByMeterId");
@@ -308,7 +319,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByMeterIdResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[23] = oper;
+        _operations[24] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByMeterNo");
@@ -319,7 +330,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByMeterNoResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[24] = oper;
+        _operations[25] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByServLoc");
@@ -330,7 +341,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByServLocResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[25] = oper;
+        _operations[26] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByAccountNumber");
@@ -341,7 +352,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByAccountNumberResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[26] = oper;
+        _operations[27] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByCustID");
@@ -352,7 +363,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByCustIDResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[27] = oper;
+        _operations[28] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("GetMeterByAMRType");
@@ -365,15 +376,6 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetMeterByAMRTypeResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[28] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("ModifyCBDataForCustomer");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customerData"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customer"), com.cannontech.multispeak.Customer.class, false, false);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[29] = oper;
 
     }
@@ -382,13 +384,22 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("ModifyCBDataForCustomer");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customerData"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customer"), com.cannontech.multispeak.Customer.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[30] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("ModifyCBDataForServiceLocation");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocationData"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"), com.cannontech.multispeak.ServiceLocation.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[30] = oper;
+        _operations[31] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("ModifyCBDataForMeter");
@@ -397,7 +408,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[31] = oper;
+        _operations[32] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("ReadingChangedNotification");
@@ -408,7 +419,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ReadingChangedNotificationResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[32] = oper;
+        _operations[33] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("HistoryLogChangedNotification");
@@ -419,7 +430,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "HistoryLogChangedNotificationResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[33] = oper;
+        _operations[34] = oper;
 
     }
 
@@ -794,6 +805,20 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetServiceLocationByMeterNo");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetServiceLocationByMeterNo.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetServiceLocationByMeterNoResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetServiceLocationByMeterNoResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetServiceLocationByPhaseCode");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetServiceLocationByPhaseCode.class;
@@ -1158,20 +1183,6 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfJointUse");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.ArrayOfJointUse.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfLaborComponent");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.ArrayOfLaborComponent.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
     }
     private void addBindings1() {
             java.lang.Class cls;
@@ -1187,6 +1198,20 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfJointUse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfJointUse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfLaborComponent");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfLaborComponent.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMaterialComponent");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ArrayOfMaterialComponent.class;
@@ -1873,20 +1898,6 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDistr");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.LoadDistr.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(enumsf);
-            cachedDeserFactories.add(enumdf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDistrict");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.LoadDistrict.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(enumsf);
-            cachedDeserFactories.add(enumdf);
-
     }
     private void addBindings2() {
             java.lang.Class cls;
@@ -1902,6 +1913,20 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDistr");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.LoadDistr.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDistrict");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.LoadDistrict.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadFlowResult");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.LoadFlowResult.class;
@@ -2588,20 +2613,6 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "riser");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.Riser.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "scadaAnalog");
-            cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.ScadaAnalog.class;
-            cachedSerClasses.add(cls);
-            cachedSerFactories.add(beansf);
-            cachedDeserFactories.add(beandf);
-
     }
     private void addBindings3() {
             java.lang.Class cls;
@@ -2617,6 +2628,20 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "riser");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.Riser.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "scadaAnalog");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ScadaAnalog.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "scadaPoint");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ScadaPoint.class;
@@ -3529,12 +3554,46 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
 }
     }
 
-    public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationByAccountNumber(java.lang.String accountNumber) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.ServiceLocation getServiceLocationByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[15]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByMeterNo");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByMeterNo"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ServiceLocation) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ServiceLocation) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ServiceLocation.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationByAccountNumber(java.lang.String accountNumber) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[16]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByAccountNumber");
         _call.setEncodingStyle(null);
@@ -3568,7 +3627,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[16]);
+        _call.setOperation(_operations[17]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByGridLocation");
         _call.setEncodingStyle(null);
@@ -3602,7 +3661,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[17]);
+        _call.setOperation(_operations[18]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByPhaseCode");
         _call.setEncodingStyle(null);
@@ -3636,7 +3695,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[18]);
+        _call.setOperation(_operations[19]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByLoadGroup");
         _call.setEncodingStyle(null);
@@ -3670,7 +3729,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[19]);
+        _call.setOperation(_operations[20]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByServiceType");
         _call.setEncodingStyle(null);
@@ -3704,7 +3763,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[20]);
+        _call.setOperation(_operations[21]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetServiceLocationByShutOffDate");
         _call.setEncodingStyle(null);
@@ -3738,7 +3797,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[21]);
+        _call.setOperation(_operations[22]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetAllMeters");
         _call.setEncodingStyle(null);
@@ -3772,7 +3831,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[22]);
+        _call.setOperation(_operations[23]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetModifiedMeters");
         _call.setEncodingStyle(null);
@@ -3806,7 +3865,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[23]);
+        _call.setOperation(_operations[24]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByMeterId");
         _call.setEncodingStyle(null);
@@ -3840,7 +3899,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[24]);
+        _call.setOperation(_operations[25]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByMeterNo");
         _call.setEncodingStyle(null);
@@ -3874,7 +3933,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[25]);
+        _call.setOperation(_operations[26]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByServLoc");
         _call.setEncodingStyle(null);
@@ -3908,7 +3967,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[26]);
+        _call.setOperation(_operations[27]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByAccountNumber");
         _call.setEncodingStyle(null);
@@ -3942,7 +4001,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[27]);
+        _call.setOperation(_operations[28]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByCustID");
         _call.setEncodingStyle(null);
@@ -3976,7 +4035,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[28]);
+        _call.setOperation(_operations[29]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetMeterByAMRType");
         _call.setEncodingStyle(null);
@@ -4010,7 +4069,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[29]);
+        _call.setOperation(_operations[30]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/ModifyCBDataForCustomer");
         _call.setEncodingStyle(null);
@@ -4037,7 +4096,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[30]);
+        _call.setOperation(_operations[31]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/ModifyCBDataForServiceLocation");
         _call.setEncodingStyle(null);
@@ -4064,7 +4123,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[31]);
+        _call.setOperation(_operations[32]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/ModifyCBDataForMeter");
         _call.setEncodingStyle(null);
@@ -4091,7 +4150,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[32]);
+        _call.setOperation(_operations[33]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/ReadingChangedNotification");
         _call.setEncodingStyle(null);
@@ -4125,7 +4184,7 @@ public class CB_MRSoap_BindingStub extends org.apache.axis.client.Stub implement
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[33]);
+        _call.setOperation(_operations[34]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/HistoryLogChangedNotification");
         _call.setEncodingStyle(null);

@@ -137,6 +137,12 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
     public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationByCustId(java.lang.String custId) throws java.rmi.RemoteException;
 
     /**
+     * Returns the requested Service Location data given the meter
+     * number of a meter served at that location.(Opt)
+     */
+    public com.cannontech.multispeak.ServiceLocation getServiceLocationByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException;
+
+    /**
      * Returns the requested Service Location data given Account Number.(Req)
      */
     public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationByAccountNumber(java.lang.String accountNumber) throws java.rmi.RemoteException;

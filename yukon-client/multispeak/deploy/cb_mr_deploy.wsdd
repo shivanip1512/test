@@ -1783,6 +1783,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByMeterNo"
+        type="java:com.cannontech.multispeak.GetServiceLocationByMeterNo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:overcurrentDeviceBank"
         type="java:com.cannontech.multispeak.OvercurrentDeviceBank"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -2025,6 +2033,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfGraphicSymbol"
         type="java:com.cannontech.multispeak.ArrayOfGraphicSymbol"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByMeterNoResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByMeterNoResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""

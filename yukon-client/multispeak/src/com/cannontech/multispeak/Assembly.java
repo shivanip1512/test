@@ -10,6 +10,8 @@ package com.cannontech.multispeak;
 public class Assembly  implements java.io.Serializable {
     private com.cannontech.multispeak.Extensions extensions;
     private com.cannontech.multispeak.ExtensionsList extensionsList;
+    private java.lang.String featureType;
+    private java.lang.String featureID;
     private java.lang.String unitCode;
     private com.cannontech.multispeak.UnitActn unitActn;
     private com.cannontech.multispeak.SpanTyp spanTyp;
@@ -29,6 +31,8 @@ public class Assembly  implements java.io.Serializable {
     public Assembly(
            com.cannontech.multispeak.Extensions extensions,
            com.cannontech.multispeak.ExtensionsList extensionsList,
+           java.lang.String featureType,
+           java.lang.String featureID,
            java.lang.String unitCode,
            com.cannontech.multispeak.UnitActn unitActn,
            com.cannontech.multispeak.SpanTyp spanTyp,
@@ -43,6 +47,8 @@ public class Assembly  implements java.io.Serializable {
            com.cannontech.multispeak.PoleType poleType) {
            this.extensions = extensions;
            this.extensionsList = extensionsList;
+           this.featureType = featureType;
+           this.featureID = featureID;
            this.unitCode = unitCode;
            this.unitActn = unitActn;
            this.spanTyp = spanTyp;
@@ -95,6 +101,46 @@ public class Assembly  implements java.io.Serializable {
      */
     public void setExtensionsList(com.cannontech.multispeak.ExtensionsList extensionsList) {
         this.extensionsList = extensionsList;
+    }
+
+
+    /**
+     * Gets the featureType value for this Assembly.
+     * 
+     * @return featureType
+     */
+    public java.lang.String getFeatureType() {
+        return featureType;
+    }
+
+
+    /**
+     * Sets the featureType value for this Assembly.
+     * 
+     * @param featureType
+     */
+    public void setFeatureType(java.lang.String featureType) {
+        this.featureType = featureType;
+    }
+
+
+    /**
+     * Gets the featureID value for this Assembly.
+     * 
+     * @return featureID
+     */
+    public java.lang.String getFeatureID() {
+        return featureID;
+    }
+
+
+    /**
+     * Sets the featureID value for this Assembly.
+     * 
+     * @param featureID
+     */
+    public void setFeatureID(java.lang.String featureID) {
+        this.featureID = featureID;
     }
 
 
@@ -355,6 +401,12 @@ public class Assembly  implements java.io.Serializable {
             ((this.extensionsList==null && other.getExtensionsList()==null) || 
              (this.extensionsList!=null &&
               this.extensionsList.equals(other.getExtensionsList()))) &&
+            ((this.featureType==null && other.getFeatureType()==null) || 
+             (this.featureType!=null &&
+              this.featureType.equals(other.getFeatureType()))) &&
+            ((this.featureID==null && other.getFeatureID()==null) || 
+             (this.featureID!=null &&
+              this.featureID.equals(other.getFeatureID()))) &&
             ((this.unitCode==null && other.getUnitCode()==null) || 
              (this.unitCode!=null &&
               this.unitCode.equals(other.getUnitCode()))) &&
@@ -407,6 +459,12 @@ public class Assembly  implements java.io.Serializable {
         }
         if (getExtensionsList() != null) {
             _hashCode += getExtensionsList().hashCode();
+        }
+        if (getFeatureType() != null) {
+            _hashCode += getFeatureType().hashCode();
+        }
+        if (getFeatureID() != null) {
+            _hashCode += getFeatureID().hashCode();
         }
         if (getUnitCode() != null) {
             _hashCode += getUnitCode().hashCode();
@@ -465,6 +523,20 @@ public class Assembly  implements java.io.Serializable {
         elemField.setFieldName("extensionsList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "extensionsList"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "extensionsList"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("featureType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "featureType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("featureID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "featureID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

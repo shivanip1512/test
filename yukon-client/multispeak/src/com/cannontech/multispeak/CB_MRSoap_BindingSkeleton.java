@@ -212,6 +212,18 @@ public class CB_MRSoap_BindingSkeleton implements com.cannontech.multispeak.CB_M
         }
         ((java.util.List)_myOperations.get("getServiceLocationByCustId")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getServiceLocationByMeterNo", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByMeterNoResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByMeterNo"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetServiceLocationByMeterNo");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getServiceLocationByMeterNo") == null) {
+            _myOperations.put("getServiceLocationByMeterNo", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getServiceLocationByMeterNo")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "accountNumber"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
         };
         _oper = new org.apache.axis.description.OperationDesc("getServiceLocationByAccountNumber", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetServiceLocationByAccountNumberResult"));
@@ -537,6 +549,12 @@ public class CB_MRSoap_BindingSkeleton implements com.cannontech.multispeak.CB_M
     public com.cannontech.multispeak.ArrayOfServiceLocation getServiceLocationByCustId(java.lang.String custId) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.ArrayOfServiceLocation ret = impl.getServiceLocationByCustId(custId);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ServiceLocation getServiceLocationByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ServiceLocation ret = impl.getServiceLocationByMeterNo(meterNo);
         return ret;
     }
 
