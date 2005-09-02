@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/08/24 20:49:00 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/09/02 16:19:47 $
 * HISTORY      :
 * $Log: dev_grp_sa305.h,v $
+* Revision 1.3  2005/09/02 16:19:47  cplender
+* Modified the getPutConfigAssignment() method to allow modifier parameters.
+*
 * Revision 1.2  2005/08/24 20:49:00  cplender
 * Restore commands were expiring inappropriately.
 *
@@ -74,7 +77,7 @@ public:
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    virtual RWCString getPutConfigAssignment(UINT level = UINT_MAX);
+    virtual RWCString getPutConfigAssignment(UINT modifier = 0);
 
 };
 #endif // #ifndef __DEV_GRP_SA305_H__

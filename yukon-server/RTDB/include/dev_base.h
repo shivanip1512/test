@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/08/12 14:07:29 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/09/02 16:19:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,14 @@ using namespace Cti;  //  in preparation for moving devices to their own namespa
  */
 class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
+public:
+
+    typedef enum
+    {
+        PutconfigAssignForce = 0x00000001
+
+    } CtiPutconfigModifiers;
+
 private:
 
     int _currTrxID;
@@ -202,7 +210,7 @@ public:
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!
     virtual bool hasTrxInfo() const;
     virtual CtiTransmitterInfo* initTrxInfo(); // Porter side info to setup transmitter device bookkeeping!
-    virtual RWCString getPutConfigAssignment(UINT level = UINT_MAX);
+    virtual RWCString getPutConfigAssignment(UINT modifier = 0);
     virtual bool isMeter() const;
     virtual INT deviceMaxCommFails() const;
 

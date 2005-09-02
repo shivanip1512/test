@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.12  2005/09/02 16:19:46  cplender
+* Modified the getPutConfigAssignment() method to allow modifier parameters.
+*
 * Revision 1.11  2005/04/15 19:04:10  mfisher
 * got rid of magic number debuglevel checks
 *
@@ -272,22 +275,5 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
 
     return nRet;
 }
-
-//===================================================================================================================
-//===================================================================================================================
-
-RWCString CtiDeviceGroupSADigital::getPutConfigAssignment(UINT level)
-{
-    RWCString assign = RWCString("sasimple assign");/* +
-                       " U" + CtiNumStr(_loadGroup.getUtility()) +
-                       " G" + CtiNumStr(_loadGroup.getGroup()) +
-                       " D" + CtiNumStr(_loadGroup.getDivision()) +
-                       " S" + CtiNumStr(_loadGroup.getSubstation()) +
-                       " F" + CtiNumStr(_loadGroup.getRateFamily()) +
-                       " M" + CtiNumStr(_loadGroup.getRateMember());
-*/
-    return  assign;
-}
-
 
 

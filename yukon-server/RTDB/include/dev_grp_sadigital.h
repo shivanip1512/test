@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/04/29 20:24:40 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/02 16:19:47 $
 * HISTORY      :
 * $Log: dev_grp_sadigital.h,v $
+* Revision 1.2  2005/09/02 16:19:47  cplender
+* Modified the getPutConfigAssignment() method to allow modifier parameters.
+*
 * Revision 1.1  2004/04/29 20:24:40  cplender
 * IR
 *
@@ -56,7 +59,6 @@ public:
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
-    virtual RWCString getPutConfigAssignment(UINT level = UINT_MAX);
 
 };
 #endif // #ifndef __DEV_GRP_SADIGITAL_H__

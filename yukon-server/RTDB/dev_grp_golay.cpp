@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/07/25 16:38:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.14  2005/09/02 16:19:46  cplender
+* Modified the getPutConfigAssignment() method to allow modifier parameters.
+*
 * Revision 1.13  2005/07/25 16:38:04  cplender
 * Golay receivers cannot epire an OM in less than 15 minutes.
 *
@@ -265,22 +268,6 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     }
 
     return nRet;
-}
-
-//===================================================================================================================
-//===================================================================================================================
-
-RWCString CtiDeviceGroupGolay::getPutConfigAssignment(UINT level)
-{
-    RWCString assign = RWCString("sasimple assign");/* +
-                       " U" + CtiNumStr(_loadGroup.getUtility()) +
-                       " G" + CtiNumStr(_loadGroup.getGroup()) +
-                       " D" + CtiNumStr(_loadGroup.getDivision()) +
-                       " S" + CtiNumStr(_loadGroup.getSubstation()) +
-                       " F" + CtiNumStr(_loadGroup.getRateFamily()) +
-                       " M" + CtiNumStr(_loadGroup.getRateMember());
-*/
-    return  assign;
 }
 
 

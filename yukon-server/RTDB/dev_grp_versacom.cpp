@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -209,7 +209,7 @@ RWCString CtiDeviceGroupVersacom::getDescription(const CtiCommandParser & parse)
     return tmpStr;
 }
 
-RWCString CtiDeviceGroupVersacom::getPutConfigAssignment(UINT level)
+RWCString CtiDeviceGroupVersacom::getPutConfigAssignment(UINT modifier)
 {
     char assign[128];
 

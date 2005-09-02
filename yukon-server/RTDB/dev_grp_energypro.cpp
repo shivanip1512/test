@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ INT CtiDeviceGroupEnergyPro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     return nRet;
 }
 
-RWCString CtiDeviceGroupEnergyPro::getPutConfigAssignment(UINT level)
+RWCString CtiDeviceGroupEnergyPro::getPutConfigAssignment(UINT modifier)
 {
     RWCString assign = RWCString("xcom assign") +
                        " S" + CtiNumStr(_expresscomGroup.getServiceProvider()) +

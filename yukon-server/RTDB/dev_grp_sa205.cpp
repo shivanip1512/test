@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/08/24 20:49:00 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -343,22 +343,5 @@ INT CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     return nRet;
 }
-
-//===================================================================================================================
-//===================================================================================================================
-
-RWCString CtiDeviceGroupSA205::getPutConfigAssignment( UINT level )
-{
-    RWCString assign = RWCString("sa205 assign");/* +
-                       " U" + CtiNumStr(_loadGroup.getUtility()) +
-                       " G" + CtiNumStr(_loadGroup.getGroup()) +
-                       " D" + CtiNumStr(_loadGroup.getDivision()) +
-                       " S" + CtiNumStr(_loadGroup.getSubstation()) +
-                       " F" + CtiNumStr(_loadGroup.getRateFamily()) +
-                       " M" + CtiNumStr(_loadGroup.getRateMember());
-                                                                    */
-    return  assign;
-}
-
 
 

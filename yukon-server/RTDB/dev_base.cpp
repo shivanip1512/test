@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/08/01 21:32:03 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -390,7 +390,7 @@ CtiTransmitterInfo* CtiDeviceBase::initTrxInfo() // Porter side info to setup tr
     return NULL;
 }
 
-RWCString CtiDeviceBase::getPutConfigAssignment(UINT level)
+RWCString CtiDeviceBase::getPutConfigAssignment(UINT modifier)
 {
     return  RWCString("config not done ") + getName();
 }

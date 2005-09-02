@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/08/24 20:49:00 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/09/02 16:19:46 $
 *
 * HISTORY      :
 * $Log: dev_grp_sa305.cpp,v $
+* Revision 1.17  2005/09/02 16:19:46  cplender
+* Modified the getPutConfigAssignment() method to allow modifier parameters.
+*
 * Revision 1.16  2005/08/24 20:49:00  cplender
 * Restore commands were expiring inappropriately.
 *
@@ -308,7 +311,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     return nRet;
 }
 
-RWCString CtiDeviceGroupSA305::getPutConfigAssignment(UINT level)
+RWCString CtiDeviceGroupSA305::getPutConfigAssignment(UINT modifier)
 {
     RWCString assign = RWCString("sa305 assign") +
                        " U" + CtiNumStr(_loadGroup.getUtility()) +
