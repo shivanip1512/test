@@ -1,8 +1,9 @@
+<%@ page import="com.cannontech.web.editor.*" %>
 <%@include file="cbc_inc.jspf"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+	class="com.cannontech.cbc.web.CapControlCache" type="com.cannontech.cbc.web.CapControlCache"
+	scope="application"></jsp:useBean>
 
 <%
 	String type = ParamUtil.getString(request, "type", "");
@@ -98,8 +99,6 @@ pageEncoding="ISO-8859-1"
                 <td>Parent</td>
               </tr>
 
-			<form id="resForm" action="feeders.jsp" method="post">
-			<input type="hidden" name="itemid" />
 <%
 for( int i = 0; i < items.length; i++ )
 {
@@ -108,15 +107,13 @@ for( int i = 0; i < items.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-				<a href="#" onclick="postMany('resForm', 'itemid', <%=item.getItemID()%>)">
-				<%=item.toString()%>
-				</a></td>
+				<a href="???">
+				<%=item.toString()%></a></td>
 				<td><%=item.getItemType()%></td>
 				<td><%=item.getDescription()%></td>
 				<td><%=item.getParent()%></td>
 			</tr>
 <% } %>
-			</form>
 
             </table>
         </div>

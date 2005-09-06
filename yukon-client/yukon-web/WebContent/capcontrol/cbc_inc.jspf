@@ -42,6 +42,14 @@
 
 %>
 
+<jsp:useBean id="CtiNavObject"
+	class="com.cannontech.web.navigation.CtiNavObject"
+	type="com.cannontech.web.navigation.CtiNavObject"
+	scope="session"></jsp:useBean>
+<jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
+
 <!--------------------------
 -
 - Init Javascript here

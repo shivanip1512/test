@@ -1,0 +1,169 @@
+* { 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
+
+a.menuLink:active {
+	color: #FF9900;
+}
+
+a.menuLink:visited, a.menuLink:link, a.menuLink, .tableHeader, .menu {
+	color: #FFFFFF;
+}
+
+a.menuLink:hover {
+	color: #CCCCCC;
+}
+
+a.menuLink {
+	font-size: 13px;
+	background-color: #006699;
+	font-weight: bold;
+	text-decoration: none;
+	margin-left: 4px;
+	margin-right: 6px;
+}
+
+.menu {
+	font-size: 13px;
+	background-color: #006699;
+	font-weight: bold;
+}
+
+.submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link,
+a.submenuLink:hover, legend, .editorHeader {
+	color: #006699;
+}
+
+.submenuLink {
+	font-size: 11px;
+	background-color: #EEEEEE;
+	margin-left: 5px;
+}
+
+.crumbs {
+	font-size: 10px;
+	color: #FF9900;
+}
+
+.main {
+	color: #000000;
+}
+
+.tableHeader, .columnHeader, .staticLabel,
+.staticNumberLabel, .medStaticLabel {
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+
+.medLabel, .medStaticLabel {
+	font-size: 14px;
+}
+
+.percentLabel {
+	width: 40px;
+}
+
+.char4Label {
+	width: 33px;
+}
+
+.char8Label {
+	width: 65px;
+}
+
+.char16Label {
+	width: 130px;
+}
+
+.editorHeader {
+	font-size: 24px;
+}
+
+.scroller {
+    padding-left: 20px;
+}
+
+.errorResults {
+	color: red;
+}
+
+.smallResults, .errorResults {
+	overflow: auto;
+	height: 32px;
+	width: 500px;
+	border: solid 1px;
+	padding-left: 3px;
+	padding-right: 3px;
+	text-align: center;
+}
+
+.scrollSmall {
+	overflow: scroll;
+	height: 200px;
+}
+
+legend {
+	font-size: 14px;
+	background-color: #E7EFF7;
+}
+
+.tabPane,
+.gridLayout, .pageLayout, .pageHeader,
+.pageNavigation, .pageBody, .pageFooter {
+	vertical-align: top;
+	width: 95%;
+}
+/*
+.gridLayout, .pageLayout, .pageHeader,
+.pageNavigation, .pageBody, .pageFooter {
+*/
+
+.stdButton {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.gridCell {
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+.alert {
+	color: #FF0000;
+}
+
+.scrollerTable {
+    padding: 2;
+    border-style: solid;
+    border-width: 1px;
+    width: 300px;
+}
+
+.scrollerCentered {
+    text-align: center;
+}
+
+.scrollerLeft {
+    text-align: left;
+}
+
+.scrollerTableHeader {
+    background-color: #E7EFF7;
+    padding: 3;
+    text-align: center;
+    border: none;
+}
+
+.tableRow {
+}
+
+.altTableRow {
+	background-color: #eeeeee;
+}
+
+.gridColumn, .gridCell {
+	vertical-align: top;
+	width: 50%;
+}

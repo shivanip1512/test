@@ -1,5 +1,5 @@
 <%@include file="cbc_inc.jspf"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
 	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
@@ -116,7 +116,7 @@ if( titles[i] != null ) {
           <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
           <td>
 
-          <div class="scrollLarge">
+          <div class="scrollMed">
             <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnheader lAlign">				
 				<td>Timestamp</td>

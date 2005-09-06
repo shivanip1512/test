@@ -1,70 +1,230 @@
-a.menuLink:active {color: #FF9900}
-a.menuLink:visited {color: #FFFFFF}
-a.menuLink:link {color: #FFFFFF}
-a.menuLink:hover {color: #CCCCCC;}
-a.menuLink { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #FFFFFF; background-color: #006699; font-weight: bold; text-decoration: none; margin-left: 4px; margin-right: 6px; }
-.menu { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #FFFFFF; background-color: #006699; font-weight: bold}
+* { 
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+}
 
-a.submenuLink:active {color: #006699}
-a.submenuLink:visited {color: #006699}
-a.submenuLink:link {color: #006699}
-a.submenuLink:hover {color: #006699;}
-.submenuLink { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #006699; background-color: #EEEEEE; margin-left: 5px; }
+a.menuLink:active {
+	color: #FF9900;
+}
 
-.crumbs { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #FF9900; }
-.main { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
-.tableHeader { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #FFFFFF; background-color: #FFFFFF; }
-.columnHeader { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #000000; background-color: #FFFFFF; }
-.copyright { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #000000}
+a.menuLink:visited, a.menuLink:link, a.menuLink, .menu, .subMenuPopup,
+.tableHeader, .trimBGColor, .cellImgHdr, .popupMenu, .popupHeader, .optSelect {
+	color: #FFFFFF;
+}
+
+a.menuLink:hover {
+	color: #CCCCCC;
+}
+
+a.menuLink {
+	background-color: #006699;
+	font-weight: bold;
+	text-decoration: none;
+	margin-left: 4px;
+	margin-right: 6px;
+}
+
+.menu {
+	background-color: #006699;
+	font-weight: bold;
+}
+
+.submenuLink, a.submenuLink:active, a.submenuLink:visited, a.submenuLink:link, a.submenuLink:hover {
+	color: #006699;
+}
+
+.submenuLink {
+	font-size: 11px;
+	background-color: #EEEEEE;
+	margin-left: 5px;
+}
+
+.main {
+	font-size: 13px;
+}
+
+.tableHeader {
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+
+.columnHeader {
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+
+.copyright, .crumbs, .altTableCell, .tableCell, .flyover {
+	font-size: 10px;
+}
+
+.crumbs {
+	color: #FF9900;
+}
+
 
 
 
 
 /* -----  Custom CSS classes ------- */
-.primeBGColor { background-color: #006699 }
-.primeColor { color: #cccccc; }
-.trimBGColor { background-color: #888888; color: #FFFFFF; font-weight: bold }
+.primeBGColor {
+	background-color: #006699;
+}
 
-.secondBGColor { background-color: #eeeeee; }
-.secondColor { color: #eeeeee; }
+.primeColor {
+	color: #cccccc;
+}
 
-a.tableCell:active {color: #006699; }
-a.tableCell:visited {color: #006699; }
-a.tableCell:link {color: #006699; }
-a.tableCell:hover {color: #006699; }
-.tableCell { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #000000; background-color: #FFFFFF; }
+.trimBGColor {
+	background-color: #888888;
+	font-weight: bold;
+}
 
-a.altTableCell:active {color: #006699; }
-a.altTableCell:visited {color: #006699; }
-a.altTableCell:link {color: #006699; }
-a.altTableCell:hover {color: #006699; }
-.altTableCell { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #000000; background-color: #eeeeee; }
+.secondBGColor {
+	background-color: #eeeeee;
+}
 
-.rAlign { text-align: right}
-.lAlign { text-align: left}
-.cAlign { text-align: center}
-.lIndent { margin-left: 27px; }
-.cellImgFill { width: 6; height: 25}
-.cellImgShort { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; height: 9; }
-.cellImgHdr { width: 100%; height: 25; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color: #FFFFFF;  background-color: 888888; margin-right: 1px; margin-left: 1px;}
+.secondColor {
+	color: #eeeeee;
+}
 
-.mainMenuHdr { height: 23; }
-.secondaryMenuHdr { height: 20; }
-.scrollSmall { overflow: auto; max-height: 120px; }
-.scrollMed { overflow: auto; max-height: 250px; }
-.scrollLarge { overflow: auto; max-height: 400px; }
-.scrollHuge { overflow: auto; max-height: 500px; }
+a.tableCell:active, a.tableCell:visited, a.tableCell:link, a.tableCell:hover,
+a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCell:link, a.altTableCell:hover {
+	color: #006699;
+}
 
-.flyover { font-family: Arial, Helvetica, sans-serif; font-size: 10; color: #FFFFF; background-color: #888888; color: #ffffff; }
-.popupMenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; visibility: hidden; cursor: default; width: 120px; }
-.optDeselect { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:pointer; width: 120 px; }
-.optSelect { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #006699; color: #FFFFFF;   border: 1px #666699; cursor:pointer; width: 120 px; }
-.popupHeader { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; color: #FFFFFF;  cursor:default; font-weight: bold;}
-.popupCell { height: 9; }
-.popupImg { height: 9; width: 9; border: 0; }
+.altTableCell {
+	background-color: #eeeeee;
+}
 
-.alert { color: #FF0000; }
-.warning { color: #F09100; cursor: help; }
-.info { color: #318a31; cursor: help; }
+.tableCell {
+	background-color: #FFFFFF;
+}
 
-.subMenuPopup { font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #eeeeee; display: none; }
+.rAlign {
+	text-align: right;
+}
+
+.lAlign {
+	text-align: left;
+}
+
+.cAlign {
+	text-align: center;
+}
+
+.lIndent {
+	margin-left: 27px;
+}
+
+.cellImgFill {
+	width: 6px;
+	height: 25px;
+}
+
+.cellImgShort {
+	font-weight: bold;
+	height: 9;
+}
+
+.cellImgHdr {
+	width: 100%;
+	height: 25px;
+	font-weight: bold;
+	background-color: 888888;
+	margin-right: 1px;
+	margin-left: 1px;
+}
+
+.mainMenuHdr {
+	height: 23;
+}
+
+.secondaryMenuHdr {
+	height: 20;
+}
+
+.scrollSmall, .scrollMed, .scrollLarge, .scrollHuge {
+	overflow: auto;
+}
+
+.scrollSmall {
+	max-height: 120px;
+}
+
+.scrollMed {
+	max-height: 250px;
+}
+
+.scrollLarge {
+	max-height: 400px;
+}
+
+.scrollHuge {
+	max-height: 500px;
+}
+
+.flyover {
+	color: #FFFFF;
+	background-color: #888888;
+}
+
+.popupMenu {
+	text-decoration: none;
+	position:absolute;
+	visibility: hidden;
+	cursor: default;
+	width: 120px;
+}
+
+.optDeselect {
+	text-decoration: none;
+	background-color: #FFFFFF;
+	border: 1px #666699;
+	cursor:pointer;
+	width: 120 px;
+}
+
+.optSelect {
+	text-decoration: none;
+	background-color: #006699;
+	border: 1px #666699;
+	cursor:pointer;
+	width: 120 px;
+}
+
+.popupHeader {
+	text-decoration: none;
+	cursor:default;
+	font-weight: bold;
+}
+
+.popupCell {
+	height: 9;
+}
+
+.popupImg {
+	height: 9;
+	width: 9;
+	border: 0;
+}
+
+.alert {
+	color: #FF0000;
+}
+
+.warning {
+	color: #F09100;
+	cursor: help;
+}
+
+.info {
+	color: #318a31;
+	cursor: help;
+}
+
+.subMenuPopup {
+	text-decoration: none;
+	background-color: #eeeeee;
+	display: none;
+}

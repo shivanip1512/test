@@ -1,19 +1,20 @@
 package com.cannontech.web.editor;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIData;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.AlarmCatFuncs;
+import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
@@ -42,48 +43,23 @@ public class PointForm extends DBEditorForm
 	private SelectItem[] initialStates = null;
 	private SelectItem[] notifGroups = null;
 	private SelectItem[] alarmCategories = null;
-
-
-	private static SelectItem[] logicalGroups = null;
-	private static SelectItem[] uofms = null;
-	private static SelectItem[] archiveIntervals = null;
 	
 	private boolean isArchiveInterEnabled = false;
 	private boolean isCalcRateEnabled = false;
 	private List alarmTableEntries = null;
-	
-	
-	//dummy UI comp to be used for internal event firing only
-	private static final UIComponent DUMMY_UI = new UIData();
+
+	private static SelectItem[] logicalGroups = null;
+	private static SelectItem[] uofms = null;
 
 
 	//init our static data with real values
 	static {
 		logicalGroups = new SelectItem[PointLogicalGroups.LGRP_STRS.length];
 		for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ )
-			logicalGroups[i] =
+			logicalGroups[i] =  //value, label
 				new SelectItem( PointLogicalGroups.LGRP_STRS[i], PointLogicalGroups.LGRP_STRS[i] );			
 
 
-		//value, label
-		archiveIntervals = new SelectItem[16];				
-		archiveIntervals[0] = new SelectItem(new Integer(5), "5 seconds");
-		archiveIntervals[1] = new SelectItem(new Integer(10), "10 seconds");
-		archiveIntervals[2] = new SelectItem(new Integer(15), "15 seconds");
-		archiveIntervals[3] = new SelectItem(new Integer(30), "30 seconds");
-		archiveIntervals[4] = new SelectItem(new Integer(60), "1 minute");
-		archiveIntervals[5] = new SelectItem(new Integer(120), "2 minutes");
-		archiveIntervals[6] = new SelectItem(new Integer(180), "3 minutes");
-		archiveIntervals[7] = new SelectItem(new Integer(300), "5 minutes");
-		archiveIntervals[8] = new SelectItem(new Integer(600), "10 minutes");
-		archiveIntervals[9] = new SelectItem(new Integer(900), "15 minutes");
-		archiveIntervals[10] = new SelectItem(new Integer(1800), "30 minutes");
-		archiveIntervals[11] = new SelectItem(new Integer(3600), "1 hour");
-		archiveIntervals[12] = new SelectItem(new Integer(7200), "2 hours");
-		archiveIntervals[13] = new SelectItem(new Integer(21600), "6 hours");
-		archiveIntervals[14] = new SelectItem(new Integer(43200), "12 hours");
-		archiveIntervals[15] = new SelectItem(new Integer(86400), "1 day");
-		
 		//getArchiveIntervalComboBox().setSelectedItem("5 minute");
 	}
 
@@ -108,7 +84,7 @@ public class PointForm extends DBEditorForm
 	}
 
 	public SelectItem[] getArchiveIntervals() {		
-			return archiveIntervals;
+			return timeInterval;
 	}
 
 	public List getAlarmTableEntries() {		
@@ -275,41 +251,39 @@ public class PointForm extends DBEditorForm
 		return CtiUtilities.NONE_ZERO_ID;
 	}
 
-	public void initPoint( int ptId, int ptType ) {
-
-System.out.println("-------  Initing point");
-		try {		
-			PointBase pointDB = PointFactory.retrievePoint( new Integer(ptId) );
-	
-			setDbPersistent( pointDB );
-			
-			setVisiblePanels( ptType );
-
-			initAllPanels( ptType );
-		}
-		catch( SQLException sx ) {
-			CTILogger.error( sx.getMessage(), sx  );
-		}
-	}
-	
 	/**
-	 * Inits all Point panels regardless of point type
+	 * Restores the object from the database
 	 *
 	 */
-	private void initAllPanels( int ptType ) {
+	public void initItem( int id ) {
 
-		stateGroupChanged(
-			new ValueChangeEvent(
-				DUMMY_UI, null,
-				new Integer(getPointBase().getPoint().getStateGroupID().intValue())) );
+		PointBase pointDB = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
+		setDbPersistent( pointDB );
+		initItem();
+	}
 
-		archiveTypeChanged(
-			new ValueChangeEvent( //src, oldValue, newValue
-				DUMMY_UI, null,
-				getPointBase().getPoint().getArchiveType()) );
+	protected void initItem() {
 
+		initPanels();
+	}
 
-		initAlarmTable( ptType );
+	/**
+	 * Reset any data structures and allow the parent to do its thing
+	 * 
+	 */
+	public void resetForm() {
+		
+		emailNotifcations = null;
+		stateGroups = null;
+		initialStates = null;
+		notifGroups = null;
+		alarmCategories = null;
+	
+		isArchiveInterEnabled = false;
+		isCalcRateEnabled = false;
+		alarmTableEntries = null;
+
+		super.resetForm();
 	}
 
 	/**
@@ -317,7 +291,7 @@ System.out.println("-------  Initing point");
 	 * based on type of object.
 	 *
 	 */
-	private void setVisiblePanels( int ptType ) {
+	private void initPanels() {
 
 		//all panels that are always displayed
 		getVisibleTabs().put( "General", new Boolean(true) );
@@ -331,6 +305,7 @@ System.out.println("-------  Initing point");
 		getVisibleTabs().put( "PointCalc", new Boolean(false) );
 
 
+		int ptType = PointTypes.getType( getPointBase().getPoint().getPointType() );
 		switch( ptType ) {
 
 			case PointTypes.ANALOG_POINT:
@@ -366,8 +341,25 @@ System.out.println("-------  Initing point");
 				throw new IllegalArgumentException("Unknown point type given, point type = " + ptType );
 		}			
 
+
+		stateGroupChanged(
+			new ValueChangeEvent(
+				DUMMY_UI, null,
+				new Integer(getPointBase().getPoint().getStateGroupID().intValue())) );
+
+		archiveTypeChanged(
+			new ValueChangeEvent( //src, oldValue, newValue
+				DUMMY_UI, null,
+				getPointBase().getPoint().getArchiveType()) );
+
+
+		initAlarmTable();
 	}
 	
+	/**
+	 * The instance of the underlying base object
+	 *
+	 */
 	public PointBase getPointBase() {
 		return (PointBase)getDbPersistent();
 	}
@@ -378,6 +370,8 @@ System.out.println("-------  Initing point");
 	 */
 	public void stateGroupChanged( ValueChangeEvent ev ) {
 		
+		if(ev == null || ev.getNewValue() == null) return;
+
 		LiteState[] lStates = StateFuncs.getLiteStates( ((Integer)ev.getNewValue()).intValue() );
 		initialStates = new SelectItem[ lStates.length ];
 		for( int i = 0; i < lStates.length; i++ )
@@ -395,8 +389,8 @@ System.out.println("-------  Initing point");
 	 */
 	public void archiveTypeChanged( ValueChangeEvent ev ) {
 		
-		if( ev.getNewValue() == null ) return;
-		
+		if( ev == null || ev.getNewValue() == null ) return;
+
 		String newVal = ev.getNewValue().toString();
 		isArchiveInterEnabled =  newVal.equalsIgnoreCase("On Timer");
 	}	
@@ -407,7 +401,7 @@ System.out.println("-------  Initing point");
 	 */
 	public void updateTypeChanged( ValueChangeEvent ev ) {
 		
-		if( ev.getNewValue() == null ) return;
+		if( ev == null || ev.getNewValue() == null ) return;
 		
 		String newVal = ev.getNewValue().toString();
 		isCalcRateEnabled =
@@ -419,8 +413,10 @@ System.out.println("-------  Initing point");
 	 * Initializes our alarm table
 	 * 
 	 */
-	private void initAlarmTable( int ptType ) {
+	private void initAlarmTable() {
 
+		int ptType = PointTypes.getType( getPointBase().getPoint().getPointType() );
+		
 		ArrayList notifEntries = new ArrayList(32);
 		java.util.List allAlarmStates = DefaultDatabaseCache.getInstance().getAllAlarmCategories();
 		//be sure we have a 32 character string
@@ -504,6 +500,56 @@ System.out.println("-------  Initing point");
 	public boolean isCalcRateEnabled()
 	{
 		return isCalcRateEnabled;
+	}
+	
+	
+	/**
+	 * Executes any last minute object updates before writting
+	 * the data to the databse. The return value is where the requested
+	 * value is redirected as defined in our faces-config.xml
+	 * 
+	 */
+	public void update() {
+		
+		String alarmStates = "";
+		String exclNotify = "";
+
+		int i = 0;
+		for( i = 0; i < getAlarmTableEntries().size(); i++ ) {
+			
+			AlarmTableEntry entry =
+				(AlarmTableEntry)getAlarmTableEntries().get(i);
+			
+			alarmStates += (char)AlarmCatFuncs.getAlarmCategoryId( entry.getGenerate() );			
+			exclNotify += entry.getExcludeNotify();
+		}
+
+		// fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+		alarmStates += PointAlarming.DEFAULT_ALARM_STATES.substring(i);
+		exclNotify += PointAlarming.DEFAULT_EXCLUDE_NOTIFY.substring(i);
+
+		getPointBase().getPointAlarming().setAlarmStates( alarmStates );
+		getPointBase().getPointAlarming().setExcludeNotifyStates( exclNotify );
+		
+		
+		
+		
+		//this message will be filled in by the super class
+		FacesMessage facesMsg = new FacesMessage();
+
+		try {
+			updateDBObject( getDbPersistent(), facesMsg );
+			
+			facesMsg.setDetail( "Database update was SUCCESSFULL" );
+		}
+		catch( TransactionException te ) {
+			//do nothing since the appropriate actions was taken in the super
+		}
+		finally {
+
+			FacesContext.getCurrentInstance().addMessage("cti_db_update", facesMsg);		
+		}
+
 	}
 
 }

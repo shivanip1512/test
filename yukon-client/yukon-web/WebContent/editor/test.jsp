@@ -5,7 +5,7 @@
 <head>
   <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=UTF-8">
   <title>Faces Impl</title>
-  <link rel="stylesheet" type="text/css" href="base.css">
+  <link rel="stylesheet" type="text/css" href="css/base.css">
 </head>
 
 

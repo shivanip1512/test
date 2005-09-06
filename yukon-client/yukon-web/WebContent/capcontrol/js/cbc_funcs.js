@@ -441,14 +441,20 @@ function showPopUpChkBoxes( baseUrl )
 	//var elemBanks = document.getElementsByName('cti_chkbxBanks');
 
 	var validElems = new Array();
-	doValidChecks( elemSubs, validElems );
-	doValidChecks( elemFdrs, validElems );
-	//doValidChecks( elemBanks, validElems );
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	//getValidChecks( elemBanks, validElems );
 
 	var url = createURLreq( validElems, baseUrl, 'value' );
 	manMsgID = loadXMLDoc(url, 'processMenuReq');
 }
 
+// -------------------------------------------
+//Shows a sticky popup for the checked box elements
+// that are valid values AND that are checked. The returned
+// html is placed in the popup box and then the box is
+// made visible
+// -------------------------------------------
 function showRecentCmds( baseUrl )
 {
 	if( baseUrl == null )
@@ -459,9 +465,9 @@ function showRecentCmds( baseUrl )
 	var elemBanks = document.getElementsByName('cti_chkbxBanks');
 
 	var validElems = new Array();
-	doValidChecks( elemSubs, validElems );
-	doValidChecks( elemFdrs, validElems );
-	doValidChecks( elemBanks, validElems );
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	getValidChecks( elemBanks, validElems );
 
 	var url = createURLreq( validElems, baseUrl, 'value' );
 	return url;
@@ -481,7 +487,36 @@ function showPopUp( urlStr )
 	manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
 }
 
-function doValidChecks( elems, validElems )
+// -------------------------------------------
+//Shows a sticky popup for the checked box elements
+// that are valid values AND that are checked. The returned
+// html is placed in the popup box and then the box is
+// made visible
+// -------------------------------------------
+function editorPost( href )
+{
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+
+	var validElems = new Array();
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	getValidChecks( elemBanks, validElems );
+
+	//only allow the editing of the zeroth element for now
+	if ( validElems.length <= 0 )
+		alert('You must check the item you want to edit first');
+	else
+		window.location =
+			href + '?itemid=' + validElems[0].getAttribute('value');
+}
+
+// -------------------------------------------
+//Adds the elems that are checked into a second
+// arry called validElems
+// -------------------------------------------
+function getValidChecks( elems, validElems )
 {
 	var cnt = validElems.length;
 	for( var i = 0; i < elems.length; i++ )
