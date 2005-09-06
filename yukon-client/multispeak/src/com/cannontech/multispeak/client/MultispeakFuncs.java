@@ -32,7 +32,7 @@ import com.cannontech.roles.yukon.MultispeakRole;
  */
 public class MultispeakFuncs
 {
-	public static final String AMR_TYPE = "cannon";
+	public static final String AMR_TYPE = "Cannon";
 	
 	public static void logArrayOfString(String intfaceName, String methodName, String[] strings)
 	{
