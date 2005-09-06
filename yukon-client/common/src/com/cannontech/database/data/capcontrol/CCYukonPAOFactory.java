@@ -4,6 +4,7 @@ package com.cannontech.database.data.capcontrol;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 
 public final class CCYukonPAOFactory {
 /**
@@ -37,4 +38,15 @@ public final static CapControlYukonPAOBase createCapControlPAO( int type )
 	
 	return returnCCbase;
 }
+
+/**
+ * Creates a default DB CapControlStrategy
+ */
+public final static CapControlStrategy createCapControlStrategy() 
+{
+	CapControlStrategy retCCStrategy = new CapControlStrategy();
+	
+	return retCCStrategy;
+}
+
 }

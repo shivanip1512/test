@@ -1,5 +1,7 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.util.ArrayList;
+
 /**
  * This type was created in VisualAge.
  */
@@ -8,7 +10,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements com.cann
 	private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
 
 	//contains objects of type com.cannontech.database.db.capcontrol.CCFeederSubAssignment
-	private java.util.Vector ccFeederListVector = null;
+	private ArrayList ccFeederList = null;
 /**
  */
 public CapControlSubBus() {
@@ -33,9 +35,9 @@ public void add() throws java.sql.SQLException
 	super.add();
 	getCapControlSubstationBus().add();
 	
-	for( int i = 0; i < getCcFeederListVector().size(); i++ )
+	for( int i = 0; i < getChildList().size(); i++ )
 	{
-		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getCcFeederListVector().elementAt(i)).add();
+		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).add();
 	}
 }
 /**
@@ -71,14 +73,14 @@ public com.cannontech.database.db.capcontrol.CapControlSubstationBus getCapContr
 /**
  * Insert the method's description here.
  * Creation date: (11/9/2001 3:00:46 PM)
- * @return java.util.Vector
+ *
  */
-public java.util.Vector getCcFeederListVector() 
+public ArrayList getChildList() 
 {
-	if( ccFeederListVector == null )
-		ccFeederListVector = new java.util.Vector(20);
+	if( ccFeederList == null )
+		ccFeederList = new ArrayList(16);
 
-	return ccFeederListVector;
+	return ccFeederList;
 }
 /**
  * This method was created in VisualAge.
@@ -89,7 +91,7 @@ public void retrieve() throws java.sql.SQLException
 	
 	getCapControlSubstationBus().retrieve();
 	
-	ccFeederListVector = com.cannontech.database.db.capcontrol.CCFeederSubAssignment.getCCFeedersOnSub(
+	ccFeederList = com.cannontech.database.db.capcontrol.CCFeederSubAssignment.getCCFeedersOnSub(
 		getPAObjectID(), getDbConnection() );
 }
 /**
@@ -100,8 +102,8 @@ public void setCapControlPAOID(Integer subBusID)
 	super.setPAObjectID( subBusID );
 	getCapControlSubstationBus().setSubstationBusID( subBusID );
 	
-	for( int i = 0; i < getCcFeederListVector().size(); i++ )
-		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getCcFeederListVector().elementAt(i)).setSubstationBusID( subBusID );
+	for( int i = 0; i < getChildList().size(); i++ )
+		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).setSubstationBusID( subBusID );
 }
 /**
  * Insert the method's description here.
@@ -116,8 +118,8 @@ public void setCapControlSubstationBus(com.cannontech.database.db.capcontrol.Cap
  * Creation date: (11/9/2001 3:00:46 PM)
  * @param newCcFeederListVector java.util.Vector
  */
-public void setCcFeederListVector(java.util.Vector newCcFeederListVector) {
-	ccFeederListVector = newCcFeederListVector;
+public void setCcFeederList(ArrayList newCcFeederListVector) {
+	ccFeederList = newCcFeederListVector;
 }
 /**
  * Insert the method's description here.
@@ -129,8 +131,8 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection( conn );
 	getCapControlSubstationBus().setDbConnection(conn);
 	
-	for (int i = 0; i < getCcFeederListVector().size(); i++)
-		 ((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getCcFeederListVector().elementAt(i)).setDbConnection(conn);
+	for (int i = 0; i < getChildList().size(); i++)
+		 ((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -144,7 +146,7 @@ public void update() throws java.sql.SQLException
 	com.cannontech.database.db.capcontrol.CCFeederSubAssignment.deleteCCFeedersFromSubList( 
 			getCapControlPAOID(), null, getDbConnection() );
 
-	for( int i = 0; i < getCcFeederListVector().size(); i++ )
-		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getCcFeederListVector().elementAt(i)).add();
+	for( int i = 0; i < getChildList().size(); i++ )
+		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).add();
 }
 }

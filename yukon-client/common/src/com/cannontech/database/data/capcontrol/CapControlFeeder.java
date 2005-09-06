@@ -1,7 +1,6 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * This type was created in VisualAge.
@@ -37,9 +36,9 @@ public void add() throws java.sql.SQLException
 	
 	getCapControlFeeder().add();
 	
-	for( int i = 0; i < getCcBankList().size(); i++ )
+	for( int i = 0; i < getChildList().size(); i++ )
 	{
-		((com.cannontech.database.db.capcontrol.CCFeederBankList) getCcBankList().get(i)).add();
+		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).add();
 	}
 	
 }
@@ -95,7 +94,7 @@ public com.cannontech.database.db.capcontrol.CapControlFeeder getCapControlFeede
  * Creation date: (11/9/2001 6:50:18 PM)
  * @return java.util.Vector
  */
-public ArrayList getCcBankList() 
+public ArrayList getChildList() 
 {
 	if( ccBankListVector == null )
 		ccBankListVector = new ArrayList(16);
@@ -134,8 +133,8 @@ public void setCapControlPAOID(Integer feedID)
 	super.setPAObjectID( feedID );
 	getCapControlFeeder().setFeederID( feedID );
 	
-	for( int i = 0; i < getCcBankList().size(); i++ )
-		((com.cannontech.database.db.capcontrol.CCFeederBankList) getCcBankList().get(i)).setFeederID( feedID );
+	for( int i = 0; i < getChildList().size(); i++ )
+		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).setFeederID( feedID );
 }
 /**
  * Insert the method's description here.
@@ -156,8 +155,8 @@ public void setDbConnection(java.sql.Connection conn)
 	getCapControlFeeder().setDbConnection(conn);
 //	getCBCStrategy().setDbConnection(conn);
 	
-	for (int i = 0; i < getCcBankList().size(); i++)
-		 ((com.cannontech.database.db.capcontrol.CCFeederBankList) getCcBankList().get(i)).setDbConnection(conn);
+	for (int i = 0; i < getChildList().size(); i++)
+		 ((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -172,7 +171,7 @@ public void update() throws java.sql.SQLException
 	com.cannontech.database.db.capcontrol.CCFeederBankList.deleteCapBanksFromFeederList( 
 			getCapControlPAOID(), null, getDbConnection() );
 
-	for( int i = 0; i < getCcBankList().size(); i++ )
-		((com.cannontech.database.db.capcontrol.CCFeederBankList) getCcBankList().get(i)).add();
+	for( int i = 0; i < getChildList().size(); i++ )
+		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).add();
 }
 }
