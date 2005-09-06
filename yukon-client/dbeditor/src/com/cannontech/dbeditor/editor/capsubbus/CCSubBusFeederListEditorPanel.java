@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.capsubbus;
 
+import java.util.ArrayList;
+
 /**
  * This type was created in VisualAge.
  */
@@ -219,8 +221,7 @@ public Object getValue(Object val)
 		ccFeederVector.addElement(ccFeederList);
 	}
 
-//	if( ccStrategyBankListVector.size() > 0 ) Dont know why this was here, anyone???
-		ccSubBus.setCcFeederListVector( ccFeederVector );
+	//ccSubBus.setCcFeederList( ccFeederVector );
 	
 	return val;
 }
@@ -438,7 +439,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 public void setValue(Object val) 
 {
 	com.cannontech.database.data.capcontrol.CapControlSubBus subBus = (com.cannontech.database.data.capcontrol.CapControlSubBus)val;
-	java.util.Vector ccFeederListVector = subBus.getCcFeederListVector();
+	ArrayList ccFeederListVector = subBus.getChildList();
 	
 	initLeftListFeeders();
 

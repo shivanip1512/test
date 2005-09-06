@@ -476,7 +476,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 public void setValue(Object val) 
 {
 	CapControlFeeder ccFeeder = (com.cannontech.database.data.capcontrol.CapControlFeeder)val;
-	java.util.ArrayList ccBankList = ccFeeder.getCcBankList();
+	java.util.ArrayList ccBankList = ccFeeder.getChildList();
 	
 	initLeftListBanks();
 	java.util.Vector assignedBanks = new java.util.Vector();
