@@ -140,7 +140,7 @@ public class DataTools
 		//int paoId = YukonPAObject.getNextYukonPAObjectID().intValue();
    		for( int i = 0; i < subCount; i++ )
    		{
-   			Vector ccFeederVector = new Vector( feederTotal );
+   			ArrayList ccFeederList = new ArrayList( feederTotal );
    			ArrayList ccBankList = new ArrayList( bankTotal );
    			
    			int[] feederIDs = new int[ feederTotal ];
@@ -175,14 +175,14 @@ public class DataTools
 	   			
    			CapControlSubBus s = createCBCSubBus( YukonPAObject.getNextYukonPAObjectID().intValue() );
    			for( int x = 0; x < feederIDs.length; x++ )
-   				ccFeederVector.addElement( new CCFeederSubAssignment(
+			ccFeederList.add( new CCFeederSubAssignment(
 						  new Integer(feederIDs[x]),
 						  s.getCapControlPAOID(),
 						  new Integer(i+1)) );
 
-   			s.setCcFeederListVector( ccFeederVector );
+   			s.setCcFeederList( ccFeederList );
    			writeToSQLDatabase( s );
-   			ccFeederVector.clear();
+			ccFeederList.clear();
    		}
    	
    }
