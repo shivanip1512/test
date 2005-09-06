@@ -1,5 +1,6 @@
 package com.cannontech.database.db.capcontrol;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 
@@ -14,7 +15,7 @@ public class DeviceCBC extends com.cannontech.database.db.DBPersistent
 
 	public static String TABLE_NAME = "DeviceCBC";
 /**
- * DeviceTwoWayFlags constructor comment.
+ * Constructor comment.
  */
 public DeviceCBC() {
 	super();
@@ -27,6 +28,64 @@ public DeviceCBC(Integer deviceID) {
 	super();
 	initialize( deviceID, null, null );
 }
+
+/**
+ * This method returns all the DeviceCBCs that are in the system
+ * 
+ */
+public static DeviceCBC[] getAllDeviceCBCs()
+{
+	java.util.Vector returnVector = null;
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+	
+	String sql = "SELECT DeviceID, SerialNumber, RouteID FROM " + TABLE_NAME +
+					" ORDER BY DeviceID";
+
+	try
+	{		
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+				
+			rset = pstmt.executeQuery();
+			returnVector = new java.util.Vector(64); //rset.getFetchSize()
+		
+			while( rset.next() ) {
+				DeviceCBC devCBC = new DeviceCBC( new Integer(rset.getInt(1)) );
+				devCBC.setSerialNumber( new Integer(rset.getInt(2)) );
+				devCBC.setRouteID( new Integer(rset.getInt(3)) );
+				
+				returnVector.addElement( devCBC );
+			}
+
+		}		
+	}
+	catch( java.sql.SQLException e ) {
+		CTILogger.error( e.getMessage(), e );
+	}
+	finally {
+		try {
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 ) {
+			CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+	
+	
+	DeviceCBC[] cbcs = new DeviceCBC[returnVector.size()];
+	return (DeviceCBC[])returnVector.toArray( cbcs );
+}
+
 
 /**
  * This method returns all the DeviceCBCs that are not assgined

@@ -1,16 +1,12 @@
 package com.cannontech.database.db.capcontrol;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.point.Point;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 /**
@@ -25,12 +21,12 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
 	private Integer maxDailyOperation = new Integer(0);
 	private Character maxOperationDisableFlag = new Character('N');
-	private Integer peakStartTime = null;
-	private Integer peakStopTime = null;
-	private Integer controlInterval = new Integer(0);
-	private Integer minResponseTime = new Integer(30);
-	private Integer minConfirmPercent = new Integer(15);
-	private Integer failurePercent = new Integer(15);
+	private Integer peakStartTime = new Integer(0);
+	private Integer peakStopTime = new Integer(86340);  //23:59
+	private Integer controlInterval = new Integer(900);
+	private Integer minResponseTime = new Integer(900);
+	private Integer minConfirmPercent = new Integer(75);
+	private Integer failurePercent = new Integer(25);
 	private String daysOfWeek = new String("YYYYYNNN");
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 	private Integer controlDelayTime = new Integer(0);
@@ -131,7 +127,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 * Creation date: (9/26/00 10:27:13 AM)
 	 * @return java.lang.String
 	 */
-	public java.lang.String getDaysOfWeek() {
+	public String getDaysOfWeek() {
 		return daysOfWeek;
 	}
 	
@@ -297,11 +293,10 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 * Creation date: (9/26/00 10:27:13 AM)
 	 * @param newDaysOfWeek java.lang.String
 	 */
-	public void setDaysOfWeek(java.lang.String newDaysOfWeek) {
+	public void setDaysOfWeek(String newDaysOfWeek) {
 		daysOfWeek = newDaysOfWeek;
 	}
-	
-	
+
 	/**
 	 * This method was created in VisualAge.
 	 * @param newValue java.lang.Integer
@@ -394,6 +389,31 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	}
 
 	/**
+	 * Gets the next unused ID for a Strategy
+	 * 
+	 */
+	public final static Integer getNextStrategyID() 
+	{
+		SqlStatement stmt = new SqlStatement(
+					"SELECT Max(StrategyID)+1 FROM " + TABLE_NAME , CtiUtilities.getDatabaseAlias());
+
+		try
+		{
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
+				return new Integer(stmt.getRow(0)[0].toString());
+			else
+				return new Integer(1);
+		}
+		catch( Exception e )
+		{
+		   CTILogger.warn( e.getMessage(), e );
+		   return new Integer(1);
+		}
+	}
+
+	/**
 	 * This method returns all CapControlStrategy currently
 	 * in the database with all their attributes populated
 	 *
@@ -471,6 +491,58 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 
 		CapControlStrategy[] strats = new CapControlStrategy[vect.size()];
 		return (CapControlStrategy[])vect.toArray( strats );
+	}
+
+	/**
+	 * This method returns all CapControlStrategy currently
+	 * in the database with all their attributes populated
+	 *
+	 */
+	public static int[] getAllPAOSUsingStrategy( int stratID, int excludedPAOID )
+	{
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		NativeIntVector retVect = new NativeIntVector(16);
+
+	   //Get all the data from the database                
+	   String sql = 
+			"select s.subStationBusID from " + CapControlSubstationBus.TABLE_NAME +
+			" s where s.strategyid = " + stratID + " and s.subStationBusID <> " + excludedPAOID +
+	   		" union " +
+	   		"select f.feederID from " + CapControlFeeder.TABLE_NAME +
+			" f where f.strategyid = " + stratID + " and f.feederID <> " + excludedPAOID;
+
+		try {		
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+			if( conn == null ) {
+				throw new IllegalStateException("Error getting database connection.");
+			}
+			else {
+				pstmt = conn.prepareStatement(sql.toString());			
+				rset = pstmt.executeQuery();
+	
+				while( rset.next() ) {
+					retVect.add( rset.getInt(1) );
+				}
+
+			}		
+		}
+		catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if( pstmt != null ) pstmt.close();
+				if( conn != null ) conn.close();
+			} 
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+
+		return retVect.toArray();
 	}
 
 	/**
