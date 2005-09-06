@@ -38,7 +38,7 @@ import com.cannontech.common.version.VersionTools;
  * The only rule is the point name must be unique.
  */
 public class PriceServer implements Runnable{
-	private String writeToFileName = "C:/yukon/server/import/pricePoint.txt";
+	private String writeToFileName = "C:/yukon/server/import/export.txt";
 	private String pointName = "PricePoint";
 	private Thread priceThread = null;
 	private String endpointURL = "https://www.electricprice.net/PSS2WS/PSS2WS";
@@ -139,7 +139,7 @@ public class PriceServer implements Runnable{
 	public void run() {
 		
 		java.util.Date now = null;
-		figureNextRunTime();
+//		figureNextRunTime();
 		
 		try
 		{
@@ -271,7 +271,7 @@ public class PriceServer implements Runnable{
 
 	public void init()
 	{
-		CTILogger.info("PriceServer - Yukon Version: " + VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +VersionTools.getDatabaseVersion());
+		CTILogger.info("PriceServer Started");
 		System.setProperty("cti.app.name", "PriceServer");
 
 		// set up ssl
@@ -316,25 +316,44 @@ public class PriceServer implements Runnable{
 				startIndex += 1;
 					
 				if( arg.toLowerCase().startsWith("point"))
+				{
 					pointName = arg.substring(startIndex);
+					CTILogger.info("Set PointName: "+ pointName);
+				}
 	
 				else if( arg.toLowerCase().startsWith("export"))
+				{
 					writeToFileName = arg.substring(startIndex);
+					CTILogger.info("Set WriteToFileName: " + writeToFileName);
+				}
 					
 				else if (arg.toLowerCase().startsWith("run"))	//RunTimeInSeconds
+				{
 					runIntervalInSeconds = Integer.valueOf(arg.substring(startIndex).trim()).intValue();
-					
+					CTILogger.info("Set runTimeInterval(seconds): " + runIntervalInSeconds); 
+				}
 				else if( arg.toLowerCase().startsWith("user"))	//username
+				{
 					userName = arg.substring(startIndex);
+					CTILogger.info("Set Username: " + userName);
+				}
 				
 				else if( arg.toLowerCase().startsWith("pass"))	//password
+				{
 					password = arg.substring(startIndex);
+					CTILogger.info("Set Password: ********");
+				}
 					
 				else if( arg.toLowerCase().startsWith("certfile"))	//certificate filename and path
+				{
 					certFileName = arg.substring(startIndex);
-				
+					CTILogger.info("Set CertFileName: " + certFileName);
+				}
 				else if( arg.toLowerCase().startsWith("certpass")) //certificate password
+				{
 					certPassword = arg.substring(startIndex);
+					CTILogger.info("Set CertPassword: ********");
+				}
 			}
 		}
 	}
