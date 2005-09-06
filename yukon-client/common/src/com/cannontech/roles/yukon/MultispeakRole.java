@@ -19,20 +19,22 @@ public interface MultispeakRole {
 
 	public static final int ROLEID = YukonRoleDefs.MULTISPEAK_ROLEID;
 	
-	//The OMS vendor webservice URL
-	public static final int OMS_WEBSERVICE_URL = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE;
-	//The unique key between Yukon and OMS vendor (valid values: PaoName(DeviceName) | MeterNumber)
-	public static final int OMS_UNIQUE_KEY = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -1;
-	public static final int OMS_USERNAME = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 2;
-	public static final int OMS_PASSWORD = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 3;
-	public static final int OMS_OA_OD_SERVICE_NAME = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 4;
-
-	//The CIS vendor webservice URL
-	public static final int CIS_WEBSERVICE_URL = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 10;
-	//The unique key between Yukon and CIS vendor (valid values: PaoName(DeviceName) | MeterNumber)
-	public static final int CIS_UNIQUE_KEY = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 11;
-	public static final int CIS_USERNAME = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 12;
-	public static final int CIS_PASSWORD = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 13;
-	public static final int CIS_CB_MR_SERVICE_NAME = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 14;
-
+	//The Vendor Config property is a comma separated string in the following form:
+	//<companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=serviceEndpoint0>...<service=serviceEndpoint1>
+	// where <deviceName|meterNumber> is the unique key between yukon and vendor
+	
+	//The Vendor services property is a comma separated string in the following form:
+	//<service=serviceName> 
+	//where service is the multispeak function (MR_CB for example) and serviceName is the service port name (MR_CBSoap for example)
+	
+	public static final int VENDOR_01_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE;
+	public static final int VENDOR_02_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -1;
+	public static final int VENDOR_03_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -2;
+	public static final int VENDOR_04_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -3;
+	public static final int VENDOR_05_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -4;
+	public static final int VENDOR_06_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -5;
+	public static final int VENDOR_07_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -6;
+	public static final int VENDOR_08_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -7;
+	public static final int VENDOR_09_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -8;
+	public static final int VENDOR_10_CONFIG = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE -9;
 }
