@@ -18,6 +18,7 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-380, -99, 'MCT-410IL', 15, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-381, -98, 'MCT-410CL', 14, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-382, -99, 'MCT-410CL', 15, 'Y');
 
+/* @error ignore-begin */
 delete from yukongrouprole where rolepropertyid < -1599 and rolepropertyid > -1615;
 delete from yukonroleproperty where rolepropertyid < -1599 and rolepropertyid > -1615;
 insert into YukonRoleProperty values(-1600,-7,'Vendor 01 Config','cannon, (none), (none), meterNumber, http://127.0.0.1:8080/soap/,OD_OA=OD_OASoap,OA_OD=OA_ODSoap,MR_EA=MR_EASoap,EA_MR=EA_MRSoap,MR_CB=MR_CBSoap,CB_MR=CB_MRSoap,CD_CB=CD_CBSoap,CB_CD=CB_CDSoap','Vendor 01 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
@@ -41,7 +42,7 @@ insert into YukonGroupRole values(-276,-1,-7,-1606,'(none)');
 insert into YukonGroupRole values(-277,-1,-7,-1607,'(none)');
 insert into YukonGroupRole values(-278,-1,-7,-1608,'(none)');
 insert into YukonGroupRole values(-279,-1,-7,-1609,'(none)');
-
+/* @error ignore-end */
 
 
 
