@@ -26,10 +26,12 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ClientConnection;
@@ -50,6 +52,7 @@ import com.cannontech.multispeak.OutageEventType;
 import com.cannontech.multispeak.OutageLocation;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -340,16 +343,40 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 	{
 		if( connToDispatch == null )
 		{
-			connToDispatch = com.cannontech.message.dispatch.ClientConnection.createDefaultConnection("Multispeak Webservices @" + CtiUtilities.getUserName());
+			String host = "127.0.0.1";
+			int port = 1510;
+			try
+			{
+				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+				port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+			}
+			catch( Exception e)
+			{
+				CTILogger.error( e.getMessage(), e );
+			}
+
+			connToDispatch = new com.cannontech.message.dispatch.ClientConnection();
+			Registration reg = new Registration();
+			reg.setAppName("Multispeak Webservices @" + CtiUtilities.getUserName() );
+			reg.setAppIsUnique(0);
+			reg.setAppKnownPort(0);
+			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
+
 			connToDispatch.addObserver(this);
-		
-			try {
+			connToDispatch.setHost(host);
+			connToDispatch.setPort(port);
+			connToDispatch.setAutoReconnect(true);
+			connToDispatch.setRegistrationMsg(reg);
+			
+			try
+			{
 				connToDispatch.connectWithoutWait();
-			} catch( Exception e ) {
-				// connectWithoutWait won't actually throw an exception
+			}
+			catch( Exception e ) 
+			{
+				CTILogger.error( e.getMessage(), e );
 			}
 		}
-
 		return connToDispatch;
 	}
 	/* (non-Javadoc)
