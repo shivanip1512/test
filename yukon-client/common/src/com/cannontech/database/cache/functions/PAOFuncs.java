@@ -5,6 +5,8 @@ package com.cannontech.database.cache.functions;
  * Creation date: (3/26/2001 9:40:33 AM)
  * @author: 
  */
+import java.util.List;
+
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -221,4 +223,25 @@ public static LiteYukonPAObject[] getRoutesByType(int[] routeTypes)
    
 	return retVal;
 }
+
+
+/**
+ * Returns all available PAObjects that have points that may be used for
+ * a CapBanks control point. Add the given ignoreID PAO to our list.
+ */
+public static LiteYukonPAObject[] getAllUnusedCCPAOs( Integer ignoreID ) {
+		
+	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	synchronized( cache ) {
+
+		List lPaos = cache.getAllUnusedCCDevices();
+		
+		LiteYukonPAObject retVal[] = (LiteYukonPAObject[])
+			lPaos.toArray( new LiteYukonPAObject[ lPaos.size() + 1 ] );
+
+		retVal[lPaos.size()] = PAOFuncs.getLiteYukonPAO( ignoreID.intValue() );   
+		return retVal;
+	}
+}
+
 }
