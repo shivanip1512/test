@@ -36,6 +36,7 @@ interface ILogging
         "log_reporting_level",
         "log_trending_level",  //13
         "log_stars_level",
+        "log_multispeak_level",
         
         //items that do not have a class definition in ALL_NAMES
         "log_general_level",
@@ -62,6 +63,7 @@ interface ILogging
         { "com.cannontech.report", DEFAULT_LOG_LEVEL },
         { "com.cannontech.graph", DEFAULT_LOG_LEVEL },  //13
         { "com.cannontech.stars", DEFAULT_LOG_LEVEL },
+        { "com.cannontech.multispeak", DEFAULT_LOG_LEVEL},
 
         //items that do not have a class definition
         { "log_general_level", DEFAULT_LOG_LEVEL },
