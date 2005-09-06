@@ -31,6 +31,8 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
@@ -1176,8 +1178,9 @@ public synchronized java.util.List getAllUnusedCCDevices()
 	  //temp code
 
 		String sqlString =
-			"select PAObjectID from " + com.cannontech.database.db.pao.YukonPAObject.TABLE_NAME +
-			" where paobjectid > 0 and paobjectid not in ( select controldeviceid from " + com.cannontech.database.db.capcontrol.CapBank.TABLE_NAME + ")";
+			"select PAObjectID from " + YukonPAObject.TABLE_NAME +
+			" where paobjectid > 0 and paobjectid not in " + 
+			"( select controldeviceid from " + CapBank.TABLE_NAME + ")";
 
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
