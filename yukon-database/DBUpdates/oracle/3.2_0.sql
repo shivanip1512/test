@@ -9,7 +9,7 @@ insert into YukonRoleProperty values(-70006,-700,'CBC Creation Name','CBC %PAONa
 insert into YukonRoleProperty values(-70007,-700,'PFactor Decimal Places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-70008,-700,'CBC Allow OVUV','false','Allows users to toggle OV/UV usage on capbanks');
 
-update yukongrouprole set rolepropertyid = -70005, roleid = -700 where rolepropertyid = -10105
+update yukongrouprole set rolepropertyid = -70005, roleid = -700 where rolepropertyid = -10105;
 update yukongrouprole set rolepropertyid = -70006, roleid = -700 where rolepropertyid = -10106;
 update yukongrouprole set rolepropertyid = -70007, roleid = -700 where rolepropertyid = -10109;
 update yukongrouprole set rolepropertyid = -70008, roleid = -700 where rolepropertyid = -10112;
