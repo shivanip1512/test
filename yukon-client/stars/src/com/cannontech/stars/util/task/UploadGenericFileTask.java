@@ -107,17 +107,16 @@ public class UploadGenericFileTask extends TimeConsumingTask {
 				//need to alter the filename a bit or we get the whole path
 				fName = fName.substring(fName.lastIndexOf("\\"));
 				
-				genericFilename = 
-							ServerUtils.getStarsTempDir() + fs 
-							+ inc.getName() + fs  
-							+ fName;
-
-				uploadFile = new File(genericFilename);
+				String dirPath = ServerUtils.getStarsTempDir() + fs + "fileholder"
+					+ fs + inc.getName();
+				genericFilename = dirPath + fs + fName;
 				
+				uploadFile = new File(dirPath);
+				uploadFile.mkdirs();
+				uploadFile = new File(genericFilename);
+
 				try
 				{	
-					System.out.println(genericFile.getName());
-					System.out.println(uploadFile.getAbsolutePath());
 					genericFile.write(uploadFile);
 					
 					status = STATUS_FINISHED;
