@@ -6,7 +6,7 @@
 	<target name="all" depends="clean,build" />
 	
 	<target name="build">
-	
+
         <mkdir dir="jspbuild"/>
 
 		<!--****************************************************
@@ -85,6 +85,12 @@
             </fileset>
         </copy>
 
+	    <antcall target="srcbuild">
+	    </antcall>
+
+
+
+
 		<!-- Put all the Yukon JAR files in here that are needed by the webserver -->
         <copy todir="build/WEB-INF/lib">
            <fileset dir="${yukon.lib}" >
@@ -116,7 +122,27 @@
 		</copy>          
 -->
 
+
 	</target> <!-- End BUILD target -->
+
+	<!-- Build the java source Model & Controller(logic) code for our pages -->
+	<target name = "srcbuild">
+       <mkdir dir="srcbuild"/>
+       <javac srcdir="src" destdir="srcbuild" target="1.4" debug="true">
+          <classpath>
+             <fileset dir="${yukon.lib}">
+                <include name="**/*.jar"/>
+             </fileset>
+             <fileset dir="${yukon-web}/WebContent/WEB-INF/lib">
+                <include name="**/*.jar"/>
+             </fileset>
+	      </classpath>
+     	</javac>
+
+		<jar jarfile="${yukon.lib}/web-logic.jar" basedir="srcbuild/" >
+		</jar>
+
+	</target>
 
    	
 	<target name="clean">
@@ -271,5 +297,4 @@
 	</target>
 
 
-	
 </project>
