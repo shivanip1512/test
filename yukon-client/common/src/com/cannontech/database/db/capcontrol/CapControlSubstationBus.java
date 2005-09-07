@@ -12,8 +12,8 @@ import com.cannontech.database.db.point.Point;
 public class CapControlSubstationBus extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer substationBusID = null;
-	private Integer currentVarLoadPointID = null;
-	private Integer currentWattLoadPointID = null;
+	private Integer currentVarLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer currentWattLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String mapLocationID = "0";  //old integer default
 	private Integer strategyID = new Integer(CtiUtilities.NONE_ZERO_ID);	
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);

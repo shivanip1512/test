@@ -11,11 +11,11 @@ import com.cannontech.database.PoolManager;
 public class CapBank extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private String operationalState = null;
+	private String operationalState = com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE;
 	private String controllerType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private Integer controlDeviceID = new Integer(com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID);
 	private Integer controlPointID = new Integer(com.cannontech.database.data.point.PointTypes.SYS_PID_SYSTEM);
-	private Integer bankSize = null;
+	private Integer bankSize = new Integer(600);
 	private String typeOfSwitch = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String switchManufacture = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String mapLocationID = "0";  //old integer default

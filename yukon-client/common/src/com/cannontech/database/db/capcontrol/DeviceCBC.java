@@ -10,8 +10,8 @@ import com.cannontech.database.PoolManager;
 public class DeviceCBC extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private Integer serialNumber = null;
-	private Integer routeID = null;
+	private Integer serialNumber = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private Integer routeID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	public static String TABLE_NAME = "DeviceCBC";
 /**
