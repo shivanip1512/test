@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/09/08 21:39:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,6 +86,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case Command_Loop:
         {
             unsigned char expectedAck;
+            unsigned char byte2_3;
             RWCString cmd(InMessage->Return.CommandStr);
             CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
@@ -101,9 +102,12 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
             //  expect two ACK characters
             expectedAck = Parity_C( 0x40 | (getAddress() & 0x03) );
+            byte2_3     = Parity_C( 0x55 ); // 20050906 CGP.  This is the default byte in LPreamble!
 
             if( InMessage->Buffer.InMessage[0] == expectedAck &&
-                InMessage->Buffer.InMessage[1] == expectedAck )
+                InMessage->Buffer.InMessage[1] == expectedAck &&
+                InMessage->Buffer.InMessage[2] == byte2_3 &&
+                InMessage->Buffer.InMessage[3] == byte2_3 )
             {
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
