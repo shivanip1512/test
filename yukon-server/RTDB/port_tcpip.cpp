@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/07/22 19:20:22 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/09/08 21:39:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,10 +160,21 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
             /* Take a crack at hooking up */
             /* set up client for stuff we will send */
             memset (&_server, 0, sizeof (_server));
+            unsigned long ip;
+
+            if( isalpha(getIPAddress()[(size_t)0]) )
+            {
+                LPHOSTENT lpHostEntry = gethostbyname(getIPAddress().data());
+                ip = *(unsigned long*)(lpHostEntry->h_addr);
+            }
+            else
+            {
+                ip = inet_addr ( getIPAddress().data() );
+            }
 
             _server.sin_family = AF_INET;
-            _server.sin_addr.s_addr = inet_addr ( getIPAddress().data() );
             _server.sin_port = htons( ipport );
+            _server.sin_addr = *(in_addr*)&ip;
 
             /* get a stream socket. */
             if((_socket = socket (AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
