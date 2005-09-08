@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2005/09/02 16:19:11 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2005/09/08 21:56:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,7 +158,7 @@ void CtiPILServer::mainThread()
     {
         CtiServerExclusion server_guard(_server_exclusion);
 
-        NetPort  = RWInetPort(PORTERINTERFACENEXUS);
+        NetPort  = RWInetPort(gConfigParms.getValueAsInt("PIL_PORT", PORTERINTERFACENEXUS));
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
         Listener = CTIDBG_new RWSocketListener(NetAddr);

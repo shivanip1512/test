@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2005/09/01 14:42:52 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2005/09/08 21:56:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5126,7 +5126,7 @@ void CtiVanGogh::establishListener()
 
         try
         {
-            NetPort  = RWInetPort(VANGOGHNEXUS);
+            NetPort  = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
             NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
             Listener = CTIDBG_new RWSocketListener(NetAddr);
