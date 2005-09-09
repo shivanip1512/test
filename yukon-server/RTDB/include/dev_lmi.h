@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/06/21 18:08:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/09/09 10:55:26 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 
 #include "dev_remote.h"
 #include "tbl_dv_address.h"
+#include "tbl_dv_seriesv.h"
 #include "prot_lmi.h"
 
 class IM_EX_DEVDB CtiDeviceLMI : public CtiDeviceRemote
@@ -27,6 +28,7 @@ class IM_EX_DEVDB CtiDeviceLMI : public CtiDeviceRemote
 private:
 
     CtiTableDeviceAddress _address;
+    CtiTableDeviceSeriesV _seriesv;
 
     typedef CtiDeviceRemote Inherited;
 

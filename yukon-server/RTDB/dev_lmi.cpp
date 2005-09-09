@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/06/21 18:45:47 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/09/09 10:55:26 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -413,6 +413,7 @@ void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &s
     Inherited::getSQL(db, keyTable, selector);
 
     _address.getSQL(db, keyTable, selector);
+    _seriesv.getSQL(db, keyTable, selector);
 }
 
 
@@ -421,6 +422,15 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);
 
     _address.DecodeDatabaseReader(rdr);
+
+    _seriesv.DecodeDatabaseReader(rdr);
+
+    _lmi.setSystemData(_seriesv.getTickTime(),
+                       _seriesv.getTimeOffset(),
+                       _seriesv.getTransmitterLow(),
+                       _seriesv.getTransmitterHigh(),
+                       _seriesv.getStartCode(),
+                       _seriesv.getStopCode());
 
     _lmi.setAddress(_address.getSlaveAddress());
     _lmi.setName(getName());
@@ -492,6 +502,7 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 
                 OutMessage->DeviceID = getID();
                 OutMessage->Sequence = CtiProtocolLMI::Sequence_QueuedWork;
+                OutMessage->Priority = MAXPRIORITY - 1;
 
                 OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
 
