@@ -27,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -782,6 +783,10 @@ public class ProgramOptOutAction implements ActionBase {
 		}
 		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) {
 			cmd += " xcom service out temp offhours " + String.valueOf(offHours);
+			//if true, the opt out also includes a restore command so the switch gets both at once
+			String restoreFirst = energyCompany.getEnergyCompanySetting( InventoryRole.EXPRESSCOM_TOOS_RESTORE_FIRST );
+			if (restoreFirst != null && Boolean.valueOf(restoreFirst).booleanValue())
+				cmd += " control restore load 0";
 		}
 		else if (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205)
 		{
