@@ -32,6 +32,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
@@ -1173,48 +1175,49 @@ public synchronized java.util.List getAllUnusedCCDevices()
 		  return allUnusedCCDevices;
 	 else
 	 {
-	  //temp code
-	  java.util.Date timerStart = new java.util.Date();
-	  //temp code
+		//temp code
+		java.util.Date timerStart = new java.util.Date();
+		//temp code
 
+		//add all the CBC and and addressable Devices (RTU, DNP, etc) into these results
 		String sqlString =
-			"select PAObjectID from " + YukonPAObject.TABLE_NAME +
-			" where paobjectid > 0 and paobjectid not in " + 
-			"( select controldeviceid from " + CapBank.TABLE_NAME + ")";
+			"select deviceID from " + DeviceAddress.TABLE_NAME + 
+			" union select deviceID from " + DeviceCBC.TABLE_NAME +
+			" where deviceID not in " + 
+			" (select controldeviceid from " + CapBank.TABLE_NAME + ")";
 
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
+		allUnusedCCDevices = new ArrayList(32);
+		
 		try
 		{
-			java.util.List allDevices = getAllDevices();
-			java.util.Collections.sort(allDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
-			allUnusedCCDevices = new ArrayList( (int)(allDevices.size() * 0.7)  );
-			
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
 
-			while (rset.next())
-			{
-				int paoID = rset.getInt(1);
+			while (rset.next()) {
 				
+				int paoID = rset.getInt(1);				
 				LiteYukonPAObject pao = PAOFuncs.getLiteYukonPAO( paoID );
-				if( pao != null )
-				{
+				
+				if( pao != null ) {
 					allUnusedCCDevices.add( pao );
 				}
 			}
 				
-			if( rset != null )
-				rset.close();
+			if( rset != null ) rset.close();
+			
+			//ensure is list is sorted by name
+			java.util.Collections.sort(allUnusedCCDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
 
-	   //temp code
-	   java.util.Date timerStop = new java.util.Date();
-	   CTILogger.info( 
-			   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
-	   //temp code
 
+		   //temp code
+		   java.util.Date timerStop = new java.util.Date();
+		   CTILogger.info( 
+				   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
+		   //temp code
 		}
 		catch( java.sql.SQLException e )
 		{
@@ -1224,10 +1227,8 @@ public synchronized java.util.List getAllUnusedCCDevices()
 		{
 			try
 			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
+				if( stmt != null ) stmt.close();
+				if( conn != null ) conn.close();
 			}
 			catch( java.sql.SQLException e )
 			{
