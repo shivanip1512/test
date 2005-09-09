@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/06/21 18:20:57 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/09/09 10:58:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,9 @@ private:
     int           _transmitter_power;
     unsigned long _transmitter_power_time;
 
+    int _tick_time, _transmitter_power_low_limit, _transmitter_power_high_limit, _time_offset;
+    string _start_code, _stop_code;
+
     //crc_ccitt_type _crc;
     queue< CtiOutMessage * > _codes;
     queue< CtiVerificationBase * > _verification_objects;
@@ -64,6 +67,7 @@ private:
     pointlist_t _lmi_statuses;
 
     unsigned int  _num_codes_retrieved;
+    unsigned long _config_sent;
     bool _verification_pending;
     bool _untransmitted_codes;
 
@@ -134,6 +138,8 @@ private:
     struct lmi_inmess_struct
     {
         unsigned short num_codes;
+        unsigned long  transmitter_power;
+        unsigned long  transmitter_power_time;
         unsigned short seriesv_inmess_length;
     };
 
@@ -163,6 +169,7 @@ private:
 
     bool _status_read;
     int  _status_read_count;
+    int  _echoed_error_count;
 
 #pragma pack(pop)
 
@@ -172,7 +179,7 @@ private:
     RWTime _completion_time,
            _transmitting_until;
 
-    bool _first_comm;
+    bool _first_code_block;
 
     RWCString _name;
 
@@ -190,7 +197,8 @@ public:
     enum LMISequences
     {
         Sequence_QueuedWork = 4845,  //  w00t
-        Sequence_RetrieveEchoedCodes
+        Sequence_RetrieveEchoedCodes,
+        Sequence_TimeSync
     };
 
     enum LMICommand
@@ -206,13 +214,16 @@ public:
         Command_TransmitCodes,
         Command_SendQueuedCodes,
         Command_ReadQueuedCodes,
-        Command_ReadEchoedCodes
+        Command_ReadEchoedCodes,
+        Command_ClearEchoedCodes,
+        Command_SendEmptyCodeset,
     };
 
     void setAddress(unsigned char address);
     void setName(const RWCString &name);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
     void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
+    void setSystemData(int ticktime, int timeoffset, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
 
     //  client-side (Scanner, PIL) functions
     int sendCommRequest(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList);
