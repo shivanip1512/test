@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/08/23 20:05:40 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/09/09 11:27:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,6 +92,7 @@ using namespace std;
 #include "thread_monitor.h"
 
 #include "prot_welco.h"
+#include "prot_lmi.h"
 
 extern ULONG TimeSyncRate;
 
@@ -331,17 +332,17 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
                 /* Load all the other stuff that is needed */
                 OutMessage->DeviceID = RemoteRecord->getID();
-                OutMessage->Port = RemoteRecord->getPortID();
-                OutMessage->Remote = RemoteRecord->getAddress();
+                OutMessage->Port     = RemoteRecord->getPortID();
+                OutMessage->Remote   = RemoteRecord->getAddress();
                 // memcpy (OutMessage->DeviceName, RemoteRecord->getDeviceName(), STANDNAMLEN);
-                OutMessage->TimeOut = 2;
-                OutMessage->OutLength = Index - PREIDLEN;
-                OutMessage->InLength = -1;
-                OutMessage->Sequence = 0;
-                OutMessage->Priority = MAXPRIORITY - 2;
-                OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
+                OutMessage->TimeOut     = 2;
+                OutMessage->OutLength   = Index - PREIDLEN;
+                OutMessage->InLength    = -1;
+                OutMessage->Sequence    = 0;
+                OutMessage->Priority    = MAXPRIORITY - 2;
+                OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
                 OutMessage->ReturnNexus = NULL;
-                OutMessage->SaveNexus = NULL;
+                OutMessage->SaveNexus   = NULL;
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -373,19 +374,19 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
             /* send a time sync to this guy */
             OutMessage->DeviceID = RemoteRecord->getID();
-            OutMessage->Port = RemoteRecord->getPortID();
-            OutMessage->Remote = RemoteRecord->getAddress();
-            OutMessage->TimeOut = 2;
-            OutMessage->Retry = 0;
-            OutMessage->OutLength = ILEXTIMELENGTH;
-            OutMessage->InLength = 0;
-            OutMessage->Source = 0;
+            OutMessage->Port     = RemoteRecord->getPortID();
+            OutMessage->Remote   = RemoteRecord->getAddress();
+            OutMessage->TimeOut     = 2;
+            OutMessage->Retry       = 0;
+            OutMessage->OutLength   = ILEXTIMELENGTH;
+            OutMessage->InLength    = 0;
+            OutMessage->Source      = 0;
             OutMessage->Destination = 0;
-            OutMessage->Sequence = 0;
-            OutMessage->Priority = MAXPRIORITY - 2;
-            OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
+            OutMessage->Sequence    = 0;
+            OutMessage->Priority    = MAXPRIORITY - 2;
+            OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
             OutMessage->ReturnNexus = NULL;
-            OutMessage->SaveNexus = NULL;
+            OutMessage->SaveNexus   = NULL;
 
 
 #if 0
@@ -420,19 +421,19 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
             /* send a time sync to this guy */
             OutMessage->DeviceID = RemoteRecord->getID();
-            OutMessage->Port = RemoteRecord->getPortID();
-            OutMessage->Remote = RemoteRecord->getAddress();
-            OutMessage->TimeOut = 2;
-            OutMessage->Retry = 0;
-            OutMessage->OutLength = 7;
-            OutMessage->InLength = 0;
-            OutMessage->Source = 0;
+            OutMessage->Port     = RemoteRecord->getPortID();
+            OutMessage->Remote   = RemoteRecord->getAddress();
+            OutMessage->TimeOut     = 2;
+            OutMessage->Retry       = 0;
+            OutMessage->OutLength   = 7;
+            OutMessage->InLength    = 0;
+            OutMessage->Source      = 0;
             OutMessage->Destination = 0;
-            OutMessage->Sequence = 0;
-            OutMessage->Priority = MAXPRIORITY - 2;
-            OutMessage->EventCode = NOWAIT | NORESULT | ENCODED | TSYNC;
+            OutMessage->Sequence    = 0;
+            OutMessage->Priority    = MAXPRIORITY - 2;
+            OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
             OutMessage->ReturnNexus = NULL;
-            OutMessage->SaveNexus = NULL;
+            OutMessage->SaveNexus   = NULL;
 
             if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
@@ -441,6 +442,35 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
             }
 
             break;
+
+        case TYPE_SERIESVLMIRTU:
+            {
+                /* Allocate some memory */
+                if((OutMessage = CTIDBG_new OUTMESS) == NULL)
+                {
+                    return;
+                }
+
+                /* send a time sync to this guy */
+                OutMessage->DeviceID    = RemoteRecord->getID();
+                OutMessage->Port        = RemoteRecord->getPortID();
+                OutMessage->Remote      = RemoteRecord->getAddress();
+                OutMessage->TimeOut     = 2;
+                OutMessage->Retry       = 0;
+                OutMessage->Sequence    = CtiProtocolLMI::Sequence_TimeSync;  //  a relatively unique value, just for safety's sake
+                OutMessage->Priority    = MAXPRIORITY - 2;
+                OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
+                OutMessage->ReturnNexus = NULL;
+                OutMessage->SaveNexus   = NULL;
+
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                {
+                    printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                    delete (OutMessage);
+                }
+
+                break;
+            }
 
         default:
             break;
@@ -699,12 +729,12 @@ VOID TimeSyncThread (PVOID Arg)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
-      
+
             CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Time Sync Thread", CtiThreadRegData::None, 400 );
             ThreadMonitor.tickle( data );
         }
         //End Thread Monitor Section
-        
+
         /* Figure out how long to wait */
         nowTime = nowTime.now();
 
