@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2005/08/23 20:12:01 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2005/09/09 10:55:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@
 #include "dev_meter.h"
 #include "dev_idlc.h"
 #include "dev_carrier.h"
+#include "dev_lmi.h"
 #include "dev_mct.h"
 #include "dev_mct410.h"
 #include "dev_modbus.h"
@@ -799,9 +800,9 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION/LMI Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for LMI Devices" << endl;
                         }
-                        Device::DNP().getSQL( db, keyTable, selector );
+                        CtiDeviceLMI().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
@@ -813,7 +814,44 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                         if(DebugLevel & 0x00020000)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP/ION/LMI Devices" << endl;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for LMI Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  LMI Devices" << endl;
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for DNP/ION Devices" << endl;
+                        }
+                        Device::DNP().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        //  added to prevent the LMI from being loaded twice
+                        selector.where( (keyTable["type"] != "RTU-LMI") && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for DNP/ION Devices" << endl;
                         }
                     }
                     stop = stop.now();
@@ -822,6 +860,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load  DNP/ION/LMI Devices" << endl;
                     }
+
 
                     start = start.now();
                     {
