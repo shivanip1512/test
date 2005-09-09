@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.150 $
-* DATE         :  $Date: 2005/08/23 20:06:57 $
+* REVISION     :  $Revision: 1.151 $
+* DATE         :  $Date: 2005/09/09 11:25:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1213,7 +1213,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_MODBUS:
                     {
                         CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
-                        int protocolStatus = NoError;
+                        int comm_status = NoError;
 
                         if( Device->isSingle() )
                         {
@@ -1228,22 +1228,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 {
                                     if( !(status = ds->generate(trx)) )
                                     {
-                                        status = Port->outInMess(trx, Device, traceList);
+                                        comm_status = Port->outInMess(trx, Device, traceList);
 
-                                        protocolStatus = ds->decode(trx, status);
-                                    }
-
-                                    //  if we had no comm errors, copy over the protocol's status -
-                                    //    it may've had non-comm-related errors (NACK, bad inbound address, etc)
-                                    if( !status )
-                                    {
-                                        status = protocolStatus;
+                                        status = ds->decode(trx, comm_status);
                                     }
 
                                     // Prepare for tracing
-                                    if(trx.doTrace(status))
+                                    if(trx.doTrace(comm_status))
                                     {
-                                        Port->traceXfer(trx, traceList, Device, status);
+                                        Port->traceXfer(trx, traceList, Device, comm_status);
                                     }
 
                                     DisplayTraceList(Port, traceList, true);
