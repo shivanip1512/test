@@ -138,7 +138,7 @@ public class WorkOrderModel extends ReportModelBase {
 	private Integer accountID = null;
 	private Integer serviceStatus = null;
 	
-	private final String ATT_SEARCH_COL = "searchCol";
+	private final String ATT_SEARCH_COL = "SearchColumn";
 	
 	private HashMap accountIDToMeterNumberMap = null;
 	
