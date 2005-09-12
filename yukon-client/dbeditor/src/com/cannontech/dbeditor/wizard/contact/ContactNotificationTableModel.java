@@ -173,13 +173,14 @@ public void removeRowValue(int rowNumber )
  */
 public boolean rowExists(ContactNotification cntNotif )
 {
-	for( int i = 0; i < getRowCount(); i++ )
+	/*This can't be here if we want to allow multiple entries of a phone number, etc.
+	 * for( int i = 0; i < getRowCount(); i++ )
 	{
 		if( getContactNotificationRow(i).toString().equalsIgnoreCase(cntNotif.toString()) )
 		{
 			return true;
 		}
-	}
+	}*/
 
 	return false;
 }
