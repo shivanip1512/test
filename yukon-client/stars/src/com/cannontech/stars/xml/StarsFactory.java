@@ -393,12 +393,27 @@ public class StarsFactory {
 		return null;
 	}
 
-	public static void setCustomerContact(Contact contact, StarsCustomerContact starsContact) {
+	public static void setCustomerContact(Contact contact, StarsCustomerContact starsContact) 
+	{
 		//contact.setContactID( new Integer(starsContact.getContactID()) );
 		contact.getContact().setContLastName( starsContact.getLastName() );
 		contact.getContact().setContFirstName( starsContact.getFirstName() );
 		contact.getContact().setLogInID( new Integer(starsContact.getLoginID()) );
         
+		contact.getContactNotifVect().removeAllElements();
+        
+        for (int i = 0; i < starsContact.getContactNotificationCount(); i++) 
+		{
+			com.cannontech.stars.xml.serialize.ContactNotification starsNotif = starsContact.getContactNotification(i);
+			
+			ContactNotification notif = new ContactNotification();
+			notif.setNotificationCatID(new Integer(starsNotif.getNotifCatID()));
+			notif.setNotification(starsNotif.getNotification());
+			notif.setDisableFlag(starsNotif.getDisabled() ? "Y" : "N");
+						
+			contact.getContactNotifVect().addElement(notif);
+		}
+        /*
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
 			ContactNotification notif = (ContactNotification) contact.getContactNotifVect().get(i);
 			// Set all the opcode to DELETE first, then change them to UPDATE or add INSERT accordingly
@@ -433,18 +448,18 @@ public class StarsFactory {
 				contact.getContactNotifVect().add( notif );
 			}
 		}
-		
+		*/
 		//another quick fix...too many of these in STARS already!  :(
 		/*this is a quick and dirty way to make sure the NestedDbPersistent comparator in Contact.update()
 		will correctly perceive this as an entry to be removed from the table.*/
-		for (int x = 0; x < contact.getContactNotifVect().size(); x++) 
+		/*for (int x = 0; x < contact.getContactNotifVect().size(); x++) 
 		{
 			if (((ContactNotification)contact.getContactNotifVect().get(x)).getOpCode() == Transaction.DELETE) 
 			{
 				contact.getContactNotifVect().remove(x);
 				x--;
 			}
-		}
+		}*/
 	}
     
     
