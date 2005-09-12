@@ -40,7 +40,7 @@ public class EnergyCompanyLoader implements Runnable
       	ResultSet rset = null;
       	try 
       	{
-	        	conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+          	 conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
 	         stmt = conn.createStatement();
 	         rset = stmt.executeQuery(sql);
    
@@ -55,6 +55,8 @@ public class EnergyCompanyLoader implements Runnable
       			allCompanies.add(company);                                   		
          	}
 
+      		if(stmt != null) 
+      			stmt.close();
          	
          	//assign all the customers that belong to each Energycompany
          	// NOTE: 1 customer may belong to several EnergyCompanies 
