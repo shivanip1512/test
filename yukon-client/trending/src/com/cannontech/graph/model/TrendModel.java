@@ -755,6 +755,9 @@ private void hitDatabase_Basic()
 					timeAndValueVector.clear();
 				}
 			}
+			
+			if( pstmt != null )
+				pstmt.close();
 		}
 	}
 	catch( java.sql.SQLException e )
