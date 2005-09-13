@@ -335,6 +335,14 @@
    #define IM_EX_FDRACS       __declspec(dllimport)
 #endif
 
+#ifdef _DLL_FDRACSMULTI
+   #define IM_EX_FDRACSMULTI       __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_FDRACSMULTI
+#else
+   #define IM_EX_FDRACSMULTI       __declspec(dllimport)
+#endif
+
 #ifdef _DLL_FDRVALMET
    #define IM_EX_FDRVALMET       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )
