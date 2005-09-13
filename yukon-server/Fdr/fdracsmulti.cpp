@@ -23,6 +23,9 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.2  2005/09/13 21:53:50  tmack
+ *      Changed config file keys to contain "MULTI".
+ *
  *      Revision 1.1  2005/09/13 20:37:27  tmack
  *      New file for the ACS(MULTI) implementation.
  *
@@ -73,17 +76,17 @@
 /** global used to start the interface by c functions **/
 CtiFDRAcsMulti * acsInterface;
 
-const CHAR * CtiFDRAcsMulti::KEY_LISTEN_PORT_NUMBER = "FDR_ACS_PORT_NUMBER";
-const CHAR * CtiFDRAcsMulti::KEY_TIMESTAMP_WINDOW = "FDR_ACS_TIMESTAMP_VALIDITY_WINDOW";
-const CHAR * CtiFDRAcsMulti::KEY_DB_RELOAD_RATE = "FDR_ACS_DB_RELOAD_RATE";
-const CHAR * CtiFDRAcsMulti::KEY_QUEUE_FLUSH_RATE = "FDR_ACS_QUEUE_FLUSH_RATE";
-const CHAR * CtiFDRAcsMulti::KEY_DEBUG_MODE = "FDR_ACS_DEBUG_MODE";
-const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_RATE = "FDR_ACS_SEND_RATE";
-const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACS_SEND_INTERVAL";
-const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_VARIATION = "FDR_ACS_MAXIMUM_TIMESYNC_VARIATION";
-const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_UPDATE = "FDR_ACS_RESET_PC_TIME_ON_TIMESYNC";
-const CHAR * CtiFDRAcsMulti::KEY_POINT_TIME_VARIATION = "FDR_ACS_POINT_TIME_VARIATION";
-const CHAR * CtiFDRAcsMulti::KEY_FDR_ACS_SERVER_NAMES = "FDR_ACS_SERVER_NAMES";
+const CHAR * CtiFDRAcsMulti::KEY_LISTEN_PORT_NUMBER = "FDR_ACSMULTI_PORT_NUMBER";
+const CHAR * CtiFDRAcsMulti::KEY_TIMESTAMP_WINDOW = "FDR_ACSMULTI_TIMESTAMP_VALIDITY_WINDOW";
+const CHAR * CtiFDRAcsMulti::KEY_DB_RELOAD_RATE = "FDR_ACSMULTI_DB_RELOAD_RATE";
+const CHAR * CtiFDRAcsMulti::KEY_QUEUE_FLUSH_RATE = "FDR_ACSMULTI_QUEUE_FLUSH_RATE";
+const CHAR * CtiFDRAcsMulti::KEY_DEBUG_MODE = "FDR_ACSMULTI_DEBUG_MODE";
+const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_RATE = "FDR_ACSMULTI_SEND_RATE";
+const CHAR * CtiFDRAcsMulti::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACSMULTI_SEND_INTERVAL";
+const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_VARIATION = "FDR_ACSMULTI_MAXIMUM_TIMESYNC_VARIATION";
+const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_UPDATE = "FDR_ACSMULTI_RESET_PC_TIME_ON_TIMESYNC";
+const CHAR * CtiFDRAcsMulti::KEY_POINT_TIME_VARIATION = "FDR_ACSMULTI_POINT_TIME_VARIATION";
+const CHAR * CtiFDRAcsMulti::KEY_FDR_ACS_SERVER_NAMES = "FDR_ACSMULTI_SERVER_NAMES";
                                     
 // Constructors, Destructor, and Operators
 CtiFDRAcsMulti::CtiFDRAcsMulti()
@@ -369,11 +372,9 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
         case StatusPointType:
             {
-                /****************************
-                * status point is both status and or control so we must check
-                * here if we are supposed to be sending a control
-                *****************************
-                */
+                /* status point is both status and or control so we must check
+                 * here if we are supposed to be sending a control
+                 */
                 if (point.isControllable())
                 {
                     // we are doing control
