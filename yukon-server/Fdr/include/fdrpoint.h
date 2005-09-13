@@ -16,10 +16,16 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.h-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:44 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/09/13 20:44:27 $
 *    History: 
       $Log: fdrpoint.h,v $
+      Revision 1.4  2005/09/13 20:44:27  tmack
+      In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+
+      - add a operator<< function to provide easy printing of this class
+      - add a typedef for the destination list to replace the verbose vector<CtiFDRDestination>
+
       Revision 1.3  2002/04/16 15:58:44  softwarebuild
       20020416_1031_2_16
 
@@ -57,11 +63,12 @@ public:
 //    BOOL operator==( const CtiFDRPoint &other ) const;
     CtiFDRPoint& operator=( const CtiFDRPoint &other );
 
-    vector< CtiFDRDestination > getDestinationList(void) const;
-    vector< CtiFDRDestination > &getDestinationList(void);
+    typedef std::vector<CtiFDRDestination> DestinationList;
+    DestinationList getDestinationList(void) const;
+    DestinationList &getDestinationList(void);
 
     CtiFDRPoint &setDestinationList (CtiFDRPoint &aList);
-    CtiFDRPoint &setDestinationList (vector< CtiFDRDestination > &aList);
+    CtiFDRPoint &setDestinationList (DestinationList &aList);
 
 
     // getters and setters
@@ -98,7 +105,7 @@ private:
         // all points have these
         long                        iPointID;
         CtiPointType_t              iPointType;
-        vector< CtiFDRDestination > iDestinationList;
+        DestinationList             iDestinationList;
         bool                        iControllable;
         double                      iValue;
         unsigned                    iQuality;
@@ -108,5 +115,7 @@ private:
         double                      iOffset;
         RWTime                      iLastTimeStamp;
 };
+
+IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point);
 
 #endif  //  #ifndef __FDRPOINT_H__

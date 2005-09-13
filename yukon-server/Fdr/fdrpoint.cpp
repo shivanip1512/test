@@ -14,10 +14,16 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/02/17 19:02:58 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2005/09/13 20:44:27 $
 *    History:
       $Log: fdrpoint.cpp,v $
+      Revision 1.6  2005/09/13 20:44:27  tmack
+      In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+
+      - add a operator<< function to provide easy printing of this class
+      - add a typedef for the destination list to replace the verbose vector<CtiFDRDestination>
+
       Revision 1.5  2005/02/17 19:02:58  mfisher
       Removed space before CVS comment header, moved #include "yukon.h" after CVS header
 
@@ -243,4 +249,8 @@ RWCString CtiFDRPoint::getTranslateName( int aIndex )
     return retVal;
 }
 
+std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point)
+{
+    return os << "[point id " << point.getPointID() << "]";
+}
 
