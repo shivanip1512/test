@@ -16,8 +16,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.2 $
- *    DATE         :  $Date: 2005/08/09 22:36:02 $
+ *    REVISION     :  $Revision: 1.3 $
+ *    DATE         :  $Date: 2005/09/13 20:44:58 $
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
@@ -86,7 +86,6 @@ protected:
   void handleNonUpdate(CtiFDRPoint *ctiPoint, 
                        const time_t timestamp);
 
-  ostream logNow();
   bool isDebugLevel (long debugLevel) {return getDebugLevel() & debugLevel;};
 
   virtual void readThisConfig();

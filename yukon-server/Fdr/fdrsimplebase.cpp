@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2005/08/09 22:36:01 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2005/09/13 20:44:58 $
  */
 
 #include <windows.h>
@@ -426,14 +426,6 @@ void CtiFDRSimple::setConnected( bool conn )
      }
    _connected = conn;
    }
-}
-
-
-/**
- * Return the 'dout' logger and prepend the current time and the interface name.
- */ 
-ostream CtiFDRSimple::logNow() {
-  return dout << RWTime::now() << " FDR-" << getInterfaceName() << ": ";
 }
 
 
