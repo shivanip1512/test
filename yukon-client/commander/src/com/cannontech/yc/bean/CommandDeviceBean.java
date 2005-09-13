@@ -25,7 +25,6 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.user.UserPaoOwner;
-import com.sun.rsasign.g;
 
 /**
  * @author yao
