@@ -1,100 +1,33 @@
-/*****************************************************************************
-*
-*    FILE NAME: fdrinterface.cpp
-*
-*    DATE: 07/15/2000
-*
-*    AUTHOR: Matt Fisher
-*
-*    PURPOSE: Base Class Functions and Interface for Foreign Data
-*
-*    DESCRIPTION: Profides an interface for all Foreign Data Interfaces
-*                 data exchanges.  The Interfaces implement methods to
-*                 exchange data with other systems.
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2005/07/19 22:48:53 $
-*    History:
-      $Log: fdrinterface.cpp,v $
-      Revision 1.18  2005/07/19 22:48:53  alauinger
-      Dispatch no longer handles email notifications, removed CtiEmailMsg.  Instead CtiNotifEmailMsg's should be sent to the notification server as a replacement.
-
-      Revision 1.17  2005/02/17 19:02:58  mfisher
-      Removed space before CVS comment header, moved #include "yukon.h" after CVS header
-
-      Revision 1.16  2005/02/10 23:23:51  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.15  2004/08/30 20:27:54  dsutton
-      Updated the RCCS interface to accept different connection and listen sockets
-      when the interface is initialized.  A new CPARM was created to define the
-      new connection socket number.  This will allow Progress energy to run both
-      their RCCS system and their Yukon system on the same cluster
-
-      Revision 1.14  2003/04/24 19:42:50  dsutton
-      Added more try catches around the dispatch connection.  Added dispatch
-      mutex in spots it was missing.  After an attempted connection I verify it before
-      returning.  Capped the queue to dispatch at 10000 and now delete the oldest
-      1000 as we go over that cap
-
-      Revision 1.13  2003/04/22 20:50:18  dsutton
-      Updated dispatch connections to null after deleting them hoping to catch
-      the problem CPL has
-
-      Revision 1.12  2003/03/24 23:00:10  dsutton
-      Added some try catch blocks around writing to the dispatch connection.
-      Sometimes the connection goes away and there is no cleanup done behind
-      it so FDR still thinks its valid.  When he does work on the connection, it throws
-      and exception and FDR doesn't recover.
-
-      Revision 1.11  2002/10/14 21:10:55  dsutton
-      In the database translation routines, if we failed to hit the database
-      we called the load routine again just to get the error code.  Whoops
-      The error code is now saved from the original call and printed as needed
-
-      Revision 1.10  2002/10/11 14:24:50  dsutton
-      Whoops, new calculation should only be done when the rate is 3600
-      or higher
-
-      Revision 1.9  2002/10/11 14:12:49  dsutton
-      Updated the db reload methods to handle reload rates
-      that are over 3600 seconds.  Anything bigger than 3600 was
-      returning the time in GMT instead of the time zone appropriate
-
-      Revision 1.8  2002/09/12 21:33:33  dsutton
-      Updated how FDR reconnects to dispatch in the event dispatch has swept
-      the leg on the connection.  We now reconnect in one place, receivefromdispatch
-      Send to dispatch tries a second time before throwing away the data and continuing.
-
-      Revision 1.7  2002/09/06 18:58:55  dsutton
-      Added new functions for connecting and registering with dispatch.  Changed
-      the logic in the places I try to read and write to dispatch to check the
-      connection validity before and reconnect if there are problems
-
-      Revision 1.6  2002/08/28 16:10:38  cplender
-      setBlockingWrites is no more!.
-
-      Revision 1.5  2002/08/06 21:59:56  dsutton
-      Programming around the error that happens if the dataset is empty when it is
-      returned from the database and shouldn't be.  The interfaces fail the call and
-      we now try to reload the db every 60 seconds until successful
-
-      Revision 1.4  2002/05/08 15:34:14  dsutton
-      removed the debug levels around the db reload code so it was easier to keep
-      track of what caused the reload
-
-      Revision 1.3  2002/04/16 15:58:33  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:18:56  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
-
-****************************************************************************/
+/*
+ *
+ *    FILE NAME: fdrinterface.cpp
+ *
+ *    DATE: 07/15/2000
+ *
+ *    AUTHOR: Matt Fisher
+ *
+ *    PURPOSE: Base Class Functions and Interface for Foreign Data
+ *
+ *    DESCRIPTION: Profides an interface for all Foreign Data Interfaces
+ *                 data exchanges.  The Interfaces implement methods to
+ *                 exchange data with other systems.
+ *
+ *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
+ *
+ *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
+ *    REVISION     :  $Revision: 1.19 $
+ *    DATE         :  $Date: 2005/09/13 20:43:07 $
+ *    History:
+ *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.19  2005/09/13 20:43:07  tmack
+ *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+ *
+ *     - clean up logging messages (especially those at shutdown)
+ *     - change logEvent() parameters to be const (allows passing char*)
+ *     - add logNow() method that provides a common string at the front of all dout messages.
+ *
+ *
+ */
 #include "yukon.h"
 
 #include <rw/db/connect.h>
@@ -567,51 +500,48 @@ BOOL CtiFDRInterface::run( void )
 */
 BOOL CtiFDRInterface::stop( void )
 {
-    // tell dispatch we are shutting down
-    disconnect( );
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "disconnect( );" << endl;
-        dout << "attemping to cancel FromDispatchThread;" << endl;
-    }
-
-    iThreadDbChange.requestCancellation();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Completed cancel threadFunctionReloadDb;" << endl;
-    }
-
-    iThreadFromDispatch.requestCancellation();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Completed cancel threadFunctionFromDispatch;" << endl;
-    }
-
-    iThreadToDispatch.requestCancellation();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Completed cancel threadFunctionToDispatch;" << endl;
-        dout << "calling ShutdownConnection();" << endl;
-    }
-
-    // this is throwing an exception sometimes, I'm cheating since its only shutdown
     try
     {
-       iDispatchConn->ShutdownConnection();
+        // tell dispatch we are shutting down
+        disconnect();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "completed ShutdownConnection();" << endl;
+            logNow() << "Attemping to cancel threadFunctionReloadDb" << endl;
         }
+        iThreadDbChange.requestCancellation();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Attempting to cancel threadFunctionReceiveFromDispatch" << endl;
+        }
+        iThreadFromDispatch.requestCancellation();
+        
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Attempting to cancel threadFunctionSendToDispatch;" << endl;
+        }
+        iThreadToDispatch.requestCancellation();
+        
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Attempting to shutdown connections" << endl;
+        }
+    
+        // this is throwing an exception sometimes, I'm cheating since its only shutdown
+       iDispatchConn->ShutdownConnection();
+       
+       iThreadDbChange.join();
+       iThreadFromDispatch.join();
+       iThreadToDispatch.join();
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           logNow() << "All threads have joined up" << endl;
+       }
     }
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Exception on shutdown " << endl;
+        logNow() << "Unknown exception on shutdown (CtiFDRInterface::stop)" << endl;
     }
-
-    //
-    // FIXFIXFIX  - may need to add exception handling here
-    //
 
     return TRUE;
 }
@@ -1075,7 +1005,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "cancellation" << endl;
+        logNow() << "threadFunctionReceiveFromDispatch shutdown" << endl;
         return;
     }
 
@@ -1083,7 +1013,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  receiveFromDispatchThread for " << iInterfaceName << " is dead! " << endl;
+        logNow() << "Fatal Error:  receiveFromDispatchThread is dead! " << endl;
         return;
     }
 }
@@ -1181,7 +1111,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION of threadFunctionSendToDispatch for " << iInterfaceName << endl;
+        logNow() << "threadFunctionSendToDispatch shutdown" << endl;
         return;
     }
 
@@ -1189,7 +1119,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  threadFunctionSendToDispatch for " << iInterfaceName << " is dead! " << endl;
+        logNow() << "Fatal Error:  threadFunctionSendToDispatch is dead! " << endl;
         return;
     }
 }
@@ -1225,7 +1155,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Initializing CtiFDRInterface::threadFunctionReloadDb " << endl;
+            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadDb " << endl;
         }
 
         for ( ; ; )
@@ -1243,7 +1173,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 //                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " - Db change reloading points for Interface - " << getInterfaceName() << endl;
+                        logNow() << "Db change reloading points" << endl;
                     }
                 }
                 else
@@ -1253,7 +1183,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 //                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " - Periodic timer expired -  reloading " << getInterfaceName() << endl;
+                        logNow() << "Periodic timer expired -  reloading" << endl;
                     }
                 }
 
@@ -1287,7 +1217,8 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                     {
                         // sleep a second and try again
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " - Error reloading points for " << getInterfaceName() << " will reset periodic timer to 60 seconds" << endl;
+                        logNow() << "Error reloading points, "
+                            << "will reset periodic timer to 60 seconds" << endl;
                     }
                     setDbReloadReason(NotReloaded);
                     refreshTime = timeNow - (timeNow.seconds() % 60) + 60;
@@ -1299,18 +1230,18 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " CANCELLATION of CtiFDRInterface::threadFunctionReloadDb " << endl;
+        logNow() << "threadFunctionReloadDb shutdown" << endl;
     }
 
     // try and catch the thread death
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Fatal Error:  threadFunctionReloadDb in CtiFDRInterfacet is dead! " << endl;
+        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
     }
 }
 
-bool CtiFDRInterface::logEvent( RWCString &aDesc, RWCString &aAction, bool aSendImmediatelyFlag )
+bool CtiFDRInterface::logEvent( const RWCString &aDesc, const RWCString &aAction, bool aSendImmediatelyFlag )
 {
     CtiSignalMsg  *     eventLog    = NULL;
     eventLog = new CtiSignalMsg(0,
@@ -1600,5 +1531,13 @@ bool CtiFDRInterface::findTranslationNameInList(RWCString aTranslationName,
         foundFlag=true;
     }
     return foundFlag;
+}
+
+
+/**
+ * Return the 'dout' logger and prepend the current time and the interface name.
+ */ 
+ostream CtiFDRInterface::logNow() {
+  return dout << RWTime::now() << " FDR-" << getInterfaceName() << ": ";
 }
 

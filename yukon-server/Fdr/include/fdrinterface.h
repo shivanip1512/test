@@ -52,7 +52,9 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual bool        sendMessageToForeignSys ( CtiMessage *aMessage ) = 0;
         virtual bool        sendMessageToDispatch   ( CtiMessage *aMessage );
         virtual bool        queueMessageToDispatch   ( CtiMessage *aMessage );
-        bool                logEvent   ( RWCString &logDesc, RWCString &logMsg, bool aSendImmediatelyFlag=false );
+        bool                logEvent( const RWCString &logDesc, 
+                                      const RWCString &logMsg, 
+                                      bool aSendImmediatelyFlag=false );
                 
         bool                sendPointRegistration();
         virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
@@ -120,7 +122,8 @@ class IM_EX_FDRBASE CtiFDRInterface
               ConnectionOkWriteOk};
         int attemptSend( CtiMessage *aMessage );
 
-        
+        ostream logNow();
+
     protected:
         CtiMutex            iDispatchMux;
         CtiConnection       *iDispatchConn;
