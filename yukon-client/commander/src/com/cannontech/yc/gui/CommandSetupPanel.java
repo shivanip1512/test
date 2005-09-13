@@ -413,19 +413,19 @@ private javax.swing.JTextField getLabelTextField() {
 	{
 	    if (commandValue == null)
 	        commandValue = new Command();
-	    
-	    if(getCommandTextField().getText().trim().length() > 0 &&
-	            getLabelTextField().getText().trim().length() > 0)
+	    /** TODO re-added a way to add a blank line to the command list (ala JimR)*/
+//	    if(getCommandTextField().getText().trim().length() > 0 &&
+//	            getLabelTextField().getText().trim().length() > 0)
 	    {
 		    //update the commandValue object with the changes in the text fields
 			commandValue.setCommand(getCommandTextField().getText().trim());
 			commandValue.setLabel(getLabelTextField().getText().trim());
 	    }
-	    else
-	    {
-	        setButtonPushed(CANCEL);
-	        return null;
-	    }
+//	    else
+//	    {
+//	        setButtonPushed(CANCEL);
+//	        return null;
+//	    }
 		
 		return commandValue;
 	}
