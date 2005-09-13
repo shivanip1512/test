@@ -53,4 +53,4 @@ insert into YukonGroupRole values(-279,-1,-7,-1609,'(none)');
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.1', 'Ryan', '15-AUG-2005', 'Manual version insert done', 12);
+insert into CTIDatabase values('3.1', 'Ryan', '12-SEP-2005', 'Manual version insert done', 12);
