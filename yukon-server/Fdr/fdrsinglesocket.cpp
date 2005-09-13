@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/09/13 20:45:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -18,75 +18,15 @@
 *                   that use a single socket to exchange data
 *    ---------------------------------------------------
 *    History: 
-      $Log: fdrsinglesocket.cpp,v $
-      Revision 1.7  2005/02/10 23:23:51  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.6  2002/10/14 21:10:56  dsutton
-      In the database translation routines, if we failed to hit the database
-      we called the load routine again just to get the error code.  Whoops
-      The error code is now saved from the original call and printed as needed
-
-      Revision 1.5  2002/09/06 18:55:22  dsutton
-      The database load and list swap used to occur before we updated
-      the translation names.  I now update the entire temporary list and then
-      lock the real list and swap it.  Much faster and doesn't lock the list
-      down as long.
-
-      Revision 1.4  2002/08/06 22:03:14  dsutton
-      Programming around the error that happens if the dataset is empty when it is
-      returned from the database and shouldn't be.  If our point list had more than
-      two entries in it before, we fail the attempt and try again in 60 seconds
-
-      Revision 1.3  2002/04/16 15:58:37  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:18:58  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
-   
-      Rev 2.9   12 Mar 2002 10:30:06   dsutton
-   updated to use the listener object in the socketinterface base class.  It allows for more peaceful shutdown of fdr when it is not connected to a foreign system
-   
-      Rev 2.8   01 Mar 2002 13:28:34   dsutton
-   moved valid connection printout to the socketlayer, added timesync processing, added calls to fail the connection on shutdown
-   
-      Rev 2.7   20 Feb 2002 08:44:02   dsutton
-   moved the listener socket creation inside the loop and made sure to shutdown and close it after we have accepted a connection.  Also saved the clients address to be used in the heartbeat log instead of the servers (oops)
-   
-      Rev 2.6   15 Feb 2002 11:29:00   dsutton
-    changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-   
-      Rev 2.5   11 Feb 2002 15:04:32   dsutton
-   added event logs when the connection is established or failed, unknown points, invalid states, etc
-   
-      Rev 2.4   20 Dec 2001 14:57:24   dsutton
-   added a isregistrationneeded function to check if the initial data dump is dependant on a registration message.  Base function in this class returns false and it can be overridden for any child classes.  Aslo a call to see if the client connection is valid to keep from getting stuck in the initial upload loop
-   
-      Rev 2.3   14 Dec 2001 17:26:22   dsutton
-   fdrpointmaplist changed to new class
-   
-      Rev 2.2   15 Nov 2001 16:16:40   dsutton
-   code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
-      Rev 2.1   26 Oct 2001 15:20:30   dsutton
-   moving revision 1 to 2.x
-   
-      Rev 1.1.1.0   26 Oct 2001 14:25:18   dsutton
-   load the translation table on initializationinstead of waiting until first connection
-   
-      Rev 1.1   20 Jul 2001 10:01:54   dsutton
-   unk
-   
-      Rev 1.0   19 Jun 2001 10:51:54   dsutton
-   Initial revision.
-   
+*     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.8  2005/09/13 20:45:53  tmack
+*     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+*
+*     - removed the ntohieeef() and htonieeef() methods that were moved to a base class
 *
 *
 *
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
+*    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
 #include "yukon.h"
@@ -898,35 +838,5 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
     }
 }
 
-
-/* Convert the order of an IEEE floating point from network to host */
-FLOAT CtiFDRSingleSocket::ntohieeef (LONG NetLong)
-{
-    union
-    {
-        FLOAT HostFloat;
-        LONG HostLong;
-    } HostUnion;
-
-    HostUnion.HostLong = ntohl (NetLong);
-
-    return(HostUnion.HostFloat);
-}
-
-
-
-/* Convert the order of an IEEE floating point from host to network */
-LONG CtiFDRSingleSocket::htonieeef (FLOAT  HostFloat) 
-{
-    union
-    {
-        FLOAT HostFloat;
-        LONG HostLong;
-    } HostUnion;
-
-    HostUnion.HostFloat = HostFloat;
-
-    return(htonl (HostUnion.HostLong));
-}
 
 

@@ -1,4 +1,3 @@
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 /*-----------------------------------------------------------------------------*
 *
 *    FILE NAME: fdrsinglesocket.h
@@ -7,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/INCLUDE/fdrsinglesocket.h-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:46 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2005/09/13 20:45:53 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,37 +19,15 @@
 *
 *    ---------------------------------------------------
 *    History: 
-      $Log: fdrsinglesocket.h,v $
-      Revision 1.3  2002/04/16 15:58:46  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:19:01  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
- * 
- *    Rev 2.5   01 Mar 2002 13:10:22   dsutton
- * function proto's for timesync processing and client link state processing
- * 
- *    Rev 2.4   20 Dec 2001 14:50:02   dsutton
- * added a isregistrationneeded function to check if the initial data dump is dependant on a registration message.  Base function in this class returns false and it can be overridden for any child classes.  Aslo a call to see if the client connection is valid to keep from getting stuck in the initial upload loop
- * 
- *    Rev 2.3   14 Dec 2001 17:12:18   dsutton
- * identical functions from child classes were moved here
- * 
- *    Rev 2.2   15 Nov 2001 16:15:54   dsutton
- * code for multipliers and an queue for the messages to dispatch
- * 
- *    Rev 2.1   26 Oct 2001 15:21:46   dsutton
- * moving revision 1 to 2.x
- * 
- *    Rev 1.0   19 Jun 2001 10:43:36   dsutton
- * Initial revision.
+*     $Log: fdrsinglesocket.h,v $
+*     Revision 1.4  2005/09/13 20:45:53  tmack
+*     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+*
+*     - removed the ntohieeef() and htonieeef() methods that were moved to a base class
 *
 *
 *
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
+*    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
 #ifndef __FDRSINGLESOCKET_H__
@@ -128,9 +105,6 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
 
         RWThreadFunction    iThreadConnection;
         void threadFunctionConnection( void );
-
-        FLOAT   ntohieeef (LONG NetLong);
-        LONG    htonieeef (FLOAT  HostFloat); 
 
     private:
         CtiFDRSocketLayer           *iLayer;
