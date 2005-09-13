@@ -29,11 +29,13 @@
 #include "dlldefs.h"
 #include "fdr.h"
 
+class CtiFDRPoint;
 
 class IM_EX_FDRBASE CtiFDRDestination
 {
     public:    
-        CtiFDRDestination (RWCString &translation, RWCString &destination = RWCString());
+        CtiFDRDestination () {}; // this is only defined so this class can be used in an std::map
+        CtiFDRDestination (CtiFDRPoint* parentPoint, RWCString &translation, RWCString &destination = RWCString());
         virtual ~CtiFDRDestination();
         CtiFDRDestination& operator=( const CtiFDRDestination &other );
 
@@ -48,12 +50,20 @@ class IM_EX_FDRBASE CtiFDRDestination
         RWCString  getDestination(void) const;
         CtiFDRDestination& setDestination (RWCString aDestination);
 
+        CtiFDRPoint* getParentPoint(void) const;
+        CtiFDRDestination& setParentPoint (CtiFDRPoint* parentPoint);
+        
+        bool operator<(const CtiFDRDestination& other) const;
+
     private:
         // private data
         RWCString           iTranslation;
         RWCString           iDestination;
+        CtiFDRPoint*        iParentPoint;
 
 };
+
+IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest);
 
 #endif  //  #ifndef __FDRDESTINATION_H__
 

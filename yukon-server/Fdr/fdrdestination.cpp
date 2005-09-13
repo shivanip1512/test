@@ -20,15 +20,16 @@
 #include <rw/ctoken.h>
 
 
+#include "fdrpoint.h"
 #include "fdrdestination.h"
 
 
 /** local definitions **/
 
-CtiFDRDestination::CtiFDRDestination(RWCString &translation, RWCString &destination)
+CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, RWCString &translation, RWCString &destination)
 :   iTranslation(translation),
-    iDestination(destination)
-
+    iDestination(destination),
+    iParentPoint(parentPoint)
 {
 }
 
@@ -42,8 +43,28 @@ CtiFDRDestination& CtiFDRDestination::operator=( const CtiFDRDestination &other 
     {
         iDestination = other.getDestination();
         iTranslation = other.getTranslation();
+        iParentPoint = other.getParentPoint();
     }
     return *this;
+}
+
+bool CtiFDRDestination::operator<(const CtiFDRDestination& other) const
+{
+    if (iParentPoint->getPointID() == other.getParentPoint()->getPointID())
+    {
+        if (iDestination == other.iDestination)
+        {
+            return iTranslation < other.iTranslation;
+        }
+        else
+        {
+            return iDestination < other.iDestination;
+        }
+    }
+    else
+    {
+        return iParentPoint->getPointID() == other.getParentPoint()->getPointID();
+    }
 }
 
 
@@ -51,6 +72,7 @@ RWCString & CtiFDRDestination::getTranslation(void)
 {
     return iTranslation;
 }
+
 RWCString  CtiFDRDestination::getTranslation(void) const
 {
     return iTranslation;
@@ -66,13 +88,26 @@ RWCString & CtiFDRDestination::getDestination(void)
 {
     return iDestination;
 }
+
 RWCString  CtiFDRDestination::getDestination(void) const
 {
     return iDestination;
 }
+
 CtiFDRDestination& CtiFDRDestination::setDestination (RWCString aDestination)
 {
   iDestination = aDestination;
+  return *this;
+}
+
+CtiFDRPoint*  CtiFDRDestination::getParentPoint(void) const
+{
+    return iParentPoint;
+}
+
+CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
+{
+  iParentPoint = aParentPoint;
   return *this;
 }
 
@@ -96,3 +131,8 @@ RWCString CtiFDRDestination::getTranslationValue(RWCString propertyName) const {
   return result;
 }
 
+std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)
+{
+    return os << "[destination " << dest.getDestination() 
+        << " for " << *dest.getParentPoint() << "]";
+}
