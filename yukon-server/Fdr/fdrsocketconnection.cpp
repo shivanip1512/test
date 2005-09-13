@@ -23,6 +23,7 @@ CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent)
 {
     iConnection = NULL;
 }
+
 CtiFDRSocketConnection::CtiFDRSocketConnection(CtiFDRSocketLayer * aParent, SOCKADDR_IN aAddr)
 :    iParent (aParent),
      iAddr (aAddr),
@@ -95,7 +96,7 @@ int CtiFDRSocketConnection::closeAndFailConnection ()
 
     if (iConnection != NULL)
     {
-        shutdown(iConnection, 2);
+        shutdown(iConnection, SD_BOTH);
         retVal = closesocket(iConnection);     
         iConnection = NULL;
     }
