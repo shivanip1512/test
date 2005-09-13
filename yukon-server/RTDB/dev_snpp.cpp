@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/09/13 15:55:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,6 +194,8 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
     catch (...)
     {//reset and throw to regular error catcher.
         resetStates();
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         throw;
     }
     return status;
@@ -248,8 +250,11 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncpy((char *)xfer.getOutBuffer(),_command_login,10);//LOGIn command
                     strncat((char *)xfer.getOutBuffer()," ",10);
                     strncat((char *)xfer.getOutBuffer(),getLoginName(),50);
-                    strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getLoginPass(),25);
+                    if(getLoginPass() != NULL)
+                    {
+                        strncat((char *)xfer.getOutBuffer()," ",10);
+                        strncat((char *)xfer.getOutBuffer(),getLoginPass(),25);
+                    }
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -468,6 +473,8 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
     catch(...)
     {//reset state settings and throw error to regular catcher.
         resetStates();
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         throw;
     }
     return status;
