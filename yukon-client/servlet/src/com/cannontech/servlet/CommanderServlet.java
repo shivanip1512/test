@@ -35,17 +35,22 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.PAOFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.bean.YCBean;
-;
+
 
 public class CommanderServlet extends javax.servlet.http.HttpServlet 
 {
@@ -118,6 +123,62 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		
 		if (clear != null)
 			localBean.clearResultText();
+		else if( action != null && action.equalsIgnoreCase("SavePeakReport"))
+		{
+			resp.addHeader("Content-Disposition", "attachment; filename=PeakReport.txt");
+			
+			final ServletOutputStream out = resp.getOutputStream();
+		  	resp.setContentType("text/plain");
+//		  	CSVQuoter quoter = new CSVQuoter(",");
+
+
+			LitePoint [] litePoints = PAOFuncs.getLitePointsForPAObject(localBean.getDeviceID());
+			if( litePoints != null)
+			{
+				for (int i = 0; i < litePoints.length; i++)
+				{
+					if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)
+					{
+						out.write(new String("LP Peak Report - " + litePoints[i].getPointName() + "\r\n").getBytes());
+						
+						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);						
+						if( pointData != null)
+						{
+							String tempStr = pointData.getStr();
+							int beginIndex = 0;
+							int endIndex = tempStr.indexOf("\n");
+							while( endIndex > 0)
+							{
+								out.write((tempStr.substring(beginIndex, endIndex) + "\r\n").getBytes()); 
+								tempStr = tempStr.substring(endIndex+1);
+								endIndex = tempStr.indexOf("\n");
+							}
+							out.write(new String("\r\n").getBytes());
+						}
+					}
+					else if( litePoints[i].getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND )
+					{
+						out.write(new String("LP Peak Report - " + litePoints[i].getPointName() + "\r\n").getBytes());
+						
+						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);						
+						if( pointData != null)
+						{
+							String tempStr = pointData.getStr();
+							int beginIndex = 0;
+							int endIndex = tempStr.indexOf("\n");
+							while( endIndex > 0)
+							{
+								out.write( (tempStr.substring(beginIndex, endIndex) + "\r\n").getBytes()); 
+								tempStr = tempStr.substring(endIndex+1);
+								endIndex = tempStr.indexOf("\n");
+							}
+							out.write(new String("\r\n").getBytes());
+						}
+					}
+				}
+			} 
+			return;
+		}
 		else if( action != null && action.equalsIgnoreCase("LoadRPHData"))
 		{
 			localBean.loadRPHData();	//reload the current RPH Data vector, based on selected pointid and timestamp		    
