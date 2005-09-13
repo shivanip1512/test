@@ -236,7 +236,7 @@ RWDBStatus CtiFDRManager::loadPointList()
                         pTempFdrPoint->setControllable (false);
                     }
 
-                    CtiFDRDestination tmpDestination (translation,destination);
+                    CtiFDRDestination tmpDestination (pTempFdrPoint, translation, destination);
                     pTempFdrPoint->getDestinationList().push_back(tmpDestination);
 
                     Map.insert( new CtiHashKey(pointID), pTempFdrPoint);
@@ -247,7 +247,7 @@ RWDBStatus CtiFDRManager::loadPointList()
                     * add the current destination to the list
                     ***********************
                     */
-                    CtiFDRDestination tmpDestination (translation,destination);
+                    CtiFDRDestination tmpDestination (pTempFdrPoint, translation, destination);
                     pTempFdrPoint->getDestinationList().push_back(tmpDestination);
                 }
             }
