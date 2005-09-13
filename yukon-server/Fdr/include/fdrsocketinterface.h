@@ -11,7 +11,7 @@
 *
 *    DESCRIPTION:  base class for the socket type interfaces
 *
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
+*    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
 ****************************************************************************
 */
 
@@ -72,6 +72,9 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         void shutdownListener();
         CtiFDRSocketConnection * getListener ();
         CtiFDRSocketInterface & setListener (CtiFDRSocketConnection *aListener);
+        
+        static FLOAT   ntohieeef (LONG NetLong);
+        static LONG    htonieeef (FLOAT  HostFloat); 
 
 
     private:

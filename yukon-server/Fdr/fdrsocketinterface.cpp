@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2005/09/13 20:47:23 $
 *
 *
 *    AUTHOR: David Sutton
@@ -18,97 +18,15 @@
 *
 *    ---------------------------------------------------
 *    History: 
-      $Log: fdrsocketinterface.cpp,v $
-      Revision 1.9  2005/02/10 23:23:51  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.8  2004/08/30 20:27:54  dsutton
-      Updated the RCCS interface to accept different connection and listen sockets
-      when the interface is initialized.  A new CPARM was created to define the
-      new connection socket number.  This will allow Progress energy to run both
-      their RCCS system and their Yukon system on the same cluster
-
-      Revision 1.6.6.1  2004/05/11 21:32:53  dsutton
-      Added a time variation to points that is configurable.  The variation
-      allows the user to not send a point if its value hasn't changed and the
-      timestamp is within the range defined by the cparm.  It is available in
-      the ACS interface only at this point.
-
-      Revision 1.7  2004/02/13 20:37:04  dsutton
-      Added a new cparm for ACS interface that allows the user to filter points
-      being routed to ACS by timestamp.  The filter is the number of seconds
-      since the last update.   If set to zero, system behaves as it always has,
-      routing everything that comes from dispatch.  If the cparm is > 0, FDR will
-      first check the value and route the point if it has changed.  If the value has
-      not changed, FDR will check the timestamp to see if it is greater than or equal
-      to the previous timestamp plus the cparm.  If so, route the data, if not, throw
-      the point update away.
-
-      Revision 1.6  2003/04/24 19:41:06  dsutton
-      Changed a dispatch connection check from isValid to verify per Corey's request
-
-      Revision 1.5  2003/04/22 20:50:52  dsutton
-      Added a null check in the sendall points on the dispatch connection
-
-      Revision 1.4  2002/08/06 22:04:23  dsutton
-      Programming around the error that happens if the dataset is empty when it is
-      returned from the database and shouldn't be.  If our point list had more than
-      two entries in it before, we fail the attempt and try again in 60 seconds
-
-      Revision 1.3  2002/04/16 15:58:38  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:18:58  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
-   
-      Rev 2.8   12 Mar 2002 10:31:44   dsutton
-   added getters/setters and appropriate shutdown calls for the listener object.  Changed sendall points to return on an error and allow the calling thread to loop on the error condition instead of staying in this function forever
-   
-      Rev 2.7   06 Mar 2002 11:19:16   dsutton
-   updated the send all points function to make sure the connection is ok before we try and send everything after dropping out of our registration loop
-   
-      Rev 2.6   01 Mar 2002 13:30:02   dsutton
-   removed a debug line that prints whenever something is received that we don't need.  Because RCCS has to register for everything, it may sometimes get points it doesn't want, causing confusion
-   
-      Rev 2.5   20 Feb 2002 08:46:16   dsutton
-   changed the moa logging to detail debug level and put a try catch block around the buildAndWrite function to keep the thread from dying should there be a problem constructing the outgoing message
-   
-      Rev 2.4   20 Dec 2001 14:58:36   dsutton
-   Added a registration flag to the base socket interface because it may be used by other interfaces eventually.  Default condition is true, currently only RDEX registers. Updated the sendall and sendto functions to check for registration first if it is needed before sending the data
-   
-      Rev 2.3   14 Dec 2001 17:21:10   dsutton
-   changed fdrpointidmap and fdrprotectedmaplist classes references to fdrpoint and fdrpointlist references
-   
-      Rev 2.2   15 Nov 2001 16:16:40   dsutton
-   code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-   
-      Rev 2.1   26 Oct 2001 15:20:30   dsutton
-   moving revision 1 to 2.x
-   
-      Rev 1.2.1.0   26 Oct 2001 14:27:20   dsutton
-   unk
-   
-      Rev 1.2   20 Jul 2001 10:02:10   dsutton
-   removed the destination list
-   
-      Rev 1.1   04 Jun 2001 09:32:12   dsutton
-   removed the reload db thread and put it in the base class
-   
-      Rev 1.0   30 May 2001 16:55:28   dsutton
-   Initial revision.
-   
-      Rev 1.0   10 May 2001 11:16:06   dsutton
-   Initial revision.
-   
-      Rev 1.0   23 Apr 2001 11:17:58   dsutton
-   Initial revision.
+*     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.10  2005/09/13 20:47:23  tmack
+*     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
+*
+*     - added the ntohieeef() and htonieeef() methods that used to be in a subclass
 *
 *
 *
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
+*    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
 *-----------------------------------------------------------------------------*
 */
 #include "yukon.h"
@@ -175,7 +93,6 @@ void CtiFDRSocketInterface::shutdownListener()
     delete iListener;
 }
 
-
 int CtiFDRSocketInterface::getPortNumber () const
 {
     return iPortNumber;
@@ -190,6 +107,7 @@ int CtiFDRSocketInterface::getConnectPortNumber () const
 {
     return iConnectPortNumber;
 }
+
 CtiFDRSocketInterface& CtiFDRSocketInterface::setConnectPortNumber (int aPort)
 {
     iConnectPortNumber = aPort;
@@ -200,6 +118,7 @@ int CtiFDRSocketInterface::getPointTimeVariation () const
 {
     return iPointTimeVariation;
 }
+
 CtiFDRSocketInterface& CtiFDRSocketInterface::setPointTimeVariation (int aTime)
 {
     iPointTimeVariation = aTime;
@@ -466,5 +385,34 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
    return retVal;
 }
 
+/** Network to Host IEEE Float
+ *  Convert the order of an IEEE floating point from network to host.
+ */
+FLOAT CtiFDRSocketInterface::ntohieeef (LONG NetLong)
+{
+    union
+    {
+        FLOAT HostFloat;
+        LONG HostLong;
+    } HostUnion;
 
+    HostUnion.HostLong = ntohl (NetLong);
 
+    return(HostUnion.HostFloat);
+}
+
+/* Host to Network IEEE Float
+ * Convert the order of an IEEE floating point from host to network.
+ */
+LONG CtiFDRSocketInterface::htonieeef (FLOAT  HostFloat) 
+{
+    union
+    {
+        FLOAT HostFloat;
+        LONG HostLong;
+    } HostUnion;
+
+    HostUnion.HostFloat = HostFloat;
+
+    return(htonl (HostUnion.HostLong));
+}
