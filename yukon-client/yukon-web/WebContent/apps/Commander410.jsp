@@ -1,11 +1,11 @@
+<%@ page import="com.cannontech.database.data.lite.LitePointUnit"%>
 <%
 
-		java.util.Enumeration enum1 = request.getParameterNames();
-		  while (enum1.hasMoreElements()) {
-		  	String ele = enum1.nextElement().toString();
-			 System.out.println(" --" + ele + "  " + request.getParameter(ele));
-		}
-		 
+java.util.Enumeration enum1 = request.getParameterNames();
+  while (enum1.hasMoreElements()) {
+  	String ele = enum1.nextElement().toString();
+	 System.out.println(" --" + ele + "  " + request.getParameter(ele));
+}
 		 
 if( request.getParameter("clearids") != null)
 {
@@ -158,7 +158,7 @@ function setCommand(cmd)
           <td align="center" class="TitleHeader"><%= header %></td>
         </tr>
         <tr> 
-          <td width="100%" class="SubtitleHeader" align="center"> Meter Name:&nbsp;<u><%=liteYukonPao.getPaoName()%></u> </td>
+          <td width="100%" class="SubtitleHeader" align="center"><%=liteYukonPao.getPaoName()%></td>
         </tr>
       </table>
       <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
@@ -169,7 +169,8 @@ function setCommand(cmd)
             <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr> 
                 <td align="right" class="TableCell"> 
-                  <input type="checkbox" name="updateDB">
+                  <input type="checkbox" name="updateDB" onMouseOver="window.status='Read Energy (from the meter)';return true;"
+                onMouseOut="window.status='';return true;">
                   Update Database</td>
               </tr>
             </table>
@@ -178,7 +179,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Energy</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
-				onMouseOver="window.status='Read Energy';return true;"
+				onMouseOver="window.status='Read Energy (from the meter)';return true;"
                 onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -198,8 +199,15 @@ function setCommand(cmd)
                       </td>
                       <td width="35%" class="main" align="right"> 
                         <div id="currEnergyPD"> 
-                          <%if( pointData != null){%>
-                          <%=format_nv3.format(pointData.getValue())%> 
+                          <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                          %>
+                          <%=df.format(pointData.getValue())%> 
                           <% } else {%>
                           --- 
                           <%}%>
@@ -264,7 +272,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Demand</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
-			  onMouseOver="window.status='Read Demand and Peak Demand';return true;"
+			  onMouseOver="window.status='Read Demand and Peak Demand (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -282,8 +290,15 @@ function setCommand(cmd)
                         --- 
                         <%}%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
+							  if( lpu != null){							  
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -300,8 +315,15 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                       <td class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -328,7 +350,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Voltage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue voltage & getvalue demand');disableAllButtons()" id="readVoltageID" name="readVoltage"
-			  onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage';return true;"
+			  onMouseOver="window.status='Read Current, Minimum, and Maximum Voltage (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -346,8 +368,15 @@ function setCommand(cmd)
                         --- 
                         <%}%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -364,8 +393,15 @@ function setCommand(cmd)
                         <%}%>
                       </td>
                       <td class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -381,8 +417,15 @@ function setCommand(cmd)
                         --- 
                         <%}%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0.000");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -409,7 +452,7 @@ function setCommand(cmd)
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="19"></td>
                 <td height="95%"  bgcolor="888888" class="tableHeader">Outage</td>
                 <td height="95%" bgcolor="888888" class="crumbs" style="font-weight:bold" align="right"> <a class="Link3" href="javascript:setCommand('getvalue powerfail & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
-			  onMouseOver="window.status='Read Current Blink Count, Last 6 Outages';return true;"
+			  onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
               onMouseOut="window.status='';return true;">Read</a></td>
                 <td width="6" height="19"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="19"></td>
               </tr>
@@ -427,8 +470,15 @@ function setCommand(cmd)
                         --- 
                         <%}%>
                       <td width="35%" class="main" align="right"> 
-                        <%if( pointData != null){%>
-                        <%=format_nv3.format(pointData.getValue())%> 
+                        <%if( pointData != null){
+                    		  LitePointUnit lpu = PointFuncs.getPointUnit(pointData.getId());
+							  java.text.DecimalFormat df = new java.text.DecimalFormat("#0");
+							  if( lpu != null){
+							  df.setMaximumFractionDigits(lpu.getDecimalPlaces());
+							  df.setMinimumFractionDigits(lpu.getDecimalPlaces());
+							  }
+                        %>
+                        <%=df.format(pointData.getValue())%> 
                         <% } else {%>
                         &nbsp; 
                         <%}%>
@@ -577,24 +627,26 @@ function setCommand(cmd)
             </table>
 			<%}%>			
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
+              <tr><td height="10"></td></tr>
               <tr> 
-              	<% if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
-              	{%>
-	                <td align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>&manual&command=null' name="manualCommander"  class="Link1">Go To Manual Commander</a></td>
-              	<%}
-              	else {%>
-	                <td align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>&manual&command=null' name="manualCommander"  class="Link1">Go To Manual Commander</a></td>
-               <%}%>
-              </tr>
-              <tr> 
-              	<% if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
-              	{%>
-	                <td align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>&lp' name="advCommander410"  class="Link1">Go To Load Profile Options</a></td>
-              	<%}
-              	else {%>
-	                <td align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>&lp' name="advCommander410"  class="Link1">Go To Load Profile Options</a></td>
-               <%}%>
-             </tr>
+   			  	<td align="center" rowspan="2"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
+				<% String gotoLink = "";
+			  	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+		          gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
+		        } else {
+		          gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
+		        }%>
+   			  	<td align="center"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
+			  </tr>	
+	          <tr>
+			  	<%
+			  	  if (request.getParameter("InvNo") != null) {	//we came from the Customer Account page
+            	    gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
+      			  } else {
+				    gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
+                  }%>
+			  	  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+	          </tr>    			  
             </table>
           </td>
         </tr>
