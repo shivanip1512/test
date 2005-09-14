@@ -515,6 +515,7 @@ public class CommandDeviceBean
 		{
 			setChanged(true);
 			setOrderBy(0);	//clear out the previously selected orderby
+			setFilterBy(NO_FILTER);	//clear out previous filters
 		}
 			
 		this.sortBy = sortBy;
