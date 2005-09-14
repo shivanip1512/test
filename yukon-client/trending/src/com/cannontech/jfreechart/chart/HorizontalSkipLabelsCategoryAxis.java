@@ -56,7 +56,7 @@ public class HorizontalSkipLabelsCategoryAxis extends CategoryAxis
 		if (isTickLabelsVisible()) {
 			g2.setFont(getTickLabelFont());
 			g2.setPaint(getTickLabelPaint());
-			List ticks = refreshTicks(g2, state, plotState.getPlotArea(), edge);       
+			List ticks = refreshTicks(g2, state, dataArea, edge);       
 			state.setTicks(ticks);        
           
 			int categoryIndex = 0;
