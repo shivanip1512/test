@@ -10,8 +10,11 @@
 
 
 
-// constructors
-CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString & connectionName, 
+/** Cti FDR Client Server Connection constructor
+ * This class should throw a StartupException if it cannot create itself (CtiFDRSocketServer
+ * will catch this exception).
+ */
+CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString& connectionName, 
                                      SOCKET theSocket,
                                      CtiFDRScadaServer *aParent)
 {
@@ -161,11 +164,12 @@ bool CtiFDRClientServerConnection::queueMessage(CHAR *aBuffer,
     }
 
     // Ship it to threadFunctionSendDataTo
-    if (WriteQueue (_outboundQueue, 0, bufferSize, aBuffer, aPriority))
+    INT writeResult = WriteQueue (_outboundQueue, 0, bufferSize, aBuffer, aPriority);
+    if (writeResult != NO_ERROR)
     {
         // write to queue failed!
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Error queueing data, failing connection" << endl;
+        logNow() << "Error queueing data (" << writeResult << "), failing connection" << endl;
         success = false;
         failConnection();
     }
@@ -229,8 +233,8 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
             if (bytesRead == 0 && queueReturn != ERROR_QUE_EMPTY) 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << "Error reading from out queue: " 
-                    << queueReturn << endl;
+                logNow() << "Error reading from out queue (" 
+                    << queueReturn << ")" << endl;
                 break;
             }
             if (queueReturn == NO_ERROR)
@@ -260,8 +264,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                         int clocksLeftInInterval = intervalClocks 
                             - (currentTime - intervalStartTime);
                         int millisToSleep = clocksLeftInInterval * (1000.0 / CLOCKS_PER_SEC);
-                        // Do we care that the queue might be filled
-                        // faster than we empty it?
+
                         unsigned long elementCount = 0;
                         QueryQueue(_outboundQueue, &elementCount);
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
@@ -385,10 +388,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
             // this where we re-initialize if needed
             if (retVal == SOCKET_ERROR)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Read failed (A)" << endl;
-                }
+                // most likely our shutdown event, but it could be a real error
                 break;
             }
             // figure out how many more bytes we now need
@@ -417,9 +417,11 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                 // this where we re-initialize if needed
                 if (retVal == SOCKET_ERROR)
                 {
+                    // most likely our shutdown event, but it could be a real error
                     {
+                        // we'll log it this time because it is less likely to occur
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Read failed (B)" << endl;
+                        logNow() << "Read failed while getting remaining message" << endl;
                     }
                     break;
                 }

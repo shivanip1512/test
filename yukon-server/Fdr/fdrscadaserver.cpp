@@ -68,7 +68,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
             {
                 if (shouldUpdatePCTime())
                 {
-                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Time sync message received"  << endl;
@@ -78,7 +78,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
                 }
                 else
                 {
-                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Time sync message received, "

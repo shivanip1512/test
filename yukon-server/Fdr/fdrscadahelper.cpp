@@ -60,13 +60,6 @@ template<typename T>
 bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value, 
                                               int quality, RWTime timestamp) const
 {
-    if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Handling value update message for " << id 
-            << " with state=" << value << endl;;
-    }
-    
     if (value == INVALID)
     {
         {
@@ -74,6 +67,13 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
             _parent->logNow() << "Invalid status for " << id << endl;
         }
         return false;
+    }
+    
+    if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        _parent->logNow() << "Handling value update message for " << id 
+            << " with state=" << value << endl;;
     }
     
     // call generic update function with pointer to the
@@ -96,7 +96,11 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
         
         if (!(*checkFunc)(point.getPointType()))
         {
-            // bad
+            if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                _parent->logNow() << "Point type mismatch for " << dest << " and " << id << endl; 
+            }
             continue;
         }
         
@@ -110,9 +114,6 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
     
         if (timestamp == rwEpoch)
         {
-            RWCString           desc;
-            CHAR               action[60];
-            CHAR                wb[20];
             if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

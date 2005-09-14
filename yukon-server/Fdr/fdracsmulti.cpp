@@ -23,6 +23,9 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.3  2005/09/14 16:22:27  tmack
+ *      Made some small changes for ACS(MULTI), mostly related to logging and error handling.
+ *
  *      Revision 1.2  2005/09/13 21:53:50  tmack
  *      Changed config file keys to contain "MULTI".
  *
@@ -181,7 +184,7 @@ int CtiFDRAcsMulti::readConfig()
                 std::string serverName = *first;
                 std::string serverAddress = *second;
                 _serverNameLookup[serverAddress] = serverName;
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Added server mapping: " << serverAddress 
@@ -552,110 +555,106 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection& connec
     timestamp = ForeignToYukonTime (acsData->TimeStamp,true);
     if (timestamp == rwEpoch)
     {
-        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Time sync request was invalid: " 
                 <<  acsData->TimeStamp << endl;
         }
-        retVal = !NORMAL;
+        return false;
+    }
+
+    RWTime now;
+    // check if the stamp is inside the window
+    if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
+        timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
+    {
+        retVal = NORMAL;
     }
     else
     {
-        RWTime now;
-        // check if the stamp is inside the window
-        if (timestamp.seconds() > (now.seconds()-getTimeSyncVariation()) &&
-            timestamp.seconds() < (now.seconds()+getTimeSyncVariation())) 
+        // timestamp is not inside the the window, is it realistic (inside 30 minutes)
+        if (timestamp.seconds() > (now.seconds()-(30 * 60)) &&
+            timestamp.seconds() < (now.seconds()+(30 * 60)))
         {
-            retVal = NORMAL;
-        }
-        else
-        {
-            // timestamp is not inside the the window, is it realistic (inside 30 minutes)
-            if (timestamp.seconds() > (now.seconds()-(30 * 60)) &&
-                timestamp.seconds() < (now.seconds()+(30 * 60)))
-            {
-                // reset the time and log the change
-                /**********************
-                *   Straight from the help files
-                *
-                * It is not recommended that you add and subtract values 
-                * from the SYSTEMTIME structure to obtain relative times. Instead, you should 
-                *
-                * Convert the SYSTEMTIME structure to a FILETIME structure. 
-                * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure. 
-                * Use normal 64-bit arithmetic on the ULARGE_INTEGER value. 
-                ***********************
-                */
-                SYSTEMTIME  sysTime;
-                FILETIME    fileTime;
-                GetSystemTime(&sysTime);
-                if (SystemTimeToFileTime (&sysTime, &fileTime))
-                {  
-                    ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601 
-                    timeNow.LowPart = fileTime.dwLowDateTime;
-                    timeNow.HighPart = fileTime.dwHighDateTime;
+            // reset the time and log the change
+            /**********************
+            *   Straight from the help files
+            *
+            * It is not recommended that you add and subtract values 
+            * from the SYSTEMTIME structure to obtain relative times. Instead, you should 
+            *
+            * Convert the SYSTEMTIME structure to a FILETIME structure. 
+            * Copy the resulting FILETIME structure to a ULARGE_INTEGER structure. 
+            * Use normal 64-bit arithmetic on the ULARGE_INTEGER value. 
+            ***********************
+            */
+            SYSTEMTIME  sysTime;
+            FILETIME    fileTime;
+            GetSystemTime(&sysTime);
+            if (SystemTimeToFileTime (&sysTime, &fileTime))
+            {  
+                ULARGE_INTEGER timeNow; // 64 bit number of 100 nanosecond parts since 1601 
+                timeNow.LowPart = fileTime.dwLowDateTime;
+                timeNow.HighPart = fileTime.dwHighDateTime;
 
-                    // which way to move converted to 100 nanosecond parts
-                    if (timestamp.seconds() > (now.seconds()))
-                    {
-                        timeNow.QuadPart += 
-                            ( __int64)((timestamp.seconds() - now.seconds()) * 10000000);
-                    }
-                    else
-                    {
-                        timeNow.QuadPart -= 
-                            ( __int64)((now.seconds() - timestamp.seconds()) * 10000000);
-                    }
+                // which way to move converted to 100 nanosecond parts
+                if (timestamp.seconds() > (now.seconds()))
+                {
+                    timeNow.QuadPart += 
+                        ( __int64)((timestamp.seconds() - now.seconds()) * 10000000);
+                }
+                else
+                {
+                    timeNow.QuadPart -= 
+                        ( __int64)((now.seconds() - timestamp.seconds()) * 10000000);
+                }
 
-                    fileTime.dwLowDateTime = timeNow.LowPart;
-                    fileTime.dwHighDateTime = timeNow.HighPart;
+                fileTime.dwLowDateTime = timeNow.LowPart;
+                fileTime.dwHighDateTime = timeNow.HighPart;
 
-                    if (FileTimeToSystemTime (&fileTime, &sysTime))
-                    {
-                        SetSystemTime (&sysTime);
-                        std::ostringstream msg;
-                        msg << getInterfaceName() << ": Request from " << connection
-                            << " to change PC time has been processed.";
-                        RWCString desc(msg.str().c_str());
-                        RWCString action("New time = ");
-                        action += timestamp.asString();
-                        logEvent (desc,action,true);
+                if (FileTimeToSystemTime (&fileTime, &sysTime))
+                {
+                    SetSystemTime (&sysTime);
+                    std::ostringstream msg;
+                    msg << getInterfaceName() << ": Request from " << connection
+                        << " to change PC time has been processed.";
+                    RWCString desc(msg.str().c_str());
+                    RWCString action("New time = ");
+                    action += timestamp.asString();
+                    logEvent (desc,action,true);
 
-//                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Request from " << connection 
-                                << " to change PC time to " << timestamp.asString() 
-                                << " has been processed" << endl;
-                        }
-                    }
-                    else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Unable to process time change (A)";
-                        }
-                        retVal = !NORMAL;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        logNow() << "Request from " << connection 
+                            << " to change PC time to " << timestamp.asString() 
+                            << " has been processed" << endl;
                     }
                 }
                 else
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Unable to process time change (B)";
+                        logNow() << "Unable to process time change (A)";
                     }
-                    retVal = !NORMAL;
+                    retVal = false;
                 }
             }
             else
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << " Time change requested from " << connection
-                        << " of " << timestamp.asString() << " is outside standard +/-30 minutes" 
-                        << endl;
+                    logNow() << "Unable to process time change (B)";
                 }
+                retVal = false;
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << " Time change requested from " << connection
+                    << " of " << timestamp.asString() << " is outside standard +/-30 minutes" 
+                    << endl;
             }
         }
     }
