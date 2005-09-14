@@ -16,6 +16,9 @@ BOOL _LM_POINT_EVENT_LOGGING = FALSE;
 RWDBDateTime gInvalidRWDBDateTime = RWDBDateTime(1990,1,1,0,0,0,0);
 ULONG gInvalidRWDBDateTimeSeconds = gInvalidRWDBDateTime.seconds();
 
+RWDBDateTime gEndOfRWDBDateTime = RWDBDateTime(2035,1,1,0,0,0,0);
+ULONG gEndOfRWDBDateTimeSeconds = gEndOfRWDBDateTime.seconds();
+
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this
 //To know when to bail

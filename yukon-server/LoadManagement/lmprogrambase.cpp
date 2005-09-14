@@ -814,7 +814,7 @@ BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
     Performs an necessary timed control and returns TRUE if it did something.
     It is up to subclasses to implement this.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+BOOL CtiLMProgramBase::handleTimedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);

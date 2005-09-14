@@ -5158,3 +5158,5 @@ void CtiLMProgramDirect::scheduleStopNotification(const RWDBDateTime& stop_time)
 // Static Members
 int CtiLMProgramDirect::defaultLMStartPriority = 13;
 int CtiLMProgramDirect::defaultLMRefreshPriority = 11;
+
+int CtiLMProgramDirect::invalidNotifyOffset = -1;

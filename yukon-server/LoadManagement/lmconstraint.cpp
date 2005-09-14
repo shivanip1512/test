@@ -497,6 +497,11 @@ bool CtiLMConstraintChecker::checkControlWindows(const CtiLMProgramDirect& lm_pr
  */
 bool CtiLMConstraintChecker::checkNotifyActiveOffset(const CtiLMProgramDirect& lm_program, ULONG now, ULONG proposed_start_from_1901, vector<string>* results)
 {
+    if(lm_program.getNotifyActiveOffset() == CtiLMProgramDirect::invalidNotifyOffset)
+    {   // there is no notify active offset
+	return true;
+    }
+    
     if(proposed_start_from_1901 < now)
     {
         proposed_start_from_1901 = now;

@@ -244,11 +244,11 @@ CtiLMControlAreaTrigger* CtiLMControlArea::getThresholdTrigger() const
 {
     for(int i=0;i<_lmcontrolareatriggers.entries();i++)
     {
-	CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-	if(currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType)
-	{
-	    return currentTrigger;
-	}
+        CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
+        if(currentTrigger->getTriggerType() == CtiLMControlAreaTrigger::ThresholdTriggerType)
+        {
+            return currentTrigger;
+        }
     }
     return 0;
 }
@@ -677,11 +677,11 @@ BOOL CtiLMControlArea::isTriggerCheckNeeded(ULONG secondsFrom1901)
     // Otherwise we might control based on default point values which can be bad
     for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
     {
-	CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
-	if(!trigger->hasReceivedPointData())
-	{
-	    return false;
-	}
+        CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
+        if(!trigger->hasReceivedPointData())
+        {
+            return false;
+        }
     }
     
     if( getControlInterval() > 0 )
@@ -890,11 +890,38 @@ BOOL CtiLMControlArea::hasThresholdTrigger()
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
         if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::ThresholdTriggerType,RWCString::ignoreCase) )
-	{
-	    return TRUE;
-	}
+        {
+            return TRUE;
+        }
     }
     return FALSE;
+}
+
+/*---------------------------------------------------------------------------
+    isStatusTriggerTripped
+
+    Returns a BOOLean if any status trigger is tripped for the control area
+    and optionally program.
+
+    If program is NULL then only the control area will be considered.
+---------------------------------------------------------------------------*/
+BOOL CtiLMControlArea::isStatusTriggerTripped(CtiLMProgramBase* program)
+{
+    BOOL returnBoolean = FALSE;
+    
+    for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
+    {
+        CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
+        if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) )
+        {
+            if( currentTrigger->getPointValue() != currentTrigger->getNormalState())
+            {
+                returnBoolean = TRUE;
+                break;
+            }
+        }
+    }
+    return returnBoolean;
 }
 
 /*---------------------------------------------------------------------------
@@ -1123,7 +1150,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     RWCString additional = *getAutomaticallyStartedSignalString();
                     //additional += getAutomaticallyStartedSignalString();
                     CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
-                    signal->setSOE(1);	
+                    signal->setSOE(1);  
 
                     multiDispatchMsg->insert(signal);
                     {
@@ -1175,23 +1202,23 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                             }
                         }
 
-			// We need to check the programs trigger threshold offset to make sure we are above it, BUT
-			// if there is no threshold trigger then it doesn't apply.
-			// Likewise if this program has no trigger offset then don't worry about it, let it control
+                        // We need to check the programs trigger threshold offset to make sure we are above it, BUT
+                        // if there is no threshold trigger then it doesn't apply.
+                        // Likewise if this program has no trigger offset then don't worry about it, let it control
                         if( (!hasThresholdTrigger() ||
-			     lmProgramDirect->getTriggerOffset() == 0 ||
-			     isThresholdTriggerTripped(lmProgramDirect)) )
+                             lmProgramDirect->getTriggerOffset() == 0 ||
+                             isThresholdTriggerTripped(lmProgramDirect)) )
 //                            (lmProgramDirect->getMaxDailyOps() == 0 ||
 //                             lmProgramDirect->getDailyOps() < lmProgramDirect->getMaxDailyOps()))
                         {
                             expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, isTriggerCheckNeeded(secondsFrom1901));
 
-			    if(lmProgramDirect->getProgramState() != CtiLMProgramBase::InactiveState)
-			    {   // reduceProgram load might not have been able to do anything,
-				// check before we assume the program went active.
-				newlyActivePrograms++;
-				setUpdatedFlag(TRUE);
-			    }
+                            if(lmProgramDirect->getProgramState() != CtiLMProgramBase::InactiveState)
+                            {   // reduceProgram load might not have been able to do anything,
+                                // check before we assume the program went active.
+                                newlyActivePrograms++;
+                                setUpdatedFlag(TRUE);
+                            }
                         }
                         
                         if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
@@ -1323,15 +1350,15 @@ void CtiLMControlArea::reduceControlAreaControl(ULONG secondsFrom1901, CtiMultiM
         {
             CtiLMProgramDirect* lm_program_direct = (CtiLMProgramDirect*) lm_program;
             if(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE)
-	    { //the program didn't refused to stop (maybe a constraint was violated like a groups min activate time?)
-		//so count this program as still active
-		num_active_programs++;
-	    }
-	    else
-	    {
-		// Let the world know we just auto stopped?
-		lm_program_direct->scheduleStopNotification(RWDBDateTime());		
-	    }
+            { //the program didn't refused to stop (maybe a constraint was violated like a groups min activate time?)
+                //so count this program as still active
+                num_active_programs++;
+            }
+            else
+            {
+                // Let the world know we just auto stopped?
+                lm_program_direct->scheduleStopNotification(RWDBDateTime());            
+            }
         }
 
 
@@ -1498,7 +1525,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     {
         if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)    
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)    
         {
             fullyActivePrograms++;
             activePrograms++;
@@ -1528,6 +1555,191 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
     return expectedLoadReduced;
 }
 
+void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+{
+    LONG fullyActivePrograms = 0;
+    LONG activePrograms = 0;
+    
+    //setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
+
+    for(LONG i=0;i<_lmprograms.entries();i++)
+    {
+        CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
+
+        if( !currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) ||
+            !currentLMProgram->getControlType().compareTo("Enabled",RWCString::ignoreCase) )
+        {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+            if( currentLMProgram->isAvailableToday() &&
+                currentLMProgram->isWithinValidControlWindow(secondsFromBeginningOfDay) &&
+                currentLMProgram->hasControlHoursAvailable() &&
+                currentLMProgram->isPastMinRestartTime(secondsFrom1901) &&
+                !currentLMProgram->getDisableFlag() )
+            {
+                if( getControlAreaState() == CtiLMControlArea::InactiveState )
+                {
+                    RWCString text = RWCString("Manual Status Trigger Start, LM Control Area: ");
+                    text += getPAOName();
+                    RWCString additional = *getAutomaticallyStartedSignalString();
+                    //additional += getAutomaticallyStartedSignalString();
+                    CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+                    signal->setSOE(1);
+
+                    multiDispatchMsg->insert(signal);
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << RWTime() << " - " << text << ", " << additional << endl;
+                    }
+                }
+
+                if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
+                    currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
+                    currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState )
+                {
+                    if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                    {
+                        CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
+                        CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
+                            CtiLMManualControlRequest::START_NOW,
+                            lmProgramDirect->getPAOId(),
+                            gEndOfRWDBDateTime,
+                            RWDBDateTime(),
+                            gEndOfRWDBDateTime,
+                            1, //gear
+                            CtiLMProgramDirect::defaultLMStartPriority,
+                            "Server Manual Start",
+                            TRUE,
+                            FALSE);
+                        CtiLMExecutorFactory factory;
+                        CtiLMExecutor* executor = factory.createExecutor(manual_req);
+                        executor->Execute();
+                    }
+
+/*                    if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
+                        getControlAreaState() != CtiLMControlArea::ActiveState )
+                    {
+                        setControlAreaState(CtiLMControlArea::ActiveState);
+                        }*/               
+                }
+            }
+        }
+    }
+
+        for(LONG j=0;j<_lmprograms.entries();j++)
+    {
+        if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)    
+        {
+            fullyActivePrograms++;
+            activePrograms++;
+        }
+        else if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            activePrograms++;
+        }
+    }
+
+    if( fullyActivePrograms > 0 &&
+        fullyActivePrograms >= _lmprograms.entries() )
+    {
+        setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else if( activePrograms > 0 )
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
+    }
+
+    if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Control cannot go active because no programs are currently available " << endl;
+    }
+}
+
+void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+{
+    LONG fullyActivePrograms = 0;
+    LONG activePrograms = 0;
+    
+    //setControlAreaState(CtiLMControlArea::AttemptingControlState);//if none the the programs are available then we can't control, but we want to
+
+    for(LONG i=0;i<_lmprograms.entries();i++)
+    {
+        CtiLMProgramBase* currentLMProgram = (CtiLMProgramBase*)_lmprograms[i];
+
+        if( !currentLMProgram->getControlType().compareTo(CtiLMProgramBase::AutomaticType,RWCString::ignoreCase) )
+        {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
+
+            RWCString text = RWCString("Manual Status Trigger Stop, LM Control Area: ");
+            text += getPAOName();
+            RWCString additional = *getAutomaticallyStartedSignalString();
+            //additional += getAutomaticallyStartedSignalString();
+            CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
+            signal->setSOE(1);
+
+            multiDispatchMsg->insert(signal);
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - " << text << ", " << additional << endl;
+            }
+
+            if( currentLMProgram->getProgramState() != CtiLMProgramBase::InactiveState )
+            {
+                if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                {
+                    CtiLMProgramDirect* lmProgramDirect = (CtiLMProgramDirect*)currentLMProgram;
+                    CtiLMManualControlRequest* manual_req = new CtiLMManualControlRequest(
+                        CtiLMManualControlRequest::STOP_NOW,
+                        lmProgramDirect->getPAOId(),
+                        gEndOfRWDBDateTime,
+                        RWDBDateTime(),
+                        gEndOfRWDBDateTime,
+                        1, //gear
+                        CtiLMProgramDirect::defaultLMStartPriority,
+                        "Server Manual Stop",
+                        TRUE,
+                        FALSE);
+                    CtiLMExecutorFactory factory;
+                    CtiLMExecutor* executor = factory.createExecutor(manual_req);
+                    executor->Execute();
+                }
+
+/*                    if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
+                      getControlAreaState() != CtiLMControlArea::ActiveState )
+                      {
+                      setControlAreaState(CtiLMControlArea::ActiveState);
+                      }*/               
+            }
+        }
+    }
+
+        for(LONG j=0;j<_lmprograms.entries();j++)
+    {
+        if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState)    
+        {
+            fullyActivePrograms++;
+            activePrograms++;
+        }
+        else if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ActiveState )
+        {
+            activePrograms++;
+        }
+    }
+
+    if( fullyActivePrograms > 0 &&
+        fullyActivePrograms >= _lmprograms.entries() )
+    {
+        setControlAreaState(CtiLMControlArea::FullyActiveState);
+    }
+    else if( activePrograms > 0 )
+    {
+        setControlAreaState(CtiLMControlArea::ActiveState);
+    }
+}
+
 /*-----------------------------------------------------------------------------
   stopProgramsBelowThreshold
 
@@ -1552,60 +1764,60 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(ULONG secondsFrom1901, CtiMult
 
         {
             CtiLMProgramDirect* lm_program_direct = (CtiLMProgramDirect*) lm_program;
-	    CtiLMControlAreaTrigger* lm_trigger = getThresholdTrigger();
-	    
-	    if(lm_program_direct->getTriggerRestoreOffset() != 0 && lm_trigger != 0 && 
-	       ((lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType &&
-		 lm_trigger->getPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset())) ||
-		(lm_trigger->getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType &&
-		 lm_trigger->getProjectedPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset()))))
-	       
-	    {
-		string text = "Stopping program: " + lm_program_direct->getPAOName() + ", trigger threshold is below the programs restore offset";
-		string additional = "Trigger Threshold: ";
-		additional += CtiNumStr(lm_trigger->getThreshold());
-		additional += " Program Restore Offset: ";
-		additional += CtiNumStr(lm_program_direct->getTriggerRestoreOffset());
+            CtiLMControlAreaTrigger* lm_trigger = getThresholdTrigger();
+            
+            if(lm_program_direct->getTriggerRestoreOffset() != 0 && lm_trigger != 0 && 
+               ((lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType &&
+                 lm_trigger->getPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset())) ||
+                (lm_trigger->getProjectionType() != CtiLMControlAreaTrigger::NoneProjectionType &&
+                 lm_trigger->getProjectedPointValue() < (lm_trigger->getThreshold() - lm_program_direct->getTriggerRestoreOffset()))))
+               
+            {
+                string text = "Stopping program: " + lm_program_direct->getPAOName() + ", trigger threshold is below the programs restore offset";
+                string additional = "Trigger Threshold: ";
+                additional += CtiNumStr(lm_trigger->getThreshold());
+                additional += " Program Restore Offset: ";
+                additional += CtiNumStr(lm_program_direct->getTriggerRestoreOffset());
 
-		if(lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType)
-		{
-		    additional += " Trigger Value: ";
-		    additional += CtiNumStr(lm_trigger->getPointValue());
-		}
-		else
-		{
-		    additional += " Projection Value: ";
-		    additional += CtiNumStr(lm_trigger->getProjectedPointValue());		    
-		}
-		
-		CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
-		signal->setSOE(1);
-		multiDispatchMsg->insert(signal);
+                if(lm_trigger->getProjectionType() == CtiLMControlAreaTrigger::NoneProjectionType)
+                {
+                    additional += " Trigger Value: ";
+                    additional += CtiNumStr(lm_trigger->getPointValue());
+                }
+                else
+                {
+                    additional += " Projection Value: ";
+                    additional += CtiNumStr(lm_trigger->getProjectedPointValue());                  
+                }
+                
+                CtiSignalMsg* signal = new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text.data(),additional.data(),GeneralLogType,SignalEvent);
+                signal->setSOE(1);
+                multiDispatchMsg->insert(signal);
 
-                if( _LM_DEBUG & LM_DEBUG_STANDARD )		    
-		{
-		    CtiLockGuard<CtiLogger> dout_guard(dout);
-		    dout << RWTime() << " " <<  text << " - " << additional << endl;
-		}
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )                 
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << RWTime() << " " <<  text << " - " << additional << endl;
+                }
 
-		if(!(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE))
-		{
-		    stopped_program = true;
-		}
-		else
-		{
-		    // Let the world know we just auto stopped?
-		    lm_program_direct->scheduleStopNotification(RWDBDateTime());		
-		}
-	    }
-	}
+                if(!(lm_program_direct->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) == FALSE))
+                {
+                    stopped_program = true;
+                }
+                else
+                {
+                    // Let the world know we just auto stopped?
+                    lm_program_direct->scheduleStopNotification(RWDBDateTime());                
+                }
+            }
+        }
     }
 
     for(int j=0;j<_lmprograms.entries();j++)
     {
         if( ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::FullyActiveState ||
             ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::ManualActiveState ||
-	    ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState ) 
+            ((CtiLMProgramBase*)_lmprograms[j])->getProgramState() == CtiLMProgramBase::TimedActiveState ) 
         {
             fullyActivePrograms++;
             activePrograms++;
@@ -1732,8 +1944,8 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
             {
                 returnBOOL = TRUE;
 
-		// Let the world know we just auto stopped?
-		((CtiLMProgramDirect*)currentLMProgram)->scheduleStopNotification(RWDBDateTime());
+                // Let the world know we just auto stopped?
+                ((CtiLMProgramDirect*)currentLMProgram)->scheduleStopNotification(RWDBDateTime());
 
                 if( !sentSignalMsg )
                 {
@@ -1924,7 +2136,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
     Check if we have any time based control programs that need to do
     something and then do it.
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
 
     // for all timed programs
@@ -1942,7 +2154,7 @@ void CtiLMControlArea::handleTimeBasedControl(ULONG secondsFrom1901, LONG second
 
         if(currentLMProgram->getControlType() == CtiLMProgramBase::TimedType )
         {
-            if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg))
+            if(currentLMProgram->handleTimedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg, multiNotifMsg))
             {
                 setUpdatedFlag(TRUE);
             }
@@ -2045,8 +2257,8 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
         {
             CtiLMProgramDirect* currentLMDirectProgram = (CtiLMProgramDirect*) currentLMProgram;
 
-	    // Notify of activation
-	    if( currentLMDirectProgram->getNotifyActiveTime() > gInvalidRWDBDateTime &&
+            // Notify of activation
+            if( currentLMDirectProgram->getNotifyActiveTime() > gInvalidRWDBDateTime &&
                 currentLMDirectProgram->getNotifyActiveTime().seconds() <= secondsFrom1901 )
             {
                 currentLMDirectProgram->notifyGroupsOfStart(multiNotifMsg);
@@ -2054,14 +2266,14 @@ void CtiLMControlArea::handleNotification(ULONG secondsFrom1901, CtiMultiMsg* mu
                 currentLMDirectProgram->dumpDynamicData();
             }
 
-	    //Notify of inactivation
-	    if( currentLMDirectProgram->getNotifyInactiveTime() > gInvalidRWDBDateTime &&
+            //Notify of inactivation
+            if( currentLMDirectProgram->getNotifyInactiveTime() > gInvalidRWDBDateTime &&
                 currentLMDirectProgram->getNotifyInactiveTime().seconds() <= secondsFrom1901 )
             {
                 currentLMDirectProgram->notifyGroupsOfStop(multiNotifMsg);
                 currentLMDirectProgram->setNotifyInactiveTime(gInvalidRWDBDateTime);
                 currentLMDirectProgram->dumpDynamicData();
-            }	    
+            }       
         }
     }    
 }

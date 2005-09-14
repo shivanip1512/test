@@ -224,6 +224,30 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
 
 RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID ) 
 
+CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
+						     LONG pao_id,
+						     const RWDBDateTime& notify_time,
+						     const RWDBDateTime& start_time,
+						     const RWDBDateTime& stop_time,
+						     LONG start_gear,
+						     LONG start_priority,
+						     const RWCString& addl_info,
+						     BOOL override_constraints,
+						     BOOL coerce_start_stop_time
+    ) :
+    _command(cmd),
+    _paoid(pao_id),
+    _notifytime(notify_time),
+    _starttime(start_time),
+    _stoptime(stop_time),
+    _startgear(start_gear),
+    _startpriority(start_priority),
+    _additionalinfo(addl_info),
+    _override_constraints(override_constraints),
+    _coerce_start_stop_time(coerce_start_stop_time)
+{
+}
+
 CtiLMManualControlRequest::CtiLMManualControlRequest(const CtiLMManualControlRequest& req)
 {
     operator=( req );

@@ -123,6 +123,17 @@ public:
     };
 
     CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
+    CtiLMManualControlRequest(LONG cmd,
+			      LONG pao_id,
+			      const RWDBDateTime& notify_time,
+			      const RWDBDateTime& start_time,
+			      const RWDBDateTime& stop_time,
+			      LONG start_gear,
+			      LONG start_priority,
+			      const RWCString& addl_info,
+			      BOOL override_constraints,
+			      BOOL coerce_start_stop_time
+			      );
     CtiLMManualControlRequest(const CtiLMManualControlRequest& req);
     
     /*CtiLMControlMsg(LONG command);

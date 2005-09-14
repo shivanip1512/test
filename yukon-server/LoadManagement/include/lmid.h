@@ -76,3 +76,6 @@
 
 extern RWDBDateTime gInvalidRWDBDateTime;
 extern ULONG gInvalidRWDBDateTimeSeconds;
+
+extern RWDBDateTime gEndOfRWDBDateTime;
+extern ULONG gEndOfRWDBDateTimeSeconds;

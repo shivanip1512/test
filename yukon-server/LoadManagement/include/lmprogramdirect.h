@@ -147,6 +147,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     static int defaultLMStartPriority;
     static int defaultLMRefreshPriority;
 
+    static int invalidNotifyOffset;
+
 private:
 
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
