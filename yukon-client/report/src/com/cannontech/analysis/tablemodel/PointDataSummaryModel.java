@@ -169,7 +169,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	private HashMap allMissingData = new HashMap();
 	
 	/** A string for the title of the data */
-	private static String title = "Load Profile Data Summary Report";
+	private static String title = "Point Data Summary Report";
 
 	//Extensions of PointTypes
 	public final static int LOAD_PROFILE_POINT_TYPE = 101;	//some "unused" PointType int
