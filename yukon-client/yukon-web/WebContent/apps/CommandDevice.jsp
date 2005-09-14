@@ -9,33 +9,15 @@
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
-<%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole"%>
 <cti:checklogin/> 
-
-<script language='JavaScript' src='../JavaScript/ol/overlib_mini.js'></script>
-<script language='JavaScript' src='../JavaScript/ol/overlib_anchor_mini.js'></script>
-<script language='JavaScript' src='../JavaScript/ol/overlib_centerpopup_mini.js'></script>
-<script language='JavaScript' src='../JavaScript/ol/overlib_hideform_mini.js'></script>
-
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 <%-- Grab the search criteria --%>
 
 <%
 	PointData pointData = null;
-	
-	boolean manual = false;
-	if( request.getParameter("manual") != null)
-	{	//Force going to the Commander page instead of a page based on the DeviceType
-		manual = true;
-	}
-	boolean lp = false;
-	if( request.getParameter("lp") != null)
-	{	//Force going to the Load Profile
-		lp = true;
-	}
-	
+
 	int invNo = -1;	//used for directing to different application starting points
 	int deviceID = PAOGroups.INVALID;
 	if( request.getParameter("deviceID") != null)
@@ -50,6 +32,22 @@
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
 	
+	boolean manual = false;
+	if( request.getParameter("manual") != null)
+	{	//Force going to the Commander page instead of a page based on the DeviceType
+		manual = true;
+	}
+	boolean lp = false;
+	if( request.getParameter("lp") != null)
+	{	//Force going to the Load Profile
+		lp = true;
+	}
+	boolean isMCT410 = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
+	if( !isMCT410 )
+	{	//MUST BE Manual...force it
+		manual = true;
+	}
+		
 	String serialNum = "";
 	String serialType = "";
 	if( request.getParameter("xcom") != null){
@@ -76,9 +74,9 @@
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <link rel="stylesheet" href="../WebConfig/yukon/Base.css" type="text/css">
+<SCRIPT  LANGUAGE="JavaScript" SRC="../JavaScript/calendar.js"></SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:200;"></div>
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -135,6 +133,72 @@
 			  <tr> 
 			    <td> 
 			      <div align="left">
+				    <span class="NavHeader">Commander</span>
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+					  <tr>
+					  	<% String link = "";
+					  	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+		              	  link =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
+		              	} else {
+		              	  link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
+		                }
+   					  	if (manual ){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>Manual</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>Manual</span></a></td>
+						<%}%>						
+			          </tr>	
+ 					  <tr>
+					  	<% 
+					  	  if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+		              	    link =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
+		              	  } else {
+		              	    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
+		                  }
+   					  	  if (! (lp || manual) ){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>MCT410 Custom</span></td>
+						  <%} else if (isMCT410){%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>MCT410 Custom</span></a></td> 
+						  <%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1;color: #CCCCCC"><span class='NavText'>MCT410 Custom</span></td>
+						  <%}%>
+			          </tr>			          
+			          <tr>
+					  	<%
+					  	  if (request.getParameter("InvNo") != null) {	//we came from the Customer Account page
+	                	    link = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
+              			  } else {
+						    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
+                          }
+					  	  if (lp) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'>MCT410 Profile</span></td>
+						  <%} else if (isMCT410){%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='<%=link%>' class='Link2'><span class='NavText'>MCT410 Profile</span></a></td>
+						  <%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1;color: #CCCCCC"><span class='NavText'>MCT410 Profile</span></td>
+						  <%}%>
+			          </tr>
+  					  <tr><td height="10"></td></tr>
+			          <tr>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>BACK TO LIST</span></a></td>
+			          </tr>
+  					  <tr><td height="10"></td></tr>
+			        </table>
+			      </div>
+			    </td>
+			  </tr>
+			  <tr> 
+			    <td> 
+			      <div align="left">
 				    <span class="NavHeader">Devices</span>
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
@@ -154,7 +218,7 @@
   			            {
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
-					  	<% if (sn.equals(serialNum)) {%>
+					  	<% if (serialType.equals("sa205") && sn.equals(serialNum)) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
@@ -183,7 +247,7 @@
   			            {
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
-					  	<% if (sn.equals(serialNum)) {%>
+					  	<% if (serialType.equals("sa305") && sn.equals(serialNum)) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
@@ -211,7 +275,7 @@
   			            {
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
-					  	<% if (sn.equals(serialNum)) {%>
+					  	<% if (serialType.equals("xcom") && sn.equals(serialNum)) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
@@ -238,7 +302,7 @@
   			            {
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
-					  	<% if (sn.equals( serialNum)) {%>
+					  	<% if (serialType.equals("vcom") && sn.equals( serialNum)) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
@@ -248,12 +312,7 @@
 			          </tr>
 			          <%}
 			          }%>
-  					  <tr><td height="20"></td></tr>
-			          <tr>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>BACK TO LIST</span></a></td>
-			          </tr>
-  					  <tr><td height="5"></td></tr>			          
+  					  <tr><td height="25"></td></tr>
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();%>
@@ -263,7 +322,7 @@
 			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
 						<%}%>						
 			          </tr>
 					  <tr><td height="3"></td></tr>
@@ -280,7 +339,7 @@
 			{%>
 				<%@ include file="AdvancedCommander410.jsp"%>
 			<%}
-			else if (liteYukonPao != null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) && !manual)
+			else if (isMCT410 && !manual)
 			{
 			%>
 				<%@ include file="Commander410.jsp"%>
