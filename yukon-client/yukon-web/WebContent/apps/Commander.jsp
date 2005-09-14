@@ -143,19 +143,33 @@ else
                   </div>
                 </td>
               </tr>
-			  <tr>
-			  	<% if (liteYukonPao != null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()))
-			  	{
-              	  if (request.getParameter("InvNo") != null)	//we came from the Customer Account page
-              	  {%>
-				    <td colspan="3" width="90%" align="right"><a href='<%= request.getContextPath() %>/operator/Consumer/CommandInv.jsp?InvNo=<%=invNo%>' class="Link1">Go to Custom Commander</a>
-			      <%}
-			      else{%>
-				    <td colspan="3" width="90%" align="right"><a href='<%= request.getContextPath() %>/apps/CommandDevice.jsp?deviceID=<%=deviceID%>' class="Link1">Go to Custom Commander</a>			    
-			      <%}
-			    }%>
-			    </td>
-			  </tr>
+              <tr><td colspan="3">
+			  <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">              
+              <tr> 
+				<% String gotoLink = "";
+			  	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
+		          gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
+		        } else {
+		          gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
+		        }
+   				if (isMCT410) {%>
+				<td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Custom</a></td>
+			  <%}%>
+	          </tr>			          
+	          <tr>
+			  	<%
+			  	  if (request.getParameter("InvNo") != null) {	//we came from the Customer Account page
+            	    gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
+      			  } else {
+				    gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
+                  }
+			  	  if (isMCT410 ) {%>
+			  	  <td align="center"><a href='<%= gotoLink%>' name="advCommander410"  class="Link1">Commander: MCT410 Profile</a></td>
+			  <%}%>
+	          </tr>    			  
+              </table>
+              </td>
+              </tr>
               <br>
               </form>
             </table>
