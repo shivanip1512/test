@@ -2,13 +2,12 @@
 --%>
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-
+<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
+<%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 <%@ page import="com.cannontech.database.cache.functions.*"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
-<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
-<%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
 
@@ -16,17 +15,6 @@
 <%
 	PointData pointData = null;
 	
-	boolean manual = false;
-	if( request.getParameter("manual") != null)
-	{	//Force going to the Commander page instead of a page based on the DeviceType
-		manual = true;
-	}
-	boolean lp = false;
-	if( request.getParameter("lp") != null)
-	{	//Force going to the Load Profile
-		lp = true;
-	}
-
 	String cmd = request.getParameter("command");
 	if (cmd != null)
 		YC_BEAN.setCommandString("");
@@ -39,13 +27,29 @@
 		StarsInventory starsMCT = inventories.getStarsInventory(invNo);
 		deviceID = starsMCT.getDeviceID();
 	}
-	else
-	{
-		int i = 1;
-	}
+	//else	//SN NOT SURE WHY THIS WAS HERE 20050913
+	//{
+		//int i = 1;
+	//}
 
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = PAOFuncs.getLiteYukonPAO(deviceID);
+
+	boolean manual = false;
+	if( request.getParameter("manual") != null)
+	{	//Force going to the Commander page instead of a page based on the DeviceType
+		manual = true;
+	}
+	boolean lp = false;
+	if( request.getParameter("lp") != null)
+	{	//Force going to the Load Profile
+		lp = true;
+	}
+	boolean isMCT410 = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType());
+	if( !isMCT410 )
+	{	//MUST BE Manual...force it
+		manual = true;
+	}
 
 	String serialNum = "";
 	String serialType = "";
@@ -73,6 +77,7 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/yukon/Base.css" type="text/css">
+<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -113,7 +118,7 @@
 			{%>
 				<%@ include file="../../apps/AdvancedCommander410.jsp"%>
 			<%}
-			else if (liteYukonPao.getType() == com.cannontech.database.data.pao.DeviceTypes.MCT410IL && !manual)
+			else if (isMCT410 && !manual)
 			{
 				%>
 				<%@ include file="../../apps/Commander410.jsp"%>
