@@ -608,6 +608,12 @@ public class MeterReadModel extends ReportModelBase
 	 */
 	public void setMeterReadType(int i)
 	{
+		if( meterReadType != i)
+		{	//reset the fields that depend on this type.
+		   columnProperties = null;
+		   columnNames = null;
+		   columnTypes = null;
+		}		
 		meterReadType = i;
 	}
 
