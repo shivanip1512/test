@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/08/30 19:34:12 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/09/15 16:39:37 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.36  2005/09/15 16:39:37  cplender
+* Simulate log was repeatedly logging the first controlled group for each group in a block to the simulate log.
+*
 * Revision 1.35  2005/08/30 19:34:12  cplender
 * PutConfig requests were not being followed by a time slot message.
 *
@@ -673,11 +676,11 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
             case SA305:
                 {
                     CtiProtocolSA305 prot( OutMessage->Buffer.SASt._buffer, OutMessage->Buffer.SASt._bufferLen );
-                    cmdStr = prot.asString();
                     prot.setTransmitterType(getType());
+                    cmdStr = prot.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << RWTime() << " " <<  getName() << ": " << prot.asString() << endl;
+                        slog << RWTime() << " " <<  getName() << ": " << cmdStr << endl;
                     }
                     break;
                 }
@@ -811,7 +814,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(OutMessage->Buffer.SASt) << endl;
+                                slog << RWTime() << " " <<  getName() << ": " << CtiProtocolSA3rdParty::asString(rtcOutMessage->Buffer.SASt) << endl;
                             }
                             break;
                         }
@@ -821,13 +824,10 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                     {
                         // This OM needs to be plopped on the retry queue!
                         queueRepeatToDevice(rtcOutMessage, NULL);
-                        if(rtcOutMessage) delete rtcOutMessage;
-                    }
-                    else
-                    {
-                        delete rtcOutMessage;
+
                     }
 
+                    delete rtcOutMessage;
                     rtcOutMessage = 0;
                 }
                 else
@@ -838,6 +838,7 @@ INT CtiDeviceRTC::prepareOutMessageForComms(CtiOutMessage *&OutMessage)
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
+                    rtcOutMessage->Priority = rtcOutMessage->Priority + 1 > MAXPRIORITY ? MAXPRIORITY : rtcOutMessage->Priority + 1;          // Try to keep the order;
                     _workQueue.putQueue(rtcOutMessage); // Put it back, the OutMessage buffer is FULL.
                     rtcOutMessage = 0;
 
