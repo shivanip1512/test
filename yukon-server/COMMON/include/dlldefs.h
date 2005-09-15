@@ -302,6 +302,14 @@
    #define IM_EX_PROT   __declspec(dllimport)
 #endif
 
+#ifdef _DLL_CONFIG                // The ctibase.dll
+   #define IM_EX_CONFIG      __declspec(dllexport)
+#elif defined( STI_UNDERSTAND )
+   #define IM_EX_CONFIG
+#else
+   #define IM_EX_CONFIG      __declspec(dllimport)
+#endif
+
 #ifdef  EXPORT
    #define IM_EX_PORT         __declspec(dllexport)
 #elif defined(IMPORT)
