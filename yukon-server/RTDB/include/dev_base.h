@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/09/02 16:19:47 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/09/15 19:12:50 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using namespace std;
 #include "cmdparse.h"
 #include "counter.h"
 #include "dev_exclusion.h"
+#include "config_device.h"
 #include "rte_base.h"
 #include "tbl_base.h"
 #include "tbl_2way.h"
@@ -315,6 +316,8 @@ public:
 
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
+
+    virtual void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
 };
 
 typedef CtiDeviceBase CtiDevice;

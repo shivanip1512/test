@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/09/02 16:19:46 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/09/15 19:12:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1161,5 +1161,9 @@ void CtiDeviceBase::getQueueMetrics(int index, int &submit, int &processed, int 
     submit = _submittal.get(index);
     processed = _processed.get(index);
     orphan = _orphaned.get(index);
+
 }
 
+void CtiDeviceBase::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
+{//Virtual function does nothing..
+}
