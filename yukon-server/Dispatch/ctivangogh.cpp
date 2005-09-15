@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2005/09/08 21:56:03 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2005/09/15 16:39:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5853,8 +5853,6 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
             pSig->setPointData((CtiPointDataMsg*)pData->replicateMessage());
         }
 
-                // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
 
                 if(duration > 0)  // Am I required to hold in this state for a bit before the announcement of this condition?
                 {
@@ -5874,6 +5872,11 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " **** LIMIT Violation ****  Point: " << pointNumeric.getName() << " delayed (" << duration << ") violation. Limit " << statelimit+1 << " pending alarm." << endl;
                     }
+                }
+                else
+                {
+                    // This is an alarm if the alarm state indicates anything other than SignalEvent.
+                    tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
                 }
             }
             else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
@@ -5915,30 +5918,30 @@ void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrap
 {
     UINT tags = pDyn->getDispatch().getTags();
 
-    if((tags & TAG_ATTRIB_CONTROL_AVAILABLE))
+    // Pseudo points cannot have feedback, therefore cannot have UCOS.
+    // Control must be available to care about UCOS
+    // Control must not be expected to have UCOS (unexpected is the same as NOT PENDING)
+    if(!point.isPseudoPoint() && (tags & TAG_ATTRIB_CONTROL_AVAILABLE) && !(tags & TAG_CONTROL_PENDING))
     {
-        if(!(tags & TAG_CONTROL_PENDING))
+        // Well, we were NOT expecting a change, so make sure the values match
+        if( pDyn->getDispatch().getValue() != pData->getValue())
         {
-            // Well, we were NOT expecting a change, so make sure the values match
-            if(pDyn->getDispatch().getValue() != pData->getValue())
+            // Values don't match and we weren't expecting a change!
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
             {
-                // Values don't match and we weren't expecting a change!
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** UNCOMMANDEDSTATECHANGE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                // OK, we have an actual alarm condition to gripe about!
-                pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), RWCString( "UCOS: " + ResolveStateName(point.getStateGroupID(), (int)pData->getValue())), getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
-
-                // This is an alarm if the alarm state indicates anything other than SignalEvent.
-                tagSignalAsAlarm(point, pSig, alarm, pData);
-
-                pSig->resetTags( TAG_ACTIVE_ALARM );
-                pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
-                pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** UNCOMMANDEDSTATECHANGE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+
+            // OK, we have an actual alarm condition to gripe about!
+            pSig = CTIDBG_new CtiSignalMsg(point.getID(), pData->getSOE(), RWCString( "UCOS: " + ResolveStateName(point.getStateGroupID(), (int)pData->getValue())), getAlarmStateName( point.getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point.getAlarming().getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
+
+            // This is an alarm if the alarm state indicates anything other than SignalEvent.
+            tagSignalAsAlarm(point, pSig, alarm, pData);
+
+            pSig->resetTags( TAG_ACTIVE_ALARM );
+            pDyn->getDispatch().resetTags( MASK_ANY_ALARM );
+            pDyn->getDispatch().setTags( _signalManager.getAlarmMask(point.getID()) );
         }
     }
 }
@@ -6043,6 +6046,9 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointBase &point, CtiSignalMsg *&pSig, int
             pSig->setTags(pDyn->getDispatch().getTags());   // They are equal here!
             pSig->setLogType(AlarmCategoryLogType);
             pSig->setCondition(alarm);
+
+            //20050913 CGP
+            _signalManager.addSignal(*pSig);
         }
 
         if(pData)    // If is "pushed" into the alarm condition, let's label it that way.
