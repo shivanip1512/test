@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/15 19:48:22 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 #include "dbaccess.h"
 #include "config_resolvers.h"
 #include "dev_base.h"
-#include "config_test_a.h"
 #include "mgr_config.h"
 
 class RWCString;
@@ -241,13 +240,6 @@ CtiConfigBaseSPtr CtiConfigManager::createConfigByType(const int &type)
     {
         switch(type)
         {
-            case TestConfigTypeA:
-                {
-                    CtiConfigBaseSPtr tempBasePtr (CTIDBG_new TestA());
-                    tempBasePtr->setType(type);
-                    return tempBasePtr;
-
-                }
             default:
             {
                 {

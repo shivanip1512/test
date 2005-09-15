@@ -43,7 +43,6 @@ DLLOBJS = \
 config_base.obj \
 config_device.obj \
 config_resolvers.obj \
-config_test_a.obj \
 mgr_config.obj \
 
 
@@ -125,6 +124,6 @@ mgr_config.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h queues.h \
-		utility.h mgr_config.h config_base.h config_device.h
-precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+		utility.h mgr_config.h config_base.h config_device.h \
+		mgr_device.h rtdb.h hashkey.h slctdev.h smartmap.h
 #ENDUPDATE#
