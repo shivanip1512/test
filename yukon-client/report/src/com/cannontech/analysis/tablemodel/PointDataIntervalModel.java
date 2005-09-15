@@ -166,7 +166,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME " + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAOBJECTID " + 
 			" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 			
 			if( getBillingGroups() != null && getBillingGroups().length > 0 ) //NO BILLING Group, we must want other devices too!
