@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.10 $                               #
-#       $Date: 2005/02/10 23:23:45 $                  #
+#       $Revision: 1.11 $                               #
+#       $Date: 2005/09/15 18:11:59 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -78,6 +78,7 @@ R_PROT           = $(REFPATH)\Protocol
 R_SERVICE        = $(REFPATH)\Service
 R_SIGNAL         = $(REFPATH)\dbsignal
 R_RTDB           = $(REFPATH)\rtdb
+R_DEVICECONFIGURATION = $(REFPATH)\DeviceConfiguration
 
 
 #
@@ -106,6 +107,7 @@ SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
 INTERP          = $(COMPILEBASE)\interp
+DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 

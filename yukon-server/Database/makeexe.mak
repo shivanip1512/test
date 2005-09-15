@@ -104,15 +104,15 @@ dllyukon.obj:	yukon.h precompiled.h ctidbgmem.h tbl_route.h dllbase.h \
 		guard.h dbmemobject.h tbl_rtcarrier.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		logger.h thread.h tbl_rtcomm.h ctibase.h ctinexus.h \
-		tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
-		msg_pcrequest.h message.h collectable.h tbl_state_grp.h \
-		tbl_state.h
+		netports.h tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h \
+		tbl_rtversacom.h msg_pcrequest.h message.h collectable.h \
+		tbl_state_grp.h tbl_state.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tabletest.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pthist.h \
 		dlldefs.h dbmemobject.h resolvers.h types.h pointtypes.h \
-		db_entry_defines.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h tbl_rtroute.h rtdb.h \
-		hashkey.h
+		db_entry_defines.h ctibase.h ctinexus.h netports.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h tbl_rtroute.h \
+		rtdb.h hashkey.h
 tbl.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h
@@ -203,6 +203,11 @@ tbl_dv_mctiedport.obj:	yukon.h precompiled.h ctidbgmem.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h db_entry_defines.h logger.h \
 		thread.h
+tbl_dv_pagingreceiver.obj:	yukon.h precompiled.h ctidbgmem.h \
+		tbl_dv_pagingreceiver.h dlldefs.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h dbmemobject.h \
+		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
+		logger.h thread.h
 tbl_dv_rtc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h logger.h thread.h tbl_dv_rtc.h
@@ -215,6 +220,10 @@ tbl_dv_tappaging.obj:	yukon.h precompiled.h ctidbgmem.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
 		sema.h resolvers.h pointtypes.h db_entry_defines.h logger.h \
 		thread.h
+tbl_dv_tnpp.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_tnpp.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h logger.h thread.h
 tbl_dv_versacom.obj:	yukon.h precompiled.h ctidbgmem.h resolvers.h \
 		types.h pointtypes.h dlldefs.h db_entry_defines.h \
 		tbl_dv_versacom.h vcomdefs.h dbmemobject.h dllbase.h \
@@ -228,16 +237,16 @@ tbl_dyn_paoinfo.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h rwutil.h boost_time.h logger.h \
 		thread.h numstr.h tbl_dyn_paoinfo.h ctibase.h ctinexus.h \
-		dbmemobject.h pointdefs.h
+		netports.h dbmemobject.h pointdefs.h
 tbl_dyn_ptalarming.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h numstr.h \
-		tbl_dyn_ptalarming.h ctibase.h ctinexus.h dbmemobject.h \
-		pointdefs.h
+		tbl_dyn_ptalarming.h ctibase.h ctinexus.h netports.h \
+		dbmemobject.h pointdefs.h
 tbl_dyn_pttag.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h numstr.h \
-		tbl_dyn_pttag.h ctibase.h ctinexus.h dbmemobject.h \
+		tbl_dyn_pttag.h ctibase.h ctinexus.h netports.h dbmemobject.h \
 		pointdefs.h
 tbl_gateway_end_device.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
@@ -315,11 +324,12 @@ tbl_port_timing.obj:	yukon.h precompiled.h ctidbgmem.h \
 tbl_ptdispatch.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h tbl_ptdispatch.h \
-		ctibase.h ctinexus.h dbmemobject.h pointdefs.h
+		ctibase.h ctinexus.h netports.h dbmemobject.h pointdefs.h
 tbl_pthist.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pthist.h \
 		dlldefs.h dbmemobject.h resolvers.h types.h pointtypes.h \
-		db_entry_defines.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h dbaccess.h sema.h
+		db_entry_defines.h ctibase.h ctinexus.h netports.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h dbaccess.h \
+		sema.h
 tbl_pt_accum.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pt_accum.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
@@ -373,21 +383,21 @@ tbl_rtcomm.obj:	yukon.h precompiled.h ctidbgmem.h tbl_rtcomm.h \
 		dbaccess.h dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h logger.h thread.h \
-		dbmemobject.h ctibase.h ctinexus.h
+		dbmemobject.h ctibase.h ctinexus.h netports.h
 tbl_rtmacro.obj:	yukon.h precompiled.h ctidbgmem.h tbl_rtmacro.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
-		ctibase.h ctinexus.h
+		ctibase.h ctinexus.h netports.h
 tbl_rtrepeater.obj:	yukon.h precompiled.h ctidbgmem.h tbl_rtrepeater.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h
 tbl_rtroute.obj:	yukon.h precompiled.h ctidbgmem.h tbl_rtroute.h \
 		dlldefs.h dbmemobject.h resolvers.h types.h pointtypes.h \
-		db_entry_defines.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h mutex.h guard.h dbaccess.h sema.h logger.h \
-		thread.h
+		db_entry_defines.h ctibase.h ctinexus.h netports.h dllbase.h \
+		os2_2w32.h cticalls.h dsm2.h mutex.h guard.h dbaccess.h \
+		sema.h logger.h thread.h
 tbl_rtversacom.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h tbl_rtversacom.h \
@@ -410,11 +420,11 @@ tbl_stats.obj:	yukon.h precompiled.h ctidbgmem.h tbl_stats.h dlldefs.h \
 tbl_tag.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h logger.h thread.h numstr.h tbl_tag.h ctibase.h \
-		ctinexus.h dbmemobject.h
+		ctinexus.h netports.h dbmemobject.h
 tbl_taglog.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
 		guard.h sema.h logger.h thread.h numstr.h tbl_taglog.h \
-		ctibase.h ctinexus.h dbmemobject.h pointdefs.h
+		ctibase.h ctinexus.h netports.h dbmemobject.h pointdefs.h
 tbl_unitmeasure.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_unitmeasure.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \

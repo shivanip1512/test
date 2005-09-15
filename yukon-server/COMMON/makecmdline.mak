@@ -96,8 +96,8 @@ cticalls.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dllbase.h dsm2.h mutex.h guard.h logger.h \
 		thread.h
 ctinexus.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h ctinexus.h logger.h thread.h mutex.h guard.h \
-		cticalls.h dsm2.h
+		types.h ctinexus.h netports.h logger.h thread.h mutex.h \
+		guard.h cticalls.h dsm2.h
 cti_asmc.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h os2_2w32.h \
 		dlldefs.h types.h cti_asmc.h
 c_port_interface.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h \
@@ -112,8 +112,8 @@ desolvers.obj:	yukon.h precompiled.h ctidbgmem.h desolvers.h \
 		mutex.h guard.h resolvers.h devicetypes.h logger.h thread.h
 dllbase.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h os2_2w32.h types.h cticalls.h configparms.h \
-		cparms.h dbaccess.h dllbase.h sema.h ctinexus.h logger.h \
-		thread.h utility.h thread_monitor.h queue.h \
+		cparms.h dbaccess.h dllbase.h sema.h ctinexus.h netports.h \
+		logger.h thread.h utility.h thread_monitor.h queue.h \
 		thread_register_data.h boost_time.h
 drpint.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h drp.h
@@ -147,17 +147,18 @@ observe.obj:	yukon.h precompiled.h ctidbgmem.h observe.h types.h \
 		dlldefs.h
 parse.obj:	yukon.h precompiled.h ctidbgmem.h
 pending_stat_operation.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		thread.h mutex.h dlldefs.h guard.h pending_stat_operation.h \
+		dlldefs.h thread.h mutex.h guard.h pending_stat_operation.h \
 		ctitypes.h dsm2.h
 perform.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h dsm2err.h \
 		device.h devicetypes.h routes.h drp.h elogger.h alarmlog.h \
 		porter.h perform.h
 pexec.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h ctinexus.h queues.h dsm2.h mutex.h guard.h \
-		dsm2err.h dllbase.h routes.h porter.h devicetypes.h master.h \
-		lm_auto.h perform.h dialup.h c_port_interface.h group.h \
-		elogger.h alarmlog.h logger.h thread.h
+		types.h cticalls.h ctinexus.h netports.h queues.h dsm2.h \
+		mutex.h guard.h dsm2err.h dllbase.h routes.h porter.h \
+		devicetypes.h master.h lm_auto.h perform.h dialup.h \
+		c_port_interface.h group.h elogger.h alarmlog.h logger.h \
+		thread.h
 point_change.obj:	yukon.h precompiled.h ctidbgmem.h point_change.h \
 		dlldefs.h
 portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
@@ -213,9 +214,10 @@ ucttime.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h elogger.h \
 		logger.h thread.h
 utility.obj:	yukon.h precompiled.h ctidbgmem.h ctinexus.h dlldefs.h \
-		dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h sema.h porter.h dsm2err.h devicetypes.h \
-		queues.h logger.h thread.h numstr.h pointdefs.h utility.h
+		netports.h dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h \
+		dsm2.h mutex.h guard.h sema.h porter.h dsm2err.h \
+		devicetypes.h queues.h logger.h thread.h numstr.h pointdefs.h \
+		utility.h
 verification_objects.obj:	yukon.h precompiled.h ctidbgmem.h \
 		verification_objects.h dlldefs.h dsm2.h mutex.h guard.h \
 		boost_time.h

@@ -91,20 +91,21 @@ decodetextcmdfile.obj:	yukon.h precompiled.h ctidbgmem.h \
 		guard.h types.h
 mccmd.obj:	yukon.h precompiled.h ctidbgmem.h mccmd.h msg_pcrequest.h \
 		dlldefs.h message.h collectable.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h pointdefs.h msg_signal.h logger.h thread.h \
-		mutex.h guard.h ctdpcptrq.h dllBase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h dbaccess.h sema.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configparms.h \
-		netports.h msg_dbchg.h ctibase.h ctinexus.h pointtypes.h \
-		numstr.h mgr_holiday.h dsm2err.h wpsc.h xcel.h \
+		msg_pdata.h pointdefs.h logger.h thread.h mutex.h guard.h \
+		ctdpcptrq.h dllBase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		dbaccess.h sema.h connection.h exchange.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configparms.h netports.h \
+		msg_signal.h msg_dbchg.h msg_notif_email.h \
+		msg_notif_email_attachment.h ctibase.h ctinexus.h \
+		pointtypes.h numstr.h mgr_holiday.h dsm2err.h wpsc.h xcel.h \
 		decodetextcmdfile.h
 mcs8100test.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h types.h
 mcsh.obj:	yukon.h precompiled.h ctidbgmem.h mcsh.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h mccmd.h msg_pcrequest.h message.h \
 		collectable.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_signal.h ctdpcptrq.h dllBase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h
+		pointdefs.h ctdpcptrq.h dllBase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 wpsc.obj:	yukon.h precompiled.h ctidbgmem.h wpsc.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h types.h numstr.h

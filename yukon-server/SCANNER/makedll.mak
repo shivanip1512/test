@@ -6,6 +6,7 @@ include ..\common\rwglobal.inc
 INCLPATHS+= \
 -I$(SCANNER)\include \
 -I$(DATABASE)\include \
+-I$(DEVICECONFIGURATION)\include \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
 -I$(PROCLOG)\include \
@@ -20,6 +21,7 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(DATABASE)\include \
+;$(DEVICECONFIGURATION)\include \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
@@ -94,7 +96,7 @@ scanglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 scanmain.obj:	yukon.h precompiled.h ctidbgmem.h scansvc.h cservice.h \
 		dlldefs.h CServiceConfig.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h ctibase.h ctinexus.h \
-		logger.h thread.h
+		netports.h logger.h thread.h
 scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dbaccess.h dllbase.h dsm2.h mutex.h \
 		guard.h sema.h device.h devicetypes.h drp.h elogger.h \
@@ -102,15 +104,15 @@ scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		perform.h scanner.h ilex.h master.h scanglob.h scansup.h \
 		rtdb.h hashkey.h mgr_device.h dev_base.h cmdparse.h \
 		parsevalue.h counter.h dev_exclusion.h tbl_paoexclusion.h \
-		rte_base.h dbmemobject.h ctibase.h ctinexus.h message.h \
-		collectable.h tbl_pao.h tbl_rtcomm.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h utility.h slctdev.h \
-		smartmap.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_signal.h \
-		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h dialup.h \
-		dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h netports.h \
+		message.h collectable.h tbl_pao.h tbl_rtcomm.h resolvers.h \
+		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
+		msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pointdefs.h utility.h slctdev.h smartmap.h \
+		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
+		dialup.h dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
 		tbl_carrier.h prot_emetcon.h tbl_metergrp.h vcomdefs.h \
 		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h pt_base.h \
 		pt_dyn_base.h tbl_pt_base.h tbl_pt_unit.h tbl_unitmeasure.h \

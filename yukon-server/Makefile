@@ -60,6 +60,12 @@ all:
         @echo Building in $(COMPILEBASE)\rtdb
         @echo:
         @$(MAKE) -nologo
+	@%cd $(COMPILEBASE)\DeviceConfiguration
+        @echo:
+        @title Building in $(COMPILEBASE)\deviceconfiguration
+        @echo Building in $(COMPILEBASE)\deviceconfiguration
+        @echo:
+        @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\dbsignal
         @echo:
         @title Building in $(COMPILEBASE)\dbsignal
@@ -168,6 +174,8 @@ clean:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\rtdb
         @$(MAKE) -nologo  $@
+	@%cd $(COMPILEBASE)\deviceconfiguration
+        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\dbsignal
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\common
@@ -213,7 +221,10 @@ deps:
         %cd $(COMPILEBASE)\database
         title %cd%
         $(MAKE) -nologo  $@
-        %cd $(COMPILEBASE)\rtdb
+	%cd $(COMPILEBASE)\rtdb
+        title %cd%
+        $(MAKE) -nologo  $@
+	%cd $(COMPILEBASE)\deviceconfiguration
         title %cd%
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\dbsignal
@@ -271,7 +282,9 @@ copy:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\database
         @$(MAKE) -nologo  $@
-        @%cd $(COMPILEBASE)\rtdb
+	@%cd $(COMPILEBASE)\rtdb
+        @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\deviceconfiguration
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\common
         @$(MAKE) -nologo  $@
