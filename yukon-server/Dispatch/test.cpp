@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/07/19 22:48:53 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/09/15 16:39:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,6 +52,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 BOOL bQuit = FALSE;
 
 void shutdown(int argc, char **argv);
+void multiExecute(int argc, char **argv);
+void multiHelp();
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
 void tagHelp();
@@ -340,6 +342,7 @@ TESTFUNC_t testfunction[] = {
     {"shutdown", shutdown, defaultHelp},
     {"seasonreset", seasonExecute, defaultHelp},
     {"tags", tagExecute, tagHelp},
+    {"multi", multiExecute, multiHelp},
     {"dbchange", dbchangeExecute, defaultHelp},
     {"default", defaultExecute, defaultHelp},
     {"notif", notifEmailExecute, defaultHelp},
@@ -356,6 +359,7 @@ static double GetPointValue(int pointtype)
 
     switch(pointtype)
     {
+    case CalculatedStatusPointType:
     case StatusPointType:
         {
             laststat = !laststat;
@@ -391,15 +395,41 @@ void main(int argc, char **argv)
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
 
-    for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
+    if(argc > 1)
     {
-        if(!strnicmp(testfunction[i].cmd, argv[1], strlen(testfunction[i].cmd)))
+        for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
         {
-            (*testfunction[i].xecute)(argc, argv);
-            break;
+            if(!strnicmp(testfunction[i].cmd, argv[1], strlen(testfunction[i].cmd)))
+            {
+                try
+                {
+                    (*testfunction[i].xecute)(argc, argv);
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                break;
+            }
         }
     }
-
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " You must supply at least one argument to indicate the test to run." << endl;
+        }
+        for(i = 0; testfunction[i].xecute != 0 && i < sizeof(testfunction) / sizeof(TESTFUNC_t); i++ )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << "   Function : " << testfunction[i].cmd << endl;
+            }
+        }
+    }
 
     // Make sure all the logs get output and done!
     dout.interrupt(CtiThread::SHUTDOWN);
@@ -407,7 +437,6 @@ void main(int argc, char **argv)
 
 
     exit(0);
-
 }
 
 
@@ -1282,8 +1311,6 @@ void  dbchangeExecute(int argc, char **argv)
         CtiMessage  *pMsg;
 
 
-        srand(1);   // This is replicable.
-
         PointMgr.refreshList();     // This should give me all the points in the box.
         CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
 
@@ -1539,4 +1566,120 @@ void shutdown(int argc, char **argv)
 
     }
 }
+
+
+void multiExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+    CtiMessage  *pMsg;
+
+    CtiPointManager PointMgr;
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        CtiMessage  *pMsg;
+
+        if(argc < 5)
+        {
+            multiHelp();
+            return;
+        }
+
+        PointMgr.refreshList();     // This should give me all the points in the box.
+        CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
+
+        CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
+
+        pM->setMessagePriority(15);
+
+        Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("multiExecute", rwThreadId(), FALSE));
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK | REG_ALARMS);
+        PtRegMsg->setMessagePriority(15);
+        Connect.WriteConnQue( PtRegMsg );
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Reading inbound messages from registration" << endl;
+        }
+
+        while( NULL != (pMsg = Connect.ReadConnQue(1000)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Done reading registration messages" << endl;
+        }
+
+
+        //
+        // ACH
+        //
+
+        pM->insert(CTIDBG_new CtiPointDataMsg( atoi(argv[3]), atoi(argv[4]), NormalQuality,  InvalidPointType, __FILE__));
+        pM->insert(CTIDBG_new CtiPointDataMsg( atoi(argv[3]), atoi(argv[4]), NormalQuality,  InvalidPointType, __FILE__));
+
+        Connect.WriteConnQue( pM );
+        pM = 0;
+
+
+        while( NULL != (pMsg = Connect.ReadConnQue(2500)))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Inbound message Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                pMsg->dump();
+            }
+
+            delete pMsg;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Request application shutdown." << endl;
+        }
+
+        Sleep(1000);
+        Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
+        Connect.ShutdownConnection();
+        Sleep(2500);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+
+    return;
+}
+
+void multiHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " multiExecute - Help" << endl;
+        dout << " Arg1: multi " << endl <<
+            " Arg2: <dispatch_machine_or_ip> " <<
+            " Arg3: <point id to send> " <<
+            " Arg4: <point value> " <<
+            endl;
+    }
+    return;
+}
+
 
