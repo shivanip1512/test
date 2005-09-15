@@ -8,19 +8,9 @@
 package com.cannontech.multispeak;
 
 import java.math.BigInteger;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeaderElement;
-
-import org.apache.axis.AxisFault;
-import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
-import org.apache.axis.message.SOAPEnvelope;
-import org.apache.axis.message.SOAPHandler;
-import org.apache.axis.message.SOAPHeader;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -98,7 +88,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 			endIndex = (maxSize> allMeters.size()? allMeters.size(): maxSize);	//index is the lesser of allMeters.size or 1000
 					
 		meters = new Meter[endIndex - startIndex];
-		CTILogger.info("Returning " + meters.length + " of " + allMeters.size() +" Meters");				
+		CTILogger.info("Returning " + meters.length + " of " + allMeters.size() +" Meters (" + startIndex + " through " + endIndex + ")");				
 		for (int i = startIndex; i < endIndex; i++)
 		{
 			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
