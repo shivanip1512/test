@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/08/08 20:46:09 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/09/15 16:36:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,6 +92,10 @@ public:
 
    };
 
+   static string getBaseFromEncodedGolayCapcode(string &capcode);
+   static int getFunctionfromEncodedGolayCapcode(string &capcode);
+   static string createEncodedCapcodeFromBaseAndFunction(string &golayString, int function);
+
    //below enums???
 protected:
    CommandState                  _command;
@@ -101,6 +105,7 @@ private:
     StateMachine         _currentState;
     int                 _retryCount;
     int                 _serialNumber;
+    int                 _transmissionCount;
 
    StateMachine getCurrentState();
    StateMachine getPreviousState();
@@ -112,6 +117,9 @@ private:
    const char* getPagerDataFormat();
    const char* getFunctionCode();
    const char* getGolayCapcode();
+
+   int getExtendedFunctionCapcode(int a);//returns capcode for TNPP
+   const char* getExtendedFunctionCode();//returns actual function code
 
    unsigned int crc16( const unsigned char *data, int length );
 
@@ -140,6 +148,41 @@ static const char *_function_1;
 static const char *_function_2;
 static const char *_function_3;
 static const char *_function_4;
+
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_0;  
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_2;  
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_4;  
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_6; 
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_8;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_10;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_12;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_14;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_16;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_18;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_20;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_22;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_24;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_26;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_28;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_30;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_32;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_34;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_36;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_38;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_40;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_42;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_44;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_46;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_48; 
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_50;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_52;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_54;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_56;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_58;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_60;
+static const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_62;
+static const int CtiDeviceTnppPagingTerminal::_a_capcode_max;
+static const int CtiDeviceTnppPagingTerminal::_a_capcode_min;
 
 };                                
                                   

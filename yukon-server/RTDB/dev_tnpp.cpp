@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/08/22 18:24:41 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/09/15 16:36:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,42 @@ const char *CtiDeviceTnppPagingTerminal::_function_1          = "D";
 const char *CtiDeviceTnppPagingTerminal::_function_2          = "C";
 const char *CtiDeviceTnppPagingTerminal::_function_3          = "B";
 const char *CtiDeviceTnppPagingTerminal::_function_4          = "A";
+
+//hard coded tnpp to golay capcodes
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_0           = 371;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_2           = 51664;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_4           = 2593;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_6           = 53687;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_8           = 54778;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_10          = 5858;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_12          = 6745;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_14          = 7897;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_16          = 8765;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_18          = 59676;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_20          = 10703;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_22          = 61346;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_24          = 62817;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_26          = 63145;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_28          = 14293;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_30          = 65321;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_32          = 66684;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_34          = 17250;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_36          = 68426;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_38          = 69471;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_40          = 20910;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_42          = 71737;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_44          = 72449;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_46          = 23211;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_48          = 74466;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_50          = 75971;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_52          = 76637;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_54          = 77729;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_56          = 28847;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_58          = 79429;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_60          = 80175;
+const int CtiDeviceTnppPagingTerminal::_ext_function_capcode_62          = 31632;
+const int CtiDeviceTnppPagingTerminal::_a_capcode_max                    = 62;
+const int CtiDeviceTnppPagingTerminal::_a_capcode_min                    = 0;
 
 //*****************************************************************************
 /* NOTE! The tnpp device must be set to immediatelly send all messages
@@ -177,6 +213,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             }
                             else if(getPreviousState() == StateGeneratePacket)
                             {
+                                _transmissionCount --;//decrement here so we count only good packets!
                                 //setup verification object
 
                                 if( !_outMessage.VerificationSequence )
@@ -186,7 +223,15 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, _outMessage, _outMessage.Request.CommandStr, reinterpret_cast<char *>(_outMessage.Buffer.OutMessage), seconds(700));//11.6 minutes
                                 _verification_objects.push(work);
 
-                                _command = Complete;
+                                if(_transmissionCount>0)//this allows multiple transmissions!!!!
+                                {
+                                    _serialNumber++;
+                                    setCurrentState(StateGeneratePacket);//no need for another function call, I know it is StateGeneratePacket here
+                                }
+                                else
+                                {
+                                    _command = Complete;
+                                }
                                 status = Normal;
                             }
 
@@ -359,6 +404,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 
                     setPreviousState(StateGeneratePacket);
                     setCurrentState(StateDecodeResponse);
+                    break;
                 }
             case StateEnd:
                 {//Failsafe
@@ -383,6 +429,17 @@ int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
         _outMessage = *OutMessage;
         resetStates();
         _command = Normal;
+        if(_outMessage.Sequence == TnppPublicProtocolGolay)//golay message
+        {
+            if(_outMessage.Buffer.SASt._function == 8 || _outMessage.Buffer.SASt._function == 14 || _outMessage.Buffer.SASt._function == 9)
+            {
+                _transmissionCount = 2;
+            }
+            else
+            {
+                _transmissionCount = 1;
+            }
+        }
 
     }
     else
@@ -559,45 +616,276 @@ const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
 ******************************************************************************/
 const char* CtiDeviceTnppPagingTerminal::getGolayCapcode()
 {
+    int returnValue;
     //BBAABB
-    _outMessage.Buffer.SASt._codeSimple[7] = '\0';
+    _outMessage.Buffer.SASt._codeSimple[6] = '\0';
+
     int capcode = atoi(_outMessage.Buffer.SASt._codeSimple);
-    //parse out values
-    int bHigh = capcode/10000;
-    int bLow = capcode%100;
-    int bTotal = bHigh*100 + bLow;
-    int a = (capcode%10000-capcode%100)/100;
+    int a = (capcode%10000-capcode%100)/100;//find AA portion of capcode
 
-    int returnValue = a/2;
-    if(bHigh % 2)//odd so we need the +100 shift from AA(TNPP)
+    //A should never be odd.
+
+    //Account for the extended codes that all use AAAAAA instead of BBAABB //FIX_ME JESS
+    if(_outMessage.Buffer.SASt._function>4 && a<=_a_capcode_max && a>=_a_capcode_min && a%2!=1/*even*/)
     {
-        returnValue += 50;
+        
+        returnValue = getExtendedFunctionCapcode(a);//takes the "a" portion and returns the capcode
     }
-    returnValue *= 1000;//shift AA to the appropriate location! AABBB
-
-    returnValue += 100*(bTotal/400); //Number of 400's we need * 100 to place the value in the correct location
-
-    returnValue += bLow/2;//No shifting for this one!
-    if((bTotal%400-bLow)>=200)//This can only be 100, 200, 300, 0 
+    else
     {
-        //if there is more than 200 remaining, the AA offset +50 is not enough, we need +200!
-        returnValue += 50;//give me a 50 offset, adds 200 to final as noted above!
+        //parse out values
+        int bHigh = capcode/10000;
+        int bLow = capcode%100;
+        int bTotal = bHigh*100 + bLow;
+    
+        returnValue = a/2;
+        if(bHigh % 2)//odd so we need the +100 shift from AA(TNPP)
+        {
+            returnValue += 50;
+        }
+        returnValue *= 1000;//shift AA to the appropriate location! AABBB
+    
+        returnValue += 100*(bTotal/400); //Number of 400's we need * 100 to place the value in the correct location
+    
+        returnValue += bLow/2;//No shifting for this one!
+        if((bTotal%400-bLow)>=200)//This can only be 100, 200, 300, 0 
+        {
+            //if there is more than 200 remaining, the AA offset +50 is not enough, we need +200!
+            returnValue += 50;//give me a 50 offset, adds 200 to final as noted above!
+        }
     }
 
     return CtiNumStr(returnValue).zpad(6);
 }
 
+int CtiDeviceTnppPagingTerminal::getExtendedFunctionCapcode(int a)
+{
+    switch(a)
+    {
+        case 0:
+            return _ext_function_capcode_0;
+        case 2:
+            return _ext_function_capcode_2;
+        case 4:
+            return _ext_function_capcode_4;
+        case 6:
+            return _ext_function_capcode_6;
+        case 8:
+            return _ext_function_capcode_8;
+        case 10:
+            return _ext_function_capcode_10;
+        case 12:
+            return _ext_function_capcode_12;
+        case 14:
+            return _ext_function_capcode_14;
+        case 16:
+            return _ext_function_capcode_16;
+        case 18:
+            return _ext_function_capcode_18;
+        case 20:
+            return _ext_function_capcode_20;
+        case 22:
+            return _ext_function_capcode_22;
+        case 24:
+            return _ext_function_capcode_24;
+        case 26:
+            return _ext_function_capcode_26;
+        case 28:
+            return _ext_function_capcode_28;
+        case 30:
+            return _ext_function_capcode_30;
+        case 32:
+            return _ext_function_capcode_32;
+        case 34:
+            return _ext_function_capcode_34;
+        case 36:
+            return _ext_function_capcode_36;
+        case 38:
+            return _ext_function_capcode_38;
+        case 40:
+            return _ext_function_capcode_40;
+        case 42:
+            return _ext_function_capcode_42;
+        case 44:
+            return _ext_function_capcode_44;
+        case 46:
+            return _ext_function_capcode_46;
+        case 48:
+            return _ext_function_capcode_48;
+        case 50:
+            return _ext_function_capcode_50;
+        case 52:
+            return _ext_function_capcode_52;
+        case 54:
+            return _ext_function_capcode_54;
+        case 56:
+            return _ext_function_capcode_56;
+        case 58:
+            return _ext_function_capcode_58;
+        case 60:
+            return _ext_function_capcode_60;
+        case 62:
+            return _ext_function_capcode_62;
+        default:
+            return a;
+    }
+}
+
+/******************************************************************************
+*   I thought it would be worth noting the meaning behind the function codes.
+*   Function 1 consists of A,B, Function 2 is A, NOT B. Function 3 is NOTA-B
+*   Function 4 is NOT A,NOT B. Function 8 is NOTA, A, A, A(two commands)
+*   Function 9 is A, NOTA, NOTA,NOTA. Function 14 is A,A,NOTA,A
+*   Functions 1,2,3 are shed loads 1,2,3 respectively. Functions
+*   4 cancels cold load pickup(same as restore). Function 8 is shed all loads.
+*   Function 9 Restore all loads. Function 14 blink test LED for 8.5 minutes.
+*   
+*   NOTA = A+1, NOTB = B+1.
+*
+*   Note as always the tnpp function code used here is not the code above. Here,
+*   only functions 1-4 are used, and TNPP code 1 is function code 4, function code
+*   3 is TNPP code 2, and so on...
+******************************************************************************/
 const char* CtiDeviceTnppPagingTerminal::getFunctionCode()
 {
     if(_outMessage.Sequence == TnppPublicProtocolGolay)
     {
-        return _function_1;
+        switch(_outMessage.Buffer.SASt._function)
+        {
+            case 0:
+                {
+                    return _function_1;//really I dont know if this will work, so try not to send it!
+                }
+            case 1:
+                {
+                    return _function_1;
+                }
+            case 2:
+                {
+                    return _function_2;
+                }
+            case 3:
+                {
+                    return _function_3;
+                }
+            case 4:
+                {
+                    return _function_4;
+                }
+
+            case 8:
+            case 9:
+            case 14:
+                {
+                    return getExtendedFunctionCode();
+                }
+            default:
+                return _function_1;
+        }
     }
     else
     {
         return _table.getFunctionCode();
     }
 
+}
+
+const char* CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
+{
+    _outMessage.Buffer.SASt._codeSimple[6] = '\0';
+
+    int capcode = atoi(_outMessage.Buffer.SASt._codeSimple);
+    int a = (capcode%10000-capcode%100)/100;//find AA portion of capcode
+
+    switch(a)
+    {
+
+        //3,1 group
+        case 0:
+        case 6:
+        case 8:
+        case 10:
+        case 14:
+        case 18:
+        case 22:
+        case 24:
+        case 32:
+        case 36:
+        case 44:
+        case 52:
+        case 56:
+        case 60:
+        case 62:
+            {
+                if(_outMessage.Buffer.SASt._function == 8)
+                {
+                    if(_transmissionCount == 2)
+                        return _function_3;//Function Code 3
+                    else
+                        return _function_1;//Function Code 1
+                }
+                else if(_outMessage.Buffer.SASt._function == 9)
+                {
+                    if(_transmissionCount == 2)
+                        return _function_2;//Function Code 3
+                    else
+                        return _function_4;//Function Code 1
+                }
+                else//function 14
+                {
+                    if(_transmissionCount == 2)
+                        return _function_1;//Function Code 3
+                    else
+                        return _function_3;//Function Code 1
+                }
+                break;
+            }
+
+        //4,2 group
+        case 2:
+        case 4:
+        case 12:
+        case 16:
+        case 20:
+        case 26:
+        case 28:
+        case 30:
+        case 34:
+        case 38:
+        case 40:
+        case 42:
+        case 46:
+        case 48:
+        case 50:
+        case 54:
+        case 58:
+            {
+                if(_outMessage.Buffer.SASt._function == 8)
+                {
+                    if(_transmissionCount == 2)
+                        return _function_4;//Function Code 3
+                    else
+                        return _function_2;//Function Code 1
+                }
+                else if(_outMessage.Buffer.SASt._function == 9)
+                {
+                    if(_transmissionCount == 2)
+                        return _function_1;//Function Code 3
+                    else
+                        return _function_3;//Function Code 1
+                }
+                else//function 14
+                {
+                    if(_transmissionCount == 2)
+                        return _function_2;//Function Code 3
+                    else
+                        return _function_4;//Function Code 1
+                }
+                break;
+            }
+        default:
+            return _function_1;
+    }
 }
 
 //Database Functions
@@ -683,5 +971,141 @@ unsigned int CtiDeviceTnppPagingTerminal::crc16( const unsigned char *data, int 
     }
 
     return crc;
+
 }
 
+
+//===================================================================================================================
+//===================================================================================================================
+string CtiDeviceTnppPagingTerminal::getBaseFromEncodedGolayCapcode(string &golayString)
+{
+    int capcode = atoi(golayString.c_str());
+
+    if(capcode %2)
+    {
+        capcode -= 1;//capcode is now even!!!
+    }
+
+    if(((capcode%10000-capcode%100)/100)%2)//if A portion (BBAABB) is odd.
+    {
+        capcode -= 100;
+    }
+
+    return CtiNumStr(capcode).zpad(6);
+
+}
+
+//===================================================================================================================
+//===================================================================================================================
+int CtiDeviceTnppPagingTerminal::getFunctionfromEncodedGolayCapcode(string &golayString)
+{
+    int capcode = atoi(golayString.c_str());
+    int functionCheck = 0;
+
+    if(capcode %2)
+    {
+        functionCheck +=1;
+    }
+
+    if(((capcode%10000-capcode%100)/100)%2)//if A portion (BBAABB) is odd.
+    {
+        functionCheck +=100;
+    }
+
+    switch(functionCheck)
+    {
+        case 1:
+            {
+                return 2;//A,NOTB
+            }
+        case 100:
+            {
+                return 3;//NOTA,B
+            }
+        case 101:
+            {
+                return 4;//NOTA, NOTB
+            }
+        default:
+            {
+                return 1;//A,B
+            }
+    }
+}
+
+//===================================================================================================================
+//===================================================================================================================
+string CtiDeviceTnppPagingTerminal::createEncodedCapcodeFromBaseAndFunction(string &golayString, int function)
+{
+    int capcode = atoi(golayString.c_str());
+
+    switch(function)
+    {
+        case 1:
+            {
+                break;
+            }
+        case 2:
+            {
+                capcode+=1;//NOTA,B
+                break;
+            }
+        case 3:
+            {
+                capcode+=100;//NOTA, NOTB
+                break;
+            }
+        case 4:
+            {
+                capcode+=101;//NOTA, NOTB
+                break;
+            }
+        default:
+            {
+                break;
+            }
+    }
+
+    return CtiNumStr(capcode).zpad(6);
+
+}
+
+
+/* It is possible that a function has the wrong value. If it does, I apologize.
+    They are always in sets of 3,1 or 4,2.
+    
+A word	Tnpp Capcode	Functions	
+0	        371	        3	1
+2	        51664	    4	2
+4	        2593	    4	2
+6	        53687	    3	1
+8	        54778	    3	1
+10	        5858	    3	1
+12	        6745	    4	2
+14	        7897	    3	1
+16	        8765	    4	2
+18	        59676	    3	1
+20	        10703	    4	2
+22	        61346	    3	1
+24	        62817	    3	1
+26	        63145	    4	2
+28	        14293	    4	2
+30	        65321	    4	2
+32	        66684	    3	1
+34	        17250	    4	2
+36	        68426	    3	1
+38	        69471	    4	2
+40	        20910	    4	2
+42	        71737	    4	2
+44	        72449	    3	1
+46	        23211	    4	2
+48	        74466	    4	2
+50	        75971	    4	2
+52	        76637	    3	1
+54	        77729	    4	2
+56	        28847	    3	1
+58	        79429	    4	2
+60	        80175	    3	1
+62	        31632	    3	1
+
+*/
