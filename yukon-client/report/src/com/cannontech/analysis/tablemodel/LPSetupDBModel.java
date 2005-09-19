@@ -120,10 +120,10 @@ public class LPSetupDBModel extends ReportModelBase
 		try
 		{
 			Integer paobjectID = new Integer(rset.getInt(1));
-			String lastIntDemand = String.valueOf(rset.getInt(9));
-			String lastIntVoltage = String.valueOf(rset.getInt(9));
-			String dmdRate = String.valueOf(rset.getInt(9));
-			String voltageDmdRate = String.valueOf(rset.getInt(9));
+			String lastIntDemand = String.valueOf(rset.getInt(2));
+			String lastIntVoltage = String.valueOf(rset.getInt(3));
+			String dmdRate = String.valueOf(rset.getInt(4));
+			String voltageDmdRate = String.valueOf(rset.getInt(5));
 				
 			MeterAndPointData mpData = new MeterAndPointData(paobjectID, null, null, null);
 			LPMeterData lpMeterData = new LPMeterData(mpData, lastIntDemand, lastIntVoltage, dmdRate, voltageDmdRate);
@@ -143,25 +143,8 @@ public class LPSetupDBModel extends ReportModelBase
 	{
 		StringBuffer sql = new StringBuffer	("SELECT PAO1.PAOBJECTID,  DLP.LASTINTERVALDEMANDRATE, VOLTAGEDMDINTERVAL, LOADPROFILEDEMANDRATE, VOLTAGEDMDRATE " +
 			" FROM YUKONPAOBJECT PAO1, DEVICELOADPROFILE DLP "+
-			" WHERE PAO1.PAOBJECTID = DMG.DEVICEID "+
-			" AND PAO1.PAOBJECTID = DR.DEVICEID " + 
-			" AND PAO1.PAOBJECTID = DLP.DEVICEID " +
-			" AND PAO2.PAOBJECTID = DR.ROUTEID ");
-
-			sql.append(" ORDER BY ");
-			if( getOrderBy() == ORDER_BY_DEVICE_NAME)
-			{
-			    sql.append(" PAO1.PAONAME ");
-			}
-			else if( getOrderBy() == ORDER_BY_METER_NUMBER)
-			{
-			    sql.append(" DMG.METERNUMBER ");
-			}
-			else if ( getOrderBy() == ORDER_BY_ROUTE_NAME)
-			{
-			    sql.append(" PAO2.PAONAME, PAO1.PAONAME ");
-			}
-
+			" WHERE PAO1.PAOBJECTID = DLP.DEVICEID " +
+			" ORDER BY PAO1.PAOBJECTID ");
 		return sql;
 	}
 		
