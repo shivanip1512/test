@@ -594,6 +594,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     }
                     // Dont let subordinate programs keep running
                     stopSubordinatePrograms(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFromBeginningOfDay);
+		    ResetGroups();
                 }
 
                 if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) )

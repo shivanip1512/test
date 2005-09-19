@@ -100,6 +100,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL isManualControlReceived();
     BOOL isThresholdTriggerTripped(CtiLMProgramBase* program = 0);
     BOOL hasThresholdTrigger();
+    BOOL hasStatusTrigger();
     BOOL isStatusTriggerTripped(CtiLMProgramBase* program = 0);
     
     DOUBLE calculateLoadReductionNeeded();

@@ -313,29 +313,24 @@ void CtiLoadManager::controlLoop()
                                     dout << RWTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
                                 }
 
-                                if(currentControlArea->isStatusTriggerTripped() &&
-                                   (!currentControlArea->hasThresholdTrigger() || !currentControlArea->getRequireAllTriggersActiveFlag()))
+				if( currentControlArea->getControlInterval() != 0 ||
+                                    currentControlArea->isThresholdTriggerTripped() )
                                 {
-                                    // Status trigger point is tripped, start manually controlling
-                                    // The logic here is do this when the status trigger point is solely responsible for us needed to reduce load
-                                    currentControlArea->manuallyStartAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
-
-				    // Potentially this control area is ready for manual control
-				    // If so lets do it now otherwise we have to wait for the top
-				    // of the main loop which could be a while
-				    if( currentControlArea->isManualControlReceived() )
-				    {
-					currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-				    }				    
+                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
                                 }
-                                else if(currentControlArea->isThresholdTriggerTripped())
+                                else
                                 {
-                                    // OK notice we aren't checking that the requirealltriggersactiveflag is or isn't set?
-                                    // well that check was done above in calculateloadreducationneeded above - at this point we know
-                                    // we've passed that test - this should probably be straightened up
-                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);                                   
+                                    //Special Case: if only a status trigger is tripped and the control interval is 0,
+                                    //then we need to start all the programs as if they were started manually.
+                                    currentControlArea->manuallyStartAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                    // Potentially this control area is ready for manual control
+                                    // If so lets do it now otherwise we have to wait for the top
+                                    // of the main loop which could be a while
+                                    if( currentControlArea->isManualControlReceived() )
+                                    {
+                                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                    }                                                               				    
                                 }
-                                    
 
 #ifdef OLDFEEDBACKCONTROL
                                 if( currentControlArea->getControlInterval() != 0 ||
@@ -373,17 +368,19 @@ void CtiLoadManager::controlLoop()
                                 {
                                     //don't have to do anything, just don't take any stop priorities
                                 }
-                                else if(!currentControlArea->isStatusTriggerTripped() &&
-                                        (!currentControlArea->hasThresholdTrigger() || !currentControlArea->getRequireAllTriggersActiveFlag()))
-                                {
+				else if(currentControlArea->hasStatusTrigger() &&
+                                        !currentControlArea->isStatusTriggerTripped() &&
+                                        (!currentControlArea->hasThresholdTrigger() || (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
+                                        currentControlArea->getControlInterval() == 0)
+                                {   // Only stop them manually if there is no control interval!
                                     currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
-				    // Potentially this control area is ready for manual control
-				    // If so lets do it now otherwise we have to wait for the top
-				    // of the main loop which could be a while
-				    if( currentControlArea->isManualControlReceived() )
-				    {
-					currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-				    }				    				    
+                                    // Potentially this control area is ready for manual control
+                                    // If so lets do it now otherwise we have to wait for the top
+                                    // of the main loop which could be a while
+                                    if( currentControlArea->isManualControlReceived() )
+                                    {
+                                        currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                    }                                                               
                                 }
                                 else if(currentControlArea->shouldReduceControl())
                                 {

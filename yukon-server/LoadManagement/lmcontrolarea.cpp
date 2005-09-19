@@ -673,6 +673,12 @@ BOOL CtiLMControlArea::isTriggerCheckNeeded(ULONG secondsFrom1901)
 {
     BOOL returnBoolean = FALSE;
 
+    if(_lmcontrolareatriggers.entries() == 0)
+    {
+	// No triggers!  no need to check
+	return false;
+    }
+    
     // Are all the triggers initialized with data?  if not no reason to check the triggers
     // Otherwise we might control based on default point values which can be bad
     for(LONG i=0;i<_lmcontrolareatriggers.entries();i++)
@@ -896,6 +902,19 @@ BOOL CtiLMControlArea::hasThresholdTrigger()
     }
     return FALSE;
 }
+
+BOOL CtiLMControlArea::hasStatusTrigger() 
+   { 
+       for(LONG i=0;i<_lmcontrolareatriggers.entries();i++) 
+       { 
+           CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i]; 
+           if( !currentTrigger->getTriggerType().compareTo(CtiLMControlAreaTrigger::StatusTriggerType,RWCString::ignoreCase) ) 
+           { 
+               return TRUE; 
+           } 
+       } 
+       return FALSE; 
+ }  
 
 /*---------------------------------------------------------------------------
     isStatusTriggerTripped
