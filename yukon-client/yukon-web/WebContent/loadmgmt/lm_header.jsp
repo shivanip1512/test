@@ -37,6 +37,7 @@
 <%@ page import="com.cannontech.message.server.ServerResponseMsg" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.database.cache.functions.AuthFuncs" %>
 
 <jsp:useBean 
 	id="lmSession" scope="session"
@@ -55,6 +56,12 @@
 	String areaState = request.getParameter("area_state");
 	if( areaState != null )
 		lmSession.setAreaView( areaState );
+	
+	if( lmSession.getAreaView() == null )
+		lmSession.setAreaView(
+			AuthFuncs.hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER))
+				? ControlAreaActionListener.SEL_ALL_CONTROL_AREAS
+				: ControlAreaActionListener.SEL_ACTIVE_AREAS );
 	
 %>
 

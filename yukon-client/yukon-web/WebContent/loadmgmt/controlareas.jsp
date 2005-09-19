@@ -91,6 +91,14 @@
                       Control Area State:</span> 
                       <select name="area_state" onchange="this.form.submit()" >
 
+<%
+if( AuthFuncs.hasPAOAccess((LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER)) ) {
+%>
+					  <option value="<%= ControlAreaActionListener.SEL_ALL_CONTROL_AREAS %>" 
+					  <%= (lmSession.getAreaView().equalsIgnoreCase(ControlAreaActionListener.SEL_ALL_CONTROL_AREAS) ? " selected" : "" ) %>>
+					  <%= ControlAreaActionListener.SEL_ALL_CONTROL_AREAS %></option>
+<% } %>
+
 					  <option value="<%= ControlAreaActionListener.SEL_ACTIVE_AREAS %>" 
 					  <%= (lmSession.getAreaView().equalsIgnoreCase(ControlAreaActionListener.SEL_ACTIVE_AREAS) ? " selected" : "" ) %>>
 					  <%= ControlAreaActionListener.SEL_ACTIVE_AREAS %></option>
