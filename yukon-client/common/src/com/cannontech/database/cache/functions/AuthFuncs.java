@@ -444,4 +444,20 @@ public class AuthFuncs {
 		return null;  //failure
 	}
 
+	/**
+	 * Return true if the use has access to a set of PAOids, else return false.
+	 * 
+	 * @param LiteYukonUser
+	 * @return boolean
+	 */
+	public static boolean hasPAOAccess( LiteYukonUser user )
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();            
+		synchronized (cache) 
+		{
+			int[] paoIDs = (int[])cache.getYukonUserPaoOwners().get( user );
+			
+			return paoIDs != null && paoIDs.length > 0;
+		}
+	}
 }
