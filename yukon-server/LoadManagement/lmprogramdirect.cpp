@@ -3845,54 +3845,6 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
 }
 
 /*----------------------------------------------------------------------------
-  refreshRampOutProgramControl
-  Only for master cycle ramp out right now
-----------------------------------------------------------------------------*/
-bool CtiLMProgramDirect::refreshRampOutProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
-{
-//     we need to keep controlling any groups currently active until it is time for that
-//      program to ramp out.  At that point we need to send a restore to it.
-
-//          How often do we refresh a groups control?  Different types of groups can handle different shed times....
-//                           for now just do one
-    bool ret_val = false;
-    
-    RWDBDateTime now = RWDBDateTime(RWTime(secondsFrom1901));
-    for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
-    {
-        CtiLMGroupPtr lm_group  = *i;    
-        if( lm_group->getIsRampingOut() )
-        {
-            if( now.seconds() >= lm_group->getControlCompleteTime().seconds())
-            {
-            int priority = 11;
-            string ctrl_str = "control restore";
-            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Sending restore command (ramp out), LM Group: " << lm_group->getPAOName() << ", string: " << ctrl_str << ", priority: " << priority << endl;
-            }
-            CtiRequestMsg* requestMsg = new CtiRequestMsg(lm_group->getPAOId(), ctrl_str.data(),0,0,0,0,0,0,priority);
-            lm_group->setLastControlString(requestMsg->CommandString());
-            lm_group->setLastControlSent(now);
-            lm_group->setControlCompleteTime(now);
-            lm_group->setIsRampingOut(false);
-            multiPilMsg->insert(requestMsg);
-
-            ret_val = true;
-            }
-/*          else if(
-            { Refresh groups that are ramping out?
-            How often? how to know when?
-            not so difficult with time refresh , use resend rate
-            but with master cycle?
-            }*/
-       }
-    }
-    return ret_val;
-}
-
-/*----------------------------------------------------------------------------
   updateGroupsRampingOut
 
   Should only be called when the program is ramping out, checks to see if
