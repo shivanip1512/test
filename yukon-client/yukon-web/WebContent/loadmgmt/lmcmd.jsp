@@ -563,21 +563,14 @@ function setStopPixTime()
               <td width="100" class="TableCell"> 
                 <div align="right"><b>New start time: </b></div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Parts/StartStopBG.gif" height="85" valign="top"> 
-                <table width="100" border="0" cellspacing="0" height="40" align="center">
-                  <tr> 
-                    <td valign = "top" align = "center"> 
-                      <div>
-                        <input type="text" name="startTime1" value="<%= winStart %>" size="5" onChange = "moveStartStopPtr('start')">
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-                <img name = "startPtr" onload = "setStartPixTime()" 
-					onMouseDown = "beginDrag(event,0,0,parseInt(document.cmdForm.stopPtr.style.left, 10),9,'showStartTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/WebConfig/yukon/Parts/SliderShort.gif" width="17" height="19"
-					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
+              <td width="179" height="85" > 
+                  <div> 
+                    <input type="text" name="startTime1"
+                    	value="<%= winStart %>" size="5"/>
+                    	<font class="TableCell">(HH:mm)</font>
+                  </div>
               </td>
+              
             </tr>
 
             <tr valign="top"> 
@@ -585,20 +578,12 @@ function setStopPixTime()
               <td width="100" class="TableCell"> 
                 <div align="right"><b>New stop time: </b></div>
               </td>
-              <td width="179" background="<%=request.getContextPath()%>/WebConfig/yukon/Parts/StartStopBG.gif" height="85" valign="top"> 
-                <table width="100" border="0" cellspacing="0" height="40" align="center">
-                  <tr> 
-                    <td valign = "top" align = "center"> 
-                      <div> 
-                        <input type="text" name="stopTime1" value="<%= winStop %>" size="5" onChange = "moveStartStopPtr('stop')">
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-                <img name = "stopPtr" onload = "setStopPixTime()" 
-					onMouseDown = "beginDrag(event,0,0,152,parseInt(document.cmdForm.startPtr.style.left, 10),'showStopTime1()','horizontal','')"
-					src="<%=request.getContextPath()%>/WebConfig/yukon/Parts/SliderShort.gif" width="17" height="19"
-					style = "position:relative; top:0px; left:9px; cursor:pointer;" ><br>
+              <td width="179" height="85" > 
+                  <div> 
+                    <input type="text" name="stopTime1"
+                    	value="<%= winStop %>" size="5"/>
+                    	<font class="TableCell">(HH:mm)</font>
+                  </div>
               </td>
             </tr>
 
