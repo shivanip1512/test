@@ -1,6 +1,5 @@
 package com.cannontech.web.loadcontrol;
 
-import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 
 /**
@@ -15,7 +14,7 @@ public class LMSession
 	public static final int REF_SECONDS_DEF = 60;
 	public static final int REF_SECONDS_PEND = 5;
 	
-	private String areaView = ControlAreaActionListener.SEL_ACTIVE_AREAS;
+	private String areaView = null; //ControlAreaActionListener.SEL_ALL_CONTROL_AREAS;	
 	private ResponseProg[] responseProgs = null;
 
 	//what our current refresh rate is
@@ -27,7 +26,7 @@ public class LMSession
 	 */
 	public LMSession()
 	{
-		super();
+		super();		
 	}
 
 	/**
