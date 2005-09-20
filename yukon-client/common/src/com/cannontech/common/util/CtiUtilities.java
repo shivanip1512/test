@@ -17,6 +17,7 @@ import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.login.ClientSession;
 
 public final class CtiUtilities 
 {
@@ -1011,12 +1012,16 @@ public final static String getUserIPAddress()
 
 
 /**
- * 
- * 
+ * Returns the YukonUser name. This method use to return the
+ * windows user name. 
  */
 public final static String getUserName()
 {
-	return System.getProperty("user.name");
+	if( ClientSession.getInstance().getUser() != null )
+		return ClientSession.getInstance().getUser().getUsername();
+	else
+		return CtiUtilities.STRING_NONE;
+	//return System.getProperty("user.name");
 }
 
 
