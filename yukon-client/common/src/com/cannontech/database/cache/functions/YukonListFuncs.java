@@ -315,16 +315,24 @@ public final class YukonListFuncs implements YukonListEntryTypes
 	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE );
 	}
 
-	/**
-	 * Checks for an email entry
-	 */
-	public static boolean isEmail( int listEntryID )
-	{
-		return
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL
-			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_CELL
-			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_PAGER;
-	}
+    /**
+     * Checks for an email entry
+     */
+    public static boolean isEmail( int listEntryID )
+    {
+        return
+             listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL;
+    }
+
+    /**
+     * Checks for an short email (SMS) entry
+     */
+    public static boolean isShortEmail( int listEntryID )
+    {
+        return
+             listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_CELL
+             || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_PAGER;
+    }
 
 	/**
 	 * Checks for a PIN entry

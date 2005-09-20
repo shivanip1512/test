@@ -118,8 +118,12 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             _outputHelper.addOutputHandler(_voiceHandler);
 
             // create email handler, add to output helper
-            OutputHandler emailHandler = new EmailHandler();
+            OutputHandler emailHandler = new StandardEmailHandler();
             _outputHelper.addOutputHandler(emailHandler);
+
+            // create SMS handler, add to output helper
+            OutputHandler smsHandler = new SmsEmailHandler();
+            _outputHelper.addOutputHandler(smsHandler);
 
             // start output handlers
             _outputHelper.startup();

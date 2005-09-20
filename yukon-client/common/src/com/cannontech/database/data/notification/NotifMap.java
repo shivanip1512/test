@@ -12,11 +12,12 @@ public class NotifMap implements java.io.Serializable
 	private int id = CtiUtilities.NONE_ZERO_ID;
 
 	//Y or N fields for the notifcation attributes:
-	// [0]:send email, [1]:make phone call
+	// [0]:send email, [1]:make phone call, [2]:send short email
 	private String attribs = DEF_ATTRIBS;
-	public static final String DEF_ATTRIBS = "YNNNNNNNNNNNNNNN";
+	public static final String DEF_ATTRIBS = "YNYNNNNNNNNNNNNN";
     public static final int METHOD_EMAIL = 0;
     public static final int METHOD_VOICE = 1;
+    public static final int METHOD_SMS = 2;
 
 
 	public NotifMap( int id )
@@ -35,33 +36,31 @@ public class NotifMap implements java.io.Serializable
         return getAttribs().charAt(notificationMethod) == 'Y';
     }
 
-	/**
-	 * @return
-	 */
-	public boolean isSendEmails()
-	{
-		return supportsMethod(METHOD_EMAIL);
-	}
+    public boolean isSendEmails()
+    {
+        return supportsMethod(METHOD_EMAIL);
+    }
 
-	/**
-	 * @return
-	 */
+    public boolean isSendSms()
+    {
+        return supportsMethod(METHOD_SMS);
+    }
+
 	public boolean isSendOutboundCalls()
 	{
 		return supportsMethod(METHOD_VOICE);
 	}
 
-	/**
-	 * @return
-	 */
-	public void setSendEmails( boolean t )
-	{
-		setChars( METHOD_EMAIL, (t ? 'Y' : 'N') );
-	}
+    public void setSendEmails( boolean t )
+    {
+        setChars( METHOD_EMAIL, (t ? 'Y' : 'N') );
+    }
 
-	/**
-	 * @return
-	 */
+    public void setSendSms( boolean t )
+    {
+        setChars( METHOD_SMS, (t ? 'Y' : 'N') );
+    }
+
 	public void setSendOutboundCalls( boolean t )
 	{
 		setChars( METHOD_VOICE, (t ? 'Y' : 'N') );
