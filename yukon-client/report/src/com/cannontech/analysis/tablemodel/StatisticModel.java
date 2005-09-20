@@ -629,7 +629,13 @@ public class StatisticModel extends ReportModelBase
 	 */
 	public void setStatType(int i)
 	{
-		statType = i;
+		if( statType != i)
+		{
+			statType = i;
+			columnNames = null;
+			columnProperties = null;
+			columnTypes = null;
+		}
 	}
 	public String getHTMLOptionsTable()
 	{
