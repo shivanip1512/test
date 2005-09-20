@@ -213,8 +213,6 @@ public void update(java.util.Observable obs, Object o)
  */
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
-	getLMSession(req).setRefreshRate(LMSession.REF_SECONDS_PEND);
-	
 	String redirectURL = req.getParameter("redirectURL");
 	Hashtable optionalProps = new Hashtable(8);
 

@@ -37,13 +37,6 @@ if( lmSession.getResponseProgs() == null )
               <tr>
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp; 
                   Load Management
-            		<% if( lmSession.getRefreshRate() < LMSession.REF_SECONDS_DEF ) {%>
-            			<font class="refreshTxt"> 
-            			(Auto-refresh in <%= lmSession.getRefreshRate() %>
-            			seconds)</font>
-            		<%
-            			lmSession.setRefreshRate(LMSession.REF_SECONDS_DEF);
-            		}%>
                 </td>
 				
                 <td width="235" valign="middle">&nbsp;</td>

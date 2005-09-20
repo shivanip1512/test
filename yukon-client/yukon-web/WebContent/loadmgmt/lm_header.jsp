@@ -68,6 +68,6 @@
 <script language="JavaScript">
 function reload()
 {
-	setTimeout( "window.location.reload(true)", <%= lmSession.getRefreshRate() %> * 1000 );
+	setTimeout( "window.location.reload(true)", 60 * 1000 );
 }
 </script>

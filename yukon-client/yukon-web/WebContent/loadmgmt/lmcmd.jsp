@@ -52,8 +52,8 @@ function update()
 
     self.close();
 
-    //tell the parent screen to refresh in 1 second
-    opener.setTimeout("window.location.reload(true)", 1000)
+    //tell the parent screen to refresh in 2 seconds
+    opener.setTimeout("window.location.reload(true)", 2000)
     return true;
 }
 
@@ -69,113 +69,6 @@ function setStopAble( radioChk )
 	var val = radioChk.value == "stopat" && radioChk.checked;	
 	document.cmdForm.stopdate.disabled = !val;
 	document.cmdForm.stopTime1.disabled = !val;
-}
-
-var browser = new Object();
-browser.isNetscape = false;
-browser.isMicrosoft = false;
-if (navigator.appName.indexOf("Netscape") != -1)
-	browser.isNetscape = true;
-else if (navigator.appName.indexOf("Microsoft") != -1)
-	browser.isMicrosoft = true;
-
-function moveStartStopPtr(s) 
-{
-	var hour, minute, time;
-
-	if (s == 'start')  
-	 time = document.cmdForm.startTime1.value.split(":");
-	else if (s == 'stop')
-	 time = document.cmdForm.stopTime1.value.split(":");
-
-	if (time.length == 2)
-	{
-		hour = parseInt(time[0], 10);
-		minute = parseInt(time[1], 10);
-	}
-	else if (time.length == 1)
-	{
-		hour = parseInt(time[0], 10);
-		minute = 0;
-	}
-	else
-	{
-		hour = 0;
-		minute = 0;
-	}
-
-		
-	if (hour > 23){   
-		hour = 23;
-		minute = 50;}
-	else if (hour < 0)
-		hour = 0;
-
-	if (hour == 23 && minute > 50)
-		minute = 50;
-	
-	if (minute < 0 || minute > 59) 
-		minute = 0;
-
-	var lgMove = 6 * hour + 9;
-	var smMove = Math.floor(minute/10);
-	
-	hour = "0" + hour;
-	minute = "0" + smMove * 10;
-	minute = minute.substr(minute.length-2, 2);
-	hour = hour.substr(hour.length-2, 2);
-	
-	if (s == 'start')
-	{
-		document.cmdForm.startTime1.value = hour + ":" + minute;
-		document.cmdForm.startPtr.style.left = lgMove + smMove;
-	}
-	else if (s == 'stop')
-	{
-		document.cmdForm.stopTime1.value = hour + ":" + minute;
-		document.cmdForm.stopPtr.style.left = lgMove + smMove;
-	}
-
-}
-
-function showStartTime1()
-{
-	var s = document.images['startPtr'];
-	var curPos = parseInt(s.style.left, 10);
-	var hourStr = "0" + Math.floor((curPos - 81 + 72) * 10 / 60);
-	hourStr = hourStr.substr(hourStr.length-2, 2);
-	var minuteStr = "0" + (curPos - 81 + 72) * 10 % 60;
-	minuteStr = minuteStr.substr(minuteStr.length-2, 2);
-	document.cmdForm.startTime1.value = hourStr + ":" + minuteStr;
-}
-
-function showStopTime1()
-{ 
-  var sp = document.images['stopPtr'];
-  var curPos = parseInt(sp.style.left, 10);
-  var hourStr = "0" + Math.floor((curPos - 81 + 72) * 10 / 60);
-  hourStr = hourStr.substr(hourStr.length-2, 2);
-  var minuteStr = "0" + (curPos-81 + 72) * 10 % 60;
-  minuteStr = minuteStr.substr(minuteStr.length-2, 2);
-  document.cmdForm.stopTime1.value = hourStr + ":" + minuteStr;
-  
-}
-function setStartPixTime()
-{
-	(navigator.appName == 'Netscape')
-	? document.images['startPtr'].style.top = -9 +"px"
-	: document.images['startPtr'].style.top = -9 + "px";
-
-	moveStartStopPtr('start');
-}
-
-function setStopPixTime()
-{
-	(navigator.appName == 'Netscape')
-	? document.images['stopPtr'].style.top = -8 +"px"
-	: document.images['stopPtr'].style.top = -9 + "px";
-	
-	moveStartStopPtr('stop');
 }
 
 </script>
@@ -786,7 +679,7 @@ function setStopPixTime()
 	  <BR>
 		<input type="submit" name="Submit2" value="Ok" class="defButton" onclick = "return update();">
 <% }  /* Ending of the isPageGood check */ %>
-		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close()">
+		<input type="submit" name="Submit" value="Cancel" class="defButton" onclick = "self.close(); return false;">
 	</form>
 	</div>
 
