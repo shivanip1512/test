@@ -2,6 +2,15 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+insert into FDRInterface values( 23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
+go
+
+insert into FDRInterfaceOption values(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
+insert into FDRInterfaceOption values(23, 'Remote', 2, 'Text', '(none)' );
+insert into FDRInterfaceOption values(23, 'Point', 3, 'Text', '(none)' );
+insert into FDRInterfaceOption values(23, 'Destination/Source', 4, 'Text', '(none)' );
+go
+
 
 
 
