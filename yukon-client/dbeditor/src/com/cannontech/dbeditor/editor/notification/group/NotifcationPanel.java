@@ -96,6 +96,7 @@ private void doCheckBoxAction( JCheckBox checkBox )
 			}
 			else if( checkBox == getJCheckBoxEmails() ) {
 				nm.setSendEmails( checkBox.isSelected() );				
+				nm.setSendSms( checkBox.isSelected() );
 			}
 
 
@@ -738,7 +739,7 @@ public void nodeSelectionChanged( boolean checkBoxCliked )
 			NotifMap dummyMap = new NotifMap(-1);
 			dummyMap.setAttribs( lbNode.getUserValue() );
 			getJCheckBoxPhoneCall().setSelected( dummyMap.isSendOutboundCalls() );
-			getJCheckBoxEmails().setSelected( dummyMap.isSendEmails() );
+			getJCheckBoxEmails().setSelected( dummyMap.isSendEmails() || dummyMap.isSendSms() );
 
 			//see if the check box in the tree was clicked
 			if( checkBoxCliked ) {
