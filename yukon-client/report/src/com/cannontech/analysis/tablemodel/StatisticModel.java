@@ -698,7 +698,14 @@ public class StatisticModel extends ReportModelBase
 	{
 		return false;
 	}
-	
+	/* (non-Javadoc)
+	 * @see com.cannontech.analysis.tablemodel.ReportModelBase#useStartDate()
+	 */
+	public boolean useStartDate()
+	{
+		return false;
+	}
+
 //	/**
 //	 * Boolean to hide All Error Percents (or rather to hide the Protocol and System Error percents)
 //	 * Note:  Channel Error Percent is shown for all statTypes.
