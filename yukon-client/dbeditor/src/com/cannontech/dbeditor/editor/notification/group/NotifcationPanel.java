@@ -91,13 +91,9 @@ private void doCheckBoxAction( JCheckBox checkBox )
 
 		if( node instanceof LiteBaseNode )
 		{
-			if( checkBox == getJCheckBoxPhoneCall() ) {	
-				nm.setSendOutboundCalls( checkBox.isSelected() );				
-			}
-			else if( checkBox == getJCheckBoxEmails() ) {
-				nm.setSendEmails( checkBox.isSelected() );				
-				nm.setSendSms( checkBox.isSelected() );
-			}
+			nm.setSendOutboundCalls( getJCheckBoxPhoneCall().isSelected() );				
+			nm.setSendEmails( getJCheckBoxEmails().isSelected() );				
+			nm.setSendSms( getJCheckBoxEmails().isSelected() );
 
 
 			//set our attribs inside the user string of the Tree node
