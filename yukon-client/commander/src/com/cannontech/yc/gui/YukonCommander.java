@@ -1276,6 +1276,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			savedCursor = getRootPane().getCursor();
 			getRootPane().setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			restoreCurrentTree();	// Refresh the device tree and the route combo box.
+			setRouteModel();
 		}
 		catch( Exception e )
 		{
@@ -1762,7 +1763,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		getSerialRoutePanel().getRouteComboBox().removeAllItems();	
 		getSerialRoutePanel().getRouteComboBox().addItem("All Default Routes");	//default first item
 	
-		
+		getYC().setAllRoutes(null);	//dump the stored routes, will reload from cache on next getAllRoutes call
 		LiteYukonPAObject[] routes = (LiteYukonPAObject[])yc.getAllRoutes();
 		for( int i = 0; i < routes.length; i++ )
 		{

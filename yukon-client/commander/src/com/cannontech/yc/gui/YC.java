@@ -87,7 +87,7 @@ public class YC extends Observable implements MessageListener
 	private int commandMode = DEFAULT_MODE;
 	
 	/** Store last Porter request message, for use when need to send it again (loop) */
-	public Request porterRequest = null;
+	private Request porterRequest = null;
 	
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static volatile long currentUserMessageID = 1;
@@ -96,7 +96,7 @@ public class YC extends Observable implements MessageListener
 	public volatile int sendMore = 0;
 
 	/** All LiteYukonPaobject of type route */
-	public Object[] allRoutes = null;
+	private Object[] allRoutes = null;
 
 	/** Valid loop command types */
 	public static int NOLOOP = 0;	//loop not parsed
@@ -109,7 +109,7 @@ public class YC extends Observable implements MessageListener
 	/** Contains com.cannontech.database.data.lite.LiteDeviceTypeCommand for the deviceType selected */
 	private Vector liteDeviceTypeCommandsVector = new Vector();
 	/** The device Type for the currently selected object in the tree model. Values found in DeviceTypes class**/
-	public String deviceType = null;
+	protected String deviceType = null;
 	
 	/** Default YC properties*/
 	private YCDefaults ycDefaults = null;
@@ -608,10 +608,15 @@ public class YC extends Observable implements MessageListener
 	 */
 	public void setAllRoutes(Object[] allRoutesArray_) 
 	{
-		allRoutes = new Object[allRoutesArray_.length];
-		for ( int i = 0; i < allRoutesArray_.length; i++)
+		if (allRoutesArray_ == null)
+			allRoutes = null;
+		else
 		{
-			allRoutes[i] = allRoutesArray_[i];
+			allRoutes = new Object[allRoutesArray_.length];
+			for ( int i = 0; i < allRoutesArray_.length; i++)
+			{
+				allRoutes[i] = allRoutesArray_[i];
+			}
 		}
 	}
 	/**
