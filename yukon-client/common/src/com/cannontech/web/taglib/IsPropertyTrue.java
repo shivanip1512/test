@@ -38,8 +38,7 @@ public class IsPropertyTrue extends BodyTagSupport
 		{
 			String val = AuthFuncs.getRolePropertyValue(
 				user,
-				liteProp.getRolePropertyID(),
-				liteProp.getDefaultValue() );
+				liteProp.getRolePropertyID() );
 			
 			if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
 				return EVAL_BODY_INCLUDE;

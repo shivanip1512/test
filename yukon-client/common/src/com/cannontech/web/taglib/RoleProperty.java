@@ -43,7 +43,7 @@ public int doStartTag() throws JspException {
 		if(user != null) {
 			if (defaultvalue == null) defaultvalue=" ";
 			//defaultvalue = "Missing rolePropertyID:  " + Integer.toString(propertyid);
-			String text = AuthFuncs.getRolePropertyValue(user, propertyid, defaultvalue);
+			String text = AuthFuncs.getRolePropertyValue(user, propertyid);
 			String fmat = getFormat();
 			if (fmat != null) {
 				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))
