@@ -127,6 +127,11 @@ private javax.swing.JButton getJButtonCancel() {
 			ivjJButtonCancel.setMnemonic('c');
 			ivjJButtonCancel.setText("Cancel");
 			// user code begin {1}
+			
+			ivjJButtonCancel.setMaximumSize(new java.awt.Dimension(80, 25));
+			ivjJButtonCancel.setPreferredSize(new java.awt.Dimension(80, 25));
+			ivjJButtonCancel.setMinimumSize(new java.awt.Dimension(80, 25));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -152,6 +157,11 @@ private javax.swing.JButton getJButtonOk() {
 			ivjJButtonOk.setPreferredSize(new java.awt.Dimension(73, 25));
 			ivjJButtonOk.setMinimumSize(new java.awt.Dimension(73, 25));
 			// user code begin {1}
+			
+			ivjJButtonOk.setMaximumSize(new java.awt.Dimension(80, 25));
+			ivjJButtonOk.setPreferredSize(new java.awt.Dimension(80, 25));
+			ivjJButtonOk.setMinimumSize(new java.awt.Dimension(80, 25));
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
