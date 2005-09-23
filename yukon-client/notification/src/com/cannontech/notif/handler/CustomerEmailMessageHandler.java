@@ -36,7 +36,7 @@ public class CustomerEmailMessageHandler extends MessageHandler {
             emailMsg.setSubject(msg.getSubject());
             emailMsg.setBody(msg.getBody());
             
-            for (Iterator iter = customer.getNotifications(EmailHandler.checker).iterator(); iter.hasNext();) {
+           /* for (Iterator iter = customer.getNotifications(EmailHandler.checker).iterator(); iter.hasNext();) {
                 LiteContactNotification addr = (LiteContactNotification) iter.next();
                 String emailTo = addr.getNotification();
                 try {
@@ -46,7 +46,7 @@ public class CustomerEmailMessageHandler extends MessageHandler {
                     CTILogger.warn("Unable to email message for " + customer + " to address " + emailTo + ".", e);
                 }
 
-            }
+            }*/
         } catch (MessagingException e) {
             CTILogger.error("Unable to email message '" + msg.getSubject() + "' to " + customer + ".", e );
         }
