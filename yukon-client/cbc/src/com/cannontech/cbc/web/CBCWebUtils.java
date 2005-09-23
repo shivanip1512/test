@@ -160,8 +160,7 @@ public class CBCWebUtils implements CBCParamValues
 		{
 			String val = AuthFuncs.getRolePropertyValue(
 				yukUser,
-				liteProp.getRolePropertyID(),
-				liteProp.getDefaultValue() );
+				liteProp.getRolePropertyID() );
 			
 			if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
 				return true;
