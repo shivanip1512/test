@@ -30,7 +30,8 @@ public LMProgramEnergyExchange() {
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlRequest createScheduledStartMsg( java.util.Date start, java.util.Date stop, int gearNumber, java.util.Date notifyTime, String additionalInfo )
+public com.cannontech.loadcontrol.messages.LMManualControlRequest createScheduledStartMsg( java.util.Date start, java.util.Date stop,
+	int gearNumber, java.util.Date notifyTime, String additionalInfo, int constraintFalg )
 {
 	return null;
 }
@@ -46,7 +47,8 @@ public com.cannontech.loadcontrol.messages.LMManualControlRequest createSchedule
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public com.cannontech.loadcontrol.messages.LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
+public com.cannontech.loadcontrol.messages.LMManualControlRequest createStartStopNowMsg( java.util.Date stopTime, int gearNumber,
+		String additionalInfo, boolean isStart, int constraintFlag )
 {
 	return null;
 }

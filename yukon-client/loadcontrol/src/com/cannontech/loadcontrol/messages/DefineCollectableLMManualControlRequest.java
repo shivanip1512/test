@@ -82,8 +82,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( lmManualControlMsg.getStopTime().getTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getStartGear() );
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getStartPriority() );
-	vstr.saveObject( lmManualControlMsg.getAddditionalInfo(), SimpleMappings.CString );	
-	vstr.insertUnsignedInt( (lmManualControlMsg.isOverrideConstraints() ? 1 : 0) );
-	vstr.insertUnsignedInt( (lmManualControlMsg.isCoerceStartStopTimes() ? 1 : 0) );	
+	vstr.saveObject( lmManualControlMsg.getAddditionalInfo(), SimpleMappings.CString );
+	
+	vstr.insertUnsignedInt( (long)lmManualControlMsg.getConstraintFlag() );
+	
 }
+
 }

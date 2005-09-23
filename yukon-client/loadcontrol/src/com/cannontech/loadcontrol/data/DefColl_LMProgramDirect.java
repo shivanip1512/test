@@ -59,65 +59,63 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	LMProgramDirect lmProgramDirect = (LMProgramDirect) obj;
 	
-	Integer currentGearNumber = new Integer( (int)vstr.extractUnsignedInt() );
-	Integer lastGroupControlled = new Integer( (int)vstr.extractUnsignedInt() );
+	lmProgramDirect.setCurrentGearNumber( new Integer( (int)vstr.extractUnsignedInt() ) );
+	lmProgramDirect.setLastGroupControlled( new Integer( (int)vstr.extractUnsignedInt() ) );
+	
 	GregorianCalendar directStartTime = new java.util.GregorianCalendar();
 	directStartTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );
+	lmProgramDirect.setDirectStartTime( directStartTime );
 
 	GregorianCalendar directStopTime = new java.util.GregorianCalendar();
-	directStopTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );	
+	directStopTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time ) );
+	lmProgramDirect.setDirectStopTime( directStopTime );	
 	
 	GregorianCalendar notifyActiveTime = new java.util.GregorianCalendar();
 	notifyActiveTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
+	lmProgramDirect.setNotifyActiveTime( notifyActiveTime );	
 	
 	GregorianCalendar notifyInactiveTime = new java.util.GregorianCalendar();
 	notifyInactiveTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
+	lmProgramDirect.setNotifyInactiveTime( notifyInactiveTime );	
 		
 	GregorianCalendar startedRampingOutTime = new java.util.GregorianCalendar(); 
 	startedRampingOutTime.setTime((Date)vstr.restoreObject( SimpleMappings.Time) );
+	lmProgramDirect.setStartedRampingOut( startedRampingOutTime );	
 	
-	Integer triggerOffset = new Integer( (int) vstr.extractUnsignedInt() );
-	Integer triggerRestoreOffset = new Integer( (int) vstr.extractUnsignedInt() );
+	lmProgramDirect.setTriggerOffset( new Integer( (int) vstr.extractUnsignedInt() ) );
+	lmProgramDirect.setTriggerRestoreOffset( new Integer( (int) vstr.extractUnsignedInt() ) );
 
-	Vector directGearVector = (Vector) vstr.restoreObject( polystr );
-	
+	lmProgramDirect.setConstraintOverride(
+		(int)vstr.extractUnsignedInt() == 1 ? true : false );
+
+
+	lmProgramDirect.setDirectGearVector( (Vector) vstr.restoreObject( polystr ) );
+
+
 	// serialize groups one at a time, using a rwordered/vector is trouble for some reason
 	int numGroups = vstr.extractInt();
-	Vector groupVector = new Vector(numGroups);
-	
-	for(int i = 0; i < numGroups; i++) {
+	Vector groupVector = new Vector(numGroups);	
+	for(int i = 0; i < numGroups; i++)
 		groupVector.add(vstr.restoreObject(polystr));
-	}
+	lmProgramDirect.setLoadControlGroupVector( groupVector );
 
 	// restore all the active master programs
 	numGroups = vstr.extractInt();
 	Vector activeMastersVector = new Vector(numGroups);
-	for(int i = 0; i < numGroups; i++) {
+	for(int i = 0; i < numGroups; i++)
 		activeMastersVector.add(vstr.restoreObject(polystr));
-	}
+	lmProgramDirect.setActiveMasterPrograms( activeMastersVector );
 	
 	// restore all the active subordinate programs
 	numGroups = vstr.extractInt();
 	Vector activeSubordinatesVector = new Vector(numGroups);
-	for(int i = 0; i < numGroups; i++) {
+	for(int i = 0; i < numGroups; i++)
 		activeSubordinatesVector.add(vstr.restoreObject(polystr));
-	}
-		
-	lmProgramDirect.setCurrentGearNumber(currentGearNumber);
-	lmProgramDirect.setLastGroupControlled(lastGroupControlled);
-	lmProgramDirect.setDirectStartTime( directStartTime );
-	lmProgramDirect.setDirectStopTime( directStopTime );
-	lmProgramDirect.setNotifyActiveTime( notifyActiveTime );
-	lmProgramDirect.setNotifyInactiveTime( notifyInactiveTime );	
-	lmProgramDirect.setStartedRampingOut( startedRampingOutTime );
-	lmProgramDirect.setTriggerOffset( triggerOffset );
-	lmProgramDirect.setTriggerRestoreOffset( triggerRestoreOffset );
-	
-	lmProgramDirect.setDirectGearVector(directGearVector);
-	lmProgramDirect.setLoadControlGroupVector( groupVector );
-	lmProgramDirect.setActiveMasterPrograms(activeMastersVector);
 	lmProgramDirect.setActiveSubordinatePrograms(activeSubordinatesVector);
+		
 }
+
+
 /**
  * saveGuts method comment.
  */

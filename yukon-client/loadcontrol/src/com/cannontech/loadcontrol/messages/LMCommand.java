@@ -18,27 +18,27 @@ public class LMCommand extends LMMessage
 
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
-	public static final int CHANGE_THRESHOLD							= 0;
-	public static final int CHANGE_RESTORE_OFFSET					= 1;
-	public static final int CHANGE_CURRENT_START_TIME				= 2;
-	public static final int CHANGE_CURRENT_STOP_TIME				= 3;
-	public static final int CHANGE_CURRENT_OPERATIONAL_STATE		= 4;
-	public static final int ENABLE_CONTROL_AREA						= 5;
-	public static final int DISABLE_CONTROL_AREA						= 6;
-	public static final int ENABLE_PROGRAM								= 7;
-	public static final int DISABLE_PROGRAM 							= 8;
-	public static final int RETRIEVE_ALL_CONTROL_AREAS				= 9;
+	public static final int CHANGE_THRESHOLD = 0;
+	public static final int CHANGE_RESTORE_OFFSET = 1;
+	public static final int CHANGE_CURRENT_START_TIME = 2;
+	public static final int CHANGE_CURRENT_STOP_TIME = 3;
+	public static final int CHANGE_CURRENT_OPERATIONAL_STATE = 4;
+	public static final int ENABLE_CONTROL_AREA = 5;
+	public static final int DISABLE_CONTROL_AREA = 6;
+	public static final int ENABLE_PROGRAM	= 7;
+	public static final int DISABLE_PROGRAM = 8;
+	public static final int RETRIEVE_ALL_CONTROL_AREAS = 9;
 	  
-	public static final int SHED_GROUP									= 10;
-	public static final int SMART_CYCLE_GROUP							= 11;
-	public static final int TRUE_CYCLE_GROUP							= 12;
-	public static final int RESTORE_GROUP								= 13;
-	public static final int ENABLE_GROUP								= 14;
-	public static final int DISABLE_GROUP								= 15;
-	public static final int CONFIRM_GROUP								= 16;
-	public static final int RESET_PEAK_POINT_VALUE                      = 17;
-	public static final int EMERGENCY_DISABLE_PROGRAM					= 18;
-          
+	public static final int SHED_GROUP = 10;
+	public static final int SMART_CYCLE_GROUP = 11;
+	public static final int TRUE_CYCLE_GROUP = 12;
+	public static final int RESTORE_GROUP = 13;
+	public static final int ENABLE_GROUP = 14;
+	public static final int DISABLE_GROUP = 15;
+	public static final int CONFIRM_GROUP = 16;
+	public static final int RESET_PEAK_POINT_VALUE = 17;
+	public static final int EMERGENCY_DISABLE_PROGRAM = 18;
+
 	public static final String[] CMD_STRS =
 	{
 		"CHANGE THRESHOLD",   //0
@@ -61,16 +61,18 @@ public class LMCommand extends LMMessage
 		"Disable Group",
 		"Confirm",
 		"Reset Peak Point",
-		"Emergency Disable Program"
+		"Emergency Disable Program",
 	};
+
+
 /**
- * ScheduleCommand constructor comment.
+ * constructor comment.
  */
 public LMCommand() {
 	super();
 }
 /**
- * LMCommand constructor comment.
+ * constructor comment.
  */
 public LMCommand( int cmd, int yukID, int num, double val)
 {

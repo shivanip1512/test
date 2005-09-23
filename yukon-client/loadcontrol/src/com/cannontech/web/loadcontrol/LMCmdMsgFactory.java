@@ -16,6 +16,7 @@ import com.cannontech.loadcontrol.data.ILMData;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
 
 /**
@@ -236,13 +237,13 @@ public final class LMCmdMsgFactory
 						multi.getVector().add( prg.createStartStopNowMsg(
 									stopdate,
 									dblarray2[i].intValue(), 
-									null, true) );
+									null, true, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 					else
 						multi.getVector().add( prg.createScheduledStartMsg(
 									startdate,
 									stopdate,
 									dblarray2[i].intValue(),
-									null, null) );					
+									null, null, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );					
 				}
 
 				if( multi.getVector().size() > 0 )
@@ -275,7 +276,8 @@ public final class LMCmdMsgFactory
 						multi.getVector().add( 
 							prg.createStartStopNowMsg(
 									stopdate,
-									1, null, false) );
+									1, null,
+									false, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 					else					
 						multi.getVector().add(
 							prg.createScheduledStopMsg(
@@ -425,13 +427,13 @@ public final class LMCmdMsgFactory
 					cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
 								stopdate,
 								gearnum.intValue(), 
-								null, true) );
+								null, true, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				else
 					cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
 								startdate,
 								stopdate,
 								gearnum.intValue(),
-								null, null) );
+								null, null, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 			}
 		}
 		else if( ILCCmds.PROG_STOP.equals(cmdMsg.getCmd()) )
@@ -447,7 +449,8 @@ public final class LMCmdMsgFactory
 					cmdMsg.setGenLCMsg( 
 						prg.createStartStopNowMsg(
 								stopdate,
-								1, null, false) );
+								1, null, false,
+								LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				else					
 					cmdMsg.setGenLCMsg(
 						prg.createScheduledStopMsg(
@@ -648,7 +651,8 @@ public final class LMCmdMsgFactory
 							scenProg.getStopOffset(),
 							dblarray2[i].intValue(),
 							startdate, 
-							stopdate) );
+							stopdate,
+							LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				}
 
 				if( multi.getVector().size() > 0 )
@@ -692,7 +696,8 @@ public final class LMCmdMsgFactory
 							scenProg.getStopOffset(),
 							0,
 							startdate, 
-							stopdate) );
+							stopdate,
+							LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				}
 
 				if( multi.getVector().size() > 0 )

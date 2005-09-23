@@ -248,7 +248,7 @@ private void showDirectManualEntry( final int panelMode )
 
 	d.setModal(true);
 	d.setContentPane(panel);
-	d.setSize(300,250);
+	d.setSize(300, 300);
 	d.pack();
 	d.setLocationRelativeTo(this);
 
@@ -297,7 +297,7 @@ private void showDirectManualEntry( final int panelMode )
 					//set our responses
 					constrPanel.setValue( programResp );
 					
-					diag.setCancelButtonVisible( false );
+					diag.setOkButtonText( "Resubmit" );
 					diag.setResizable( true );
 					diag.setSize( 800, 350 );
 					diag.setLocationRelativeTo( this );
@@ -310,9 +310,6 @@ private void showDirectManualEntry( final int panelMode )
 					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
 						&& respArr.length > 0 )
 					{
-						for( int i = 0; i < respArr.length; i++ )
-							respArr[i].getLmRequest().setOverrideConstraints( true );
-
 						LCUtils.executeSyncMessage( respArr );
 					}
 
@@ -374,7 +371,7 @@ private void showCurtailManualEntry()
 		LoadControlClientConnection.getInstance().write( 
 				((LMProgramCurtailment)getLoadControlProgram()).createStartStopNowMsg(
 					com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime(), 
-					0, null, false) );
+					0, null, false, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 					//com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime(), 
 					//0, null) );
 	}

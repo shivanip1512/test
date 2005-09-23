@@ -3,14 +3,20 @@ package com.cannontech.loadcontrol.gui.manualentry;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.table.TableColumn;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.util.CheckBoxTableHeader;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
 
 /**
@@ -18,7 +24,7 @@ import com.cannontech.message.server.ServerResponseMsg;
  * Creation date: (6/1/2004 12:44:50 PM)
  * @author: 
  */
-public class ConstraintResponsePanel extends DataInputPanel
+public class ConstraintResponsePanel extends DataInputPanel implements ActionListener, ItemListener
 {
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
 	private javax.swing.JTable ivjJTableConstraints = null;
@@ -63,6 +69,31 @@ private static void getBuilderData() {
 **end of data**/
 }
 
+public void actionPerformed( ActionEvent e ) {
+	
+	//check boxes inside table cells
+	if( e.getSource() instanceof JCheckBox ) {		
+		//only tell our table to repaint itself
+		getTableModelCons().fireTableDataChanged();
+	}
+	
+}
+
+public void itemStateChanged(ItemEvent e) {
+
+  //check boxe inside the tableHeader
+  if( e.getSource() instanceof CheckBoxTableHeader ) {
+	  boolean checked = ((CheckBoxTableHeader)e.getSource()).isSelected();
+	
+	  for( int i = 0; i < getTableModelCons().getRowCount(); i++ ) {
+		  ResponseProg prg = getTableModelCons().getRowAt( i );		
+		  prg.setOverride( new Boolean(checked) );
+	  }
+	
+	  getTableModelCons().fireTableDataChanged();
+  }
+
+}
 
 /**
  * Return the JScrollPaneTable property value.
@@ -125,7 +156,7 @@ private javax.swing.JTable getJTableConstraints() {
 			ivjJTableConstraints.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);					
 			ivjJTableConstraints.setAutoCreateColumnsFromModel( true );
 			ivjJTableConstraints.createDefaultColumnsFromModel();
-			
+
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -165,8 +196,24 @@ private void initJTableCellComponents()
 	chkBox.setVerticalAlignment(JCheckBox.NORTH);
 	chkBox.setHorizontalAlignment(JCheckBox.CENTER);
 	chkBox.setBackground( Color.BLACK );
+	chkBox.addActionListener( this );
 	
 	overColumn.setCellEditor( new javax.swing.DefaultCellEditor(chkBox) );
+
+
+
+	//assign our table header for the Override column
+	CheckBoxTableHeader hdrBxRender = new CheckBoxTableHeader( this );
+
+	//hdrBxRender.setVerticalAlignment(JCheckBox.NORTH);
+	//hdrBxRender.setHorizontalAlignment(JCheckBox.LEFT);
+	hdrBxRender.setText("Ignore Constraints");
+	
+	//force all check boxes to be checked/unchecked based on the state of the
+	// header checkBox
+	hdrBxRender.addActionListener( this );
+
+	overColumn.setHeaderRenderer( hdrBxRender );
 }
 
 
@@ -182,8 +229,13 @@ public Object getValue(Object obj)
 	for( int i = 0; i < getTableModelCons().getRowCount(); i++ )
 	{
 		ResponseProg prg = getTableModelCons().getRowAt( i );
-		if( prg.getOverride().booleanValue() )
-			progList.add( prg );
+		
+		prg.getLmRequest().setConstraintFlag(
+			prg.getOverride().booleanValue()
+			? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+			: LMManualControlRequest.CONSTRAINTS_FLAG_USE );
+
+		progList.add( prg );
 	}
 
 	//ResponseProg[] progArr = new ResponseProg[ progList.size() ];

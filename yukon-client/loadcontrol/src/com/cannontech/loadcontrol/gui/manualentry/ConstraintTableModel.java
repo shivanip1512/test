@@ -46,7 +46,9 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 		//Ok
 		Color.WHITE,
 		//Conn error
-		Color.RED
+		Color.RED,
+		//disabled like color for checked columns
+		Color.LIGHT_GRAY
 	};
 
 	/**
@@ -89,9 +91,12 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 	public java.awt.Color getCellForegroundColor(int row, int col) 
 	{
 		ResponseProg prog = getRowAt( row );
-		if( prog.getStatus() == ServerResponseMsg.STATUS_UNINIT )
-		{
+
+		if( prog.getStatus() == ServerResponseMsg.STATUS_UNINIT ) {
 			return CELL_COLORS[1];
+		}
+		else if( prog.getOverride().booleanValue() ) {
+			return CELL_COLORS[2];
 		}
 		else
 			return CELL_COLORS[0];

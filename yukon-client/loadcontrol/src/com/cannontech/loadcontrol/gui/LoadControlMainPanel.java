@@ -358,7 +358,7 @@ private void showContScenWindow( final int panelMode )
 	d.setModal(true);
 	d.setContentPane(panel);
 	d.pack();
-	d.setSize( 640, 285 );
+	d.setSize( 640, 320 );
 	d.setLocationRelativeTo(this);
 
 	if( allProgs.values().size() > 0 )
@@ -402,7 +402,7 @@ private void showContScenWindow( final int panelMode )
 					//set our responses
 					constrPanel.setValue( programResp );
 					
-					diag.setCancelButtonVisible( false );					
+					diag.setOkButtonText( "Resubmit" );
 					diag.setResizable( true );
 					diag.setSize( 800, 350 );
 					diag.setLocationRelativeTo( this );
@@ -415,9 +415,6 @@ private void showContScenWindow( final int panelMode )
 					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
 						&& respArr.length > 0 )
 					{
-						for( int i = 0; i < respArr.length; i++ )
-							respArr[i].getLmRequest().setOverrideConstraints( true );
-
 						LCUtils.executeSyncMessage( respArr );
 					}
 

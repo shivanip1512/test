@@ -1,4 +1,7 @@
 package com.cannontech.loadcontrol.gui.manualentry;
+
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+
 /**
  * Insert the type's description here.
  * Creation date: (1/20/2001 10:59:31 PM)
@@ -1841,7 +1844,7 @@ public void jButtonStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					stopCalendar.getTime(), 
 					0, 
 					notifyCalendar.getTime(), 
-					msg) );
+					msg, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 
 		
 		//close the Dialog

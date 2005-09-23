@@ -21,6 +21,7 @@ public class LMProgramDirect extends LMProgramBase implements IGearProgram
 	private GregorianCalendar startedRampingOut = null;
 	private Integer triggerOffset = null;
 	private Integer triggerRestoreOffset = null;	
+	private boolean constraintOverride = false;	
 	
 	/**
 	 * @return Returns the triggerOffset.
@@ -62,7 +63,9 @@ public LMProgramDirect()
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlRequest createScheduledStartMsg( Date start, Date stop, int gearNumber, Date notifyTime, String additionalInfo )
+public LMManualControlRequest createScheduledStartMsg( Date start, Date stop,
+		int gearNumber, Date notifyTime, String additionalInfo,
+		int constraintFlag )
 {
 	LMManualControlRequest msg = new LMManualControlRequest();
 	java.util.GregorianCalendar cStart = new java.util.GregorianCalendar();
@@ -80,7 +83,8 @@ public LMManualControlRequest createScheduledStartMsg( Date start, Date stop, in
 	msg.setYukonID( getYukonID().intValue() );
 	msg.setStartPriority( getStartPriority().intValue() );
 	
-	msg.setCommand( LMManualControlRequest.SCHEDULED_START );		
+	msg.setCommand( LMManualControlRequest.SCHEDULED_START );
+	msg.setConstraintFlag( constraintFlag );		
 		
 
 	return msg;
@@ -117,7 +121,9 @@ public LMManualControlRequest createScheduledStopMsg( Date start, Date stop, int
  * Insert the method's description here.
  * Creation date: (7/19/2001 8:50:05 AM)
  */
-public LMManualControlRequest createStartStopNowMsg( Date stopTime, int gearNumber, String additionalInfo, boolean isStart )
+public LMManualControlRequest createStartStopNowMsg( Date stopTime, int gearNumber,
+		String additionalInfo, boolean isStart,
+		int constraintFlag )
 {
 	LMManualControlRequest msg = new LMManualControlRequest();	
 	java.util.GregorianCalendar cStop = new java.util.GregorianCalendar();
@@ -135,8 +141,10 @@ public LMManualControlRequest createStartStopNowMsg( Date stopTime, int gearNumb
 	msg.setYukonID( getYukonID().intValue() );
 	msg.setStartPriority( getStartPriority().intValue() );
 
-	if( isStart )
+	if( isStart ) {
 		msg.setCommand( LMManualControlRequest.START_NOW );
+		msg.setConstraintFlag( constraintFlag );
+	}
 	else
 		msg.setCommand( LMManualControlRequest.STOP_NOW );
 
@@ -291,4 +299,19 @@ public void setLastGroupControlled(Integer newLastGroupControlled) {
 	public void setNotifyInactiveTime(GregorianCalendar notifyInactiveTime) {
 		this.notifyInactiveTime = notifyInactiveTime;
 	}
+
+	/**
+	 * @return
+	 */
+	public boolean isConstraintOverride() {
+		return constraintOverride;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setConstraintOverride(boolean b) {
+		constraintOverride = b;
+	}
+
 }

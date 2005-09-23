@@ -1,5 +1,9 @@
 package com.cannontech.loadcontrol.messages;
 
+import java.util.GregorianCalendar;
+
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * ScheduleCommand objects are sent to the CBC server to request that an operation
  * be done on the given strategy.  Clients only send CBCCommands
@@ -10,33 +14,21 @@ public class LMManualControlRequest extends LMMessage
 {
 	private int command;
 	private int yukonID;
-	private java.util.GregorianCalendar notifyTime = com.cannontech.common.util.CtiUtilities.get1990GregCalendar();
-	private java.util.GregorianCalendar startTime = com.cannontech.common.util.CtiUtilities.get1990GregCalendar();
-	private java.util.GregorianCalendar stopTime = com.cannontech.common.util.CtiUtilities.get1990GregCalendar();
+	private GregorianCalendar notifyTime = CtiUtilities.get1990GregCalendar();
+	private GregorianCalendar startTime = CtiUtilities.get1990GregCalendar();
+	private GregorianCalendar stopTime = CtiUtilities.get1990GregCalendar();
 	private int startGear = 0;
 	private int startPriority = 0;
 	private String addditionalInfo = new String();
-	private boolean overrideConstraints = false;
-	private boolean coerceStartStopTimes = false;
-	
-	/**
-	 * @return Returns the coerceStartStopTimes.
-	 */
-	public boolean isCoerceStartStopTimes() {
-		return coerceStartStopTimes;
-	}
-	/**
-	 * @param coerceStartStopTimes The coerceStartStopTimes to set.
-	 */
-	public void setCoerceStartStopTimes(boolean coerceStartStopTimes) {
-		this.coerceStartStopTimes = coerceStartStopTimes;
-	}
+	private int constraintFlag = CONSTRAINTS_FLAG_USE;
+
+
 	//The following are the different commands that
 	//can be applied to control area, trigger, or program and map into the C++ side
-  public static final int SCHEDULED_START = 0;
-  public static final int SCHEDULED_STOP = 1;
-  public static final int START_NOW = 2;
-  public static final int STOP_NOW = 3;
+	public static final int SCHEDULED_START = 0;
+	public static final int SCHEDULED_STOP = 1;
+	public static final int START_NOW = 2;
+	public static final int STOP_NOW = 3;
 
 	public static final String[] COMMAND_STRINGS =
 	{
@@ -46,8 +38,19 @@ public class LMManualControlRequest extends LMMessage
 		"STOP NOW"
 	};
 
+	//LMProgram constraint flags
+	public static final int CONSTRAINTS_FLAG_USE = 0;
+	public static final int CONSTRAINTS_FLAG_OVERRIDE = 1;
+	public static final int CONSTRAINTS_FLAG_CHECK = 2;
+
+	public static final String[] CONSTRAINT_FLAG_STRS = {
+		"Observe",
+		"Override",
+		"Check"
+	};
+
 /**
- * ScheduleCommand constructor comment.
+ * constructor comment.
  */
 public LMManualControlRequest() {
 	super();
@@ -77,12 +80,27 @@ public static String getCommandString(int command)
 {
 	return COMMAND_STRINGS[command];
 }
+
+/**
+ * Returns the Constraint Flag ID given the String representation
+ */
+public static int getConstraintID( String constStr ) 
+{
+	for( int i = 0; i < CONSTRAINT_FLAG_STRS.length; i++ ) {		
+		if( constStr.equalsIgnoreCase(CONSTRAINT_FLAG_STRS[i]) )
+			return i;
+	}
+
+	//some reasonable default value
+	return CONSTRAINTS_FLAG_USE;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @return java.util.GregorianCalendar
+ * @return GregorianCalendar
  */
-public java.util.GregorianCalendar getNotifyTime() {
+public GregorianCalendar getNotifyTime() {
 	return notifyTime;
 }
 /**
@@ -104,17 +122,17 @@ public int getStartPriority() {
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @return java.util.GregorianCalendar
+ * @return GregorianCalendar
  */
-public java.util.GregorianCalendar getStartTime() {
+public GregorianCalendar getStartTime() {
 	return startTime;
 }
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @return java.util.GregorianCalendar
+ * @return GregorianCalendar
  */
-public java.util.GregorianCalendar getStopTime() {
+public GregorianCalendar getStopTime() {
 	return stopTime;
 }
 /**
@@ -143,9 +161,9 @@ public void setCommand(int newValue) {
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @param newNotifyTime java.util.GregorianCalendar
+ * @param newNotifyTime GregorianCalendar
  */
-public void setNotifyTime(java.util.GregorianCalendar newNotifyTime) {
+public void setNotifyTime(GregorianCalendar newNotifyTime) {
 	notifyTime = newNotifyTime;
 }
 /**
@@ -167,17 +185,17 @@ public void setStartPriority(int newStartPriority) {
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @param newStartTime java.util.GregorianCalendar
+ * @param newStartTime GregorianCalendar
  */
-public void setStartTime(java.util.GregorianCalendar newStartTime) {
+public void setStartTime(GregorianCalendar newStartTime) {
 	startTime = newStartTime;
 }
 /**
  * Insert the method's description here.
  * Creation date: (4/3/2001 3:41:37 PM)
- * @param newStopTime java.util.GregorianCalendar
+ * @param newStopTime GregorianCalendar
  */
-public void setStopTime(java.util.GregorianCalendar newStopTime) {
+public void setStopTime(GregorianCalendar newStopTime) {
 	stopTime = newStopTime;
 }
 /**
@@ -188,18 +206,19 @@ public void setStopTime(java.util.GregorianCalendar newStopTime) {
 public void setYukonID(int newYukonID) {
 	yukonID = newYukonID;
 }
+
 	/**
 	 * @return
 	 */
-	public boolean isOverrideConstraints() {
-		return overrideConstraints;
+	public int getConstraintFlag() {
+		return constraintFlag;
 	}
 
 	/**
-	 * @param b
+	 * @param i
 	 */
-	public void setOverrideConstraints(boolean b) {
-		overrideConstraints = b;
+	public void setConstraintFlag(int i) {
+		constraintFlag = i;
 	}
 
 }

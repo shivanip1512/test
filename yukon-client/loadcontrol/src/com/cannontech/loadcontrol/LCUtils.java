@@ -558,7 +558,7 @@ public class LCUtils
 	public static synchronized LMManualControlRequest createProgMessage(
 				boolean doItNow, boolean isStop,
 				Date startTime, Date stopTime, LMProgramBase program,
-				Integer gearNum ) 
+				Integer gearNum, int constraintFlag ) 
 	{
 		LMManualControlRequest msg = null;
 		
@@ -569,7 +569,7 @@ public class LCUtils
 				msg = program.createStartStopNowMsg(
 							stopTime,
 							(gearNum == null ? 0 : gearNum.intValue()), 
-							null, false);
+							null, false, constraintFlag);
 			else					
 				msg = program.createScheduledStopMsg(
 							startTime, 
@@ -583,13 +583,13 @@ public class LCUtils
 				msg = program.createStartStopNowMsg(
 							stopTime,
 							(gearNum == null ? 0 : gearNum.intValue()), 
-							null, true);
+							null, true, constraintFlag);
 			else
 				msg = program.createScheduledStartMsg( 
 							startTime, 
 							stopTime,
 							(gearNum == null ? 0 : gearNum.intValue()), 
-							null, null );
+							null, null, constraintFlag );
 		}
 	
 		//return the message created
@@ -605,13 +605,9 @@ public class LCUtils
 	 */
 	public static synchronized LMManualControlRequest createScenarioMessage( 
 			LMProgramBase program,
-			boolean isStop,
-			boolean isNow,
-			int startDelay,
-			int stopOffset,
-			int gearNum,
-			Date startTime,
-			Date stopTime ) 
+			boolean isStop, boolean isNow, int startDelay,
+			int stopOffset, int gearNum, Date startTime,
+			Date stopTime, int constraintFlag )
 	{
 		//we can not start/stop now if there is a delay for the program
 		boolean doItNow = false;
@@ -638,9 +634,7 @@ public class LCUtils
 		
 		LMManualControlRequest msg = LCUtils.createProgMessage(
 			doItNow, isStop, startGC.getTime(), stopGC.getTime(),
-			program, (isStop ? null : new Integer(gearNum)) );
-
-		msg.setCoerceStartStopTimes( true );
+			program, (isStop ? null : new Integer(gearNum)), constraintFlag );
 
 		return msg;				
 	}

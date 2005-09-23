@@ -312,7 +312,6 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 					if( progID == lmSess.getResponseProgs()[j].getLmProgramBase().getYukonID().intValue() )
 					{
 						resProgArr[i] = lmSess.getResponseProgs()[j];
-						resProgArr[i].getLmRequest().setOverrideConstraints( true );
 						break;
 					}
 				}
