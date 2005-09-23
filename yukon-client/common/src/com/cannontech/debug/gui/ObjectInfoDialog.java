@@ -335,7 +335,7 @@ public void okPanel_JButtonOkAction_actionPerformed(java.util.EventObject newEve
 /**
  * @param obj
  *
- * This method will use reflection to get all the "getter" mehods
+ * This method will use reflection to get all the "getter" & "is" mehods
  *  and print all their values and names in the JList
  */
 private Vector getListData( Object obj )
@@ -348,7 +348,8 @@ private Vector getListData( Object obj )
 		for( int i = 0; i < obj.getClass().getMethods().length; i++ )
 		{
 			//get all the getters
-			if( obj.getClass().getMethods()[i].getName().startsWith("get")
+			if( (obj.getClass().getMethods()[i].getName().startsWith("get")
+					|| obj.getClass().getMethods()[i].getName().startsWith("is"))
 				&& obj.getClass().getMethods()[i].getParameterTypes().length == 0 )
 			{
 				try
