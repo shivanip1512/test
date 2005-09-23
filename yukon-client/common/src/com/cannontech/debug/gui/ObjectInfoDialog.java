@@ -347,20 +347,24 @@ private Vector getListData( Object obj )
 	{
 		for( int i = 0; i < obj.getClass().getMethods().length; i++ )
 		{
-			//get all the getters
-			if( (obj.getClass().getMethods()[i].getName().startsWith("get")
-					|| obj.getClass().getMethods()[i].getName().startsWith("is"))
-				&& obj.getClass().getMethods()[i].getParameterTypes().length == 0 )
+			//get all the accessors
+			if( obj.getClass().getMethods()[i].getParameterTypes().length == 0 )
 			{
 				try
 				{
-					Object value = obj.getClass().getMethods()[i].invoke( obj, null );
+					int methLength = getValidMethodLength(obj.getClass().getMethods()[i].getName());
 
-					//format all objects that have an unreadable toString() output
-					value = formatSpecialObjects( value );							
-						
-					data.addElement( obj.getClass().getMethods()[i].getName().substring(3) +
-						" : " + (value == null ? "(null)" : value.toString()) );
+					//determines if this is a valid method
+					if( methLength > 0 ) {
+						Object value = obj.getClass().getMethods()[i].invoke( obj, null );
+	
+						//format all objects that have an unreadable toString() output
+						value = formatSpecialObjects( value );							
+							
+						data.addElement( obj.getClass().getMethods()[i].getName().substring(methLength) +
+							" : " + (value == null ? "(null)" : value.toString()) );
+					}
+
 				}
 				catch( IllegalAccessException ie )
 				{
@@ -382,6 +386,17 @@ private Vector getListData( Object obj )
 		data.addElement("(null) object");
 
 	return data;
+}
+
+public int getValidMethodLength( String methName ) {
+
+	if( "get".equalsIgnoreCase(methName) )
+		return "get".length();
+	else
+	if( "is".equalsIgnoreCase(methName) )
+		return "is".length();
+	else
+		return 0; //not a valid method
 }
 
 /**
