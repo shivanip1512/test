@@ -4,6 +4,8 @@ import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -102,11 +104,11 @@ public interface IDatabaseCache
 
 	//Map<LiteYukonUser, Map<Integer(rolepropertyid), Pair<LiteYukonRoleProperty, String(value)>>>
 	//Provided as a means to efficiently obtain a roleproperty and its value
-	public java.util.Map getYukonUserRolePropertyIDLookupMap();
+	//public java.util.Map getYukonUserRolePropertyIDLookupMap(int userid);
 
 	//Map<LiteYukonUser, Map<Integer(roleid), LiteYukonRole>>
 	//Provided as a means to efficiently obtain a role
-	public java.util.Map getYukonUserRoleIDLookupMap();
+	//public java.util.Map getYukonUserRoleIDLookupMap(int userid);
 
 	//Map<Integer(custID), LiteCustomer>
 	public java.util.Map getAllCustomersMap();
@@ -136,6 +138,9 @@ public interface IDatabaseCache
 	
 	//Map<Integer(contactID), LiteContact>
 	public java.util.Map getAllContactsMap();
+	
+	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
+	public LiteYukonRole getARole(LiteYukonUser user, int roleID);
 
 	/**
 	 *  Returns the LiteBase object that was added,deleted or updated, 
@@ -170,6 +175,9 @@ public interface IDatabaseCache
 	public void releaseAllYukonUsers();
 	public void releaseAllDeviceTypeCommands();
 	public void releaseAllCommands();
+	
+	public void releaseUserRolePropertyValueMap();
+	public void releaseUserRoleMap();
 
 	public void removeDBChangeListener(DBChangeListener listener);
 	public void setDatabaseAlias(String newAlias);

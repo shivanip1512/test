@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
@@ -752,18 +754,7 @@ public class DatabaseCacheBean implements IDatabaseCache
 	 * @ejb:interface-method
 	 * tview-type="remote"
 	 */
-	public synchronized Map getYukonUserRoleIDLookupMap() {
-		return getCache().getYukonUserRoleIDLookupMap();
-	}
 	
-    /**
-	 * @ejb:interface-method
-	 * tview-type="remote"
-	 */
-	public synchronized Map getYukonUserRolePropertyIDLookupMap() {
-		return getCache().getYukonUserRolePropertyIDLookupMap();
-	}
-
 	/* (non-Javadoc)
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllDMG_CollectionGroups()
 	 */
@@ -787,4 +778,32 @@ public class DatabaseCacheBean implements IDatabaseCache
 	{
 		return getCache().getAllDMG_BillingGroups();
 	}
+	/**
+	 * @return
+	 */
+	public LiteYukonRole getARole(LiteYukonUser user, int roleID) {
+		return getCache().getARole(user, roleID);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID) {
+		return getCache().getARolePropertyValue(user, rolePropertyID);
+	}
+
+	/**
+	 * 
+	 */
+	public void releaseUserRoleMap() {
+		getCache().releaseUserRoleMap();
+	}
+
+	/**
+	 * 
+	 */
+	public void releaseUserRolePropertyValueMap() {
+		getCache().releaseUserRolePropertyValueMap();
+	}
+
 }

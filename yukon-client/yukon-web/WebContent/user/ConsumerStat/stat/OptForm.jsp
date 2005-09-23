@@ -41,7 +41,7 @@ function MM_popupMsg(msg) { //v1.0
             <div align="center"> 
               <br>
               <div align="center"> 
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_OPT_OUT, "PROGRAMS - OPT OUT"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_OPT_OUT); %>
               <%@ include file="include/InfoBar.jsp" %>
                 <table width="600" border="0" cellpadding="0" cellspacing="0">
                   <tr> 

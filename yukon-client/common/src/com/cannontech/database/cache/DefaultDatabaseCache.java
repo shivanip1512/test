@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.concrete.ResourceFactory;
@@ -766,20 +768,6 @@ public class DefaultDatabaseCache implements IDatabaseCache
 		return getDBCache().getAllUserEnergyCompanies();
 	}
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRoleIDLookupMap()
-	 */
-	public synchronized  Map getYukonUserRoleIDLookupMap() {
-		return getDBCache().getYukonUserRoleIDLookupMap();
-	}
-	
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonUserRolePropertyIDLookupMap()
-	 */
-	public synchronized  Map getYukonUserRolePropertyIDLookupMap() {
-		return getDBCache().getYukonUserRolePropertyIDLookupMap();
-	}
-	
 	public synchronized void releaseAllTags()
 	{
 	   getDBCache().releaseAllTags();
@@ -809,5 +797,33 @@ public class DefaultDatabaseCache implements IDatabaseCache
     {
         return getDBCache().getAllLMGroups();
     }
+
+	/**
+	 * @return
+	 */
+	public LiteYukonRole getARole(LiteYukonUser user, int roleID) {
+		return getDBCache().getARole(user, roleID);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID) {
+		return getDBCache().getARolePropertyValue(user, rolePropertyID);
+	}
+
+	/**
+	 * 
+	 */
+	public void releaseUserRoleMap() {
+		getDBCache().releaseUserRoleMap();
+	}
+
+	/**
+	 * 
+	 */
+	public void releaseUserRolePropertyValueMap() {
+		getDBCache().releaseUserRolePropertyValueMap();
+	}
 
 }

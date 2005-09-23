@@ -90,31 +90,27 @@ public class AuthDump {
 			System.out.println("");			
 		}
 		
-		Map lookupMap = cache.getYukonUserRoleIDLookupMap();
-		
-	    Iterator i1 = allUsers.iterator();
+		Iterator i1 = allUsers.iterator();
 	    while(i1.hasNext()) {
 	    	LiteYukonUser user = (LiteYukonUser) i1.next();
 	    	Iterator i2 = allRoles.iterator();
 	    	while(i2.hasNext()) {
 	    		LiteYukonRole role = (LiteYukonRole) i2.next();
-	    		Map m = (Map) lookupMap.get(user);
-	    		if(m != null) {
-	    			LiteYukonRole r2 = AuthFuncs.checkRole(user,role.getRoleID());
-	    			if(r2 != null) {
-	    				System.out.println("userid: " + user.getUserID() + "  username: " + user.getUsername() + " has roleid: " + r2.getRoleID() + " name: " + r2.getRoleName() + " category: " + r2.getCategory() );	    			
-	    				
-	    				Iterator propIter = allRoleProperties.iterator();
-						while(propIter.hasNext()) {
-							LiteYukonRoleProperty p = (LiteYukonRoleProperty) propIter.next();
-							if(p.getRoleID() == r2.getRoleID()) {
-								String pVal = AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID());	
-								System.out.println("  rolepropertyid: " + p.getRolePropertyID() + " keyname: " + p.getKeyName() + " value: " + pVal);
-							}
-						}	
-	    			}	    			
-	    		}
-	    	}
+    		
+    			LiteYukonRole r2 = AuthFuncs.checkRole(user,role.getRoleID());
+    			if(r2 != null) {
+    				System.out.println("userid: " + user.getUserID() + "  username: " + user.getUsername() + " has roleid: " + r2.getRoleID() + " name: " + r2.getRoleName() + " category: " + r2.getCategory() );	    			
+    				
+    				Iterator propIter = allRoleProperties.iterator();
+					while(propIter.hasNext()) {
+						LiteYukonRoleProperty p = (LiteYukonRoleProperty) propIter.next();
+						if(p.getRoleID() == r2.getRoleID()) {
+							String pVal = AuthFuncs.getRolePropertyValue(user, p.getRolePropertyID());	
+							System.out.println("  rolepropertyid: " + p.getRolePropertyID() + " keyname: " + p.getKeyName() + " value: " + pVal);
+						}
+					}	
+    			}	    			
+    		}
 	    }
 	    	   	   
 	    LiteYukonUser yukonUser = AuthFuncs.login("yukon", "yukon");

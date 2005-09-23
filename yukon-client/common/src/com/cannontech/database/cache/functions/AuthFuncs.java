@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.user.UserUtils;
 
+
 /**
  * A collection of methods to handle authenticating, authorization, and the retrieval of role property values.
  * @author alauinger
@@ -77,10 +78,26 @@ public class AuthFuncs {
 	 * @param roleID
 	 * @return LiteYukonRole
 	 */
+	/*This was changed to bypass the huge memory overhead in caching several
+	 * complex map within map structures for every single user when all we really
+	 * need is one.
+	 */
+	public static LiteYukonRole checkRole(LiteYukonUser user, int roleID) 
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) 
+		{
+			return cache.getARole(user, roleID);
+		}
+	}
+	
+	
+	/*
 	public static LiteYukonRole checkRole(LiteYukonUser user, int roleID) {		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
-			Map lookupMap = cache.getYukonUserRoleIDLookupMap();
+			Map lookupMap = cache.getYukonUserRoleIDLookupMap(user.getLiteID());
 			Map roleMap = (Map) lookupMap.get(user);
 			if(roleMap != null) {
 				LiteYukonRole role= (LiteYukonRole) roleMap.get(new Integer(roleID));
@@ -89,7 +106,7 @@ public class AuthFuncs {
 		}			
 		return null;		
 	}
-	
+	*/
 	/**
 	 * Returns true if the given user has a true value for the given property
 	 * @param user
@@ -97,20 +114,10 @@ public class AuthFuncs {
 	 * @return boolean
 	 */
 	public static boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
-		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID, null));
+		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
 	}	
     
-    /**
-     * Returns the value for a given user and role property.
-     * @param user
-     * @param rolePropertyID
-     * @return String
-     */
-    public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) {
-    	return getRolePropertyValue(user,rolePropertyID,null);
-    }
-    
-    /**
+   /**
      * Returns the value for a given user and role property.
      * @param user
      * @param rolePropertyID
@@ -118,7 +125,7 @@ public class AuthFuncs {
      * @throws UnknownRolePropertyException If RoleProperty doesn't exist. 
      */
     public static String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID) throws UnknownRolePropertyException {
-        String value = getRolePropertyValue(user,rolePropertyID, null);
+        String value = getRolePropertyValue(user,rolePropertyID);
         if (value == null) {
             throw new UnknownRolePropertyException(user, rolePropertyID);
         }
@@ -132,6 +139,21 @@ public class AuthFuncs {
 	 * @param roleProperty
 	 * @return String
 	 */
+	/*This was changed to bypass the huge memory overhead in caching several
+	 * complex map within map structures for every single user when all we really
+	 * need is one return value straight from the db.
+	 */
+	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) 
+	{
+		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+		
+		synchronized(cache) 
+		{
+			return cache.getARolePropertyValue(user, rolePropertyID);
+		}
+	}
+	
+	/*
 	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID, String defaultValue) {
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
@@ -157,7 +179,7 @@ public class AuthFuncs {
 		}
 		return defaultValue;	
 	}
-
+	*/
 	/**
 	 * Returns the value for a given group and role property.
 	 * If no value is found then defaultValue is returned for convenience.
@@ -323,7 +345,9 @@ public class AuthFuncs {
 	 * Dont let anyone instantiate me
 	 * @see java.lang.Object#Object()
 	 */
-	private AuthFuncs() {
+	private AuthFuncs() 
+	{
+		super();
 	}
 
 	/**

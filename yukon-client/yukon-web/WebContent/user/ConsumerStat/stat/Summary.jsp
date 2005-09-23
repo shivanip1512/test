@@ -51,7 +51,7 @@
 		  <td width="657" valign="top" bgcolor="#FFFFFF"> 
               
             <div align="center"><br>
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_PROGRAM_CTRL_SUM, "PROGRAM - CONTROL SUMMARY"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_TITLE_PROGRAM_CTRL_SUM); %>
               <%@ include file="include/InfoBar.jsp" %>
               <table width="600" border="0" cellpadding="0" cellspacing="0">
                 <tr> 

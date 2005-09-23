@@ -117,7 +117,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 					}
 					
 					//stash a cookie that might tell us later where they log in at								
-					String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL, LOGIN_URI);
+					String loginUrl = AuthFuncs.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
 					if (loginUrl.startsWith("/")) loginUrl = req.getContextPath() + loginUrl;
 					
 					Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);

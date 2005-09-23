@@ -213,8 +213,8 @@ function prepareSubmit() {
                   <tr> 
                     <td width="25">&nbsp;</td>
 <%
-	String scheduleStr = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED, "Schedule") :
-			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule");
+	String scheduleStr = (isOperator)? AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) :
+			AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED);
 %>
                     <td width="576" class="TableCell">Please use the thermostat 
                       below to temporarily change your current settings. To adjust 

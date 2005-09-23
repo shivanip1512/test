@@ -58,7 +58,7 @@ function checkOrderNo(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"> 
-              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY, "WORK ORDERS - SERVICE HISTORY"); %>
+              <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY); %>
               <%@ include file="include/InfoSearchBar.jsp" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <span class="MainText">Click on an Order # to view the complete 

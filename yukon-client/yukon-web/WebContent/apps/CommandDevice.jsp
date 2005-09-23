@@ -143,7 +143,7 @@
 		              	  link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
 		                }
    					  	if (manual ){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Manual</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -158,7 +158,7 @@
 		              	    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
 		                  }
    					  	  if (! (lp || manual) ){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>MCT410 Custom</span></td>
 						  <%} else if (isMCT410){%>
 			            <td width="10"></td>
@@ -176,7 +176,7 @@
 						    link = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
                           }
 					  	  if (lp) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>MCT410 Profile</span></td>
 						  <%} else if (isMCT410){%>
 			            <td width="10"></td>
@@ -204,7 +204,7 @@
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
  					  <tr>
 					  	<% if (serialType.equals("sa205") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>DCU-205 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -219,7 +219,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("sa205") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -233,7 +233,7 @@
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
 					  <tr>
 					  	<% if (serialType.equals("sa305") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>DCU-305 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -248,7 +248,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("sa305") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -261,7 +261,7 @@
 					  </cti:checkProperty>
 			          <tr> 
 					  	<% if (serialType.equals("xcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Expresscom Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -276,7 +276,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("xcom") && sn.equals(serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -288,7 +288,7 @@
   					  <tr><td height="5"></td></tr>			          
 			          <tr> 
 					  	<% if (serialType.equals("vcom") ) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'>Versacom Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -303,7 +303,7 @@
 			          	  String sn = (String)serialNumbers.get(i);%>
 			          <tr>
 					  	<% if (serialType.equals("vcom") && sn.equals( serialNum)) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=sn%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -318,7 +318,7 @@
 			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();%>
 			          <tr>
 					  	<% if (id == deviceID) {%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
 						<%} else {%>
 			            <td width="10"></td>

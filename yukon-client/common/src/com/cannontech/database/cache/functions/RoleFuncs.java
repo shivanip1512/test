@@ -94,7 +94,7 @@ public class RoleFuncs
 			
 		}
 		
-		return AuthFuncs.getRolePropertyValue( user, rolePropertyID, defaultValue );
+		return AuthFuncs.getRolePropertyValue( user, rolePropertyID );
 	}
 
 	/**

@@ -45,7 +45,7 @@ function MM_popupMsg(msg) { //v1.0
 		  </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF" align = "center"> 
-      		  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT, "OPT OUT"); %>
+      		  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT); %>
               <%@ include file="include/InfoSearchBar.jsp" %> 
           
             <p><span class="MainText">Please complete the following form to opt out of the program:</span> </p>

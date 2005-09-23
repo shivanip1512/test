@@ -37,7 +37,7 @@
     { 
     	energyCompanyID = EnergyCompanyFuncs.getEnergyCompany(user).getEnergyCompanyID();
 	    ecUser = EnergyCompanyFuncs.getEnergyCompanyUser(energyCompanyID);
-		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE, "CST"));
+		tz = TimeZone.getTimeZone(AuthFuncs.getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 	}
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();

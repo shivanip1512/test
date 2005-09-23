@@ -39,7 +39,7 @@ function checkCallNo(form) {
           <td width="1" bgcolor="#000000"><img src=""../WebConfig/yukon/Icons/VerticalRule.gif"" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center">
-			  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_CALL, "ACCOUNT - CREATE NEW CALL"); %>
+			  <% String header = AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CREATE_CALL); %>
 			  <%@ include file="include/InfoSearchBar.jsp" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
@@ -73,7 +73,7 @@ function checkCallNo(form) {
                           <td width="269" > 
                             <input type="text" name="CallDate" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
                             - 
-                            <input type="text" name="CallTime" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)"
+                            <input type="text" name="CallTime" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
                           </td>
                         </tr>
                         <tr> 

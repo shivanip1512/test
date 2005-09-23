@@ -76,12 +76,12 @@
               <tr> 
                 <td> 
                   <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = 'ThermSchedule.jsp?Item=<%= itemNo %>'">
-				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED, "Schedule") %></span>
+				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED) %></span>
 				  </div>
                 </td>
                 <td> 
                   <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = "Thermostat.jsp?Item=<%= itemNo %>"">
-				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL, "Manual") %></span>
+				    <span class="MainText"><%= AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %></span>
 				  </div>
                 </td>
               </tr>

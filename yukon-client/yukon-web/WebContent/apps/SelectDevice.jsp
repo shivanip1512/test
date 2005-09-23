@@ -117,7 +117,7 @@ function setFilterValue(form){
   					  <tr><td height="60"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.DEVICE_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1;font-weight:bold"><span class='Nav' style="font-weight:bold; font-size: 10px">DEVICE</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -127,7 +127,7 @@ function setFilterValue(form){
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == DeviceClasses.GROUP){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -137,7 +137,7 @@ function setFilterValue(form){
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == DeviceClasses.RTU){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_RTU%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -147,7 +147,7 @@ function setFilterValue(form){
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == DeviceClasses.TRANSMITTER){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_TRANSMITTER%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -158,7 +158,7 @@ function setFilterValue(form){
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA205_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-205 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -170,7 +170,7 @@ function setFilterValue(form){
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA305_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-305 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -181,7 +181,7 @@ function setFilterValue(form){
 					  </cti:checkProperty>
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.EXPRESSCOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Expresscom</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -191,7 +191,7 @@ function setFilterValue(form){
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.VERSACOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Versacom</span></td>
 						<%} else {%>
 			            <td width="10"></td>

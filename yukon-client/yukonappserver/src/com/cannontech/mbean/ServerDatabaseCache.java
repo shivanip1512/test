@@ -38,6 +38,8 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
+import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
+import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 
 /**
  * All the action is here!
@@ -125,8 +127,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
     
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	private Map allYukonUserLookupRoleIDsMap = null;
-	private Map allYukonUserLookupRolePropertyIDsMap = null;    
 	private Map allUserEnergyCompaniesMap = null;
 	private Map userPaoOwnersMap = null;
     
@@ -136,7 +136,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map allStateGroupMap = null;
 	private Map allUsersMap = null;
 	private Map allContactNotifsMap = null;
-
+	
+	private Map userRolePropertyValueMap = null;
+	private Map userRoleMap = null;
 
 /**
  * ServerDatabaseCache constructor comment.
@@ -1372,70 +1374,6 @@ public synchronized java.util.List getAllYukonPAObjects()
 	}
 	
 	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonUserRoleIDLookupMap()
-	 */
-	public synchronized Map getYukonUserRoleIDLookupMap() 
-	{
-		if(allYukonUserLookupRoleIDsMap == null) {
-			loadRoleLookupMaps();
-		}
-		return allYukonUserLookupRoleIDsMap;
-	}
-	
-	public synchronized Map getYukonUserRolePropertyIDLookupMap() 
-	{
-		if(allYukonUserLookupRolePropertyIDsMap == null) {
-			loadRoleLookupMaps();
-		}
-		return allYukonUserLookupRolePropertyIDsMap;
-	}
-	
-	/**
-	 * Fill in allYukonUserLookupRoleIDs and allYukonUserLookupRolePropertyIDs
-	 */	
-	private void loadRoleLookupMaps() 
-	{		
-		allYukonUserLookupRoleIDsMap = new HashMap();
-		allYukonUserLookupRolePropertyIDsMap = new HashMap();
-		
-		Iterator iter = getAllYukonUsers().iterator();			
-		Map userRoles = getYukonUserRolePropertyMap();
-		Map userGroups =  getYukonUserGroupMap();
-		Map groupRoles = getYukonGroupRolePropertyMap();
-			
-		while(iter.hasNext()) {
-					
-			LiteYukonUser user = (LiteYukonUser) iter.next();
-			
-			Map userRoleIDsLookupMap = new HashMap();
-			Map userRolePropertyIDsLookupMap = new HashMap();
-			
-			// first consider group roles then user roles
-			// then user roles to maintain precedence
-			List groups = (List) userGroups.get(user);
-			if(groups != null) {
-				Iterator groupIter = groups.iterator();
-				while(groupIter.hasNext()) {
-					LiteYukonGroup group = (LiteYukonGroup) groupIter.next();
-					Map groupRoleMap = (Map) groupRoles.get(group);
-					if(groupRoleMap != null) {
-						addRolesAndPropertiesToLookupMap(groupRoleMap, userRoleIDsLookupMap, userRolePropertyIDsLookupMap);												
-					}
-				}
-			}
-			
-			//add user roles
-			Map userRoleMap = (Map) userRoles.get(user);
-			if(userRoleMap != null) {			
-				addRolesAndPropertiesToLookupMap(userRoleMap, userRoleIDsLookupMap,userRolePropertyIDsLookupMap);
-			}
-			
-			allYukonUserLookupRoleIDsMap.put(user, userRoleIDsLookupMap);
-			allYukonUserLookupRolePropertyIDsMap.put(user, userRolePropertyIDsLookupMap);
-		}
-	
-	}
-	/**
 	 * roleMap<LiteYukonRole, Map<LiteYukonRoleProperty,String>>
 	 * roleIDMap<Integer,LiteYukonRole>
 	 * rolePropertyIDMap<Integer,Pair<LiteYukonRoleProperty,String>>
@@ -1935,8 +1873,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		allYukonUserGroupsMap = null;
 		allYukonGroupUsersMap = null;
 		allUserEnergyCompaniesMap = null;
-		allYukonUserLookupRoleIDsMap = null;
-		allYukonUserLookupRolePropertyIDsMap = null;
 
 		userPaoOwnersMap = null;
 	}
@@ -3206,8 +3142,6 @@ public synchronized void releaseAllCache()
 
 	//derived from allYukonUsers,allYukonRoles,allYukonGroups
 	//see type info in IDatabaseCache
-	allYukonUserLookupRoleIDsMap = null;
-	allYukonUserLookupRolePropertyIDsMap = null;    
 	allUserEnergyCompaniesMap = null;
 	userPaoOwnersMap = null;
 }
@@ -3341,6 +3275,8 @@ public synchronized void releaseAllPoints()
 public synchronized void releaseAllYukonUsers(){
 	allYukonUsers = null;
 	allUsersMap = null;
+	releaseUserRoleMap();
+	releaseUserRolePropertyValueMap();
 }
 /**
  * Insert the method's description here.
@@ -3348,6 +3284,8 @@ public synchronized void releaseAllYukonUsers(){
  */
 public synchronized void releaseAllYukonGroups(){
 	allYukonGroups = null;
+	releaseUserRoleMap();
+	releaseUserRolePropertyValueMap();
 }
 /**
  * Insert the method's description here.
@@ -3450,4 +3388,77 @@ public synchronized void setDatabaseAlias(String newAlias){
 protected void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
 	dbChangeListener = newDbChangeListener;
 }
+	
+/* (non-Javadoc)
+ * This method takes a userid and a roleid.  It checks userRoleMap to see
+ * if this role has been recovered from the db before.  If it has not, it will
+ * be taken directly from the database.  
+ */
+public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID) 
+{
+	MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), roleID);
+	LiteYukonRole specifiedRole = null;
+	//check cache for previous grabs
+	if(userRoleMap == null)
+		userRoleMap = new HashMap();
+	else
+		specifiedRole = (LiteYukonRole) userRoleMap.get(keyInts);
+	
+	//not in cache, go to DB.
+	if(specifiedRole == null && !userRoleMap.containsKey(keyInts))
+	{
+		specifiedRole = YukonUserRolePropertyLookup.loadSpecificRole(user, roleID);
+		/*found it, put it in the cache for later searches
+		 * Go ahead and put in null values, too.  This will make it faster to check if this
+		 * role exists for this user next time around.
+		 */
+		userRoleMap.put(keyInts, specifiedRole);
+	}	
+		
+	return specifiedRole;
+}
+
+/*This method takes a userid and a rolepropertyid.  It checks userRolePropertyValueMap
+ *  to see if this role has been recovered from the db before.  If it has not, it will
+ * be taken directly from the database.
+ */
+public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePropertyID) 
+{
+	MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), rolePropertyID);
+	String specifiedPropVal = null;
+	//check cache for previous grabs
+	if(userRolePropertyValueMap == null)
+		userRolePropertyValueMap = new HashMap();
+	else
+		specifiedPropVal = (String) userRolePropertyValueMap.get(keyInts);
+	
+	//not in cache, go to DB.
+	if(specifiedPropVal == null)
+	{
+		specifiedPropVal = YukonUserRolePropertyLookup.loadSpecificRoleProperty(user, rolePropertyID);
+		//found it, put it in the cache for later searches
+		userRolePropertyValueMap.put(keyInts, specifiedPropVal);
+	}
+		
+	return specifiedPropVal;
+}
+
+/* (non-Javadoc)
+ * Scrub out the userRoleMap.  Any LiteYukonRoles that were in here will have to be
+ *recovered from the database.
+ */
+public void releaseUserRoleMap() 
+{
+	userRoleMap = null;
+}
+
+/* (non-Javadoc)
+ * Scrub out the userRolePropertyValueMap.  Any String values that were in here will have to be
+ *recovered from the database.
+ */
+public void releaseUserRolePropertyValueMap() 
+{
+	userRolePropertyValueMap = null;
+}
+
 }

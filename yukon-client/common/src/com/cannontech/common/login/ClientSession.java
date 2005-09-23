@@ -99,7 +99,7 @@ public class ClientSession {
 	 * @return
 	 */
 	public String getRolePropertyValue(int rolePropertyID, String defaultValue) {
-		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID, defaultValue);
+		return AuthFuncs.getRolePropertyValue(getUser(), rolePropertyID);
 	}
 		
 	/**
