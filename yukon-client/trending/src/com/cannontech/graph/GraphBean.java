@@ -308,14 +308,14 @@ public class GraphBean extends Graph
 			ActivityLogSummary.LogSummary logSummary = (ActivityLogSummary.LogSummary)actLogSummary.getLogSummaryVector().get(i); 
 			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
 			{
-				if( logSummary.count >= Integer.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MAXIMUM_DAILY_SCANS, "2")).intValue())
+				if( logSummary.count >= Integer.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MAXIMUM_DAILY_SCANS)).intValue())
 				{
 					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
 				}
 							
 				Date now = new Date();
 				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
-				long duration = Long.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MINIMUM_SCAN_FREQUENCY, "15")).longValue() * 36000;
+				long duration = Long.valueOf(AuthFuncs.getRolePropertyValue(liteYukonUser, CommercialMeteringRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
 				if (sinceLast <= duration)
 				{
 					long waitTime = duration - sinceLast;
