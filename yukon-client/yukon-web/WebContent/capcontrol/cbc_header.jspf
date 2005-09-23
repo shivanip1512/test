@@ -1,8 +1,8 @@
 <!-- START Static Page Header Include -->
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 <%@ page import="com.cannontech.web.editor.DBEditorForm" %>
-
-<script type="text/JavaScript" src="../JavaScript/minmax.js"></script>
+<%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
+<%@ page import="com.cannontech.database.data.point.PointTypes" %>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -45,12 +45,13 @@
                       <td width="49%"> 
                         <div class="rAlign"><span class="menu">Module:</span> 
                           <select id="select">
-                            <option>Account</option>
-                            <option>Metering</option>
-                            <option>Load Response</option>
-                            <option>Hardware</option>
-                            <option>Work Orders</option>
-                            <option>Administration</option>
+				            <option>Account</option>
+				            <option>Administration</option>
+				            <option>Cap Control</option>
+				            <option>Hardware</option>
+				            <option>Load Response</option>
+				            <option>Metering</option>
+				            <option>Work Orders</option>
                           </select>
                           <a href="x" class="menuLink">Help</a> 
                           <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
@@ -70,15 +71,15 @@
 			<input type="hidden" name="value">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorForm.getWizardURL(DBEditorForm.WIZARD_CBC_SUBBUS)%>');">New Substation</a>
-					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Feeder</a> 
-					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New CapBank</a> 
-					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New CBC</a> 
-					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">New Point</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">New Substation</a>
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">New Feeder</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAPBANK)%>');">New CapBank</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">New CBC</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PointTypes.ANALOG_POINT)%>');">New Point</a> 
 				  </div>
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorForm.getEditorURL(DBEditorForm.EDITOR_CAPCONTROL)%>');">Edit</a>
-					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Delete</a> 
+					<a href="#" class="submenuLink" onclick="deletePost();">Delete</a> 
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> 
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
 				  </div>

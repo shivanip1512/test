@@ -24,7 +24,6 @@
 </cti:isPropertyFalse>
 
 <script type="text/JavaScript" src="js/cbc_funcs.js"></script>
-<script type="text/JavaScript" src="../JavaScript/minmax.js"></script>
 <script type="text/JavaScript" src="../JavaScript/xmlhttp.js"></script>
 <script type="text/JavaScript" src="../JavaScript/ol/overlib_mini.js"></script>
 <script type="text/JavaScript" src="../JavaScript/validation.js"></script>

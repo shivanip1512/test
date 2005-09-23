@@ -310,7 +310,7 @@ function callBack( response )
 }
 
 // -------------------------------------------
-//Creates a URL string that from teh elements given.
+//Creates a URL string from the elements given.
 // The attrib name/value pari is appended to the
 // URL. Ensures that each element is only requested onces
 // in the URL line. 
@@ -401,12 +401,7 @@ function processMenuReq()
 			response, FULLHTML, STICKY, MOUSEOFF, FIXX, 25, FIXY, 95);
 
 		//always do this
-		freeReq( manMsgID );
-		
-		//Make up for bug in IE not respecting the min/max size attribute on
-		// pages. This call rescans for min/max attributes for the newly
-		// received HTML.
-		minmax_scan();
+		freeReq( manMsgID );		
     }
 
 }
@@ -488,10 +483,8 @@ function showPopUp( urlStr )
 }
 
 // -------------------------------------------
-//Shows a sticky popup for the checked box elements
-// that are valid values AND that are checked. The returned
-// html is placed in the popup box and then the box is
-// made visible
+//Posts to the correct URL with the checked item
+// for editing
 // -------------------------------------------
 function editorPost( href )
 {
@@ -510,6 +503,42 @@ function editorPost( href )
 	else
 		window.location =
 			href + '?itemid=' + validElems[0].getAttribute('value');
+}
+
+// -------------------------------------------
+//Posts to the correct URL with the checked item
+// for editing
+// -------------------------------------------
+function deletePost()
+{
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+
+	var validElems = new Array();
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	getValidChecks( elemBanks, validElems );
+
+	//only allow the editing of the zeroth element for now
+	if ( validElems.length <= 0 )
+		alert('You must check one or more items that you want to delete');
+	else {
+
+		window.location =	
+			createURLreq( validElems, '/editor/deleteItems.jsf', 'value' );
+
+//		window.location =
+//			'/editor/deleteItems.jsf?id=' + validElems[0].getAttribute('value');
+	}
+}
+
+// -------------------------------------------
+//Simple post for a Wizard->Create action
+// -------------------------------------------
+function wizardPost( href )
+{
+	window.location = href;
 }
 
 // -------------------------------------------
