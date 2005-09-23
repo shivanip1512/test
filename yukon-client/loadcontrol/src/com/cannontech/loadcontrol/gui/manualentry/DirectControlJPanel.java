@@ -1620,7 +1620,10 @@ private void initialize() {
 				getDateComboStart().setVisible(false);
 				getJComboBoxGear().setVisible(false);
 				getJLabelGear().setVisible(false);
-				
+
+				getJComboBoxConstraints().setVisible(false);
+				getJLabelGear1().setVisible(false);
+
 				
 				//getMultiSelectPrgModel().get
 				((DefaultCellEditor)
