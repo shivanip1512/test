@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/06/15 19:23:17 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/09/26 17:11:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -532,7 +532,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
-                resultString = "ERROR " + CtiNumStr(nRet) + " performing command on route " + Route->getName().data() + "\n" + FormatError(nRet);
+                resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + FormatError(nRet) + ") performing command on route " + Route->getName().data();
                 pRet->setResultString(resultString);
                 pRet->setStatus( nRet );
             }
@@ -555,7 +555,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
         {
             nRet = BADROUTE;
 
-            resultString = "ERROR: Route or Route Transmitter not available for device " + getName();
+            resultString = getName() + ": ERROR: Route or Route Transmitter not available for device ";
 
             pRet = CTIDBG_new CtiReturnMsg(getID(),
                                            RWCString(pOut->Request.CommandStr),
