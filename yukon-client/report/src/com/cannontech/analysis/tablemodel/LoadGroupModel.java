@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,8 +12,12 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.functions.LMFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
+import com.cannontech.database.db.macro.GenericMacro;
+import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.database.model.ModelFactory;
@@ -191,7 +196,7 @@ public class LoadGroupModel extends ReportModelBase
 
 				if( getECIDs() != null)
 				{
-					sql.append("AND LMCH.PAOBJECTID IN " +
+					sql.append("AND (LMCH.PAOBJECTID IN " +
 					"(SELECT DISTINCT DG.LMGROUPDEVICEID " +
 					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
 					LMProgramDirectGroup.TABLE_NAME + " DG " +
@@ -201,8 +206,21 @@ public class LoadGroupModel extends ReportModelBase
 					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
 					for (int i = 1; i < getECIDs().length; i++)
 						sql.append(", " + getECIDs()[i]+ " ");
-							 
-					sql.append(")))");
+					sql.append(") ) )");
+
+					//Get all groups that are part of a macroGroup
+					sql.append("OR LMCH.PAOBJECTID IN " +
+					"(SELECT DISTINCT GM.CHILDID " +
+					" FROM " + UserPaoOwner.TABLE_NAME + " us, " +
+					GenericMacro.TABLE_NAME + " GM " +
+					" WHERE US.PAOID = GM.OWNERID " +
+					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
+					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
+					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
+					" WHERE ECLL.ENERGYCOMPANYID IN ( " + getECIDs()[0]);
+					for (int i = 1; i < getECIDs().length; i++)
+						sql.append(", " + getECIDs()[i]+ " ");
+					sql.append(") ) ) )");
 				}
 				if( getPaoIDs()!= null)	//null load groups means ALL groups!
 				{
@@ -216,6 +234,7 @@ public class LoadGroupModel extends ReportModelBase
 				sql.append(" ORDER BY LMCH.PAOBJECTID, LMCH.StartDateTime, LMCTRLHISTID ");	//, LMCH.StopDateTime");
 				if (!isShowAllActiveRestore())
 					sql.append(" DESC ");  // order desc so we can parse for the most recent soe_tag per control
+
 		return sql;
 	}	
 	/* (non-Javadoc)
@@ -501,5 +520,17 @@ public class LoadGroupModel extends ReportModelBase
 	    return restore;
 	    
 	}
+	
+	/*
+	 * Returns a List of Objects (Strings for DeviceMeterGroup stuff, and LiteYukonPaobjects for pao stuff)
+	 * List is from cache.
+	 */
+//	public List getObjectsByModelType(int model)
+//	{
+//		/** TODO Add restrictions for load groups for EC (paoowner) only!  */
+//		List objects = super.getObjectsByModelType(model);
+//		
+//		return objects;
+//	}
 }
 	
