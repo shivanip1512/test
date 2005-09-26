@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/08/15 15:11:44 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/09/26 16:30:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,11 +49,11 @@
 // DLLIMPORT extern CtiConnection VanGoghConnection;
 
 CtiDeviceWelco::CtiDeviceWelco() :
-_deadbandsSent(false)
+_deadbandsSent(0)
 {}
 
 CtiDeviceWelco::CtiDeviceWelco(const CtiDeviceWelco& aRef) :
-_deadbandsSent(false)
+_deadbandsSent(0)
 {
     *this = aRef;
 }
@@ -131,7 +131,8 @@ INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
     if(getDeadbandsSent() == false)      // We are currently unsure whether a deadband request has ever been sent.
     {
-        status = WelCoDeadBands(OutMessage, outList, MAXPRIORITY - 1);
+        incDeadbandsSent();
+        status = WelCoDeadBands(OutMessage, outList, ScanPriority);
     }
 
     if(OutMessage != NULL)
@@ -1591,7 +1592,9 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
                         MyOutMessage->InLength                 = -1;
                         MyOutMessage->EventCode                = RESULT | ENCODED;
                         MyOutMessage->Sequence                 = 0;
-                        MyOutMessage->Retry                    = 2;
+                        MyOutMessage->Retry                    = 0;
+
+                        MyOutMessage->ExpirationTime = RWTime().seconds() + 120;     // These guys do not need to be on-queue for too long.
 
                         outList.insert(MyOutMessage);
                         MyOutMessage = NULL;                // Out of our hands now...
@@ -1895,11 +1898,23 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
 
 bool CtiDeviceWelco::getDeadbandsSent() const
 {
-    return _deadbandsSent;
+    return _deadbandsSent >= 10;
+}
+void CtiDeviceWelco::incDeadbandsSent()
+{
+    _deadbandsSent++;
+    return;
 }
 CtiDeviceWelco& CtiDeviceWelco::setDeadbandsSent(const bool b)
 {
-    _deadbandsSent = b;
+    if(b)
+    {
+        _deadbandsSent = 10;
+    }
+    else
+    {
+        _deadbandsSent = 0;
+    }
     return *this;
 }
 

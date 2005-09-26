@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2003/08/22 21:43:31 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/09/26 16:30:38 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ protected:
 
    private:
 
-   bool     _deadbandsSent;
+   int     _deadbandsSent;
 
 public:
 
@@ -57,6 +57,7 @@ public:
    INT WelCoTimeSync    (INMESS  *InMessage,  RWTPtrSlist< OUTMESS > &outList, INT Priority);
 
    bool getDeadbandsSent() const;
+   void incDeadbandsSent();
    CtiDeviceWelco& setDeadbandsSent(const bool b);
 
    /*
