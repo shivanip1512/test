@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.device.IDeviceMeterGroup"%>
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
-<%@ page import="com.cannontech.yc.bean.LiteLoadGroup"%>
 <%@ page import="com.cannontech.database.data.device.CarrierBase"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.pao.DeviceClasses"%>
@@ -12,7 +11,8 @@
 
 <jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
 <%-- Grab the search criteria --%>
-<jsp:setProperty name="commandDeviceBean" property="page" param="page"/>
+<jsp:setProperty name="commandDeviceBean" property="page" param="page_"/>
+<jsp:setProperty name="commandDeviceBean" property="pageSize" param="pageSize"/>
 <jsp:setProperty name="commandDeviceBean" property="filterBy" param="FilterBy"/>
 <jsp:setProperty name="commandDeviceBean" property="filterValue" param="FilterValue"/>
 <jsp:setProperty name="commandDeviceBean" property="orderBy" param="OrderBy"/>
@@ -41,8 +41,8 @@ if( request.getParameter("SortBy") != null)
 <script language="JavaScript">
 function changeFilter(filterBy) {
 	document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
+	document.getElementById("DivCommChannel").style.display = (filterBy == <%= CommandDeviceBean.COMM_CHANNEL_FILTER %>)? "" : "none";
 	document.getElementById("DivCollectionGroup").style.display = (filterBy == <%= CommandDeviceBean.COLLECTION_GROUP_FILTER%>)? "" : "none";
-	document.getElementById("DivLoadGroup").style.display = (filterBy == <%= CommandDeviceBean.LOAD_GROUP_FILTER%>)? "" : "none";
 }
 
 function init() {
@@ -58,10 +58,10 @@ function showAll(form) {
 function setFilterValue(form){
 	if(document.getElementById("DivRoute").style.display == "")
 		form.FilterValue.value = form.RouteFilterValue.value;
+	else if(document.getElementById("DivCommChannel").style.display == "")
+		form.FilterValue.value = form.CommChannelFilterValue.value;
 	else if( document.getElementById("DivCollectionGroup").style.display == "")
 		form.FilterValue.value = form.CollGroupFilterValue.value;
-	else if( document.getElementById("DivLoadGroup").style.display == "")
-		form.FilterValue.value = form.LoadGroupFilterValue.value;
 	form.submit();
 }
 </script>
@@ -112,32 +112,31 @@ function setFilterValue(form){
 			  <tr> 
 			    <td> 
 			      <div align="left">
-<!--				    <span class="NavHeader">View</span>-->
+   			        <span class="NavHeader">Devices</span>
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-  					  <tr><td height="60"></td></tr>
 			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.DEVICE_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1;font-weight:bold"><span class='Nav' style="font-weight:bold; font-size: 10px">DEVICE</span></td>
+					  	<% if( currentSortBy == DeviceClasses.CARRIER){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1;font-weight:bold"><span class='Nav' style="font-weight:bold; font-size: 10px">MCT</span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=CommandDeviceBean.DEVICE_SORT_BY%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">DEVICE</span></a></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.CARRIER%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">MCT</span></a></td>
 						<%}%>						
 			          </tr>
 					  <tr><td height="10"></td></tr>
 			          <tr>
-					  	<% if( currentSortBy == DeviceClasses.GROUP){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></td>
+					  	<% if( currentSortBy == DeviceClasses.IED){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_IED%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.GROUP%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></a></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.IED%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_IED%></span></a></td>
 						<%}%>						
-			          </tr>
+			          </tr>			          
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == DeviceClasses.RTU){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_RTU%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -147,7 +146,7 @@ function setFilterValue(form){
 					  <tr><td height="10"></td></tr>
 			          <tr>
 					  	<% if( currentSortBy == DeviceClasses.TRANSMITTER){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_TRANSMITTER%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -155,10 +154,47 @@ function setFilterValue(form){
 						<%}%>						
 			          </tr>
 					  <tr><td height="20"></td></tr>
+					</table>
+					<span class="NavHeader">Load Management</span>
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			          <tr>
+					  	<% if( currentSortBy == DeviceClasses.GROUP){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=DeviceClasses.GROUP%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=DeviceClasses.STRING_CLASS_GROUP%></span></a></td>
+						<%}%>						
+			          </tr>
+					  <tr><td height="10"></td></tr>
+					  <cti:checkProperty propertyid="<%= CommanderRole.EXPRESSCOM_SERIAL_MODEL %>">
+			          <tr>
+					  	<% if( currentSortBy == CommandDeviceBean.EXPRESSCOM_SORT_BY){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Expresscom</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Expresscom</span></a></td>
+						<%}%>						
+			          </tr>			          
+					  <tr><td height="10"></td></tr>
+					  </cti:checkProperty>
+					  <cti:checkProperty propertyid="<%= CommanderRole.VERSACOM_SERIAL_MODEL %>">
+			          <tr>
+					  	<% if( currentSortBy == CommandDeviceBean.VERSACOM_SORT_BY){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Versacom</span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Versacom</span></a></td>
+						<%}%>						
+			          </tr>	
+					  <tr><td height="10"></td></tr>
+					  </cti:checkProperty>
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA205_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-205 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -170,7 +206,7 @@ function setFilterValue(form){
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA305_SERIAL_MODEL %>">
 			          <tr>
 					  	<% if( currentSortBy == CommandDeviceBean.DCU_SA305_SERIAL_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
 			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">DCU-305 Serial</span></td>
 						<%} else {%>
 			            <td width="10"></td>
@@ -179,26 +215,20 @@ function setFilterValue(form){
 			          </tr>			          
 					  <tr><td height="10"></td></tr>
 					  </cti:checkProperty>
+					</table>
+					<span class="NavHeader">Cap Control</span>
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
 			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.EXPRESSCOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Expresscom</span></td>
+					  	<% if( currentSortBy == PAOGroups.CLASS_CAPCONTROL){%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px"><%=PAOGroups.STRING_CAT_CAPCONTROL%></span></td>
 						<%} else {%>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Expresscom</span></a></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp?SortBy=<%=PAOGroups.CLASS_CAPCONTROL%>' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px"><%=PAOGroups.STRING_CAT_CAPCONTROL%></span></a></td>
 						<%}%>						
-			          </tr>			          
+			          </tr>
 					  <tr><td height="10"></td></tr>
-			          <tr>
-					  	<% if( currentSortBy == CommandDeviceBean.VERSACOM_SORT_BY){%>
-			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
-			            <td style="padding:1"><span class='Nav' style="font-weight:bold; font-size: 10px">Versacom</span></td>
-						<%} else {%>
-			            <td width="10"></td>
-			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom' class='Link2'><span class='NavText' style="font-weight:bold; font-size: 10px">Versacom</span></a></td>
-						<%}%>						
-			          </tr>			          
-			        </table>
+					</table>
 			      </div>
 			    </td>
 			  </tr>
@@ -264,23 +294,34 @@ function setFilterValue(form){
                         </tr>
                         <tr valign="top"> 
                           <td width="15%">
-						    <% if (currentSortBy == CommandDeviceBean.DEVICE_SORT_BY || currentSortBy == DeviceClasses.GROUP){%>
+						    <% if (currentSortBy == DeviceClasses.IED || 
+							    currentSortBy == DeviceClasses.RTU ||
+							    currentSortBy == DeviceClasses.CARRIER ||
+							    currentSortBy == DeviceClasses.TRANSMITTER){%>
                             <div align="right">Filter by:</div>
                             <%}%>
                           </td>
                           <td width="35%"> 
-						    <% if (currentSortBy == CommandDeviceBean.DEVICE_SORT_BY){%>
+						    						    <% if (currentSortBy == DeviceClasses.CARRIER){%>
                             <select name="FilterBy" onChange="changeFilter(this.value)">
 	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
                               <option value="<%=CommandDeviceBean.ROUTE_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.ROUTE_FILTER) ?  "selected" : ""%>>Route</option>
                               <option value="<%=CommandDeviceBean.COLLECTION_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COLLECTION_GROUP_FILTER) ?  "selected" : ""%>>Collection Group</option>
                             </select>
-	                         <%} else if (currentSortBy == DeviceClasses.GROUP){%>
+						    <%} else if (currentSortBy == DeviceClasses.IED || currentSortBy == DeviceClasses.RTU){%>
                             <select name="FilterBy" onChange="changeFilter(this.value)">
 	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
-                              <option value="<%=CommandDeviceBean.LOAD_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.LOAD_GROUP_FILTER) ?  "selected" : ""%>>Load Group</option>
+                              <option value="<%=CommandDeviceBean.COMM_CHANNEL_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COMM_CHANNEL_FILTER) ?  "selected" : ""%>>Comm Channel</option>
+                              <option value="<%=CommandDeviceBean.COLLECTION_GROUP_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COLLECTION_GROUP_FILTER) ?  "selected" : ""%>>Collection Group</option>
                             </select>
-	                         <%}%>	                         
+						    <%} else if (currentSortBy == DeviceClasses.TRANSMITTER){%>
+                            <select name="FilterBy" onChange="changeFilter(this.value)">
+	                          <option value="<%=CommandDeviceBean.NO_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.NO_FILTER) ?  "selected" : ""%>>(none)</option>
+                              <option value="<%=CommandDeviceBean.COMM_CHANNEL_FILTER%>" <%=(commandDeviceBean.getFilterBy() == CommandDeviceBean.COMM_CHANNEL_FILTER) ?  "selected" : ""%>>Comm Channel</option>
+                            </select>                            
+	                         <%} else {%>
+			    			<input type="hidden" name="FilterBy" value="<%=CommandDeviceBean.NO_FILTER%>">
+	                         <%}%>
                           </td>
                           <td width="50%"> 
                             <div id="DivRoute" style="display:none"> 
@@ -288,6 +329,16 @@ function setFilterValue(form){
                               <% for (int i = 0; i < commandDeviceBean.getValidRoutes().size(); i++)
                               {
                               	int id = ((Integer)commandDeviceBean.getValidRoutes().get(i)).intValue();
+                              	%>
+                                 <option value="<%=id%>" <%=(commandDeviceBean.getFilterValue().length() > 0 && commandDeviceBean.getFilterValue().equals(String.valueOf( id)) ? "selected" :"")%>><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></option>
+                            <%}%>
+                              </select>
+                            </div>
+                            <div id="DivCommChannel" style="display:none"> 
+                              <select name="CommChannelFilterValue">
+                              <% for (int i = 0; i < commandDeviceBean.getValidCommChannels().size(); i++)
+                              {
+                              	int id = ((Integer)commandDeviceBean.getValidCommChannels().get(i)).intValue();
                               	%>
                                  <option value="<%=id%>" <%=(commandDeviceBean.getFilterValue().length() > 0 && commandDeviceBean.getFilterValue().equals(String.valueOf( id)) ? "selected" :"")%>><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></option>
                             <%}%>
@@ -301,30 +352,6 @@ function setFilterValue(form){
                               	%>
                                 <option value="<%=val%>" <%=(commandDeviceBean.getFilterValue().equalsIgnoreCase(val) ? "selected" :"")%>><%=val%></option>
                                 <%}%>
-                              </select>
-                            </div>
-                            <div id="DivLoadGroup" style="display:none"> 
-                              <select name="LoadGroupFilterValue">
-                              <% Vector tempLiteLoadGroups = (Vector)commandDeviceBean.getValidLoadGroups();
-                              if( tempLiteLoadGroups != null)
-                              {
-                                for (int i = 0; i < tempLiteLoadGroups.size(); i++)
-                                {
-                                	int id = ((LiteLoadGroup)tempLiteLoadGroups.get(i)).getGroupID();
-                                	%>
-                                  <option value="<%=id%>" <%=(commandDeviceBean.getFilterValue().equals(String.valueOf(id))? "selected" :"")%>><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></option>
-                              <%}
-                              }%>
-                              </select>
-                            </div>
-                            <div id="DivAlternateGroup" style="display:none"> 
-                              <select name="AltGroup">
-                                <option value="Default" selected>Default</option>
-                              </select>
-                            </div>
-                            <div id="DivRoute" style="display:none"> 
-                              <select name="RouteGroup">
-                                <option value="SomeRoute" selected>Some Route</option>
                               </select>
                             </div>
                           </td>

@@ -10,6 +10,7 @@
 <%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole"%>
+<%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
 <cti:checklogin/> 
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
@@ -48,6 +49,7 @@
 		manual = true;
 	}
 		
+	Vector serialNumbers;
 	String serialNum = "";
 	String serialType = "";
 	if( request.getParameter("xcom") != null){
@@ -133,7 +135,7 @@
 			  <tr> 
 			    <td> 
 			      <div align="left">
-				    <span class="NavHeader">Commander</span>
+				    <span class="NavHeader">Go To...</span>
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
 					  <tr>
 					  	<% String link = "";
@@ -189,7 +191,7 @@
   					  <tr><td height="10"></td></tr>
 			          <tr>
 			            <td width="10"></td>
-			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>BACK TO LIST</span></a></td>
+			            <td style="padding:1"><a href='SelectDevice.jsp' class='Link2'><span class='NavText'>Select Device</span></a></td>
 			          </tr>
   					  <tr><td height="10"></td></tr>
 			        </table>
@@ -201,6 +203,44 @@
 			      <div align="left">
 				    <span class="NavHeader">Devices</span>
 			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
+			          {
+			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
+			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	if( CommandDeviceBean.isDeviceSortByGroup(lPao) )
+			          	{%>
+			          <tr>
+					  	<% if (id == deviceID) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+						<%}%>						
+			          </tr>
+					  <tr><td height="3"></td></tr>
+			          <% } }%>
+					  <tr><td height="25"></td></tr>
+			        </table>			      
+				    <span class="NavHeader">Load Management</span>
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
+			          {
+			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
+			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	if( CommandDeviceBean.isLoadManagementSortByGroup(lPao) )
+			          	{%>
+			          <tr>
+					  	<% if (id == deviceID) {%>
+			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED, "Bullet.gif")%>' width='9' height='9'></td>
+			            <td style="padding:1"><span class='Nav'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></td>
+						<%} else {%>
+			            <td width="10"></td>
+			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=id%><%=(manual?"&manual":"")%>' class='Link2'><span class='NavText'><%=com.cannontech.database.cache.functions.PAOFuncs.getYukonPAOName(id)%></span></a></td>
+						<%}%>						
+			          </tr>
+					  <tr><td height="3"></td></tr>
+			          <% } }%>
 					  <cti:checkProperty propertyid="<%= CommanderRole.DCU_SA205_SERIAL_MODEL %>">
  					  <tr>
 					  	<% if (serialType.equals("sa205") ) {%>
@@ -211,7 +251,7 @@
 			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205' class='Link2'><span class='NavText'>DCU-205 Serial</span></a></td>
 						<%}%>						
 			          </tr>
-  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA205_SERIAL); 
+  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA205_SERIAL); 
   					  if(serialNumbers != null)
   					  {
   			            for (int i = 0; i < serialNumbers.size(); i++)
@@ -240,7 +280,7 @@
 			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305' class='Link2'><span class='NavText'>DCU-305 Serial</span></a></td>
 						<%}%>						
 			          </tr>
-  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA305_SERIAL); 
+  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_SA305_SERIAL); 
   					  if(serialNumbers != null)
   					  {
   			            for (int i = 0; i < serialNumbers.size(); i++)
@@ -259,6 +299,7 @@
 			          }%>
   					  <tr><td height="5"></td></tr>
 					  </cti:checkProperty>
+					  <cti:checkProperty propertyid="<%= CommanderRole.EXPRESSCOM_SERIAL_MODEL %>">
 			          <tr> 
 					  	<% if (serialType.equals("xcom") ) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
@@ -268,7 +309,7 @@
 			            <td style="padding:1"><a href='CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom' class='Link2'><span class='NavText'>Expresscom Serial</span></a></td>
 						<%}%>						
 			          </tr>
-  					  <%Vector serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL); 
+  					  <%serialNumbers = YC_BEAN.getSerialNumbers(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL); 
   					  if(serialNumbers != null)
   					  {
   			            for (int i = 0; i < serialNumbers.size(); i++)
@@ -285,7 +326,9 @@
 			          </tr>
 			          <%}
 			          }%>
-  					  <tr><td height="5"></td></tr>			          
+  					  <tr><td height="5"></td></tr>
+  					  </cti:checkProperty>
+  					  <cti:checkProperty propertyid="<%= CommanderRole.VERSACOM_SERIAL_MODEL %>">
 			          <tr> 
 					  	<% if (serialType.equals("vcom") ) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
@@ -312,10 +355,17 @@
 			          </tr>
 			          <%}
 			          }%>
-  					  <tr><td height="25"></td></tr>
+					  <tr><td height="25"></td></tr>
+					  </cti:checkProperty>
+			        </table>
+				    <span class="NavHeader">Cap Control</span>
+			        <table width="100%" border="0" cellspacing="0" cellpadding="0">
 			          <% for (int i = 0; i < YC_BEAN.getDeviceIDs().size(); i++)
 			          {
-			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();%>
+			          	int id = ((Integer)YC_BEAN.getDeviceIDs().get(i)).intValue();
+			          	LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(id);
+			          	if( CommandDeviceBean.isCapControlSortByGroup(lPao) )
+			          	{%>
 			          <tr>
 					  	<% if (id == deviceID) {%>
 			            <td width="10"><img src='../WebConfig/<%=AuthFuncs.getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED)%>' width='9' height='9'></td>
@@ -326,7 +376,7 @@
 						<%}%>						
 			          </tr>
 					  <tr><td height="3"></td></tr>
-			          <%}%>
+			          <% } }%>
 			        </table>
 			      </div>
 			    </td>
