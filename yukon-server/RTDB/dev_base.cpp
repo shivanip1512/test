@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/09/15 19:12:50 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/09/26 17:11:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -784,7 +784,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(RWTPtrSlist< CtiMessage > &retList, c
     {
         status = DEVICEINHIBITED;
 
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,          // 20050922 CGP.  TargetId should be used in case the target is an MCT, not the CCU. // getID(),
                                                      RWCString(OutMessage->Request.CommandStr),
                                                      getName() + RWCString(": ") + FormatError(status),
                                                      status,
