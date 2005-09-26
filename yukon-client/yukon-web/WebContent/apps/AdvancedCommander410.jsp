@@ -93,7 +93,6 @@ function disableAllButtons()
 	document.getElementById('DCChannel4ID').disabled = true;
 
 	document.getElementById('PRChannel1ID').disabled = true;
-	document.getElementById('PRChannel4ID').disabled = true;
 	
 	document.getElementById('LoadRPH1ID').disabled = true;
 	document.getElementById('LoadRPH4ID').disabled = true;
@@ -253,7 +252,7 @@ function disableAllButtons()
 					  <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
 						<tr> 
 						  <td align="right"><span class="NavText">
-							<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRChannel4ID"
+							<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
 								onMouseOver="window.status='Save Displayed Peak Reports to File';return true;"
 										onMouseOut="window.status='';return true;">Save to File</a></span>
 						  </td>
