@@ -16,6 +16,7 @@ import com.cannontech.analysis.Reportable;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.model.DeviceTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.util.ServletUtil;
 
@@ -329,7 +330,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		
 		html += "<SCRIPT>" + LINE_SEPARATOR;
 		html += "function disableGroup(form){" + LINE_SEPARATOR;
-		html += "  if (form.paoIDs) {" + LINE_SEPARATOR;
+		html += "  if (form.paoIDs) {" + LINE_SEPARATOR;	//DEPRECTATED PAOIDS
 		html += "    uncheckAll(form, form.paoIDs)" + LINE_SEPARATOR;
 		html += "  }" + LINE_SEPARATOR;
 		html += "  if (form.filterValues) {" + LINE_SEPARATOR;
@@ -401,6 +402,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					        html += "          <option value='" + objects.get(j).toString()+ "'>" + objects.get(j).toString() + "</option>" + LINE_SEPARATOR;
 					    else if (objects.get(j) instanceof LiteYukonPAObject)
 					        html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
+						else if (objects.get(j) instanceof LiteDeviceMeterNumber)
+							html += "          <option value='" + ((LiteDeviceMeterNumber)objects.get(j)).getDeviceID() + "'>" + ((LiteDeviceMeterNumber)objects.get(j)).getMeterNumber() + "</option>" + LINE_SEPARATOR;
 					}
 				}
 				html += "        </select>" + LINE_SEPARATOR;
@@ -466,6 +469,9 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					setBillingGroups(paramArray);
 				else
 					setBillingGroups(null);
+					
+				//Unload paoIDs
+				setPaoIDs(null);
 			}
 			else	//Load PaobjectID int values
 			{
@@ -481,6 +487,9 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				}
 				else
 					setPaoIDs(null);
+
+				//Unload billinggroups
+				setBillingGroups(null);
 			}
 			//This parameter is not implemented in this getHTMLOptionsTable since most of the implementing classes
 			//	have their own rendering of this parameter.  But setting it here takes care of all the other classes not having to do it.
@@ -589,6 +598,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	            return cache.getAllDevices();
 	        case ModelFactory.MCT:
 	            return cache.getAllMCTs();
+			case ModelFactory.DEVICE_METERNUMBER:
+				return cache.getAllDeviceMeterGroups();
 	        case ModelFactory.COLLECTIONGROUP:
 	            return cache.getAllDMG_CollectionGroups();
 	        case ModelFactory.TESTCOLLECTIONGROUP:
