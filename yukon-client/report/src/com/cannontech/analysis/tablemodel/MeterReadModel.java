@@ -169,7 +169,8 @@ public class MeterReadModel extends ReportModelBase
 	{
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, null);
-		setFilterModelTypes(new int[]{ 
+		setFilterModelTypes(new int[]{
+				ModelFactory.METER, 
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
@@ -229,6 +230,15 @@ public class MeterReadModel extends ReportModelBase
 		" AND UM.FORMULA ='usage' " +	//TODO - how to choose which points to show.
 		" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 			
+//		Use paoIDs in query if they exist			
+		if( getPaoIDs() != null && getPaoIDs().length > 0)
+		{
+			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
+			for (int i = 1; i < getPaoIDs().length; i++)
+				sql.append(", " + getPaoIDs()[i]);
+			sql.append(") ");
+		}
+		
 		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
 			sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID " +

@@ -53,7 +53,8 @@ public class PowerFailModel extends ReportModelBase
 	public PowerFailModel()
 	{
 		super();
-		setFilterModelTypes(new int[]{ 
+		setFilterModelTypes(new int[]{
+				ModelFactory.DEVICE, 
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
@@ -101,6 +102,15 @@ public class PowerFailModel extends ReportModelBase
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID  AND P.POINTID = RPH.POINTID"+
 			" AND P.PAOBJECTID = PAO.PAOBJECTID AND P.POINTOFFSET = 20 ");
 			
+//		Use paoIDs in query if they exist			
+		if( getPaoIDs() != null && getPaoIDs().length > 0)
+		{
+			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
+			for (int i = 1; i < getPaoIDs().length; i++)
+				sql.append(", " + getPaoIDs()[i]);
+			sql.append(") ");
+		}
+					
 		if( getBillingGroups() != null && getBillingGroups().length > 0)
 		{
 			sql.append(" AND " + getBillingGroupDatabaseString(getFilterModelType()) + " IN ( '" + getBillingGroups()[0]);
