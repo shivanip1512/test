@@ -12,16 +12,20 @@ package com.cannontech.yc.bean;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class LiteLoadGroup{
+public class YCLiteLoadGroup{
 	private int groupID = -1;
+	private int routeID = -1;
+	private double kwCapacity = 0; 
 	private String serial = null;
 	
 	/**
 	 * 
 	 */
-	public LiteLoadGroup(int groupID_, String serial_) {
+	public YCLiteLoadGroup(int groupID_, double kwCapacity_, int routeID_, String serial_) {
 		super();
 		groupID = groupID_;
+		kwCapacity = kwCapacity_;
+		routeID = routeID_;
 		serial = serial_;
 	}
 	public int getGroupID()
@@ -32,4 +36,12 @@ public class LiteLoadGroup{
 	{
 		return serial;
 	}
+    public double getKwCapacity()
+    {
+        return kwCapacity;
+    }
+    public int getRouteID()
+    {
+        return routeID;
+    }
 }
