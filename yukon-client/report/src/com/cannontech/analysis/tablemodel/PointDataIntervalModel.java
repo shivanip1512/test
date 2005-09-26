@@ -129,7 +129,8 @@ public class PointDataIntervalModel extends ReportModelBase
 		setPointType(intervalPointType);
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
-		setFilterModelTypes(new int[]{ 
+		setFilterModelTypes(new int[]{
+				ModelFactory.DEVICE, 
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
