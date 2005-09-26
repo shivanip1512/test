@@ -218,15 +218,16 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 		for (int i = 0; i < meterNumbers.length; i++)
 		{
 			LiteYukonPAObject lPao = null;
-			if( key == null )
+			//This error will never happen.
+			/*if( key == null )
 			{
 				ErrorObject err = new ErrorObject();
 				err.setEventTime(new GregorianCalendar());
 				err.setErrorString("Unknown OMS unique key value.");
 				err.setObjectID(meterNumbers[i]);
 				errorObjects.add(err);
-			}
-			else if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+			} else */
+			if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
 				lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumbers[i]);
 			else if(key.toLowerCase().startsWith("meternum"))
 				lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumbers[i]);
@@ -387,6 +388,7 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 		if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB)
 		{
 			mspRolesMap = null;
+			CTILogger.debug("DBChange received: Releasing multispeak Roles Map");
 			//Release the stored multispeak role/properties
 		}
 	}
