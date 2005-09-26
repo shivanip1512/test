@@ -12,7 +12,7 @@ LitePoint kwLP = null;
 LitePoint voltageLP = null;
 
 String channel_1Str = "Channel 1 (kW Profile)";
-String channel_4Str = "Channel 4 (Voltage Profile)";
+String channel_4Str = "Channel 4 (Volt Profile)";
 int channel_1ID = PointTypes.SYS_PID_SYSTEM;
 int channel_4ID = PointTypes.SYS_PID_SYSTEM;
 
@@ -169,9 +169,6 @@ function disableAllButtons()
 								<a href="javascript:submitCommand('PeakReport',<%= channel_1ID %>, 1);" style="font-weight:bold;height:20px" class="Link3" id="PRChannel1ID"
 										onMouseOver="window.status='Read (from the meter) the selected Profile Peak Report for Channel 1';return true;"
 										onMouseOut="window.status='';return true;"><%= channel_1Str%></a><br>
-							    <a href="javascript:submitCommand('PeakReport', <%= channel_4ID %>, 4);" style="font-weight:bold;height:20px" class="Link3" id="PRChannel4ID"
-										onMouseOver="window.status='Read (from the meter) the selected Profile Peak Report for Channel 4';return true;"
-										onMouseOut="window.status='';return true;"><%= channel_4Str %></a>
 								</td>
                     		  </tr>
                   			</table>
