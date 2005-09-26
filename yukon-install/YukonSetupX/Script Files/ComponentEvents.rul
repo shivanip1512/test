@@ -164,10 +164,10 @@ foundVal = RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , TomcatPath , -1 
 
 //unpack the war file
 foundVal = ChangeDirectory(TomcatPath + "\\webapps\\yukon");
-WarPath = TomcatPath + '\\webapps\\yukon\\yukon-web.war';
+WarPath = TomcatPath + '\\webapps\\yukon\\yukon.war';
 szCmdLine = '-xfv ' + WarPath;
 LaunchAppAndWait (JavaPath+"\\bin\\jar.exe" , szCmdLine, WAIT | LAAW_OPTION_NO_CHANGEDIRECTORY);
-DeleteFile(TomcatPath + "\\webapps\\yukon\\yukon-web.war");
+DeleteFile(TomcatPath + "\\webapps\\yukon\\yukon.war");
 
 //make sure that Tomcat will be aware of the presence of the new environment variables
 szEnv = "Environment";

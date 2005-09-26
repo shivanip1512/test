@@ -908,7 +908,7 @@
 		<row><td>xerces_c_1_7_0d.dll</td><td>Common Dlls</td><td>xerces-c_1_7_0D.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\xerces-c_1_7_0D.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>yc.jar</td><td>Yukon Commander</td><td>yc.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yc.jar</td><td>1</td><td>NewSubFolder89</td></row>
 		<row><td>yukon.bat</td><td>Common Dlls</td><td>yukon.bat</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\yukon.bat</td><td>1</td><td>NewSubFolder72</td></row>
-		<row><td>yukon_web.war</td><td>Tomcat</td><td>yukon-web.war</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukon-web.war</td><td>1</td><td>NewSubFolder65</td></row>
+		<row><td>yukon.war</td><td>Tomcat</td><td>yukon.war</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\yukon.war</td><td>1</td><td>NewSubFolder65</td></row>
 		<row><td>yukonappserver.jar</td><td>Common Bin</td><td>yukonappserver.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\yukonappserver.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>yukonnoalarm.ico</td><td>Alarm Monitor</td><td>YukonNoAlarm.ico</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\YukonNoAlarm.ico</td><td>1</td><td>NewSubFolder73</td></row>
 	</table>
