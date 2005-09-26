@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/15 15:13:59 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/09/26 17:10:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
     InMessage.DeviceID = PORTERSU_DEVID;
     /* create and send return message if calling process expects it */
-    if(OutMessage->EventCode & RESULT)
+    if(ErrorCode == PORTINHIBITED || OutMessage->EventCode & RESULT)
     {
         OutEchoToIN( OutMessage, &InMessage );
 
@@ -189,7 +189,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " DeviceID " << CtiNumStr(OutMessage->DeviceID) << ", Error " << CtiNumStr(ErrorCode) << " " << FormatError(ErrorCode) << endl;
+            dout << RWTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
         }
     }
 
