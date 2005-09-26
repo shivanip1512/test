@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/09/09 11:27:40 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/09/26 16:53:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -410,39 +410,43 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
         case TYPE_WELCORTU:
         case TYPE_VTU:
-            /* Allocate some memory */
-            if((OutMessage = CTIDBG_new OUTMESS) == NULL)
             {
-                return;
+                if(RemoteRecord->getAddress() != RTUGLOBAL)     // 20050919 CGP: Timesyncs not supported on the RTU (ODEC RTU implementation) to the global address
+                {
+                    /* Allocate some memory */
+                    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
+                    {
+                        return;
+                    }
+
+                    OutMessage->Buffer.OutMessage[5] = IDLC_TIMESYNC | 0x80;
+                    OutMessage->Buffer.OutMessage[6] = 7;
+
+                    /* send a time sync to this guy */
+                    OutMessage->DeviceID = RemoteRecord->getID();
+                    OutMessage->Port     = RemoteRecord->getPortID();
+                    OutMessage->Remote   = RemoteRecord->getAddress();
+                    OutMessage->TimeOut     = 2;
+                    OutMessage->Retry       = 0;
+                    OutMessage->OutLength   = 7;
+                    OutMessage->InLength    = 0;
+                    OutMessage->Source      = 0;
+                    OutMessage->Destination = 0;
+                    OutMessage->Sequence    = 0;
+                    OutMessage->Priority    = MAXPRIORITY - 2;
+                    OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
+                    OutMessage->ReturnNexus = NULL;
+                    OutMessage->SaveNexus   = NULL;
+
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    {
+                        printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                        delete (OutMessage);
+                    }
+                }
+
+                break;
             }
-
-            OutMessage->Buffer.OutMessage[5] = IDLC_TIMESYNC | 0x80;
-            OutMessage->Buffer.OutMessage[6] = 7;
-
-            /* send a time sync to this guy */
-            OutMessage->DeviceID = RemoteRecord->getID();
-            OutMessage->Port     = RemoteRecord->getPortID();
-            OutMessage->Remote   = RemoteRecord->getAddress();
-            OutMessage->TimeOut     = 2;
-            OutMessage->Retry       = 0;
-            OutMessage->OutLength   = 7;
-            OutMessage->InLength    = 0;
-            OutMessage->Source      = 0;
-            OutMessage->Destination = 0;
-            OutMessage->Sequence    = 0;
-            OutMessage->Priority    = MAXPRIORITY - 2;
-            OutMessage->EventCode   = NOWAIT | NORESULT | ENCODED | TSYNC;
-            OutMessage->ReturnNexus = NULL;
-            OutMessage->SaveNexus   = NULL;
-
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-            {
-                printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
-                delete (OutMessage);
-            }
-
-            break;
-
         case TYPE_SERIESVLMIRTU:
             {
                 /* Allocate some memory */
@@ -471,7 +475,6 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
                 break;
             }
-
         default:
             break;
         }
