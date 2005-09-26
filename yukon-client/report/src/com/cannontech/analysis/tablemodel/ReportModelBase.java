@@ -417,10 +417,11 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		html += "    <td class='main' height='10' style='padding-left:5; padding-top:5'>" + LINE_SEPARATOR;
 		if( getFilterModelTypes() != null)
 		{
-			html += "      <div id='DivSelectAll' style='displaytrue'>" + LINE_SEPARATOR;
+			html += "<span class='NavText'>* Hold &ltCTR&gt key down to select multiple values</span>" + LINE_SEPARATOR;
+			html += "      <div id='DivSelectAll' style='display:true'>" + LINE_SEPARATOR;
 			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='disableGroup(document.reportForm);'>Select All" + LINE_SEPARATOR;
 			html += "      </div>" + LINE_SEPARATOR;
-			html += "      <div id='DivSelectNone' style='displaytrue'>" + LINE_SEPARATOR;			
+			html += "      <div id='DivSelectNone' style='display:true'>" + LINE_SEPARATOR;			
 			html += "        <input type='button' value='Unselect All' onclick='disableGroup(document.reportForm);'/>";
 			html += "      </div>" + LINE_SEPARATOR;
 			    
