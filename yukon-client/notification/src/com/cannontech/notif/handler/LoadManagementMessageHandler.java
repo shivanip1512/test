@@ -38,6 +38,15 @@ public class LoadManagementMessageHandler extends NotifHandler {
         final String durationMinutesStr = Long.toString(durationMinutes);
         final String durationHoursStr = Long.toString(durationHours);
         final String remainingMinutesStr = Long.toString(remainingMinutes);
+        
+        final boolean openEnded;
+        // check if duration is greater than 1 year
+        final int hoursInYear = (24 * 365);
+        if (durationHours > hoursInYear) {
+            openEnded = true;
+        } else {
+            openEnded = false;
+        }
 
         final String actionString;
         switch(msg.notifType) {
@@ -72,6 +81,8 @@ public class LoadManagementMessageHandler extends NotifHandler {
                 notif.addData("durationminutes", durationMinutesStr);
                 notif.addData("durationhours", durationHoursStr);
                 notif.addData("remainingminutes", remainingMinutesStr);
+                
+                notif.addData("openended", openEnded ? "yes" : "no");
                 
                 notif.addData("action", actionString);
 

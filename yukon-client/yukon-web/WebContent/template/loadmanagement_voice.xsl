@@ -40,7 +40,7 @@
   <xsl:template match="loadmanagement" priority="-5">
       HECO is calling for customers enrolled in the CIDLC program to curtail electric use.  
       Curtailment will start on <xsl:value-of select="startdate"/> at <xsl:value-of select="starttime"/> 
-      and last for approximately <xsl:value-of select="durationhours"/> hours.  
+    <xsl:if test="openended = 'no'">and last for approximately <xsl:value-of select="durationhours"/> hours</xsl:if> 
   </xsl:template>
   
 </xsl:stylesheet>
