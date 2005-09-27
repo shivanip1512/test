@@ -1,5 +1,5 @@
-#include "yukon.h"
 
+#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/09/27 20:41:19 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "yukon.h"
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
 
@@ -110,8 +111,11 @@ ULONG CtiTransdataData::stringToInt( BYTE *str, int len )
    {
       c = *str;
 
-      accumulator = accumulator * 10;
-      accumulator += c - 48;
+      if( c >= 48 )    // 5/6/2005 wasn't checking for bad values, a ' ' was killing us!
+      {
+         accumulator = accumulator * 10;
+         accumulator += c - 48;
+      }
 
       str++;
    }
