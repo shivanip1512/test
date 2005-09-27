@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_dyn_dispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/09/27 00:53:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,5 +156,23 @@ CtiDynamicPointDispatch&  CtiDynamicPointDispatch::setInDelayedData(const bool i
 {
     _inDelayedData = in;
     return *this;
+}
+
+void CtiDynamicPointDispatch::setConditionActive(int alarm_condition, bool active)
+{
+    if(active)
+    {
+        _conditionActive |= (0x00000001 << alarm_condition);
+    }
+    else
+    {
+        _conditionActive &= ~(0x00000001 << alarm_condition);
+    }
+
+    return;
+}
+bool CtiDynamicPointDispatch::isConditionActive(int alarm_condition) const
+{
+    return _conditionActive & (0x00000001 << alarm_condition);
 }
 

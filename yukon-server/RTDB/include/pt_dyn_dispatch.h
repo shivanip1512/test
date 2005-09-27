@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2004/11/17 23:39:41 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/09/27 00:53:10 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,6 +38,8 @@ protected:
    INT                        _lastSignal;
 
    bool                       _inDelayedData;
+
+   UINT                       _conditionActive;     // These are the point conditions (alarmable conditions) active for this point.
 
 private:
 
@@ -77,6 +79,10 @@ public:
 
    bool inDelayedData() const;
    CtiDynamicPointDispatch&  setInDelayedData(const bool in = true);
+
+   void setConditionActive(int alarm_condition, bool active = true);
+   bool isConditionActive(int alarm_condition) const;
+
 
 };
 #endif // #ifndef __PT_DYN_DISPATCH_H__

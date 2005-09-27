@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/09/01 14:42:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/09/27 00:53:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -401,7 +401,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     return tags;
 }
 
-UINT CtiSignalManager::getAlarmMask(long pointid) const // Returns the bitwise OR of all alarms on this point
+UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR of all alarms on this point
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())

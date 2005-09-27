@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/08/23 20:02:55 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/09/27 00:53:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -125,7 +125,7 @@ private:
     CtiTagManager              _tagManager;
 
     CtiConnection* _notificationConnection;
-    
+
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
 
     int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
@@ -137,6 +137,7 @@ private:
     void checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
     void tagSignalAsAlarm(CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData = 0);
+    void updateDynTagsForSignalMsg( CtiPointBase &point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
     bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
     bool ablementPoint(CtiPointBase *&pPoint, bool &devicedifferent, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &Multi);
@@ -151,9 +152,9 @@ private:
     void stopDispatch();
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
-    
+
     CtiConnection* getNotificationConnection();
-    
+
 public:
 
     typedef CtiServer Inherited;
@@ -275,6 +276,7 @@ public:
     void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false);
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
+    void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn, bool activate);
     void deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
     void reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn);
 
