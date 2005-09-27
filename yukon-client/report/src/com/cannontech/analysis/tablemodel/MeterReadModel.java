@@ -77,6 +77,7 @@ public class MeterReadModel extends ReportModelBase
 
 	//servlet attributes/parameter strings
 	private static String ATT_METER_READ_TYPE = "meterReadType";
+	private static String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
 	
 	public class MeterReadComparator implements Comparator, Serializable
@@ -216,7 +217,7 @@ public class MeterReadModel extends ReportModelBase
 		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    sql.append(", TIMESTAMP, VALUE ");
 			
-		sql.append(" FROM YUKONPAOBJECT PAO, POINT P, POINTUNIT PU, UNITMEASURE UM ");
+		sql.append(" FROM YUKONPAOBJECT PAO, POINT P ");
 
 		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    sql.append(", RAWPOINTHISTORY RPH1");
@@ -225,10 +226,10 @@ public class MeterReadModel extends ReportModelBase
 		    sql.append(", DEVICEMETERGROUP DMG ");
 			
 		sql.append(" WHERE PAO.PAOCLASS = '" + DeviceClasses.STRING_CLASS_CARRIER + "' " +
-		" AND P.POINTID = PU.POINTID " +
-		" AND PU.UOMID = UM.UOMID " +
-		" AND UM.FORMULA ='usage' " +	//TODO - how to choose which points to show.
-		" AND P.PAOBJECTID = PAO.PAOBJECTID ");
+		" AND P.PAOBJECTID = PAO.PAOBJECTID " +		        
+		//  Select only billing points
+		" AND (P.POINTTYPE = 'PulseAccumulator' AND P.POINTOFFSET IN (1, 2, 3) " +
+		"      OR P.POINTTYPE = 'Analog' AND P.POINTOFFSET IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27, 28) ) ");		    
 			
 //		Use paoIDs in query if they exist			
 		if( getPaoIDs() != null && getPaoIDs().length > 0)
@@ -632,7 +633,19 @@ public class MeterReadModel extends ReportModelBase
 		String html = "";
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td align='center'>" + LINE_SEPARATOR;
+		/*html += "    <td valign='top' align='center'>" + LINE_SEPARATOR;
+		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td valign='top' class='TitleHeader'>Point Type</td>" +LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "        <tr>" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='" + ATT_POINT_TYPE +"' value='kWh' checked disabled>kWh" + LINE_SEPARATOR;
+		html += "          </td>" + LINE_SEPARATOR;
+		html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
+*/
+		html += "    <td valign='top' align='center'>" + LINE_SEPARATOR;		
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>Meter Read Status</td>" +LINE_SEPARATOR;
