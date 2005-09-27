@@ -27,7 +27,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private Integer minResponseTime = new Integer(900);
 	private Integer minConfirmPercent = new Integer(75);
 	private Integer failurePercent = new Integer(25);
-	private String daysOfWeek = new String("YYYYYNNN");
+	private String daysOfWeek = new String("NYYYYYNN");
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 	private Integer controlDelayTime = new Integer(0);
 	private Integer controlSendRetries = new Integer(0);
