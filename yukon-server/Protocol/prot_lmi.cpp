@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/09/09 10:58:11 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/09/27 18:19:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,6 +221,7 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         //  note that this will be analog offset LMIPointOffsetTransmitterPower + 1 when it gets back to the system
         pdm = CTIDBG_new CtiPointDataMsg(LMIPointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
         pdm->setTime(_transmitter_power_time);
+        pdm->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
         pointList.append(pdm);
 

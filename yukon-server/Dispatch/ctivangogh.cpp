@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2005/09/27 00:53:09 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2005/09/27 18:19:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2195,11 +2195,23 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynami
     bool bValueChange = true;
     bool bQualityChange = true;
     BOOL bStatus = TRUE;
+    bool bTimestampMatters = false;
+    bool bTimestampChange = false;
 
     // Verify that the point has actually changed from the last known!
     // OR it must be marked for forcing through the system
     if(pDyn != NULL)
     {
+        if(Msg.getTags() & TAG_POINT_DATA_TIMESTAMP_VALID)
+        {
+            bTimestampMatters = true;
+            if((Msg.getTime() > pDyn->getTimeStamp()) || (Msg.getTime() == pDyn->getTimeStamp() && Msg.getMillis() != pDyn->getTimeStampMillis()))
+            {
+                // The timestamp is changed, OR the FORCE bit is set, then the SOE data has been tweaked.
+                bTimestampChange = true;
+            }
+        }
+
         if(pDyn->getValue() == Msg.getValue())
         {
             bValueChange = false;   // There was no value change.
@@ -2214,7 +2226,15 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynami
         }
     }
 
-    bStatus = ( (bValueChange || bQualityChange) ? TRUE : FALSE );
+    if(bTimestampMatters)
+    {
+        // It matters, but is not newer!  DO NOT CALL THIS NEW
+        bStatus = bTimestampChange ? TRUE : FALSE;
+    }
+    else
+    {
+        bStatus = ( (bValueChange || bQualityChange) ? TRUE : FALSE );
+    }
 
     return bStatus;
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/03/30 19:42:16 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/09/27 18:19:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -305,6 +305,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
         case Binary32BitWithTime:
         case Delta32BitWithTime:
         {
+            tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
             tmpMsg->setTime(_toc.getSeconds() + rwEpoch);
             tmpMsg->setMillis(_toc.getMilliseconds());
 

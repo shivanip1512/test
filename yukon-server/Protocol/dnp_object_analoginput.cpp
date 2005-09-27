@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/03/10 21:25:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/09/27 18:19:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -671,6 +671,7 @@ CtiPointDataMsg *AnalogInputChange::getPoint( const TimeCTO *cto ) const
         case AI16BitWithTime:
         case AI32BitWithTime:
         {
+            tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
             tmpMsg->setTime(_toc.getSeconds() + rwEpoch);
             tmpMsg->setMillis(_toc.getMilliseconds());
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/09/27 18:19:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2329,6 +2329,7 @@ void CtiProtocolION::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         pointdata = CTIDBG_new CtiPointDataMsg((*p_itr).offset, (*p_itr).value, NormalQuality, (*p_itr).type);
         pointdata->setString((*p_itr).name);
         pointdata->setTime(RWTime((*p_itr).time));
+        pointdata->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
         pointList.append(pointdata);
     }
