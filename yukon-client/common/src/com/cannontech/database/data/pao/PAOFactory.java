@@ -23,8 +23,10 @@ private PAOFactory() {
  */
 public static YukonPAObject createPAObject( com.cannontech.database.data.lite.LiteYukonPAObject litePAObject )
 {
+	if( litePAObject == null ) return null;
+	
 	YukonPAObject returnObject = null;
-
+	
 	//decide what kind of PAObject to create by the category
 	String liteCategory = PAOGroups.getCategory( litePAObject.getCategory() );
 
