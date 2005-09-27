@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/07/11 20:08:28 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/09/27 20:37:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ using namespace std;
 
 #define DEBUGLEVEL_LUDICROUS        0x00000001
 #define DEBUGLEVEL_PORTCOMM         0x00000010
+#define DEBUGLEVEL_ACTIVITY_INFO    0x00000020
 #define DEBUGLEVEL_CONNECTION       0x00000200
 #define DEBUGLEVEL_FACTORY          0x00000400
 #define DEBUGLEVEL_DATABASE         0x00000800
@@ -50,12 +51,12 @@ using namespace std;
 #define DEBUGLEVEL_PIL_MAINTHREAD   0x00400000
 #define DEBUGLEVEL_RIPPLE           0x01000000
 #define DEBUGLEVEL_ILEX_PROTOCOL    0x02000000
+#define DEBUGLEVEL_THREAD_SPEW      0x04000000   //yes Corey, I'll rename this when I think of something good
 #define DEBUGLEVEL_SA3RDPARTY       0x08000000
 #define DEBUGLEVEL_SIXNET_DEVICE    0x10000000
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
 #define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
-#define DEBUGLEVEL_THREAD_SPEW      0x04000000   //yes Corey, I'll rename this when I think of something good
 
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
