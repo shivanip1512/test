@@ -14,19 +14,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/09/27 20:43:24 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include <rw/db/datetime.h>
 
-#include "dllbase.h"
 #include "xfer.h"
 #include "numstr.h"
 #include "transdata_datalink.h"
 #include "prot_ymodem.h"
+#include "dllbase.h"
 
 class IM_EX_PROT CtiTransdataTracker
 {
@@ -69,7 +69,6 @@ class IM_EX_PROT CtiTransdataTracker
       bool grabChannels( BYTE *data, int bytes );
       bool grabFormat( BYTE *data, int bytes );
       bool grabTime( BYTE *data, int bytes );
-      bool grabReturnedChannels( BYTE *data, int bytes );
       void injectData( RWCString str );
       void setNextState( void );
       void reset( void );
