@@ -1,5 +1,5 @@
-#include "yukon.h"
 
+#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,12 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/09/27 20:41:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "yukon.h"
 #include "guard.h"
 #include "logger.h"
 #include "transdata_datalink.h"
@@ -64,7 +65,7 @@ void CtiTransdataDatalink::reinitalize( void )
    _finished            = false;
    _firstTime           = true;
 
-   if( _storage != NULL )
+   if( _storage )
    {
       delete [] _storage;
    }
@@ -78,7 +79,9 @@ void CtiTransdataDatalink::reinitalize( void )
 RWCString CtiTransdataDatalink::buildMsg( RWCString command, RWCString wantToGet )
 {
    RWCString cmd;
-   memset( _storage, '\0', Storage_size );
+
+   memset( _storage, 0, Storage_size );
+
    _lookFor = wantToGet;
    _finished = false;
 
@@ -142,15 +145,15 @@ bool CtiTransdataDatalink::isTransactionComplete( void )
 
 void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 {
-   if( _storage != NULL )
+   if( _storage )
    {
-      if( data != NULL )
+      if( data )
       {
          memcpy( data, _storage, _bytesReceived );
          *bytes = _bytesReceived;
       }
 
-      memset( _storage, '\0', Storage_size );
+      memset( _storage, 0, Storage_size );
 
       _bytesReceived = 0;
       _finished = false;
