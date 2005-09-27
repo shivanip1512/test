@@ -1,5 +1,5 @@
-#include "yukon.h"
 
+#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/09/27 20:39:35 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -21,6 +21,7 @@
          some more
 *-----------------------------------------------------------------------------*/
 
+#include "yukon.h"
 #include <rw/cstring.h>
 
 #include "guard.h"
@@ -116,7 +117,7 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
       }
       else
       {
-         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+         if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
              CtiLockGuard<CtiLogger> doubt_guard(dout);
              dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -152,7 +153,7 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memcpy( data, _storage + 3, _bytesReceived - 5 );
       *bytes = _bytesReceived - 5;
 
-      memset( _storage, '\0', Storage_size );
+      memset( _storage, 0, Storage_size );
 
       _bytesReceived = 0;
       _finished = false;
@@ -214,7 +215,7 @@ bool CtiProtocolYmodem::isCrcValid( void )
 
    if( _bytesReceived > 1020 )
    {
-      memset( temp, '\0', sizeof( temp ) );
+      memset( temp, 0, sizeof( temp ) );
       memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
 
       crc.ch[0] = _storage[_bytesReceived - 1];
