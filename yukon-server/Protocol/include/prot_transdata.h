@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/09/27 20:38:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -23,10 +23,10 @@
 #include <windows.h>
 #include <rw\cstring.h>
 
-#include "dllbase.h"
 #include "transdata_application.h"
 #include "transdata_data.h"
 #include "xfer.h"
+#include "dllbase.h"
 
 class IM_EX_PROT CtiProtocolTransdata
 {

@@ -1,5 +1,4 @@
-#include "yukon.h"
-
+#pragma warning( disable : 4786)
 
 /*-----------------------------------------------------------------------------*
 *
@@ -11,12 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/09/27 20:38:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "yukon.h"
 #include <rw/cstring.h>
 
 #include "guard.h"
@@ -113,7 +113,7 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
    
    if( _numBilling > Billing_size )
    {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
           dout << RWTime() << " Whoa! The billing bytes are too big! # bytes = " << _numBilling << endl;
@@ -137,7 +137,7 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
 
    if( _numLoadProfile > Loadprofile_size )
    {
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
           CtiLockGuard<CtiLogger> doubt_guard(dout);
           dout << RWTime() << " Whoa! The lp bytes are too big! # bytes = " << _numLoadProfile << endl;
@@ -218,9 +218,9 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
 
    lp = ( llp *)ptr;
    _lastLPTime = lp->lastLP;
-   ptr += sizeof( lp ); //ULONG );
+   ptr += sizeof( lp ); 
 
-   if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+   if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
    {
        CtiLockGuard<CtiLogger> doubt_guard(dout);
        dout << RWTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
