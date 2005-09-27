@@ -1,3 +1,5 @@
+#pragma warning( disable : 4786)
+
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -8,13 +10,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/09/27 20:45:20 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include "yukon.h"
 
+#include "yukon.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_mark_v.h"
@@ -81,7 +83,7 @@ INT CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg             *pReq,
       OutMessage->Port      = getPortID();
       OutMessage->Remote    = getAddress();
 
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
          RWTime p( getLastLPTime().seconds() );
          CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -173,8 +175,8 @@ INT CtiDeviceMarkV::ResultDecode( INMESS                    *InMessage,
                                   RWTPtrSlist< CtiMessage > &retList,
                                   RWTPtrSlist< OUTMESS >    &outList)
 {
-   vector<CtiTransdataData *>    transVector;
-   INT                           retCode = NOTNORMAL;
+   vector<CtiTransdataData *> transVector;
+   INT                        retCode = NOTNORMAL;
 
    try
    {
@@ -225,8 +227,9 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
                                  RWTPtrSlist< CtiMessage >  &retList,
                                  RWTPtrSlist< OUTMESS >     &outList)
 {
-   INT retCode       = NORMAL;
-   CtiCommandParser  parse( InMessage->Return.CommandStr );
+   INT retCode = NORMAL;
+
+   CtiCommandParser parse( InMessage->Return.CommandStr );
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
@@ -238,7 +241,7 @@ INT CtiDeviceMarkV::ErrorDecode( INMESS                     *InMessage,
 
    if( pMsg != NULL )
    {
-      pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+      pMsg->insert( -1 );               // This is the dispatch token and is unimplemented at this time
       pMsg->insert( OP_DEVICEID );      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
       pMsg->insert( getID() );          // The id (device or point which failed)
       pMsg->insert( ScanRateInvalid );  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
@@ -274,6 +277,9 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    CtiPointDataMsg   *pData = NULL;
    CtiPointBase      *pPoint = NULL;
    int               index;
+   int               offset;
+   int               time_id;
+   int               date_id;
    CtiReturnMsg      *pPIL = CTIDBG_new CtiReturnMsg( getID(),
                                                        RWCString(InMessage->Return.CommandStr),
                                                        RWCString(),
@@ -294,560 +300,413 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
    {
       for( index = 0; index < transVector.size() - 1; index++ )
       {
+         time_id = 0;
+         date_id = 0;
+
          switch( transVector[index]->getID() )
          {
-
          case 5:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + TOTAL_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );   //FIXME no need to pass the whole vector!
-               }
+               offset = CH1_OFFSET + TOTAL_USAGE;
             }
             break;
 
          case 6:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + CURRENT_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + CURRENT_DEMAND;
             }
             break;
 
          case 7:  //peak demand
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 8, 300 );
-               }
+               offset = CH1_OFFSET + PEAK_DEMAND;
+               time_id = 8;
+               date_id = 300;
             }
             break;
 
          case 10:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + PREVIOUS_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + PREVIOUS_DEMAND;
             }
             break;
 
          case 13:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + TOTAL_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + TOTAL_USAGE;
             }
             break;
 
          case 14:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + CURRENT_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + CURRENT_DEMAND;
             }
             break;
 
          case 15:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 16, 301 );
-               }
+               offset = CH2_OFFSET + PEAK_DEMAND;
+               time_id = 16;
+               date_id = 301;
             }
             break;
 
          case 18:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + PREVIOUS_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + PREVIOUS_DEMAND;
             }
             break;
 
          case 21:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + TOTAL_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + TOTAL_USAGE;
             }
             break;
 
          case 22:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + CURRENT_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + CURRENT_DEMAND;
             }
             break;
 
          case 23:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 24, 302 );
-               }
+               offset = CH3_OFFSET + PEAK_DEMAND;
+               time_id = 24;
+               date_id = 302;
             }
             break;
 
          case 26:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + PREVIOUS_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + PREVIOUS_DEMAND;
             }
             break;
 
 
          case 29:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + TOTAL_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + TOTAL_USAGE;
             }
             break;
 
          case 30:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + CURRENT_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + CURRENT_DEMAND;
             }
             break;
 
          case 31:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 32, 303 );
-               }
+               offset = CH4_OFFSET + PEAK_DEMAND;
+               time_id = 32;
+               date_id = 303;
             }
             break;
 
          case 34:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + PREVIOUS_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + PREVIOUS_DEMAND;
             }
             break;
 
          case 105:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEA_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + RATEA_USAGE;
             }
             break;
 
          case 129:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEB_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + RATEB_USAGE;
             }
             break;
 
          case 153:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEC_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + RATEC_USAGE;
             }
             break;
 
          case 177:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATED_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH1_OFFSET + RATED_USAGE;
             }
             break;
 
          case 109:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEA_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + RATEA_USAGE;
             }
             break;
 
          case 133:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEB_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + RATEB_USAGE;
             }
             break;
 
          case 157:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEC_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + RATEC_USAGE;
             }
             break;
 
          case 181:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATED_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH2_OFFSET + RATED_USAGE;
             }
             break;
 
          case 113:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEA_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + RATEA_USAGE;
             }
             break;
 
          case 137:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEB_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + RATEB_USAGE;
             }
             break;
 
          case 161:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEC_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + RATEC_USAGE;
             }
             break;
 
          case 185:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATED_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH3_OFFSET + RATED_USAGE;
             }
             break;
 
 
          case 117:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEA_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + RATEA_USAGE;
             }
             break;
 
          case 141:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEB_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + RATEB_USAGE;
             }
             break;
 
          case 165:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEC_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + RATEC_USAGE;
             }
             break;
 
          case 189:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATED_USAGE, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 0, 0 );
-               }
+               offset = CH4_OFFSET + RATED_USAGE;
             }
             break;
 
 
          case 106:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEA_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 107, 315 );
-               }
+               offset = CH1_OFFSET + RATEA_PEAK_DEMAND;
+               time_id = 107;
+               date_id = 315;
             }
             break;
 
          case 130:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEB_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 131, 316 );
-               }
+               offset = CH1_OFFSET + RATEB_PEAK_DEMAND;
+               time_id = 131;
+               date_id = 316;
             }
             break;
 
          case 154:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATEC_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 155, 317 );
-               }
+               offset = CH1_OFFSET + RATEC_PEAK_DEMAND;
+               time_id = 155;
+               date_id = 317;
             }
             break;
 
          case 178:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH1_OFFSET + RATED_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 179, 318 );
-               }
+               offset = CH1_OFFSET + RATED_PEAK_DEMAND;
+               time_id = 179;
+               date_id = 318;
             }
             break;
 
 
          case 110:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEA_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 111, 323 );
-               }
+               offset = CH2_OFFSET + RATEA_PEAK_DEMAND;
+               time_id = 111;
+               date_id = 323;
             }
             break;
 
          case 134:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEB_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 135, 324 );
-               }
+               offset = CH2_OFFSET + RATEB_PEAK_DEMAND;
+               time_id = 135;
+               date_id = 324;
             }
             break;
 
          case 158:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATEC_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 159, 325 );
-               }
+               offset = CH2_OFFSET + RATEC_PEAK_DEMAND;
+               time_id = 159;
+               date_id = 325;
             }
             break;
 
          case 182:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH2_OFFSET + RATED_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 183, 326 );
-               }
+               offset = CH2_OFFSET + RATED_PEAK_DEMAND;
+               time_id = 183;
+               date_id = 326;
             }
             break;
 
 
          case 114:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEA_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 115, 331 );
-               }
+               offset = CH3_OFFSET + RATEA_PEAK_DEMAND;
+               time_id = 115;
+               date_id = 331;
             }
             break;
 
          case 138:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEB_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 139, 332 );
-               }
+               offset = CH3_OFFSET + RATEB_PEAK_DEMAND;
+               time_id = 139;
+               date_id = 332;
             }
             break;
 
          case 162:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATEC_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 163, 333 );
-               }
+               offset = CH3_OFFSET + RATEC_PEAK_DEMAND;
+               time_id = 163;
+               date_id = 333;
             }
             break;
 
          case 186:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH3_OFFSET + RATED_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 187, 334 );
-               }
+               offset = CH3_OFFSET + RATED_PEAK_DEMAND;
+               time_id = 187;
+               date_id = 334;
             }
             break;
 
 
          case 118:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEA_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 119, 339 );
-               }
+               offset = CH4_OFFSET + RATEA_PEAK_DEMAND;
+               time_id = 119;
+               date_id = 339;
             }
             break;
 
          case 142:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEB_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 143, 340 );
-               }
+               offset = CH4_OFFSET + RATEB_PEAK_DEMAND;
+               time_id = 143;
+               date_id = 340;
             }
             break;
 
          case 166:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATEC_PEAK_DEMAND, AnalogPointType );
-
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 167, 341 );
-               }
+               offset = CH4_OFFSET + RATEC_PEAK_DEMAND;
+               time_id = 167;
+               date_id = 341;
             }
             break;
 
          case 190:
             {
-               pPoint = getDevicePointOffsetTypeEqual( CH4_OFFSET + RATED_PEAK_DEMAND, AnalogPointType );
+               offset = CH4_OFFSET + RATED_PEAK_DEMAND;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
 
-               if( pPoint != NULL )
-               {
-                  pData = fillPDMsg( transVector, pPoint, index, 191, 342 );
-               }
+         case 505:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
+
+         case 506:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
+
+         case 507:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
+
+         case 509:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_A_CURRENT;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
+
+         case 510:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_B_CURRENT;
+               time_id = 191;
+               date_id = 342;
+            }
+            break;
+
+         case 511:
+            {
+               offset = OFFSET_INSTANTANEOUS_PHASE_C_CURRENT;
+               time_id = 191;
+               date_id = 342;
             }
             break;
          }
 
+         pPoint = getDevicePointOffsetTypeEqual( offset, AnalogPointType );
+
          if( pPoint != NULL )
          {
+            pData = fillPDMsg( transVector, pPoint, index, time_id, date_id );
             pPoint = NULL;
-         }
 
-         if( pData != NULL )
-         {
-            pPIL->PointData().insert( pData );
-            pData = NULL;
+            if( pData != NULL )
+            {
+               pPIL->PointData().insert( pData );
+               pData = NULL;
+            }
          }
       }
 
       retList.insert( pPIL );
       pPIL = NULL;
 
-      if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
          CtiLockGuard<CtiLogger> doubt_guard(dout);
          dout << RWTime() << " ----Scanner Message Inserted For " << getName() << "----" << endl;
@@ -946,7 +805,6 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    int                              numEnabledChannels = 0;
    int                              val = 0;
    int                              qual = 0;
-   bool                             foundSomething = false;
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
@@ -966,15 +824,14 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       for( index = 0; index < lp->numLpRecs; )
       {
-         for( int x = 0; x < 4; x++ )
-         {
-            if( lp->enabledChannels[x] == true )
+	      for( int x = 3; x >= 0; x-- )      // the 3 here should be a define, reps # of channels   
+			{
+            if( lp->enabledChannels[x] )
             {
                pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
 
                if( pPoint != NULL )
                {
-                  foundSomething = true;
                   pData = CTIDBG_new CtiPointDataMsg();
                   val = 0;
                   qual = 0;
@@ -983,24 +840,30 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                   correctValue( lp->lpData[index], lp->lpFormat[1], val, qual );
 
-                  pData->setValue( val );
+                  CtiPointNumeric *pTemp;
+                  pTemp = ( CtiPointNumeric *)pPoint;
+
+                  pData->setValue( pTemp->computeValueForUOM( val ) );
                   pData->setQuality( qual );
                   pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                   pData->setTime( mTime );
                   pData->setType( pPoint->getType() );
 
-                  msgMulti->getData().insert( pData );
-                  pData = NULL;
+                  if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard(dout);
+                     dout << mTime << " " << pTemp->computeValueForUOM( val ) << endl;
+                  }
 
-                  index += 2;
+                  msgMulti->getData().insert( pData );
+
+                  pTemp = NULL;
+                  pData = NULL;
                   pPoint = NULL;
                }
-            }
-         }
 
-         if( !foundSomething )
-         {
-            index += 8; //keep us from looking forever!
+               index++;
+            }
          }
 
          //decrement the time to the interval previous to the current one...
@@ -1084,15 +947,8 @@ void CtiDeviceMarkV::correctValue( CtiTransdataTracker::lpRecord rec, int yyMap,
 {
    BYTEUSHORT temp;
 
-   if(( rec.rec[0] != NULL ) && ( rec.rec[1] != 0 ))
-   {
-      temp.ch[0] = rec.rec[1];
-      temp.ch[1] = rec.rec[0];
-   }
-   else
-   {
-      temp.sh = 0;
-   }
+   temp.ch[0] = rec.rec[1];
+   temp.ch[1] = rec.rec[0];
 
    value = temp.sh;
    quality = checkQuality( yyMap, value );
@@ -1186,7 +1042,7 @@ int CtiDeviceMarkV::getChannelOffset( int index )
       break;
    }
 
-   return( retVal );
+   return retVal;
 }
 
 

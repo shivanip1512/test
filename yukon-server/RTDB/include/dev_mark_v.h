@@ -1,3 +1,8 @@
+
+#pragma warning( disable : 4786)
+#ifndef __DEV_MARK_V_H__
+#define __DEV_MARK_V_H__
+
 /*---------------------------------------------------------------------------------*
 *
 * File:   dev_mark_v
@@ -9,15 +14,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/03/10 19:31:01 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/09/27 20:45:20 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786)
-#ifndef __DEV_MARK_V_H__
-#define __DEV_MARK_V_H__
-
 
 #include <rw/rwtime.h>
 #include <rw/rwdate.h>
@@ -33,6 +34,7 @@
 #include "pt_numeric.h"
 #include "connection.h"
 #include "msg_cmd.h"
+#include "dllbase.h"
 
 class IM_EX_DEVDB CtiDeviceMarkV : public CtiDeviceMeter
 {
