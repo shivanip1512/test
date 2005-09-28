@@ -562,7 +562,7 @@ public class InputFrame extends JFrame implements ActionListener, Runnable, Obse
 				if( newCBC instanceof ICapBankController )
 				{
 					ICapBankController cntrler = (ICapBankController)newCBC;
-					cntrler.assignAddress( new Integer(SERIAL_FORM.format(i)) );
+					cntrler.setAddress( new Integer(SERIAL_FORM.format(i)) );
 					
 					Integer comID = null;
 					if(command)

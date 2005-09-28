@@ -16,12 +16,12 @@ public CapBankController() {
 	super();
 }
 
-   public Integer copiableAddress() 
+   public Integer getAddress() 
    {
       return getDeviceCBC().getSerialNumber();
    }
 
-   public void assignAddress( Integer newAddress )
+   public void setAddress( Integer newAddress )
    {
       getDeviceCBC().setSerialNumber( newAddress );
    }

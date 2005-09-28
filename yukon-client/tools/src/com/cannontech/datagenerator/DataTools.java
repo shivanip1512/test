@@ -228,7 +228,7 @@ public class DataTools
 		if( newCBC instanceof ICapBankController )
 		{
 	   		ICapBankController cntrler = (ICapBankController)newCBC;
-	   		cntrler.assignAddress( new Integer(serialNumber) );
+	   		cntrler.setAddress( new Integer(serialNumber) );
 	  		cntrler.setCommID( new Integer(intParam1) );
 		}
 		else

@@ -409,7 +409,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 				new Integer(
 					pInt(address.substring(0, 2)).intValue() + PORTID_OFFSET));
 			System.out.println("address: " + address.substring(2, 4));
-			device.assignAddress(pInt(address.substring(2, 4)));
+			device.setAddress(pInt(address.substring(2, 4)));
 
 			device.getDeviceIDLCRemote().setCcuAmpUseType(
 				DeviceIDLCRemote.AMPUSE_ALTERNATING);
@@ -500,7 +500,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 			String name = idNum;
 			device.setPAOName(name);
 			// assign address of zero, manually entered later
-			device.assignAddress(new Integer(0));
+			device.setAddress(new Integer(0));
 
 			//Create the Comm Status point
 			StatusPoint commStatus =

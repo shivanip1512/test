@@ -165,6 +165,18 @@ public final static boolean isCapBankController( com.cannontech.database.data.li
 				 && isCapBankController(lite.getType()) );
 }
 /**
+ * Returns all the CBC that require a port for communications.
+ * @return
+ */
+public final static boolean cbcHasPort( int cbcType ) {
+
+	return
+		cbcType == DNP_CBC_6510
+		|| cbcType == CBC_7020;
+}
+
+
+/**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)
  * @return boolean

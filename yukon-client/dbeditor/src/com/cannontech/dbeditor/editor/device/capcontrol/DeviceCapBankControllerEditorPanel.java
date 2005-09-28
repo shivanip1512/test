@@ -994,7 +994,7 @@ public Object getValue(Object val)
       ICapBankController cntrler = 
             (ICapBankController)capBankController;
 
-   	cntrler.assignAddress( serialNumber );
+   	cntrler.setAddress( serialNumber );
    
   		cntrler.setCommID( comID );
   		      
@@ -1212,7 +1212,7 @@ public void setValue(Object val)
       ICapBankController cntrler = 
             (ICapBankController)capBankController;
 
-      Integer serialNumber = cntrler.copiableAddress();
+      Integer serialNumber = cntrler.getAddress();
       comboID = cntrler.getCommID();
    
       getSerialNumberTextField().setText( serialNumber.toString() );

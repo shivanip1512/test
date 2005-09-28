@@ -2,6 +2,8 @@ package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
 
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * This type was created in VisualAge.
  */
@@ -16,12 +18,15 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
  */
 public CapControlFeeder() {
 	super();
+
+	setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
+	setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
 }
 /**
  */
 public CapControlFeeder(Integer feedID) 
 {
-	super();
+	this();
 	setCapControlPAOID( feedID );
 }
 /**

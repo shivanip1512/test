@@ -10,7 +10,7 @@ a.menuLink:active {
 
 a.menuLink:visited, a.menuLink:link, a.menuLink, .menu, .subMenuPopup,
 .tableHeader, .trimBGColor, .cellImgHdr, .popupMenu, .popupHeader, .optSelect {
-	color: #FFFFFF;
+	color: #ffffff;
 }
 
 a.menuLink:hover {
@@ -46,12 +46,12 @@ a.menuLink {
 
 .tableHeader {
 	font-weight: bold;
-	background-color: #FFFFFF;
+	background-color: #ffffff;
 }
 
 .columnHeader {
 	font-weight: bold;
-	background-color: #FFFFFF;
+	background-color: #ffffff;
 }
 
 .copyright, .crumbs, .altTableCell, .tableCell, .flyover {
@@ -97,8 +97,8 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	background-color: #eeeeee;
 }
 
-.tableCell {
-	background-color: #FFFFFF;
+.tableCell, .pageBlank {
+	background-color: #ffffff;
 }
 
 .rAlign {
@@ -174,12 +174,13 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	position:absolute;
 	visibility: hidden;
 	cursor: default;
-	width: 120px;
+	width: 140px;
+	background-color: #ffffff;
 }
 
 .optDeselect {
 	text-decoration: none;
-	background-color: #FFFFFF;
+	background-color: #ffffff;
 	border: 1px #666699;
 	cursor:pointer;
 	width: 120 px;

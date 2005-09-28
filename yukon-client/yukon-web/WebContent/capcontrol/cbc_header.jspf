@@ -1,6 +1,6 @@
 <!-- START Static Page Header Include -->
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
-<%@ page import="com.cannontech.web.editor.DBEditorForm" %>
+<%@ page import="com.cannontech.web.editor.DBEditorNav" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
 
@@ -71,15 +71,15 @@
 			<input type="hidden" name="value">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">New Substation</a>
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">New Feeder</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAPBANK)%>');">New CapBank</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">New CBC</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorForm.getWizardURL(PointTypes.ANALOG_POINT)%>');">New Point</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">New Substation</a>
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">New Feeder</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">New CapBank</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">New CBC</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">New Point</a> 
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorForm.getEditorURL(DBEditorForm.EDITOR_CAPCONTROL)%>');">Edit</a>
-					<a href="#" class="submenuLink" onclick="deletePost();">Delete</a> 
+					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorNav.getEditorURL(DBEditorNav.EDITOR_CAPCONTROL)%>');">Edit</a>
+					<a href="#" class="submenuLink" onclick="deletePost('<%=DBEditorNav.getDeleteURL(DBEditorNav.DELETE_PAO)%>');">Delete</a> 
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> 
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> 
 				  </div>

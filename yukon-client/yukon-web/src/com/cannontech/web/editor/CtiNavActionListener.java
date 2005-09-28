@@ -36,6 +36,7 @@ public class CtiNavActionListener implements ActionListener {
 			//remove any & all session variables that are not longer needed
 			JSFParamUtil.removeJSFVar("capControlForm");
 			JSFParamUtil.removeJSFVar("ptEditorForm");
+			JSFParamUtil.removeJSFVar("paoDeleteForm");
 
 			
 			context.responseComplete();

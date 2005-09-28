@@ -19,14 +19,13 @@ public class DeviceCBC extends com.cannontech.database.db.DBPersistent
  */
 public DeviceCBC() {
 	super();
-	initialize( null, null, null );
 }
 /**
  * DeviceTwoWayFlags constructor comment.
  */
 public DeviceCBC(Integer deviceID) {
-	super();
-	initialize( deviceID, null, null );
+	this();
+	setDeviceID( deviceID );
 }
 
 /**

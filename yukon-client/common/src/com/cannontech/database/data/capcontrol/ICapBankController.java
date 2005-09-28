@@ -9,8 +9,8 @@ package com.cannontech.database.data.capcontrol;
 public interface ICapBankController 
 {
 	
-   public void assignAddress( Integer newAddress );
-	public Integer copiableAddress();
+	public void setAddress( Integer newAddress );
+	public Integer getAddress();
 
 	public void setDeviceID(Integer deviceID);
 	

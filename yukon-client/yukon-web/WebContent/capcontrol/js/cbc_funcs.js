@@ -509,7 +509,7 @@ function editorPost( href )
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
-function deletePost()
+function deletePost( href )
 {
 	var elemSubs = document.getElementsByName('cti_chkbxSubs');
 	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
@@ -526,10 +526,7 @@ function deletePost()
 	else {
 
 		window.location =	
-			createURLreq( validElems, '/editor/deleteItems.jsf', 'value' );
-
-//		window.location =
-//			'/editor/deleteItems.jsf?id=' + validElems[0].getAttribute('value');
+			createURLreq( validElems, href, 'value' );
 	}
 }
 

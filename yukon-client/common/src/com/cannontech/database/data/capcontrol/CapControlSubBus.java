@@ -2,6 +2,8 @@ package com.cannontech.database.data.capcontrol;
 
 import java.util.ArrayList;
 
+import com.cannontech.database.data.pao.PAOGroups;
+
 /**
  * This type was created in VisualAge.
  */
@@ -15,12 +17,14 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements com.cann
  */
 public CapControlSubBus() {
 	super();
+	setPAOCategory( PAOGroups.STRING_CAT_CAPCONTROL );
+	setPAOClass( PAOGroups.STRING_CAT_CAPCONTROL );
 }
 /**
  */
 public CapControlSubBus(Integer subBusID) 
 {
-	super();
+	this();
 	setCapControlPAOID( subBusID );
 }
 

@@ -8,13 +8,26 @@
 
 <faces-config>
 
+	<!-- Allows the usage of Tiles in our JSF world -->
+	<application>
+	    <view-handler>org.apache.myfaces.application.jsp.JspTilesViewHandlerImpl</view-handler>
+	</application>
+
+
 	<!-- Our DBCache object -->
     <managed-bean>
         <managed-bean-name>dbCache</managed-bean-name>
         <managed-bean-class>com.cannontech.database.cache.DefaultDatabaseCache</managed-bean-class>
         <managed-bean-scope>application</managed-bean-scope>
     </managed-bean>
-	
+
+    <managed-bean>
+        <managed-bean-name>selLists</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.util.CBCSelectionLists</managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+
+
 	
 	<!-- Database specific (DBPersistent) managed beans -->
     <managed-bean>
@@ -28,6 +41,15 @@
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>paoDeleteForm</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.delete.DeleteForm</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+
+
 
 	<!-- Navigation bean -->
     <managed-bean>
@@ -45,15 +67,14 @@
 
 
 
-	<!-- navigation rules for helloWorld.jsp -->
+	<!-- page navigation rules -->
 	<navigation-rule>
 		<navigation-case>
-			<from-outcome>cbcResultsXX</from-outcome>
-			<to-view-id>/capcontrol/results.jsp</to-view-id>
+			<from-outcome>cbcEditor</from-outcome>
+			<to-view-id>/editor/cbcBase.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 	
-	<!-- navigation rules for page2.jsp -->
 	<navigation-rule>
 		<from-view-id>/page2.jsp</from-view-id>
 		<navigation-case>
@@ -61,4 +82,5 @@
 			<to-view-id>/helloWorld.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+
 </faces-config>

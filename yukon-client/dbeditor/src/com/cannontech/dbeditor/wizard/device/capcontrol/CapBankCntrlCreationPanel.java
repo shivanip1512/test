@@ -277,7 +277,7 @@ private com.cannontech.database.data.multi.SmartMultiDBPersistent createExtraObj
       ICapBankController cntrler = 
             (ICapBankController)newCBC;
 
-   	cntrler.assignAddress(serialNumber);
+   	cntrler.setAddress(serialNumber);
    
   		cntrler.setCommID( comboID );
    }

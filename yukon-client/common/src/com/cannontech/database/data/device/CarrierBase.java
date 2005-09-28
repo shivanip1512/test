@@ -22,12 +22,12 @@ public class CarrierBase extends TwoWayDevice implements com.cannontech.database
    	setDeviceClass( DeviceClasses.STRING_CLASS_CARRIER );
    }
 
-   public Integer copiableAddress() 
+   public Integer getAddress() 
    {
       return getDeviceCarrierSettings().getAddress();
    }
 
-   public void assignAddress( Integer newAddress )
+   public void setAddress( Integer newAddress )
    {
       getDeviceCarrierSettings().setAddress( newAddress );
    }

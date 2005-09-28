@@ -596,7 +596,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				 isCapBank = true;
 			}
 			else if (val instanceof ICapBankController )
-				 ((ICapBankController) val).assignAddress( new Integer(getAddressTextField().getText()) );
+				 ((ICapBankController) val).setAddress( new Integer(getAddressTextField().getText()) );
 			else if (val instanceof Series5Base)
 				 ((Series5Base) val).getSeries5().setSlaveAddress( new Integer(getAddressTextField().getText()) );			
 			else if (val instanceof RTCBase)
@@ -1011,7 +1011,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
              	val instanceof CapBankController7020)? "Master Address:" : "Address:")) );
    
          getAddressTextField().setText( 
-            ((ICapBankController)val).copiableAddress().toString() );            
+            ((ICapBankController)val).getAddress().toString() );            
       }
 
       if( val instanceof CapBank )

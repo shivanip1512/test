@@ -513,7 +513,7 @@ for( int i = 0; i < capBanks.length; i++ )
 	for( int i = 0; i < cbcStates.length; i++ )
 	{ %>
           <tr id="invisBankStates" style="display: none;"><td>
-          	<a href="#" class="optDeselect" style="margin-left: 10px;"
+          	<a href="#" class="optDeselect" style="margin-left: 5px;"
 				onmouseover="changeOptionStyle(this)"
 				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'opt', <%=cbcStates[i].getStateRawState()%>, 'cmdID', <%=CBCCommand.CMD_MANUAL_ENTRY%>)"
 				><%=cbcStates[i]%></a>

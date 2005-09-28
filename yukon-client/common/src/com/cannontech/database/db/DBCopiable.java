@@ -10,7 +10,7 @@ public interface DBCopiable
 {
 
 
-   public Integer copiableAddress();
+   public Integer getAddress();
 
-   public void assignAddress( Integer newAddress );
+   public void setAddress( Integer newAddress );
 }

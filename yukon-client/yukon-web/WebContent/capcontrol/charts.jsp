@@ -21,7 +21,7 @@
 	}
 
 %>
-  <table id="chartTable" width="505px" border="0" cellspacing="0" cellpadding="0">
+  <table id="chartTable" width="505px" border="0" cellspacing="0" cellpadding="0" class="pageBlank" >
     <tr> 
       <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
       <td class="trimBGColor cellImgShort">Charts (Only the first <%=MAX_TRENDS%> selected are displayed)</td>

@@ -413,7 +413,7 @@ public void runImport(Vector imps, Connection conn)
 			current410 = template410;
 			current410.setPAOName(name);
 			current410.setDeviceID(deviceID);
-			current410.assignAddress(new Integer(address));
+			current410.setAddress(new Integer(address));
 			current410.getDeviceMeterGroup().setMeterNumber(meterNumber);
 			current410.getDeviceMeterGroup().setCollectionGroup(collectionGrp);
 			current410.getDeviceMeterGroup().setTestCollectionGroup(altGrp);

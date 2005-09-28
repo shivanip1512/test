@@ -21,15 +21,16 @@ import com.cannontech.yukon.conns.ConnPool;
  * Form for executing editor changes for DBPersitants
  *
  */
-public abstract class DBEditorForm implements DBEditorTypes
+public abstract class DBEditorForm
 {
+	//data object that represents what is being edited
     private DBPersistent dbPersistent = null;
 
 	//contains: Key:"TabName", Value:Boolean
 	private Map visibleTabs = new HashMap(16);
 
 	//title of our editor panel
-	private String editorTitle = "Database Editor";
+	private String editorTitle = "Database";
 
 	//dummy UI comp to be used for internal event firing only
 	protected static final UIComponent DUMMY_UI = new UIData();
@@ -147,6 +148,7 @@ public abstract class DBEditorForm implements DBEditorTypes
 	 */
 	protected void deleteDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
 
+		if( db == null ) return;
 		if( facesMsg == null ) facesMsg = new FacesMessage();
 
 		try {
@@ -157,14 +159,14 @@ public abstract class DBEditorForm implements DBEditorTypes
 		}
 		catch( TransactionException e ) {
 			CTILogger.error( e.getMessage(), e );
-			facesMsg.setDetail( "Error delete from the database, " + e.getMessage() );
+			facesMsg.setDetail( "Error deleting '" + db + "' from the database: " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
 
 			throw e; //chuck this thing up
 		}
 		catch( Exception e ) {
 			CTILogger.error( e.getMessage(), e );
-			facesMsg.setDetail( "Unable to delete from the database, " + e.getMessage() );
+			facesMsg.setDetail( "Unable to delete '" + db + "' from the database: " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
 
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
@@ -223,64 +225,6 @@ public abstract class DBEditorForm implements DBEditorTypes
 
 	public Map getVisibleTabs() {
 		return visibleTabs;
-	}
-
-
-	/**
-	 * Retuns the wizard URL for the given editorType. Add all editor types
-	 * and their starting panel here.
-	 * 
-	 */
-	public static String getWizardURL( int wizardType ) {
-		
-		switch(wizardType) {
-			case DBEditorForm.EDITOR_POINT:
-				return "/editor/point/pointWizard.jsf";
-
-			case DBEditorForm.EDITOR_CAPCONTROL:
-				return "/editor/pao/cbcWizard.jsf";
-			
-			default:
-				CTILogger.info("Uknown WizardType ("+wizardType+"), redirecting to same page");
-				return "";
-		}
-
-	}
-
-	/**
-	 * Retuns the editor URL for the  given editorType. Add all editor types
-	 * and their starting panel here.
-	 * 
-	 */
-	public static String getEditorURL( int editorType ) {
-		
-		switch(editorType) {
-			case DBEditorForm.EDITOR_POINT:
-				return "/editor/point/pointEditor.jsf";
-
-			case DBEditorForm.EDITOR_CAPCONTROL:
-				return "/editor/pao/cbcEditor.jsf";
-			
-			default:
-				CTILogger.info("Uknown EditorType ("+editorType+"), redirecting to same page");
-				return "";
-		}
-
-	}
-
-	/**
-	 * Retuns the editor URL for the  given litetype
-	 * 
-	 * @param liteType: int type from the Lites
-	 * @param itemID:  the primary key identifier
-	 * @param itemType: specific type within the given litetype 
-	 * 			(Status Point, CCU711 Transmitter)
-	 */
-	public static String getEditorURL( int liteType, int itemID ) {
-		
-		return getEditorURL(liteType) +
-			"?itemid=" + itemID;
-			//"&itemtype=" + itemType;
 	}
 
 	/**

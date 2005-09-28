@@ -21,7 +21,6 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 
 import com.cannontech.database.TransactionException;
@@ -29,8 +28,10 @@ import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
@@ -38,13 +39,13 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
  * @author ryan
@@ -55,6 +56,7 @@ public class CapControlForm extends DBEditorForm
 	private String paoDescLabel = "Description";
 	private String childLabel = "Children";
 	private boolean editingCBCStrategy = false;
+	private boolean editingController = false;
 	
 	//contains <Integer(stratID), CapControlStrategy>
 	private HashMap cbcStrategiesMap = null;
@@ -68,69 +70,30 @@ public class CapControlForm extends DBEditorForm
 	//contains <Integer(cbcID), DeviceCBC>
 	private HashMap cbcDevicesMap = null;
 
+	//possible selection types for every wizard panel
+	private CBCWizardModel wizData = null;
+	
+	//possible editor for the CBC a CapBank belongs to
+	private CBControllerEditor cbControllerEditor = null;
+
+
 	
 	//selectable items that appear in lists on the GUI
 	private SelectItem[] kwkvarPaos = null;
 	private SelectItem[] kwkvarPoints = null;
 	private SelectItem[] cbcStrategies = null;
 
-	private static final SelectItem[] cbcControlMethods;
-	private static final SelectItem[] cbcControlAlgorithim;
-	private static final SelectItem[] capBankOpStates;
-	private static final SelectItem[] capBankSizes;
 
-
-	//init our static data with real values
-	static {
-		//value, label
-		cbcControlMethods = new SelectItem[4];				
-		cbcControlMethods[0] = new SelectItem(CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER) );
-		cbcControlMethods[1] = new SelectItem(CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER) );		
-		cbcControlMethods[2] = new SelectItem(CapControlStrategy.CNTRL_MANUAL_ONLY,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_MANUAL_ONLY) );		
-		cbcControlMethods[3] = new SelectItem(CapControlStrategy.CNTRL_SUBSTATION_BUS,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS) );
-
-
-		cbcControlAlgorithim = new SelectItem[4];				
-		cbcControlAlgorithim[0] = new SelectItem(CalcComponentTypes.LABEL_KVAR, CalcComponentTypes.LABEL_KVAR);
-		cbcControlAlgorithim[1] = new SelectItem(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION, CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION);
-		cbcControlAlgorithim[2] = new SelectItem(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION, CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION);
-		cbcControlAlgorithim[3] = new SelectItem(CalcComponentTypes.LABEL_VOLTS, CalcComponentTypes.LABEL_VOLTS);
-
-
-		capBankOpStates = new SelectItem[4];				
-		capBankOpStates[0] = new SelectItem(CapBank.FIXED_OPSTATE, CapBank.FIXED_OPSTATE);
-		capBankOpStates[1] = new SelectItem(CapBank.STANDALONE_OPSTATE, CapBank.STANDALONE_OPSTATE);
-		capBankOpStates[2] = new SelectItem(CapBank.SWITCHED_OPSTATE, CapBank.SWITCHED_OPSTATE);
-		capBankOpStates[3] = new SelectItem(CapBank.UNINSTALLED_OPSTATE, CapBank.UNINSTALLED_OPSTATE);
-
-
-		capBankSizes = new SelectItem[12];				
-		capBankSizes[0] = new SelectItem(new Integer(50), "50 kVar");
-		capBankSizes[1] = new SelectItem(new Integer(100), "100 kVar");
-		capBankSizes[2] = new SelectItem(new Integer(150), "120 kVar");
-		capBankSizes[3] = new SelectItem(new Integer(275), "275 kVar");
-		capBankSizes[4] = new SelectItem(new Integer(300), "300 kVar");
-		capBankSizes[5] = new SelectItem(new Integer(450), "450 kVar");
-		capBankSizes[6] = new SelectItem(new Integer(550), "550 kVar");
-		capBankSizes[7] = new SelectItem(new Integer(600), "600 kVar");
-		capBankSizes[8] = new SelectItem(new Integer(825), "825 kVar");
-		capBankSizes[9] = new SelectItem(new Integer(900), "900 kVar");
-		capBankSizes[10] = new SelectItem(new Integer(1100), "1100 kVar");
-		capBankSizes[11] = new SelectItem(new Integer(1200), "1200 kVar");
-	}
-
-
+	/**
+	 * default constructor
+	 */
 	public CapControlForm()
 	{
 		super();
 	}
 
 	/**
-	 * Hold a the CBCStrategies in memory for quicker access.
+	 * Hold all the CBCStrategies in memory for quicker access.
 	 */
 	public SelectItem[] getCbcStrategies() {
 		
@@ -152,7 +115,7 @@ public class CapControlForm extends DBEditorForm
 
 		return cbcStrategies;
 	}
-	
+
 	/**
 	 * Hold a the CBCStrategies in memory for quicker access.
 	 */
@@ -450,7 +413,7 @@ public class CapControlForm extends DBEditorForm
 	 *
 	 */
 	public void voltPtTeeClick( ActionEvent ae ) {
-		
+
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
@@ -463,7 +426,6 @@ public class CapControlForm extends DBEditorForm
 	
 	/**
 	 * Restores the object from the database
-	 *
 	 */
 	public void initItem( int id ) {
 
@@ -471,7 +433,20 @@ public class CapControlForm extends DBEditorForm
 		setDbPersistent( paoDB );
 		initItem();
 	}
-	
+
+	/**
+	 * Inits the wizard for the creation of a particular object type
+	 */
+	public void initWizard( int paoType ) {
+
+		//YukonPAObject paoDB = PAOFactory.createPAObject( id );
+		//setDbPersistent( paoDB );
+		//initItem();		
+		getWizData().setWizPaoType( paoType );
+
+		initPanels( paoType );
+	}
+
 	/**
 	 * Initialize our current DBPersistent object from the databse
 	 */
@@ -497,10 +472,10 @@ public class CapControlForm extends DBEditorForm
 		}
 
 
-		initPanels();
-		initChildLists();		
+		initPanels( PAOGroups.getPAOType(getPAOBase().getPAOCategory(), getPAOBase().getPAOType()) );
+		initEditorPanels();
 	}
-	
+
 	/**
 	 * Reset any data structures and allow the parent to do its thing
 	 * 
@@ -508,14 +483,16 @@ public class CapControlForm extends DBEditorForm
 	public void resetForm() {
 		
 		resetStrategies();
+		resetCBCs();
+
 		editingCBCStrategy = false;
 		unassignedBanks = null;
 		unassignedFeeders = null;
-		cbcDevicesMap = null;
 
 
 		kwkvarPaos = null;
 		kwkvarPoints = null;
+		editingController = false;
 
 		super.resetForm();
 	}
@@ -530,11 +507,20 @@ public class CapControlForm extends DBEditorForm
 	}
 
 	/**
-	 * All possible panels for this editor go here. Set visible panels
-	 * based on type of object.
-	 *
+	 * Reset CBC Strategy data, forcing them to be reInited
+	 * 
 	 */
-	private void initPanels() {
+	private void resetCBCs() {		
+		cbcDevicesMap = null;
+		cbControllerEditor = null;
+	}
+
+	/**
+	 * All possible panels for this editor go here. Set visible panels and labels
+	 * based on type of object. DO NOT access the DB persitent object in
+	 * this method since it may be null in the case of a Wizard.
+	 */
+	private void initPanels( int paoType ) {
 
 		//all panels that are always displayed
 		getVisibleTabs().put( "General", new Boolean(true) );
@@ -544,59 +530,53 @@ public class CapControlForm extends DBEditorForm
 		getVisibleTabs().put( "CBCSubstation", new Boolean(false) );
 		getVisibleTabs().put( "CBCFeeder", new Boolean(false) );
 		getVisibleTabs().put( "CBCCapBank", new Boolean(false) );
-		
+		getVisibleTabs().put( "CBCController", new Boolean(false) );
 
-		int paoType = PAOGroups.getPAOType( getPAOBase().getPAOCategory(), getPAOBase().getPAOType() );
+
 		switch( paoType ) {
 
 			case PAOGroups.CAP_CONTROL_SUBBUS:
-				setEditorTitle("Substation Bus Editor");			
+				setEditorTitle("Substation Bus");			
 				setPaoDescLabel("Geographical Name");
 				setChildLabel("Feeders");
-				getVisibleTabs().put( "CBCSubstation", new Boolean(true) );
-				
-				int varPtID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getCurrentVarLoadPointID().intValue();
-				if( varPtID > CtiUtilities.NONE_ZERO_ID )				
-					kwkvarPaosChanged(
-						new ValueChangeEvent(
-							DUMMY_UI, null,
-							new Integer(PointFuncs.getLitePoint(varPtID).getPaobjectID())) );
+				getVisibleTabs().put( "CBCSubstation", new Boolean(true) );				
 				break;
 
 			case PAOGroups.CAP_CONTROL_FEEDER:
-				setEditorTitle("Feeder Editor");			
+				setEditorTitle("Feeder");			
 				getVisibleTabs().put( "CBCFeeder", new Boolean(true) );
 				setPaoDescLabel(null);
-				setChildLabel("CapBanks");
-				int fdrVarPtID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getCurrentVarLoadPointID().intValue();
-				kwkvarPaosChanged(
-					new ValueChangeEvent(
-						DUMMY_UI, null,
-						new Integer(PointFuncs.getLitePoint(fdrVarPtID).getPaobjectID())) );
-
+				setChildLabel("CapBanks");				
 				break;
 			
 			case PAOGroups.CAPBANK:
-				setEditorTitle("Capacitor Bank Editor");			
+				setEditorTitle("Capacitor Bank");			
 				setPaoDescLabel( "Street Location" );
 				getVisibleTabs().put( "CBCCapBank", new Boolean(true) );
 
 				break;
-			
+
+			case PAOGroups.CAPBANKCONTROLLER:
+			case PAOGroups.CBC_FP_2800:
+			case PAOGroups.DNP_CBC_6510:
+			case PAOGroups.CBC_EXPRESSCOM:
+			case PAOGroups.CBC_7010:
+			case PAOGroups.CBC_7020:
+				setEditorTitle("CBC");
+				setPaoDescLabel(null);
+				getVisibleTabs().put( "CBCController", new Boolean(true) );
+				break;
+
+			//-------- todo ----------
+			case PointTypes.ANALOG_POINT:
+				break;
+
+
+
 			default:
 				throw new IllegalArgumentException("Unknown PAO type given, PAO type = " + paoType );
-		}			
+		}
 
-
-
-
-//		archiveTypeChanged(
-//			new ValueChangeEvent( //src, oldValue, newValue
-//				DUMMY_UI, null,
-//				getPointBase().getPoint().getArchiveType()) );
-
-
-//		initAlarmTable();
 	}
 	
 	/**
@@ -645,6 +625,7 @@ public class CapControlForm extends DBEditorForm
 		FacesMessage facesMsg = new FacesMessage();
 
 		try {
+			//update the CBCStrategy object if we are editing it
 			if( isEditingCBCStrategy() ) {
 			
 				int stratID = CtiUtilities.NONE_ZERO_ID;
@@ -656,26 +637,156 @@ public class CapControlForm extends DBEditorForm
 				updateDBObject(
 					(CapControlStrategy)getCbcStrategiesMap().get( new Integer(stratID) ), facesMsg );
 
-				//clear out the memory of the any list of Strategies
+				//clear out the memory of any list of Strategies
 				resetStrategies();
 				setEditingCBCStrategy( false );
 			}
 
+			//update the CBC object if we are editing it
+			if( isEditingController() ) {
+				updateDBObject(
+					getCBContollerEditor().retrieveDB(), facesMsg );
+
+				//clear out the memory of CBCs structures
+				resetCBCs();
+				setEditingController( false );
+			}
 
 			updateDBObject( getPAOBase(), facesMsg );
 			
-			facesMsg.setDetail( "Database update was SUCCESSFULL" );
+			facesMsg.setDetail( "Database update was SUCCESSFUL" );
 		}
 		catch( TransactionException te ) {
 			//do nothing since the appropriate actions was taken in the super
 		}
 		finally {
-
 			FacesContext.getCurrentInstance().addMessage("cti_db_update", facesMsg);		
+		}
+	}
+
+	/**
+	 * Creates extra points or any other supporting object for the given parent
+	 * based ont he paoType
+	 */
+	private void createSupportItems( int paoType, int parentID, final FacesMessage facesMsg ) throws TransactionException {
+		
+		//a status point is automatically added to all capbank controllers
+		if( DeviceTypesFuncs.isCapBankController(paoType) ) {
+			addDBObject(
+				CapBankController.createStatusControlPoint(parentID),
+				facesMsg );
+		}
+		else if( paoType == PAOGroups.CAPBANK ) {
+			addDBObject( 
+				PointFactory.createBankStatusPt(parentID), facesMsg );
+
+			addDBObject( 
+				PointFactory.createBankOpCntPoint(parentID), facesMsg );
 		}
 
 	}
+
+	/**
+	 * Executes the creation of the current DB object. We stuff the current
+	 * DB persistent object with the newlay created one so our jump to the 
+	 * editor page will use the new created DB object.
+	 */
+	public String create() {
+
+		//creates the DB object
+		FacesMessage facesMsg = new FacesMessage();
+
+		try {
+			
+			//if there is a secondaryType set, use that value to creat the PAO
+			int paoType = getWizData().getSelectedType();
+
+			YukonPAObject dbObj = 
+				(YukonPAObject)CCYukonPAOFactory.createCapControlPAO(paoType);
+
+			dbObj.setDisabled( getWizData().getDisabled().booleanValue() );
+			dbObj.setPAOName( getWizData().getName() );
+			
+
+			//for CBCs that have a portID with it
+			if( DeviceTypesFuncs.cbcHasPort(paoType) )
+				((ICapBankController)dbObj).setCommID( getWizData().getPortID() );
+
+
+			addDBObject( dbObj, facesMsg );
+			
+			//creates any extra db objects if need be
+			createSupportItems( paoType, dbObj.getPAObjectID().intValue(), facesMsg );
+
+
+			facesMsg.setDetail( "Database add was SUCCESSFUL" );
+			
+			//init this form with the newly created DB object
+			initItem( dbObj.getPAObjectID().intValue() );
+
+			//redirect to this form as the editor for this new DB object
+			return "cbcEditor";
+			
+		}
+		catch( TransactionException te ) {
+			//do nothing since the appropriate actions was taken in the super
+		}
+		finally {
+			FacesContext.getCurrentInstance().addMessage("cti_db_add", facesMsg);		
+		}
+
+		return ""; //go nowhere since this action failed
+	}
+
+	/**
+	 * Puts our form into CBC editing mode 
+	 */
+	public void editController( ValueChangeEvent ev ) {
+		
+		if(ev == null || ev.getNewValue() == null) return;
+		
+		if( getCBContollerEditor()== null && isControllerCBC() ) {
+
+			int devID = PointFuncs.getLitePoint( 
+				((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
+
+			if( devID >= 0 )
+				setCBControllerEditor(
+					new CBControllerEditor( (DeviceCBC)getCbcDevicesMap().get(new Integer(devID)) ) );
+			else
+				setCBControllerEditor( null );
+		}
+
+	}
+
+	/**
+	 * Returns the editor object for the internal CBC editor
+	 */
+	private CBControllerEditor getCBContollerEditor() {
+		return cbControllerEditor;
+	}
 	
+	/**
+	 * Sets the editor object for the internal CBC editor
+	 */
+	private void setCBControllerEditor( CBControllerEditor cbCntrlEditor) {
+		cbControllerEditor = cbCntrlEditor;
+	}
+	
+	/**
+	 * Tells us if we are editing a CBC 
+	 */
+	public boolean isEditingController() {
+		return editingController;
+	}
+
+	/**
+	 * Tells us if we are editing a CBC 
+	 */
+	public void setEditingController( boolean val ) {
+		editingController = val;
+	}
+
 	/**
 	 * Creates a strategy 
 	 *
@@ -704,7 +815,7 @@ public class CapControlForm extends DBEditorForm
 			resetStrategies();
 			setEditingCBCStrategy( true );
 
-			facesMsg.setDetail( "CapControl Strategy add was SUCCESSFULL" );
+			facesMsg.setDetail( "CapControl Strategy add was SUCCESSFUL" );
 		}
 		catch( TransactionException te ) {
 			//do nothing since the appropriate actions was taken in the super
@@ -754,7 +865,7 @@ public class CapControlForm extends DBEditorForm
 				//clear out the memory of the any list of Strategies
 				resetStrategies();
 
-				facesMsg.setDetail( "CapControl Strategy delete was SUCCESSFULL" );
+				facesMsg.setDetail( "CapControl Strategy delete was SUCCESSFUL" );
 			}
 			else {
 				StringBuffer items = new StringBuffer("");
@@ -919,10 +1030,26 @@ public class CapControlForm extends DBEditorForm
 
 	/**
 	 * Builds up the available CapBanks and unavailable CapBanks for assignment to
-	 * a feeder
+	 * a feeder. Also, inits panel state based on the editor object that is set.
 	 */
-	public void initChildLists() 
+	public void initEditorPanels() 
 	{
+		if( getPAOBase() instanceof CapControlFeeder ) {
+			int fdrVarPtID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getCurrentVarLoadPointID().intValue();
+			kwkvarPaosChanged(
+				new ValueChangeEvent(
+					DUMMY_UI, null,
+					new Integer(PointFuncs.getLitePoint(fdrVarPtID).getPaobjectID())) );
+		}
+		else if( getPAOBase() instanceof CapControlSubBus ) {
+			int varPtID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getCurrentVarLoadPointID().intValue();
+			if( varPtID > CtiUtilities.NONE_ZERO_ID )				
+				kwkvarPaosChanged(
+					new ValueChangeEvent(
+						DUMMY_UI, null,
+						new Integer(PointFuncs.getLitePoint(varPtID).getPaobjectID())) );
+		}
+		
 		unassignedBanks = new Vector(16);
 		int[] unassignedBankIDs = 
 			com.cannontech.database.db.capcontrol.CapBank.getUnassignedCapBankIDs();
@@ -966,34 +1093,6 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public void setEditingCBCStrategy(boolean b) {
 		editingCBCStrategy = b;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCbcControlAlgorithim() {
-		return cbcControlAlgorithim;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCapBankOpStates() {
-		return capBankOpStates;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCapBankSizes() {
-		return capBankSizes;
-	}
-
-	/**
-	 * @return
-	 */
-	public SelectItem[] getCbcControlMethods() {
-		return cbcControlMethods;
 	}
 	
 	/**
@@ -1059,7 +1158,7 @@ public class CapControlForm extends DBEditorForm
 
 		if( strat == null || newDaysOfWeek == null ) return;
 		
-		StringBuffer buff = new StringBuffer("NNNNNNN");
+		StringBuffer buff = new StringBuffer("NNNNNNNN");
 		for( int i = 0; i < newDaysOfWeek.length; i++ ) {
 			buff.setCharAt( newDaysOfWeek[i], 'Y' );
 		}
@@ -1087,7 +1186,7 @@ public class CapControlForm extends DBEditorForm
 	}
 
 	/**
-	 * @return
+	 * Tells us if our current CapBank uses a CBC for control or not
 	 */
 	public boolean isControllerCBC() {
 		
@@ -1102,6 +1201,30 @@ public class CapControlForm extends DBEditorForm
 		}		
 
 		return false;
+	}
+
+	/**
+	 * Returns true if the DB object is a CapBank and the OpState is FIXED
+	 * @return
+	 */
+	public boolean isBankControlPtVisible() {
+
+		if( getPAOBase() instanceof CapBank ) {			
+			return !CapBank.FIXED_OPSTATE.equals( ((CapBank)getPAOBase()).getCapBank().getOperationalState() );
+		}
+		else
+			return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public CBCWizardModel getWizData() {
+		
+		if( wizData == null )
+			wizData = new CBCWizardModel();
+
+		return wizData;
 	}
 
 }

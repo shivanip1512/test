@@ -22,12 +22,12 @@ public class DNPBase extends RemoteBase implements com.cannontech.database.db.DB
 		setDeviceClass( DeviceClasses.STRING_CLASS_RTU );
 	}
 
-   public Integer copiableAddress() 
+   public Integer getAddress() 
    {
       return getDeviceAddress().getMasterAddress();
    }
 
-   public void assignAddress( Integer newAddress )
+   public void setAddress( Integer newAddress )
    {
       getDeviceAddress().setMasterAddress( newAddress );
    }

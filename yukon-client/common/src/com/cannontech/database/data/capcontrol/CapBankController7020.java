@@ -21,12 +21,12 @@ public class CapBankController7020 extends com.cannontech.database.data.device.R
 	}
 
 
-   public Integer copiableAddress() 
+   public Integer getAddress() 
    {
       return getDeviceAddress().getMasterAddress();
    }
 
-   public void assignAddress( Integer newAddress )
+   public void setAddress( Integer newAddress )
    {
       getDeviceAddress().setMasterAddress( newAddress );
    }

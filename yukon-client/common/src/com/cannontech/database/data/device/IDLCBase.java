@@ -16,12 +16,12 @@ public class IDLCBase extends RemoteBase implements com.cannontech.database.db.D
    	super();
    }
    
-   public Integer copiableAddress() 
+   public Integer getAddress() 
    {
       return getDeviceIDLCRemote().getAddress();
    }
    
-   public void assignAddress( Integer newAddress )
+   public void setAddress( Integer newAddress )
    {
       getDeviceIDLCRemote().setAddress( newAddress );
    }
