@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_device.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/28 14:33:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@ CtiConfigDevice::~CtiConfigDevice()
 
 CtiConfigBaseSPtr CtiConfigDevice::getConfigFromType(int type)
 {
+    LockGuard config_guard(_mux);
+
     BasePointerMap::iterator bcIterator = _baseConfigurations.find(type);
     if(bcIterator != _baseConfigurations.end())
     {
@@ -40,7 +42,21 @@ CtiConfigBaseSPtr CtiConfigDevice::getConfigFromType(int type)
 
 void CtiConfigDevice::insertConfig(CtiConfigBaseSPtr configuration)
 {
-        _baseConfigurations.insert(BasePointerMap::value_type(configuration->getType(), configuration));
+    LockGuard config_guard(_mux);
+
+    _baseConfigurations.insert(BasePointerMap::value_type(configuration->getType(), configuration));
+}
+
+string CtiConfigDevice::getAllOutputStrings()
+{
+    string returnString = "";
+    LockGuard config_guard(_mux);
+
+    for(BasePointerMap::iterator confItr = _baseConfigurations.begin(); confItr!=_baseConfigurations.end(); confItr++)
+    {
+        returnString += confItr->second->getOutputStrings();
+    }
+    return returnString;
 }
 
 }

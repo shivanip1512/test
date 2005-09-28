@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/28 14:33:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,10 @@ namespace Config {
 
 class IM_EX_CONFIG CtiConfigDevice
 {
+protected:
+    typedef CtiLockGuard<CtiMutex> LockGuard;//This must be used in every class that sets the value with key, or returns values.
+    mutable CtiMutex    _mux;
+
 private:
     typedef map <int,Cti::Config::CtiConfigBaseSPtr> BasePointerMap;
 
@@ -40,6 +44,7 @@ public:
     ~CtiConfigDevice();
     CtiConfigBaseSPtr getConfigFromType(int type);
     void insertConfig(CtiConfigBaseSPtr configuration);//Type should be set in this pointer, so its not necessary
+    string getAllOutputStrings();//Returns strings from every base configuration
 };
 
 #ifdef VSLICK_TAG_WORKAROUND
