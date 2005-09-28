@@ -6,11 +6,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/28 14:32:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+    *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <rw\cstring.h>
@@ -25,13 +25,48 @@ INT resolveConfigType(RWCString rwsTemp)
     rwsTemp.toLower();
     rwsTemp = rwsTemp.strip(RWCString::both);
 
-    if(rwsTemp == "test config type a")
+    if(rwsTemp.contains(" mct "))
     {
-        Ret = TestConfigTypeA;
+        if(rwsTemp == "config type mct tou")
+        {
+            Ret = ConfigTypeMCTTOU;
+        }
+        else if(rwsTemp == "config type mct addressing")
+        {
+            Ret = ConfigTypeMCTAddressing;
+        }
+        else if(rwsTemp == "config type mct configuration")
+        {
+            Ret = ConfigTypeMCTConfiguration;
+        }
+        else if(rwsTemp == "config type mct demand LP")
+        {
+            Ret = ConfigTypeMCTDemandLP;
+        }
+        else if(rwsTemp == "config type mct dst")
+        {
+            Ret = ConfigTypeMCTDST;
+        }
+        else if(rwsTemp == "config type mct vthreshold")
+        {
+            Ret = ConfigTypeMCTVThreshold;
+        }
+        else
+        {
+            Ret = ConfigTypeInvalid;
+        }
+
     }
-    else 
+    else
     {
-        Ret = ConfigTypeInvalid;
+            if(rwsTemp == "config type general")
+            {
+                Ret = ConfigTypeGeneral;
+            }
+                else 
+            {
+                Ret = ConfigTypeInvalid;
+            }
     }
 
     return Ret;
