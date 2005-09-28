@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_base.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/28 14:30:51 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,13 +51,35 @@ string Base::getOutputStrings()
     CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     dout << RWTime() << " No Defined output strings function.";
-    return NULL;
+    return "";//null string
 }
 
 //should contain a map of all of the possible types (subtypes). (TouRateA, TouRateB).
 int Base::getResolvedKey(RWCString key)
 {
     return 0;
+}
+
+RWCString Base::getValueFromKey(const int &key)
+{
+    return RWCString();
+}
+
+//Returns LONG_MIN or LONG_MAX if overflow, LONG_MIN + 1 if invalid (null)
+long Base::getLongValueFromKey(const int &key)
+{
+    RWCString tempStr = getValueFromKey(key);
+
+    if(tempStr)
+    {
+        char *endStr;
+        
+        return strtol(tempStr.data(),&endStr,16);
+    }
+    else
+    {
+        return LONG_MIN+1;
+    }
 }
 
 bool Base::setValueWithKey(const RWCString& value, const int &key)
