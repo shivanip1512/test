@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2005/08/23 20:07:46 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2005/09/28 14:52:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,6 +146,7 @@ using namespace std;
 #include "mgr_port.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
+#include "mgr_config.h"
 
 #include "port_base.h"
 #include "port_shr.h"
@@ -214,6 +215,7 @@ extern INT RunningInConsole;              // From portmain.cpp
 // Some Global Manager types to allow us some RTDB stuff.
 CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager(Application_Porter);
+CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 vector< CtiPortShare * > PortShareManager;
 
@@ -1400,6 +1402,8 @@ INT RefreshPorterRTDB(void *ptr)
         }
 
         DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
+        ConfigManager.setDeviceManager(DeviceManager);
+        ConfigManager.refreshConfigurations();
     }
 
     if(!PorterQuit)

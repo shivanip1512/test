@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/08/23 20:05:40 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/09/28 14:52:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,8 +57,9 @@ using namespace std;
 // Some Global Manager types to allow us some RTDB stuff.
 extern CtiDeviceManager   DeviceManager;
 extern CtiRouteManager    RouteManager;
+extern CtiConfigManager   ConfigManager;
 
-CtiPILServer PIL(&DeviceManager, &RouteManager);
+CtiPILServer PIL(&DeviceManager, &RouteManager, &ConfigManager);
 
 VOID PorterInterfaceThread (VOID *Arg)
 {
