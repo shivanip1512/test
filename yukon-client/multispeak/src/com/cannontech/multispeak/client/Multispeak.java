@@ -6,13 +6,12 @@
  */
 package com.cannontech.multispeak.client;
 
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
@@ -25,12 +24,11 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.DeviceFuncs;
-import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -41,6 +39,7 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.multispeak.ArrayOfErrorObject;
 import com.cannontech.multispeak.ArrayOfOutageDetectionEvent;
 import com.cannontech.multispeak.ErrorObject;
+import com.cannontech.multispeak.MeterRead;
 import com.cannontech.multispeak.OA_OD;
 import com.cannontech.multispeak.OA_ODLocator;
 import com.cannontech.multispeak.OA_ODSoap_BindingImpl;
@@ -62,7 +61,7 @@ import com.cannontech.yukon.conns.ConnPool;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class Multispeak implements MessageListener, Observer, DBChangeListener {
+public class Multispeak implements MessageListener, DBChangeListener {
 	
 	/** An instance of this */
 	private static Multispeak _mspInstance = null;
@@ -72,6 +71,9 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 
 	/** A map of Long(userMessageID) to ODEvent values */
 	private static Map ODEventsMap = new HashMap();
+	
+	/** A map of Long(userMessageID) to MeterReadEvent value */
+	private static Map meterReadEventsMap = new HashMap();
 
 	/** A map of String<companyName> (from the MultispeakRole) to MultispeakVendor objects*/
 	private static Map mspRolesMap = null;
@@ -90,7 +92,7 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 			CTILogger.info("New MSP instance created");
 			_mspInstance = new Multispeak();
 			_mspInstance.getPilConn().addMessageListener(_mspInstance);
-			_mspInstance.getClientConnection();
+			DefaultDatabaseCache.getInstance().addDBChangeListener(_mspInstance);
 		}
 
 		return _mspInstance;
@@ -151,19 +153,8 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 					{
 						MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
 						String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
-						String keyValue = null;						
+						String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
 							
-						if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-						{
-							LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(returnMsg.getDeviceID());
-							keyValue = (lPao == null ? null : lPao.getPaoName());
-						}
-						else if(key.toLowerCase().startsWith("meternum"))
-						{
-							LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(returnMsg.getDeviceID());
-							keyValue = (ldmn == null ? null : ldmn.getMeterNumber());
-						}
-
 						OutageDetectionEvent ode = new OutageDetectionEvent();
 						GregorianCalendar cal = new GregorianCalendar();
 						cal.setTime(returnMsg.getTimeStamp());
@@ -187,9 +178,56 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 					    	ode.setOutageEventType(OutageEventType.Restoration);
 					    }
 					    
-					    event.getODEvents().add(ode);
+					    event.setOutageDetectionEvent(ode);
+						ODEventNotification(event);
+
+						getODEventsMap().remove(new Long(event.getPilMessageID()));
 					}
-					event.setCompletedMeterCount(event.getCompletedMeterCount() + 1);
+					else
+					{
+						MeterReadEvent mrEvent = (MeterReadEvent)getMeterReadEventsMap().get(new Long (returnMsg.getUserMessageID()) );
+						if( mrEvent != null)
+						{
+							MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
+							String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+							String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
+							
+							MeterRead meterRead = new MeterRead();
+							meterRead.setDeviceID(keyValue);
+							meterRead.setMeterNo(keyValue);
+							meterRead.setObjectID(keyValue);
+							meterRead.setUtility(MultispeakFuncs.AMR_TYPE);
+
+						    if( returnMsg.getStatus() != 0)
+							{
+						        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
+						        CTILogger.info(result);
+						        meterRead.setErrorString(result);
+							}
+						    else
+						    {
+						        if(returnMsg.getVector().size() > 0 )
+								{
+									for (int i = 0; i < returnMsg.getVector().size(); i++)
+									{
+										Object o = returnMsg.getVector().elementAt(i);
+										//TODO SN - Hoping at this point that only one value comes back in the point data vector 
+										if (o instanceof PointData)
+										{
+											PointData point = (PointData) o;
+											Double val = new Double(point.getValue());
+											meterRead.setPosKWh(new BigInteger(String.valueOf(val.intValue())));
+											GregorianCalendar cal = new GregorianCalendar();
+											cal.setTimeInMillis(point.getPointDataTimeStamp().getTime());
+											meterRead.setReadingDate(cal);
+											CTILogger.info("MeterReadEvent:  Reading Successful (" + keyValue + ") - " );
+										}
+									}
+								}
+						    }
+						    mrEvent.setMeterRead(meterRead);
+						}
+					}
 				}
 			}
 		}
@@ -201,56 +239,74 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 	 */
 	public synchronized ErrorObject[] ODEvent(String companyName, String[] meterNumbers)
 	{
-		long id = generateMessageID();
-
 		Vector errorObjects = new Vector();
-		ODEvent event = new ODEvent(companyName, id, meterNumbers.length);
-		event.addObserver(this);
-		getODEventsMap().put(new Long(id), event);
+		MultispeakVendor vendor = getMultispeakVendor(companyName);
 		
-		Request pilRequest = null;
-		CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from OMS vendor");
-		
-		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
-		
-		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
-
-		for (int i = 0; i < meterNumbers.length; i++)
+		String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
+		String endpointURL = "";			
+		if( endpoint != null)
+			endpointURL = vendor.getUrl() + endpoint;
+        try
+        {
+	 		OA_OD service = new OA_ODLocator();
+			((OA_ODLocator)service).setOA_ODSoapEndpointAddress(endpointURL);
+			OA_ODSoap_PortType port;
+            port = service.getOA_ODSoap();
+	        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
+			((OA_ODSoap_BindingStub)port).setHeader(header);
+			//Ping the URL make sure it exists and we aren't reading meters for the fun of it..
+			ArrayOfErrorObject errObjects = port.pingURL();
+	
+			Request pilRequest = null;
+			CTILogger.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + companyName);
+			
+			String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+	
+			for (int i = 0; i < meterNumbers.length; i++)
+			{
+				LiteYukonPAObject lPao = null;
+				if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+					lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumbers[i]);
+				else if(key.toLowerCase().startsWith("meternum"))
+					lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumbers[i]);
+				
+				
+				if (lPao == null)
+				{
+					ErrorObject err = new ErrorObject();
+					err.setEventTime(new GregorianCalendar());
+					err.setErrorString("MeterNumber: " + meterNumbers[i] + " - Was NOT found in Yukon.");
+					err.setObjectID(meterNumbers[i]);
+					errorObjects.add(err);
+				}
+				else
+				{
+					long id = generateMessageID();		
+					ODEvent event = new ODEvent(vendor.getCompanyName(), id);
+					getODEventsMap().put(new Long(id), event);
+				    
+					pilRequest = new Request(lPao.getYukonID(), "ping noqueue", id);
+					pilRequest.setPriority(13);	//just below Client applications
+					getPilConn().write(pilRequest);
+				}
+				
+			}
+        } catch (ServiceException e)
 		{
-			LiteYukonPAObject lPao = null;
-			//This error will never happen.
-			/*if( key == null )
-			{
-				ErrorObject err = new ErrorObject();
-				err.setEventTime(new GregorianCalendar());
-				err.setErrorString("Unknown OMS unique key value.");
-				err.setObjectID(meterNumbers[i]);
-				errorObjects.add(err);
-			} else */
-			if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-				lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumbers[i]);
-			else if(key.toLowerCase().startsWith("meternum"))
-				lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumbers[i]);
-			
-			
-			if (lPao == null)
-			{
-				ErrorObject err = new ErrorObject();
-				err.setEventTime(new GregorianCalendar());
-				err.setErrorString("MeterNumber: " + meterNumbers[i] + " - Was NOT found in Yukon.");
-				err.setObjectID(meterNumbers[i]);
-				errorObjects.add(err);
-				//Remove unknown meters from expected return message
-				event.setTotalMeterCount(event.getTotalMeterCount()-1);
-			}
-			else
-			{
-				pilRequest = new Request(lPao.getYukonID(), "ping noqueue", id);
-				pilRequest.setPriority(13);	//just below Client applications
-				getPilConn().write(pilRequest);
-			}
-			
+			ErrorObject err = new ErrorObject();
+			err.setEventTime(new GregorianCalendar());
+			err.setErrorString("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
+			errorObjects.add(err);
+			CTILogger.info(err.getErrorString());
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			ErrorObject err = new ErrorObject();
+			err.setEventTime(new GregorianCalendar());
+			err.setErrorString("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
+			errorObjects.add(err);
+		    CTILogger.info(err.getErrorString());
 		}
+    		
 		if( !errorObjects.isEmpty())
 		{
 			ErrorObject[] errors = new ErrorObject[errorObjects.size()];
@@ -260,26 +316,70 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 		return new ErrorObject[0];
 	}
 	
+	public MeterRead MeterReadEvent(String companyName, String meterNumber)
+	{
+		long id = generateMessageID();
+
+		MeterReadEvent event = new MeterReadEvent(companyName, id);
+		getMeterReadEventsMap().put(new Long(id), event);
+		
+		Request pilRequest = null;
+		CTILogger.info("Received " + meterNumber + " for Meter Reading from " + companyName);
+		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
+		
+		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+
+		LiteYukonPAObject lPao = null;
+		if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+			lPao = DeviceFuncs.getLiteYukonPaobjectByDeviceName(meterNumber);
+		else if(key.toLowerCase().startsWith("meternum"))
+			lPao = DeviceFuncs.getLiteYukonPaobjectByMeterNumber(meterNumber);
+		
+		if (lPao != null)
+		{
+			pilRequest = new Request(lPao.getYukonID(), "getvalue kwh", id);
+			pilRequest.setPriority(15);
+			getPilConn().write(pilRequest);
+
+		    synchronized (event)
+            {
+		        long millisTimeOut = 0;	//
+		        while (event.getMeterRead() == null && millisTimeOut < 120000)	//quit after 8 seconds
+		        {
+		            try
+                    {
+                        Thread.sleep(1000);
+                        millisTimeOut += 1000;
+                    } catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+		        }
+		        if( millisTimeOut >= 120000)// this broke the loop, more than likely, have to kill it sometime
+		            event.getMeterRead().setErrorString("Reading Timed out after 2 minutes.");
+
+            }
+		}
+
+		return event.getMeterRead();
+	}	
+	
 	/**
 	 * Send an ODEventNotification to the OMS webservice containing odEvents 
 	 * @param odEvents
 	 */
-	public synchronized void ODEventNotification(ODEvent odEvent)//OutageDetectionEvent [] odEvents)
+	public void ODEventNotification(ODEvent odEvent)
 	{
-		try
-		{
-			OutageDetectionEvent [] odEvents = new OutageDetectionEvent[odEvent.getODEvents().size()];
-			odEvent.getODEvents().toArray(odEvents);
-			
-//			String endpointURL = "http://localhost:8080/head/services/OA_ODSoap";
-			MultispeakVendor vendor = getMultispeakVendor(odEvent.getVendorName());
-			String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
-			String endpointURL = "";			
-			if( endpoint != null)
-				endpointURL = vendor.getUrl() + endpoint;
+    	MultispeakVendor vendor = getMultispeakVendor(odEvent.getVendorName());
+		String endpoint = (String)vendor.getServiceToEndpointMap().get(OA_ODSoap_BindingImpl.INTERFACE_NAME);
+		String endpointURL = "";			
+		if( endpoint != null)
+			endpointURL = vendor.getUrl() + endpoint;
 
-		    CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): " + odEvents.length + " events."); 
-	
+	    CTILogger.info("Responding to OMS ODEventNotification WebService ("+ endpointURL+ "): Meter Number " + odEvent.getOutageDetectionEvent().getObjectID() +" event."); 
+	    try
+		{
+			
 			OA_OD service = new OA_ODLocator();
 			((OA_ODLocator)service).setOA_ODSoapEndpointAddress(endpointURL);
 			
@@ -288,19 +388,22 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 			((OA_ODSoap_BindingStub)port).setHeader(header);
 	
-			ArrayOfOutageDetectionEvent arrayODEvents = new ArrayOfOutageDetectionEvent(odEvents);
+			OutageDetectionEvent[] odEventArray = new OutageDetectionEvent[1];
+			odEventArray[0] = odEvent.getOutageDetectionEvent();
+			ArrayOfOutageDetectionEvent arrayODEvents = new ArrayOfOutageDetectionEvent(odEventArray);
+			
 			ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
 			if( errObjects != null)
 			    MultispeakFuncs.logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
-		}
-		catch (ServiceException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        } catch (ServiceException e)
+		{	
+            CTILogger.info("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
+            e.printStackTrace();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+			
+		    CTILogger.info("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
+		    e.printStackTrace();
+		}	
 	}
 	/**
 	 * @return
@@ -308,33 +411,17 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 	public static Map getODEventsMap() {
 		return ODEventsMap;
 	}
-
+	/**
+	 * @return
+	 */
+	public static Map getMeterReadEventsMap() {
+		return meterReadEventsMap;
+	}
 	/**
 	 * @param map
 	 */
 	public static void setODEventsMap(Map map) {
 		ODEventsMap = map;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-	 */
-	/** 
-	 * Handle a notify message from any ODEvent being observed.
-	 * For ODEvent object, ODEventNotification is called.
-	 * Removes the ODEvent observer and removes ODEvent from the ODEventsMap
-	 */
-	public void update(Observable o, Object arg)
-	{
-		if( o instanceof ODEvent)
-		{
-			ODEvent odEvent = (ODEvent)o;
-			ODEventNotification(odEvent);
-
-			((ODEvent)ODEventsMap.get(new Long(odEvent.getPilMessageID()))).deleteObservers();
-			ODEventsMap.remove(new Long(odEvent.getPilMessageID()));
-		}
 	}
 
 	/* (non-Javadoc)
@@ -363,7 +450,6 @@ public class Multispeak implements MessageListener, Observer, DBChangeListener {
 			reg.setAppKnownPort(0);
 			reg.setAppExpirationDelay( 300 );  // 5 minutes should be OK
 
-			connToDispatch.addObserver(this);
 			connToDispatch.setHost(host);
 			connToDispatch.setPort(port);
 			connToDispatch.setAutoReconnect(true);
