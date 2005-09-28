@@ -37,7 +37,6 @@ INCLPATHS+= \
 
 LIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\ctidevdb.lib \
 
 DLLOBJS = \
 config_base.obj \
@@ -50,23 +49,21 @@ config_type_mct_demand_LP.obj \
 config_type_mct_configuration.obj \
 config_type_mct_addressing.obj \
 config_type_mct_dst.obj \
-mgr_config.obj \
-
 
 
 CTIPROGS=\
-configmgr.dll
+cticonfig.dll
 
 
 ALL:            $(CTIPROGS)
 
 
-configmgr.dll:   $(DLLOBJS) Makedll.mak
+cticonfig.dll:   $(DLLOBJS) Makedll.mak
                 @$(MAKE) -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(COMPILEBASE)\lib\tcpsup.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(RWLIBS) $(BOOSTLIBS) 
+                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) 
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -120,17 +117,38 @@ config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
 config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_resolvers.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
+config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h \
+		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
+config_type_general.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_general.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+config_type_mct_addressing.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_addressing.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+config_type_mct_configuration.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_configuration.h config_base.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h
+config_type_mct_demand_lp.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_demand_LP.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+config_type_mct_dst.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_dst.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+config_type_mct_tou.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_tou.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
+config_type_mct_vthreshold.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_type_mct_vthreshold.h config_base.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		dsm2.h mutex.h dlldefs.h guard.h id_build.h id_vinfo.h
-mgr_config.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h sema.h config_resolvers.h logger.h thread.h \
-		dev_base.h cmdparse.h parsevalue.h counter.h dev_exclusion.h \
-		tbl_paoexclusion.h rte_base.h dbmemobject.h ctibase.h \
-		ctinexus.h netports.h message.h collectable.h tbl_pao.h \
-		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h queues.h \
-		utility.h mgr_config.h config_base.h config_device.h \
-		mgr_device.h rtdb.h hashkey.h slctdev.h smartmap.h
+precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#
