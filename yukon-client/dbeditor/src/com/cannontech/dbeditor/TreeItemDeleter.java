@@ -6,6 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import Acme.RefInt;
 import com.cannontech.common.gui.util.TreeViewPanel;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
@@ -46,11 +47,10 @@ public class TreeItemDeleter
 
 	public int executeDelete()
 	{
-	   int confirm = JOptionPane.NO_OPTION;
-	   boolean deleteVerified = false, canDelete = false, isMultiDelete = nodes.length > 1;
+		int confirm = JOptionPane.NO_OPTION;
+		boolean deleteVerified = false, canDelete = false, isMultiDelete = nodes.length > 1;
 		byte deleteVal = DBDeletionFuncs.STATUS_DISALLOW;
-		StringBuffer unableDel = new StringBuffer(), message = new StringBuffer();
-		String dbDeletionWarning = "";
+		DBDeleteResult delRes = null;
 		
 		if( nodes.length <= 0 )
 		{
@@ -99,21 +99,17 @@ public class TreeItemDeleter
 			deletables[i] = 
 				LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
 				
-			RefInt delID = new RefInt(0), delType = new RefInt(0);
-			 			
 			//get the info about this possible deletion candidate
-			deleteVerified = DBDeletionFuncs.getDeleteInfo( 
-										deletables[i], delID, delType, 
-										message, unableDel,
-								 		nodes[i].getUserObject().toString() );
+			delRes = DBDeletionFuncs.getDeleteInfo( 
+							deletables[i], nodes[i].getUserObject().toString() );
 	 		
 	   
-			if( deleteVerified )
+			if( delRes.isDeletable() )
 			{
 				try
 				{	
-		         deleteVal = DBDeletionFuncs.deletionAttempted(delID.val, delType.val);
-		         dbDeletionWarning = DBDeletionFuncs.getTheWarning().toString();
+		         deleteVal = DBDeletionFuncs.deletionAttempted( delRes );
+		         //dbDeletionWarning = DBDeletionFuncs.getTheWarning().toString();
 		         
 		         //as soon as we can NOT delete, preserve that false value
 		         canDelete = (deleteVal == DBDeletionFuncs.STATUS_ALLOW || deleteVal == DBDeletionFuncs.STATUS_CONFIRM);
@@ -147,9 +143,9 @@ public class TreeItemDeleter
 					  "Unable to Delete")));
 
 		msgUsed = ( isMultiDelete && canDelete ? "Are you sure you want to permanently delete all the items selected?" :
-					 ( isMultiDelete ? unableDel + dbDeletionWarning : //message.toString() :
-					 ( canDelete ? message.toString() + dbDeletionWarning :
-					   unableDel + dbDeletionWarning)));
+					 ( isMultiDelete ? delRes.getUnableDelMsg().append(delRes.getDescriptionMsg()) :
+					 ( canDelete ? delRes.getConfirmMessage().append(delRes.getDescriptionMsg()) :
+						delRes.getUnableDelMsg().append(delRes.getDescriptionMsg()))).toString() );
 
 		if( canDelete )
 		{

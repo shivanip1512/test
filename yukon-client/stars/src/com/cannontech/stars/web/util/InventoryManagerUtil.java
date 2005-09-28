@@ -21,6 +21,8 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.cache.functions.DBDeleteResult;
+import com.cannontech.database.cache.functions.DBDeletionFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.CarrierBase;
@@ -38,7 +40,6 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.dbeditor.DBDeletionFuncs;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.util.InventoryUtils;
@@ -421,9 +422,12 @@ public class InventoryManagerUtil {
 		energyCompany.deleteInventory( invID );
 		
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
-			byte status = DBDeletionFuncs.deletionAttempted( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
+			
+			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DBDeletionFuncs.DEVICE_TYPE );
+			byte status = DBDeletionFuncs.deletionAttempted( delRes );
+
 			if (status == DBDeletionFuncs.STATUS_DISALLOW)
-				throw new WebClientException( DBDeletionFuncs.getTheWarning().toString() );
+				throw new WebClientException( delRes.getDescriptionMsg().toString() );
 			
 			LiteYukonPAObject litePao = PAOFuncs.getLiteYukonPAO( liteInv.getDeviceID() );
 			DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );

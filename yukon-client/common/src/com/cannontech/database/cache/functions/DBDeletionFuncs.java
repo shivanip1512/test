@@ -1,0 +1,615 @@
+package com.cannontech.database.cache.functions;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.tou.TOUSchedule;
+import com.cannontech.database.data.holiday.HolidaySchedule;
+import com.cannontech.database.data.season.SeasonSchedule;
+import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.lm.LMProgramConstraint;
+
+
+/**
+ * Insert the type's description here.
+ * Creation date: (6/14/2002 3:25:50 PM)
+ * @author: jdayton
+ */
+public class DBDeletionFuncs 
+{
+	private static final String CR_LF = System.getProperty("line.separator");
+   
+
+   //types of delete
+	public static final int POINT_TYPE = 1;
+	public static final int NOTIF_GROUP_TYPE = 2;
+	public static final int STATEGROUP_TYPE = 3;
+	public static final int PORT_TYPE = 4;
+	public static final int DEVICE_TYPE = 5;
+	public static final int PAO_TYPE	= 6;
+	public static final int CONTACT_TYPE = 7;
+	public static final int CUSTOMER_TYPE = 8;
+	public static final int LOGIN_TYPE = 9;
+	public static final int HOLIDAY_SCHEDULE = 10;
+	public static final int LOGIN_GRP_TYPE = 11;
+	public static final int BASELINE_TYPE = 12;
+	public static final int CONFIG_TYPE = 13;
+	public static final int TAG_TYPE = 14;
+	public static final int LMPROG_CONSTR_TYPE = 15;
+	public static final int SEASON_SCHEDULE = 16;
+	public static final int TOU_TYPE = 17;
+	public static final int ROUTE_TYPE = 18;
+
+   //the return types of each possible delete
+   public static final byte STATUS_ALLOW = 1;
+   public static final byte STATUS_CONFIRM = 2;
+   public static final byte STATUS_DISALLOW = 3;
+   
+	/**
+	 * DBDeletionWarn constructor comment.
+	 */
+	private DBDeletionFuncs() {
+		super();
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForCommPort(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+		if( com.cannontech.database.data.port.DirectPort.hasDevice( theID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a device.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this point is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForDevice(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	   	String str = null;   
+	
+	   /* Some day we could consolidate all these seperate delete statements into one
+	    * statement. Do this when performance becomes an issue and put it into the
+	    * DeviceBase class 
+	    */
+		if( (str = com.cannontech.database.data.device.DeviceBase.hasRoute(theID)) != null )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the route named '"+ str + "'") );
+			return STATUS_DISALLOW;
+		}
+	
+	   if( (str = com.cannontech.database.db.capcontrol.DeviceCBC.usedCapBankController(theID)) != null )
+	   {
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the Device named '" + str + "'") );
+	      return STATUS_DISALLOW;
+	   }
+	
+	   if( (str = com.cannontech.database.db.route.RepeaterRoute.isRepeaterUsed(theID)) != null )
+	   {
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the route named '"+ str + "'") );
+	      return STATUS_DISALLOW;
+	   }
+	
+		//this device is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForRoute(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	   	String str = null;   
+		/* Some day we could consolidate all these seperate delete statements into one
+		* statement. Do this when performance becomes an issue and put it into the
+		* DeviceBase class 
+		*/
+		if( (str = com.cannontech.database.data.route.RouteBase.hasDevice(theID)) != null )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the device named '"+ str + "'") );
+			return STATUS_DISALLOW;
+		}
+		
+		if( (str = com.cannontech.database.data.route.RouteBase.inMacroRoute(theID)) != null )
+	   	{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "If you continue, this route will be removed from \n the macro route '" + str + "'." +
+				"  Delete anyway?") );
+			return STATUS_CONFIRM;
+		}
+		
+		//this route is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForNotifGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+	   /* Some day we could consolidate all these seperate delete statements into one
+	    * statement. Do this when performance becomes an issue and put it into the
+	    * NotificationBase class 
+	    */
+		if( com.cannontech.database.data.notification.NotificationGroup.hasAlarmCategory( theID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by an Alarm Category.") );
+			return STATUS_DISALLOW;
+		}
+	
+		if( com.cannontech.database.data.notification.NotificationGroup.hasPointAlarming( theID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a point alarm.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this point is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForContact(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+		if( com.cannontech.database.data.customer.Contact.isPrimaryContact(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used as a primary contact for a customer.") );
+			return STATUS_DISALLOW;
+		}
+
+
+		if( com.cannontech.database.data.customer.Contact.isUsedInPointAlarming(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used as notifications for point alarms.") );
+			return STATUS_DISALLOW;
+		}
+
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForBaseline(final DBDeleteResult dbRes) throws java.sql.SQLException
+		{
+			Integer theID = new Integer( dbRes.getItemID() );
+	
+			if( com.cannontech.database.data.point.CalculatedPoint.inUseByPoint(
+					theID, CtiUtilities.getDatabaseAlias() ) )
+			{
+				dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a calculated point.") );
+				return STATUS_DISALLOW;
+			}
+	
+			//this object is deleteable
+			return STATUS_ALLOW;
+		}
+		
+	private static byte createDeleteStringForConfig(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+		if( ConfigTwoWay.inUseByMCT(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by an MCT.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}	
+	
+	private static byte createDeleteStringForTOU(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+		/*if( TOUSchedule.inUseByDevice(
+				theID, CtiUtilities.getDatabaseAlias() ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a device.");
+			return STATUS_DISALLOW;
+		}*/
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForLMProgConst(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		if( LMProgramConstraint.inUseByProgram(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Program.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForSeasonSchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		if( LMProgramConstraint.usesSeasonSchedule(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Constraint.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForHolidaySchedule(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		if( LMProgramConstraint.usesHolidaySchedule(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Constraint.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this object is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	private static byte createDeleteStringForTag(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This tag and ALL references to it in the system will be removed.") );
+		return STATUS_CONFIRM;
+	 
+	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForPoints(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer ptID = new Integer( dbRes.getItemID() );
+	   	      
+	   /* Some day we could consolidate all these seperate delete statements into one
+	    * statement. Do this when performance becomes an issue and put it into the
+	    * PointBase class 
+	    */
+		if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a CapControl Substation Bus.") );
+			return STATUS_DISALLOW;
+		}
+	
+		if( com.cannontech.database.data.point.PointBase.hasCapBank( ptID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a CapBank Device.") );
+			return STATUS_DISALLOW;
+		}
+	
+		if( com.cannontech.database.data.point.PointBase.hasLMTrigger( ptID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a LoadManagement Trigger.") );
+			return STATUS_DISALLOW;
+		}
+	
+		if( com.cannontech.database.data.point.PointBase.hasLMGroup( ptID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a Load Group.") );
+			return STATUS_DISALLOW;
+		}
+		
+	   if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) )
+	   {
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has archived historical data that will be lost if removed.") );
+	      return STATUS_CONFIRM;
+	   }
+	   
+	   if( com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
+	   {
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "This point has system log data that will be lost if removed.") );
+	      return STATUS_CONFIRM;
+	   }
+	
+		//this point is deleteable
+		return STATUS_ALLOW;
+	}
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForStateGroup(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+		Integer theID = new Integer( dbRes.getItemID() );
+	
+		if( com.cannontech.database.data.state.GroupState.hasPoint( theID ) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a point.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this point is deleteable
+		return STATUS_ALLOW;
+	}
+	
+	/**
+	 * Insert the method's description here.
+	 * Creation date: (5/31/2001 2:36:20 PM)
+	 * @return java.lang.String
+	 * @param pointID int
+	 */
+	private static byte createDeleteStringForLogin(final DBDeleteResult dbRes) throws java.sql.SQLException
+	{
+/*
+		if( loginID == UserUtils.USER_YUKON_ID ) //this id is the default
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is reserved for system use.");
+			return STATUS_DISALLOW;
+		}
+*/
+		if( YukonUser.isUsedByContact(dbRes.getItemID(), CtiUtilities.getDatabaseAlias()) )
+		{
+			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a contact.") );
+			return STATUS_DISALLOW;
+		}
+	
+		//this login is deleteable
+		return STATUS_ALLOW;
+	}
+
+	public static DBDeleteResult getDeleteInfo( DBPersistent toDelete, final String nodeName )
+	{
+		DBDeleteResult delRes = new DBDeleteResult();
+
+		if (toDelete instanceof com.cannontech.database.data.point.PointBase)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently Delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the point '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.point.PointBase) toDelete).getPoint().getPointID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.POINT_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.customer.Contact)
+		{
+         delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the contact '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.customer.Contact) toDelete).getContact().getContactID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.CONTACT_TYPE );
+		}		
+		else if (toDelete instanceof com.cannontech.database.data.notification.NotificationGroup)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the notification group '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.notification.NotificationGroup) toDelete).getNotificationGroup().getNotificationGroupID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.NOTIF_GROUP_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.state.GroupState)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the state group '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.state.GroupState) toDelete).getStateGroup().getStateGroupID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.STATEGROUP_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.port.DirectPort)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + ((com.cannontech.database.data.port.DirectPort) toDelete).getPortName() + "?");
+			delRes.getUnableDelMsg().append("You cannot delete the comm port '" + ((com.cannontech.database.data.port.DirectPort) toDelete).getPortName() + "'");
+			delRes.setItemID( ((com.cannontech.database.data.port.DirectPort) toDelete).getCommPort().getPortID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.PORT_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.device.DeviceBase)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "?");
+			delRes.getUnableDelMsg().append("You cannot delete the device '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.device.DeviceBase) toDelete).getDevice().getDeviceID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.DEVICE_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.route.RouteBase)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the route '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.route.RouteBase) toDelete).getRouteID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.ROUTE_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.baseline.Baseline)
+		{
+			delRes.setItemID( ((com.cannontech.database.data.baseline.Baseline) toDelete).getBaseline().getBaselineID().intValue() );
+			
+			//this is crappy
+			if( delRes.getItemID() == com.cannontech.database.data.baseline.Baseline.IDForDefaultBaseline.intValue())
+			{
+				delRes.getConfirmMessage().append("This default value was created by the system." + CR_LF + "Are you sure you want to permanently delete '" + nodeName + "'?");
+				delRes.getUnableDelMsg().append("You cannot delete the baseline '" + nodeName + "'");
+				delRes.setDelType( DBDeletionFuncs.BASELINE_TYPE );
+			}
+			else
+			{	
+				delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+				delRes.getUnableDelMsg().append("You cannot delete the baseline '" + nodeName + "'");
+				delRes.setDelType( DBDeletionFuncs.BASELINE_TYPE );
+			}
+		}
+		
+		else if (toDelete instanceof com.cannontech.database.data.config.ConfigTwoWay)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the two-way config '" + nodeName + "'");
+			delRes.setItemID( ((ConfigTwoWay) toDelete).getConfigID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.CONFIG_TYPE );
+		}
+		
+		else if (toDelete instanceof TOUSchedule)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the TOU Schedule '" + nodeName + "'");
+			delRes.setItemID( ((TOUSchedule) toDelete).getScheduleID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.TOU_TYPE );
+		}
+		
+		else if (toDelete instanceof com.cannontech.database.db.tags.Tag)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the tag '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.db.tags.Tag) toDelete).getTagID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.TAG_TYPE );
+		}				
+		else if( toDelete instanceof com.cannontech.database.data.pao.YukonPAObject )
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + 
+								"' and all of its points?" + CR_LF + CR_LF +
+								"*The delete process will take extra time if several points are present." + CR_LF +
+								"*All points history will also be deleted.");
+
+			delRes.getUnableDelMsg().append("You cannot delete the point attachable object '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.pao.YukonPAObject) toDelete).getPAObjectID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.PAO_TYPE );
+		}
+/*
+		else if( toDelete instanceof com.cannontech.database.db.notification.AlarmCategory )
+		{
+			delRes.getConfirmMessage().append("You can not delete alarm categories using the DatabaseEditor"); 
+			delRes.getUnableDelMsg().append("You cannot delete the AlarmCategory '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.db.notification.AlarmCategory) toDelete).getAlarmCategoryID().intValue() );
+
+			retValue = false;
+		}
+*/
+		else if (toDelete instanceof com.cannontech.database.data.customer.Customer)
+		{
+         	delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?" + CR_LF + CR_LF +
+         			"*All customer activity and settings will be deleted");
+
+			delRes.getUnableDelMsg().append("You cannot delete the customer '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.customer.Customer) toDelete).getCustomerID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.CUSTOMER_TYPE );
+	 	}		
+		else if (toDelete instanceof com.cannontech.database.data.user.YukonUser)
+		{
+         	delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the login '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.user.YukonUser) toDelete).getUserID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.LOGIN_TYPE );
+		}
+		else if (toDelete instanceof com.cannontech.database.data.user.YukonGroup)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the login group '" + nodeName + "'");
+			delRes.setItemID( ((com.cannontech.database.data.user.YukonGroup) toDelete).getGroupID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.LOGIN_GRP_TYPE );
+		}
+		else if (toDelete instanceof HolidaySchedule)
+		{
+		 	delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the holiday schedule '" + nodeName + "'");
+			delRes.setItemID( ((HolidaySchedule) toDelete).getHolidayScheduleID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.HOLIDAY_SCHEDULE );
+		}
+		else if (toDelete instanceof SeasonSchedule)
+		{
+		 	delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the season schedule '" + nodeName + "'");
+			delRes.setItemID( ((SeasonSchedule) toDelete).getScheduleID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.SEASON_SCHEDULE );
+		}		
+		else if (toDelete instanceof LMProgramConstraint)
+		{
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+			delRes.getUnableDelMsg().append("You cannot delete the Program Constraint '" + nodeName + "'");
+			delRes.setItemID( ((LMProgramConstraint) toDelete).getConstraintID().intValue() );
+			delRes.setDelType( DBDeletionFuncs.LMPROG_CONSTR_TYPE );
+		}		
+		else
+		{
+			delRes.getConfirmMessage().append("You can not delete this object using the DatabaseEditor"); 
+			delRes.getUnableDelMsg().append("You cannot delete object named '" + nodeName + "'");
+						
+			delRes.setDeletable( false );
+		}
+
+		
+		return delRes;
+	}
+
+	/**
+	 * Accepts the result of the getDeleteInfo() method.
+	 */
+	public static byte deletionAttempted( final DBDeleteResult dbRes ) throws java.sql.SQLException
+	{
+		if (dbRes.getDelType() == POINT_TYPE)
+			return createDeleteStringForPoints(dbRes);
+
+		else if(dbRes.getDelType() == NOTIF_GROUP_TYPE)
+			return createDeleteStringForNotifGroup(dbRes);
+
+		else if(dbRes.getDelType() == STATEGROUP_TYPE)
+			return createDeleteStringForStateGroup(dbRes);
+
+		else if(dbRes.getDelType() == PORT_TYPE)
+			return createDeleteStringForCommPort(dbRes);
+		
+		else if(dbRes.getDelType() == DEVICE_TYPE)
+			return createDeleteStringForDevice(dbRes);
+		
+		else if(dbRes.getDelType() == ROUTE_TYPE)
+			return createDeleteStringForRoute(dbRes);
+		
+		else if(dbRes.getDelType() == CONTACT_TYPE)
+			return createDeleteStringForContact(dbRes);
+			
+		else if(dbRes.getDelType() == BASELINE_TYPE)
+			return createDeleteStringForBaseline(dbRes);
+
+		else if(dbRes.getDelType() == CONFIG_TYPE)
+				return createDeleteStringForConfig(dbRes);
+		
+		else if(dbRes.getDelType() == TOU_TYPE)
+			return createDeleteStringForTOU(dbRes);
+				
+		else if(dbRes.getDelType() == TAG_TYPE)
+			return createDeleteStringForTag(dbRes);
+
+		else if(dbRes.getDelType() == LMPROG_CONSTR_TYPE)
+			return createDeleteStringForLMProgConst(dbRes);
+
+		else if(dbRes.getDelType() == LOGIN_TYPE)
+			return createDeleteStringForLogin(dbRes);
+		
+		else if(dbRes.getDelType() == SEASON_SCHEDULE)	
+			return createDeleteStringForSeasonSchedule(dbRes);
+			
+		else if(dbRes.getDelType() == HOLIDAY_SCHEDULE)	
+			return createDeleteStringForHolidaySchedule(dbRes);
+
+		else if( dbRes.getDelType() == CUSTOMER_TYPE
+				 || dbRes.getDelType() == PAO_TYPE 
+				 || dbRes.getDelType() == LOGIN_GRP_TYPE )
+
+		{
+			return STATUS_CONFIRM;
+		}
+
+		else
+			return STATUS_DISALLOW;
+	}
+
+}

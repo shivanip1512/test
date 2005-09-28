@@ -18,6 +18,7 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.*;
@@ -910,8 +911,10 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 				  "Are you sure you want to change the type of '"+node.toString() + "'?");
 
 
-         byte deleteVal = DBDeletionFuncs.deletionAttempted(((com.cannontech.database.data.point.PointBase) userObject)
-                              .getPoint().getPointID().intValue(), DBDeletionFuncs.POINT_TYPE);
+		DBDeleteResult delRes = new DBDeleteResult(
+				((com.cannontech.database.data.point.PointBase) userObject).getPoint().getPointID().intValue(), DBDeletionFuncs.POINT_TYPE);
+			
+         byte deleteVal = DBDeletionFuncs.deletionAttempted( delRes );
          
          if( deleteVal == DBDeletionFuncs.STATUS_ALLOW
              || deleteVal == DBDeletionFuncs.STATUS_CONFIRM )
@@ -925,7 +928,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 			  
 			   javax.swing.JOptionPane.showConfirmDialog(
 				  getParentFrame(),
-				  ("You cannot change this point '"+node.toString() + "'" + DBDeletionFuncs.getTheWarning().toString()),
+				  ("You cannot change this point '"+node.toString() + "'" + delRes.getDescriptionMsg().toString()),
 				  "Unable to change",
 				  JOptionPane.CLOSED_OPTION,
 				  JOptionPane.WARNING_MESSAGE);
