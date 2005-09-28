@@ -53,14 +53,15 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
 									PAOGroups.STRING_LCU_LG[0],
 									PAOGroups.STRING_LCU_T3026[0],
 									PAOGroups.STRING_LCU_ER[0],
+									PAOGroups.STRING_TAP_TERMINAL[2],
 									PAOGroups.STRING_REPEATER[1],
 									PAOGroups.STRING_REPEATER_800[0],
-									PAOGroups.STRING_TAP_TERMINAL[2],
-									PAOGroups.STRING_WCTP_TERMINAL[0],
+									PAOGroups.STRING_RTC[0],
+									PAOGroups.STRING_SERIES_5_LMI[0],
+									PAOGroups.STRING_SNPP_TERMINAL[0],
 									PAOGroups.STRING_TCU_5000[0],
 									PAOGroups.STRING_TCU_5500[0],
-									PAOGroups.STRING_SERIES_5_LMI[0],
-									PAOGroups.STRING_RTC[0]
+									PAOGroups.STRING_WCTP_TERMINAL[0]
 								},								
 								{	//Electronic Meters
 									PAOGroups.STRING_ALPHA_POWERPLUS[0],

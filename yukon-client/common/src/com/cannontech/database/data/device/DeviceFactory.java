@@ -189,6 +189,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.WCTP_TERMINAL:
 			returnDevice = new WCTPTerminal();
 			break;
+		case PAOGroups.SNPP_TERMINAL:
+			returnDevice = new SNPPTerminal();
+			break;
 
 		case PAOGroups.LM_GROUP_EMETCON:
 			returnDevice = new com.cannontech.database.data.device.lm.LMGroupEmetcon();

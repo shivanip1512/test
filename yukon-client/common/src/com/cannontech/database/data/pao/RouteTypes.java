@@ -17,6 +17,7 @@ public interface RouteTypes extends TypeBase
 	public final static int ROUTE_WCTP_TERMINAL = ROUTE_OFFSET + 6;
 	public final static int ROUTE_SERIES_5_LMI	= ROUTE_OFFSET + 7;
 	public final static int ROUTE_RTC			= ROUTE_OFFSET + 8;
+	public final static int ROUTE_SNPP_TERMINAL = ROUTE_OFFSET + 9;
 
 	public static final String STRING_CCU = "CCU";
 	public static final String STRING_TCU = "TCU";
@@ -25,6 +26,7 @@ public interface RouteTypes extends TypeBase
 	public static final String STRING_VERSACOM = "Versacom";
 	public static final String STRING_TAP_PAGING = "Tap Paging";
 	public static final String STRING_WCTP_TERMINAL_ROUTE = "WCTP Terminal";
+	public static final String STRING_SNPP_TERMINAL_ROUTE = "SNPP Terminal";
 	public static final String STRING_SERIES_5_LMI_ROUTE = "Series 5 LMI";
 	public static final String STRING_RTC_ROUTE = "RTC";
 	

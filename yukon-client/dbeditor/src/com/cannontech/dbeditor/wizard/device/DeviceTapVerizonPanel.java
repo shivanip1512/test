@@ -605,7 +605,7 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("DeviceNameAddressPanel");
+		setName("DeviceTapVerizonPanel");
 		setLayout(new java.awt.GridLayout());
 		setSize(350, 200);
 		add(getJPanel1(), getJPanel1().getName());

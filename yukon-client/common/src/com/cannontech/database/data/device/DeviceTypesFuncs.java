@@ -766,6 +766,7 @@ public final static boolean isTransmitter(int deviceType)
 		case REPEATER_800:
 		case TAPTERMINAL:
 		case WCTP_TERMINAL:
+		case SNPP_TERMINAL:
 		case SERIES_5_LMI:
 		case RTC:
 			return true;

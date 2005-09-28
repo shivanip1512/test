@@ -304,6 +304,8 @@ public Object getValue(Object val)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_TAP_PAGING;
 		else if (devType == PAOGroups.WCTP_TERMINAL)
 			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_WCTP_TERMINAL_ROUTE;
+		else if (devType == PAOGroups.SNPP_TERMINAL)
+			routeType = com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE;
 		else if (devType == PAOGroups.SERIES_5_LMI)
 		{
 			Integer devID = ((DeviceBase)val).getDevice().getDeviceID();

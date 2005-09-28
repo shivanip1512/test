@@ -103,8 +103,10 @@ public interface DeviceTypes extends TypeBase
 	public final static int CBC_7010				= DEVICE_OFFSET + 82;
 	public final static int CBC_7020				= DEVICE_OFFSET + 83;
 	
+	public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
+	
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 83;
+	public final static int DEVICE_TYPES_COUNT = 84;
 	
 
 	//all the possible text representation of each device type.
@@ -155,6 +157,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
 	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
+	public static final String[] STRING_SNPP_TERMINAL = {"SNPP TERMINAL"};
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};

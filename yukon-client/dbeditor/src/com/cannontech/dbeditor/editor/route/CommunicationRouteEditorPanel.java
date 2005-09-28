@@ -564,6 +564,14 @@ private void loadSignalTransmitterComboBox(String routeType) {
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
 			}
 		}
+		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE) )
+		{
+			for(int i=0;i<devices.size();i++)
+			{
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.SNPP_TERMINAL)
+					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			}
+		}
 		else if( routeType.equalsIgnoreCase(com.cannontech.database.data.pao.RouteTypes.STRING_VERSACOM) )
 		{
 			for(int i=0;i<devices.size();i++)

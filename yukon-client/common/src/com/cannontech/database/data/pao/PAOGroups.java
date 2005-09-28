@@ -207,7 +207,9 @@ public final static int getDeviceType(String typeString)
    else if (isStringDevice(compareString, STRING_TAP_TERMINAL))
 	  return TAPTERMINAL;
    else if (isStringDevice(compareString, STRING_WCTP_TERMINAL))
-	  return WCTP_TERMINAL;
+	  return WCTP_TERMINAL;   
+   else if (isStringDevice(compareString, STRING_SNPP_TERMINAL))
+	  return SNPP_TERMINAL;
    else if (isStringDevice(compareString, STRING_EMETCON_GROUP))
 	  return LM_GROUP_EMETCON;
    else if (isStringDevice(compareString, STRING_SA305_GROUP))
@@ -304,6 +306,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_TAP_PAGING;
 		case ROUTE_WCTP_TERMINAL:
 			return STRING_WCTP_TERMINAL_ROUTE;
+		case ROUTE_SNPP_TERMINAL:
+			return STRING_SNPP_TERMINAL_ROUTE;
 		case ROUTE_TCU:
 			return STRING_TCU;
 		case ROUTE_VERSACOM:
@@ -439,6 +443,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_TAP_TERMINAL[0];
 	  	case WCTP_TERMINAL:
 		  	return STRING_WCTP_TERMINAL[0];
+		case SNPP_TERMINAL:
+			return STRING_SNPP_TERMINAL[0];
 
 	  	case LM_GROUP_EMETCON:
 		  	return STRING_EMETCON_GROUP[0];
@@ -689,6 +695,8 @@ public final static int getRouteType(String typeString)
 		return ROUTE_TAP_PAGING;
 	else if( typeString.equalsIgnoreCase( STRING_WCTP_TERMINAL_ROUTE) )
 		return ROUTE_WCTP_TERMINAL;
+	else if( typeString.equalsIgnoreCase( STRING_SNPP_TERMINAL_ROUTE) )
+		return ROUTE_SNPP_TERMINAL;
 	else if( typeString.equalsIgnoreCase( STRING_TCU) )
 		return ROUTE_TCU;
 	else if( typeString.equalsIgnoreCase( STRING_VERSACOM) )

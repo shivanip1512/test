@@ -49,6 +49,10 @@ public final static RouteBase createRoute(int routeType)
 		case RouteTypes.ROUTE_WCTP_TERMINAL:
 			returnRoute = new WCTPTerminalRoute();
 			returnRoute.setRouteType( RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
+			break;		
+		case RouteTypes.ROUTE_SNPP_TERMINAL:
+			returnRoute = new SNPPTerminalRoute();
+			returnRoute.setRouteType( RouteTypes.STRING_SNPP_TERMINAL_ROUTE );
 			break;
 		case RouteTypes.ROUTE_SERIES_5_LMI:
 			returnRoute = new Series5LMIRoute();
@@ -112,6 +116,11 @@ public final static RouteBase createRoute( String routeType)
 	{
 		returnRoute = new WCTPTerminalRoute();
 		returnRoute.setRouteType( RouteTypes.STRING_WCTP_TERMINAL_ROUTE );
+	}
+	else if( routeType.equalsIgnoreCase(RouteTypes.STRING_SNPP_TERMINAL_ROUTE) )
+	{
+		returnRoute = new SNPPTerminalRoute();
+		returnRoute.setRouteType( RouteTypes.STRING_SNPP_TERMINAL_ROUTE );
 	}
 	else if( routeType.equalsIgnoreCase(RouteTypes.STRING_SERIES_5_LMI_ROUTE) )
 	{

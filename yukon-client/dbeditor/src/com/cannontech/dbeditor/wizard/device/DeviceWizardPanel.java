@@ -238,7 +238,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			return getDeviceTapTerminalPanel();
 		}
-		else if( devType == PAOGroups.WCTP_TERMINAL )
+		else if( devType == PAOGroups.WCTP_TERMINAL || devType == PAOGroups.SNPP_TERMINAL )
 		{
 			return getDeviceTapVerizonPanel();
 		}
