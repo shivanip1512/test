@@ -172,6 +172,10 @@ public void start()
 					{
 						//go go go, import away!
 						runImport(importEntries);
+					}
+					
+					if(paoIDsForPorter.size() < 1)
+					{
 						//make sure the worker bee is doing his thing
 						porterWorker();
 					}
