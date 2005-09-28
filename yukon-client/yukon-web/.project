@@ -66,6 +66,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>com.ibm.etools.struts.StrutsBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>com.ibm.etools.beaninfo.BeaninfoNature</nature>
@@ -73,5 +78,7 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.ibm.etools.webpage.template.templatenature</nature>
 		<nature>com.ibm.etools.siteedit.WebSiteNature</nature>
+		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
+		<nature>com.ibm.etools.struts.StrutsNature</nature>
 	</natures>
 </projectDescription>

@@ -17,7 +17,6 @@
         <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
         <webClassPathEntry>/macs/bin</webClassPathEntry>
         <webClassPathEntry>/report/bin</webClassPathEntry>
-        <webClassPathEntry>/resource</webClassPathEntry>
         <webClassPathEntry>/servlet/bin</webClassPathEntry>
         <webClassPathEntry>/stars/bin</webClassPathEntry>
         <webClassPathEntry>/tdc/bin</webClassPathEntry>
@@ -79,5 +78,6 @@
         <webClassPathEntry>/yukon-web/WebContent/WEB-INF/lib/web.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
         <webClassPathEntry>/multispeak/bin</webClassPathEntry>
+        <webClassPathEntry>/cttp/bin</webClassPathEntry>
     </webClassPathEntries>
 </tomcatProjectProperties>
