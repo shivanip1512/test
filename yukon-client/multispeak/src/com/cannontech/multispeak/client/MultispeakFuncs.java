@@ -18,7 +18,11 @@ import org.apache.axis.message.SOAPHeader;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.cache.functions.DeviceFuncs;
+import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.ArrayOfErrorObject;
 import com.cannontech.multispeak.ArrayOfString;
 import com.cannontech.multispeak.ErrorObject;
@@ -75,16 +79,20 @@ public class MultispeakFuncs
 		}
 	}
 	
-//	public static String getUniqueKey()
-//	{
-//		String key = RoleFuncs.getGlobalPropertyValue(MultispeakRole.OMS_UNIQUE_KEY);
-//		if( key == null )
-//		{
-//			CTILogger.info("Unkown OMS unique key value.");
-//			key = "meterNumber";
-//		}
-//		return key;
-//	}
+	public static String getKeyValue(String key, int deviceID)
+	{
+	    if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
+		{
+			LiteYukonPAObject lPao = PAOFuncs.getLiteYukonPAO(deviceID);
+			return (lPao == null ? null : lPao.getPaoName());
+		}
+		else //if(key.toLowerCase().startsWith("meternum"))	// default value
+		{
+			LiteDeviceMeterNumber ldmn = DeviceFuncs.getLiteDeviceMeterNumber(deviceID);
+			return (ldmn == null ? null : ldmn.getMeterNumber());
+		}
+		
+	}
 	/**
 	 * This method should be called by every multispeak function!!!
 	 *
