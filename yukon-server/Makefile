@@ -52,18 +52,18 @@ all:
         @echo:
         @title Building in $(COMPILEBASE)\database
         @echo Building in $(COMPILEBASE)\database
+	@echo:
+        @$(MAKE) -nologo
+	@%cd $(COMPILEBASE)\DeviceConfiguration
+        @echo:
+        @title Building in $(COMPILEBASE)\deviceconfiguration
+        @echo Building in $(COMPILEBASE)\deviceconfiguration
         @echo:
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\rtdb
         @echo:
         @title Building in $(COMPILEBASE)\rtdb
         @echo Building in $(COMPILEBASE)\rtdb
-        @echo:
-        @$(MAKE) -nologo
-	@%cd $(COMPILEBASE)\DeviceConfiguration
-        @echo:
-        @title Building in $(COMPILEBASE)\deviceconfiguration
-        @echo Building in $(COMPILEBASE)\deviceconfiguration
         @echo:
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\dbsignal
@@ -171,10 +171,10 @@ clean:
         @%cd $(COMPILEBASE)\server
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\database
+	@$(MAKE) -nologo  $@
+	@%cd $(COMPILEBASE)\deviceconfiguration
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\rtdb
-        @$(MAKE) -nologo  $@
-	@%cd $(COMPILEBASE)\deviceconfiguration
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\dbsignal
         @$(MAKE) -nologo  $@
@@ -207,6 +207,9 @@ clean:
         @%cd $(COMPILEBASE)\loadmanagement
         @$(MAKE) -nologo  $@
         @%cd $(CWD)
+	@%cd $(COMPILEBASE)\lib
+       -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+        @%cd $(CWD)
 
 deps:
         %cd $(COMPILEBASE)\protocol
@@ -219,12 +222,12 @@ deps:
         title %cd%
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\database
-        title %cd%
-        $(MAKE) -nologo  $@
-	%cd $(COMPILEBASE)\rtdb
-        title %cd%
+	title %cd%
         $(MAKE) -nologo  $@
 	%cd $(COMPILEBASE)\deviceconfiguration
+	title %cd%
+        $(MAKE) -nologo  $@
+	%cd $(COMPILEBASE)\rtdb
         title %cd%
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\dbsignal
@@ -282,9 +285,9 @@ copy:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\database
         @$(MAKE) -nologo  $@
-	@%cd $(COMPILEBASE)\rtdb
-        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\deviceconfiguration
+	@$(MAKE) -nologo  $@
+	@%cd $(COMPILEBASE)\rtdb
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\common
         @$(MAKE) -nologo  $@
