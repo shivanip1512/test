@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/08/12 14:33:01 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/09/28 03:34:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1174,7 +1174,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             else if( !cmd.compare("peak") )
             {
                 //  !!!  FIXME: this will not allow reporting on any load profile interval size smaller than 1 hour  !!!
-                if( getLoadProfile().getLoadProfileDemandRate() >= 3600 )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == MCT410_Sspec &&
+                    (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= MCT410_Min_NewLLPRev ||
+                     getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) == 253) )  //  Chef's Special for JSW
                 {
                     function = Emetcon::GetValue_LoadProfilePeakReport;
                     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
@@ -1186,7 +1188,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     if( ReturnMsg )
                     {
                         ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                        ReturnMsg->setResultString(getName() + " / Load profile reporting currently only supported for 60-minute load profile");
+                        ReturnMsg->setResultString(getName() + " / Load profile reporting currently only supported for SSPEC " + CtiNumStr(MCT410_Sspec) + " revision " + RWCString((char)('A' + MCT410_Min_NewLLPRev - 1)) + " and up");
 
                         retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
                     }
@@ -1215,7 +1217,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     {
                         //  add on a day - this is the end of the interval, not the beginning,
                         //    so we need to start at midnight of the following day...  minus one second
-                        request_time  = RWTime(RWDate(day + 1, month, year)).seconds() - 1;
+                        request_time  = RWTime(RWDate(day, month, year)).seconds() + 86400 - 1;
 
                         if( request_time    != _llpPeakInterest.time    ||
                             request_channel != _llpPeakInterest.channel ||
