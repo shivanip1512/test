@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/09/15 19:48:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/09/28 14:48:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,15 @@
 #include "dbaccess.h"
 #include "config_resolvers.h"
 #include "dev_base.h"
+
+#include "config_type_general.h"
+#include "config_type_mct_tou.h"
+#include "config_type_mct_addressing.h"
+#include "config_type_mct_configuration.h"
+#include "config_type_mct_demand_LP.h"
+#include "config_type_mct_dst.h"
+#include "config_type_mct_vthreshold.h"
+
 #include "mgr_config.h"
 
 class RWCString;
@@ -132,6 +141,9 @@ void CtiConfigManager::refreshConfigurations()
             rdr["partid"]>>partID;
 
             ConfigDeviceMap::iterator deviceMapItr;
+
+            LockGuard conf_guard(_devMux);
+
             if((deviceMapItr = _deviceConfig.find(configID))==_deviceConfig.end())//This key is not in the map yet
             {
                 CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice());
@@ -185,6 +197,7 @@ void CtiConfigManager::refreshConfigurations()
        
         RWDBReader rdr = selector.reader(conn);
 
+        
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
             int devID, configID;
@@ -195,6 +208,9 @@ void CtiConfigManager::refreshConfigurations()
             CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
 
             ConfigDeviceMap::iterator deviceMapItr;
+
+            LockGuard conf_guard(_devMux);//make this access more thread safe.
+            
             if((deviceMapItr = _deviceConfig.find(configID))!=_deviceConfig.end() && pDev)//This key is not in the map
             {
                 pDev->setDeviceConfig(deviceMapItr->second);
@@ -207,7 +223,7 @@ void CtiConfigManager::refreshConfigurations()
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
+        dout << RWTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
     }
 
 
@@ -240,6 +256,48 @@ CtiConfigBaseSPtr CtiConfigManager::createConfigByType(const int &type)
     {
         switch(type)
         {
+            case ConfigTypeGeneral:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new General());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTTOU:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTTOU());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTAddressing:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTAddressing());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTConfiguration:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTConfiguration());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTDemandLP:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTDemandLoadProfile());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTDST:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTDST());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTVThreshold:
+            {
+                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTVThreshold());
+                tempBasePtr->setType(type);
+                return tempBasePtr;
+            }
             default:
             {
                 {
@@ -290,4 +348,19 @@ bool CtiConfigManager::insertValueIntoConfigMap(const int &partID, const RWCStri
 void CtiConfigManager::setDeviceManager(CtiDeviceManager &mgr)
 {
     _devMgr = &mgr;
+}
+
+//Config ID that is.
+CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(int ID)
+{
+    ConfigDeviceMap::iterator deviceMapItr;
+    LockGuard conf_guard(_devMux);
+    if((deviceMapItr = _deviceConfig.find(ID))!=_deviceConfig.end())//This key is in the map
+    {
+        return deviceMapItr->second;
+    }
+    else
+    {
+        return CtiConfigDeviceSPtr();
+    }
 }

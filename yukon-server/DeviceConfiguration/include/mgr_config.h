@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/mgr_config.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/15 17:57:00 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/09/28 14:48:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,9 @@ class IM_EX_CONFIG CtiConfigManager
 
 
 private:
+    typedef CtiLockGuard<CtiMutex> LockGuard;
+    mutable CtiMutex    _devMux;//For use with _deviceConfig map.
+
     typedef map<int,CtiConfigBaseSPtr>    ConfigTypeMap;
     typedef map<int,CtiConfigDeviceSPtr>  ConfigDeviceMap;
 
@@ -48,6 +51,8 @@ public:
 
     void refreshConfigurations();
     void setDeviceManager(CtiDeviceManager &mgr);
+
+    CtiConfigDeviceSPtr getDeviceConfigFromID(int id);
     
 };
 #endif __MGR_CONFIG_H__
