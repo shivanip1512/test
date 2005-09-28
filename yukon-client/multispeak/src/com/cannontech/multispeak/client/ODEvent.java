@@ -19,103 +19,32 @@ import com.cannontech.multispeak.OutageDetectionEvent;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ODEvent extends Observable{
-	
-	private String vendorName = "";
-	/** The unique messageID for all of the commands sent to pil */
-	private long pilMessageID = -1;
-	/** The total number of meters tested */
-	private int totalMeterCount = 0;
-	/** The number of meters processed, this count and totalMeterCount must be equal before Notification message will be sent */
-	private int completedMeterCount = 0;
-	/** A vector of OutageDetectionEvents, meterCount should equal the number of "expected" ODEvents elements */
-	private Vector ODEvents = new Vector();
-	
-	/**
-	 * 
-	 */
-	public ODEvent(String vendorName_, long pilMessageID_, int meterCount_) {
-		super();
-		vendorName = vendorName_;
-		pilMessageID = pilMessageID_;
-		totalMeterCount = meterCount_;
-	}
+public class ODEvent extends MultispeakEvent{
+
+   private OutageDetectionEvent outageDetectionEvent = null;
 
 	/**
-	 * @return
+	 * @param vendorName_
+	 * @param pilMessageID_
 	 */
-	public int getTotalMeterCount() {
-		return totalMeterCount;
-	}
-
-
-	/**
-	 * @return
-	 */
-	public long getPilMessageID() {
-		return pilMessageID;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setTotalMeterCount(int i) {
-		totalMeterCount = i;
-	}
-
-	/**
-	 * @param long1
-	 */
-	public void setPilMessageID(long long1) {
-		pilMessageID = long1;
-	}
-
-	/**
-	 * @return
-	 */
-	public Vector getODEvents() {
-		return ODEvents;
-	}
-
-	/**
-	 * @param map
-	 */
-	public void setODEvents(Vector ODEvents_) {
-		ODEvents = ODEvents_;
-	}
-	/**
-	 * @return
-	 */
-	public int getCompletedMeterCount() {
-		return completedMeterCount;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setCompletedMeterCount(int i) {
-		completedMeterCount = i;
-		if( completedMeterCount >= getTotalMeterCount() )
-		{
-			setChanged();
-			notifyObservers();
-		}
-	}
-
-	/**
-	 * @return
-	 */
-	public String getVendorName()
+	public ODEvent(String vendorName_, long pilMessageID_)//, int meterCount_)
 	{
-		return vendorName;
+		super(vendorName_, pilMessageID_);
 	}
 
+	
 	/**
-	 * @param string
+	 * @return
 	 */
-	public void setVendorName(String string)
+	public OutageDetectionEvent getOutageDetectionEvent()
 	{
-		vendorName = string;
+		return outageDetectionEvent;
 	}
-
+	/**
+	 * @param outageDetectionEvent_
+	 */
+	public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_)
+	{
+		this.outageDetectionEvent = outageDetectionEvent_;
+	}
 }
