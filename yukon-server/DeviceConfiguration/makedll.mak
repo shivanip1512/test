@@ -43,6 +43,14 @@ DLLOBJS = \
 config_base.obj \
 config_device.obj \
 config_resolvers.obj \
+config_test_a.obj \
+config_type_general.obj \
+config_type_mct_tou.obj \
+config_type_mct_vthreshold.obj \
+config_type_mct_demand_LP.obj \
+config_type_mct_configuration.obj \
+config_type_mct_addressing.obj \
+config_type_mct_dst.obj \
 mgr_config.obj \
 
 
