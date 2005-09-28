@@ -21,6 +21,9 @@ import java.util.Date;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 
 /**
  * @author jdayton
@@ -34,29 +37,23 @@ public class DBFuncs
 	 * Grab a Route using a PAOName, returns one with an ID of -12 if unsuccessful
 	 * This should be changed to use cache at a later time
 	 */
-	public static Integer getRouteFromName(String name, Connection conn)
+	public static Integer getRouteFromName(String name)
 	{
 		Integer routeID = new Integer(-12);
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
 		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND PAOCLASS = 'ROUTE'", "yukon");
 		
 		try
 		{
-			String statement = ("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-							+ name + "' AND PAOCLASS = 'ROUTE'");
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			if(rset != null && rset.next() )
+			stmt.execute();
+				
+			if( stmt.getRowCount() > 0 )
 			{
-				routeID = new Integer(rset.getInt(1));
+				routeID = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());	
 			}
 		}
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}
@@ -68,62 +65,51 @@ public class DBFuncs
 	 * Grab an MCT410 using a PAOName, returns one with an ID of -12 if unsuccessful
 	 * This should be changed to use cache at a later time
 	 */
-	public static MCT410IL get410FromTemplateName(String name, Connection conn)
+	public static MCT410IL get410FromTemplateName(String name)
 	{
 		MCT410IL template410 = new MCT410IL();
 		template410.setDeviceID(new Integer(-12));
 		Integer id = new Integer(1);
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-	
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-	
+
+		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND TYPE = 'MCT-410IL'", "yukon");
+		
 		try
 		{
-			String statement = ("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-							+ name + "' AND TYPE = 'MCT-410IL'");
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-			if(rset != null && rset.next() )
+			stmt.execute();
+				
+			if( stmt.getRowCount() > 0 )
 			{
-				id = new Integer(rset.getInt(1));
+				id = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());	
 			
 				template410.setDeviceID(id);
-				template410.setDbConnection(conn);
-				template410.retrieve();
+				template410 = (MCT410IL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
 			}
 		}
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
+			template410.setDeviceID(new Integer(-12));
 			e.printStackTrace();
 		}
 	
 		return template410;
 	}
 	
-	public static boolean IsDuplicateName(String name, Connection conn)
+	public static boolean IsDuplicateName(String name)
 	{
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND TYPE = 'MCT-410IL'", "yukon");
 		
 		try
 		{
-			String statement = ("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-							+ name + "' AND TYPE = 'MCT-410IL'");
+			stmt.execute();
 
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			if(rset != null && rset.next() )
+			if( stmt.getRowCount() > 0 )
 			{
-				return rset.getInt(1) != 0;
+				return ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() != 0;	
 			}
 		}
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}
@@ -131,43 +117,26 @@ public class DBFuncs
 		return false;
 	}
 	
-	public static int[] getNextPAObjectID(int numberOfImportEntries, Connection conn)
+	public static int[] getNextPAObjectID(int numberOfImportEntries)
 	{
 		int retVal = 0;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
 		int[] ids = new int[numberOfImportEntries];
+		
+		SqlStatement stmt = new SqlStatement("select max(paobjectid) AS maxid from yukonpaobject", "yukon");
 		
 		try
 		{		
-			if( conn == null )
-			{
-				throw new IllegalStateException("Database connection cannot be null.");
-			}
-			else
-			{
-				pstmt = conn.prepareStatement("select max(paobjectid) AS maxid from yukonpaobject");
-				rset = pstmt.executeQuery();							
+			stmt.execute();							
 
-				// Just one please
-				if( rset.next() )
-					retVal = rset.getInt("maxid") + 1;
-			}		
+			// Just one please
+			if( stmt.getRowCount() > 0 )
+			{
+				retVal = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();	
+			}
 		}
-		catch( java.sql.SQLException e )
+		catch(Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
 		}
 		
 		for(int j = 0; j < numberOfImportEntries; j++)
@@ -214,20 +183,13 @@ public class DBFuncs
 		return Point.getNextPointID();
 	}
 	
-	public static boolean writeLastImportTime(Date lastImport, Connection conn)
+	public static boolean writeLastImportTime(Date lastImport)
 	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+		
 		try
 		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-				
+			stmt.execute();
 		}
 		catch (Exception e)
 		{
@@ -240,27 +202,6 @@ public class DBFuncs
 	
 	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning)
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		boolean truth = writeNextImportTime(nextImport, currentlyRunning, conn);
-		
-		try
-		{
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		
-		return truth;		
-	}
-	
-	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning, Connection conn)
-	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-			
 		String next;
 		
 		if(currentlyRunning)
@@ -268,109 +209,11 @@ public class DBFuncs
 		else
 			next = nextImport.toString();
 
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + next + "' WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
-	}
-	
-	public static boolean writeTotalSuccess(int success, Connection conn)
-	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
-	}
-	
-	public static boolean writeTotalAttempted(int attempts, Connection conn)
-	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET TOTALATTEMPTS = " + attempts + " WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			return false;
-		}
-
-		return true;
-	}
-	
-	public static synchronized void alreadyForcedImport(Connection conn)
-	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'N' WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
-
-		}
-		catch (Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-	}
-	
-	public static synchronized boolean forceImport()
-	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
-		try
-		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'");
-		
-			if (stat != null)
-				stat.close();
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET NEXTIMPORTTIME = '" + next + "' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
 				
-			conn.close();
+		try
+		{
+			stmt.execute();
 		}
 		catch (Exception e)
 		{
@@ -381,30 +224,85 @@ public class DBFuncs
 		return true;
 	}
 	
-	public static synchronized boolean isForcedImport(Connection conn)
+	public static boolean writeTotalSuccess(int success)
+	{
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET TOTALSUCCESSES = " + success + " WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+
+		try
+		{
+			stmt.execute();
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+
+		return true;
+	}
+	
+	public static boolean writeTotalAttempted(int attempts)
+	{
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET TOTALATTEMPTS = " + attempts + " WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+
+		try
+		{
+			stmt.execute();
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+
+		return true;
+	}
+	
+	public static void alreadyForcedImport()
+	{
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'N' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+	
+		try
+		{
+			stmt.execute();
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+	}
+	
+	public static boolean forceImport()
+	{
+		SqlStatement stmt = new SqlStatement("UPDATE DYNAMICIMPORTSTATUS SET FORCEIMPORT = 'Y' WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
+			
+		try
+		{
+			stmt.execute();
+		}
+		catch (Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+
+		return true;
+	}
+	
+	public static boolean isForcedImport()
 	{
 		boolean isForced = false;
-		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		SqlStatement stmt = new SqlStatement("SELECT FORCEIMPORT FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", "yukon");
 		
 		try
 		{
-			String statement = ("SELECT FORCEIMPORT FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'");
+			stmt.execute();
 
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
-			{
-				isForced = rset.getString(1).compareTo("Y") == 0;
-			}
+			if( stmt.getRowCount() > 0 )
+				isForced = stmt.getRow(0)[0].toString().compareTo("Y") == 0;
 		}
 		
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}

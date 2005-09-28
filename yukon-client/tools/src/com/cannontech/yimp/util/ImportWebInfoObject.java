@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 import com.cannontech.database.PoolManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.importer.ImportFail;
+import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton
@@ -37,23 +38,9 @@ public class ImportWebInfoObject
 		//getFailures();
 	}
 	
-	public synchronized Vector getFailures()
+	public Vector getFailures()
 	{
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-		failures = ImportFuncs.getAllFailed(conn);
-			
-		try
-		{
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();	
-		}
-	
-		return failures;
+		return ImportFuncs.getAllFailed();
 	}
 	
 	public ImportFail getFailureAt(int index)
@@ -79,36 +66,25 @@ public class ImportWebInfoObject
 		return ((ImportFail)getFailureAt(index)).getDateTime().toString();
 	}
 	
-	public synchronized String getLastImportTime()
+	public String getLastImportTime()
 	{
 		String lastImportTime = new String("------------");
 		
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-		
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
+													"yukon" );
+
 		try
 		{
-			String statement = ("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'");
+			stmt.execute();
 
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			if( stmt.getRowCount() > 0 )
 			{
-				lastImportTime = rset.getString(1);
+				lastImportTime = stmt.getRow(0)[0].toString();
 			}
-			
-			if( conn != null )
-				conn.close();
-			
 		}
 		
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}
@@ -116,36 +92,24 @@ public class ImportWebInfoObject
 		return lastImportTime;
 	}
 	
-	public synchronized String getNextImportTime()
+	public String getNextImportTime()
 	{
 		String nextImportTime = new String("------------");
 		
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-		
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
+													"yukon" );
+
 		try
 		{
-			String statement = ("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'");
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
 			{
-				nextImportTime = rset.getString(1);
+				nextImportTime = stmt.getRow(0)[0].toString();
 			}
-			
-			if( conn != null )
-				conn.close();
-			
 		}
-		
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}
@@ -153,36 +117,24 @@ public class ImportWebInfoObject
 		return nextImportTime;
 	}
 	
-	public synchronized String getTotalSuccesses()
+	public String getTotalSuccesses()
 	{
 		String totalSuccesses = new String("--");
 		
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-		
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement("SELECT TOTALSUCCESSES FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
+													"yukon" );
 		try
 		{
-			String statement = ("SELECT TOTALSUCCESSES FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'");
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			stmt.execute();
+				
+			if( stmt.getRowCount() > 0 )
 			{
-				totalSuccesses = rset.getString(1);
+				totalSuccesses = stmt.getRow(0)[0].toString();
 			}
-			
-			if( conn != null )
-				conn.close();
-			
 		}
 		
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}
@@ -190,36 +142,25 @@ public class ImportWebInfoObject
 		return totalSuccesses;
 	}
 	
-	public synchronized String getTotalAttempts()
+	public String getTotalAttempts()
 	{
 		String totalAttempts = new String("--");
 		
-		Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		com.cannontech.database.SqlStatement stmt =
+			new com.cannontech.database.SqlStatement("SELECT TOTALATTEMPTS FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
+													"yukon" );
 		
 		try
 		{
-			String statement = ("SELECT TOTALATTEMPTS FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'");
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
 			{
-				totalAttempts = rset.getString(1);
+				totalAttempts = stmt.getRow(0)[0].toString();
 			}
-			
-			if( conn != null )
-				conn.close();
-			
 		}
 		
-		catch( java.sql.SQLException e )
+		catch( Exception e )
 		{
 			e.printStackTrace();
 		}

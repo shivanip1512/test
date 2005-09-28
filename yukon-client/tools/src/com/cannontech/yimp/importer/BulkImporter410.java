@@ -78,23 +78,6 @@ public BulkImporter410() {
  */
 public void figureNextImportTime()
 {
-	Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	figureNextImportTime(conn);	
-	
-	try
-	{
-		if( conn != null )
-			conn.close();
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}	
-}
-
-
-public void figureNextImportTime(Connection conn)
-{
 	if( this.nextImportTime == null )
 	{
 		this.nextImportTime = new GregorianCalendar();
@@ -121,30 +104,15 @@ public void figureNextImportTime(Connection conn)
 	logger = ImportFuncs.writeToImportLog(logger, 'N', " ... Next Import Data Event to occur at: " + nextImportTime.getTime(), "", "");
 	CTILogger.info(" ... Import Data Event to occur at: " + nextImportTime.getTime());
 	*/
-	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), false, conn);
+	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), false);
 }
 
 public boolean isForcedImport()
 {
-	Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-	
-	if( conn == null )
-		throw new IllegalArgumentException("Database connection should not be (null)");
-
-	if(DBFuncs.isForcedImport(conn))
+	if(DBFuncs.isForcedImport())
 	{
-		DBFuncs.alreadyForcedImport(conn);
+		DBFuncs.alreadyForcedImport();
 		return true;
-	}
-	
-	try
-	{
-		if( conn != null )
-			conn.close();
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
 	}
 	
 	return false;
@@ -191,9 +159,7 @@ public void start()
 					CTILogger.info("Starting import process.");
 					logger = ImportFuncs.writeToImportLog(logger, 'N', "Starting import process.", "", "");
 					
-					Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			
-					Vector importEntries = ImportFuncs.summonImps(conn);
+					Vector importEntries = ImportFuncs.summonImps();
 					
 					//if no importEntries, report this and go back to waiting
 					if(importEntries.size() < 1)
@@ -204,7 +170,7 @@ public void start()
 					else
 					{
 						//go go go, import away!
-						runImport(importEntries, conn);
+						runImport(importEntries);
 						//make sure the worker bee is doing his thing
 						porterWorker();
 					}
@@ -218,15 +184,7 @@ public void start()
 					ImportFuncs.flushImportTable(conn);
 					*/
 										
-					try
-					{
-						if( conn != null )
-							conn.close();
-					}
-					catch( java.sql.SQLException e )
-					{
-						e.printStackTrace();
-					}
+					
 				}
 				
 				try
@@ -269,9 +227,9 @@ public void start()
 	 * This method also will call logging methods for those
 	 * that failed.
 	 */
-public void runImport(Vector imps, Connection conn)
+public void runImport(Vector imps)
 {
-	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true, conn);
+	DBFuncs.writeNextImportTime(this.nextImportTime.getTime(), true);
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
@@ -281,8 +239,10 @@ public void runImport(Vector imps, Connection conn)
 	Vector successVector = new Vector();
 	boolean badEntry = false;
 	int successCounter = 0;
+	Connection conn = null;
 	
-	int ids[] = DBFuncs.getNextPAObjectID(imps.size(), conn);
+	
+	int ids[] = DBFuncs.getNextPAObjectID(imps.size());
 	
 	for(int j = 0; j < imps.size(); j++)
 	{
@@ -321,7 +281,7 @@ public void runImport(Vector imps, Connection conn)
 		}
 		else
 		{
-			boolean isDuplicate = DBFuncs.IsDuplicateName(name, conn);
+			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
 			if(isDuplicate)
 			{
 				CTILogger.info("Name " + name + " is already used by an MCT-410 in the Yukon database.");
@@ -368,7 +328,7 @@ public void runImport(Vector imps, Connection conn)
 		}
 		else
 		{
-			routeID = DBFuncs.getRouteFromName(routeName, conn);
+			routeID = DBFuncs.getRouteFromName(routeName);
 			if(routeID.intValue() == -12)
 			{
 				CTILogger.info("Import entry with name " + name + " specifies a route not in the Yukon database.");
@@ -386,7 +346,7 @@ public void runImport(Vector imps, Connection conn)
 		}
 		else
 		{
-			template410 = DBFuncs.get410FromTemplateName(templateName, conn);
+			template410 = DBFuncs.get410FromTemplateName(templateName);
 			if(template410.getDevice().getDeviceID().intValue() == -12)
 			{
 				CTILogger.info("Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.");
@@ -434,10 +394,17 @@ public void runImport(Vector imps, Connection conn)
 			
 			try
 			{
+				/*
+				 * Do we want to do this every iteration or just use one
+				 * connection for the whole import run??
+				 */
+				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+				
 				if(hasPoints)
 				{				
 					objectsToAdd.setDbConnection(conn);
 					objectsToAdd.add();
+					
 				}
 				else
 				{
@@ -461,12 +428,28 @@ public void runImport(Vector imps, Connection conn)
 				failures.addElement(currentFailure);
 				logger = ImportFuncs.writeToImportLog(logger, 'F', "MCT410 with name " + name + "failed on INSERT into database.", e.toString(), e.toString());
 			}
+			finally
+			{
+				try
+				{
+					if( conn != null )
+					{
+						conn.commit();
+						conn.close();
+					}
+				}
+				catch( java.sql.SQLException e )
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
-	
+	conn = null;	
 	//remove executed ImportData entries
 	try
 	{
+		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		ImportFuncs.flushImportTable(imps, conn);
 	}
 	catch( java.sql.SQLException e )
@@ -474,7 +457,23 @@ public void runImport(Vector imps, Connection conn)
 		e.printStackTrace();
 		logger = ImportFuncs.writeToImportLog(logger, 'F', "PREVIOUSLY USED IMPORT ENTRIES NOT REMOVED: THEY WOULD NOT DELETE!!!", e.toString(), e.toString());
 	}
+	finally
+	{
+		try
+		{
+			if( conn != null )
+			{
+				conn.commit();
+				conn.close();
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+	}
 	
+	conn = null;
 	//store failures
 	try
 	{
@@ -483,6 +482,8 @@ public void runImport(Vector imps, Connection conn)
 		{
 			((NestedDBPersistent)failures.elementAt(m)).setOpCode(Transaction.INSERT);
 		}		
+		
+		conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 		ImportFuncs.storeFailures(successVector, failures, conn);
 	}
 	catch( java.sql.SQLException e )
@@ -490,15 +491,30 @@ public void runImport(Vector imps, Connection conn)
 		e.printStackTrace();
 		logger = ImportFuncs.writeToImportLog(logger, 'F', "FAILURES NOT RECORDED: THEY WOULD NOT INSERT!!!", e.toString(), e.toString());
 	}
+	finally
+	{
+		try
+		{
+			if( conn != null )
+			{
+				conn.commit();
+				conn.close();
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	//send off a big DBChangeMsg so all Yukon entities know what's goin' on...
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[1], getDispatchConnection());
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
 	
-	DBFuncs.writeTotalSuccess(successCounter, conn);
-	DBFuncs.writeTotalAttempted(imps.size(), conn);
+	DBFuncs.writeTotalSuccess(successCounter);
+	DBFuncs.writeTotalAttempted(imps.size());
 	Date now = new Date();
-	DBFuncs.writeLastImportTime(now, conn);
+	DBFuncs.writeLastImportTime(now);
 	
 	try
 	{

@@ -9,6 +9,7 @@ package com.cannontech.yimp.util;
 import java.util.Vector;
 import java.sql.Connection;
 import java.util.Date;
+import java.text.DateFormat;
 import java.util.GregorianCalendar;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.importer.ImportData;
@@ -16,6 +17,7 @@ import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.SqlStatement;
 
 /**
  * @author jdayton
@@ -29,43 +31,39 @@ public class ImportFuncs
 	 * This method will bring in the contents of the ImportData
 	 * table in the form of ImportData objects
 	 */
-	public static Vector summonImps(Connection conn)
+	public static Vector summonImps()
 	{
 		Vector hordeOfImps = new Vector();
 		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		SqlStatement stmt = new SqlStatement("SELECT * FROM " + ImportData.TABLE_NAME, "yukon");
 		
 		try
 		{
-			String statement = ("SELECT * FROM " + ImportData.TABLE_NAME);
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
 			{
-				String address = rset.getString(1);
-				String name = rset.getString(2);
-				String routeName = rset.getString(3);
-				String meterNumber = rset.getString(4);
-				String collectionGrp = rset.getString(5);
-				String altGrp = rset.getString(6);
-				String templateName = rset.getString(7);
+				for( int i = 0; i < stmt.getRowCount(); i++ )
+				{
+					String address = stmt.getRow(i)[0].toString();
+					String name = stmt.getRow(i)[1].toString();
+					String routeName = stmt.getRow(i)[2].toString();
+					String meterNumber = stmt.getRow(i)[3].toString();
+					String collectionGrp = stmt.getRow(i)[4].toString();
+					String altGrp = stmt.getRow(i)[5].toString();
+					String templateName = stmt.getRow(i)[6].toString();
 
-				ImportData imp = new ImportData( address, name,
-									routeName, meterNumber, collectionGrp, altGrp, templateName );
+					ImportData imp = new ImportData( address, name,
+										routeName, meterNumber, collectionGrp, altGrp, templateName );
 
-				hordeOfImps.add(imp);
+					hordeOfImps.add(imp);
 				}
 			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
 		
 		return hordeOfImps;
 	}
@@ -74,43 +72,39 @@ public class ImportFuncs
 	 * This method will bring in the contents of the ImportFail
 	 * table in the form of ImportFail objects
 	 */
-	public static synchronized Vector getAllFailed(Connection conn)
+	public static synchronized Vector getAllFailed()
 	{
 		Vector failures = new Vector();
 		
-		java.sql.PreparedStatement preparedStatement = null;
-		java.sql.ResultSet rset = null;
-		
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
+		SqlStatement stmt = new SqlStatement("SELECT * FROM " + ImportFail.TABLE_NAME + " ORDER BY DATETIME DESC", "yukon");
 		
 		try
 		{
-			String statement = ("SELECT * FROM " + ImportFail.TABLE_NAME + " ORDER BY DATETIME DESC");
-
-			preparedStatement = conn.prepareStatement( statement );
-			rset = preparedStatement.executeQuery();
-
-			while (rset.next() && rset != null)
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
 			{
-				String address = rset.getString(1);
-				String name = rset.getString(2);
-				String routeName = rset.getString(3);
-				String meterNumber = rset.getString(4);
-				String collectionGrp = rset.getString(5);
-				String altGrp = rset.getString(6);
-				String templateName = rset.getString(7);
-				String errorMsg = rset.getString(8);
-	     		Date dateTime = rset.getTimestamp(9);
+				for( int i = 0; i < stmt.getRowCount(); i++ )
+				{
+					String address = stmt.getRow(i)[0].toString();
+					String name = stmt.getRow(i)[1].toString();
+					String routeName = stmt.getRow(i)[2].toString();
+					String meterNumber = stmt.getRow(i)[3].toString();
+					String collectionGrp = stmt.getRow(i)[4].toString();
+					String altGrp = stmt.getRow(i)[5].toString();
+					String templateName = stmt.getRow(i)[6].toString();
+					String errorMsg = stmt.getRow(i)[7].toString();
+					Date dateTime = java.sql.Date.valueOf(stmt.getRow(i)[8].toString());
 
-				ImportFail fail = new ImportFail( address, name,
-									routeName, meterNumber, collectionGrp, altGrp,  
-									templateName, errorMsg, dateTime );
+					ImportFail fail = new ImportFail( address, name,
+										routeName, meterNumber, collectionGrp, altGrp,  
+										templateName, errorMsg, dateTime );
 
-				failures.add(fail);
+					failures.add(fail);
+				}
 			}
 		}
-			catch( java.sql.SQLException e )
+			catch( Exception e )
 			{
 				e.printStackTrace();
 			}
@@ -123,19 +117,13 @@ public class ImportFuncs
 	 * table since this table only holds unexecuted import entries.
 	 * It then returns a boolean value indicating success or failure.
 	 */
-	public static boolean flushImportTable(Connection conn)
+	public static boolean flushImportTable()
 	{
-		if( conn == null )
-			throw new IllegalArgumentException("Database connection should not be (null)");
-
+		SqlStatement stmt = new SqlStatement("DELETE FROM " + ImportData.TABLE_NAME, "yukon");
+		
 		try
 		{
-			java.sql.Statement stat = conn.createStatement();
-
-			stat.execute("DELETE FROM " + ImportData.TABLE_NAME);
-		
-			if (stat != null)
-				stat.close();
+			stmt.execute();
 		}
 		catch (Exception e)
 		{
@@ -186,7 +174,7 @@ public class ImportFuncs
 	 */
 	public static void storeFailures(Vector impsSuccess, Vector impsFailed, Connection conn) throws java.sql.SQLException
 	{
-		Vector previousFailures = getAllFailed(conn);
+		Vector previousFailures = getAllFailed();
 		
 		//this is a little nasty looking, on account of 
 		//how the ImportFail table is supposed to work.
