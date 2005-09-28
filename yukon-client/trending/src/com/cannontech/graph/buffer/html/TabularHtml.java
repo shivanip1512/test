@@ -184,14 +184,14 @@ public class TabularHtml extends HTMLBuffer
 		
 		buf.append("<tr align=\"center\" valign=\"top\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">\n");
 		//Output html for the timestamps.
-		buf.append("<td class=\"tablecell\" width=\"80\"><font size=\"-1\" face=\"arial\">\n");
+		buf.append("<td class=\"tablecell\" width=\"80\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
 		for( int x = 0; x < keyArray.length; x++ )
 		{
 			Long ts1 = keyArray[x];
 			buf.append(tabularTimeFormat.format(new java.util.Date(ts1.longValue())));
 			buf.append("<br>");
 		}
-		buf.append("</font></td>\n");
+		buf.append("</span></font></td>\n");
 		
 		//Output html for each valid serie's readings.
 		int validIndex = 0;
