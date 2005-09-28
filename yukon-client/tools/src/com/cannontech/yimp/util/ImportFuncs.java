@@ -72,7 +72,7 @@ public class ImportFuncs
 	 * This method will bring in the contents of the ImportFail
 	 * table in the form of ImportFail objects
 	 */
-	public static synchronized Vector getAllFailed()
+	public static Vector getAllFailed()
 	{
 		Vector failures = new Vector();
 		

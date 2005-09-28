@@ -66,6 +66,7 @@ public final class BulkImporter410
 	private final int PORTER_PRIORITY = 6;
 	private final String INTERVAL_COMMAND = "putconfig emetcon intervals";
 	private final long PORTER_WAIT = 900000;
+	private final int SAVETHEAMPCARDS_AMOUNT = 50;
 	
 	
 public BulkImporter410() {
@@ -660,6 +661,9 @@ private synchronized com.cannontech.message.porter.ClientConnection getPorterCon
  * to work, we need to give porter its grace period.  This worker thread will grab the ids of 
  * all successfully imported devices and then wait fifteen minutes before it attempts to submit 
  * the intervals for them.
+ * 
+ * Also, we will now do only fifty at a time.  Otherwise, we could dump a thousand or more meters out at
+ * at time and burn out some poor CCU amp card.
  */
 private void porterWorker()
 {	
@@ -676,7 +680,7 @@ private void porterWorker()
 		
 					synchronized(paoIDsForPorter)
 					{
-						if(paoIDsForPorter.size() > 0)
+						if(paoIDsForPorter.size() > 0 && paoIDsForPorter.size() <= SAVETHEAMPCARDS_AMOUNT)
 						{
 							paoIDs = new Integer[paoIDsForPorter.size()];
 							paoIDsForPorter.copyInto(paoIDs);
@@ -684,6 +688,14 @@ private void porterWorker()
 							
 							CTILogger.info("Porter worker thread has obtained " + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.");
 							logger = ImportFuncs.writeToImportLog(logger, 'N', "Porter worker thread has obtained" + paoIDs.length + " MCT IDs.  Interval write attempt after " + PORTER_WAIT + " ms.", "", "");
+						}
+						else if(paoIDsForPorter.size() > SAVETHEAMPCARDS_AMOUNT)
+						{
+							paoIDs = new Integer[SAVETHEAMPCARDS_AMOUNT];
+							for(int j = 0; j < paoIDs.length; j++)
+							{
+								paoIDs[j] = (Integer)paoIDsForPorter.get(j);
+							}
 						}
 					}
 					
