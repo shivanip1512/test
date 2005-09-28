@@ -21,6 +21,7 @@ using namespace std;
 #include "msg_pcrequest.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
+#include "mgr_config.h"
 #include "ctibase.h"
 
 class IM_EX_CTIPIL CtiPILServer : public CtiServer
@@ -32,6 +33,7 @@ private:
 
    CtiDeviceManager              *DeviceManager;
    CtiRouteManager               *RouteManager;
+   CtiConfigManager              *ConfigManager;
 
    RWThreadFunction              ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
    RWThreadFunction              _vgConnThread;     // Thread which manages VanGogh requests!
@@ -48,9 +50,10 @@ public:
 
    typedef CtiServer Inherited;
 
-   CtiPILServer(CtiDeviceManager *DM = NULL, CtiRouteManager *RM = NULL) :
+   CtiPILServer(CtiDeviceManager *DM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
       DeviceManager(DM),
       RouteManager(RM),
+      ConfigManager(CM),
       ListenerAvailable(0),
       bServerClosing(FALSE)
    {}
