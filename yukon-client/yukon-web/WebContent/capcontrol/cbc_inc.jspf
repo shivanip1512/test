@@ -59,6 +59,6 @@
 		parseInt(
 		<%=AuthFuncs.getRolePropertyValue( 
 			ServletUtil.getYukonUser(session),
-			CBCSettingsRole.CBC_REFRESH_RATE, "60")%>, 10) * 1000;
+			CBCSettingsRole.CBC_REFRESH_RATE)%>, 10) * 1000;
 	
 </script>
