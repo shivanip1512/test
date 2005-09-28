@@ -13,9 +13,9 @@
 	// Entry point file for all operations that create a CBC PAObject
 	//****
 
-	int type = ParamUtil.getInteger(request, "type", DBEditorForm.INVALID);
+	int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 
-	if( type != DBEditorForm.INVALID ) {
+	if( type != PAOGroups.INVALID ) {
 		CapControlForm capControlForm =
 			(CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 
