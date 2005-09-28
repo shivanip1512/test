@@ -60,7 +60,7 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctipil.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
-$(COMPILEBASE)\lib\configmgr.lib
+$(COMPILEBASE)\lib\cticonfig.lib
 
 
 TESTLIBS=\
@@ -158,7 +158,8 @@ exe_pcreq.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h queues.h utility.h slctdev.h \
-		smartmap.h mgr_route.h repeaterrole.h exe_pcreq.h executor.h
+		smartmap.h mgr_route.h repeaterrole.h mgr_config.h \
+		exe_pcreq.h executor.h
 parsetest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h dlldefs.h \
 		logger.h thread.h mutex.h guard.h cmdparse.h parsevalue.h
 pilglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
@@ -173,10 +174,10 @@ pilhost.obj:	yukon.h precompiled.h ctidbgmem.h mgr_device.h dlldefs.h \
 		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pointdefs.h queues.h utility.h slctdev.h \
-		smartmap.h mgr_route.h repeaterrole.h mgr_config.h \
-		pilserver.h server_b.h con_mgr.h connection.h exchange.h \
-		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h queue.h \
-		cmdopts.h critical_Section.h msg_pcrequest.h dlldev.h
+		smartmap.h mgr_route.h repeaterrole.h pilserver.h server_b.h \
+		con_mgr.h connection.h exchange.h msg_multi.h msg_pdata.h \
+		msg_ptreg.h msg_reg.h queue.h cmdopts.h critical_Section.h \
+		msg_pcrequest.h mgr_config.h dlldev.h
 pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dev_grp_versacom.h dev_base.h dsm2.h \
 		mutex.h guard.h cmdparse.h parsevalue.h counter.h \
@@ -196,7 +197,7 @@ pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		msg_ptreg.h msg_reg.h queue.h pil_exefct.h executorfactory.h \
 		executor.h exe_cmd.h exe_reg.h pilserver.h server_b.h \
 		cmdopts.h critical_Section.h mgr_device.h rtdb.h hashkey.h \
-		slctdev.h smartmap.h mgr_route.h repeaterrole.h \
+		slctdev.h smartmap.h mgr_route.h repeaterrole.h mgr_config.h \
 		msg_pcreturn.h msg_cmd.h numstr.h pilglob.h rte_ccu.h \
 		rte_xcu.h tbl_rtcarrier.h tbl_rtrepeater.h
 piltest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h dlldefs.h \
