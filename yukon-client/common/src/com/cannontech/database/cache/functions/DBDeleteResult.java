@@ -12,8 +12,8 @@ public class DBDeleteResult {
 	private StringBuffer confirmMessage = new StringBuffer(16);
 	private StringBuffer unableDelMsg = new StringBuffer(16);
 	private StringBuffer descriptionMsg = new StringBuffer(16);
+	private boolean deletable = true;
 
-	private boolean deletable = false;
 
 	/**
 	 * 

@@ -384,7 +384,9 @@ public class DBDeletionFuncs
 
 		if (toDelete instanceof com.cannontech.database.data.point.PointBase)
 		{
-			delRes.getConfirmMessage().append("Are you sure you want to permanently Delete '" + nodeName + "'?");
+			delRes.getConfirmMessage().append("Are you sure you want to permanently Delete '" + nodeName +
+						"'?" + CR_LF + CR_LF + "*All points history will also be deleted.");
+			
 			delRes.getUnableDelMsg().append("You cannot delete the point '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.data.point.PointBase) toDelete).getPoint().getPointID().intValue() );
 			delRes.setDelType( DBDeletionFuncs.POINT_TYPE );
@@ -419,7 +421,7 @@ public class DBDeletionFuncs
 		}
 		else if (toDelete instanceof com.cannontech.database.data.device.DeviceBase)
 		{
-			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "?");
+			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
 			delRes.getUnableDelMsg().append("You cannot delete the device '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.data.device.DeviceBase) toDelete).getDevice().getDeviceID().intValue() );
 			delRes.setDelType( DBDeletionFuncs.DEVICE_TYPE );

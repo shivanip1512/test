@@ -48,7 +48,7 @@ public class TreeItemDeleter
 	public int executeDelete()
 	{
 		int confirm = JOptionPane.NO_OPTION;
-		boolean deleteVerified = false, canDelete = false, isMultiDelete = nodes.length > 1;
+		boolean canDelete = false, isMultiDelete = nodes.length > 1;
 		byte deleteVal = DBDeletionFuncs.STATUS_DISALLOW;
 		DBDeleteResult delRes = null;
 		
@@ -133,7 +133,7 @@ public class TreeItemDeleter
 		}
 			
 		//get a final verdict for permission to delete the node or not
-		canDelete &= deleteVerified; //be sure we can do both
+		//canDelete &= deleteVerified; //be sure we can do both
 		
 		
 		String title = null, msgUsed = null;
