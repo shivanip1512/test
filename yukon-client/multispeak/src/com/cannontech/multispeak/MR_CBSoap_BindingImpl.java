@@ -33,7 +33,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 
 	public com.cannontech.multispeak.ArrayOfString getMethods() throws java.rmi.RemoteException {
 		init();
-		String [] methods = new String[]{"pingURL", "getMethods", "getAMRSupportedMeters", "isAMRMeter"};		
+		String [] methods = new String[]{"pingURL", "getMethods", "getAMRSupportedMeters", "getLatestReadingByMeterNo", "isAMRMeter"};				
 		return MultispeakFuncs.getMethods(INTERFACE_NAME , methods);
 	}
 
@@ -153,8 +153,27 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
     }
 
     public com.cannontech.multispeak.MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
-		init();
-        return null;
+//		init();	//init is already performed on the call to isAMRMeter()
+		if( ! isAMRMeter(meterNo))
+		{
+			MeterRead errorMR = new MeterRead();
+			errorMR.setDeviceID(meterNo);
+			errorMR.setObjectID(meterNo);
+			errorMR.setMeterNo(meterNo);
+			errorMR.setErrorString("MeterNumber (" + meterNo + "): NOT found.");
+			return errorMR;
+		}
+		if ( ! Multispeak.getInstance().getPilConn().isValid() )	//perform this after isAMRMeter so init() is called.
+		{
+			MeterRead errorMR = new MeterRead();
+			errorMR.setDeviceID(meterNo);
+			errorMR.setObjectID(meterNo);
+			errorMR.setMeterNo(meterNo);
+			errorMR.setErrorString("Connection to Yukon Porter is not valid.  Please contact your Yukon administrator.");
+			return errorMR;
+		}		
+		String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
+		return Multispeak.getInstance().MeterReadEvent(companyName, meterNo);
     }
 
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
