@@ -2,59 +2,16 @@
 
 /*-----------------------------------------------------------------------------*
 *
-* File:   dev_kv2
+* File:   dev_KV2
 *
-* Date:   6/13/2002
+* Date:   8/19/2004
 *
-* Author: Eric Schmit
+* Author: Julie Richter
 *
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_kv2.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2005/06/16 19:17:59 $
-*
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Generic Interface used to download a file using ftp
-*
-*    DESCRIPTION:
-*
-*    History:
-      $Log: dev_kv2.cpp,v $
-      Revision 1.14  2005/06/16 19:17:59  jrichter
-      Sync ANSI code with 3.1 branch!
-
-      Revision 1.13  2005/05/12 18:33:12  jrichter
-      changed so it doesn't send additional last lp value to scanner.  Matt advised to do this and says now all lp values are sent to clients.
-
-      Revision 1.12  2005/03/14 21:44:16  jrichter
-      updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
-
-      Revision 1.11  2005/03/10 20:49:47  mfisher
-      changed getProtocol to getKV2Protocol so it wouldn't interfere with the new dev_single getProtocol
-
-      Revision 1.10  2005/02/10 23:24:00  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.9  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.8  2005/01/03 23:07:15  jrichter
-      checking into 3.1, for use at columbia to test sentinel
-
-      Revision 1.7  2004/12/10 21:58:43  jrichter
-      Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
-
-      Revision 1.6  2004/09/30 21:37:21  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.5  2003/04/25 15:14:07  dsutton
-      Changed general scan and decode result
-
-
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+** Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
+#include "yukon.h"
 #include "porter.h"
 #include "logger.h"
 #include "dev_kv2.h"
@@ -111,13 +68,30 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
       if (useScanFlags())
       {
-          buildScannerTableRequest (ptr);
+          buildScannerTableRequest (ptr, parse.getFlags());
       }
       else
       {
-          buildCommanderTableRequest (ptr);
+          buildCommanderTableRequest (ptr, parse.getFlags());
+          CtiReturnMsg *retMsg = NULL;
+          retMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                          pReq->CommandString(),
+                                          //RWCString(),
+                                          RWCString(getName() + " / scan general in progress"),
+                                          NORMAL,//EventCode & 0x7fff
+                                          pReq->RouteId(),
+                                          pReq->MacroOffset(),
+                                          1, //pReq->Attempt(),
+                                          pReq->TransmissionId(),
+                                          pReq->UserMessageId());
+          retMsg->setExpectMore(1);
+          retList.insert(retMsg);    
+
+          retMsg = 0;
+
       }
       outList.insert( OutMessage );
+
 
       OutMessage = 0;
    }
@@ -154,10 +128,10 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
       WANTS_HEADER   header;
 
-      //here is the password for the sentinel (should be changed to a cparm, I think)
+      //here is the password for the KV2 (should be changed to a cparm, I think)
       BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-    // here are the tables requested for the sentinel
+    // here are the tables requested for the KV2
       ANSI_TABLE_WANTS    table[100] = {
         {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
@@ -219,8 +193,12 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         }
     }
 
+
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
+    header.lastLoadProfileTime = 0;
+    //_lastLPTime = header.lastLoadProfileTime;
+
     for (int x=0; x < 100; x++)
     {
         if (table[x].tableID < 0)
@@ -234,9 +212,8 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     }
     header.command = 5; // ?
 
-    BYTE scanOperation = 1; //1 = demand reset
-
-    _parseFlags = parse.getFlags();
+    BYTE scanOperation = 2; //2 = demand reset
+    UINT flags = parse.getFlags();
 
     // put the stuff in the buffer
     memcpy( aMsg, &header, sizeof (header));
@@ -247,18 +224,22 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
             &scanOperation, sizeof(BYTE));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
-            &_parseFlags, sizeof(UINT));
+            &flags, sizeof(UINT));
 
 
-      outList.insert( OutMessage );
-
-      OutMessage = 0;
+    
+    outList.insert( OutMessage );
+    OutMessage = 0;
    }
    else
    {
       return MEMORY;
    }
 
+   {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "outList.entries() = " <<outList.entries()<< endl;
+   }
    return NoError;
 }
 
@@ -274,12 +255,12 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
     int nRet = NoError;
     RWTPtrSlist< OUTMESS > tmpOutList;
 
-    _parseFlags = parse.getFlags();
-    
+    //_parseFlags = parse.getFlags();
+
     switch( parse.getCommand( ) )
     {
 
-    
+
         /*case LoopbackRequest:
         {
             nRet = executeLoopback( pReq, parse, OutMessage, vgList, retList, tmpOutList );
@@ -292,7 +273,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
             nRet = GeneralScan( pReq, parse, OutMessage, vgList, retList, outList );
             //nRet = executeScan( pReq, parse, OutMessage, vgList, retList, tmpOutList );
             break;
-        } 
+        }
         /*case GetValueRequest:
         {
             nRet = executeGetValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
@@ -389,9 +370,15 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                 RWTPtrSlist< OUTMESS >    &outList)
 {
     CtiReturnMsg *retMsg = NULL;
-    if (getKV2Protocol().getScanOperation() == 1) //demand Reset
+    RWCString inMsgResultString = "";
+
+    //inMsgResultString = RWCString("successfully");
+    inMsgResultString = RWCString((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
+
+    if (getKV2Protocol().getScanOperation() == 2) //demand Reset
     {
-        if (InMessage->EventCode == NORMAL)
+        //if (InMessage->EventCode == NORMAL)
+        if (inMsgResultString.contains("successful", RWCString::ignoreCase))
         {
             retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                             RWCString(InMessage->Return.CommandStr),
@@ -420,42 +407,13 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
     }
     else
     {
-
-        if (useScanFlags())
+        if (inMsgResultString.contains("general",RWCString::ignoreCase) )
         {
-            if (InMessage->EventCode == NORMAL)
-            {
-                unsigned long *lastLpTime;
-                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
-
-                if (lastLpTime != NULL && *lastLpTime != 0)
-                {  
-                    setLastLPTime(RWTime(*lastLpTime));
-                }
-                if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
-                }
-            }
-            else
-            {
-                if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " ResultDecode for " << getName() <<" **SCAN FAILED**  lastLPTime: "<<getLastLPTime()<< endl;
-                }
-            }
-            resetScanPending();
-        }
-        else
-        {
-            if (InMessage->EventCode == NORMAL)
+            if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
             {
                 retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 RWCString(InMessage->Return.CommandStr),
-                                                //RWCString(),
-                                                 RWCString(getName() + " / general scan successful : \n" + _result_string.data()),
+                                                RWCString(getName() + " / general scan successful : \n" + _result_string.data()),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
@@ -467,7 +425,6 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
             {
                  retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                 RWCString(InMessage->Return.CommandStr),
-                                                //RWCString(),
                                                 RWCString(getName() + " / general scan failed"),
                                                 InMessage->EventCode & 0x7fff,
                                                 InMessage->Return.RouteID,
@@ -477,7 +434,38 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                                 InMessage->Return.UserID);
             }
 
-        } 
+
+
+        }
+        else if (useScanFlags())
+        {
+            //if (InMessage->EventCode == NORMAL)
+            //if (inMsgResultString.contains("successful", RWCString::ignoreCase) )
+            {
+                unsigned long *lastLpTime;
+                lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+
+                if (lastLpTime != NULL && *lastLpTime != 0)
+                {  
+                    setLastLPTime(RWTime(*lastLpTime));
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                    {
+                         CtiLockGuard<CtiLogger> doubt_guard(dout);
+                         dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                     }
+                }
+                else
+                {
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                    }
+                }
+            }
+            resetScanPending();
+        }
+        
     }
     if( retMsg != NULL )
     {
@@ -490,16 +478,14 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
         dout << RWTime::now() << " ==============================================" << endl;
         dout << RWTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
         dout << RWTime::now() << " ==============================================" << endl;
-    }   
+    }
+
+
     return( 0 ); //just a val
 }
-
-//=========================================================================================================================================
-//=========================================================================================================================================
-
 INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 {
-    if (getKV2Protocol().getScanOperation() == 1) //demand Reset
+    if (getKV2Protocol().getScanOperation() == 2) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
         {                                
@@ -520,28 +506,44 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
     }
     else //general Scan
     {
-
-        if (useScanFlags())
-        {
-            unsigned long lastLpTime = getLastLPTime().seconds();
-
-            memcpy( InMessage->Buffer.InMessage, (void *)&lastLpTime, sizeof (unsigned long) );
-            InMessage->InLength = sizeof (unsigned long);
-            //InMessage->EventCode = NORMAL;
-
-
-            if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " sendCommResult for" << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+    
+        //if (useScanFlags())
+        
+        if (InMessage->EventCode == NORMAL)
+        {                                
+            if (getKV2Protocol().getlastLoadProfileTime() != 0 || getKV2Protocol().getScanOperation() == 0) //scanner
+            {                   
+                ULONG lptime = getKV2Protocol().getlastLoadProfileTime();
+                memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
+                InMessage->InLength = sizeof (unsigned long);
+                
+                if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " sendCommResult for " << getName() <<" lastLPTime: "<<RWTime(getKV2Protocol().getlastLoadProfileTime())<< endl;
+                }
             }
-        }
-      //  else
-        {
+            else
+            {
+                RWCString returnString("general scan successful");
+                int sizeOfReturnString = returnString.length();
+                memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+                InMessage->InLength = sizeOfReturnString;
 
+                InMessage->EventCode = NORMAL;
+            } 
         }
+        else
+        {
+            RWCString returnString("general scan failed");
+            int sizeOfReturnString = returnString.length();
+            memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
+            InMessage->InLength = sizeOfReturnString;
+        }
+           
     }
-    return( 0 ); //just a val
+   return( InMessage->EventCode ); //just a val
+   //return( 0 ); //just a val
 }
 
 
@@ -560,174 +562,55 @@ INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist <
 * different tables
 *************************************************************************************
 */
-int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg)
+int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
 
-    BYTE        password[] = { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+    //here is the password for the KV2 (should be changed to a cparm, I think)
+    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-    // here are the tables requested for the kv2
+    // here are the tables requested for the KV2
     ANSI_TABLE_WANTS    table[100] = {
         {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  3,     0,      0,      ANSI_TABLE_TYPE_STANDARD,     ANSI_OPERATION_READ},
+//        {  7,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_WRITE},
+//        {  8,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 14,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       //27-28 not supported in KV2
+       // { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 31,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 32,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+
+    //    { 51,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 61,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 62,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 63,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 64,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
-        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // {  0,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
        // { 70,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
 
-//        {110,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
     };
-
-    // currently defaulted at billing data only
-    header.lastLoadProfileTime = getLastLPTime().seconds();
-    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
-    }
 
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
     pswdTemp.toUpper();
-    /*if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
-    } */
-    BYTE *temp;
-    temp = (BYTE *)pswdTemp.data();
-    struct CHexMap
-    {
-        char c;
-        int val;
-    };
-
-    CHexMap HexMap[16] = {
-        {'0', 0}, {'1', 1},
-        {'2', 2}, {'3', 3},
-        {'4', 4}, {'5', 5},
-        {'6', 6}, {'7', 7},
-        {'8', 8}, {'9', 9},
-        {'A', 10}, {'B', 11},
-        {'C', 12}, {'D', 13},
-        {'E', 14}, {'F', 15}
-    };
-
-
-    int pwdTemp;
-    int nibble;
-    for (int aa = 0; aa < 20; aa++)
-        password[aa] = 0;
-    for (int a = 0; a < 10; a++)
-    {
-        nibble = 0;
-        for (int nib = 0; nib < 2; nib++)
-        {
-            pwdTemp = 0;
-            for (int i = 0; i < 16; i++)
-            {
-                if (*temp == HexMap[i].c)
-                {
-                    pwdTemp = HexMap[i].val;
-                }
-            }
-            if (nib == 0)
-            {
-                pwdTemp = pwdTemp << 4;
-            }
-
-            password[a] |= pwdTemp;
-            temp++;
-        }
     }
-    // lazyness so I don't have to continually remember to update this
-    header.numTablesRequested = 0;
-    for (int x=0; x < 100; x++)
-    {
-        if (table[x].tableID < 0)
-        {
-            break;
-        }
-        else
-        {
-            header.numTablesRequested++;
-        }
-    }
-    header.command = 5; // ?
-
-    BYTE scanOperation = 0;  //0 = general Scan
-
-    // put the stuff in the buffer
-    memcpy( aMsg, &header, sizeof (header));
-    memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)),
-            &table,
-            (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof(ANSI_TABLE_WANTS))),
-            &scanOperation, sizeof(BYTE));
-    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
-            &_parseFlags, sizeof(UINT));
-
-
-    // keep the list on the scanner side for decode
-    //getKV2Protocol().buildWantedTableList (aMsg);
-    return NORMAL;
-}
-
-/*************************************************************************************
-* build the list of tables and header requested in the device as each ansi device may need a few
-* different tables
-*************************************************************************************
-*/
-
-int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
-{
-    WANTS_HEADER   header;
-    //ANSI_SCAN_OPERATION scanOperation = generalScan;
-
-    //here is the password for the sentinel (should be changed to a cparm, I think)
-    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-    // here are the tables requested for the sentinel
-    ANSI_TABLE_WANTS    table[100] = {
-        {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 31,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 32,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
-        
-    };
-
-    RWCString pswdTemp;
-    pswdTemp = getIED().getPassword();
-    pswdTemp.toUpper();
-    
     BYTE *temp;
     temp = (BYTE *)pswdTemp.data();
     struct CHexMap
@@ -776,8 +659,25 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
     }
 
     // currently defaulted at billing data only
-    header.lastLoadProfileTime = 0;
-    
+    if (useScanFlags())
+    {
+        header.lastLoadProfileTime = getLastLPTime().seconds();
+    }
+    else
+    {
+        header.lastLoadProfileTime = 0;
+    }
+    //_lastLPTime = header.lastLoadProfileTime;
+
+    if (useScanFlags())
+    {
+        if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
+        }
+    }
+
     // lazyness so I don't have to continually remember to update this
     header.numTablesRequested = 0;
     for (int x=0; x < 100; x++)
@@ -794,7 +694,143 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
     header.command = 5; // ?
 
     BYTE scanOperation = 0; //0 = general scan
-    BYTE tempBuffer[1000];
+
+    // put the stuff in the buffer
+    memcpy( aMsg, &header, sizeof (header));
+    memcpy( (aMsg+sizeof(header)), &password, sizeof (password));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)),
+            &table,
+            (header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
+            &scanOperation, sizeof(BYTE));
+    memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
+            &flags, sizeof(UINT));
+
+
+    // keep the list on the scanner side for decode
+    //getKV2Protocol().buildWantedTableList (aMsg);
+
+
+    return NORMAL;
+}
+
+/*************************************************************************************
+* build the list of tables and header requested in the device as each ansi device may need a few
+* different tables
+*************************************************************************************
+*/
+int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
+{
+    WANTS_HEADER   header;
+    //ANSI_SCAN_OPERATION scanOperation = generalScan;
+
+    //here is the password for the KV2 (should be changed to a cparm, I think)
+    BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+    // here are the tables requested for the KV2
+    ANSI_TABLE_WANTS    table[100] = {
+        {  0,     0,      30,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  1,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  3,     0,      0,      ANSI_TABLE_TYPE_STANDARD,     ANSI_OPERATION_READ},
+        { 11,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 12,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 13,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 15,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 16,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 21,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 22,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 23,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 25,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        //27-28 not supported in KV2
+       // { 27,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+       // { 28,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 31,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 32,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
+        {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
+        
+    };
+    RWCString pswdTemp;
+    pswdTemp = getIED().getPassword();
+    pswdTemp.toUpper();
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "pswdTemp "<<pswdTemp<< endl;
+    }
+    BYTE *temp;
+    temp = (BYTE *)pswdTemp.data();
+    struct CHexMap
+    {
+        char c;
+        int val;
+    };
+
+    CHexMap HexMap[16] = {
+        {'0', 0}, {'1', 1},
+        {'2', 2}, {'3', 3},
+        {'4', 4}, {'5', 5},
+        {'6', 6}, {'7', 7},
+        {'8', 8}, {'9', 9},
+        {'A', 10}, {'B', 11},
+        {'C', 12}, {'D', 13},
+        {'E', 14}, {'F', 15}
+    };
+
+
+    int pwdTemp;
+    int nibble;
+    for (int aa = 0; aa < 20; aa++)
+        password[aa] = 0;
+    for (int a = 0; a < 10; a++)
+    {       
+        nibble = 0;
+        for (int nib = 0; nib < 2; nib++)
+        {   
+            pwdTemp = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                if (*temp == HexMap[i].c)
+                {
+                    pwdTemp = HexMap[i].val;
+                }
+            }
+            if (nib == 0)
+            {
+                pwdTemp = pwdTemp << 4;
+            }
+
+            password[a] |= pwdTemp;
+            temp++;
+        }
+    }
+
+        // currently defaulted at billing data only
+    header.lastLoadProfileTime = 0;
+    //_lastLPTime = header.lastLoadProfileTime;
+   /* if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << "lastLPTime "<<getLastLPTime()<< endl;
+    } */
+
+    // lazyness so I don't have to continually remember to update this
+    header.numTablesRequested = 0;
+    for (int x=0; x < 100; x++)
+    {
+        if (table[x].tableID < 0)
+        {
+            break;
+        }
+        else
+        {
+            header.numTablesRequested++;
+        }
+    }
+    header.command = 5; // ?
+
+    BYTE scanOperation = 1; //1 = general pil scan
 
 
     // put the stuff in the buffer
@@ -808,13 +844,16 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS))),
             &scanOperation, sizeof(BYTE));
     memcpy ((aMsg+sizeof(header)+sizeof(password)+(header.numTablesRequested*sizeof (ANSI_TABLE_WANTS)) +sizeof(BYTE)),
-            &_parseFlags, sizeof(UINT));
+            &flags, sizeof(UINT));
 
 
+    
     // keep the list on the scanner side for decode
     //getKV2Protocol().buildWantedTableList (aMsg);
     return NORMAL;
 }
+
+
 
 //=========================================================================================================================================
 //
@@ -822,18 +861,17 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg)
 
 CtiProtocolANSI & CtiDeviceKV2::getKV2Protocol( void )
 {
-   return _ansiProtocol;
+   return  _ansiProtocol;
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT archiveFlag )
+void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &retList, UINT archiveFlag )
 {
 
-    CtiMultiMsg                      *msgMulti = CTIDBG_new CtiMultiMsg;
+    CtiReturnMsg *msgPtr;
     CtiPointDataMsg                  *pData = NULL;
-    //CtiPointBase                     *pPoint = NULL;
     CtiPointAnalog *pPoint = NULL;
     CtiPointStatus *pStatusPoint = NULL;
     double value = 0;
@@ -847,22 +885,23 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
     RWTime lastLoadProfileTime;
     RWCString resultString = "";
 
-    //RWCString 
-    _result_string = "";  
-
+    _result_string = "";    
+    
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
     }
-    if (getKV2Protocol().getScanOperation() == 1)
+    if (getKV2Protocol().getScanOperation() == 2)
     {
+
         return;
     }
     else //general Scan
     {
-        if (useScanFlags())
-        {                 
-            lastLoadProfileTime = getLastLPTime();
+        //if (useScanFlags())
+        {
+            //_lastLPTime = getKV2Protocol().getlastLoadProfileTime();
+            lastLoadProfileTime = RWTime(getKV2Protocol().getlastLoadProfileTime());
         }
 
         x =  OFFSET_TOTAL_KWH;
@@ -871,13 +910,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
             pPoint = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(x, AnalogPointType);
             if (pPoint != NULL) 
             {
+
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Point Offset ==> " <<x<< endl;
                 }
-            
                 foundSomething = true;
-
                 switch (x)
                 {
                     case OFFSET_TOTAL_KWH:
@@ -901,7 +939,14 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                     case OFFSET_RATE_D_KVAH:
                     case OFFSET_RATE_E_KVAH:
                     {
-                        gotValue = getKV2Protocol().retreiveSummation( x, &value );
+                        if (archiveFlag & CMD_FLAG_FROZEN)
+                        {
+                            gotValue = getKV2Protocol().retreiveFrozenSummation( x, &value, &time );
+                        }
+                        else
+                        {
+                            gotValue = getKV2Protocol().retreiveSummation( x, &value );
+                        }
                         break;
                     }
                     case OFFSET_PEAK_KW_OR_RATE_A_KW:
@@ -925,7 +970,14 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                     case OFFSET_RATE_E_KVA:
                     case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
                     {
-                        gotValue = getKV2Protocol().retreiveDemand( x, &value, &time );
+                        if (archiveFlag & CMD_FLAG_FROZEN)
+                        {
+                            gotValue = getKV2Protocol().retreiveFrozenDemand( x, &value, &time );
+                        }
+                        else
+                        {
+                            gotValue = getKV2Protocol().retreiveDemand( x, &value, &time );
+                        }
                         break;
                     }
                     case OFFSET_LOADPROFILE_KW:  
@@ -967,7 +1019,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                     case OFFSET_DAYS_ON_BATTERY:
                     {
                         gotValue = getKV2Protocol().retreiveBatteryLife(x, &value);
-                        if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                        if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " battery life value =  "<< value<< endl;
@@ -980,7 +1032,6 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                         gotLPValues = false;
                     }
                 }
-                     
                 if (gotValue) 
                 {
                     pData = CTIDBG_new CtiPointDataMsg();
@@ -994,12 +1045,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                             value += pPoint->getDataOffset();
                         }
                     }
+
                     resultString = getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-                    
+
                     pData->setValue( value );
                     qual = NormalQuality;
                     pData->setQuality( qual );
-                    //if (_parseFlags & CMD_FLAG_UPDATE)
                     if (archiveFlag & CMD_FLAG_UPDATE)
                     {
                         pData->setTags(TAG_POINT_MUST_ARCHIVE);
@@ -1007,24 +1058,29 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                     if (time != 0)
                     {
                         pData->setTime(RWTime(time));
-                    }   
+                    }
                     else
                     {
                         pData->setTime( RWTime() );
                     }
                     pData->setType( pPoint->getType() );
 
+                    msgPtr = new CtiReturnMsg;
+
                     msgPtr->insert(pData); 
-                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                    retList.insert(msgPtr);
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " gotValue! "<< endl;
                     }
+
                     pData = NULL;
+                    msgPtr = NULL;
                 }
                 else if (gotLPValues) 
                 {
-                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " gotLPValues! "<< endl;
@@ -1033,9 +1089,11 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                     int ptMultiplier = pPoint->getMultiplier();
                     int ptOffset = pPoint->getDataOffset();
 
-
                     qual = NormalQuality;
 
+                    int msgCntr = 0;
+                    msgPtr = new CtiReturnMsg;
+                    
                     for (y = getKV2Protocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
                     {
                         if (getKV2Protocol().getLPTime(y) > lastLoadProfileTime.seconds())
@@ -1054,29 +1112,50 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                             pData = new CtiPointDataMsg(pPoint->getID(), lpValue, qual, pPoint->getType());
                             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                             pData->setTime( RWTime(getKV2Protocol().getLPTime(y)) );
+
                             msgPtr->insert(pData); 
+
+                            if (msgCntr >= 400 || y <= 0 )
+                            {
+                                msgCntr = 0;
+                                retList.insert(msgPtr);
+                                msgPtr = NULL;
+                                if (y > 0)
+                                    msgPtr = new CtiReturnMsg;
+                            }
+                            else
+                                msgCntr++; 
+                            
                             pData = NULL;
+
                         }
                         else
                         {
                             y = -1;
+                            if (msgPtr->getCount() > 0)
+                            {                         
+                                retList.insert(msgPtr);
+                            }
                         }
+                        
+
                     }
-                    setLastLPTime(RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
-                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+                    //setLastLPTime(RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
+                    _lastLPTime = getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1);
+                    getKV2Protocol().setLastLoadProfileTime(_lastLPTime);
+                    if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << "lastLPTime "<<RWTime(getKV2Protocol().getlastLoadProfileTime())<< endl;
+                        dout << RWTime() << "lastLPTime "<<RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1))<< endl;
                     }
                     if (pData != NULL) 
                     {
                         delete []pData;
                         pData = NULL;
-                    }
-                } 
+                    }  
+                }
                 pPoint = NULL;
             }
-
             else //try pPoint as a StatusPoint
             {
                 pStatusPoint = (CtiPointStatus*)getDevicePointOffsetTypeEqual(x, StatusPointType);
@@ -1098,23 +1177,26 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
                             pData->setValue( value );
                             qual = NormalQuality;
                             pData->setQuality( qual );
-                            //if (_parseFlags & CMD_FLAG_UPDATE)
                             if (archiveFlag & CMD_FLAG_UPDATE)
                             {
                                 pData->setTags(TAG_POINT_MUST_ARCHIVE);
-                            }
+                            }          
                             pData->setTime( RWTime() );
                             pData->setType( pStatusPoint->getType() );
 
+                            msgPtr = new CtiReturnMsg;
                             msgPtr->insert(pData); 
-                            if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )//DEBUGLEVEL_LUDICROUS )
+
+                            retList.insert(msgPtr);
+
+                            if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " gotValue! "<< endl;
                             }
-
                             resultString  = getName() + " / " + pStatusPoint->getName() + ": " + ResolveStateName(((CtiPointStatus *)pStatusPoint)->getStateGroupID(), value);
                             pData = NULL;
+                            msgPtr = NULL;
                         }
                     }
                     pStatusPoint = NULL;
@@ -1133,12 +1215,13 @@ void CtiDeviceKV2::processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT arch
             x++;
         }
     }
-    if( msgMulti != NULL )
+    /*if( msgMulti != NULL )
     {
        delete msgMulti;
        msgMulti = NULL;
-    }    
+    } */
 }
+
 
 
 

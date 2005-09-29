@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/06/16 19:17:59 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.10  2005/09/29 21:18:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.9  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -46,7 +49,7 @@
 //=========================================================================================================================================
 //=========================================================================================================================================
 CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
-                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat )
+                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr )
 {
    _ocNums = occur;
    _sumNums = summations;
@@ -66,7 +69,7 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( int occur, int summations, int deman
 }
 
 CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
-                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat )
+                                            bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr )
 {
    int      index;
    int      cnt;
@@ -87,6 +90,8 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
    _format1 = format1;
    _format2 = format2;
    _timefmt = timefmat;
+
+   _tablePrintNumber = tableNbr;
 
 
    _totSize = 0;
@@ -628,6 +633,7 @@ void CtiAnsiTableTwoThree::printResult(  )
     * of the method call
     ***************************************************************
     */
+    if (_tablePrintNumber == 23)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl << "=======================  Std Table 23 ========================" << endl;
@@ -706,11 +712,16 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
           }
           for( cnt = 0; cnt < _ocNums; cnt++ )
           {
-             timeString = RWTime( data_block.demands[index].event_time[cnt]).asString();
-             {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << "  "<<timeString;
-             }
+              if (data_block.demands[index].event_time[cnt] != 0)
+              {
+                  timeString = RWTime( data_block.demands[index].event_time[cnt]).asString();
+              }
+              else
+                  timeString = RWTime(1,1,1990).asString();
+              {
+                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                   dout << "  "<<timeString;
+              }
           }
        }
        

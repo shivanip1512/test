@@ -103,8 +103,11 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
 CtiAnsiTableSixOne::~CtiAnsiTableSixOne()
 {
    //delete clock_table;
-   delete []_lp_tbl.lp_data_set_info;
-    _lp_tbl.lp_data_set_info = NULL;
+   if (_lp_tbl.lp_data_set_info != NULL)
+   {                                   
+       delete []_lp_tbl.lp_data_set_info;
+       _lp_tbl.lp_data_set_info = NULL;
+   }
 }
 
 //=========================================================================================================================================

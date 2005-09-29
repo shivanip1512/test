@@ -9,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/06/16 19:18:00 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.11  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.10  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -94,9 +97,9 @@ public:
 
 
    CtiProtocolANSI & getKV2Protocol( void );
-   void processDispatchReturnMessage( CtiReturnMsg *msgPtr, UINT archiveFlag );
-   int buildScannerTableRequest (BYTE *ptr);
-   int buildCommanderTableRequest (BYTE *aMsg);
+   void processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg >  &retList, UINT archiveFlag );
+   int buildScannerTableRequest (BYTE *ptr, UINT flags);
+   int buildCommanderTableRequest (BYTE *ptr, UINT flags);
    INT sendCommResult( INMESS *InMessage);
 
    struct WANTS_HEADER
@@ -112,6 +115,8 @@ private:
 
     UINT _parseFlags;
     RWCString _result_string;
+    unsigned long _lastLPTime;
+
 };
 
 

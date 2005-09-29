@@ -1,7 +1,5 @@
 #include "yukon.h"
 
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_three_three
@@ -12,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_three.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/03/14 21:44:46 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/09/27 20:37:19 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ using namespace std;
 #define SCANNERSEM "SCANNER.SEM"
 
 #define DEBUGLEVEL_LUDICROUS        0x00000001
+#define DEBUGLEVEL_DATA_INFO        0x00000004
 #define DEBUGLEVEL_PORTCOMM         0x00000010
 #define DEBUGLEVEL_ACTIVITY_INFO    0x00000020
 #define DEBUGLEVEL_CONNECTION       0x00000200

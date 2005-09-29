@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_one.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *    History: 
       $Log: std_ansi_tbl_two_one.h,v $
+      Revision 1.6  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.5  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 
@@ -93,6 +96,7 @@ public:
    int getNbrPresentValues(void);
    bool getTimeRemainingFlag(void);
    bool getDemandResetCtrFlag( void );
+   bool getSeasonInfoFieldFlag( void);
    bool getTimeDateFieldFlag( void );
    bool getCumDemandFlag( void );
    bool getContCumDemandFlag( void );

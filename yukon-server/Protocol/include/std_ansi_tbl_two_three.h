@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_three.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/06/16 19:18:00 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *    History: 
       $Log: std_ansi_tbl_two_three.h,v $
+      Revision 1.6  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.5  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -88,6 +91,8 @@ private:
    bool                 _cumcont;
    int                  _timefmt;
 
+   int                  _tablePrintNumber;
+
 
 public:
 
@@ -106,9 +111,9 @@ public:
    bool getCumd( void );
    bool getCumcont( void );
    CtiAnsiTableTwoThree( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat );
+                         int f1, int f2, int timeformat, int tableNbr );
    CtiAnsiTableTwoThree( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat );
+                         int f1, int f2, int timeformat, int tableNbr );
    virtual ~CtiAnsiTableTwoThree();
    CtiAnsiTableTwoThree& operator=(const CtiAnsiTableTwoThree& aRef);
    void printResult(  );

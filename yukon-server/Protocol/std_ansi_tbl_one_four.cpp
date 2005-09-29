@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_four.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *    History: 
       $Log: std_ansi_tbl_one_four.cpp,v $
+      Revision 1.6  2005/09/29 21:18:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.5  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -80,13 +83,20 @@ CtiAnsiTableOneFour::~CtiAnsiTableOneFour()
 {
    int index;
    //int count;
-
-   for( index = 0; index < _controlEntries; index++ )
-   {
-      delete[] _data_control_record.data_rcd[index].source_id;
+   if (_data_control_record.data_rcd != NULL)
+   {                                        
+       for( index = 0; index < _controlEntries; index++ )
+       {
+           if (_data_control_record.data_rcd[index].source_id != NULL)
+           {                                                         
+               delete[] _data_control_record.data_rcd[index].source_id;
+               _data_control_record.data_rcd[index].source_id = NULL;
+           }
+       }
+       delete[] _data_control_record.data_rcd;
+       _data_control_record.data_rcd = NULL;
    }
 
-   delete[] _data_control_record.data_rcd;
 }
 
 //=========================================================================================================================================

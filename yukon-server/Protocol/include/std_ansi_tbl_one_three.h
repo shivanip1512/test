@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_three.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2004/09/30 21:37:20 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *    History: 
       $Log: std_ansi_tbl_one_three.h,v $
+      Revision 1.5  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.4  2004/09/30 21:37:20  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
@@ -98,7 +101,7 @@ private:
     bool                 _slidingDemandFlag; 
     bool                 _resetExcludeFlag;
 
-    DEMAND_CONTROL_RCD   *_demand_control_record;
+    DEMAND_CONTROL_RCD   _demand_control_record;
 
 
 };

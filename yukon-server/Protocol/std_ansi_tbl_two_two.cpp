@@ -11,11 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_two.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *
 *    History: 
       $Log: std_ansi_tbl_two_two.cpp,v $
+      Revision 1.7  2005/09/29 21:18:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.6  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -106,11 +109,31 @@ CtiAnsiTableTwoTwo::CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_de
 
 CtiAnsiTableTwoTwo::~CtiAnsiTableTwoTwo()
 {
-   delete []_summation_select;
-   delete []_demand_select;
-   delete []_set;
-   delete []_coincident_select;
-   delete []_coin_demand_assoc;
+    if (_summation_select != NULL)
+    {
+        delete []_summation_select;
+        _summation_select = NULL;
+    }
+    if (_demand_select != NULL)
+    {                         
+        delete []_demand_select;
+        _demand_select = NULL;
+    }
+    if (_set != NULL)
+    {
+        delete []_set;
+        _set = NULL;
+    }
+    if (_coincident_select != NULL)
+    {                             
+        delete []_coincident_select;
+        _coincident_select = NULL;
+    }
+    if (_coin_demand_assoc)
+    {                     
+        delete []_coin_demand_assoc;
+        _coin_demand_assoc = NULL;
+    }
 }
 
 //=========================================================================================================================================

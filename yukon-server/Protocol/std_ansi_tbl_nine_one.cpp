@@ -1,6 +1,5 @@
 
-#pragma warning( disable : 4786)
-
+#include "yukon.h"
 /*-----------------------------------------------------------------------------*
 *
 * File:   std_ansi_tbl_ninety_one

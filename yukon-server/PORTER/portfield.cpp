@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.151 $
-* DATE         :  $Date: 2005/09/09 11:25:05 $
+* REVISION     :  $Revision: 1.152 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1321,19 +1321,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if (!ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
-                                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+                                RWTPtrSlist< CtiReturnMsg >  retList;
+                                retList.clearAndDestroy();
 
-                                //send dispatch lp data directly
-                                kv2dev->processDispatchReturnMessage( retMsg, ansi.getParseFlags() );
-                                if( !retMsg->getData().isEmpty() )
+                                kv2dev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
+                                while( !retList.isEmpty())
                                 {
-                                    VanGoghConnection.WriteConnQue( retMsg );
+                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.get();
+                                    VanGoghConnection.WriteConnQue(retMsg);
                                 }
-                                else
-                                {
-                                    delete retMsg;
-                                }
+                                retList.clearAndDestroy();
+
                                 InMessage->EventCode = NORMAL;
+
                             }
                             else
                             {
@@ -1354,6 +1354,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = kv2dev->sendCommResult( InMessage );
 
                         ansi.reinitialize();
+                        kv2dev = NULL;
+
                         break;
                     }
                 case TYPE_SENTINEL:
@@ -1367,6 +1369,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
                         CtiProtocolANSI &ansi   = sentinelDev->getSentinelProtocol();
 
+                        ansi.setAnsiDeviceName(sentinelDev->getName());
                         //allocate some space
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
@@ -1382,6 +1385,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             while( !ansi.isTransactionComplete() )
                             {
+
                                 //jump in, check for login, build packets, send messages, etc...
                                 ansi.generate( trx );
                                 status = Port->outInMess( trx, Device, traceList );
@@ -1402,18 +1406,17 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if (!ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
-                                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg();
+                                RWTPtrSlist< CtiReturnMsg >  retList;
+                                retList.clearAndDestroy();
 
-                                //send dispatch lp data directly
-                                sentinelDev->processDispatchReturnMessage( retMsg, ansi.getParseFlags() );
-                                if( !retMsg->getData().isEmpty() )
+                                sentinelDev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
+                                while( !retList.isEmpty())
                                 {
-                                    VanGoghConnection.WriteConnQue( retMsg );
+                                    CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.get();
+                                    VanGoghConnection.WriteConnQue(retMsg);
                                 }
-                                else
-                                {
-                                    delete retMsg;
-                                }
+                                retList.clearAndDestroy();
+
                                 InMessage->EventCode = NORMAL;
                             }
                             else
@@ -1433,6 +1436,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = sentinelDev->sendCommResult( InMessage );
 
                         ansi.reinitialize();
+                        sentinelDev = NULL;
                         break;
                     }
 

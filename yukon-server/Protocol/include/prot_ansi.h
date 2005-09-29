@@ -14,10 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/06/16 19:18:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.12  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.11  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -68,6 +71,7 @@
 #include "std_ansi_tbl_two_one.h"
 #include "std_ansi_tbl_two_two.h"
 #include "std_ansi_tbl_two_three.h"
+#include "std_ansi_tbl_two_five.h"
 #include "std_ansi_tbl_two_seven.h"
 #include "std_ansi_tbl_two_eight.h"
 #include "std_ansi_tbl_three_one.h"
@@ -279,14 +283,14 @@ struct TIME
 class IM_EX_PROT CtiProtocolANSI
 {
    public:
-
       CtiProtocolANSI();
       virtual ~CtiProtocolANSI();
 
       typedef enum
       {
           generalScan = 0,
-          demandReset,
+          generalPilScan,
+          demandReset
       } ANSI_SCAN_OPERATION;
 
       void reinitialize( void );
@@ -330,6 +334,8 @@ class IM_EX_PROT CtiProtocolANSI
     /**** JULIE *****/
     bool retreiveSummation( int offset, double *value );
     bool retreiveDemand( int offset, double *value, double *time );
+    bool retreiveFrozenSummation( int offset, double *value, double *time );
+    bool retreiveFrozenDemand( int offset, double *value, double *time );
     bool retreivePresentValue( int offset, double *value );
     bool retreiveLPDemand( int offset, int dataSet );
     bool retreiveBatteryLife(int x, double *value);
@@ -357,10 +363,14 @@ class IM_EX_PROT CtiProtocolANSI
     int getLastBlockIndex();
     int getNbrBlksSet();
 
+    const RWCString& getAnsiDeviceName() const;
+    void setAnsiDeviceName(const RWCString& devName);
+
     int proc09RemoteReset(UINT8 actionFlag);
     int proc22LoadProfileStartBlock( void );
 
     void setCurrentAnsiWantsTableValues(short tableID,int tableOffset, unsigned int bytesExpected,BYTE  type, BYTE operation);
+    void setLastLoadProfileTime(LONG lastLPTime);
     int getWriteSequenceNbr( void );
 
     unsigned long getlastLoadProfileTime(void);
@@ -390,7 +400,7 @@ class IM_EX_PROT CtiProtocolANSI
 
       CtiANSIApplication               _appLayer;
 
-      BYTE                             *_outBuff;
+      //BYTE                             *_outBuff;
 
       ULONG                            _bytesInGot;
 
@@ -426,6 +436,11 @@ class IM_EX_PROT CtiProtocolANSI
       CtiAnsiTableSixFour              *_tableSixFour;
     //  CtiAnsiTableFiveFive             *_tableFiveFive;
 
+      CtiAnsiTableTwoFive             *_frozenRegTable;
+      //ULONG  _frozenEndDateTime;
+      //UINT8  _frozenSeason;
+
+
       bool _validFlag;
       bool _previewTable64;
       bool _entireTableFlag;
@@ -440,6 +455,8 @@ class IM_EX_PROT CtiProtocolANSI
 
        double *_lpValues;
        ULONG *_lpTimes;
+
+       RWCString _ansiDevName;
 
      int _lpNbrLoadProfileChannels;
      int _lpNbrIntvlsLastBlock;
@@ -459,6 +476,7 @@ class IM_EX_PROT CtiProtocolANSI
 
      bool _currentTableNotAvailableFlag;
      bool _requestingBatteryLifeFlag;
+     bool _invalidLastLoadProfileTime;
 
      ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset, 
      UINT _parseFlags;

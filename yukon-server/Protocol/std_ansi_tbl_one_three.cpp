@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_three.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *    History: 
       $Log: std_ansi_tbl_one_three.cpp,v $
+      Revision 1.6  2005/09/29 21:18:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.5  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -37,7 +40,6 @@
 CtiAnsiTableOneThree::CtiAnsiTableOneThree( int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
 {
    _numberDemandCtrlEntries = nbr_demand_cntl_entries;
-   _demand_control_record = new DEMAND_CONTROL_RCD;
    _pfExcludeFlag = pf_exclude;
    _slidingDemandFlag = sliding_demand; 
    _resetExcludeFlag = reset_exclude;
@@ -52,7 +54,7 @@ CtiAnsiTableOneThree::CtiAnsiTableOneThree( int nbr_demand_cntl_entries, bool pf
        _demand_control_record->excludes.cold_load_pickup = 1;
    }
    */
-   _demand_control_record->_int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
+   _demand_control_record._int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
 
 
 }
@@ -75,59 +77,46 @@ CtiAnsiTableOneThree::CtiAnsiTableOneThree( BYTE *dataBlob, int nbr_demand_cntl_
 {
    int      index;
 
-   _demand_control_record = new DEMAND_CONTROL_RCD;
    _pfExcludeFlag = pf_exclude;
    _slidingDemandFlag = sliding_demand; 
    _resetExcludeFlag = reset_exclude;
 
    if( reset_exclude != false )
    {
-      memcpy( (void *)&_demand_control_record->reset_exclusion, dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.reset_exclusion, dataBlob, sizeof( unsigned char ));
       dataBlob += sizeof( unsigned char );
    }
-   /*else
-      _demand_control_record->reset_exclusion = 500;      //invalid value
-   */
+
    if( pf_exclude != false )
    {
-      memcpy( (void *)&_demand_control_record->excludes.p_fail_recogntn_tm, dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, dataBlob, sizeof( unsigned char ));
       dataBlob += sizeof( unsigned char );
 
-      memcpy( (void *)&_demand_control_record->excludes.p_fail_exclusion, dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.p_fail_exclusion, dataBlob, sizeof( unsigned char ));
       dataBlob += sizeof( unsigned char );
 
-      memcpy( (void *)&_demand_control_record->excludes.cold_load_pickup, dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.cold_load_pickup, dataBlob, sizeof( unsigned char ));
       dataBlob += sizeof( unsigned char );
    }
 
 
    dataBlob += sizeof( unsigned char );
-   /*else
-   {
-      //default invalid vals
-      _demand_control_record->excludes.p_fail_recogntn_tm = 500;
-      _demand_control_record->excludes.p_fail_exclusion = 500;
-      _demand_control_record->excludes.cold_load_pickup = 500;
-   } */
    _numberDemandCtrlEntries = nbr_demand_cntl_entries;
-   _demand_control_record->_int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
-   //memcpy( (void *)&_demand_control_record->_int_control_rec, dataBlob, sizeof( USHORT ) * _numberDemandCtrlEntries);
-   //dataBlob += (sizeof( USHORT ) * _numberDemandCtrlEntries);
-
+   _demand_control_record._int_control_rec = new INT_CONTROL_RCD[nbr_demand_cntl_entries];
 
    for( index = 0; index < _numberDemandCtrlEntries; index++ )
    {
       if( sliding_demand != false )
       {
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.sub_int, dataBlob, sizeof( unsigned char ));
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, dataBlob, sizeof( unsigned char ));
          dataBlob += sizeof( unsigned char );
 
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.int_mulitplier, dataBlob, sizeof( unsigned char ));
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, dataBlob, sizeof( unsigned char ));
          dataBlob += sizeof( unsigned char );
       }
       else
       {
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
          dataBlob += ( sizeof( unsigned char) *2 );
       }
    } 
@@ -138,8 +127,11 @@ CtiAnsiTableOneThree::CtiAnsiTableOneThree( BYTE *dataBlob, int nbr_demand_cntl_
 
 CtiAnsiTableOneThree::~CtiAnsiTableOneThree()
 {
-   delete []_demand_control_record->_int_control_rec;
-   delete _demand_control_record;
+    if (_demand_control_record._int_control_rec != NULL)
+    {
+        delete []_demand_control_record._int_control_rec;
+        _demand_control_record._int_control_rec = NULL;
+    }
 }
 
 //=========================================================================================================================================
@@ -157,7 +149,7 @@ void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
 {
    if( _resetExcludeFlag != false )
    {
-      memcpy( (void *)&_demand_control_record->reset_exclusion, *dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.reset_exclusion, *dataBlob, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
    /*else
@@ -165,13 +157,13 @@ void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
      */
    if( _pfExcludeFlag != false )
    {
-      memcpy( (void *)&_demand_control_record->excludes.p_fail_recogntn_tm, *dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, *dataBlob, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
 
-      memcpy( (void *)&_demand_control_record->excludes.p_fail_exclusion, *dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.p_fail_exclusion, *dataBlob, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
 
-      memcpy( (void *)&_demand_control_record->excludes.cold_load_pickup, *dataBlob, sizeof( unsigned char ));
+      memcpy( (void *)&_demand_control_record.excludes.cold_load_pickup, *dataBlob, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
 
@@ -184,7 +176,7 @@ void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
       _demand_control_record->excludes.cold_load_pickup = 500;
    }*/
 
-   _demand_control_record->_int_control_rec = new INT_CONTROL_RCD[_numberDemandCtrlEntries];
+   _demand_control_record._int_control_rec = new INT_CONTROL_RCD[_numberDemandCtrlEntries];
    //memcpy( (void *)&_demand_control_record->_int_control_rec, *dataBlob, sizeof( USHORT ) * _numberDemandCtrlEntries);
    //*dataBlob += (sizeof( USHORT ) * _numberDemandCtrlEntries);
 
@@ -193,15 +185,15 @@ void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
    {
       if( _slidingDemandFlag != false )
       {
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.sub_int, *dataBlob, sizeof( unsigned char ));
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, *dataBlob, sizeof( unsigned char ));
          *dataBlob += sizeof( unsigned char );
 
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.int_mulitplier, *dataBlob, sizeof( unsigned char ));
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, *dataBlob, sizeof( unsigned char ));
          *dataBlob += sizeof( unsigned char );
       }
       else
       {
-         memcpy( (void *)&_demand_control_record->_int_control_rec[index].int_length, *dataBlob, sizeof( unsigned char) *2 );
+         memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, *dataBlob, sizeof( unsigned char) *2 );
          *dataBlob += ( sizeof( unsigned char) *2 );
       }
    }
@@ -216,7 +208,7 @@ void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "_resetExcludeFlag != false" << endl;
     }
-      memcpy(*dataBlob, (void *)&_demand_control_record->reset_exclusion, sizeof( unsigned char ));
+      memcpy(*dataBlob, (void *)&_demand_control_record.reset_exclusion, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
    if( _pfExcludeFlag != false )
@@ -225,13 +217,13 @@ void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "_pfExcludeFlag != false" << endl;
     }
-      memcpy( *dataBlob, (void *)&_demand_control_record->excludes.p_fail_recogntn_tm, sizeof( unsigned char ));
+      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.p_fail_recogntn_tm, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
 
-      memcpy( *dataBlob, (void *)&_demand_control_record->excludes.p_fail_exclusion, sizeof( unsigned char ));
+      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.p_fail_exclusion, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
 
-      memcpy( *dataBlob, (void *)&_demand_control_record->excludes.cold_load_pickup, sizeof( unsigned char ));
+      memcpy( *dataBlob, (void *)&_demand_control_record.excludes.cold_load_pickup, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
       /*INT_CONTROL_RCD *tempIntCtrlRcd;
@@ -262,15 +254,15 @@ void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
         dout << "_slidingDemandFlag != false" << endl;
     }
 
-         memcpy( *dataBlob, (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.sub_int, sizeof( unsigned char ));
+         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].cntl_rec.sub_int, sizeof( unsigned char ));
          *dataBlob += sizeof( unsigned char );
 
-         memcpy( *dataBlob, (void *)&_demand_control_record->_int_control_rec[index].cntl_rec.int_mulitplier, sizeof( unsigned char ));
+         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].cntl_rec.int_mulitplier, sizeof( unsigned char ));
          *dataBlob += sizeof( unsigned char );
       }
       else
       {
-         memcpy( *dataBlob, (void *)&_demand_control_record->_int_control_rec[index].int_length, sizeof( unsigned char) *2 );
+         memcpy( *dataBlob, (void *)&_demand_control_record._int_control_rec[index].int_length, sizeof( unsigned char) *2 );
          *dataBlob += ( sizeof( unsigned char) *2 );
       }
    }
@@ -313,14 +305,14 @@ void CtiAnsiTableOneThree::printResult(  )
     if (_resetExcludeFlag) 
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   RESET_EXCLUSION:  " << _demand_control_record->reset_exclusion << endl;
+        dout << "   RESET_EXCLUSION:  " << _demand_control_record.reset_exclusion << endl;
     }
     if (_pfExcludeFlag) 
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   P_FAIL_RECOGNTN_TM:  " <<(int)_demand_control_record->excludes.p_fail_recogntn_tm << endl;
-        dout << "   P_FAIL_EXCLUSION:  " <<(int)_demand_control_record->excludes.p_fail_exclusion << endl;
-        dout << "   COLD_LOAD_PICKUP:  " << (int)_demand_control_record->excludes.cold_load_pickup << endl;
+        dout << "   P_FAIL_RECOGNTN_TM:  " <<(int)_demand_control_record.excludes.p_fail_recogntn_tm << endl;
+        dout << "   P_FAIL_EXCLUSION:  " <<(int)_demand_control_record.excludes.p_fail_exclusion << endl;
+        dout << "   COLD_LOAD_PICKUP:  " << (int)_demand_control_record.excludes.cold_load_pickup << endl;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -335,7 +327,7 @@ void CtiAnsiTableOneThree::printResult(  )
         for (int x = 0; x < _numberDemandCtrlEntries; x++) 
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "         "<<x<<"       "<<(int)_demand_control_record->_int_control_rec[x].cntl_rec.sub_int<<"        "<<(int)_demand_control_record->_int_control_rec[x].cntl_rec.int_mulitplier<< endl;
+            dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.sub_int<<"        "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.int_mulitplier<< endl;
         }
     }
     else
@@ -347,7 +339,7 @@ void CtiAnsiTableOneThree::printResult(  )
         for (int x = 0; x < _numberDemandCtrlEntries; x++) 
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "         "<<x<<"       "<<(int)_demand_control_record->_int_control_rec[x].int_length<< endl;
+            dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].int_length<< endl;
         }
     }
 

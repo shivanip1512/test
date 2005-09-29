@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_datalink.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $                                                198
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.12 $                                                198
+* DATE         :  $Date: 2005/09/29 21:18:24 $
 *    History: 
       $Log: ansi_datalink.cpp,v $
+      Revision 1.12  2005/09/29 21:18:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.11  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -85,6 +88,8 @@ void CtiANSIDatalink::reinitialize( void )
    _toggle = false;
    _packetBytesReceived = 0;
    _identityByte = ANsI_RESERVED;  //0x00 default
+
+   destroyMe();                                
 }
 
 //=========================================================================================================================================
@@ -94,7 +99,7 @@ void CtiANSIDatalink::destroyMe( void )
 {
    if( _currentPacket != NULL )
    {
-       delete _currentPacket;
+       delete []_currentPacket;
        _currentPacket = NULL;
    }
 }
@@ -263,7 +268,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
               // new number of bytes received for this packet
               _packetBytesReceived += xfer.getInCountActual();
 
-              if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+              if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
               {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );                              
                   dout <<"  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
@@ -399,36 +404,39 @@ void CtiANSIDatalink::buildNegotiate(BYTE aServiceCode, CtiXfer &xfer )
 {
    BYTE        data[5];
    BYTEUSHORT  flip;
+   int arraySize = 4;
 
    //this is just for TESTING
    data[0] = aServiceCode;
    data[1] = 0x00;               //176 bytes in a packet max
    data[2] = 0x80;
-   //data[2] = 0xb0;
    data[3] = 0xff;
   // data[3] = 0x03;
-   data[4] = 0x06;
+   //data[4] = 0x06;
    //data[4] = 0x04;
+   if (aServiceCode != 0x60)
+   {                 
+       arraySize = 5;
+       data[4] = 0x06;
+       //data[4] = 0x04;
+   }
 
 
    memset( xfer.getOutBuffer(), NULL, 100 );
-   assemblePacket( xfer.getOutBuffer(), data, 5, 0 );
-   flip.sh = crc( 5 + HEADER_LEN, xfer.getOutBuffer() );
-   xfer.getOutBuffer()[5 + HEADER_LEN] = flip.ch[1];
-   xfer.getOutBuffer()[5 + HEADER_LEN + 1] = flip.ch[0];
+   assemblePacket( xfer.getOutBuffer(), data, arraySize, 0 );
+   flip.sh = crc( arraySize + HEADER_LEN, xfer.getOutBuffer() );
+   xfer.getOutBuffer()[arraySize + HEADER_LEN] = flip.ch[1];
+   xfer.getOutBuffer()[arraySize + HEADER_LEN + 1] = flip.ch[0];
 
-   xfer.setOutCount( 5 + HEADER_LEN + sizeof( USHORT ) );
-   
-   /*assemblePacket( xfer.getOutBuffer(), data, 4, 0 );
-
-
+   xfer.setOutCount( arraySize + HEADER_LEN + sizeof( USHORT ) );
+   /*
+   assemblePacket( xfer.getOutBuffer(), data, 4, 0 );
    flip.sh = crc( 4 + HEADER_LEN, xfer.getOutBuffer() );
    xfer.getOutBuffer()[4 + HEADER_LEN] = flip.ch[1];
    xfer.getOutBuffer()[4 + HEADER_LEN + 1] = flip.ch[0];
-
+   
    xfer.setOutCount( 4 + HEADER_LEN + sizeof( USHORT ) );
    */
-
    //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
    xfer.setInCountExpected( 1 );
    setExpectedBytes( 1 );
@@ -752,6 +760,12 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    //we're just going to look for one byte first (the <ack>) then we'll know what's sitting out on the port for us...
    xfer.setInCountExpected( 1 );
    setExpectedBytes( 1 );
+
+   if (data != NULL)
+   {
+       delete []data;
+       data = NULL;
+   }
 
 }
 

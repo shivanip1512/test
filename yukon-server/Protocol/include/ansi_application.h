@@ -12,10 +12,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/06/16 19:18:00 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/09/29 21:19:24 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.12  2005/09/29 21:19:24  jrichter
+      Merged latest 3.1 changes to head.
+
       Revision 1.11  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -192,6 +195,9 @@ class IM_EX_PROT CtiANSIApplication
     
     int encryptDataMethod();
 
+    const RWCString& getAnsiDeviceName() const;
+    void setAnsiDeviceName(const RWCString& devName);
+
 
     static const CHAR * ANSI_DEBUGLEVEL;
     bool getANSIDebugLevel(int mask);
@@ -251,8 +257,9 @@ class IM_EX_PROT CtiANSIApplication
 
        BYTEUSHORT _maxPktSize;
        BYTE _maxNbrPkts;
-       BYTE _negBaudRate;
+       BYTE _negBaudRate;    
 
+       RWCString _devName;
        static const RWCString KVmeter;
        static const RWCString KV2meter;
        static const RWCString SENTINELmeter;
