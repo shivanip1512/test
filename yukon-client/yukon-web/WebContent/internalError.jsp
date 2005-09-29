@@ -17,14 +17,16 @@ Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
 StringWriter sw = new StringWriter();
 PrintWriter p = new PrintWriter(sw);
 p.write(
-	"<B>Status code:</B> " + status_code.toString() +
-	"<BR><B>Message</B>: " + message.toString() +
-	"<BR><B>Error type</B>: " + error_type.toString() +
-	"<BR><B>Request URI</B>: " + request_uri.toString() +
-	"<HR><PRE>");		
+	"<b>Status code:</b> " + status_code.toString() +
+	"<br><B>Message</b>: " + message.toString() +
+	"<br><B>Error type</b>: " + error_type.toString() +
+	"<br><B>Request URI</b>: " + request_uri.toString() +
+	"<hr><pre>");		
 
-if( throwable != null )
+if( throwable != null ) {
 	throwable.printStackTrace( p );
+}
+p.write("</pre>");
 %>
 
 <html>
@@ -37,12 +39,8 @@ if( throwable != null )
 <!--
 function showElem( elemId, chkBox ) {
 	var elem = document.getElementById(elemId);
-	var rows = elem.getElementsByTagName('tr');
+	elem.style.display = (chkBox.checked ? 'block' : 'none')
 
-	for( i = 0; i < rows.length; i++ ) {
-		rows[i].style.display = 
-			(chkBox.checked ? 'inline' : 'none');
-	}
 }
 //-->
 </script>
@@ -62,7 +60,7 @@ function showElem( elemId, chkBox ) {
         
 		<tr> 
 		    <td align = "center"><span class="TableCell"><b><font size="4">
-		    Try to execute your request again.
+		    Try to execute your request again.</font></b></span>
 			</td>
 		</tr>
         
@@ -72,17 +70,18 @@ function showElem( elemId, chkBox ) {
   </tr>
 
 	<tr><td>
-		<input type="checkbox" id="stTraceChk" onclick="showElem( 'stackTrace', this );"/>
-		<B>Detailed information</B>
+		<label><input type="checkbox" id="stTraceChk" onclick="showElem( 'stackTrace', this );"/>
+		<b>Detailed information</b></label>
 	</td></tr>
 
-<a id="stackTrace">
-  <tr style="display: none; overflow: scroll;">
+  <tr>
     <td valign = "top" class="MainText">
+    <div style="display: none" id="stackTrace">
     <%=sw.getBuffer().toString()%>
+    </div>
     </td>
   </tr>  
-</a>
+
 
 </table>
 <br>
