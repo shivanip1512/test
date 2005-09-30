@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2005/08/17 17:42:48 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2005/09/30 21:01:02 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.16  2005/09/30 21:01:02  jrichter
+      allows fileNames to have wildcards.  *.lse, *.ls, etc.
+
       Revision 1.15  2005/08/17 17:42:48  jrichter
       Merged  changes from 3.1.  handled massive point data with list of multimsg.  handled white space in data record for optional interval time field, handled massively long file format (extended workbuffer to 1500 bytes)
 
@@ -649,14 +652,31 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                  {
                      try
                      {
+
+
+                        HANDLE hSearch;
                          _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),getFileInfoList()[fileIndex].getLodeStarFileName());
-                         //FindFirstFile(fileName, fileData);
-                         _snprintf(fileNameAndPath, 250, "%s",fileName);
-                         //_snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
-                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                         hSearch = FindFirstFile(fileName, fileData);
+                                                           
+
+                         //_snprintf(fileNameAndPath, 250, "%s",fileName);
+                         _snprintf(fileNameAndPath, 250, "%s\\%s",getFileInfoList()[fileIndex].getLodeStarDrivePath(),fileData->cFileName);
+                         if (hSearch != INVALID_HANDLE_VALUE)
                          {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileNameAndPath << " ***** "  << endl;
+                         
+                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                             {
+                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                 dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileData->cFileName << " ***** "  << endl;
+                             }
+                         }
+                         else
+                         {
+                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                             {
+                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                 dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileName << " NOT FOUND ***** "  << endl;
+                             }
                          }
                      }
                      catch(...)
@@ -665,14 +685,16 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                          dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                      }
                      try
-                     {
-                         fptr = fopen(fileNameAndPath, "r");
-                     }
-                     catch(...)
-                     {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                     }
+                 {
+                     //fptr = fopen(fileNameAndPath, "r");
+                     fptr = fopen(fileNameAndPath, "r");
+                 }
+                 catch(...)
+                 {
+                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                     dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                 }
+
                      try
                      {
                          while ((fptr == NULL) && (attemptCounter < 10))
