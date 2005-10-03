@@ -202,7 +202,7 @@ thread_listener.obj:	yukon.h precompiled.h ctidbgmem.h \
 		thread_listener.h thread.h mutex.h dlldefs.h guard.h
 thread_monitor.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h \
 		os2_2w32.h dlldefs.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h logger.h thread.h thread_monitor.h queue.h \
+		guard.h logger.h thread.h utility.h thread_monitor.h queue.h \
 		thread_register_data.h boost_time.h
 thread_register_data.obj:	yukon.h precompiled.h ctidbgmem.h \
 		thread_register_data.h boost_time.h cticalls.h os2_2w32.h \

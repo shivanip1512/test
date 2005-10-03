@@ -160,13 +160,13 @@ ctivangogh.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_analog.h \
 		tbl_pt_analog.h pt_status.h tbl_pt_status.h dev_base.h \
 		cmdparse.h parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
-		rte_base.h tbl_pao.h tbl_rtcomm.h tbl_base.h tbl_2way.h \
-		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h queues.h \
-		tbl_dyn_ptalarming.h tbl_ptdispatch.h tbl_pt_alarm.h \
-		thread_monitor.h thread_register_data.h boost_time.h \
-		mgr_ptclients.h mgr_point.h slctpnt.h ptconnect.h \
-		pt_dyn_dispatch.h numstr.h device.h devicetypes.h dllvg.h \
-		dllyukon.h
+		config_device.h config_base.h rte_base.h tbl_pao.h \
+		tbl_rtcomm.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h queues.h tbl_dyn_ptalarming.h \
+		tbl_ptdispatch.h tbl_pt_alarm.h thread_monitor.h \
+		thread_register_data.h boost_time.h mgr_ptclients.h \
+		mgr_point.h slctpnt.h ptconnect.h pt_dyn_dispatch.h numstr.h \
+		device.h devicetypes.h dllvg.h dllyukon.h
 dispmain.obj:	yukon.h precompiled.h ctidbgmem.h dispsvc.h cservice.h \
 		dlldefs.h dllvg.h CServiceConfig.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h ctibase.h \

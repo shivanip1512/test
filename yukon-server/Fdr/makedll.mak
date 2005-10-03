@@ -495,9 +495,19 @@ fdracs.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h connection.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
+		fdrsocketinterface.h queues.h fdrinterface.h mgr_fdrpoint.h \
+		rtdb.h hashkey.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
+		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
+		fdracs.h
+fdracsmulti.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
+		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
+		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h connection.h \
+		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h logger.h thread.h queue.h pointtypes.h \
 		fdrpointlist.h queues.h mgr_fdrpoint.h rtdb.h hashkey.h \
 		fdrpoint.h fdrdestination.h fdr.h fdrsocketinterface.h \
-		fdrinterface.h fdrdebuglevel.h fdrscadahelper.h fdracs.h \
+		fdrinterface.h fdrdebuglevel.h fdrscadahelper.h fdracsmulti.h \
 		device.h devicetypes.h fdrscadaserver.h fdrsocketserver.h \
 		fdrclientserverconnection.h
 fdrasciiimportbase.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h \
@@ -698,15 +708,16 @@ fdrrdex.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
 		fdrdebuglevel.h fdrpointlist.h fdrsinglesocket.h \
 		fdrsocketlayer.h device.h devicetypes.h fdrsocketconnection.h \
 		fdrserverconnection.h fdrrdex.h
-fdrscadahelper.obj:	yukon.h precompiled.h ctidbgmem.h fdracs.h \
-		dlldefs.h queues.h types.h fdrpointlist.h mgr_fdrpoint.h \
-		rtdb.h hashkey.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
-		mutex.h guard.h fdrpoint.h pointtypes.h fdrdestination.h \
-		fdr.h pointdefs.h device.h devicetypes.h fdrscadaserver.h \
-		fdrsocketserver.h fdrclientserverconnection.h fdrinterface.h \
-		message.h collectable.h connection.h exchange.h logger.h \
-		thread.h msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h fdrdebuglevel.h fdrscadahelper.h msg_cmd.h
+fdrscadahelper.obj:	yukon.h precompiled.h ctidbgmem.h msg_cmd.h \
+		dlldefs.h message.h collectable.h fdrdebuglevel.h \
+		fdrscadahelper.h pointtypes.h fdrdestination.h fdr.h \
+		pointdefs.h fdracsmulti.h queues.h types.h fdrpointlist.h \
+		mgr_fdrpoint.h rtdb.h hashkey.h dllbase.h os2_2w32.h \
+		cticalls.h dsm2.h mutex.h guard.h fdrpoint.h device.h \
+		devicetypes.h fdrscadaserver.h fdrsocketserver.h \
+		fdrclientserverconnection.h fdrinterface.h connection.h \
+		exchange.h logger.h thread.h msg_multi.h msg_pdata.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h
 fdrscadaserver.obj:	yukon.h precompiled.h ctidbgmem.h fdrscadaserver.h \
 		dlldefs.h fdrsocketserver.h queues.h types.h \
 		fdrclientserverconnection.h fdrinterface.h message.h \

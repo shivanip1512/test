@@ -117,9 +117,6 @@ config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
 config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_resolvers.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
-config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h \
-		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
 config_type_general.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_type_general.h config_base.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \

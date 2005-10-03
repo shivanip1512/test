@@ -819,18 +819,18 @@ dev_kv2.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h mutex.h \
 		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
 		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
 		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_two_seven.h \
-		std_ansi_tbl_two_eight.h std_ansi_tbl_three_one.h \
-		std_ansi_tbl_three_two.h std_ansi_tbl_three_three.h \
-		std_ansi_tbl_five_one.h std_ansi_tbl_five_two.h \
-		std_ansi_tbl_six_one.h std_ansi_tbl_six_two.h \
-		std_ansi_tbl_six_three.h std_ansi_tbl_six_four.h \
-		ansi_kv2_mtable_zero.h ansi_kv2_mtable_seventy.h \
-		ansi_kv2_mtable_onehundredten.h mgr_point.h rtdb.h hashkey.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h device.h \
-		dllyukon.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h tbl_pt_analog.h pt_status.h \
-		tbl_pt_status.h numstr.h
+		std_ansi_tbl_two_three.h std_ansi_tbl_two_five.h \
+		std_ansi_tbl_two_seven.h std_ansi_tbl_two_eight.h \
+		std_ansi_tbl_three_one.h std_ansi_tbl_three_two.h \
+		std_ansi_tbl_three_three.h std_ansi_tbl_five_one.h \
+		std_ansi_tbl_five_two.h std_ansi_tbl_six_one.h \
+		std_ansi_tbl_six_two.h std_ansi_tbl_six_three.h \
+		std_ansi_tbl_six_four.h ansi_kv2_mtable_zero.h \
+		ansi_kv2_mtable_seventy.h ansi_kv2_mtable_onehundredten.h \
+		mgr_point.h rtdb.h hashkey.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h slctpnt.h device.h dllyukon.h pt_analog.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		tbl_pt_analog.h pt_status.h tbl_pt_status.h numstr.h
 dev_lcu.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
 		connection.h exchange.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h logger.h thread.h message.h \
@@ -908,24 +908,24 @@ dev_macro.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 dev_mark_v.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
 		mutex.h dlldefs.h guard.h dsm2err.h devicetypes.h queues.h \
 		types.h logger.h thread.h dev_mark_v.h prot_transdata.h \
-		dllbase.h os2_2w32.h cticalls.h transdata_application.h \
-		xfer.h dialup.h utility.h transdata_tracker.h numstr.h \
-		transdata_datalink.h prot_ymodem.h transdata_data.h \
-		dev_meter.h tbl_metergrp.h vcomdefs.h dbmemobject.h \
-		dbaccess.h sema.h resolvers.h pointtypes.h db_entry_defines.h \
-		dev_ied.h ctitypes.h dev_remote.h dev_single.h dev_base.h \
-		cmdparse.h parsevalue.h counter.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h config_base.h rte_base.h \
-		ctibase.h ctinexus.h netports.h message.h collectable.h \
-		tbl_pao.h tbl_rtcomm.h desolvers.h msg_signal.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pointdefs.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h \
-		tbl_dialup.h tbl_direct.h tbl_dv_ied.h mgr_point.h rtdb.h \
-		hashkey.h pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h \
-		device.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h msg_cmd.h
+		transdata_application.h xfer.h dialup.h utility.h \
+		transdata_tracker.h numstr.h transdata_datalink.h \
+		prot_ymodem.h dllbase.h os2_2w32.h cticalls.h \
+		transdata_data.h dev_meter.h tbl_metergrp.h vcomdefs.h \
+		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		db_entry_defines.h dev_ied.h ctitypes.h dev_remote.h \
+		dev_single.h dev_base.h cmdparse.h parsevalue.h counter.h \
+		dev_exclusion.h tbl_paoexclusion.h config_device.h \
+		config_base.h rte_base.h ctibase.h ctinexus.h netports.h \
+		message.h collectable.h tbl_pao.h tbl_rtcomm.h desolvers.h \
+		msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pointdefs.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		prot_base.h tbl_dialup.h tbl_direct.h tbl_dv_ied.h \
+		mgr_point.h rtdb.h hashkey.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h slctpnt.h device.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_limit.h msg_cmd.h
 dev_mct.obj:	yukon.h precompiled.h ctidbgmem.h numstr.h dlldefs.h \
 		devicetypes.h device.h dev_mct.h dev_carrier.h dev_dlcbase.h \
 		dev_single.h dsm2.h mutex.h guard.h dev_base.h cmdparse.h \
@@ -1341,16 +1341,16 @@ dev_sentinel.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
 		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
 		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
 		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
-		std_ansi_tbl_two_seven.h std_ansi_tbl_two_eight.h \
-		std_ansi_tbl_three_one.h std_ansi_tbl_three_two.h \
-		std_ansi_tbl_three_three.h std_ansi_tbl_five_one.h \
-		std_ansi_tbl_five_two.h std_ansi_tbl_six_one.h \
-		std_ansi_tbl_six_two.h std_ansi_tbl_six_three.h \
-		std_ansi_tbl_six_four.h mgr_point.h rtdb.h hashkey.h \
-		pt_base.h pt_dyn_base.h tbl_pt_base.h slctpnt.h device.h \
-		dllyukon.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h tbl_pt_analog.h pt_status.h \
-		tbl_pt_status.h numstr.h
+		std_ansi_tbl_two_five.h std_ansi_tbl_two_seven.h \
+		std_ansi_tbl_two_eight.h std_ansi_tbl_three_one.h \
+		std_ansi_tbl_three_two.h std_ansi_tbl_three_three.h \
+		std_ansi_tbl_five_one.h std_ansi_tbl_five_two.h \
+		std_ansi_tbl_six_one.h std_ansi_tbl_six_two.h \
+		std_ansi_tbl_six_three.h std_ansi_tbl_six_four.h mgr_point.h \
+		rtdb.h hashkey.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
+		slctpnt.h device.h dllyukon.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		tbl_pt_analog.h pt_status.h tbl_pt_status.h numstr.h
 dev_seriesv.obj:	yukon.h precompiled.h ctidbgmem.h dev_seriesv.h \
 		dev_ied.h ctitypes.h types.h os2_2w32.h dlldefs.h dsm2.h \
 		mutex.h guard.h dev_remote.h dev_single.h dev_base.h \
@@ -1497,8 +1497,7 @@ dev_tnpp.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h dlldefs.h \
 		tbl_pt_accumhistory.h port_base.h tbl_port_base.h \
 		tbl_port_statistics.h mgr_route.h repeaterrole.h rtdb.h \
 		hashkey.h slctdev.h smartmap.h msg_trace.h numstr.h \
-		config_type_general.h config_resolvers.h dev_tnpp.h \
-		tbl_dv_tnpp.h
+		dev_tnpp.h tbl_dv_tnpp.h
 dev_vectron.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
 		mutex.h dlldefs.h guard.h dsm2err.h devicetypes.h queues.h \
 		types.h dev_schlum.h ctitypes.h os2_2w32.h dev_meter.h \
@@ -1653,13 +1652,12 @@ mgr_device.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		prot_seriesv.h verification_objects.h boost_time.h dev_mct.h \
 		dev_mct410.h dev_modbus.h prot_modbus.h dev_repeater.h \
 		dev_rtc.h tbl_dv_rtc.h dev_rtm.h dev_tap.h tbl_dv_tappaging.h \
-		dev_snpp.h dev_tnpp.h tbl_dv_tnpp.h config_type_general.h \
-		dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
-		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_energypro.h \
-		tbl_dv_expresscom.h dev_grp_expresscom.h dev_grp_golay.h \
-		prot_sasimple.h tbl_lmg_sasimple.h dev_grp_ripple.h \
-		tbl_dv_lmg_ripple.h dev_grp_sa105.h prot_sa105.h \
-		tbl_lmg_sa205105.h dev_grp_sa305.h prot_sa305.h \
+		dev_snpp.h dev_tnpp.h tbl_dv_tnpp.h dev_pagingreceiver.h \
+		tbl_dv_pagingreceiver.h dev_grp_emetcon.h tbl_dv_emetcon.h \
+		dev_grp_energypro.h tbl_dv_expresscom.h dev_grp_expresscom.h \
+		dev_grp_golay.h prot_sasimple.h tbl_lmg_sasimple.h \
+		dev_grp_ripple.h tbl_dv_lmg_ripple.h dev_grp_sa105.h \
+		prot_sa105.h tbl_lmg_sa205105.h dev_grp_sa305.h prot_sa305.h \
 		tbl_lmg_sa305.h dev_grp_sa205.h prot_sa205.h \
 		dev_grp_sadigital.h dev_grp_versacom.h tbl_dv_versacom.h \
 		dev_grp_mct.h tbl_dv_lmgmct.h dev_mct_broadcast.h
@@ -1959,13 +1957,12 @@ rte_xcu.obj:	yukon.h precompiled.h ctidbgmem.h desolvers.h \
 		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h dialup.h \
 		tbl_dialup.h tbl_direct.h dev_tap.h tbl_dv_tappaging.h \
 		dev_ied.h ctitypes.h tbl_dv_ied.h dev_snpp.h dev_tnpp.h \
-		tbl_dv_tnpp.h config_type_general.h dev_pagingreceiver.h \
-		tbl_dv_pagingreceiver.h boost_time.h dev_lcu.h dev_idlc.h \
-		tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
-		devicetypes.h trx_711.h mgr_point.h rtdb.h pt_base.h \
-		pt_dyn_base.h tbl_pt_base.h slctpnt.h dev_wctp.h numstr.h \
-		prot_versacom.h prot_fpcbc.h prot_sa305.h prot_sa3rdparty.h \
-		protocol_sa.h
+		tbl_dv_tnpp.h dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
+		boost_time.h dev_lcu.h dev_idlc.h tbl_dv_idlcremote.h \
+		trx_info.h porter.h dsm2err.h devicetypes.h trx_711.h \
+		mgr_point.h rtdb.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
+		slctpnt.h dev_wctp.h numstr.h prot_versacom.h prot_fpcbc.h \
+		prot_sa305.h prot_sa3rdparty.h protocol_sa.h
 slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		ctitypes.h types.h os2_2w32.h dlldefs.h dsm2.h mutex.h \
 		guard.h dev_remote.h dev_single.h dev_base.h cmdparse.h \
@@ -2009,28 +2006,28 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		tbl_carrier.h prot_emetcon.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h dev_rtm.h dev_tap.h tbl_dv_tappaging.h \
 		dev_snpp.h dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
-		dev_tnpp.h tbl_dv_tnpp.h config_type_general.h dev_wctp.h \
-		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_expresscom.h \
-		tbl_dv_expresscom.h dev_grp_energypro.h dev_grp_golay.h \
-		prot_sasimple.h tbl_lmg_sasimple.h dev_grp_mct.h \
-		tbl_dv_lmgmct.h dev_grp_ripple.h tbl_dv_lmg_ripple.h \
-		dev_grp_sa105.h prot_sa105.h tbl_lmg_sa205105.h \
-		dev_grp_sa205.h prot_sa205.h dev_grp_sa305.h prot_sa305.h \
-		tbl_lmg_sa305.h dev_grp_sadigital.h dev_grp_versacom.h \
-		tbl_dv_versacom.h dev_davis.h dev_system.h dev_aplus.h \
-		device.h dev_alpha.h dev_a1.h dev_lgs4.h dev_dr87.h \
-		dev_dct501.h dev_mct24x.h dev_mct2xx.h dev_mct.h dev_mct210.h \
-		dev_mct22X.h dev_mct310.h dev_mct31X.h dev_mct410.h \
-		dev_mct470.h dev_mct_lmt2.h dev_mct_broadcast.h dev_kv2.h \
-		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
-		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
-		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
-		std_ansi_tbl_zero_eight.h std_ansi_tbl_one_zero.h \
-		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
-		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
-		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
-		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_two_seven.h \
+		dev_tnpp.h tbl_dv_tnpp.h dev_wctp.h dev_grp_emetcon.h \
+		tbl_dv_emetcon.h dev_grp_expresscom.h tbl_dv_expresscom.h \
+		dev_grp_energypro.h dev_grp_golay.h prot_sasimple.h \
+		tbl_lmg_sasimple.h dev_grp_mct.h tbl_dv_lmgmct.h \
+		dev_grp_ripple.h tbl_dv_lmg_ripple.h dev_grp_sa105.h \
+		prot_sa105.h tbl_lmg_sa205105.h dev_grp_sa205.h prot_sa205.h \
+		dev_grp_sa305.h prot_sa305.h tbl_lmg_sa305.h \
+		dev_grp_sadigital.h dev_grp_versacom.h tbl_dv_versacom.h \
+		dev_davis.h dev_system.h dev_aplus.h device.h dev_alpha.h \
+		dev_a1.h dev_lgs4.h dev_dr87.h dev_dct501.h dev_mct24x.h \
+		dev_mct2xx.h dev_mct.h dev_mct210.h dev_mct22X.h dev_mct310.h \
+		dev_mct31X.h dev_mct410.h dev_mct470.h dev_mct_lmt2.h \
+		dev_mct_broadcast.h dev_kv2.h prot_ansi_kv2.h prot_ansi.h \
+		ansi_application.h ansi_datalink.h ansi_billing_table.h \
+		std_ansi_tbl_base.h std_ansi_tbl_zero_zero.h \
+		std_ansi_tbl_zero_one.h std_ansi_tbl_zero_eight.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_two_five.h std_ansi_tbl_two_seven.h \
 		std_ansi_tbl_two_eight.h std_ansi_tbl_three_one.h \
 		std_ansi_tbl_three_two.h std_ansi_tbl_three_three.h \
 		std_ansi_tbl_five_one.h std_ansi_tbl_five_two.h \

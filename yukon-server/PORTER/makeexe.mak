@@ -396,24 +396,24 @@ portfield.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
 		dnp_datalink_packet.h dnp_object_binaryoutput.h \
 		tbl_dv_address.h dev_pagingreceiver.h tbl_dv_pagingreceiver.h \
-		boost_time.h dev_tnpp.h tbl_dv_tnpp.h config_type_general.h \
-		dev_rtc.h tbl_dv_rtc.h dev_rtm.h verification_objects.h \
-		dev_wctp.h routes.h master.h portdecl.h port_base.h \
-		tbl_port_base.h tbl_port_statistics.h tcpsup.h perform.h \
-		tapterm.h porttcp.h portglob.h statistics.h prot_sa3rdparty.h \
-		protocol_sa.h portverify.h c_port_interface.h group.h \
-		elogger.h alarmlog.h mgr_port.h smartmap.h slctprt.h \
-		mgr_device.h slctdev.h dev_cbc6510.h dev_dnp.h prot_dnp.h \
-		dev_schlum.h dev_meter.h tbl_metergrp.h vcomdefs.h dev_kv2.h \
-		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
-		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
-		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
-		std_ansi_tbl_zero_eight.h std_ansi_tbl_one_zero.h \
-		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
-		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
-		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
-		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_two_seven.h \
+		boost_time.h dev_tnpp.h tbl_dv_tnpp.h dev_rtc.h tbl_dv_rtc.h \
+		dev_rtm.h verification_objects.h dev_wctp.h routes.h master.h \
+		portdecl.h port_base.h tbl_port_base.h tbl_port_statistics.h \
+		tcpsup.h perform.h tapterm.h porttcp.h portglob.h \
+		statistics.h prot_sa3rdparty.h protocol_sa.h portverify.h \
+		c_port_interface.h group.h elogger.h alarmlog.h mgr_port.h \
+		smartmap.h slctprt.h mgr_device.h slctdev.h dev_cbc6510.h \
+		dev_dnp.h prot_dnp.h dev_schlum.h dev_meter.h tbl_metergrp.h \
+		vcomdefs.h dev_kv2.h prot_ansi_kv2.h prot_ansi.h \
+		ansi_application.h ansi_datalink.h ansi_billing_table.h \
+		std_ansi_tbl_base.h std_ansi_tbl_zero_zero.h \
+		std_ansi_tbl_zero_one.h std_ansi_tbl_zero_eight.h \
+		std_ansi_tbl_one_zero.h std_ansi_tbl_one_one.h \
+		std_ansi_tbl_one_two.h std_ansi_tbl_one_three.h \
+		std_ansi_tbl_one_four.h std_ansi_tbl_one_five.h \
+		std_ansi_tbl_one_six.h std_ansi_tbl_two_one.h \
+		std_ansi_tbl_two_two.h std_ansi_tbl_two_three.h \
+		std_ansi_tbl_two_five.h std_ansi_tbl_two_seven.h \
 		std_ansi_tbl_two_eight.h std_ansi_tbl_three_one.h \
 		std_ansi_tbl_three_two.h std_ansi_tbl_three_three.h \
 		std_ansi_tbl_five_one.h std_ansi_tbl_five_two.h \
@@ -450,9 +450,8 @@ portfill.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
 		trx_711.h mgr_point.h slctpnt.h dev_tap.h tbl_dv_tappaging.h \
 		dev_ied.h tbl_dv_ied.h dev_snpp.h dev_tnpp.h tbl_dv_tnpp.h \
-		config_type_general.h dev_pagingreceiver.h \
-		tbl_dv_pagingreceiver.h boost_time.h dev_wctp.h \
-		prot_versacom.h expresscom.h
+		dev_pagingreceiver.h tbl_dv_pagingreceiver.h boost_time.h \
+		dev_wctp.h prot_versacom.h expresscom.h
 portglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h dsm2err.h \
 		device.h devicetypes.h routes.h porter.h das08.h tcpsup.h \

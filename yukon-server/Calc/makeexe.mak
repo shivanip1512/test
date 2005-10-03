@@ -206,14 +206,13 @@ calclogicsvc.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		thread.h utility.h calclogicsvc.h connection.h exchange.h \
 		queue.h cservice.h calcthread.h hashkey.h calc.h \
 		calccomponent.h pointstore.h rtdb.h thread_monitor.h \
-		msg_pcreturn.h thread_register_data.h boost_time.h
+		thread_register_data.h boost_time.h
 calcthread.obj:	yukon.h precompiled.h ctidbgmem.h ctibase.h ctinexus.h \
 		dlldefs.h netports.h dllbase.h os2_2w32.h types.h cticalls.h \
 		dsm2.h mutex.h guard.h pointtypes.h message.h collectable.h \
 		msg_multi.h msg_pdata.h pointdefs.h logger.h thread.h \
 		utility.h calcthread.h hashkey.h calc.h calccomponent.h \
-		pointstore.h rtdb.h thread_monitor.h queue.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h msg_pcreturn.h \
+		pointstore.h rtdb.h thread_monitor.h queue.h \
 		thread_register_data.h boost_time.h
 calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
@@ -222,7 +221,7 @@ calc_logic.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		connection.h exchange.h logger.h thread.h message.h \
 		collectable.h msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h \
 		msg_reg.h queue.h cservice.h calcthread.h calc.h \
-		calccomponent.h pointstore.h thread_monitor.h msg_pcreturn.h \
+		calccomponent.h pointstore.h thread_monitor.h \
 		thread_register_data.h boost_time.h
 log.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \

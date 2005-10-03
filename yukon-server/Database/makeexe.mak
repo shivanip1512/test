@@ -215,6 +215,10 @@ tbl_dv_scandata.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h sema.h logger.h thread.h tbl_dv_scandata.h \
 		dbmemobject.h
+tbl_dv_seriesv.obj:	yukon.h precompiled.h ctidbgmem.h tbl_dv_seriesv.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h dbmemobject.h dbaccess.h sema.h resolvers.h \
+		pointtypes.h db_entry_defines.h logger.h thread.h
 tbl_dv_tappaging.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_dv_tappaging.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h dbmemobject.h dbaccess.h \
