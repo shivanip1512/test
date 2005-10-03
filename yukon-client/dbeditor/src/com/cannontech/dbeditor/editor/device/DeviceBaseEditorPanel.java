@@ -1656,6 +1656,7 @@ private javax.swing.JComboBox getTOUComboBox() {
 			ivjTOUComboBox.setMinimumSize(new java.awt.Dimension(162,20));
 			// user code begin {1}
 			ivjTOUComboBox.setEnabled(false);
+			ivjTOUComboBox.setVisible(false);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -2291,8 +2292,8 @@ private void setNonRemBaseValue( Object base )
 	   getJPanelMCTSettings().setVisible(true);
 	   if(base instanceof MCT400SeriesBase)
 	   {
-	   		getTOUComboBox().setVisible(true);
-	   		getTOULabel().setVisible(true);		
+	   		getTOUComboBox().setVisible(false);
+	   		getTOULabel().setVisible(false);		
 	   }
    }
 	
