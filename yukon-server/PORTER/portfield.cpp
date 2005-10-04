@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.152 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.153 $
+* DATE         :  $Date: 2005/10/04 20:12:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,6 +106,7 @@ using namespace std;
 #include "dev_schlum.h"
 #include "dev_remote.h"
 #include "dev_kv2.h"
+#include "dev_mct410.h"
 #include "dev_sentinel.h"
 #include "dev_mark_v.h"
 #include "msg_trace.h"
@@ -146,6 +147,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
 INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
+void processPreloads(CtiPortSPtr Port);
 INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT NonWrapDecode(INMESS *InMessage, CtiDeviceSPtr &Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
@@ -378,7 +380,7 @@ VOID PortThread(void *pid)
             continue;
         }
 
-        // See if there is a reason to proceed..
+        //  See if there is a reason to proceed...  Note that this is where OMs can be queued onto devices
         if((status = DevicePreprocessing(Port, OutMessage, Device)) != NORMAL)   /* do any preprocessing according to type */
         {
             RequeueReportError(status, OutMessage);
@@ -424,6 +426,16 @@ VOID PortThread(void *pid)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Profiling - CommunicateDevice took " << ticks << " ms for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+        }
+
+        //  if the device needs to schedule more work
+        if( Device->hasPreloadWork() )
+        {
+            Port->setDevicePreload(Device->getID());
+
+            processPreloads(Port);
+
+            DeviceManager.addPortExclusion(Device->getID());
         }
 
         /* Non wrap protcol specific communications stuff */
@@ -955,9 +967,18 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     if( QUEUED_TO_DEVICE == (status = Device->queueOutMessageToDevice(OutMessage, &dqcnt)) )
     {
         Device->incQueueSubmittal(1, RWTime());
-        Port->setDeviceQueued( Device->getID() );
+        Port->setDeviceQueued(Device->getID());
 
-        if(gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001)
+        if( Device->hasPreloadWork() )
+        {
+            Port->setDevicePreload(Device->getID());
+
+            processPreloads(Port);
+
+            DeviceManager.addPortExclusion(Device->getID());
+        }
+
+        if( gConfigParms.getValueAsULong("YUKON_SIMULATOR_DEBUGLEVEL", 0) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(slog);
             slog << RWTime() << " " << Device->getName() << " queuing work.  There are " << dqcnt << " entries on the queue.  Last grant at " << Device->getExclusion().getExecutionGrant() << endl;
@@ -965,7 +986,9 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
     }
 
     if( status == NORMAL )
+    {
         status = ProcessExclusionLogic(Port, OutMessage, Device);
+    }
 
     if(status == NORMAL)
     {
@@ -995,9 +1018,20 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                 if(OutMessage->EventCode & TSYNC)
                 {
                     if(OutMessage->EventCode & BWORD)
-                        LoadBTimeMessage (OutMessage);
+                    {
+                        if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT410::UniversalAddress )
+                        {
+                            LoadMCT400BTimeMessage(OutMessage);
+                        }
+                        else
+                        {
+                            LoadBTimeMessage(OutMessage);
+                        }
+                    }
                     else
+                    {
                         LoadXTimeMessage (OutMessage->Buffer.OutMessage);
+                    }
                 }
 
                 /* Broadcasts do not need CCU preprocessing */
@@ -1073,7 +1107,16 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             {
                 /* check if we need to load the time into a time sync */
                 if(OutMessage->EventCode & TSYNC)
-                    LoadBTimeMessage (OutMessage);
+                {
+                    if( OutMessage->Buffer.BSt.Address == CtiDeviceMCT410::UniversalAddress )
+                    {
+                        LoadMCT400BTimeMessage(OutMessage);
+                    }
+                    else
+                    {
+                        LoadBTimeMessage(OutMessage);
+                    }
+                }
 
                 break;
             }
@@ -1135,6 +1178,126 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
 
     return status;
 }
+
+struct preload_offset_t
+{
+    RWTime time;
+    LONG deviceid;
+
+    operator<(const preload_offset_t &rhs) const { return time < rhs.time || (time == rhs.time && deviceid < rhs.deviceid); }
+};
+
+void processPreloads(CtiPortSPtr Port)
+{
+    RWTime now, load_begin(YUKONEOT), load_end(0UL);
+    set<LONG> preloads = Port->getPreloads();
+    set<LONG>::iterator itr;
+
+    preload_offset_t preload;
+
+    set<preload_offset_t> times;
+    set<preload_offset_t>::reverse_iterator r_itr;
+
+    CtiDeviceManager::ptr_type dev;
+
+    for( itr = preloads.begin(); itr != preloads.end(); itr++ )
+    {
+        dev = DeviceManager.getEqual(*itr);
+
+        preload.time     = dev->getPreloadEndTime();
+        preload.deviceid = dev->getID();
+
+        times.insert(preload);
+    }
+
+    //  a possible optimization here would be to also order the devices by the amount of work they have,
+    //    so that a device could not be starved for time
+
+    for( r_itr = times.rbegin(); r_itr != times.rend(); r_itr++ )
+    {
+        dev = DeviceManager.getEqual(r_itr->deviceid);
+
+        CtiTablePaoExclusion paox(0, dev->getID(), 0, 0, 0, CtiTablePaoExclusion::ExFunctionCycleTime);
+
+        if( load_end < dev->getPreloadEndTime() )
+        {
+            load_end = dev->getPreloadEndTime();
+        }
+
+        if( load_begin > dev->getPreloadEndTime() )
+        {
+            load_begin = dev->getPreloadEndTime();
+        }
+
+
+        //  we would like at least this many millis to communicate
+        double preload_ideal = (dev->getPreloadBytes() * 8.0) / Port->getBaudRate();
+
+        preload_ideal *= gConfigParms.getValueAsDouble("PRELOAD_MULTIPLIER", 1.2);
+        preload_ideal += gConfigParms.getValueAsULong("PRELOAD_PADDING", 5);
+
+        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadEndTime() = " << dev->getPreloadEndTime() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint \"" << dev->getName() << "\" dev->getPreloadBytes() = " << dev->getPreloadBytes() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint \"" << dev->getName() << "\" Device will fire at " << load_begin << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint \"" << dev->getName() << "\" Load will begin at " << (load_begin - preload_ideal) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        if( dev->getCycleTime() )
+        {
+//            if( load_begin > now )
+//            {
+            paox.setCycleTime(dev->getCycleTime());
+            paox.setCycleOffset((load_begin.seconds() - (long)preload_ideal) % dev->getCycleTime());
+            paox.setTransmitTime((long)preload_ideal);
+            dev->getExclusion().addExclusion(paox);
+
+            dev->getExclusion().setEvaluateNextAt(load_begin.seconds() - preload_ideal);
+
+            load_begin -= preload_ideal;
+/*            }
+            else
+            {
+                //  this should only possibly happen once, since this means that we've run out
+                //    of time for the devices to execute - so we'll handle this guy at the first available opportunity
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\", ";
+                    dout << " appending load to end of current cycle (" << load_end << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                paox.setCycleTime(dev->getCycleTime());
+                paox.setCycleOffset(load_end.seconds() % dev->getCycleTime());
+                paox.setTransmitTime(preload_ideal);
+                dev->getExclusion().addExclusion(paox);
+
+                dev->getExclusion().setEvaluateNextAt(load_end);
+
+                load_end += preload_ideal;
+            }*/
+            if( load_begin < now )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - preload time window full (" << load_begin << ") when processing \"" << dev->getName() << "\" - should only see this once per port per cycle **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - zero-length cycle time for device \"" << dev->getName() << "\" - unable to insert preloads **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+}
+
+
+
 
 INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
