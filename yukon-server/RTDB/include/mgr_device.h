@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.24 $
- * DATE         :  $Date: 2005/06/15 19:21:16 $
+ * REVISION     :  $Revision: 1.25 $
+ * DATE         :  $Date: 2005/10/04 19:42:28 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -54,7 +54,8 @@ private:
 
     coll_type        _smartMap;
     coll_type        _exclusionMap;         // This is a map of the devices which HAVE exclusions.
-
+    coll_type        _portExclusions;       // This is a map of the devices the port has added - when a DB reload occurs, it clears
+                                            //   _exclusionMap, so these need to be retained and reinserted from a seperate list
 private:
 
     bool (*_removeFunc)(CtiDeviceSPtr&,void*);
@@ -132,6 +133,7 @@ public:
     bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
     bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
     ptr_type chooseExclusionDevice(LONG portid);
+    CtiDeviceManager &addPortExclusion(LONG paoID);
 
 };
 

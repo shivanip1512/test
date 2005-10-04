@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2005/09/09 10:55:59 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2005/10/04 19:42:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2018,6 +2018,19 @@ void CtiDeviceManager::refreshExclusions(LONG id)
         }
     }
 
+    for( itr = _portExclusions.getMap().begin(); itr != _portExclusions.getMap().end(); itr++ )
+    {
+        if( _smartMap.find(itr->second->getID()) )
+        {
+            _exclusionMap.insert(itr->second->getID(), itr->second);
+        }
+        else
+        {
+            //  That device doesn't exist any more - delete it
+            _portExclusions.getMap().erase(itr);
+        }
+    }
+
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2918,5 +2931,23 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
     }
 
     return devS;
+}
+
+
+//  This is a little distasteful, but necessary - a port must add preload devices to the exclusion list so they
+//    can be time-excluded against one another
+CtiDeviceManager &CtiDeviceManager::addPortExclusion( LONG paoID )
+{
+    ptr_type new_device;
+
+    if( new_device = _smartMap.find(paoID) )
+    {
+        _exclusionMap.insert(paoID, new_device);
+
+        //  this is so they're retained over DB reloads
+        _portExclusions.insert(paoID, new_device);
+    }
+
+    return *this;
 }
 
