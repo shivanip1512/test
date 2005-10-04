@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/06/13 19:29:08 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/10/04 19:15:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1432,7 +1432,7 @@ BOOL areAnyLCUControlEntriesOkToSend(void *pRWtime, void* d)
 
                 if( Now > lcu->getNextCommandTime() )
                 {
-                    RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
+                    RWMutexLock::LockGuard guard( lcu->getLCUExclusionMux() );             // get mux for all LCU's
                     blockedByExclusion = DeviceManager.contains( findExclusionBlockage, (void*)lcu);
 
                     if( !blockedByExclusion )
@@ -1483,7 +1483,7 @@ bool LCUCanExecute(OUTMESS *&OutMessage, CtiDeviceLCU *lcu, RWTime &Now )
     if( Now > lcu->getNextCommandTime() )
     {
         {
-            RWMutexLock::LockGuard guard( lcu->getExclusionMux() );             // get mux for all LCU's
+            RWMutexLock::LockGuard guard( lcu->getLCUExclusionMux() );             // get mux for all LCU's
 
             blockedByExclusion = DeviceManager.contains( findExclusionBlockage, (void*)lcu);
 
