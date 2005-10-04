@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/08/01 21:25:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/10/04 19:05:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,7 @@ public:
         Key_MCT_LoadProfileInterval,
         Key_MCT_LoadProfileInterval2,
         Key_MCT_IEDLoadProfileInterval,
+        Key_VerificationSequence,
         //  make sure to add any new enum values to the string map
     };
 
@@ -64,6 +65,7 @@ protected:
     static const string _key_mct_loadprofile_interval;
     static const string _key_mct_loadprofile_interval2;
     static const string _key_mct_ied_loadprofile_interval;
+    static const string _key_verification_sequence;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
