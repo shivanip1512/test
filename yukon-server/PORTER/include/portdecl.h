@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/03/17 19:16:29 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/10/04 20:16:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,7 @@ VOID TimeSyncThread (PVOID);
 INT SendTime(VOID);
 INT LoadXTimeMessage (PBYTE);
 INT LoadBTimeMessage (OUTMESS *);
+INT LoadMCT400BTimeMessage (OUTMESS *);
 INT LoadILEXTimeMessage (PBYTE, USHORT);
 INT LoadWelcoTimeMessage (PBYTE, USHORT);
 INT LoadSES92TimeMessage (PBYTE, USHORT);
