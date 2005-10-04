@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/10/04 20:10:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@
 CtiProtocolLMI::CtiProtocolLMI() :
     _transmitter_power_time(0),
     _transmitter_power(-1),
+    _num_codes_loaded(0),
     _config_sent(0),
     _address(0),
     _transmitter_id(0),
@@ -118,16 +119,24 @@ void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsign
 }
 
 
-void CtiProtocolLMI::setSystemData(int ticktime, int timeoffset, int transmitterlow, int transmitterhigh, string startcode, string stopcode)
+void CtiProtocolLMI::setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode)
 {
     _tick_time   = ticktime;
     _time_offset = timeoffset;
+
+    _transmit_duration = transmittime;
 
     _transmitter_power_low_limit  = transmitterlow;
     _transmitter_power_high_limit = transmitterhigh;
 
     _start_code = startcode;
     _stop_code  = stopcode;
+}
+
+
+CtiProtocolLMI::LMICommand CtiProtocolLMI::getCommand() const
+{
+    return _command;
 }
 
 
@@ -221,7 +230,6 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         //  note that this will be analog offset LMIPointOffsetTransmitterPower + 1 when it gets back to the system
         pdm = CTIDBG_new CtiPointDataMsg(LMIPointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
         pdm->setTime(_transmitter_power_time);
-        pdm->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
         pointList.append(pdm);
 
@@ -249,30 +257,50 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
 
 int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 {
+    _comm_end_time = 0UL;
+    _preload_sequence = false;
+
     switch( OutMessage->Sequence )
     {
-        case Sequence_QueuedWork:
+        case Sequence_Preload:
         {
-            setCommand(Command_SendQueuedCodes, 0, 0);
-            _completion_time    = OutMessage->ExpirationTime;
+            setCommand(Command_Timesync, 0, 0);
 
-            _transmitting_until = RWTime::now();
+            _preload_sequence = true;
+
+            //  this is the only type of command that requires us to complete by a certain
+            //    time - all of the other ones aren't governed by exclusion logic
+            _comm_end_time = OutMessage->ExpirationTime;
 
             break;
         }
 
-        case Sequence_RetrieveEchoedCodes:
+        /*
+        case Sequence_QueueCodes:
+        {
+            setCommand(Command_QueueCodes, 0, 0);
+
+            break;
+        }
+
+        case Sequence_ReadEchoedCodes:
         {
             setCommand(Command_ReadEchoedCodes, 0, 0);
-            _completion_time    = OutMessage->ExpirationTime;
 
             break;
         }
+
+        case Sequence_ClearQueuedCodes:
+        {
+            setCommand(Command_ClearQueuedCodes, 0, 0);
+
+            break;
+        }
+        */
 
         case Sequence_TimeSync:
         {
             setCommand(Command_Timesync, 0, 0);
-            _completion_time    = OutMessage->ExpirationTime;
 
             break;
         }
@@ -280,9 +308,7 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
         default:
         {
             lmi_outmess_struct &lmi_om = *((lmi_outmess_struct *)OutMessage->Buffer.OutMessage);
-
             setCommand(lmi_om.command, lmi_om.control_offset, lmi_om.control_parameter);
-            _completion_time = 0UL;
 
             break;
         }
@@ -290,8 +316,9 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
 
     _transmitter_id = OutMessage->DeviceID;
     _transaction_complete = false;
+    _transmission_end = 0;
     _first_code_block = true;
-    _untransmitted_codes = false;
+    _final_code_block = false;
     _status_read = false;
     _status_read_count = 0;
     _echoed_error_count = 0;
@@ -366,26 +393,17 @@ bool CtiProtocolLMI::codeVerificationPending( void ) const
 }
 
 
-bool CtiProtocolLMI::canTransmit( const RWTime &allowed_time ) const
+bool CtiProtocolLMI::canDownloadCodes( void ) const
 {
-    bool retval = false;
+    RWTime now, transmit_begin, transmit_end;
+    int percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
-    long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250),
-         fudge   = gConfigParms.getValueAsULong("PORTER_LMI_FUDGE", 1000);
+    transmit_begin -= now.seconds() % (_tick_time * 60);
+    transmit_begin += _time_offset;
 
-    RWTime start_time, required_time;
+    transmit_end = transmit_begin.seconds() + ((_num_codes_loaded * percode) / 1000);
 
-    if( _transmitting_until < start_time )
-    {
-        required_time = start_time + ((percode + fudge) / 1000);
-
-        if( required_time <= allowed_time )
-        {
-            retval = true;
-        }
-    }
-
-    return retval;
+    return (now < transmit_begin) || (now > transmit_end);
 }
 
 int CtiProtocolLMI::getNumCodes( void ) const
@@ -394,9 +412,60 @@ int CtiProtocolLMI::getNumCodes( void ) const
 }
 
 
-RWTime CtiProtocolLMI::getTransmittingUntil( void ) const
+int CtiProtocolLMI::getPreloadDataLength( void ) const
 {
-    return _transmitting_until;
+    int total_comms = 0;
+    int codes_to_download = _codes.size();
+
+    //  NOTE - this is where we set the max codes for the transmit window of the device -
+    //    add it here when the value is available from the DB
+
+    //  we can only download this many per cycle anyway
+    if( codes_to_download > LMIMaxCodesDownloaded )
+    {
+        codes_to_download = LMIMaxCodesDownloaded;
+    }
+
+    if( codes_to_download )
+    {
+        //  a couple of magic numbers here, but basically this assumes we get one full header packet back
+        //    for every batch of codes we send out - this is approximately true
+        total_comms += (codes_to_download * 6) + (((codes_to_download / LMIMaxCodesPerTransaction) + 1) * (LMIPacketOverheadLen * 2));
+    }
+    else
+    {
+        //  if no codes to download, we must clear the codes
+        total_comms += LMIPacketOverheadLen * 2;
+
+    }
+    if( _num_codes_loaded )
+    {
+        //  This is an exact copy of the code-loading behavior, except the outbound and inbound sizes are swapped
+        total_comms += (_num_codes_loaded * 6) + (((_num_codes_loaded / LMIMaxCodesPerTransaction) + 1) * (LMIPacketOverheadLen * 2));
+    }
+
+    //  add on the config length
+    if( _config_sent < (RWTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
+    {
+        total_comms += LMIPacketOverheadLen * 2 + 18;
+    }
+
+    //  add on the time sync
+    total_comms += LMIPacketOverheadLen * 2;
+
+    return total_comms;
+}
+
+
+RWTime CtiProtocolLMI::getTransmissionEnd( void ) const
+{
+    return _transmission_end;
+}
+
+
+RWTime CtiProtocolLMI::getLastCodeDownload( void ) const
+{
+    return _last_code_download;
 }
 
 
@@ -404,24 +473,13 @@ bool CtiProtocolLMI::isTransactionComplete( void )
 {
     bool retval = false;
 
-    if( _completion_time.seconds() && _completion_time < RWTime::now() )
+    if( _comm_end_time && _comm_end_time < RWTime::now().seconds() )
     {
-        if( _command == Command_SendQueuedCodes && _untransmitted_codes )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - late in loop for \"" << _name << "\", using one more pass to transmit codes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-        else
-        {
-            //  if we don't have any untransmitted codes, it's okay to break
-            retval = true;
+        retval = true;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else
@@ -542,46 +600,33 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             {
                 switch( _command )
                 {
-                    case Command_SendQueuedCodes:
+                    case Command_QueueCodes:
                     {
-                        unsigned long transmit_time, waiting_codes, max_codes, num_codes, expired_codes;
+                        int percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
+                        int transmit_time, slots_available, max_codes, expired_codes;
+
                         bool final_block = false;
 
                         queue< CtiOutMessage * > viable_codes;
                         CtiOutMessage *om;
 
-                        long percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
-
-                        waiting_codes = _codes.size();
-
-                        if( _completion_time > _transmitting_until )
+                        if( _first_code_block )
                         {
-                            transmit_time  = _completion_time.seconds() - _transmitting_until.seconds();
-                            transmit_time *= 1000;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                                slog << RWTime() << " LMI device \"" << _name << "\" removing previous outbound codes" << endl;
+                            }
 
-                            max_codes = transmit_time / percode;
-                        }
-                        else
-                        {
-                            max_codes = 0;
+                            _num_codes_loaded = 0;
                         }
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" has enough time to load " << max_codes << " (of " << waiting_codes << " potential) codes" << endl;
-                        }
-
-                        if( max_codes > LMIMaxCodesPerTransaction )
-                        {
-                            max_codes = LMIMaxCodesPerTransaction;
-                        }
-                        else
-                        {
-                            final_block = true;
-                        }
+                        //  number of millis we have available to transmit
+                        transmit_time   = (_transmit_duration * 1000) - (_num_codes_loaded * percode);
+                        slots_available = transmit_time / percode;
 
                         expired_codes = 0;
-                        while( !_codes.empty() && viable_codes.size() < max_codes )
+                        while( !_codes.empty() && viable_codes.size() < slots_available &&
+                                                  viable_codes.size() < LMIMaxCodesPerTransaction )
                         {
                             om = _codes.front();
                             _codes.pop();
@@ -602,13 +647,8 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - null OM detected for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " **** Checkpoint - removing null OM from device queue for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
-                        }
-
-                        if( viable_codes.size() <= max_codes )
-                        {
-                            final_block = true;
                         }
 
                         if( expired_codes )
@@ -619,22 +659,25 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << waiting_codes << " potential) codes this pass:" << endl;
+                            slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
                         }
 
-                        if( _first_code_block )
+                        if( _codes.empty() || (viable_codes.size() == slots_available) )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " LMI device \"" << _name << "\" removing previous outbound codes" << endl;
-                            }
+                            _final_code_block = true;
                         }
 
-                        _transmitting_until += (viable_codes.size() * percode) / 1000;
-                        _outbound.data[0]    =  viable_codes.size();
-                        _outbound.length     = (viable_codes.size() * 6) + 2;
+                        _num_codes_loaded += viable_codes.size();
+                        _outbound.data[0]  = viable_codes.size();
+
+                        _outbound.length  = (viable_codes.size() * 6) + 2;
                         _outbound.body_header.message_type = Opcode_SendCodes;
                         _outbound.body_header.flush_codes  = _first_code_block;
+
+                        if( _final_code_block )
+                        {
+                            _outbound.data[0] |= LMILastCodeGroup;
+                        }
 
                         unsigned offset = 1;
 
@@ -642,8 +685,6 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                         {
                             om = viable_codes.front();
                             viable_codes.pop();
-
-                            _untransmitted_codes = true;
 
                             om->Buffer.SASt._codeSimple[6] = 0;  //  make sure it's null-terminated, just to be safe...
                             char (&codestr)[7] = om->Buffer.SASt._codeSimple;
@@ -687,16 +728,6 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             slog << endl;
                         }
 
-                        if( final_block )
-                        {
-                            _outbound.data[0] |= 0xc0;    //  last group of codes, send immediately
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << RWTime() << " LMI device \"" << _name << "\" transmitting" << endl;
-                            }
-                        }
-
                         break;
                     }
                     case Command_ReadQueuedCodes:
@@ -717,20 +748,18 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
                         _outbound.body_header.message_type = Opcode_FlushCodes;
 
-                        _outbound.data[0] = 0x01;  //  clear only ECHOED codes - any subsequent downloads will clear out the queued codes...
-                                                   //    although we will have to clear out the codes eventually to prevent unexpected control
-                                                   //    in the case of comm loss when we're outside of the control
-
+                        _outbound.data[0] = 0x01;  //  clear only ECHOED codes - note that we do clear the queued codes after a full
+                                                   //    interval/cycle has passed with no downloads
                         break;
                     }
-                    case Command_SendEmptyCodeset:
+                    case Command_ClearQueuedCodes:
                     {
                         _outbound.length = 2;
 
-                        _outbound.body_header.message_type = Opcode_SendCodes;
-                        _outbound.body_header.flush_codes  = 0;
+                        _outbound.body_header.message_type = Opcode_FlushCodes;
 
-                        _outbound.data[0] = 0;
+                        _outbound.data[0] = 0x02;  //  clear only LOADED codes - this way, we can clear the queued codes and still do
+                                                   //    verification if we haven't already
 
                         break;
                     }
@@ -901,29 +930,23 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                     {
                         switch( _command )
                         {
-                            case Command_SendQueuedCodes:
+                            case Command_QueueCodes:
                             {
                                 _first_code_block = false;
 
                                 _verification_pending = true;
 
-                                if( _outbound.data[0] & 0xc0 )
-                                {
-                                    _untransmitted_codes = false;
-                                }
+                                _transaction_complete = _final_code_block;
 
-                                //  well, theory goes that if we're here and the code queue is empty, we probably transmitted them
-                                //    (this should be FIX 'd to make the transactioncomplete stuff more robust, ick)
-                                if( _codes.empty() )
-                                {
-                                    _transaction_complete = true;
-                                }
+                                _last_code_download = RWTime::now().seconds();
 
-                                //  also, if we're out of time, stop loading codes
-                                if( _transmitting_until >= _completion_time )
+                                _transmission_end   = RWTime::now().seconds();
+                                _transmission_end  -= _transmission_end % (_tick_time * 60);
+                                _transmission_end  += _time_offset;
+
+                                while( _transmission_end < RWTime::now().seconds() )
                                 {
-                                    //  FIX: does this do the send?
-                                    _transaction_complete = true;
+                                    _transmission_end += _tick_time * 60;
                                 }
 
                                 break;
@@ -931,16 +954,32 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                             case Command_ClearEchoedCodes:
                             {
-                                //  ACH:  verify inbound?
-                                //_transaction_complete = true;
+                                _verification_pending = false;
 
-                                _command = Command_SendEmptyCodeset;
+                                //  if this set of commands was triggered through the
+                                //    preload behavior, do the next step
+                                if( _preload_sequence )
+                                {
+                                    if( _codes.size() )
+                                    {
+                                        _command = Command_QueueCodes;
+                                    }
+                                    else
+                                    {
+                                        _command = Command_ClearQueuedCodes;
+                                    }
+                                }
+                                else
+                                {
+                                    _transaction_complete = true;
+                                }
 
                                 break;
                             }
 
-                            case Command_SendEmptyCodeset:
+                            case Command_ClearQueuedCodes:
                             {
+                                _num_codes_loaded = 0;
                                 _transaction_complete = true;
 
                                 break;
@@ -953,10 +992,13 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                 offset++;  //  move past the UPA status for the time being
 
-                                //  final block of codes, so we're done
                                 if( !(_inbound.data[offset++] & 0x80) )
                                 {
-                                    _command = Command_ClearEchoedCodes;
+                                    //  final block of codes, so we're done
+                                    if( _command == Command_ReadEchoedCodes )
+                                    {
+                                        _command = Command_ClearEchoedCodes;
+                                    }
                                 }
 
                                 while( offset < (_inbound.length - 1) )
@@ -989,12 +1031,13 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 //  shouldn't be possible
                                 if( _num_codes_retrieved > 0xff )
                                 {
-                                    _transaction_complete = true;
-
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
+
+                                    //  clear them out for safety
+                                    _command = Command_ClearEchoedCodes;
                                 }
 
                                 break;
@@ -1045,10 +1088,23 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 break;
                             }
 
+                            case Command_Timesync:
+                            {
+                                if( _preload_sequence )
+                                {
+                                    _command = Command_ReadEchoedCodes;
+                                }
+                                else
+                                {
+                                    _transaction_complete = true;
+                                }
+
+                                break;
+                            }
+
                             case Command_Loopback:
                             //  all we have to do is verify that the message got to us okay - nothing more
                             //    what will it take to return a message from a loopback?
-                            case Command_Timesync:
                             default:
                             {
                                 _transaction_complete = true;
@@ -1091,19 +1147,37 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
             _config_sent = RWTime::now().seconds();
         }
 
-        if( _command == Command_SendQueuedCodes )
+        if( _preload_sequence )
         {
-            if( _outbound.data[0] & 0xc0 )
+            if( _command == Command_Timesync )
             {
-                _untransmitted_codes = false;
+                _command = Command_ReadEchoedCodes;
             }
-
-            if( _codes.empty() )
+            else if( _command == Command_ReadEchoedCodes )
             {
-                _transaction_complete = true;
+                _command = Command_ClearEchoedCodes;
             }
+            else if( _command == Command_ClearEchoedCodes )
+            {
+                if( _codes.size() )
+                {
+                    _command = Command_QueueCodes;
+                }
+                else
+                {
+                    _command = Command_ClearQueuedCodes;
+                }
+            }
+            else if( _command == Command_QueueCodes )
+            {
+                _first_code_block = false;
 
-            if( _transmitting_until >= _completion_time )
+                if( _codes.empty() )
+                {
+                    _transaction_complete = true;
+                }
+            }
+            else
             {
                 _transaction_complete = true;
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/09/09 10:58:11 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/10/04 20:10:10 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,8 @@ private:
     int           _transmitter_power;
     unsigned long _transmitter_power_time;
 
-    int _tick_time, _transmitter_power_low_limit, _transmitter_power_high_limit, _time_offset;
+    int _tick_time, _transmit_duration, _time_offset;
+    int _transmitter_power_low_limit, _transmitter_power_high_limit;
     string _start_code, _stop_code;
 
     //crc_ccitt_type _crc;
@@ -66,10 +67,13 @@ private:
 
     pointlist_t _lmi_statuses;
 
-    unsigned int  _num_codes_retrieved;
+    unsigned int  _num_codes_retrieved, _num_codes_loaded;
     unsigned long _config_sent;
+    unsigned long _last_code_download;
+    unsigned long _comm_end_time, _transmission_end;
     bool _verification_pending;
     bool _untransmitted_codes;
+    bool _preload_sequence;
 
     enum LMIOpcode
     {
@@ -93,7 +97,8 @@ private:
         LMIPacketOverheadLen = 8,
         LMIPacketHeaderLen   = 6,
 
-        LMIMaxCodesPerTransaction = 42,
+        LMIMaxCodesPerTransaction =  42,
+        LMIMaxCodesDownloaded     = 255,  //  or is it 255 + 42?
 
         LMIPointOffset_TransmitterPower = 1000,
 
@@ -102,7 +107,9 @@ private:
         LMIPointOffset_Transmitting     = 1003,
         LMIPointOffset_PowerReset       = 1004,
 
-        MaxStatusReads = 5
+        MaxStatusReads = 5,
+
+        LMILastCodeGroup = 0x40,
     };
 
 #pragma pack(push, 1)
@@ -176,10 +183,8 @@ private:
     unsigned long _in_count,
                   _in_total;
 
-    RWTime _completion_time,
-           _transmitting_until;
-
-    bool _first_code_block;
+    bool _first_code_block,
+         _final_code_block;
 
     RWCString _name;
 
@@ -196,8 +201,11 @@ public:
     //  these are tokens to kick the protocol layer into doing something fun
     enum LMISequences
     {
-        Sequence_QueuedWork = 4845,  //  w00t
-        Sequence_RetrieveEchoedCodes,
+        Sequence_Code = 4845,  //  w00t
+        Sequence_Preload,
+        Sequence_QueueCodes,
+        Sequence_ReadEchoedCodes,
+        Sequence_ClearQueuedCodes,
         Sequence_TimeSync
     };
 
@@ -210,20 +218,20 @@ public:
         Command_Loopback,
         Command_AnalogSetpoint,
         Command_Timesync,
-        Command_QueueCode,
-        Command_TransmitCodes,
-        Command_SendQueuedCodes,
+        Command_QueueCodes,
         Command_ReadQueuedCodes,
         Command_ReadEchoedCodes,
         Command_ClearEchoedCodes,
-        Command_SendEmptyCodeset,
+        Command_ClearQueuedCodes,
     };
 
     void setAddress(unsigned char address);
     void setName(const RWCString &name);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
     void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
-    void setSystemData(int ticktime, int timeoffset, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
+    void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
+
+    LMICommand getCommand() const;
 
     //  client-side (Scanner, PIL) functions
     int sendCommRequest(OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList);
@@ -242,9 +250,11 @@ public:
     void   queueCode(CtiOutMessage *om);
     bool   hasQueuedCodes() const;
     bool   codeVerificationPending() const;
-    bool   canTransmit(const RWTime &allowed_time) const;
+    bool   canDownloadCodes() const;
     int    getNumCodes() const;
-    RWTime getTransmittingUntil() const;
+    int    getPreloadDataLength() const;
+    RWTime getTransmissionEnd() const;
+    RWTime getLastCodeDownload() const;
 
     bool isTransactionComplete();
 
