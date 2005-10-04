@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/08/08 20:49:55 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/10/04 19:15:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,6 +42,7 @@ using namespace std;
 #include "prot_fpcbc.h"
 #include "prot_sa305.h"
 #include "prot_sa3rdparty.h"
+#include "prot_lmi.h"
 
 static INT NoQueing = FALSE;
 
@@ -983,6 +984,7 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
             OutMessage->EventCode = RESULT | ENCODED;
             OutMessage->Buffer.SASt._groupType = GOLAY;
             strncpy(OutMessage->Buffer.SASt._codeSimple, parse.getsValue("sa_codesimple").data(), 7);
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_Code;  //  these are the only commands that can be queued to an LMI
             outList.insert( CTIDBG_new OUTMESS( *OutMessage ) );
 
             resultString = " Command successfully sent on route " + getName() + "\n" + byteString;
