@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/06/13 19:06:45 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/10/04 19:09:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -152,7 +152,7 @@ public:
     CtiReturnMsg*  lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist< OUTMESS > &outList);
 
 
-    RWMutexLock&   getExclusionMux();
+    RWMutexLock&   getLCUExclusionMux();
 
     void           verifyControlLockoutState(INMESS *InMessage);
     bool           isLCUAlarmed(INMESS *InMessage);

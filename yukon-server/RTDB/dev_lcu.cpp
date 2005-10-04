@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/06/13 19:06:45 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/10/04 19:09:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1798,7 +1798,7 @@ bool CtiDeviceLCU::isLCUAlarmed( INMESS *InMessage )
     return bAlarmed;
 }
 
-RWMutexLock& CtiDeviceLCU::getExclusionMux()
+RWMutexLock& CtiDeviceLCU::getLCUExclusionMux()
 {
     return _lcuExclusionMux;
 }
