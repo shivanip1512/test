@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2005/09/28 14:52:21 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2005/10/04 20:15:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -944,6 +944,16 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         dout << RWTime() << " Trace is now off for all messages" << endl;
     }
 
+    CtiDeviceManager::ptr_type system;
+
+    if( system = DeviceManager.getEqual(0) )
+    {
+        if( system->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence) )
+        {
+            VerificationSequenceGen(true, system->getDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence));
+        }
+    }
+
     /* Startup is done so main process becomes input thread */
     for(;!PorterQuit;)
     {
@@ -1019,6 +1029,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
         CTISleep(250);
     }
+
+    if( system = DeviceManager.getEqual(0) )
+    {
+        system->setDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence, VerificationSequenceGen());
+    }
+
+    DeviceManager.writeDynamicPaoInfo();
 
     PorterCleanUp(0);
     _CrtSetAllocHook(pfnOldCrtAllocHook);
@@ -1349,9 +1366,11 @@ static void applyRepeaterAutoRole(const long unusedid, CtiDeviceSPtr autoRoleDev
 
 INT RefreshPorterRTDB(void *ptr)
 {
-    extern CtiPILServer     PIL;
-    bool autoRole = false;                              // Set to true if routes might have changed and or we need to download based on time!
-    static RWTime lastAutoRole(rwEpoch);        // This time is used to trigger timed downloads of repeater roles.
+    extern CtiPILServer  PIL;
+    bool autoRole     = false;              // Set to true if routes might have changed and or we need to download based on time!
+    static RWTime lastAutoRole(rwEpoch);    // This time is used to trigger timed downloads of repeater roles.
+
+    bool autoCCURoute = false;
 
     INT   i;
     INT   status = NORMAL;
