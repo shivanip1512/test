@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/09/09 10:55:26 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/10/04 20:13:35 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,8 @@
 #include "cparms.h"
 
 
-CtiDeviceLMI::CtiDeviceLMI()
+CtiDeviceLMI::CtiDeviceLMI() :
+    _lastPreload(0UL)
 {
 }
 
@@ -45,7 +46,9 @@ int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
 
     if( _lmi.isTransactionComplete() )
     {
-        getExclusion().setEvaluateNextAt(_lmi.getTransmittingUntil());
+        //  it shouldn't be evaluated until then, anyway, given the way that
+        //    cycle time exclusion works, but I figured I should just be nice and explicit
+        _lmi_exclusion.setEvaluateNextAt(_lmi.getTransmissionEnd());
     }
 
     return retval;
@@ -427,6 +430,9 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 
     _lmi.setSystemData(_seriesv.getTickTime(),
                        _seriesv.getTimeOffset(),
+                       //  this is probably zero the first time through here - we need to wait for mgr_device to load
+                       //    the exclusions...  so when we add them above, we'll make this call again
+                       _exclusion.getCycleTimeExclusion().getTransmitTime(),
                        _seriesv.getTransmitterLow(),
                        _seriesv.getTransmitterHigh(),
                        _seriesv.getStartCode(),
@@ -439,7 +445,52 @@ void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiDeviceLMI::hasQueuedWork() const
 {
-    return _lmi.hasQueuedCodes() || _lmi.codeVerificationPending();
+    return true;  //  always operates according to exclusion rules - the time exclusion window is what lets us preload
+}
+
+bool CtiDeviceLMI::hasPreloadWork() const
+{
+    return true;  //  as opposed to some other devices, this one needs to "preload" timesyncs and things all the time
+                  //    maybe "preload" needs to change its name to "scheduled work" or something like that
+                  //  and also, maybe all of this could be merged with Scanner when the Grand Unification takes place
+}
+
+RWTime CtiDeviceLMI::getPreloadEndTime() const
+{
+    RWTime preload_end, now, next_preload;
+
+    //  make sure at least half of the period has passed before we allow another download - this should protect us against transmitting too soon
+    next_preload = _lastPreload + ((_seriesv.getTickTime() * 60) / 2);
+
+    //  make sure it's not zero - otherwise, return something crazy like now()
+    if( _seriesv.getTickTime() )
+    {
+        preload_end -= preload_end.seconds() % (_seriesv.getTickTime() * 60);
+        preload_end += _seriesv.getTimeOffset();
+
+        while( preload_end < now ||
+               preload_end < next_preload )
+        {
+            preload_end += (_seriesv.getTickTime() * 60);
+        }
+    }
+
+    return preload_end;
+}
+
+LONG CtiDeviceLMI::getPreloadBytes() const
+{
+    return _lmi.getPreloadDataLength();
+}
+
+LONG CtiDeviceLMI::getCycleTime() const
+{
+    return _seriesv.getTickTime() * 60;
+}
+
+LONG CtiDeviceLMI::getCycleOffset() const
+{
+    return _seriesv.getTimeOffset();
 }
 
 INT CtiDeviceLMI::queuedWorkCount() const
@@ -452,8 +503,7 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     int retval = NORMAL;
 
-    //  make sure we don't requeue our "go" OM
-    if( getExclusion().hasExclusions() && OutMessage->Sequence != CtiProtocolLMI::Sequence_QueuedWork && OutMessage->MessageFlags & MSGFLG_APPLY_EXCLUSION_LOGIC )
+    if( OutMessage->Sequence == CtiProtocolLMI::Sequence_Code )
     {
         if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
         {
@@ -469,6 +519,18 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 
         *dqcnt = _lmi.getNumCodes();
     }
+    else if( OutMessage->Sequence == CtiProtocolLMI::Sequence_TimeSync )
+    {
+        //  we say that we've "enqueued" the message, when really, it's just the DevicePreprocessing() code around
+        //      queueOutMessageToDevice() call that we care about
+
+        delete OutMessage;
+        OutMessage = 0;
+
+        retval = QUEUED_TO_DEVICE;
+
+        *dqcnt = _lmi.getNumCodes();
+    }
 
     return retval;
 }
@@ -477,38 +539,22 @@ INT CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
 {
     bool retval = false;
+    RWTime now;
 
-    if( RWTime::now() > (_lmi.getTransmittingUntil()) )
+    if( now > (_lastPreload + (_seriesv.getTickTime() * 60) / 2) )
     {
-        if( _lmi.codeVerificationPending() )
+        if( !OutMessage )
         {
-            if( !OutMessage )
-            {
-                OutMessage = new CtiOutMessage();
-            }
-
-            OutMessage->DeviceID = getID();
-            OutMessage->Sequence = CtiProtocolLMI::Sequence_RetrieveEchoedCodes;
+            OutMessage = new CtiOutMessage();
         }
-        else if( _lmi.hasQueuedCodes() )
-        {
-            //  can we do anything in the time we're given?
-            if( _lmi.canTransmit(getExclusion().getExecutionGrantExpires().seconds()) )
-            {
-                if( !OutMessage )
-                {
-                    OutMessage = new CtiOutMessage();
-                }
 
-                OutMessage->DeviceID = getID();
-                OutMessage->Sequence = CtiProtocolLMI::Sequence_QueuedWork;
-                OutMessage->Priority = MAXPRIORITY - 1;
+        OutMessage->DeviceID = getID();
+        OutMessage->Sequence = CtiProtocolLMI::Sequence_Preload;
+        OutMessage->Priority = MAXPRIORITY - 1;
 
-                OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+        OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
 
-                retval = true;
-            }
-        }
+        _lastPreload = now;
     }
     else
     {
@@ -520,12 +566,68 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
         }
     }
 
+    /*
+    if( now > (_lmi.getTransmissionEnd()) )
+    {
+        if( _lmi.canDownloadCodes() && _lmi.hasQueuedCodes() )
+        {
+            if( !OutMessage )
+            {
+                OutMessage = new CtiOutMessage();
+            }
+
+            OutMessage->DeviceID = getID();
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_QueueCodes;
+            OutMessage->Priority = MAXPRIORITY - 1;
+
+            OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+
+            retval = true;
+        }
+        else if( _lmi.codeVerificationPending() )
+        {
+            if( !OutMessage )
+            {
+                OutMessage = new CtiOutMessage();
+            }
+
+            OutMessage->DeviceID = getID();
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_ReadEchoedCodes;
+        }
+        else if( !_lmi.hasQueuedCodes() && now > (_lmi.getLastCodeDownload() + (_seriesv.getTickTime() * 60)) )
+        {
+            if( !OutMessage )
+            {
+                OutMessage = new CtiOutMessage();
+            }
+
+            OutMessage->DeviceID = getID();
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_ClearQueuedCodes;
+        }
+    }
+    else
+    {
+        if( OutMessage )
+        {
+            delete OutMessage;
+
+            OutMessage = 0;
+        }
+    }
+    */
+
     if(OutMessage)
     {
         incQueueProcessed(1, RWTime());
     }
 
     return retval;
+}
+
+
+RWTime CtiDeviceLMI::selectCompletionTime() const
+{
+    return getPreloadEndTime();
 }
 
 
@@ -552,4 +654,140 @@ LONG CtiDeviceLMI::deviceMaxCommunicationTime() const
 }
 
 
+bool CtiDeviceLMI::hasExclusions() const
+{
+    return _lmi_exclusion.hasExclusions();
+}
+
+CtiDeviceExclusion CtiDeviceLMI::exclusion() const
+{
+    return _lmi_exclusion;
+}
+
+CtiDeviceExclusion& CtiDeviceLMI::getExclusion()
+{
+    return _lmi_exclusion;
+}
+
+CtiDeviceBase::exclusions CtiDeviceLMI::getExclusions() const
+{
+    //  this is the only one we advertise
+    return _lmi_exclusion.getExclusions();
+}
+
+void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
+{
+    try
+    {
+        if( paox.getExclusionId() == 0 )
+        {
+            //  these are the port-manufactured exclusion timings
+            _lmi_exclusion.addExclusion(paox);
+        }
+        else
+        {
+            if( !_lmi_exclusion.hasTimeExclusion() && paox.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+            {
+                //  this sets _lmi_exclusion to be everything BUT the transmit time - the port will do this later
+                //    in the preload code, but we need to initialize it here if it's never been done
+
+                CtiTablePaoExclusion paox_lmi(paox);
+
+                paox_lmi.setCycleOffset((paox.getCycleOffset() + paox.getTransmitTime()) % paox.getCycleTime());
+                paox_lmi.setTransmitTime(paox.getCycleTime() - paox.getTransmitTime());
+
+                _lmi_exclusion.addExclusion(paox_lmi);
+                _lmi_exclusion.setEvaluateNextAt(RWTime::now());
+            }
+
+            _exclusion.addExclusion(paox);
+
+            if( _exclusion.getCycleTimeExclusion().getCycleTime() != (_seriesv.getTickTime() * 60) ||
+                _exclusion.getCycleTimeExclusion().getCycleOffset() != _seriesv.getTimeOffset() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Exclusion and Series 5 cycle time and/or offset do not match for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** (" << _exclusion.getCycleTimeExclusion().getCycleTime()   << ") (" << (_seriesv.getTickTime() * 60) << "), ("
+                                              << _exclusion.getCycleTimeExclusion().getCycleOffset() << ") (" <<  _seriesv.getTimeOffset()     << ")" << endl;
+            }
+
+            _lmi.setSystemData(_seriesv.getTickTime(),
+                               _seriesv.getTimeOffset(),
+                               _exclusion.getCycleTimeExclusion().getTransmitTime(),
+                               _seriesv.getTransmitterLow(),
+                               _seriesv.getTransmitterHigh(),
+                               _seriesv.getStartCode(),
+                               _seriesv.getStopCode());
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
+void CtiDeviceLMI::clearExclusions()
+{
+    try
+    {
+        _exclusion.clearExclusions();
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
+
+/*
+ *  Check if the passed id is in the exclusion list?
+ */
+bool CtiDeviceLMI::isDeviceExcluded(long id) const
+{
+    bool bstatus = false;
+
+    try
+    {
+        bstatus = _lmi_exclusion.isDeviceExcluded(id);
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return bstatus;
+}
+
+bool CtiDeviceLMI::isExecuting() const
+{
+    return _lmi_exclusion.isExecuting();
+}
+
+void CtiDeviceLMI::setExecuting(bool set)
+{
+    _lmi_exclusion.setExecuting(set);
+    return;
+}
+
+bool CtiDeviceLMI::isExecutionProhibited(const RWTime &now, LONG did)
+{
+    return _lmi_exclusion.isExecutionProhibited(now, did);
+}
+
+size_t CtiDeviceLMI::setExecutionProhibited(unsigned long id, RWTime& releaseTime)
+{
+    return _lmi_exclusion.setExecutionProhibited(id,releaseTime);
+}
+
+bool CtiDeviceLMI::removeInfiniteProhibit(unsigned long id)
+{
+    return _lmi_exclusion.removeInfiniteProhibit(id);
+}
 

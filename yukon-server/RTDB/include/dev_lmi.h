@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/09/09 10:55:26 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/04 20:13:35 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,9 @@ private:
     CtiTableDeviceSeriesV _seriesv;
 
     typedef CtiDeviceRemote Inherited;
+
+    CtiDeviceExclusion _lmi_exclusion;
+    RWTime _lastPreload;
 
 protected:
 
@@ -61,8 +64,29 @@ public:
 
     void processInboundData(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, RWTPtrSlist<CtiPointDataMsg> &points, RWCString &info );
 
+    CtiMutex& getExclusionMux();
+    bool hasExclusions() const;
+    void addExclusion(CtiTablePaoExclusion &paox);
+    void clearExclusions();
+    CtiDeviceExclusion& getExclusion();
+    CtiDeviceExclusion exclusion() const; // New copy.
+    exclusions getExclusions() const;
+    RWTime selectCompletionTime() const;
+    bool isDeviceExcluded(long id) const;
+    bool isExecuting() const;
+    void setExecuting(bool set = true);
+    bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
+    size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
+    bool removeInfiniteProhibit(unsigned long id);
+
     INT queuedWorkCount() const;
     bool hasQueuedWork() const;
+    bool hasPreloadWork() const;
+    RWTime getPreloadEndTime() const;
+    LONG getPreloadBytes() const;
+    LONG getCycleTime() const;
+    LONG getCycleOffset() const;
+
     bool readEchoed() const;
     INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
