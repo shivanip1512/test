@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2005/07/22 19:20:21 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2005/10/04 20:19:03 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.55  2005/10/04 20:19:03  mfisher
+* added preload functions, improved isSimulated() a little
+*
 * Revision 1.54  2005/07/22 19:20:21  cplender
 * Make isSimulated const.
 *
@@ -637,13 +640,16 @@ bool CtiPort::isSimulated() const
     //  if we haven't checked before
     if( !_simulated )
     {
+        set<long>::iterator itr;
         _simulated = -1;  //  default to NOT simulated
 
-        if( (gSimulatePorts > 0) && (gSimulatedPortList.find(getPortID()) != gSimulatedPortList.end()) )  //  must be included
+        itr = gSimulatedPortList.find(getPortID());
+
+        if( (gSimulatePorts > 0) && (itr != gSimulatedPortList.end()) )  //  must be included
         {
             _simulated = 1;
         }
-        if( (gSimulatePorts < 0) && (gSimulatedPortList.find(getPortID()) == gSimulatedPortList.end()) )  //  must be excluded
+        else if( (gSimulatePorts < 0) && (itr == gSimulatedPortList.end()) )  //  must be excluded
         {
             _simulated = 1;
         }
@@ -1591,6 +1597,24 @@ CtiPort& CtiPort::resetDeviceQueued(LONG id)
 {
     _devicesQueued.remove( id );
     return *this;
+}
+
+
+CtiPort& CtiPort::setDevicePreload(LONG id)
+{
+    _devicesPreloaded.insert( id );
+    return *this;
+}
+
+CtiPort& CtiPort::resetDevicePreload(LONG id)
+{
+    _devicesPreloaded.erase( id );
+    return *this;
+}
+
+set<LONG> CtiPort::getPreloads(void)
+{
+    return _devicesPreloaded;
 }
 
 

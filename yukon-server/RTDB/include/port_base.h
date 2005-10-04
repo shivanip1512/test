@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/07/22 19:20:22 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/10/04 20:19:03 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -246,6 +246,9 @@ public:
     CtiPort& setDeviceQueued(LONG id);
     CtiPort& resetDeviceQueued(LONG id);
 
+    CtiPort& setDevicePreload(LONG id);
+    CtiPort& resetDevicePreload(LONG id);
+    set<LONG> getPreloads(void);
 
     INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
     INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
@@ -302,6 +305,7 @@ private:
     RWTime                      _lastOMComplete;
 
     list< LONG >                _devicesQueued;
+    set< LONG >                 _devicesPreloaded;
 
     ULONG                       _queueSlot;         // This is the queue entry which will be popped on the next readQueue call.
 
