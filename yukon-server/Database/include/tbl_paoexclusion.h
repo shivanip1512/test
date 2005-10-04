@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2004/07/30 21:33:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/10/04 19:06:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -120,9 +120,13 @@ public:
     } CtiExclusionFunction_t;
 
     int getCycleTime() const;
+    CtiTablePaoExclusion &setCycleTime(int cycletime);
     int getCycleOffset() const;
+    CtiTablePaoExclusion &setCycleOffset(int cycleoffset);
     int getTransmitTime() const;
+    CtiTablePaoExclusion &setTransmitTime(int transmittime);
     int getMaxTransmitTime() const;
+    CtiTablePaoExclusion &setMaxTransmitTime(int maxtransmittime);
 
 };
 #endif // #ifndef __TBL_PAOEXCLUSION_H__

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/10/04 19:06:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -172,7 +172,7 @@ void CtiTablePaoExclusion::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 
 void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -314,6 +314,8 @@ void CtiTablePaoExclusion::dump() const
         dout << "funcname       " <<  _funcName << endl;
         dout << "funcrequeue    " <<  _funcRequeue << endl;
         dout << "funcparams     " <<  _funcParams << endl;
+        dout << "cycletime      " <<  _cycleTime << endl;
+        dout << "cycleoffset    " <<  _cycleOffset << endl;
 
     }
 }
@@ -336,6 +338,45 @@ int CtiTablePaoExclusion::getTransmitTime() const
 int CtiTablePaoExclusion::getMaxTransmitTime() const
 {
     return _maxTransmitTime;
+}
+
+
+CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleTime(int cycletime)
+{
+    _cycleTime = cycletime;
+
+    if( _cycleTime < _cycleOffset )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return *this;
+}
+
+CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleOffset(int cycleoffset)
+{
+    _cycleOffset = cycleoffset;
+
+    if( _cycleTime < _cycleOffset )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return *this;
+}
+
+CtiTablePaoExclusion &CtiTablePaoExclusion::setTransmitTime(int transmittime)
+{
+    _transmitTime = transmittime;
+    return *this;
+}
+
+CtiTablePaoExclusion &CtiTablePaoExclusion::setMaxTransmitTime(int maxtransmittime)
+{
+    _maxTransmitTime = maxtransmittime;
+    return *this;
 }
 
 
