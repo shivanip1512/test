@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/08/01 21:25:16 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/10/04 19:04:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,7 @@ const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config       = "mct lo
 const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval     = "mct load profile interval";
 const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2    = "mct load profile interval 2";
 const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval = "mct ied load profile rate";
+const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
@@ -67,6 +68,7 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_LoadProfileInterval,    &_key_mct_loadprofile_interval));
     retval.insert(make_pair(Key_MCT_LoadProfileInterval2,   &_key_mct_loadprofile_interval2));
     retval.insert(make_pair(Key_MCT_IEDLoadProfileInterval, &_key_mct_ied_loadprofile_interval));
+    retval.insert(make_pair(Key_VerificationSequence,       &_key_verification_sequence));
 
     return retval;
 }
@@ -187,13 +189,14 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
         tmp_value = _empty_string;
     }
 
-    if( getPaoID() && tmp_owner && tmp_key )
+    if( (getPaoID() >= 0) && tmp_owner && tmp_key )
     {
         inserter <<  getEntryID()  //  MUST be set before we try to insert
                  <<  getPaoID()
                  << *tmp_owner
                  << *tmp_key
-                 <<  tmp_value;
+                 <<  tmp_value
+                 <<  RWDBDateTime(RWTime::now());
 
         if(DebugLevel & DEBUGLEVEL_LUDICROUS)
         {
@@ -221,9 +224,12 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
     }
     else
     {
+        if( !tmp_owner ) tmp_owner = &_empty_string;
+        if( !tmp_key   ) tmp_key   = &_empty_string;
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint - invalid attempt to insert into " << getTableName() << " - paoid = " << getPaoID() << ", tmp_owner = \"" << tmp_owner << "\", and tmp_key = \"" << tmp_key << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " **** Checkpoint - invalid attempt to insert into " << getTableName() << " - paoid = " << getPaoID() << ", tmp_owner = \"" << *tmp_owner << "\", and tmp_key = \"" << *tmp_key << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -262,7 +268,8 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
         updater << table["paobjectid"].assign(getPaoID())
                 << table["owner"].assign(tmp_owner->data())
                 << table["infokey"].assign(tmp_key->data())
-                << table["value"].assign(tmp_value.data());
+                << table["value"].assign(tmp_value.data())
+                << table["updatetime"].assign(RWTime::now());
 
         RWDBResult myResult = updater.execute( conn );
 
