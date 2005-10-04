@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/09/15 19:12:50 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/10/04 19:08:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,9 +82,9 @@ private:
     int _responsesOnTrxID;
     RWTime _lastReport;
 
-    CtiDeviceExclusion  _exclusion;
-
 protected:
+
+    CtiDeviceExclusion  _exclusion;
 
     CtiCounter          _submittal;
     CtiCounter          _processed;
@@ -279,22 +279,28 @@ public:
 
 
     // The methods below are in place to support exclusion logic and will typ. be overridden in load group objects only.
-    CtiMutex& getExclusionMux();
-    bool hasExclusions() const;
-    void addExclusion(CtiTablePaoExclusion &paox);
-    void clearExclusions();
-    CtiDeviceExclusion& getExclusion();
-    CtiDeviceExclusion exclusion() const; // New copy.
-    exclusions getExclusions() const;
-    RWTime selectCompletionTime() const;
-    bool isDeviceExcluded(long id) const;
-    bool isExecuting() const;
-    void setExecuting(bool set = true);
-    bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
-    size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
-    bool removeInfiniteProhibit(unsigned long id);
+    CtiMutex& getExclusionMux();  //  this isn't implemented anywhere... ?
+    virtual bool hasExclusions() const;
+    virtual void addExclusion(CtiTablePaoExclusion &paox);
+    virtual void clearExclusions();
+    virtual CtiDeviceExclusion& getExclusion();
+    virtual CtiDeviceExclusion exclusion() const; // New copy.
+    virtual exclusions getExclusions() const;
+    virtual RWTime selectCompletionTime() const;
+    virtual bool isDeviceExcluded(long id) const;
+    virtual bool isExecuting() const;
+    virtual void setExecuting(bool set = true);
+    virtual bool isExecutionProhibited(const RWTime &now = RWTime(), LONG did = 0);
+    virtual size_t setExecutionProhibited(unsigned long id, RWTime& releaseTime = RWTime(YUKONEOT));
+    virtual bool removeInfiniteProhibit(unsigned long id);
 
     virtual bool hasQueuedWork() const;
+    virtual bool hasPreloadWork() const;
+    virtual RWTime getPreloadEndTime() const;
+    virtual LONG getPreloadBytes() const;
+    virtual LONG getCycleTime() const;
+    virtual LONG getCycleOffset() const;
+
     virtual bool isExecutionProhibitedByInternalLogic() const;
     virtual INT queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt = 0);
     virtual LONG deviceQueueCommunicationTime() const;          // how many millis of comm time do we have?
@@ -360,6 +366,11 @@ inline bool CtiDeviceBase::isExecutionProhibitedByInternalLogic() const { return
 inline INT CtiDeviceBase::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt) { return NORMAL; }
 inline bool CtiDeviceBase::hasQueuedWork() const { return false; }
 inline INT CtiDeviceBase::queuedWorkCount() const { return 0; }
+inline bool CtiDeviceBase::hasPreloadWork() const { return false; }
+inline RWTime CtiDeviceBase::getPreloadEndTime() const { return RWTime(); }
+inline LONG CtiDeviceBase::getPreloadBytes() const { return 0; }
+inline LONG CtiDeviceBase::getCycleTime() const { return 0; }
+inline LONG CtiDeviceBase::getCycleOffset() const { return 0; }
 inline bool CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return getID() < rhs.getID(); }
 
 
