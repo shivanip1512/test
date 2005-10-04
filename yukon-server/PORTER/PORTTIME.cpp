@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/09/26 16:53:07 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/10/04 20:11:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -449,13 +449,13 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
             }
         case TYPE_SERIESVLMIRTU:
             {
-                /* Allocate some memory */
+                //  Allocate some memory
                 if((OutMessage = CTIDBG_new OUTMESS) == NULL)
                 {
                     return;
                 }
 
-                /* send a time sync to this guy */
+                //  send a time sync to this guy
                 OutMessage->DeviceID    = RemoteRecord->getID();
                 OutMessage->Port        = RemoteRecord->getPortID();
                 OutMessage->Remote      = RemoteRecord->getAddress();
@@ -475,6 +475,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
 
                 break;
             }
+
         default:
             break;
         }
@@ -497,8 +498,6 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
             (RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU710 || RemoteRecord->getType() == TYPE_CCU711) &&
             (RemoteRecord->getPortID() == portid) && pRoute->isDefaultRoute() )
         {
-            unsigned long time   = RWTime::now().seconds() - rwEpoch;
-            bool          is_dst = RWTime::now().isDST();
             int amp      =  0,
                 fixed    = 31,
                 variable =  7;
@@ -521,51 +520,20 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Retry     = 0;
                 OutMessage->Sequence  = 0;
                 OutMessage->Priority  = MAXPRIORITY;
-                OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD; // we don't want this to be hijacked | TSYNC;
+                OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
                 OutMessage->Command   = CMND_DTRAN;
                 OutMessage->InLength  = 0;
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
 
-                message.Port     = portid;
-                message.Remote   = RemoteRecord->getAddress();
+                OutMessage->Buffer.BSt.DlcRoute.Amp      = amp;
+                OutMessage->Buffer.BSt.DlcRoute.RepFixed = pRoute->getCCUFixBits();
+                OutMessage->Buffer.BSt.DlcRoute.RepVar   = pRoute->getCCUVarBits();
+                OutMessage->Buffer.BSt.DlcRoute.Feeder   = pRoute->getBus();
+                OutMessage->Buffer.BSt.DlcRoute.Stages   = pRoute->getStages();
 
-                message.DlcRoute.Amp      = amp;
-                message.DlcRoute.RepFixed = pRoute->getCCUFixBits();
-                message.DlcRoute.RepVar   = pRoute->getCCUVarBits();
-                message.DlcRoute.Feeder   = pRoute->getBus();
-                message.DlcRoute.Stages   = pRoute->getStages();
-
-                //  VERY 400-series specific, watch this space carefully
-
-                message.Address  = CtiDeviceMCT410::UniversalAddress;
-                message.Function = CtiDeviceMCT410::FuncWrite_TSyncPos;
-                message.Length   = CtiDeviceMCT410::FuncWrite_TSyncLen;
-                message.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
-
-                message.Message[0] = 0xff;  //  global SPID
-                message.Message[1] = (time >> 24) & 0x000000ff;
-                message.Message[2] = (time >> 16) & 0x000000ff;
-                message.Message[3] = (time >>  8) & 0x000000ff;
-                message.Message[4] =  time        & 0x000000ff;
-                message.Message[5] = is_dst;
-
-                INT wordCount;
-                //  Now build up the words in the calling structure
-                C_Words (OutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
-                         message.Message,
-                         message.Length,
-                         &wordCount);
-
-                //  build the b word
-                B_Word (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, message, wordCount);
-
-                //  calculate message lengths
-                OutMessage->InLength = 2;
-                // FIX FIX FIX 090199 CGP OutMessage->TimeOut = TIMEOUT + MyOutMessage.Buffer.BSt.Stages * (MyOutMessage.Buffer.BSt.NumW + 1);
-                OutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
-
-                BPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, message, wordCount);
+                //  this is key - this, and the TSYNC flag, are what get the time loaded into the message
+                OutMessage->Buffer.BSt.Address = CtiDeviceMCT410::UniversalAddress;
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -834,6 +802,57 @@ LoadXTimeMessage (BYTE *Message)
     Message[12] = HIBYTE (Mod8Time);
     Message[13] = LOBYTE (Mod8Time);
 
+    return(NORMAL);
+}
+
+
+LoadMCT400BTimeMessage (OUTMESS *OutMessage)
+{
+    /* Save the message information */
+    OUTMESS MyOutMessage = *OutMessage;
+
+    /* get the time from the system */
+    unsigned long time   = RWTime::now().seconds() - rwEpoch;
+    bool          is_dst = RWTime::now().isDST();
+
+
+    /* Load the time sync parts of the message into the local B word structure */
+    MyOutMessage.Buffer.BSt.Address  = CtiDeviceMCT410::UniversalAddress;
+    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT410::FuncWrite_TSyncPos;
+    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT410::FuncWrite_TSyncLen;
+    MyOutMessage.Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
+
+    MyOutMessage.Buffer.BSt.Message[0] = 0xff;  //  global SPID
+    MyOutMessage.Buffer.BSt.Message[1] = (time >> 24) & 0x000000ff;
+    MyOutMessage.Buffer.BSt.Message[2] = (time >> 16) & 0x000000ff;
+    MyOutMessage.Buffer.BSt.Message[3] = (time >>  8) & 0x000000ff;
+    MyOutMessage.Buffer.BSt.Message[4] =  time        & 0x000000ff;
+    MyOutMessage.Buffer.BSt.Message[5] = is_dst;
+
+    INT wordCount;
+    /* Now build up the words in the calling structure */
+    C_Words (OutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN,
+             MyOutMessage.Buffer.BSt.Message,
+             MyOutMessage.Buffer.BSt.Length,
+             &wordCount);
+
+    /* build the b word */
+    B_Word (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN, MyOutMessage.Buffer.BSt, wordCount);
+
+    /* calculate message lengths */
+    OutMessage->InLength = 2;
+    // FIX FIX FIX 090199 CGP OutMessage->TimeOut = TIMEOUT + MyOutMessage.Buffer.BSt.Stages * (MyOutMessage.Buffer.BSt.NumW + 1);
+    OutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
+
+    /* build preamble message */
+    if(ZeroRemoteAddress)
+    {
+        // FIX FIX FIX 090199 CGP MyOutMessage.Buffer.BSt.Remote = 0;
+    }
+
+    BPreamble (OutMessage->Buffer.OutMessage + PREIDLEN, MyOutMessage.Buffer.BSt, wordCount);
+
+    /* That all folks */
     return(NORMAL);
 }
 
