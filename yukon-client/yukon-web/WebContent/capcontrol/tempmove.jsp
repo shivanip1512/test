@@ -38,7 +38,7 @@ pageEncoding="ISO-8859-1"
 </HEAD>
 
 
-<body>
+<body class="pageBlank" >
 
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
  <form id="frmCapBankMove" action="/servlet/CBCServlet" method="post">
@@ -50,7 +50,7 @@ pageEncoding="ISO-8859-1"
 	<input type="hidden" name="opt"> <!--New Feeder ID-->
 	<input type="hidden" name="opt"> <!--Control Order-->
 
-  <table id="chartTable" width="65%" border="0" cellspacing="0" cellpadding="0">
+  <table id="chartTable" width="65%" border="0" cellspacing="0" cellpadding="0" class="pageBlank" >
     <tr> 
       <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
       <td class="trimBGColor cellImgShort">CapBank Temp Move (Pick feeder by clicking on name)</td>      
