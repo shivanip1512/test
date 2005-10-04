@@ -196,23 +196,26 @@ LONG CommErrorHistoryIdGen(bool force)
     return tempid;
 }
 
-LONG VerificationSequenceGen(bool force)
+
+//  force = true on its own will force a database read,
+//    force = true, force_value > 0 will set the id to force_value
+LONG VerificationSequenceGen(bool force, int force_value)
 {
     LONG tempid = -1;
 
-    static RWMutexLock   mux;
+    static LONG vs_id = 0;
+    static RWMutexLock mux;
 
-    static BOOL init_id = FALSE;
-    static LONG id = 0;
+    static BOOL init_id = false;
     static const CHAR sql[] = "SELECT MAX(CODESEQUENCE) FROM DYNAMICVERIFICATION";
 
     {
         RWMutexLock::TryLockGuard guard(mux);
 
         int trycnt = 0;
-        while(!guard.isAcquired() && trycnt++ < 50)
+        while( !guard.isAcquired() && trycnt++ < 50 )
         {
-            if(!(trycnt%10))
+            if( !(trycnt % 10) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << " **** Checkpoint: unable to acquire mux in verificationsequencegen, trycnt = " << trycnt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -222,34 +225,54 @@ LONG VerificationSequenceGen(bool force)
             guard.tryAcquire();
         }
 
-        if(guard.isAcquired())
+        if( guard.isAcquired() )
         {
-            if(!init_id || force)
-            {   // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-                if(rdr() && rdr.isValid())
+            //  is the value being forced?
+            if( force && force_value > 0 )
+            {
+                if( force_value >= vs_id )
                 {
-                    rdr >> tempid;
+                    tempid = vs_id = force_value;
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - force_value < vs_id (" << force_value << " < " << vs_id << ") in VerificationSequenceGen() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
-
-                if(tempid >= id)
+            }
+            else
+            {
+                //  do we need to do a database select?
+                if( !init_id || force )
                 {
-                    id = tempid;
+                    // Make sure all objects that that store results are out of scope when the release is called
+                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                    RWDBConnection conn = getConnection();
+                    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+                    if( rdr() && rdr.isValid() )
+                    {
+                        rdr >> tempid;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    if( tempid >= vs_id )
+                    {
+                        vs_id = tempid;
+                    }
+
+                    init_id = true;
+                    // Temporary results are destroyed to free the connection
                 }
 
-                init_id = TRUE;
-            }   // Temporary results are destroyed to free the connection
-
-            tempid =  ++id;
+                tempid = ++vs_id;
+            }
         }
         else
         {

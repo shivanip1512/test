@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/23 19:57:37 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/10/04 19:03:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 IM_EX_CTIBASE LONG LMControlHistoryIdGen(bool force = false);
 IM_EX_CTIBASE LONG CommErrorHistoryIdGen(bool force = false);
-IM_EX_CTIBASE LONG VerificationSequenceGen(bool force = false);
+IM_EX_CTIBASE LONG VerificationSequenceGen(bool force = false, int force_value = 0);
 IM_EX_CTIBASE INT ChangeIdGen(bool force = false);
 IM_EX_CTIBASE INT SystemLogIdGen();
 IM_EX_CTIBASE INT PAOIdGen();
