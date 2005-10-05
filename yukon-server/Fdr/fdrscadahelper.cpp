@@ -72,7 +72,7 @@ bool CtiFDRScadaHelper<T>::handleStatusUpdate(const T& id, int value,
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Handling value update message for " << id 
+        _parent->logNow() << "Handling status update message for " << id 
             << " with state=" << value << endl;;
     }
     
@@ -259,16 +259,22 @@ template<typename T>
 void CtiFDRScadaHelper<T>::addSendMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
     sendMap[pointDestination] = id;
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << endl;
+    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << endl;
+    }
 }
 
 template<typename T>
 void CtiFDRScadaHelper<T>::addReceiveMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
     receiveMap.insert(ReceiveMap::value_type(id, pointDestination));    
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    _parent->logNow() << "Added receive mapping " << id << " to " << pointDestination << endl;
+    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        _parent->logNow() << "Added receive mapping " << id << " to " << pointDestination << endl;
+    }
 }
 
 template<typename T>
