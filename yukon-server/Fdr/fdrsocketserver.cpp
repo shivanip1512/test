@@ -369,7 +369,7 @@ void CtiFDRSocketServer::threadFunctionConnection( void )
             if (_listenerSocket == NULL) {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Failed to create listener socket" 
+                    logNow() << "Failed to open listener socket" 
                        << endl;
                 }
             } else {
@@ -523,7 +523,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
         {
             int errorCode = WSAGetLastError();
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Failed to listen on socket "
+            logNow() << "Failed to listen on listener socket "
                 << " (Error: " << errorCode << ")" << endl;
                 
         }
@@ -643,7 +643,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Data for PointId " << point.getPointID()
+            logNow() << "Data for " << point
                 << " was not sent because it hasn't been initialized " << endl;
         }
         return false;
