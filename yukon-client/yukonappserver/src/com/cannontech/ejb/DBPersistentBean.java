@@ -20,9 +20,7 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.yukon.IDBPersistent;
 
 /**
@@ -34,7 +32,7 @@ public class DBPersistentBean implements IDBPersistent
 {
 	protected static final int ORACLE_FLOAT_PRECISION = SqlUtils.ORACLE_FLOAT_PRECISION;
 	
-   public static String sqlFileName = null; 
+   //public static String sqlFileName = null; 
    //com.cannontech.common.util.CtiUtilities.getLogDirPath() + "DatabaseSQL.sql";
 
    private java.sql.Connection dbConnection = null;   
@@ -179,23 +177,6 @@ public class DBPersistentBean implements IDBPersistent
    {
       return dbConnection;
    }
-
-
-	public void setSQLFileName( String fileName )
-	{
-		if( fileName == null )
-		{
-			sqlFileName = null;
-		}		
-		else
-		{
-			sqlFileName = 
-				CtiUtilities.getLogDirPath() + 
-				System.getProperty("file.separator") +
-				fileName;
-		}
-		
-	}
 	
    /**
     * @ejb:interface-method
@@ -681,27 +662,14 @@ public class DBPersistentBean implements IDBPersistent
       else
          return o;
    }
-
-
-
-   /**
-    * Insert the method's description here.
-    * Creation date: (5/21/2001 11:20:05 AM)
-    * @return boolean
-    */
-   public static boolean isPrintSQL() 
-   {
-		//some other startup init properties
-		String printSQLfile =
-			CTILogManager.ALL_NAMES[CTILogManager.PRINT_SQL_INSERTS_FILE][1]; 
-
-		return (sqlFileName != null);
-   }
    
    private void printSQLToFile(String line, Object[] columnValues, SQLException exception )
    {
-   	
-   	if( !isPrintSQL() )
+
+	String printSQLfile =
+		CTILogManager.ALL_NAMES[CTILogManager.PRINT_SQL_INSERTS_FILE][1]; 
+
+   	if( printSQLfile == null || printSQLfile.trim().length() <= 0 )
    		return;
 
       // Here we want to print all SQL to a file, creating a
@@ -729,14 +697,14 @@ public class DBPersistentBean implements IDBPersistent
          if( missingColumnValue )
             buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
             
-         pw = new java.io.PrintWriter(new java.io.FileWriter( sqlFileName, true), true);
+         pw = new java.io.PrintWriter(new java.io.FileWriter( printSQLfile, true), true);
          pw.write(buffer + "; \r\n");
          pw.close();
       }
       catch (Exception e) //catch everything and write the Exception to the log file
       {
          if( e instanceof java.io.IOException )
-            CTILogger.info("*** Cant find SQL Log file named : " + sqlFileName +
+            CTILogger.info("*** Cant find SQL Log file named : " + printSQLfile +
                   " : " + e.getMessage() );
          else
          {

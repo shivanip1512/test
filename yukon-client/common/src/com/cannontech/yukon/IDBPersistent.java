@@ -35,7 +35,4 @@ public interface IDBPersistent
                         
    public com.cannontech.database.db.DBPersistent
           execute( int operation, com.cannontech.database.db.DBPersistent obj ) throws com.cannontech.database.TransactionException;
-
-	public void setSQLFileName( String fileName ); 
-	//com.cannontech.common.util.CtiUtilities.getLogDirPath() + "/" + printSQLfile );
 }
