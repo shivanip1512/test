@@ -23,6 +23,10 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.4  2005/10/05 19:10:37  tmack
+ *      Fixed bug with handleStatusUpdate.
+ *      Fixed small bug with time sync variation when the set time was less than the allowed minimum.
+ *
  *      Revision 1.3  2005/09/14 16:22:27  tmack
  *      Made some small changes for ACS(MULTI), mostly related to logging and error handling.
  *
@@ -139,7 +143,7 @@ int CtiFDRAcsMulti::readConfig()
                 << endl;
         }
         // default to 5 seconds
-        setTimeSyncVariation(iConfigParameters.getValueAsInt(KEY_TIMESYNC_VARIATION, 5));
+        setTimeSyncVariation(5);
     }
 
     setPointTimeVariation (iConfigParameters.getValueAsInt(KEY_POINT_TIME_VARIATION, 0));
@@ -521,7 +525,7 @@ bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection& connecti
     timestamp = ForeignToYukonTime(acsData->TimeStamp);
     value = ForeignToYukonStatus(acsData->Status.Value);
 
-    return _helper->handleValueUpdate(acsId, value, quality, timestamp);
+    return _helper->handleStatusUpdate(acsId, value, quality, timestamp);
 }
 
 bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection& connection, char* data, unsigned int size)
