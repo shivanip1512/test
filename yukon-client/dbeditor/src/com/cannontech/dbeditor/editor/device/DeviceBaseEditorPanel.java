@@ -1942,8 +1942,6 @@ public Object getValue(Object val)
 			if( password.length() > 0 )
 				if(val instanceof WCTPTerminal)
 					((WCTPTerminal)val).getDeviceTapPagingSettings().setPOSTPath(password);
-				else if(val instanceof SNPPTerminal)
-					((SNPPTerminal)val).getDeviceTapPagingSettings().setPOSTPath(password);
 				else
 					((IEDBase)val).getDeviceIED().setPassword(password);
 			else
@@ -2505,7 +2503,7 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		getPasswordLabel().setVisible(true);
 		getPasswordTextField().setVisible(true);
 		
-		if(rBase instanceof WCTPTerminal || rBase instanceof SNPPTerminal)
+		if(rBase instanceof WCTPTerminal)
 		{
 			getSenderLabel().setVisible(true);
 			getSenderTextField().setVisible(true);
@@ -2515,9 +2513,23 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 			getSenderTextField().setText(((PagingTapTerminal)rBase).getDeviceTapPagingSettings().getSender());
 			getSecurityCodeTextField().setText(((PagingTapTerminal)rBase).getDeviceTapPagingSettings().getSecurityCode());
 		}
+		else if(rBase instanceof SNPPTerminal)
+		{
+			getSenderLabel().setText("Login");
+			getSenderLabel().setVisible(true);
+			getSenderTextField().setVisible(true);
+			getSecurityCodeLabel().setText("Password");
+			getSecurityCodeLabel().setVisible(true);
+			getSecurityCodeTextField().setVisible(true);
+			getPasswordLabel().setVisible(false);
+			getPasswordTextField().setVisible(false);
+			
+			getSenderTextField().setText(((PagingTapTerminal)rBase).getDeviceTapPagingSettings().getSender());
+			getSecurityCodeTextField().setText(((PagingTapTerminal)rBase).getDeviceTapPagingSettings().getSecurityCode());
+		}
 		
 		String password;
-		if(rBase instanceof WCTPTerminal || rBase instanceof SNPPTerminal)
+		if(rBase instanceof WCTPTerminal)
 			password = ((PagingTapTerminal)rBase).getDeviceTapPagingSettings().getPOSTPath();
 		else
 			password = ((IEDBase)rBase).getDeviceIED().getPassword();

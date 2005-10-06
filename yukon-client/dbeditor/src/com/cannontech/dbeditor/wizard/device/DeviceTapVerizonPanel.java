@@ -36,6 +36,7 @@ class IvjEventHandler implements javax.swing.event.CaretListener {
 	private javax.swing.JTextField ivjSecurityCodeTextField = null;
 	private javax.swing.JLabel ivjSenderLabel = null;
 	private javax.swing.JTextField ivjSenderTextField = null;
+	private boolean isSNPP = false;
 /**
  * Constructor
  */
@@ -556,12 +557,13 @@ public Object getValue(Object val)
 
 	String nameString = getNameTextField().getText();
 	tapTerm.setPAOName( nameString );
-
+	
 	String pagerNumber = getPagerNumberTextField().getText();
 	tapTerm.getDeviceTapPagingSettings().setPagerNumber(pagerNumber);
-	tapTerm.getDeviceTapPagingSettings().setPOSTPath( getPasswordTextField().getText() );
 	tapTerm.getDeviceTapPagingSettings().setSender( getSenderTextField().getText() );
 	tapTerm.getDeviceTapPagingSettings().setSecurityCode( getSecurityCodeTextField().getText() );
+	if(!isSNPP)
+		tapTerm.getDeviceTapPagingSettings().setPOSTPath( getPasswordTextField().getText() );
 		
 	//server checks both DeviceIED and DeviceTapPagingSettings for a password
 	//make sure this one is not set to any real password.
@@ -685,4 +687,25 @@ public static void main(java.lang.String[] args) {
 public void setValue(Object val ) {
 	return;
 }
+
+public void setIsSNPP(boolean isSuch) 
+{
+	isSNPP = isSuch;
+	
+	if(isSuch)
+	{
+		getSenderLabel().setVisible(true);
+		getSenderTextField().setVisible(true);
+		getSenderLabel().setText("Login:  ");
+		getSecurityCodeLabel().setVisible(true);
+		getSecurityCodeTextField().setVisible(true);
+		getSecurityCodeLabel().setText("Password:   ");
+		getPasswordLabel().setVisible(false);
+		getPasswordTextField().setVisible(false);
+		
+		getSenderTextField().setText("");
+		getSecurityCodeTextField().setText("");
+	}
+}
+
 }

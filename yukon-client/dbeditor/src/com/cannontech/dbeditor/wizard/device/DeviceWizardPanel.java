@@ -238,8 +238,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			return getDeviceTapTerminalPanel();
 		}
-		else if( devType == PAOGroups.WCTP_TERMINAL || devType == PAOGroups.SNPP_TERMINAL )
+		else if( devType == PAOGroups.WCTP_TERMINAL)
 		{
+			return getDeviceTapVerizonPanel();
+		}
+		else if( devType == PAOGroups.SNPP_TERMINAL )
+		{
+			getDeviceTapVerizonPanel().setIsSNPP(true);
 			return getDeviceTapVerizonPanel();
 		}
 		else if( (DeviceTypesFuncs.isMeter(devType)
