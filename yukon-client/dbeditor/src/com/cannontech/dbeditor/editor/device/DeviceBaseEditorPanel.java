@@ -2515,10 +2515,10 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 		}
 		else if(rBase instanceof SNPPTerminal)
 		{
-			getSenderLabel().setText("Login");
+			getSenderLabel().setText("Login: ");
 			getSenderLabel().setVisible(true);
 			getSenderTextField().setVisible(true);
-			getSecurityCodeLabel().setText("Password");
+			getSecurityCodeLabel().setText("Password: ");
 			getSecurityCodeLabel().setVisible(true);
 			getSecurityCodeTextField().setVisible(true);
 			getPasswordLabel().setVisible(false);

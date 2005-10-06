@@ -646,14 +646,14 @@ public boolean isInputValid() {
    }
    
    if( getSenderTextField().getText() == null ||
-			getSenderTextField().getText().length() < 1 )
+			getSenderTextField().getText().length() < 1 && (!isSNPP))
    {
 	  setErrorString("The Sender text field must be filled in");
 	  return false;
    }
    
    if( getSecurityCodeTextField().getText() == null ||
-			getSecurityCodeTextField().getText().length() < 1 )
+			getSecurityCodeTextField().getText().length() < 1 && (!isSNPP))
    {
 	  setErrorString("The Security Code text field must be filled in");
 	  return false;
@@ -699,7 +699,7 @@ public void setIsSNPP(boolean isSuch)
 		getSenderLabel().setText("Login:  ");
 		getSecurityCodeLabel().setVisible(true);
 		getSecurityCodeTextField().setVisible(true);
-		getSecurityCodeLabel().setText("Password:   ");
+		getSecurityCodeLabel().setText("Password:       ");
 		getPasswordLabel().setVisible(false);
 		getPasswordTextField().setVisible(false);
 		
