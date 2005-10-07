@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/18 22:09:43 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/10/07 20:48:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -698,7 +698,7 @@ INT CtiProtocolVersacom::updateVersacomMessage()
     if(!status) status = assembleCommandToMessage();
     if(!status) status = assembleAddressing();
 
-    // dumpMessageBuffer();
+    dumpMessageBuffer();
 
     return status;
 }
@@ -1391,17 +1391,20 @@ INT CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const VSTRUCT &a
 
 void CtiProtocolVersacom::dumpMessageBuffer()
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-    for(int i = 0; i < (_vst[_last]->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
+    if(PROTOCOL_DEBUG_NIBBLES & gConfigParms.getValueAsULong("PROTOCOL_VERSACOM_DEBUG", 0, 0))
     {
-        if(i && !(i % 8))
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        for(int i = 0; i < (_vst[_last]->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
         {
-            dout << endl;
+            if(i && !(i % 8))
+            {
+                dout << endl;
+            }
+            dout << hex << setw(2) << (INT)(_vst[_last]->Message[i]) << " ";
         }
-        dout << hex << setw(2) << (INT)(_vst[_last]->Message[i]) << " ";
+        dout << dec << endl;
     }
-    dout << dec << endl;
 }
 
 
@@ -1783,16 +1786,23 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     {
         UINT hasrand  = parse.isKeyValid("shed_rand");
         UINT hasdelay = parse.isKeyValid("delaytime_sec");
+        INT shed_time = parse.getiValue("shed");
+
+        // 8 hour max shed time if we are LMT-3000s.
+        if(shed_time > 28800 && (getTransmitterType() == TYPE_CCU700 || getTransmitterType() == TYPE_CCU710 || getTransmitterType() == TYPE_CCU711))
+        {
+            shed_time = 28800;
+        }
 
         // Add these two items to the list for control accounting!
-        parse.Map()["control_interval"]  = CtiParseValue( parse.getiValue("shed") );
+        parse.Map()["control_interval"]  = CtiParseValue( shed_time );
         parse.Map()["control_reduction"] = CtiParseValue( 100 );
 
-        if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 || parse.getiValue("shed") == 1 )     // Positional relays only one thru three can go out type four (in one message).
+        if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 || shed_time == 1 )     // Positional relays only one thru three can go out type four (in one message).
         {
             // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
             primeAndAppend(aVst);  // Get a new one in the system
-            VersacomShedCommand(parse.getiValue("shed"));
+            VersacomShedCommand(shed_time);
         }
         else
         {
@@ -1807,7 +1817,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                     if( relay & (0x01 << i) )
                     {
                         primeAndAppend(aVst);  // Get a new one in the system
-                        VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
+                        VersacomShedCommandEx(shed_time, (i+1), rand, delay);
                     }
                 }
             }
@@ -1820,7 +1830,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
                     if( relay & (0x01 << i) )
                     {
                         primeAndAppend(aVst);  // Get a new one in the system
-                        VersacomShedCommandEx(parse.getiValue("shed"), (i+1), rand, delay);
+                        VersacomShedCommandEx(shed_time, (i+1), rand, delay);
                     }
                 }
             }

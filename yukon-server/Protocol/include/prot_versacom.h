@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2004/05/21 16:04:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/10/07 20:48:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,9 @@
 #include "dsm2.h"
 #include "dllbase.h"
 #include "cmdparse.h"
+
+// Versacom protocol debg settings for cparm "PROTOCOL_VERSACOM_DEBUG"
+#define PROTOCOL_DEBUG_NIBBLES         0x00000001
 
 #define MAX_VERSACOM_MESSAGE  40
 
