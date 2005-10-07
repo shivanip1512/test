@@ -20,6 +20,7 @@
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
+#include <list>
 
 #include "dbaccess.h"
 #include "observe.h"
@@ -65,6 +66,9 @@ public:
     LONG getParentId() const;
     BOOL getAlarmInhibitFlag() const;
     BOOL getControlInhibitFlag() const;
+    LONG getMaxDailyOps() const;
+    LONG getCurrentDailyOperations() const;
+    BOOL getMaxOpsDisableFlag() const;
     const RWCString& getOperationalState() const;
     const RWCString& getControllerType() const;
     LONG getControlDeviceId() const;
@@ -94,6 +98,8 @@ public:
     CCBANKVSTATE getVerificationState() const;
     int getAssumedOrigVerificationState() const;
 
+    list <LONG> getPointIds() {return _pointIds;};
+
     CtiCCCapBank& setPAOId(LONG id);
     CtiCCCapBank& setPAOCategory(const RWCString& category);
     CtiCCCapBank& setPAOClass(const RWCString& pclass);
@@ -104,6 +110,9 @@ public:
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
     CtiCCCapBank& setControlInhibitFlag(BOOL controlinhibit);
+    CtiCCCapBank& setMaxDailyOperation(LONG maxdailyops);
+    CtiCCCapBank& setCurrentDailyOperations(LONG operations);
+    CtiCCCapBank& setMaxOpsDisableFlag(BOOL maxopsdisable);
     CtiCCCapBank& setDeviceClass(const RWCString& deviceclass);
     CtiCCCapBank& setOperationalState(const RWCString& operational);
     CtiCCCapBank& setControllerType(const RWCString& controllertype);
@@ -188,7 +197,10 @@ private:
     BOOL _disableflag;
     LONG _parentId; //feederId
     BOOL _alarminhibitflag;
-    BOOL _controlinhibitflag;
+    BOOL _controlinhibitflag; 
+    LONG _maxdailyops;
+    LONG _currentdailyoperations;
+    BOOL _maxopsdisableflag;
     RWCString _operationalstate;
     RWCString _controllertype;
     LONG _controldeviceid;
@@ -238,6 +250,8 @@ private:
     void restore(RWDBReader& rdr);
     void restoreCapBankTableValues(RWDBReader& rdr);
     CtiCCCapBank();
+
+    list <LONG> _pointIds;
 };
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;

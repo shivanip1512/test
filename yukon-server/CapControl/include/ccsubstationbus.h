@@ -19,7 +19,8 @@
 #include <rw/vstream.h>
 #include <rw/db/db.h>
 #include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h> 
+#include <rw/thr/recursiv.h>
+#include <list> 
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -30,7 +31,7 @@
 #include "msg_pcrequest.h"
 #include "ccstrategy.h"
 
-
+/*
 #define ALLBANKS 0
 #define FAILEDANDQUESTIONABLEBANKS 1
 #define FAILEDBANKS 2
@@ -38,7 +39,7 @@
 #define SELECTEDFORVERIFICATIONBANKS 4
 #define BANKSINACTIVEFORXTIME 5
 #define STANDALONEBANKS 6
-
+*/
 
 class CtiCCSubstationBus : public RWCollectable
 {
@@ -119,6 +120,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     RWOrdered& getCCFeeders();
+    void deleteCCFeeder(CtiCCFeeder *feeder) { _ccfeeders.removeAndDestroy(feeder); };
 
     CtiCCSubstationBus& setPAOId(LONG id);
     CtiCCSubstationBus& setPAOCategory(const RWCString& category);
@@ -217,11 +219,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
 
+    list <LONG> getPointIds() {return _pointIds;};
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     list <LONG> getVerificationCapBankList();
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
+    const RWCString& getVerificationCommand();
+    CtiCCSubstationBus& setVerificationCommand(RWCString verCommand);
     void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
     LONG getCapBankInactivityTime(void) const;
 
@@ -307,7 +312,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG _dailyoperationsanalogpointid;
     LONG _powerfactorpointid;
     LONG _estimatedpowerfactorpointid;
-    LONG _currentdailyoperations;
+    LONG _currentdailyoperations;       //daily operations...
     BOOL _peaktimeflag;
     BOOL _recentlycontrolledflag;
     RWDBDateTime _lastoperationtime;
@@ -332,7 +337,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     BOOL _startVerificationFlag;
     BOOL _verificationAlreadyStartedFlag;
-    //list <LONG> _verificationCapBankIds;
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;
@@ -344,6 +348,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void restore(RWDBReader& rdr);
     void restoreSubstationBusTableValues(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
+
+    list <long> _pointIds;
 };
 
 

@@ -69,7 +69,7 @@ public:
         UNWAIVE_FEEDER,//16
         ENABLE_OVUV,//17 
         DISABLE_OVUV,//18
-      //  ENABLE_SUBSTATION_BUS_VERIFICATION, //19
+        DELETE_ITEM //19
        // DISABLE_SUBSTATION_BUS_VERIFICATION//20
     };
 
@@ -226,6 +226,7 @@ public:
     // Possible bit mask settings
     static ULONG AllSubBusesSent;
     static ULONG SubBusDeleted;
+    static ULONG SubBusAdded;
 
 private:
     CtiCCSubstationBusMsg() : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(0) {};

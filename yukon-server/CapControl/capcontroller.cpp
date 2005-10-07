@@ -339,7 +339,7 @@ void CtiCapController::controlLoop()
                                                 currentSubstationBus->setVerificationFlag(FALSE);
                                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 CtiCCExecutorFactory f;
-                                                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, -1));
+                                                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
                                                 executor->Execute();
                                                 delete executor;
                                                 {
@@ -384,7 +384,7 @@ void CtiCapController::controlLoop()
                                         currentSubstationBus->setVerificationFlag(FALSE);
                                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                                         CtiCCExecutorFactory f;
-                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(1, currentSubstationBus->getPAOId(),0, -1));
+                                        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
                                         executor->Execute();
                                         delete executor;
                                         {
@@ -1017,8 +1017,35 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
-                        CtiCCSubstationBusStore::getInstance()->setValid(false);
-                        CtiPAOScheduleManager::getInstance()->setValid(false);
+                        //CtiCCSubstationBusStore::getInstance()->setValid(false);
+                        //CtiPAOScheduleManager::getInstance()->setValid(false);
+
+                        long objType = 0;
+                        if (dbChange->getDatabase() == ChangeCBCStrategyDb)
+                        {
+                            objType = 4;
+                        }
+                        else if (dbChange->getDatabase() == ChangePAODb && !(dbChange->getObjectType().compareTo("cap bank", RWCString::ignoreCase)))
+                        {
+                            objType = 1;
+                        }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
+                        {
+                            objType = 3;
+                        }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
+                        {
+                            objType = 2;
+                        }
+                        else if (objType == 0)
+                        {
+                            CtiCCSubstationBusStore::getInstance()->setValid(false);
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
+                        }
+
+                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), objType};
+
+                        CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
                 }
                 break;

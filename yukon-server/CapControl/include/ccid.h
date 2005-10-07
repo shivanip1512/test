@@ -58,6 +58,7 @@
 #define CC_DEBUG_DATABASE          0x00000004
 #define CC_DEBUG_CLIENT            0x00000008
 #define CC_DEBUG_CONTROL_PARAMS    0x00000010
+#define CC_DEBUG_VERIFICATION      0x00000020
 //#define CC_DEBUG_                  0x00000000
 #define CC_DEBUG_EXTENDED          0x10000000
 

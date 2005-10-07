@@ -117,15 +117,11 @@ void CtiCCCommandExecutor::Execute()
         DisableOvUv();
         break;
 
-    /*case CtiCCCommand::DISABLE_SUBSTATION_BUS_VERIFICATION:
-        DisableSubstationBusVerification();
+    case CtiCCCommand::DELETE_ITEM:
+        DeleteItem();
         break;
 
-    case CtiCCCommand::ENABLE_SUBSTATION_BUS_VERIFICATION:
-        EnableSubstationBusVerification();
-        break;
-    */
-
+    
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -164,7 +160,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                 RWCString text = RWCString("Substation Bus Verification Enabled");
                 RWCString additional = RWCString("Bus: ");
                 additional += currentSubstationBus->getPAOName();
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_subVerificationMsg->getUser()));
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
             }
             else
             {
@@ -179,7 +175,7 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     RWCString text = RWCString("Substation Bus Verification Enabled");
                     RWCString additional = RWCString("Bus: ");
                     additional += currentSubstationBus->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_subVerificationMsg->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
                 }
             }
             break;
@@ -236,7 +232,7 @@ void CtiCCSubstationVerificationExecutor::DisableSubstationBusVerification()
             RWCString text = RWCString("Substation Bus Verification Disabled");
             RWCString additional = RWCString("Bus: ");
             additional += currentSubstationBus->getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_subVerificationMsg->getUser()));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_subVerificationMsg->getUser()));
             break;
         }
     }
@@ -265,7 +261,7 @@ void CtiCCCommandExecutor::EnableSubstationBus()
             RWCString text = RWCString("Substation Bus Enabled");
             RWCString additional = RWCString("Bus: ");
             additional += currentSubstationBus->getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             break;
         }
     }
@@ -293,7 +289,7 @@ void CtiCCCommandExecutor::DisableSubstationBus()
             RWCString text = RWCString("Substation Bus Disabled");
             RWCString additional = RWCString("Bus: ");
             additional += currentSubstationBus->getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             break;
         }
     }
@@ -328,7 +324,7 @@ void CtiCCCommandExecutor::EnableFeeder()
                     RWCString text = RWCString("Feeder Enabled");
                     RWCString additional = RWCString("Feeder: ");
                     additional += currentFeeder->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
@@ -374,7 +370,7 @@ void CtiCCCommandExecutor::DisableFeeder()
                     RWCString text = RWCString("Feeder Disabled");
                     RWCString additional = RWCString("Feeder: ");
                     additional += currentFeeder->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
@@ -426,7 +422,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                         additional += currentCapBank->getPAOName();
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                         else
                         {
@@ -434,7 +430,7 @@ void CtiCCCommandExecutor::EnableCapBank()
                             dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                     }
                     else
@@ -491,7 +487,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                         additional += currentCapBank->getPAOName();
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                         else
                         {
@@ -499,7 +495,7 @@ void CtiCCCommandExecutor::DisableCapBank()
                             dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                     }
                     else
@@ -558,7 +554,7 @@ void CtiCCCommandExecutor::EnableOvUv()
                     RWCString text = RWCString("Cap Bank OV/UV Enabled");
                     RWCString additional = RWCString("Cap Bank: ");
                     additional += currentCapBank->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                     found = TRUE;
                     break;
@@ -626,7 +622,7 @@ void CtiCCCommandExecutor::DisableOvUv()
                     RWCString text = RWCString("Cap Bank OV/UV Disabled");
                     RWCString additional = RWCString("Cap Bank: ");
                     additional += currentCapBank->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                     found = TRUE;
                     break;
@@ -657,6 +653,14 @@ void CtiCCCommandExecutor::DisableOvUv()
         dout << RWTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
+}
+
+/*---------------------------------------------------------------------------
+    Disable OV/UV
+---------------------------------------------------------------------------*/    
+void CtiCCCommandExecutor::DeleteItem()
+{
+    CtiCCClientListener::getInstance()->BroadcastMessage(_command);
 }
 
 
@@ -714,6 +718,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                         currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
                         currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                         currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
+                        currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
@@ -732,7 +737,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             text += RWCString(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
-                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
@@ -899,6 +904,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                         currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
                         currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                         currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
+                        currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                         currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
@@ -917,7 +923,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             text += RWCString(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
-                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( !savedBusRecentlyControlledFlag ||
@@ -1102,7 +1108,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             text += RWCString(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
-                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
@@ -1293,7 +1299,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                             text += RWCString(" Feeder VarLoad = ");
                             _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
                             text += tempchar1;
-                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                            pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                             if( ( !savedBusRecentlyControlledFlag ||
@@ -1684,6 +1690,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     else
                     {
                         currentCapBank->setTotalOperations(0);
+                        currentCapBank->setCurrentDailyOperations(0);
                     }
                 }
             }
@@ -1710,6 +1717,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         else
                         {
                             currentCapBank->setTotalOperations(0);
+                            currentCapBank->setCurrentDailyOperations(0);
                         }
                     }
 
@@ -1733,6 +1741,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                             else
                             {
                                 currentCapBank->setTotalOperations(0);
+                                currentCapBank->setCurrentDailyOperations(0);
                             }
 
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -1796,7 +1805,7 @@ void CtiCCCommandExecutor::WaiveSubstationBus()
                 RWCString text = RWCString("Substation Bus Waived");
                 RWCString additional = RWCString("Bus: ");
                 additional += currentSubstationBus->getPAOName();
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             }
             else
             {
@@ -1832,7 +1841,7 @@ void CtiCCCommandExecutor::UnwaiveSubstationBus()
                 RWCString text = RWCString("Substation Bus Unwaived");
                 RWCString additional = RWCString("Bus: ");
                 additional += currentSubstationBus->getPAOName();
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
             }
             else
             {
@@ -1873,7 +1882,7 @@ void CtiCCCommandExecutor::WaiveFeeder()
                     RWCString text = RWCString("Feeder Waived");
                     RWCString additional = RWCString("Feeder: ");
                     additional += currentFeeder->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
@@ -1916,7 +1925,7 @@ void CtiCCCommandExecutor::UnwaiveFeeder()
                     RWCString text = RWCString("Feeder Unwaived");
                     RWCString additional = RWCString("Feeder: ");
                     additional += currentFeeder->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                 }
                 else
                 {
@@ -2478,6 +2487,7 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
         case CTICCSUBSTATIONBUS_MSG_ID:
         case CTICCCAPBANKSTATES_MSG_ID:
         case CTICCGEOAREAS_MSG_ID:
+        //case CTICCITEMDELETE_MSG_ID:
             ret_val = new CtiCCClientMsgExecutor( (CtiMessage*)message );
             break;
     

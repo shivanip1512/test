@@ -83,7 +83,6 @@ void CtiCCStrategy::restoreGuts( RWvistream& istrm )
     >> _peaklead
     >> _offpklag
     >> _offpklead;
-
 }
 void CtiCCStrategy::saveGuts( RWvostream& ostrm ) const
 {

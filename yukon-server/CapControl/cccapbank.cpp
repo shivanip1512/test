@@ -131,6 +131,34 @@ LONG CtiCCCapBank::getParentId() const
     return _parentId;
 }
 
+/*---------------------------------------------------------------------------
+    getMaxDailyOperation
+
+    Returns the max daily operations of the cap bank
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getMaxDailyOps() const
+{
+    return _maxdailyops;
+}
+/*---------------------------------------------------------------------------
+    getCurrentDailyOperations
+
+    Returns the current daily operations of the cap bank
+---------------------------------------------------------------------------*/
+LONG CtiCCCapBank::getCurrentDailyOperations() const
+{
+    return _currentdailyoperations;
+}
+
+/*---------------------------------------------------------------------------
+    getMaxOperationDisableFlag
+
+    Returns the max operation disable flag for the cap bank
+---------------------------------------------------------------------------*/
+BOOL CtiCCCapBank::getMaxOpsDisableFlag() const
+{
+    return _maxopsdisableflag;
+}
 
 /*---------------------------------------------------------------------------
     getAlarmInhibitFlag
@@ -554,6 +582,52 @@ CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(BOOL controlinhibit)
 
     return *this;
 }
+
+
+/*---------------------------------------------------------------------------
+    setMaxDailyOperation
+
+    Sets the max daily operations of the cap bank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(LONG maxdailyops)
+{
+    _maxdailyops = maxdailyops;
+
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
+    setCurrentDailyOperations
+
+    Sets the current daily operations of the cap bank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
+{
+    if( _currentdailyoperations != operations )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentdailyoperations = operations;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setMaxOperationDisableFlag
+
+    Sets the max operation disable flag for the cap bank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(BOOL maxopsdisable)
+{
+    _maxopsdisableflag = maxopsdisable;
+
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     setOperationalState
@@ -1200,6 +1274,9 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _parentId = right._parentId;
         _alarminhibitflag = right._alarminhibitflag;
         _controlinhibitflag = right._controlinhibitflag;
+        _maxdailyops = right._maxdailyops;
+        _currentdailyoperations = right._currentdailyoperations;
+        _maxopsdisableflag = right._maxopsdisableflag;
         _operationalstate = right._operationalstate;
         _controllertype = right._controllertype;
         _controldeviceid = right._controldeviceid;
@@ -1282,6 +1359,8 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["switchmanufacture"] >> _switchmanufacture;
     rdr["maplocationid"] >> _maplocationid;
     rdr["reclosedelay"] >> _reclosedelay;
+    rdr["maxdailyops"] >> _maxdailyops;
+    rdr["maxopsdisable"] >> _maxopsdisableflag;
     rdr["controlorder"] >> _controlorder;
 
     setStatusPointId(0);
@@ -1291,7 +1370,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     if( !isNull )
     {
         rdr["controlstatus"] >> _controlstatus;
-        rdr["currentdailyoperations"] >> _totaloperations;
+        rdr["totaloperations"] >> _totaloperations;
         rdr["laststatuschangetime"] >> _laststatuschangetime;
         rdr["tagscontrolstatus"] >> _tagscontrolstatus;
         rdr["ctitimestamp"] >> dynamicTimeStamp;
@@ -1306,6 +1385,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
         _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
         _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
         _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+        rdr["currentdailyoperations"] >> _currentdailyoperations;
 
         _controlDeviceType = "";
 
@@ -1401,8 +1481,11 @@ void CtiCCCapBank::restoreCapBankTableValues(RWDBReader& rdr)
     rdr["switchmanufacture"] >> _switchmanufacture;
     rdr["maplocationid"] >> _maplocationid;
     rdr["reclosedelay"] >> _reclosedelay;
+    rdr["maxdailyops"] >> _maxdailyops;
+    rdr["maxopsdisable"] >> tempBoolString;
+    tempBoolString.toLower();
+    setMaxOpsDisableFlag(tempBoolString=='y'?TRUE:FALSE);
     //rdr["controlorder"] >> _controlorder;
-
 
 
     //setAlarmInhibitFlag(false);
@@ -1438,7 +1521,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
 
     RWDBDateTime dynamicTimeStamp;
     rdr["controlstatus"] >> _controlstatus;
-    rdr["currentdailyoperations"] >> _totaloperations;
+    rdr["totaloperations"] >> _totaloperations;
     rdr["laststatuschangetime"] >> _laststatuschangetime;
     rdr["tagscontrolstatus"] >> _tagscontrolstatus;
     rdr["ctitimestamp"] >> dynamicTimeStamp;
@@ -1453,6 +1536,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
     _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
     _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
+
+    rdr["currentdailyoperations"] >> _currentdailyoperations;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
@@ -1526,7 +1611,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
 
             updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
-            << dynamicCCCapBankTable["currentdailyoperations"].assign( _totaloperations )
+            << dynamicCCCapBankTable["totaloperations"].assign( _totaloperations )
             << dynamicCCCapBankTable["laststatuschangetime"].assign( (RWDBDateTime)_laststatuschangetime )
             << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
             << dynamicCCCapBankTable["ctitimestamp"].assign((RWDBDateTime)currentDateTime)
@@ -1535,7 +1620,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
             << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
             << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
-            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags);
+            << dynamicCCCapBankTable["additionalflags"].assign(_additionalFlags)
+            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations );
 
 
 
@@ -1585,7 +1671,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDa
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
-            << RWCString(*addFlags, 20);
+            << RWCString(*addFlags, 20)
+            << _currentdailyoperations;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

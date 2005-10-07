@@ -29,6 +29,16 @@
 #include "ccsubstationbus.h"
 #include "ccid.h"
 
+
+
+struct CC_DBRELOAD_INFO
+{
+   LONG objectId;
+   unsigned char action:2;
+   unsigned char objecttype:3;
+   unsigned char filler:3;
+};
+
 class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
@@ -72,6 +82,21 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
 
+    void deleteCapBank(long capBankId);
+    void deleteFeeder(long feederId);
+    void deleteSubBus(long subBusId);
+    void deleteStrategy(long strategyId);
+
+    void reloadCapBankFromDatabase(long capBankId);
+    void reloadFeederFromDatabase(long feederId);
+    void reloadSubBusFromDatabase(long subBusId);
+    void reloadStrategyFromDataBase(long strategyId);
+    void reloadCapBankStatesFromDatabase();
+    void reloadGeoAreasFromDatabase();
+
+    list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
+    void insertDBReloadList(CC_DBRELOAD_INFO x) {_reloadList.push_back(x);}; 
+    void checkDBReloadList();
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
 
@@ -84,6 +109,7 @@ private:
     virtual ~CtiCCSubstationBusStore();
 
     void reset();
+    //bool CtiCCSubstationBusStore::findPointId(long pointId);
     void checkAMFMSystemForUpdates();
     void handleAMFMChanges(RWDBReader& rdr);
     void shutdown();
@@ -140,9 +166,6 @@ private:
 
     static const RWCString m3iAMFMNullString;
 
-
-    //map< long, CtiCCSubstationBusPtr > _points_subbus_map;
-
     map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
     map< long, CtiCCFeederPtr > _paobject_feeder_map;
     map< long, CtiCCCapBankPtr > _paobject_capbank_map;
@@ -158,6 +181,7 @@ private:
     map< long, long > _capbank_feeder_map;
 
     list <long> _pointIdList;
+    list <CC_DBRELOAD_INFO> _reloadList;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };

@@ -28,6 +28,7 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 #include "mgr_holiday.h"
+#include "mgr_paosched.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -1114,6 +1115,20 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     else
     {
         _nextchecktime = currenttime;
+        if (!_controlmethod.compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase))
+        {
+            for (LONG i = 0; i < _ccfeeders.entries(); i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                if (currentFeeder->getStrategyId() > 0)
+                {
+                    LONG tempsum1 = (currenttime.seconds() - ( currenttime.seconds()%currentFeeder->getControlInterval() ) + currentFeeder->getControlInterval() );
+                    _nextchecktime = RWDBDateTime(RWTime(tempsum1));
+                    break;
+                }
+            }
+
+        }
     }
     return *this;
 }
@@ -1561,7 +1576,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
                     if( !currentFeeder->getRecentlyControlledFlag() &&
                         (getControlInterval()!=0 ||
-                         currentFeeder->getNewPointDataReceivedFlag()) )
+                         currentFeeder->getNewPointDataReceivedFlag() ||
+                         currentFeeder->getControlInterval() != 0) )
                     {
                         figureCurrentSetPoint(currentDateTime);//this is just to set the Peak Time Flag
                         if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, pilMessages, getPeakTimeFlag(), getDecimalPlaces(), getControlUnits()) )
@@ -2476,10 +2492,22 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 
             if( currentFeeder->getRecentlyControlledFlag() )
             {
-                if( currentFeeder->isAlreadyControlled(getMinConfirmPercent()) ||
-                    currentFeeder->isPastMaxConfirmTime(RWDBDateTime(),getMaxConfirmTime(),getControlSendRetries()) )
+                LONG minConfirmPercent = getMinConfirmPercent();
+                LONG maxConfirmTime = getMaxConfirmTime();
+                LONG sendRetries = getControlSendRetries();
+                LONG failPercent = getFailurePercent();
+
+                if (currentFeeder->getStrategyId() > 0)
                 {
-                    currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
+                    minConfirmPercent = currentFeeder->getMinConfirmPercent();
+                    maxConfirmTime = currentFeeder->getMaxConfirmTime();
+                    sendRetries = currentFeeder->getControlSendRetries();
+                    failPercent = currentFeeder->getFailurePercent();
+                }
+                if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
+                    currentFeeder->isPastMaxConfirmTime(RWDBDateTime(),maxConfirmTime,sendRetries) )
+                {
+                    currentFeeder->capBankControlStatusUpdate(pointChanges,minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
                     //currentFeeder->setNewPointDataReceivedFlag(FALSE);
                 }
                 if( currentFeeder->getRecentlyControlledFlag() )
@@ -2903,6 +2931,13 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const RWDBDateTime& currentDateTime)
             {
                 for(LONG i=0;i<_ccfeeders.entries();i++)
                 {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                    if( currentFeeder->getStrategyId() > 0  && 
+                        currentFeeder->getControlInterval() > 0 )
+                    {
+                        returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
+                    }
+
                     if( ((CtiCCFeeder*)_ccfeeders[i])->getNewPointDataReceivedFlag() )
                     {
                         returnBoolean = TRUE;
@@ -3829,6 +3864,10 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const RWDBDateTime& currentDateTim
         for(LONG i=0;i<_ccfeeders.entries();i++)
         {
             CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders[i];
+            if (currentCCFeeder->getStrategyId() > 0)
+            {
+
+            }
             if( currentCCFeeder->getRecentlyControlledFlag() &&
                 currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) )
             {
@@ -4336,7 +4375,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
 
     switch (verificationStrategy)
     {
-        case ALLBANKS:
+        //case ALLBANKS:
+        case CtiPAOScheduleManager::AllBanks:
         {
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
@@ -4380,7 +4420,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             }
             break;
         }
-        case FAILEDANDQUESTIONABLEBANKS:
+        case CtiPAOScheduleManager::FailedAndQuestionableBanks:
         {
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
@@ -4428,7 +4468,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             break;
         }
 
-        case FAILEDBANKS:
+        case CtiPAOScheduleManager::FailedBanks:
         {
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
@@ -4473,7 +4513,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             }
             break;
         }
-        case QUESTIONABLEBANKS:
+        case CtiPAOScheduleManager::QuestionableBanks:
         {
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
@@ -4518,11 +4558,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             }
             break;
         }
-        case SELECTEDFORVERIFICATIONBANKS:
+        case CtiPAOScheduleManager::SelectedForVerificationBanks:
         {
             break;
         }
-        case BANKSINACTIVEFORXTIME:
+        case CtiPAOScheduleManager::BanksInactiveForXTime:
         {
             RWDBDateTime currentTime = RWTime();
             currentTime.now();
@@ -4569,7 +4609,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
 
             break;
         }
-        case STANDALONEBANKS:
+        case CtiPAOScheduleManager::StandAloneBanks:
         {
             for (x = 0; x < _ccfeeders.entries(); x++)
             {
@@ -5150,7 +5190,7 @@ void CtiCCSubstationBus::restoreSubstationBusTableValues(RWDBReader& rdr)
     setMaxConfirmTime(0);
     setMinConfirmPercent(0);
     setFailurePercent(0);
-    setDaysOfWeek("NNNNNNNN");
+    setDaysOfWeek("NYYYYYNN");
     setControlUnits("KVAR");
     setControlDelayTime(0);
     setControlSendRetries(0);

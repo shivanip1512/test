@@ -79,6 +79,7 @@ private:
     void UnwaiveFeeder();
     void EnableOvUv();
     void DisableOvUv();
+    void DeleteItem();
 
     CtiCCCommand* _command;
 };

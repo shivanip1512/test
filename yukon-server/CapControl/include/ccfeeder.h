@@ -21,6 +21,7 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <rw/sortvec.h> 
+#include <list>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -126,6 +127,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPeakTimeFlag() const;
     
     RWSortedVector& getCCCapBanks();
+    void deleteCCCapBank(CtiCCCapBank *capBank) {_cccapbanks.removeAndDestroy(capBank);};
+
 
     CtiCCFeeder& setPAOId(LONG id);
     CtiCCFeeder& setPAOCategory(const RWCString& category);
@@ -192,7 +195,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, RWOrdered& pointChanges, DOUBLE currentVarLoadPointValue, LONG decimalPlaces);
     BOOL capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     //BOOL isPeakDay();
-    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG subBusRetries);
+    BOOL isPastMaxConfirmTime(const RWDBDateTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
     BOOL checkForAndProvideNeededIndividualControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, BOOL peakTimeFlag, LONG decimalPlaces, const RWCString& controlUnits);
     DOUBLE figureCurrentSetPoint(const RWDBDateTime& currentDateTime);
     BOOL isPeakTime(const RWDBDateTime& currentDateTime);
@@ -212,6 +215,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
 
+    list <LONG> getPointIds() {return _pointIds;};
 
     BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
@@ -323,6 +327,8 @@ private:
     void restore(RWDBReader& rdr);
     void restoreFeederTableValues(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
+
+    list <long> _pointIds;
 };
 
 

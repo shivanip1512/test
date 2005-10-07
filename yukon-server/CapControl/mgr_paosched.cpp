@@ -20,6 +20,7 @@
 #include <rw/cstring.h>
 
 
+extern ULONG _CC_DEBUG;
 /* The singleton instance of CtiPAOScheduleManager */
 CtiPAOScheduleManager* CtiPAOScheduleManager::_instance = NULL;
 
@@ -161,9 +162,11 @@ void CtiPAOScheduleManager::mainLoop()
                         currentSched = new CtiPAOSchedule();
                         currentSched = mySchedules.front();
                         mySchedules.pop_front();
+
+                        if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " WHOA!!!  ScheduleID == "<<currentSched->getScheduleId()<<endl;
+                            dout << RWTime() << " - ScheduleID "<<currentSched->getScheduleId() << " NextRunTime about to occur (" << RWTime(currentSched->getNextRunTime().seconds()) << ")." << endl;
                         }
                         myEvents.clear();
                         if (getEventsBySchedId(currentSched->getScheduleId(), myEvents))
@@ -173,9 +176,10 @@ void CtiPAOScheduleManager::mainLoop()
                                 currentEvent = new CtiPAOEvent();
                                 currentEvent = myEvents.front();
                                 myEvents.pop_front();
+                                if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " WHOA!!!  EventID == "<<currentEvent->getEventId()<<endl;
+                                    dout << RWTime() << " -- EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<"."<<endl;
                                 }
                                 runScheduledEvent(currentEvent);
                             }
@@ -188,11 +192,26 @@ void CtiPAOScheduleManager::mainLoop()
                         updateDataBaseSchedules(updateSchedules);
                     } 
                 }
-                else
+                /*else
                 {
                     Sleep(500);
-                }
+                }*/
             }
+            try
+            {
+                rwRunnable().serviceCancellation();
+                rwRunnable().sleep( 500 );
+            }
+            catch(RWCancellation& )
+            {
+                throw;
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
         }
     }
     catch (...)
@@ -241,10 +260,10 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
     long secsSinceLastOp = -1;
     switch (parseEvent(event->getEventCommand(), strategy, secsSinceLastOp))
     {
-        case 0:
+        case CapControlVerification:
             {
                 CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(0, event->getPAOId(), strategy, secsSinceLastOp));
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::ENABLE_SUBSTATION_BUS_VERIFICATION, event->getPAOId(), strategy, secsSinceLastOp));
                 executor->Execute();
                 delete executor;
             }
@@ -273,30 +292,30 @@ int CtiPAOScheduleManager::parseEvent(RWCString command, int &strategy, long &se
 {
     RWCString tempCommand, temp2;
     LONG multiplier = 0;
-    int retVal = 1; //0 capbank event...future use could include other devices??  dunno..open to expand on.
-
-    if ( !command.contains("CapBanks", RWCString::ignoreCase))
+    int retVal = SomethingElse; //0 capbank event...future use could include other devices??  dunno..open to expand on.
+                             
+    if ( command.contains("CapBanks", RWCString::ignoreCase))
     {
-        retVal = 0;
+        retVal = CapControlVerification;
         if (!command.compareTo("Verify ALL CapBanks",RWCString::ignoreCase))
         {
-            strategy = 0;
+            strategy = AllBanks;
         }
         else if (!command.compareTo("Verify Failed and Questionable CapBanks",RWCString::ignoreCase))
         {
-            strategy = 1;
+            strategy = FailedAndQuestionableBanks;
         }
         else if (!command.compareTo("Verify Failed CapBanks",RWCString::ignoreCase))
         {
-            strategy = 2;
+            strategy = FailedBanks;
         }
         else if (!command.compareTo("Verify Questionable CapBanks",RWCString::ignoreCase))
         {
-            strategy = 3;
+            strategy = QuestionableBanks;
         }
         else if (!command.compareTo("Verify Selected CapBanks",RWCString::ignoreCase))
         {
-            strategy = 4;
+            strategy = SelectedForVerificationBanks;
         }
         else if (command.contains("Verify CapBanks that have not operated in",RWCString::ignoreCase))
         {
@@ -320,47 +339,12 @@ int CtiPAOScheduleManager::parseEvent(RWCString command, int &strategy, long &se
                 }
 
                 secsSinceLastOperation = atol(tempCommand) * multiplier;
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << RWTime() << " - multiplier "<<multiplier<< endl;
-                    dout << RWTime() << " - secsSinceLastOperation "<<secsSinceLastOperation<< endl;
-                }
             }
-            strategy = 5;
-        }
-        else if (!(tempCommand = command.match(RWCRExpr("[0-9]+-[0-9]+-[0-9]+\ [0-9]+:[0-9]+:[0-9]+\.[0-9]+"))).isNull())
-        {
-            int year, month, day, hour, minute, second;
-            RWCTokenizer next(tempCommand);
-            RWCString token;
-            token = next("-");
-            year = atoi(token);
-            token = next("-");
-            month = atoi(token);
-            token = next("-");
-            day = atoi(token);
-            RWCTokenizer next1(tempCommand);
-            next1(" ");
-            token = next1(":");
-            hour = atoi(token);
-            token = next1(":");
-            minute = atoi(token);
-            token = next1(":");
-            second = atoi(token);
-            
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - PARSED Operated Since!  "<<tempCommand << endl;
-                dout << RWTime() << " - year:   "<<year<<" month: "<<month<<" day: "<<day << endl;
-                dout << RWTime() << " - hour:   "<<hour<<" minute: "<<minute<<" second: "<<second << endl;
-            }
-
-            strategy = 5;
+            strategy = BanksInactiveForXTime;
         }
         else if (!command.compareTo("Verify Standalone CapBanks",RWCString::ignoreCase))
         {
-           // strategy = CtiCCSubstationBus::STANDALONEBANKS;
-           strategy = 6;
+           strategy = StandAloneBanks;
         }
     }
     return retVal;
@@ -555,6 +539,8 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                         while ( rdr() )
                         {
                             currentPAOSchedule = new CtiPAOSchedule(rdr);
+
+                            if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " -currentPAOSchedule.getScheduleId()" << currentPAOSchedule->getScheduleId()<<endl;
@@ -646,6 +632,8 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                         while ( rdr() )
                         {
                             currentPAOEvent = new CtiPAOEvent(rdr);
+
+                            if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << RWTime() << " -currentPAOEvent.getEventId()" << currentPAOEvent->getEventId()<<endl;

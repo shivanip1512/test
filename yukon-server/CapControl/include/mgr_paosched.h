@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/07/05 16:22:53 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/10/07 14:17:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,9 +23,28 @@
 #include "pao_schedule.h"
 #include "pao_event.h"
 
+
 class CtiPAOScheduleManager 
 {
 public:
+
+    typedef enum 
+    {
+        AllBanks = 0,
+        FailedAndQuestionableBanks,
+        FailedBanks,
+        QuestionableBanks,
+        SelectedForVerificationBanks,
+        BanksInactiveForXTime,
+        StandAloneBanks
+    } CtiVerificationStrategy;
+
+    typedef enum
+    {
+        CapControlVerification = 0,
+        SomethingElse
+    } CtiPAOScheduleOperation;
+
     static CtiPAOScheduleManager* getInstance();
 
     void start();
