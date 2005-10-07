@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/09/15 16:39:20 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/10/07 15:13:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "queue.h"
 #include "exchange.h"
 #include "netports.h"
+#include "numstr.h"
 #include "message.h"
 #include "mgr_point.h"
 #include "msg_cmd.h"
@@ -54,6 +55,8 @@ BOOL bQuit = FALSE;
 void shutdown(int argc, char **argv);
 void multiExecute(int argc, char **argv);
 void multiHelp();
+void historyExecute(int argc, char **argv);
+void historyHelp();
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
 void tagHelp();
@@ -349,6 +352,7 @@ TESTFUNC_t testfunction[] = {
     {"lm", lmExecute, lmHelp},
     {"socket", socketExecute, lmHelp},
     {"thread", testThreads, defaultHelp },
+    {"history", historyExecute, historyHelp},
     {"", 0, 0}
 };
 
@@ -1592,7 +1596,7 @@ void multiExecute(int argc, char **argv)
             return;
         }
 
-        PointMgr.refreshList();     // This should give me all the points in the box.
+        // PointMgr.refreshList();     // This should give me all the points in the box.
         CtiConnection  Connect(VANGOGHNEXUS, argv[2]);
 
         CtiMultiMsg   *pM  = CTIDBG_new CtiMultiMsg;
@@ -1600,7 +1604,7 @@ void multiExecute(int argc, char **argv)
         pM->setMessagePriority(15);
 
         Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("multiExecute", rwThreadId(), FALSE));
-        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_ALL_PTS_MASK | REG_ALARMS);
+        CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NONE);
         PtRegMsg->setMessagePriority(15);
         Connect.WriteConnQue( PtRegMsg );
 
@@ -1677,6 +1681,118 @@ void multiHelp()
             " Arg2: <dispatch_machine_or_ip> " <<
             " Arg3: <point id to send> " <<
             " Arg4: <point value> " <<
+            endl;
+    }
+    return;
+}
+
+
+void historyExecute(int argc, char **argv)
+{
+    int Op, k;
+
+    unsigned    timeCnt = rwEpoch;
+    unsigned    pt = 1;
+
+    try
+    {
+        int Op, k;
+
+        unsigned    timeCnt = rwEpoch;
+        unsigned    pt = 1;
+        unsigned    rows = 0;
+        CtiMessage  *pMsg;
+
+        typedef map< pair<unsigned long, unsigned long>, double > historyCol_t;
+
+        historyCol_t histCol;
+
+        if(argc < 4)
+        {
+            historyHelp();
+            return;
+        }
+
+        pt = atoi(argv[2]);
+        rows = atoi(argv[3]);
+
+        RWDBDateTime dbtnow;
+        RWDBDateTime dbtpast;
+
+
+        while(histCol.size() < rows)
+        {
+            dbtpast.addDays(-1);        // Back up one day from now.
+            RWCString sql = "select * from rawpointhistory where pointid = " + CtiNumStr(pt) + " and timestamp > '" + dbtpast.rwdate().asString() + "' and timestamp <= '" + dbtnow.rwdate().asString() + "' order by timestamp desc";
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << sql << endl;
+            }
+
+            {
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+
+                RWDBReader rdr = ExecuteQuery( conn, sql );
+
+                //Assume there is only one?
+                while( rdr() && histCol.size() < rows )
+                {
+                    long cid;
+                    long pid;
+                    RWDBDateTime ts;
+                    long qual;
+                    double val;
+                    long milli;
+
+                    rdr >> cid;
+                    rdr >> pid;
+                    rdr >> ts;
+                    rdr >> qual;
+                    rdr >> val;
+                    rdr >> milli;
+
+                    historyCol_t::_Pairib inspair = histCol.insert( historyCol_t::value_type( make_pair(ts.rwtime().seconds(), milli), val) );
+
+                    if(inspair.second == false)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << " Failed insert on duplicate " << cid << " " << ts.rwtime() << "." << (char*)CtiNumStr(milli).zpad(3) << " " << val << endl;
+                        }
+                    }
+                }
+            }
+
+            dbtnow.addDays(-1);        // Back up one day from last select..
+        }
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " There are " << histCol.size() << " entries found" << endl;
+        }
+
+        return;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
+void historyHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " historyExecute - Help" << endl;
+        dout << " Arg1: history " << endl <<
+            " Arg2: <pointid to search> " << endl <<
+            " Arg3: <number of history points> " <<
             endl;
     }
     return;
