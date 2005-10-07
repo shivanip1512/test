@@ -138,6 +138,9 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid
         int componentQuality, qualityFlag = 0;
         RWTime componentTime, minTime = RWTime(ULONG_MAX - 86400 * 2), maxTime = rwEpoch;
 
+        /*
+         *  Iterate this calc's components passing in each succesive result (through retVal).
+         */
         for( ; iter( ) && _valid; )
         {
             CtiCalcComponent *tmpComponent = (CtiCalcComponent *)iter.key( );
@@ -367,6 +370,9 @@ RWTime CtiCalc::calcTimeFromComponentTime( const RWTime &minTime, const RWTime &
     return rtime;
 }
 
+/*
+ *  Determines if all valid calc components have the same timestamp.  Nonupdated and Constant Qualities do not affect the timestamp output.
+ */
 bool CtiCalc::calcTimeFromComponentTime( RWTime &componentTime, int componentQuality, RWTime &minTime, RWTime &maxTime )
 {
     if( componentQuality != NonUpdatedQuality &&        // Timestamps are ignored on non-updated or constant quality points.

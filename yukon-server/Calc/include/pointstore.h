@@ -66,9 +66,12 @@ private:
     RWTime _pointTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
 
+    // The following two elements are used to determine if the VALUE changes from one scan to the next.
+    RWTime _lastValueChangedTime;
+
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
-    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0),
+    _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0), _lastValueChangedTime(pointValue),
     _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
     {  };
 
@@ -79,12 +82,22 @@ public:
     RWTime  getPointTime( void )        {   return _pointTime;  };
     long    getNumUpdates( void )       {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
-    RWTValHashSetIterator<depStore, depStore, depStore>
-            *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
+    RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
+
+    RWTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
+
 
 protected:
     void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
     {
+        /*
+         *  This represents a bonofide value change.  Record the time of the change.
+         */
+        if(newValue != _pointValue)
+        {
+            _lastValueChangedTime = newTime;
+        }
+
         _secondsSincePreviousPointTime = newTime.seconds() - _pointTime.seconds();
         _pointTime = newTime;
         _pointValue = newValue;
@@ -99,6 +112,8 @@ protected:
         _pointValue = newValue;
         _pointQuality = newQuality;
         _pointTags = newTags;
+
+        _lastValueChangedTime = _pointTime;
     };
 
     void appendDependent( long dependentID, PointUpdateType updateType )

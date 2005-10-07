@@ -203,6 +203,10 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
 
     if(_componentPointId > 0)
     {
+        // If this component HAS a component ID it means it is associated with a point.  We discover and push the point's value onto the stack
+        // so it may be operated upon.  The quality and time are returned to allow the calculation to be graded based upon ALL such returns.
+        // input is passed in by value and returned by the function....
+
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         CtiHashKey componentHashKey(_componentPointId);
         CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
@@ -244,7 +248,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, RWTime
         // Push the constant and then perform the action against the stack.
         if( _calcpoint != NULL )
         {
-            if( _calcpoint->push( _constantValue ) )
+            if( _calcpoint->push( _constantValue ) )    // The final result of a sequence of push operations is always equal to the last push.
                 input = _constantValue;
         }
         else
@@ -740,6 +744,33 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = (fabs(a-b) + fabs(b-c) + fabs(c-a)) / 2.0;
 
+        }
+        else if( !functionName.compareTo("State Timer",RWCString::ignoreCase) )
+        {
+            /*
+             *  This function pops a number representing the trigger state of a status and returns the
+             *  number of seconds since the point entered that state
+             */
+            double pt_val = _calcpoint->pop();       // This should be the point's value.
+            double state  = _calcpoint->pop();   // This is the state value it must be in.  Return zero if the state is not correct.
+
+            retVal = 0;
+            if(_componentPointId > 0)
+            {
+
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                CtiHashKey componentHashKey(_componentPointId);
+                CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+                if(componentPointPtr != NULL)
+                {
+                    RWTime now;
+                    RWTime component_time = componentPointPtr->getLastValueChangedTime();
+
+                    if(pt_val == state)
+                        retVal = now.seconds() - component_time.seconds();
+                }
+            }
         }
         else
         {
