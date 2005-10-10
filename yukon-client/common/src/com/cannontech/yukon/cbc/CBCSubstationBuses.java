@@ -10,20 +10,13 @@ public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	private java.util.Vector buses;
 	
 	
-	public static final int SUB_ALL = 0x00000001;
-	public static final int SUB_DELETE = 0x00000002;
-	
+	public static final int SUB_ALL = 0x00000001;	
 	
 /**
  * CBCSubstationBuses constructor comment.
  */
 public CBCSubstationBuses() {
 	super();
-}
-
-public boolean isSubDeleted()
-{
-	return (getMsgInfoBitMask().intValue() & SUB_DELETE) > 0;
 }
 
 public boolean isAllSubs()

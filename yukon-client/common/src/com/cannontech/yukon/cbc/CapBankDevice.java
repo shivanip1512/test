@@ -7,12 +7,14 @@ package com.cannontech.yukon.cbc;
  */
 public class CapBankDevice extends StreamableCapObject
 {
+	private Integer maxDailyOperation = null;
+	private Boolean maxOperationDisableFlag = null;
+
 	private Integer alarmInhibit = null;
 	private Integer controlInhibit = null;
 	private String operationalState = null;
 	private String controllerType = null;
 	private Integer controlDeviceID = null;
-	private Integer controlPointID = null;
 	private Integer bankSize = null;
 	private String typeOfSwitch = null;
 	private String switchManufacture = null;
@@ -22,13 +24,16 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer statusPointID = null;
 	private Integer controlStatus = null;
 	private Integer operationAnalogPointID = null;
-	private Integer currentDailyOperations = null;	
+	private Integer totalOperations = null;	
 	private java.util.Date lastStatusChangeTime = null;
 	private Integer tagControlStatus = null;
 	
-	private Integer recloseDelay = null;
-	
+	private Integer recloseDelay = null;	
 	private int origFeederID = 0;
+	private Integer currentDailyOperations = null;	
+	
+
+
 
 	/**
 	 * CapBankDevice constructor comment.
@@ -97,14 +102,6 @@ public class CapBankDevice extends StreamableCapObject
 	}
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (11/19/2001 11:45:37 AM)
-	 * @return java.lang.Integer
-	 */
-	public java.lang.Integer getControlPointID() {
-		return controlPointID;
-	}
-	/**
-	 * Insert the method's description here.
 	 * Creation date: (8/23/00 10:08:35 AM)
 	 */
 	public Integer getControlStatus() {
@@ -115,8 +112,8 @@ public class CapBankDevice extends StreamableCapObject
 	 * Creation date: (11/19/2001 11:45:37 AM)
 	 * @return java.lang.Integer
 	 */
-	public java.lang.Integer getCurrentDailyOperations() {
-		return currentDailyOperations;
+	public java.lang.Integer getTotalOperations() {
+		return totalOperations;
 	}
 	/**
 	 * Insert the method's description here.
@@ -277,14 +274,6 @@ public class CapBankDevice extends StreamableCapObject
 	}
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (11/19/2001 11:45:37 AM)
-	 * @param newControlPointID java.lang.Integer
-	 */
-	public void setControlPointID(java.lang.Integer newControlPointID) {
-		controlPointID = newControlPointID;
-	}
-	/**
-	 * Insert the method's description here.
 	 * Creation date: (8/23/00 10:08:35 AM)
 	 */
 	public void setControlStatus(Integer newValue) {
@@ -295,8 +284,8 @@ public class CapBankDevice extends StreamableCapObject
 	 * Creation date: (11/19/2001 11:45:37 AM)
 	 * @param newCurrentDailyOperations java.lang.Integer
 	 */
-	public void setCurrentDailyOperations(java.lang.Integer newCurrentDailyOperations) {
-		currentDailyOperations = newCurrentDailyOperations;
+	public void setTotalOperations(java.lang.Integer newCurrentDailyOperations) {
+		totalOperations = newCurrentDailyOperations;
 	}
 	/**
 	 * Insert the method's description here.
@@ -399,6 +388,48 @@ public class CapBankDevice extends StreamableCapObject
 	public void setRecloseDelay(Integer integer)
 	{
 		recloseDelay = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getMaxDailyOperation() {
+		return maxDailyOperation;
+	}
+
+	/**
+	 * @return
+	 */
+	public Boolean getMaxOperationDisableFlag() {
+		return maxOperationDisableFlag;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMaxDailyOperation(Integer integer) {
+		maxDailyOperation = integer;
+	}
+
+	/**
+	 * @param boolean1
+	 */
+	public void setMaxOperationDisableFlag(Boolean boolean1) {
+		maxOperationDisableFlag = boolean1;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getCurrentDailyOperations() {
+		return currentDailyOperations;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setCurrentDailyOperations(Integer integer) {
+		currentDailyOperations = integer;
 	}
 
 }

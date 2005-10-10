@@ -52,6 +52,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	
 	Feeder feeder = (Feeder)obj;
 	
+	feeder.setMaxDailyOperation( new Integer( (int)vstr.extractUnsignedInt() ) );
+	feeder.setMaxOperationDisableFlag( 
+		((int)vstr.extractUnsignedInt() == 1)
+		? new Boolean(true) : new Boolean(false) );
+	
 	feeder.setCurrentVarLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	feeder.setCurrentVarLoadPointValue( new Double( vstr.extractDouble() ) );
 	feeder.setCurrentWattLoadPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -77,11 +82,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	feeder.setLastOperationTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
 	feeder.setVarValueBeforeControl( new Double( vstr.extractDouble() ) );
-	feeder.setLastCapBankControlledDeviceID( new Integer( (int)vstr.extractUnsignedInt() ) );
+//	feeder.setLastCapBankControlledDeviceID( new Integer( (int)vstr.extractUnsignedInt() ) );
 
    feeder.setPowerFactorValue( new Double( vstr.extractDouble() ) );
 
-   feeder.setKVarSolution( new Double( vstr.extractDouble() ) );
+//   feeder.setKVarSolution( new Double( vstr.extractDouble() ) );
    feeder.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
    feeder.setCurrentVarPtQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
 
@@ -127,6 +132,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	Feeder feeder = (Feeder)obj;
 
+	vstr.insertUnsignedInt( feeder.getMaxDailyOperation().intValue() );
+	vstr.insertUnsignedInt( 
+		(feeder.getMaxOperationDisableFlag().booleanValue() == true)
+		? 1 : 0 );
+
 	vstr.insertUnsignedInt( feeder.getCurrentVarLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentVarLoadPointValue().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentWattLoadPointID().intValue() );
@@ -152,11 +162,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.saveObject( feeder.getLastOperationTime(), SimpleMappings.Time );
 	vstr.insertDouble( feeder.getVarValueBeforeControl().doubleValue() );
-	vstr.insertUnsignedInt( feeder.getLastCapBankControlledDeviceID().intValue() );
+//	vstr.insertUnsignedInt( feeder.getLastCapBankControlledDeviceID().intValue() );
 
    vstr.insertDouble( feeder.getPowerFactorValue().doubleValue() );
 
-   vstr.insertDouble( feeder.getKVarSolution().doubleValue() );
+//   vstr.insertDouble( feeder.getKVarSolution().doubleValue() );
    vstr.insertDouble( feeder.getEstimatedPFValue().doubleValue() );
    vstr.insertUnsignedInt( feeder.getCurrentVarPtQuality().intValue() );
 
@@ -176,9 +186,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertDouble( feeder.getOffPkLead().doubleValue() );
 	vstr.insertUnsignedInt( feeder.getCurrentVoltLoadPointID().intValue() );
 	vstr.insertDouble( feeder.getCurrentVoltLoadPointValue().doubleValue() );
-
-
-
 
 
 

@@ -57,10 +57,14 @@ public Class getJavaClass() {
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
-	//Should never be called
 	super.restoreGuts( obj, vstr, polystr );
-	throw new java.lang.Error("CBCCommand should never be receieved by the client" );
+	
+	CBCCommand cmd = (CBCCommand) obj;
+
+	cmd.setCommand( (int)vstr.extractUnsignedInt() );
+	cmd.setDeviceID( (int)vstr.extractUnsignedInt() );
 }
+
 /**
  * saveGuts method comment.
  */

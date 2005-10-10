@@ -4,6 +4,9 @@ import java.text.NumberFormat;
 import java.util.Comparator;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
@@ -179,6 +182,16 @@ public final class CBCUtils
 	public static String format( double val )
 	{
 		return NumberFormat.getInstance().format( val );
+	}
+
+
+	/**
+	 * Tells us if the given CBC DB objec is twoWay or not
+	 */
+	public static boolean isTwoWay( DBPersistent dbObj) {		
+		return
+			dbObj instanceof ICapBankController
+			&& dbObj instanceof RemoteBase;
 	}
 
 }

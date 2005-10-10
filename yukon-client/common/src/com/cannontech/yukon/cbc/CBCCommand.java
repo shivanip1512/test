@@ -31,6 +31,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 
 	public static final int BANK_ENABLE_OVUV = 17;
 	public static final int BANK_DISABLE_OVUV = 18;
+	public static final int DELETE_ITEM = 19;
 
 
 	//server does not use these commands
@@ -60,7 +61,8 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"UNWAIVE FEEDER",
 		"ENABLE OV/UV",
 		"DISABLE OV/UV",
-		"","","","","","",
+		"DELETE ITEM", //19
+		"","","","","",
 		"","","","","",
 
 

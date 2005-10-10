@@ -138,7 +138,7 @@ public class CBCDisplay
                     
             case CB_OP_COUNT_COLUMN :
             {
-                return capBank.getCurrentDailyOperations();
+                return capBank.getTotalOperations();
             }
                 
             case CB_BANK_SIZE_COLUMN :

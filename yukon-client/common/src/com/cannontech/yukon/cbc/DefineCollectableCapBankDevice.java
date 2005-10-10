@@ -51,13 +51,18 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	
 	CapBankDevice capBank = (CapBankDevice) obj;
-	
+
+	capBank.setMaxDailyOperation( new Integer( (int)vstr.extractUnsignedInt() ) );
+	capBank.setMaxOperationDisableFlag( 
+		((int)vstr.extractUnsignedInt() == 1)
+		? new Boolean(true) : new Boolean(false) );
+
 	capBank.setAlarmInhibit( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setControlInhibit( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setOperationalState( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setControllerType( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setControlDeviceID( new Integer( (int)vstr.extractUnsignedInt() ) );
-	capBank.setControlPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
+//	capBank.setControlPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setBankSize( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setTypeOfSwitch( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setSwitchManufacture( (String) vstr.restoreObject( SimpleMappings.CString ) );	
@@ -69,11 +74,12 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setStatusPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setOperationAnalogPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
-	capBank.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );	
+	capBank.setTotalOperations( new Integer( (int)vstr.extractUnsignedInt() ) );	
 	capBank.setLastStatusChangeTime( (java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );	
 	capBank.setTagControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
 
 	capBank.setOrigFeederID( (int)vstr.extractUnsignedInt() );
+	capBank.setCurrentDailyOperations( new Integer( (int)vstr.extractUnsignedInt() ) );	
 }
 /**
  * saveGuts method comment.
@@ -84,12 +90,17 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	CapBankDevice capBank = (CapBankDevice) obj;
 
+	vstr.insertUnsignedInt( capBank.getMaxDailyOperation().intValue() );
+	vstr.insertUnsignedInt( 
+		(capBank.getMaxOperationDisableFlag().booleanValue() == true)
+		? 1 : 0 );
+
 	vstr.insertUnsignedInt( capBank.getAlarmInhibit().intValue() );
 	vstr.insertUnsignedInt( capBank.getControlInhibit().intValue() );
 	vstr.saveObject( capBank.getOperationalState(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getControllerType(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( capBank.getControlDeviceID().intValue() );
-	vstr.insertUnsignedInt( capBank.getControlPointID().intValue() );
+//	vstr.insertUnsignedInt( capBank.getControlPointID().intValue() );
 	vstr.insertUnsignedInt( capBank.getBankSize().intValue() );
 	vstr.saveObject( capBank.getTypeOfSwitch(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getSwitchManufacture(), SimpleMappings.CString );
@@ -100,10 +111,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( capBank.getStatusPointID().intValue() );
 	vstr.insertUnsignedInt( capBank.getControlStatus().intValue() );
 	vstr.insertUnsignedInt( capBank.getOperationAnalogPointID().intValue() );
-	vstr.insertUnsignedInt( capBank.getCurrentDailyOperations().intValue() );
+	vstr.insertUnsignedInt( capBank.getTotalOperations().intValue() );
 	vstr.saveObject( capBank.getLastStatusChangeTime(), SimpleMappings.Time );
 	vstr.insertUnsignedInt( capBank.getTagControlStatus().intValue() );
 
 	vstr.insertUnsignedInt( capBank.getOrigFeederID() );	
+	vstr.insertUnsignedInt( capBank.getCurrentDailyOperations().intValue() );
 }
 }

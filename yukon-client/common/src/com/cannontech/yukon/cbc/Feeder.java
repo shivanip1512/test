@@ -4,12 +4,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
- * Insert the type's description here.
- * Creation date: (8/18/00 4:23:32 PM)
- * @author: 
+ * A feeder object
  */
 public class Feeder extends StreamableCapObject
 {
+	private Integer maxDailyOperation = null;
+	private Boolean maxOperationDisableFlag = null;
+
 	private Integer currentVarLoadPointID = null;
 	private Double currentVarLoadPointValue = null;
 	private Integer currentWattLoadPointID = null;
@@ -29,10 +30,8 @@ public class Feeder extends StreamableCapObject
 	private Boolean recentlyControlledFlag = null;
 	private java.util.Date lastOperationTime = null;
 	private Double varValueBeforeControl = null;
-	private Integer lastCapBankControlledDeviceID= null;
 
 	private Double powerFactorValue = null;
-	private Double kVarSolution = null;
 	private Double estimatedPFValue = null;   
 	private Integer currentVarPtQuality = null;
 	private Boolean waiveControlFlag = null;
@@ -159,14 +158,6 @@ public java.lang.Integer getEstimatedVarLoadPointID() {
  */
 public java.lang.Double getEstimatedVarLoadPointValue() {
 	return estimatedVarLoadPointValue;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getLastCapBankControlledDeviceID() {
-	return lastCapBankControlledDeviceID;
 }
 /**
  * Insert the method's description here.
@@ -309,14 +300,6 @@ public void setEstimatedVarLoadPointValue(java.lang.Double newEstimatedVarLoadPo
 /**
  * Insert the method's description here.
  * Creation date: (11/19/2001 1:11:48 PM)
- * @param newLastCapBankControlledDeviceID java.lang.Integer
- */
-public void setLastCapBankControlledDeviceID(java.lang.Integer newLastCapBankControlledDeviceID) {
-	lastCapBankControlledDeviceID = newLastCapBankControlledDeviceID;
-}
-/**
- * Insert the method's description here.
- * Creation date: (11/19/2001 1:11:48 PM)
  * @param newLastCurrentVarPointUpdateTime java.util.Date
  */
 public void setLastCurrentVarPointUpdateTime(java.util.Date newLastCurrentVarPointUpdateTime) {
@@ -379,24 +362,6 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setPowerFactorValue(Double powerFactorValue)
 	{
 		this.powerFactorValue = powerFactorValue;
-	}
-
-	/**
-	 * Returns the kVarSolution.
-	 * @return Double
-	 */
-	public Double getKVarSolution()
-	{
-		return kVarSolution;
-	}
-
-	/**
-	 * Sets the kVarSolution.
-	 * @param kVarSolution The kVarSolution to set
-	 */
-	public void setKVarSolution(Double kVarSolution)
-	{
-		this.kVarSolution = kVarSolution;
 	}
 
 	/**
@@ -595,6 +560,34 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	 */
 	public void setPeakLead(Double double1) {
 		peakLead = double1;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getMaxDailyOperation() {
+		return maxDailyOperation;
+	}
+
+	/**
+	 * @return
+	 */
+	public Boolean getMaxOperationDisableFlag() {
+		return maxOperationDisableFlag;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMaxDailyOperation(Integer integer) {
+		maxDailyOperation = integer;
+	}
+
+	/**
+	 * @param boolean1
+	 */
+	public void setMaxOperationDisableFlag(Boolean boolean1) {
+		maxOperationDisableFlag = boolean1;
 	}
 
 }
