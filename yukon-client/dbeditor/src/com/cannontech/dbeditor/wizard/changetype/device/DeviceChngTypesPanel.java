@@ -445,8 +445,8 @@ public Object getValue(Object val)
 		if( val instanceof TwoWayDevice
 	 	    && oldDevice instanceof TwoWayDevice )
 		{
-			((TwoWayDevice) val).setDeviceScanRateVector(
-					((TwoWayDevice) oldDevice).getDeviceScanRateVector() );
+			((TwoWayDevice) val).setDeviceScanRateMap(
+					((TwoWayDevice) oldDevice).getDeviceScanRateMap() );
 		}
 		
 		if( val instanceof CapBankController)

@@ -22,6 +22,7 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
+import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.CapControlFeeder;
@@ -270,14 +271,12 @@ public synchronized Feeder[] getFeedersByArea(String area)
 public synchronized LiteWrapper[] getOrphanedCBCs()
 {
 	//hits the DB
-	DeviceCBC[] unassignedCBCs = DeviceCBC.getUnassignedDeviceCBCs();
-	LiteWrapper[] retVal = new LiteWrapper[ unassignedCBCs.length ];
+	int[] unassignedCBCsIds = CapBankController.getUnassignedDeviceCBCIds();
+	LiteWrapper[] retVal = new LiteWrapper[ unassignedCBCsIds.length ];
 	
-	for( int i = 0 ; i < unassignedCBCs.length; i++ )
-	{
-		DeviceCBC cbc = unassignedCBCs[i];		
+	for( int i = 0 ; i < unassignedCBCsIds.length; i++ ) {
 		retVal[i] = new LiteWrapper(
-				PAOFuncs.getLiteYukonPAO(cbc.getDeviceID().intValue()) );
+				PAOFuncs.getLiteYukonPAO(unassignedCBCsIds[i]) );
 	}
 
 	return retVal;
@@ -392,23 +391,21 @@ private synchronized void handleAreaList(CBCSubAreaNames areaNames_)
  * Removes this subbus from all the structures in cache. 
  * @param msg
  */
-private void handleDeletedSubs( CBCSubstationBuses msg )
+private void handleDeletedSubs( int itemID )
 {
-	for( int i = 0; i < msg.getNumberOfBuses(); i++ )
-	{
-		subBusMap.remove( msg.getSubBusAt(i).getCcId() );
-		subToBankMap.remove( msg.getSubBusAt(i).getCcId() );
+	Integer id = new Integer(itemID);
+	String area = getSubBus(id).getCcArea();
+
+	subBusMap.remove( id );
+	subToBankMap.remove( id );
 
 
-		//remove mapping of subs to areas by subId
-		NativeIntVector subIDs =
-			(NativeIntVector)subIDToAreaMap.get( msg.getSubBusAt(i).getCcArea() );
-		subIDs.removeElement( msg.getSubBusAt(i).getCcId().intValue() );
-		if( subIDs.isEmpty() )
-			subIDToAreaMap.remove( msg.getSubBusAt(i).getCcArea() );
-			
-	}
-
+	//remove mapping of subs to areas by subId
+	NativeIntVector subIDs =
+		(NativeIntVector)subIDToAreaMap.get( area );
+	subIDs.removeElement( id.intValue() );
+	if( subIDs.isEmpty() )
+		subIDToAreaMap.remove( area );
 }
 
 /**
@@ -430,14 +427,24 @@ private void handleSubBuses( CBCSubstationBuses busesMsg )
 	}
 
 
-	//process the subs that need to be removed
-	if( busesMsg.isSubDeleted() )
-		handleDeletedSubs( busesMsg );
-
-
 	//add the each subbus to the cache
 	for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ )
 		handleSubBus( busesMsg.getSubBusAt(i) );
+}
+
+/**
+ * Process a command message from the server
+ */
+private void handleCBCCommand( CBCCommand cbcCmd ) {
+
+	switch( cbcCmd.getCommand() ) {
+
+		//delete the given subID
+		case CBCCommand.DELETE_ITEM:
+			if( isSubBus(cbcCmd.getDeviceID()) )
+				handleDeletedSubs( cbcCmd.getDeviceID() );
+	}
+
 }
 
 /**
@@ -552,13 +559,14 @@ public void messageReceived( MessageEvent e )
 {
 	Message in = e.getMessage();
 
-	if( in instanceof CBCSubstationBuses )
-	{
+	if( in instanceof CBCSubstationBuses ) {
 		handleSubBuses( (CBCSubstationBuses)in );
 	}
-	else if( in instanceof CBCSubAreaNames )
-	{
+	else if( in instanceof CBCSubAreaNames ) {
 		handleAreaList( (CBCSubAreaNames)in );
+	}	
+	else if( in instanceof CBCCommand ) {		
+		handleCBCCommand( (CBCCommand)in );
 	}
 
 }

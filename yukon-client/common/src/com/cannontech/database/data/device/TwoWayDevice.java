@@ -1,6 +1,7 @@
 package com.cannontech.database.data.device;
 
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceScanRate;
@@ -14,9 +15,11 @@ public class TwoWayDevice extends DeviceBase
 {
 
 	private DeviceTwoWayFlags deviceTwoWayFlags = null;
-	//private Vector deviceStatisticsVector = null;
-	private Vector deviceScanRateVector = null;
 	private DeviceWindow deviceWindow = null;
+
+	//contains <String:ScanType, DeviceScanRate>
+	private HashMap deviceScanRateVector = null;
+
 /**
  * TwoWayDevice constructor comment.
  */
@@ -35,9 +38,9 @@ public void add() throws java.sql.SQLException {
 			((DBPersistent) getDeviceStatisticsVector().elementAt(i)).add();
 */
 
-	if( getDeviceScanRateVector() != null )
-		for( int i = 0; i < getDeviceScanRateVector().size(); i++ )
-			((DBPersistent) getDeviceScanRateVector().elementAt(i)).add();
+	Iterator it = getDeviceScanRateMap().values().iterator();
+	while( it.hasNext() )
+		((DBPersistent)it.next()).add();
 
 	getDeviceWindow().add();
 }
@@ -84,9 +87,9 @@ public void deletePartial() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @return java.util.Vector
  */
-public Vector getDeviceScanRateVector() {
+public HashMap getDeviceScanRateMap() {
 	if( deviceScanRateVector == null )
-		deviceScanRateVector = new Vector();
+		deviceScanRateVector = new HashMap();
 	return deviceScanRateVector;
 }
 /**
@@ -137,26 +140,25 @@ public void retrieve() throws java.sql.SQLException{
 	getDeviceTwoWayFlags().retrieve();
 	getDeviceWindow().retrieve();
 
-	deviceScanRateVector = new java.util.Vector();
 	try
 	{
 		com.cannontech.database.db.device.DeviceScanRate rArray[] = 
             com.cannontech.database.db.device.DeviceScanRate.getDeviceScanRates( 
                   getDevice().getDeviceID(), getDbConnection() );
 
-		for( int i = 0; i < rArray.length; i++ )
-		{
+		for( int i = 0; i < rArray.length; i++ ) {
 			rArray[i].setDbConnection(getDbConnection());
-			deviceScanRateVector.addElement( rArray[i] );
+			getDeviceScanRateMap().put( rArray[i].getScanType(), rArray[i] );
 		}
 
-		for( int j = 0; j < getDeviceScanRateVector().size(); j++ )
-		{	
-			DBPersistent o = ((DBPersistent) getDeviceScanRateVector().elementAt(j));
+		Iterator it = getDeviceScanRateMap().values().iterator();
+		while( it.hasNext() ) {
+			DBPersistent o = (DBPersistent)it.next();
 			o.setDbConnection( getDbConnection() );
 			o.retrieve();
 			o.setDbConnection(null);
 		}
+
 	}
 	catch(java.sql.SQLException e )
 	{
@@ -206,13 +208,9 @@ public void setDbConnection(java.sql.Connection conn)
 		for( int i = 0; i < v.size(); i++ )
 			((DBPersistent) v.elementAt(i)).setDbConnection(conn);
 */
-	Vector v2 = getDeviceScanRateVector();
-
-	if( v2 != null )
-	{
-		for( int i = 0; i < v2.size(); i++ )
-			((DBPersistent) v2.elementAt(i)).setDbConnection(conn);
-	}
+	Iterator it = getDeviceScanRateMap().values().iterator();
+	while( it.hasNext() )
+		((DBPersistent)it.next()).setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -225,17 +223,21 @@ public void setDeviceID(Integer deviceID)
 	getDeviceTwoWayFlags().setDeviceID(deviceID);
 	getDeviceWindow().setDeviceID(deviceID);
 
-	if( getDeviceScanRateVector() != null )
-		for( int i = 0; i < getDeviceScanRateVector().size(); i++ )
-			((DeviceScanRate) getDeviceScanRateVector().elementAt(i)).setDeviceID(deviceID);
+	Iterator it = getDeviceScanRateMap().values().iterator();
+	while( it.hasNext() )
+		((DeviceScanRate)it.next()).setDeviceID(deviceID);
 }
 /**
- * This method was created in VisualAge.
- * @param newValue java.util.Vector
+ * Ensure this guy is never null
  */
-public void setDeviceScanRateVector(Vector newValue) {
+public void setDeviceScanRateMap(HashMap newValue) {
+	
+	if( newValue == null )
+		newValue = new HashMap();
+
 	this.deviceScanRateVector = newValue;
 }
+
 /**
  * This method was created in VisualAge.
  * @param newValue com.cannontech.database.db.device.DeviceTwoWayFlags
@@ -267,8 +269,8 @@ public void update() throws java.sql.SQLException
 
 	DeviceScanRate.deleteDeviceScanRates( getDevice().getDeviceID(), getDbConnection() );
 
-	if( getDeviceScanRateVector() != null )
-		for( int i = 0; i < getDeviceScanRateVector().size(); i++ )
-			((DBPersistent) getDeviceScanRateVector().elementAt(i)).add();
+	Iterator it = getDeviceScanRateMap().values().iterator();
+	while( it.hasNext() )
+		((DBPersistent)it.next()).add();
 }
 }

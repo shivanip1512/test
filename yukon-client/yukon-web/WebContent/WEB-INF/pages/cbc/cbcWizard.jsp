@@ -87,7 +87,7 @@
 					<x:panelGroup>
 				        <f:verbatim><br/><hr/><br/></f:verbatim>
 				        <x:commandButton value="Create" action="#{capControlForm.create}" styleClass="stdButton" title="Saves this item to the database" />
-				        <x:commandButton value="Cancel" action="none" styleClass="stdButton" immediate="true" title="Cancels editing and returns to the last module that was used" >
+				        <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
 							<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
 						</x:commandButton>
 				    </x:panelGroup>

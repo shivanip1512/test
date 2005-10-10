@@ -7,11 +7,10 @@ package com.cannontech.database.db.device;
 public class DeviceScanRate extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer deviceID = null;
-	private String scanType = null;
-	private Integer intervalRate = null;
-	private Integer deviceScanRateID = null;
-	private Integer scanGroup = null;
-	private Integer alternateRate = null;
+	private String scanType = TYPE_GENERAL;
+	private Integer intervalRate = new Integer(300);
+	private Integer scanGroup = new Integer(0);
+	private Integer alternateRate = new Integer(300);
 
 	public static final String TYPE_GENERAL = "General";
 	public static final String TYPE_STATUS = "Status";
@@ -20,13 +19,23 @@ public class DeviceScanRate extends com.cannontech.database.db.DBPersistent
 	public static final String TYPE_INTEGRITY = "Integrity";
 	
 	public static final String TABLE_NAME = "DeviceScanRate";
+
 /**
- * DeviceScantRateTable constructor comment.
+ * DeviceScanRate constructor comment.
  */
 public DeviceScanRate() {
 	super();
-	initialize( null, null, null, null, null );
 }
+
+/**
+ * DeviceScanRate constructor comment.
+ */
+public DeviceScanRate( Integer devID, String scanTypeStr ) {
+	super();
+	setDeviceID( devID );
+	setScanType( scanTypeStr );
+}
+
 /**
  * DeviceScantRateTable constructor comment.
  */

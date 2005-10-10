@@ -1,12 +1,16 @@
 package com.cannontech.web.editor;
 
+import java.util.HashMap;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan
@@ -14,56 +18,114 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
  */
 public class CBControllerEditor {
 	
-	private DeviceCBC deviceCBC = null;
+	private YukonPAObject deviceCBC = null;
+	
+	//contains <String, Boolean>  (type, isEditing)
+	//private HashMap scanEditMap = new HashMap(8);
 
 	/**
-	 * 
+	 * Accepts a paoID and creates the DBPersistent from it, and then retrieves the
+	 * data from the DB
 	 */
-	public CBControllerEditor( DeviceCBC devCBC ) {
+	public CBControllerEditor( int paoId ) {
 		super();
-		setDeviceCBC( devCBC );
+		
+		setPaoCBC( PAOFactory.createPAObject(paoId) );
+		retrieveDB();
+		
+		//complain if the DB object is not null and it is not a Controller
+		if( getPaoCBC() != null && !(getPaoCBC() instanceof ICapBankController) )
+			throw new IllegalArgumentException(
+				"The CapController editor only allows PAO ids that map to a Controller, paoID=" + paoId +
+				" is not an instance of a ICapBankController");
+	}
+
+
+	/**
+	 * @return
+	 */
+	public boolean isEditingIntegrity() {
+		
+		return isTwoWay() && 
+			((TwoWayDevice)getPaoCBC()).getDeviceScanRateMap().containsKey(
+					DeviceScanRate.TYPE_INTEGRITY);
 	}
 
 	/**
 	 * @return
 	 */
-	public DeviceCBC getDeviceCBC() {
+	public boolean isEditingException() {
+		
+		return isTwoWay() && 
+			((TwoWayDevice)getPaoCBC()).getDeviceScanRateMap().containsKey(
+					DeviceScanRate.TYPE_EXCEPTION);
+	}
+
+	/**
+	 * @return
+	 */
+	public void setEditingIntegrity( boolean val ) {
+	}
+	/**
+	 * @return
+	 */
+	public void setEditingException( boolean val ) {
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isTwoWay() {
+		return CBCUtils.isTwoWay( getPaoCBC() );
+	}
+
+//	/**
+//	 * @return
+//	 */
+//	protected boolean isEditingScan( String type ) {
+//
+//		Boolean isEditing = scanEditMap.get(type) == null ? Boolean.FALSE : (Boolean)scanEditMap.get(type);
+//		return isTwoWay() && isEditing.booleanValue();
+//	}
+//
+//	/**
+//	 * @return
+//	 */
+//	protected void setEditingScan( String type, Boolean val ) {
+//		scanEditMap.put( type, val );
+//	}
+
+	/**
+	 * @return
+	 */
+	public YukonPAObject getPaoCBC() {
 		return deviceCBC;
 	}
 
 	/**
 	 * @param deviceCBC
 	 */
-	public void setDeviceCBC(DeviceCBC deviceCBC) {
+	public void setPaoCBC(YukonPAObject deviceCBC) {
 		this.deviceCBC = deviceCBC;
 	}
 
 
 	/**
 	 * Gets the full DB object from the database so we can operate on
-	 * the whole thing. Sets our fields to have the same values as the given
-	 * DB object.
+	 * the whole thing.
 	 */
-	public DBPersistent retrieveDB() {
+	public void retrieveDB() {
 		
-		if( getDeviceCBC() == null ) return null;
+		if( getPaoCBC() == null ) return;
 		
-		DBPersistent dbObj = 
-			PAOFactory.createPAObject(
-				getDeviceCBC().getDeviceID().intValue() );
-
 		try {
-			dbObj = Transaction.createTransaction( Transaction.RETRIEVE, dbObj ).execute();
+			setPaoCBC( (YukonPAObject)
+				Transaction.createTransaction(Transaction.RETRIEVE, getPaoCBC()).execute() );
 			
-			//set our feilds to what the user has set
-			((ICapBankController)dbObj).setAddress( getDeviceCBC().getSerialNumber() );
-			((ICapBankController)dbObj).setCommID( getDeviceCBC().getRouteID() );
-			
-			return dbObj;
 		}
 		catch( TransactionException te ) {
 			CTILogger.error( "Unable to retrieve CBC db object", te );
-			return null;
+			return;
 		}
 
 	}

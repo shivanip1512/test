@@ -80,6 +80,31 @@ public class CBCSelectionLists {
 	};
 
 
+	//generic time list in seconds for a many fields
+	public static final SelectItem[] TIME_INTERVAL = {
+		//value, label
+		new SelectItem(new Integer(1), "1 seconds"),
+		new SelectItem(new Integer(2), "2 seconds"),
+		new SelectItem(new Integer(5), "5 seconds"),
+		new SelectItem(new Integer(10), "10 seconds"),
+		new SelectItem(new Integer(15), "15 seconds"),
+		new SelectItem(new Integer(30), "30 seconds"),
+		new SelectItem(new Integer(60), "1 minute"),
+		new SelectItem(new Integer(120), "2 minutes"),
+		new SelectItem(new Integer(180), "3 minutes"),
+		new SelectItem(new Integer(300), "5 minutes"),
+		new SelectItem(new Integer(600), "10 minutes"),
+		new SelectItem(new Integer(900), "15 minutes"),
+		new SelectItem(new Integer(1200), "20 minutes"),
+		new SelectItem(new Integer(1500), "25 minutes"),		
+		new SelectItem(new Integer(1800), "30 minutes"),
+		new SelectItem(new Integer(3600), "1 hour"),
+		new SelectItem(new Integer(7200), "2 hours"),
+		new SelectItem(new Integer(21600), "6 hours"),
+		new SelectItem(new Integer(43200), "12 hours"),
+		new SelectItem(new Integer(86400), "1 day")
+	};
+
 
 	/**
 	 * 

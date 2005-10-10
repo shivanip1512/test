@@ -35,37 +35,10 @@ public abstract class DBEditorForm
 	//dummy UI comp to be used for internal event firing only
 	protected static final UIComponent DUMMY_UI = new UIData();
 
-	//generic time list in seconds for a number of fields
-	protected static final SelectItem[] timeInterval;
-
-	//init our static data with real values
-	static {
-		//value, label
-		timeInterval = new SelectItem[18];
-		timeInterval[0] = new SelectItem(new Integer(5), "5 seconds");
-		timeInterval[1] = new SelectItem(new Integer(10), "10 seconds");
-		timeInterval[2] = new SelectItem(new Integer(15), "15 seconds");
-		timeInterval[3] = new SelectItem(new Integer(30), "30 seconds");
-		timeInterval[4] = new SelectItem(new Integer(60), "1 minute");
-		timeInterval[5] = new SelectItem(new Integer(120), "2 minutes");
-		timeInterval[6] = new SelectItem(new Integer(180), "3 minutes");
-		timeInterval[7] = new SelectItem(new Integer(300), "5 minutes");
-		timeInterval[8] = new SelectItem(new Integer(600), "10 minutes");
-		timeInterval[9] = new SelectItem(new Integer(900), "15 minutes");
-		timeInterval[10] = new SelectItem(new Integer(1200), "20 minutes");
-		timeInterval[11] = new SelectItem(new Integer(1500), "25 minutes");		
-		timeInterval[12] = new SelectItem(new Integer(1800), "30 minutes");
-		timeInterval[13] = new SelectItem(new Integer(3600), "1 hour");
-		timeInterval[14] = new SelectItem(new Integer(7200), "2 hours");
-		timeInterval[15] = new SelectItem(new Integer(21600), "6 hours");
-		timeInterval[16] = new SelectItem(new Integer(43200), "12 hours");
-		timeInterval[17] = new SelectItem(new Integer(86400), "1 day");
-	}
 
 
 	/**
 	 * Resets this form with the original values from the database
-	 *
 	 */
 	public void resetForm() {
 		

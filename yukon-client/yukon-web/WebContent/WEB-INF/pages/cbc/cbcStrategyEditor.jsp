@@ -57,14 +57,16 @@
 			<x:outputLabel for="CntrlInterv" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
 			<x:selectOneMenu id="CntrlInterv" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlInterval}" >
-				<f:selectItems value="#{capControlForm.controlInterval}"/>
+				<f:selectItem itemLabel="(On New Data Only)" itemValue="0"/>
+				<f:selectItems value="#{capControlForm.timeInterval}"/>
 			</x:selectOneMenu>
 	
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="MaxConfTime" value="Max Confirm Time: " title="How much time the system waits until the control is considered successful"/>
 			<x:selectOneMenu id="MaxConfTime" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minResponseTime}" >
-				<f:selectItems value="#{capControlForm.dayTime}"/>
+				<f:selectItem itemLabel="(none)" itemValue="0"/>
+				<f:selectItems value="#{capControlForm.timeInterval}"/>				
 			</x:selectOneMenu>
 	
 			<f:verbatim><br/></f:verbatim>
@@ -94,7 +96,8 @@
 			<x:outputLabel for="DelayTime" value="Delay Time: " title="How much time we should wait before sending the control command into the field"/>
 			<x:selectOneMenu id="DelayTime" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlDelayTime}" >
-				<f:selectItems value="#{capControlForm.dayTime}"/>
+				<f:selectItem itemValue="0" itemLabel="(none)" />
+				<f:selectItems value="#{capControlForm.timeInterval}" />
 			</x:selectOneMenu>
 	
 	

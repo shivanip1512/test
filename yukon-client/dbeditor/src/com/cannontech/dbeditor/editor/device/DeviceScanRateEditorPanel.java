@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -1536,8 +1539,10 @@ public Object getValue(Object device)
    	val = (TwoWayDevice)device;
 
 	Integer deviceID = val.getDevice().getDeviceID();
-	java.util.Vector oldScanRateVector = val.getDeviceScanRateVector();
-	java.util.Vector newScanRateVector = new java.util.Vector(3);
+	HashMap oldScanRateMap = val.getDeviceScanRateMap();
+	HashMap newScanRateMap = new HashMap(3);
+//	java.util.Vector oldScanRateVector = val.getDeviceScanRateVector();
+//	java.util.Vector newScanRateVector = new java.util.Vector(3);
 
 
 	if( (val instanceof CCUBase) || (val instanceof TCUBase) 
@@ -1554,7 +1559,9 @@ public Object getValue(Object device)
 					: getJComboBoxAltHealthChk() );
 
 			Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());			
-			newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_STATUS, generalRate, generalGroup, altRate));
+			newScanRateMap.put(
+				DeviceScanRate.TYPE_STATUS,
+				new DeviceScanRate(deviceID, DeviceScanRate.TYPE_STATUS, generalRate, generalGroup, altRate));
 		}
 	}
 	else if ( val instanceof IEDMeter || val instanceof RTM )
@@ -1568,7 +1575,9 @@ public Object getValue(Object device)
 					: getJComboBoxAltHealthChk() );
 
 			Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());
-			newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_GENERAL, generalRate, generalGroup, altRate));
+			newScanRateMap.put(
+				DeviceScanRate.TYPE_GENERAL,
+				new DeviceScanRate(deviceID, DeviceScanRate.TYPE_GENERAL, generalRate, generalGroup, altRate));
 		}
 	}
 	else if( (val instanceof RTUBase) 
@@ -1590,7 +1599,9 @@ public Object getValue(Object device)
 					: getJComboBoxAltHealthChk() );
 
 				Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());
-				newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_STATUS, generalRate, generalGroup, altRate));
+				newScanRateMap.put(
+					DeviceScanRate.TYPE_STATUS,
+					new DeviceScanRate(deviceID, DeviceScanRate.TYPE_STATUS, generalRate, generalGroup, altRate));
 			}
 			else
 			{
@@ -1601,7 +1612,9 @@ public Object getValue(Object device)
 					: getJComboBoxAltHealthChk() );
 
 				Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());
-				newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_EXCEPTION, generalRate, generalGroup, altRate));
+				newScanRateMap.put(
+					DeviceScanRate.TYPE_EXCEPTION,
+					new DeviceScanRate(deviceID, DeviceScanRate.TYPE_EXCEPTION, generalRate, generalGroup, altRate));
 			}
 		}
 
@@ -1614,7 +1627,9 @@ public Object getValue(Object device)
 					: getJComboBoxAltAccRate() );
 
 			Integer accumulatorGroup = new Integer(getAccumulatorGroupComboBox().getSelectedIndex());
-			newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_ACCUMULATOR, accumulatorRate, accumulatorGroup, altRate));
+			newScanRateMap.put(
+				DeviceScanRate.TYPE_ACCUMULATOR,
+				new DeviceScanRate(deviceID, DeviceScanRate.TYPE_ACCUMULATOR, accumulatorRate, accumulatorGroup, altRate));
 		}
 		
 		if( getIntegrityRateCheckBox().isSelected() &&  getIntegrityRateCheckBox().isVisible() )
@@ -1626,23 +1641,31 @@ public Object getValue(Object device)
 					: getJComboBoxAltIntegrityRate() );
 
 			Integer integrityGroup = new Integer(getIntegrityGroupComboBox().getSelectedIndex());
-			newScanRateVector.addElement(new DeviceScanRate(deviceID, DeviceScanRate.TYPE_INTEGRITY, integrityRate, integrityGroup, altRate));
+			newScanRateMap.put(
+				DeviceScanRate.TYPE_INTEGRITY,
+				new DeviceScanRate(deviceID, DeviceScanRate.TYPE_INTEGRITY, integrityRate, integrityGroup, altRate));
 		}
 	}
 
-	for(int i=0;i<newScanRateVector.size();i++)
-	{
+	Iterator newIt = newScanRateMap.values().iterator();
+	Iterator oldIt = oldScanRateMap.values().iterator();
+	while( newIt.hasNext() ) {
+
+		DeviceScanRate newRate = (DeviceScanRate)newIt.next();
+		
 		//be sure no scan rates are set to zero (if any rate is zero, we may have a problem)
-		if( ((DeviceScanRate)newScanRateVector.get(i)).getIntervalRate().intValue() == 0 
-			 || ((DeviceScanRate)newScanRateVector.get(i)).getAlternateRate().intValue() == 0 )
+		if( newRate.getIntervalRate().intValue() == 0 
+			 || newRate.getAlternateRate().intValue() == 0 )
 		{
-			for(int j=0;j<oldScanRateVector.size();j++)
-			{
-				if( ((DeviceScanRate)newScanRateVector.get(i)).getScanType().equalsIgnoreCase(((DeviceScanRate)oldScanRateVector.get(j)).getScanType()) )
+			//for(int j=0;j<oldScanRateVector.size();j++)
+			while( oldIt.hasNext() ) {
+
+				DeviceScanRate oldRate = (DeviceScanRate)oldIt.next();
+				if( newRate.getScanType().equalsIgnoreCase(oldRate.getScanType()) )
 				{
 					//reset to our original scan rate values
-					((DeviceScanRate)newScanRateVector.get(i)).setIntervalRate( new Integer(((DeviceScanRate)oldScanRateVector.get(j)).getIntervalRate().intValue()) );
-					((DeviceScanRate)newScanRateVector.get(i)).setAlternateRate( new Integer(((DeviceScanRate)oldScanRateVector.get(j)).getAlternateRate().intValue()) );
+					newRate.setIntervalRate( new Integer(oldRate.getIntervalRate().intValue()) );
+					newRate.setAlternateRate( new Integer(oldRate.getAlternateRate().intValue()) );
 					break;
 				}
 			}
@@ -1650,7 +1673,7 @@ public Object getValue(Object device)
 
 	}
 
-	val.setDeviceScanRateVector(newScanRateVector);
+	val.setDeviceScanRateMap( newScanRateMap );
 
 	//set the scan window values here! Also we must do this in the Wizard
 	val.getDeviceWindow().setType( getJComboBoxScanWindowType().getSelectedItem().toString() );
@@ -2052,8 +2075,10 @@ public void setValue(Object val)
 	
 	//getAccumulatorRateCheckBox().setText("Accumulator Rate");		
 
-	DeviceScanRate dScanRate[] = new DeviceScanRate[((TwoWayDevice) val).getDeviceScanRateVector().size()];
-	((TwoWayDevice) val).getDeviceScanRateVector().copyInto(dScanRate);
+//	DeviceScanRate dScanRate[] = new DeviceScanRate[
+//		((TwoWayDevice) val).getDeviceScanRateVector().size()];
+
+	HashMap scanRateMap = ((TwoWayDevice)val).getDeviceScanRateMap();
 
 	if ((val instanceof CCUBase)
 		|| (val instanceof TCUBase)
@@ -2063,29 +2088,29 @@ public void setValue(Object val)
 		|| (val instanceof RTCBase)
 		|| (val instanceof RTM))
 	{
-		if (dScanRate.length > 0)
-		{
-			if( dScanRate[0].getScanType().equals(DeviceScanRate.TYPE_STATUS)
-				 || dScanRate[0].getScanType().equals(DeviceScanRate.TYPE_GENERAL) )
-			{
-				getPeriodicHealthCheckBox().setSelected(true);
-				getPeriodicHealthIntervalComboBox().setEnabled(true);
-				getPeriodicHealthGroupComboBox().setEnabled(true);
-				getJComboBoxAltHealthChk().setEnabled(true);
-				
-				getPeriodicHealthGroupComboBox().setSelectedIndex(dScanRate[0].getScanGroup().intValue());
-				
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getPeriodicHealthIntervalComboBox(),
-					dScanRate[0].getIntervalRate().intValue());
+		DeviceScanRate scanRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_STATUS);		
+		if( scanRate == null )
+			scanRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_GENERAL);
+		
+		if( scanRate != null ) {
+			getPeriodicHealthCheckBox().setSelected(true);
+			getPeriodicHealthIntervalComboBox().setEnabled(true);
+			getPeriodicHealthGroupComboBox().setEnabled(true);
+			getJComboBoxAltHealthChk().setEnabled(true);
+			
+			getPeriodicHealthGroupComboBox().setSelectedIndex(
+				scanRate.getScanGroup().intValue());
+			
+			CtiUtilities.setIntervalComboBoxSelectedItem(
+				getPeriodicHealthIntervalComboBox(),
+				scanRate.getIntervalRate().intValue());
 
-				if( dScanRate[0].getIntervalRate().intValue() == dScanRate[0].getAlternateRate().intValue() )
-					getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
-				else
-					CtiUtilities.setIntervalComboBoxSelectedItem(
-						getJComboBoxAltHealthChk(),
-						dScanRate[0].getAlternateRate().intValue());
-			}
+			if( scanRate.getIntervalRate().intValue() == scanRate.getAlternateRate().intValue() )
+				getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
+			else
+				CtiUtilities.setIntervalComboBoxSelectedItem(
+					getJComboBoxAltHealthChk(),
+					scanRate.getAlternateRate().intValue());
 		}
 	}
 	else if( (val instanceof RTUBase) 
@@ -2097,63 +2122,68 @@ public void setValue(Object val)
             || (val instanceof Series5Base) )
 	{
 
-		for (int i = 0; i < dScanRate.length; i++)
-		{
-			if (dScanRate[i].getScanType().equals(DeviceScanRate.TYPE_EXCEPTION)
-				|| dScanRate[i].getScanType().equals(DeviceScanRate.TYPE_STATUS))
-			{
-				getPeriodicHealthCheckBox().setSelected(true);
-				getPeriodicHealthIntervalComboBox().setEnabled(true);
-				getPeriodicHealthGroupComboBox().setEnabled(true);
-				getJComboBoxAltHealthChk().setEnabled(true);
-				
-				getPeriodicHealthGroupComboBox().setSelectedIndex(dScanRate[i].getScanGroup().intValue());
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getPeriodicHealthIntervalComboBox(),
-					dScanRate[i].getIntervalRate().intValue());
-				
-				if( dScanRate[i].getIntervalRate().intValue() == dScanRate[i].getAlternateRate().intValue() )
-					getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
-				else
-					CtiUtilities.setIntervalComboBoxSelectedItem(
-						getJComboBoxAltHealthChk(), dScanRate[i].getAlternateRate().intValue());
-			}
-			else if (dScanRate[i].getScanType().equals(DeviceScanRate.TYPE_ACCUMULATOR))
-			{
-				getAccumulatorRateCheckBox().setSelected(true);
-				getAccumulatorRateComboBox().setEnabled(true);
-				getAccumulatorGroupComboBox().setEnabled(true);
-				getJComboBoxAltAccRate().setEnabled(true);
-				
-				getAccumulatorGroupComboBox().setSelectedIndex(dScanRate[i].getScanGroup().intValue());
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getAccumulatorRateComboBox(), dScanRate[i].getIntervalRate().intValue());
-				
-				if( dScanRate[i].getIntervalRate().intValue() == dScanRate[i].getAlternateRate().intValue() )
-					getJComboBoxAltAccRate().setSelectedItem( CtiUtilities.STRING_NONE );
-				else
-					CtiUtilities.setIntervalComboBoxSelectedItem(
-						getJComboBoxAltAccRate(), dScanRate[i].getAlternateRate().intValue());				
-			}
-			else if (dScanRate[i].getScanType().equals(DeviceScanRate.TYPE_INTEGRITY))
-			{
-				getIntegrityRateCheckBox().setSelected(true);
-				getIntegrityRateComboBox().setEnabled(true);
-				getIntegrityGroupComboBox().setEnabled(true);
-				getJComboBoxAltIntegrityRate().setEnabled(true);
-				
-				getIntegrityGroupComboBox().setSelectedIndex(dScanRate[i].getScanGroup().intValue());
-				
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getIntegrityRateComboBox(), dScanRate[i].getIntervalRate().intValue());
+		DeviceScanRate statusRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_EXCEPTION);		
+		if( statusRate == null )
+			statusRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_STATUS);
 
-				if( dScanRate[i].getIntervalRate().intValue() == dScanRate[i].getAlternateRate().intValue() )
-					getJComboBoxAltIntegrityRate().setSelectedItem( CtiUtilities.STRING_NONE );
-				else
-					CtiUtilities.setIntervalComboBoxSelectedItem(
-						getJComboBoxAltIntegrityRate(), dScanRate[i].getAlternateRate().intValue());
-			}
+		if( statusRate != null ) {
+			getPeriodicHealthCheckBox().setSelected(true);
+			getPeriodicHealthIntervalComboBox().setEnabled(true);
+			getPeriodicHealthGroupComboBox().setEnabled(true);
+			getJComboBoxAltHealthChk().setEnabled(true);
+			
+			getPeriodicHealthGroupComboBox().setSelectedIndex(statusRate.getScanGroup().intValue());
+			CtiUtilities.setIntervalComboBoxSelectedItem(
+				getPeriodicHealthIntervalComboBox(),
+				statusRate.getIntervalRate().intValue());
+			
+			if( statusRate.getIntervalRate().intValue() == statusRate.getAlternateRate().intValue() )
+				getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
+			else
+				CtiUtilities.setIntervalComboBoxSelectedItem(
+					getJComboBoxAltHealthChk(), statusRate.getAlternateRate().intValue());
 		}
+		
+
+		DeviceScanRate accumRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_ACCUMULATOR);		
+		if( accumRate != null ) {
+			getAccumulatorRateCheckBox().setSelected(true);
+			getAccumulatorRateComboBox().setEnabled(true);
+			getAccumulatorGroupComboBox().setEnabled(true);
+			getJComboBoxAltAccRate().setEnabled(true);
+			
+			getAccumulatorGroupComboBox().setSelectedIndex(accumRate.getScanGroup().intValue());
+			CtiUtilities.setIntervalComboBoxSelectedItem(
+				getAccumulatorRateComboBox(), accumRate.getIntervalRate().intValue());
+			
+			if( accumRate.getIntervalRate().intValue() == accumRate.getAlternateRate().intValue() )
+				getJComboBoxAltAccRate().setSelectedItem( CtiUtilities.STRING_NONE );
+			else
+				CtiUtilities.setIntervalComboBoxSelectedItem(
+					getJComboBoxAltAccRate(), accumRate.getAlternateRate().intValue());				
+		}
+		
+
+		DeviceScanRate integrityRate = (DeviceScanRate)scanRateMap.get(DeviceScanRate.TYPE_INTEGRITY);		
+		if( integrityRate != null ) {
+			getIntegrityRateCheckBox().setSelected(true);
+			getIntegrityRateComboBox().setEnabled(true);
+			getIntegrityGroupComboBox().setEnabled(true);
+			getJComboBoxAltIntegrityRate().setEnabled(true);
+			
+			getIntegrityGroupComboBox().setSelectedIndex(integrityRate.getScanGroup().intValue());
+			
+			CtiUtilities.setIntervalComboBoxSelectedItem(
+				getIntegrityRateComboBox(), integrityRate.getIntervalRate().intValue());
+
+			if( integrityRate.getIntervalRate().intValue() == integrityRate.getAlternateRate().intValue() )
+				getJComboBoxAltIntegrityRate().setSelectedItem( CtiUtilities.STRING_NONE );
+			else
+				CtiUtilities.setIntervalComboBoxSelectedItem(
+					getJComboBoxAltIntegrityRate(), integrityRate.getAlternateRate().intValue());
+		}
+			
+			
 	}
 
 	DeviceWindow window = ((TwoWayDevice) val).getDeviceWindow();

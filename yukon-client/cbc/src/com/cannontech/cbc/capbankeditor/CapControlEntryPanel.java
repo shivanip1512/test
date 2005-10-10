@@ -650,7 +650,7 @@ public void setCapObject(StreamableCapObject newCapObj_ )
 				//getJComboBoxState().setSelectedItem( capBank.getOperationalState() );
 
 				getJTextFieldOpCount().setText( 
-					String.valueOf(capBank.getCurrentDailyOperations()) );
+					String.valueOf(capBank.getTotalOperations()) );
 				
 				getJComboBoxState().setSelectedItem( 
 					CBCDisplay.getCBCStateNames()[capBank.getControlStatus().intValue()] );				

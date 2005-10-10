@@ -14,6 +14,7 @@ import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSubAreaNames;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
 import com.cannontech.yukon.cbc.CBCUtils;
@@ -399,40 +400,27 @@ public synchronized void setFilter(java.lang.String newFilter)
 }
 
 
-private void handleDeletedSub( CBCSubstationBuses msg )
+/**
+ * Removes a subBus from our list
+ */
+private void handleDeletedSub( int subID )
 {
-	Vector deleteSubs = new Vector( msg.getNumberOfBuses() );
-	
-	for( int i = 0; i < getAllSubBuses().size(); i++ )
-	{
-		boolean fnd = false;
+	for( int i = 0; i < getAllSubBuses().size(); i++ ) {
+
 		SubBus existingSub = (SubBus)getAllSubBuses().get(i);
-
-		for( int j = 0; j  < msg.getNumberOfBuses(); j++ )
-		{
-			if( msg.getSubBusAt(j).equals(existingSub) )
-			{
-				fnd = true;
-				break;
-			}
+		
+		if( subID == existingSub.getCcId().intValue() ) {
+			removeSubBus( existingSub );
 		}
-				
-		if( !fnd )
-			deleteSubs.add( existingSub );
-	}
 
-	for( int i = (deleteSubs.size()-1); i >=0; i-- )
-	{
-		removeControlArea( (SubBus)deleteSubs.get(i) );
-	}
-	
+	}	
 }
 
 /**
  * Removes the specified subbus
  * @param SubBus
  */
-private void removeControlArea( SubBus bus_ )
+private void removeSubBus( SubBus bus_ )
 {
 	int loc = getAllSubBuses().indexOf( bus_ );
 		
@@ -471,11 +459,6 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
                 busesMsg.removeSubBusAt( i );
 
         }
-		
-		
-		//since this is all the subs, lets just clear what we currently have
-		if( busesMsg.isSubDeleted() )
-			handleDeletedSub( busesMsg );
 
 
         //only add the subs we are allowed to see
@@ -496,7 +479,15 @@ public void messageReceived( com.cannontech.message.util.MessageEvent e )
 
         fireTableChanged( areasChng );
     }
+	else if( in instanceof CBCCommand )
+	{
+		CBCCommand cmd = (CBCCommand)in;
 
+		//since this is all the subs, lets just clear what we currently have
+		if( cmd.getCommand() == CBCCommand.DELETE_ITEM )
+			handleDeletedSub( cmd.getDeviceID() );
+
+	}
 
 	//by using fireTableRowsUpdated(int,int) we do not clear the table selection		
 	if( oldRowCount == getRowCount() )

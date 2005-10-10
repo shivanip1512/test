@@ -1,7 +1,14 @@
 package com.cannontech.database.data.capcontrol;
 
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.database.db.pao.YukonPAObject;
 
 /**
  * This type was created in VisualAge.
@@ -137,5 +144,64 @@ public static PointBase createStatusControlPoint( int cbcDeviceID )
 
 	return newPoint;
 }
+
+
+/**
+ * This method returns all the cbc IDs that are not assgined
+ *  to a CapBank.
+ */
+public static int[] getUnassignedDeviceCBCIds()
+{
+	NativeIntVector returnVector = new NativeIntVector(16);
+	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.ResultSet rset = null;
+
+	//curerntly, CBCs are the only PAOs that have a category=DEVICE and class=CAPCONTROL
+	String sql =
+		"SELECT PAObjectID FROM " + YukonPAObject.TABLE_NAME + " where " +
+			"Category = '" + PAOGroups.STRING_CAT_DEVICE + "' " + 
+			"and PAOClass = '" + PAOGroups.getPAOClass(PAOGroups.CAT_CAPCONTROL, PAOGroups.CLASS_CAPCONTROL) +
+			"' and PAObjectID not in (select ControlDeviceID from " + CapBank.TABLE_NAME +
+			") ORDER BY PAOName";
+
+	try
+	{		
+		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+		if( conn == null )
+		{
+			throw new IllegalStateException("Error getting database connection.");
+		}
+		else
+		{
+			pstmt = conn.prepareStatement(sql.toString());
+			rset = pstmt.executeQuery();
+	
+			while( rset.next() ) {
+				returnVector.addElement( rset.getInt(1) );
+			}
+		}		
+	}
+	catch( java.sql.SQLException e )
+	{
+		CTILogger.error( e.getMessage(), e );
+	}
+	finally
+	{
+		try
+		{
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
+		} 
+		catch( java.sql.SQLException e2 )
+		{
+			CTILogger.error( e2.getMessage(), e2 );//something is up
+		}	
+	}
+
+	return returnVector.toArray();
+}
+
 
 }

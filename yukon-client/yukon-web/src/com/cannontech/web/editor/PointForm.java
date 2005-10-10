@@ -31,6 +31,7 @@ import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.web.editor.point.AlarmTableEntry;
+import com.cannontech.web.util.CBCSelectionLists;
 
 /**
  * @author ryan
@@ -83,8 +84,8 @@ public class PointForm extends DBEditorForm
 		return logicalGroups;
 	}
 
-	public SelectItem[] getArchiveIntervals() {		
-			return timeInterval;
+	public SelectItem[] getTimeInterval() {		
+			return CBCSelectionLists.TIME_INTERVAL;
 	}
 
 	public List getAlarmTableEntries() {		

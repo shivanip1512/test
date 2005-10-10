@@ -228,7 +228,7 @@ class CCOneLineGenerator
 		graph.add(controlMethodString);
 		controlMethodString.setFont(new java.awt.Font("arial", java.awt.Font.BOLD, 14));
 		controlMethodString.setPaint(Color.WHITE);
-		controlMethodString.setText("Control Method: "+subBus.getControlMethod());
+		//controlMethodString.setText("Control Method: "+subBus.getControlMethod());
 
 		StaticText nameString = new StaticText();
 		graph.add(nameString);

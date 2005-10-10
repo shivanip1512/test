@@ -32,8 +32,8 @@ public class OneLineSubs implements MessageListener
 		super();
         
         // /yukon/server/web/webapps/yukon/capcontrol
-        //dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/capcontrol/oneline";
-        dirBase = CtiUtilities.getYukonBase() + "/server/web/webapps/yukon/capcontrol/oneline";
+        dirBase = CtiUtilities.getYukonBase() + "/head/yukon-web/WebContent/capcontrol/oneline";
+        //dirBase = CtiUtilities.getYukonBase() + "/server/web/webapps/yukon/capcontrol/oneline";
         
         CTILogger.debug(" Oneline generation output: " + dirBase);
 	}

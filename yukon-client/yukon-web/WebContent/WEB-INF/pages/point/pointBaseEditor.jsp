@@ -42,7 +42,7 @@
 	    <f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="archiveInterval" value="Interval: "/>
 		<x:selectOneMenu id="archiveInterval" value="#{ptEditorForm.pointBase.point.archiveInterval}" disabled="#{!ptEditorForm.archiveInterEnabled}">
-			<f:selectItems value="#{ptEditorForm.archiveIntervals}"/>
+			<f:selectItems value="#{ptEditorForm.timeInterval}"/>
 		</x:selectOneMenu>
 	<f:verbatim></fieldset></f:verbatim>
 

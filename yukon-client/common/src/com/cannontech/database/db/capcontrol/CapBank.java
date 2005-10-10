@@ -4,6 +4,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 
 /**
  * This type was created in VisualAge.
@@ -20,12 +22,16 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	private String switchManufacture = com.cannontech.common.util.CtiUtilities.STRING_NONE;
 	private String mapLocationID = "0";  //old integer default
 	private Integer recloseDelay = new Integer(0);
+	private Integer maxDailyOps = new Integer(0);
+	private Character maxOpDisable = new Character('N');
+
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"OperationalState", "ControllerType", "ControlDeviceID",
 		"ControlPointID", "BankSize", "TypeOfSwitch",
-		"SwitchManufacture", "MapLocationID", "RecloseDelay"
+		"SwitchManufacture", "MapLocationID", "RecloseDelay",
+		"MaxDailyOps", "MaxOpDisable"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
@@ -55,7 +61,8 @@ public void add() throws java.sql.SQLException
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
 		getTypeOfSwitch(), getSwitchManufacture(),
-		getMapLocationID(), getRecloseDelay()
+		getMapLocationID(), getRecloseDelay(),
+		getMaxDailyOps(), getMaxOpDisable()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -65,7 +72,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException {
 
-	delete( this.TABLE_NAME, "DeviceID", getDeviceID() );
+	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 	
 }
 /**
@@ -184,20 +191,18 @@ public static CapBank[] getUnassignedCapBanksList()
 	}
 	catch( java.sql.SQLException e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 	finally
 	{
 		try
 		{
-			if( pstmt != null ) 
-				pstmt.close();
-			if( conn != null ) 
-				conn.close();
+			if( pstmt != null ) pstmt.close();
+			if( conn != null ) conn.close();
 		} 
 		catch( java.sql.SQLException e2 )
 		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
+			CTILogger.error( e2.getMessage(), e2 );//something is up
 		}	
 	}
 
@@ -276,7 +281,9 @@ public void retrieve() throws java.sql.SQLException
 		setTypeOfSwitch( (String) results[5] );
 		setSwitchManufacture( (String) results[6] );
 		setMapLocationID( (String) results[7] );
-		setRecloseDelay( (Integer) results[8] );
+		setRecloseDelay( (Integer) results[8] );		
+		setMaxDailyOps( (Integer) results[9] );
+		setMaxOpDisable( new Character(results[10].toString().charAt(0)) );		
 	}
 
 }
@@ -363,7 +370,8 @@ public void update() throws java.sql.SQLException
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
 		getTypeOfSwitch(), getSwitchManufacture(),
-		getMapLocationID(), getRecloseDelay()
+		getMapLocationID(), getRecloseDelay(),
+		getMaxDailyOps(), getMaxOpDisable()
 	};
 
 	Object constraintValues[] = { getDeviceID() };
@@ -379,15 +387,15 @@ public static boolean isSwitchedBank( Integer paoID )
 
 	try
 	{
-		com.cannontech.database.Transaction t =
-			com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, cb);
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, cb);
 		t.execute();
-		
-		isSwitched = cb.getOperationalState().compareTo("Switched") == 0;
+
+		isSwitched = cb.getOperationalState().compareTo(
+			com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE) == 0;
 	}
-	catch (com.cannontech.database.TransactionException e)
+	catch (TransactionException e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		CTILogger.error( e.getMessage(), e );
 	}
 
 	return isSwitched;
@@ -445,5 +453,49 @@ public static int getParentFeederID( int capBankID )
 	
 	return feederID;
 }
+
+	/**
+	 * @return
+	 */
+	public Integer getMaxDailyOps() {
+		return maxDailyOps;
+	}
+
+	/**
+	 * @return
+	 */
+	public Character getMaxOpDisable() {
+		return maxOpDisable;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setMaxDailyOps(Integer integer) {
+		maxDailyOps = integer;
+	}
+
+	/**
+	 * @param character
+	 */
+	public void setMaxOpDisable(Character character) {
+		maxOpDisable = character;
+	}
+
+
+	/**
+	 * Boolean method for MaxOperations diable flag
+	 */
+	public boolean isMaxOperationDisabled() {
+		return CtiUtilities.isTrue(getMaxOpDisable());
+	}
+	
+	/**
+	 * Boolean method for MaxOperations diable flag
+	 */
+	public void setMaxOperationDisabled( boolean val ) {
+		setMaxOpDisable(
+			(val ? CtiUtilities.trueChar : CtiUtilities.falseChar) );
+	}
 
 }

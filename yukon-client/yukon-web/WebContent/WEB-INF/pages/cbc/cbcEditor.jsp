@@ -85,7 +85,7 @@
 				        <f:verbatim><br/></f:verbatim>
 				        <x:commandButton value="Submit" action="#{capControlForm.update}" styleClass="stdButton" title="Writes this item to the database" />
 				        <x:commandButton value="Reset" action="#{capControlForm.resetForm}" styleClass="stdButton" title="Resets all the data to the original settings" />
-				        <x:commandButton value="Cancel" action="none" styleClass="stdButton" immediate="true" title="Cancels editing and returns to the last module that was used" >
+				        <x:commandButton value="Return" action="none" styleClass="stdButton" immediate="true" title="Returns to the last module page that was used to enter this editor" >
 							<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
 						</x:commandButton>
 				    </x:panelGroup>

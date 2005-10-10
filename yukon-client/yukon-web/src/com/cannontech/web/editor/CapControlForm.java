@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -33,6 +34,7 @@ import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -46,6 +48,8 @@ import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
+import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.web.util.CBCSelectionLists;
 
 /**
  * @author ryan
@@ -66,9 +70,6 @@ public class CapControlForm extends DBEditorForm
 
 	//contains LiteYukonPAObject
 	private List unassignedFeeders = null;
-
-	//contains <Integer(cbcID), DeviceCBC>
-	private HashMap cbcDevicesMap = null;
 
 	//possible selection types for every wizard panel
 	private CBCWizardModel wizData = null;
@@ -130,23 +131,7 @@ public class CapControlForm extends DBEditorForm
 		
 		return cbcStrategiesMap;
 	}
-	
-	/**
-	 * Hold a the CBCDevices in memory for quicker access.
-	 */
-	public HashMap getCbcDevicesMap() {
-		
-		if( cbcDevicesMap == null ) {
-			
-			DeviceCBC[] devCBCs = DeviceCBC.getAllDeviceCBCs();
-			cbcDevicesMap = new HashMap( devCBCs.length );
-			
-			for( int i = 0; i < devCBCs.length; i++ )
-				cbcDevicesMap.put( devCBCs[i].getDeviceID(), devCBCs[i] );			
-		}
-		
-		return cbcDevicesMap;
-	}
+
 
 	/**
 	 * Hold a the KwkvarPaos SelectableItems in memory for quicker access.
@@ -403,8 +388,11 @@ public class CapControlForm extends DBEditorForm
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
-		if( getPAOBase() instanceof CapBank )
+		if( getPAOBase() instanceof CapBank ) {
 			((CapBank)getPAOBase()).getCapBank().setControlPointID( new Integer(val) );
+
+			resetCBCEditor();
+		}
 	}
 
 
@@ -483,7 +471,7 @@ public class CapControlForm extends DBEditorForm
 	public void resetForm() {
 		
 		resetStrategies();
-		resetCBCs();
+		resetCBCEditor();
 
 		editingCBCStrategy = false;
 		unassignedBanks = null;
@@ -499,21 +487,20 @@ public class CapControlForm extends DBEditorForm
 
 	/**
 	 * Reset CBC Strategy data, forcing them to be reInited
-	 * 
 	 */
 	private void resetStrategies() {		
 		cbcStrategiesMap = null;
 		cbcStrategies = null;
 	}
-
+	
 	/**
-	 * Reset CBC Strategy data, forcing them to be reInited
-	 * 
+	 * Reset the CBC device data, forcing them to be reInited
 	 */
-	private void resetCBCs() {		
-		cbcDevicesMap = null;
-		cbControllerEditor = null;
+	private void resetCBCEditor() {
+		setCBControllerEditor( null );
+		setEditingController( false );		
 	}
+
 
 	/**
 	 * All possible panels for this editor go here. Set visible panels and labels
@@ -645,11 +632,10 @@ public class CapControlForm extends DBEditorForm
 			//update the CBC object if we are editing it
 			if( isEditingController() ) {
 				updateDBObject(
-					getCBContollerEditor().retrieveDB(), facesMsg );
+					getCBControllerEditor().getPaoCBC(), facesMsg );
 
 				//clear out the memory of CBCs structures
-				resetCBCs();
-				setEditingController( false );
+				resetCBCEditor();
 			}
 
 			updateDBObject( getPAOBase(), facesMsg );
@@ -743,33 +729,86 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public void editController( ValueChangeEvent ev ) {
 		
-		if(ev == null || ev.getNewValue() == null) return;
-		
-		if( getCBContollerEditor()== null && isControllerCBC() ) {
-
-			int devID = PointFuncs.getLitePoint( 
-				((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
-
-			if( devID >= 0 )
-				setCBControllerEditor(
-					new CBControllerEditor( (DeviceCBC)getCbcDevicesMap().get(new Integer(devID)) ) );
-			else
-				setCBControllerEditor( null );
-		}
+//		if(ev == null || ev.getNewValue() == null) return;
+//		
+//		if( isControllerCBC() ) {
+//
+//			int devID = PointFuncs.getLitePoint( 
+//				((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
+//
+//			if( devID >= 0 )
+//				setCBControllerEditor(
+//					new CBControllerEditor( (DeviceCBC)getCbcDevicesMap().get(new Integer(devID)) ) );
+//			else
+//				setCBControllerEditor( null );
+//		}
 
 	}
 
 	/**
+	 * Puts our form into CBC editing mode 
+	 */
+	public void showScanRate( ValueChangeEvent ev ) {
+		
+		if(ev == null || ev.getNewValue() == null) return;
+
+		Boolean isChecked = (Boolean)ev.getNewValue();
+		
+		//find out if this device is TwoWay (used for 2 way CBCs)
+		if( isControllerCBC() && getCBControllerEditor().isTwoWay() ) {
+			
+			TwoWayDevice twoWayDev = (TwoWayDevice)getCBControllerEditor().getPaoCBC();
+
+
+			String type = 
+				ev.getComponent().getId().equalsIgnoreCase("scanIntegrityChk") 
+				? DeviceScanRate.TYPE_INTEGRITY :
+					(ev.getComponent().getId().equalsIgnoreCase("scanExceptionChk") 
+					? DeviceScanRate.TYPE_EXCEPTION : "");
+
+			//store what scan we are or ar not editing
+			//getCBControllerEditor().setEditingScan( type, isChecked );
+
+			if( isChecked.booleanValue() ) {
+				twoWayDev.getDeviceScanRateMap().put(
+					type,
+					new DeviceScanRate(
+						getCBControllerEditor().getPaoCBC().getPAObjectID(),
+						type));				
+			}
+			else {
+				twoWayDev.getDeviceScanRateMap().remove( type );
+			}
+						
+		}
+
+	}
+
+
+	/**
 	 * Returns the editor object for the internal CBC editor
 	 */
-	private CBControllerEditor getCBContollerEditor() {
+	public CBControllerEditor getCBControllerEditor() {
+		
+		if( cbControllerEditor == null ) {
+
+			if( getPAOBase() instanceof CapBank ) {
+				
+				int paoId = PointFuncs.getLitePoint(
+					((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
+				
+				cbControllerEditor =
+					new CBControllerEditor( paoId );
+			}
+		}
+		
 		return cbControllerEditor;
 	}
 	
 	/**
 	 * Sets the editor object for the internal CBC editor
 	 */
-	private void setCBControllerEditor( CBControllerEditor cbCntrlEditor) {
+	public void setCBControllerEditor( CBControllerEditor cbCntrlEditor) {
 		cbControllerEditor = cbCntrlEditor;
 	}
 	
@@ -1094,29 +1133,13 @@ public class CapControlForm extends DBEditorForm
 	public void setEditingCBCStrategy(boolean b) {
 		editingCBCStrategy = b;
 	}
-	
+
 	/**
 	 * @return
 	 */
-	public SelectItem[] getControlInterval() {
-		
-		SelectItem[] interval = new SelectItem[ timeInterval.length + 1 ];
-		interval[0] = new SelectItem(new Integer(CtiUtilities.NONE_ZERO_ID), "(On New Data Only)");
-		
-		System.arraycopy( timeInterval, 0, interval, 1, timeInterval.length );
-		return interval;
-	}
-		
-	/**
-	 * @return
-	 */
-	public SelectItem[] getDayTime() {
-		
-		SelectItem[] interval = new SelectItem[ timeInterval.length + 1 ];
-		interval[0] = new SelectItem(new Integer(CtiUtilities.NONE_ZERO_ID), CtiUtilities.STRING_NONE);
-		
-		System.arraycopy( timeInterval, 0, interval, 1, timeInterval.length );
-		return interval;
+	public SelectItem[] getTimeInterval() {
+
+		return CBCSelectionLists.TIME_INTERVAL;
 	}
 
 	/**

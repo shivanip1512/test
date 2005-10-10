@@ -8,6 +8,9 @@
 // NOTE: do not put JSF components in here since there seems to be a bug
 //  with the flush attribute in tiles (struts 1.2.7)  http://issues.apache.org/bugzilla/show_bug.cgi?id=21972
 %>
+
+<cti:checklogin/>
+
 <html>
 	<head>
 		<title><t:getAsString name="title" /></title>			
