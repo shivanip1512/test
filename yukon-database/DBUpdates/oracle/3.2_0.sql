@@ -424,11 +424,11 @@ alter table CapBank add MaxOpDisable char(1);
 update CapBank set MaxOpDisable = 'N';
 alter table CapBank modify MaxOpDisable char(1) not null;
 
-alter table DynamicccCapBank rename column CurrentDailyOperations to TotalOperation;
+alter table DynamicccCapBank rename column CurrentDailyOperations to TotalOperations;
 
-alter table dynamiccccapbank add currentdailyoperation number;
-update dynamiccccapbank set currentdailyoperation = 0;
-alter table dynamiccccapbank modify currentdailyoperation number not null;
+alter table dynamiccccapbank add currentdailyoperations number;
+update dynamiccccapbank set currentdailyoperations = 0;
+alter table dynamiccccapbank modify currentdailyoperations number not null;
 
 
 

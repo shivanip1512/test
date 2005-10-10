@@ -532,13 +532,13 @@ go
 alter table CapBank alter column MaxOpDisable char(1) not null;
 go
 
-sp_rename 'dynamiccccapbank.currentdailyoperations', 'totaloperation', 'column';
+sp_rename 'dynamiccccapbank.currentdailyoperations', 'totaloperations', 'column';
 go
-alter table dynamiccccapbank add currentdailyoperation numeric;
+alter table dynamiccccapbank add currentdailyoperations numeric;
 go
-update dynamiccccapbank set currentdailyoperation = 0;
+update dynamiccccapbank set currentdailyoperations = 0;
 go
-alter table dynamiccccapbank alter column currentdailyoperation numeric not null;
+alter table dynamiccccapbank alter column currentdailyoperations numeric not null;
 go
 
 
