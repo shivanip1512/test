@@ -126,7 +126,7 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
     {
         deviceNameToRPHMap = new HashMap();
         
-		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, DCS.ADDRESS " + 
+		String sql = "SELECT RPH1.CHANGEID, RPH1.POINTID, RPH1.TIMESTAMP, RPH1.QUALITY, RPH1.VALUE, RPH1.MILLIS, DCS.ADDRESS, P2.POINTOFFSET " + 
 		        		" FROM RAWPOINTHISTORY RPH1, POINT P, DEVICECARRIERSETTINGS DCS " + 
 		        		" WHERE RPH1.TIMESTAMP = ( " + 
 		        		" SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2, POINT P2 " + 
@@ -178,10 +178,13 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 					int quality = rset.getInt(4);
 					double value = rset.getDouble(5);
 					short millis = rset.getShort(6);
-					String name = rset.getString(7);	//key value
 					RawPointHistory dummyRPH = new RawPointHistory(new Integer(changeID), new Integer(pointID), tsCal, new Integer(quality), new Double(value));
-					deviceNameToRPHMap.put(name, dummyRPH);
-					CTILogger.info("Added Address to RPH: " + name);
+					
+					String name = rset.getString(7);	//key value
+					String ptOffset = String.valueOf(rset.getInt(8));	//additional info for key value 
+					String keyValue = name + ptOffset; 
+					deviceNameToRPHMap.put(keyValue, dummyRPH);
+					CTILogger.info("Added Address to RPH: " + name + " (offset:" + ptOffset +")");
 				}
 			}
 		}
@@ -446,8 +449,12 @@ public final String processReadingRecord(String buffer) {
 	RawPointHistory dummyRPH = null;
 	try
 	{
-		dummyRPH = (RawPointHistory)getDeviceNameToRPHMap().get(meterRecord.meterNumber.toString());
-		CTILogger.info("METERNUMBER LOOKUP: " + meterRecord.meterNumber + "  " + 
+	    String ptOffsetStr = buffer.substring(11,15);	
+	    int ptOffset = getPointOffset(ptOffsetStr);//numeric value for ptOffsetStr
+	    String keyLookupValue = meterRecord.meterNumber.toString() + String.valueOf(ptOffset);
+		dummyRPH = (RawPointHistory)getDeviceNameToRPHMap().get(keyLookupValue);
+		
+		CTILogger.info("METERNUMBER LOOKUP: " + meterRecord.meterNumber + "  " + "PointName: " + ptOffset + " " + 
 		        (dummyRPH == null ? " NOT FOUND - " : dummyRPH.getValue() + " @ " + DATE_FORMAT.format(dummyRPH.getTimeStamp().getTime()) + " " + TIME_FORMAT.format(dummyRPH.getTimeStamp().getTime())));
 	}
 	catch (SQLException e1)	{ }
@@ -489,6 +496,20 @@ public final String processReadingRecord(String buffer) {
 	
 	numberReads++;
 	return storage.toString();
+}
+/**
+ * This is a hardcoded method to match static strings to their yukon point offset (best guess).
+ * We needed a way to look up point data based on a string specified by the MVRS data file, not us.
+ * @param ptOffsetStr
+ * @return
+ */
+private int getPointOffset(String ptOffsetStr)
+{
+    if( ptOffsetStr.trim().equalsIgnoreCase("kwh"))
+        return 1;
+    else if ( ptOffsetStr.trim().equalsIgnoreCase("hgal"))
+        return 2;
+    return 1;	//default?
 }
 /**
  * Handles the route header/trailer from the input file
