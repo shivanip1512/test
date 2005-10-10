@@ -50,7 +50,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.varPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -99,7 +99,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="wPtLink" value="#{node.description}"
 						actionListener="#{capControlForm.wattPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -146,7 +146,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.voltPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -211,7 +211,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.varPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -260,7 +260,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="wPtLink" value="#{node.description}"
 						actionListener="#{capControlForm.wattPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -307,7 +307,7 @@
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="AlarmFlag.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == node.identifier}" border="0"/>
+                  	<h:graphicImage value="blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == node.identifier}" border="0"/>
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.voltPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
