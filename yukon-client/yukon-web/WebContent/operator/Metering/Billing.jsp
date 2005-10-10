@@ -181,8 +181,8 @@ function deselectGroup(form)
 														<td width="50%" align = "right" colspan = "2"> 
 															<table width="100%" border="0" cellspacing="0" cellpadding="1" class = "TableCell">
 																<tr> 
-																	<td width="50%" align="right">Billing Group Type:</td>
-																	<td width="50%"> 
+																	<td width="40%" align="right">Billing Group Type:</td>
+																	<td width="60%"> 
 																		<select name = "billGroupType" onchange='changeBillGroupType(this.value)'>
 																			<% /* Fill in the possible file format types*/
 																			int [] groupTypes = DeviceMeterGroup.getValidBillGroupTypeIDs();
@@ -196,8 +196,8 @@ function deselectGroup(form)
 																	</td>
 																</tr>
 																<tr> 
-																	<td width="50%" align="right">Billing Group:</td>
-																	<td width="50%"> 
+																	<td width="40%" align="right">Billing Group:</td>
+																	<td width="60%"> 
 																	<%
 																	  DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 																	  java.util.List collGroups = cache.getAllDMG_CollectionGroups();
@@ -205,7 +205,7 @@ function deselectGroup(form)
 																	  java.util.List billGroups = cache.getAllDMG_BillingGroups();
 																	%>																	
 																	  <div id='DivCollGroup' style='display:true'>
-																		<select name='billGroup' size='5' style='width:50%;'>
+																		<select name='billGroup' size='5' style='width:100%;'>
 																		  <%for (int i = 0; i < collGroups.size(); i++)
 																		  {
 																			String val = (String)collGroups.get(i);
@@ -215,7 +215,7 @@ function deselectGroup(form)
 																		</select>
 																	 </div>
 																	 <div id='DivAltGroup' style='display:none'>
-																	   <select name='billGroup' size='5' style='width:50%;'>
+																	   <select name='billGroup' size='5' style='width:100%;'>
 																	     <%for (int i = 0; i < altGroups.size(); i++)
 																	     {
 																	     	String val = (String)altGroups.get(i);
@@ -225,7 +225,7 @@ function deselectGroup(form)
 																	   </select>
 																	 </div>
 																	 <div id='DivBillGroup' style='display:none'>
-																	   <select name='billGroup' size='5' style='width:50%;'>
+																	   <select name='billGroup' size='5' style='width:100%;'>
 																	     <%for (int i = 0; i < billGroups.size(); i++)
 																	     {
 																	     	String val = (String)billGroups.get(i);
