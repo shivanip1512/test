@@ -386,6 +386,170 @@ update point set pointID = (select max(pointID)+1 from point) where pointID = -2
 go
 
 
+create table CapControlStrategy (
+   StrategyID           numeric              not null,
+   StrategyName         varchar(32)          not null,
+   ControlMethod        varchar(32)          null,
+   MAXDAILYOPERATION    numeric              not null,
+   MaxOperationDisableFlag char(1)              not null,
+   PEAKSTARTTIME        numeric              not null,
+   PEAKSTOPTIME         numeric              not null,
+   CONTROLINTERVAL      numeric              not null,
+   MINRESPONSETIME      numeric              not null,
+   MINCONFIRMPERCENT    numeric              not null,
+   FAILUREPERCENT       numeric              not null,
+   DAYSOFWEEK           char(8)              not null,
+   ControlUnits         varchar(32)          not null,
+   ControlDelayTime     numeric              not null,
+   ControlSendRetries   numeric              not null,
+   PeakLag              float                not null,
+   PeakLead             float                not null,
+   OffPkLag             float                not null,
+   OffPkLead            float                not null
+);
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0);
+alter table CapControlStrategy
+   add constraint PK_CAPCONTROLSTRAT primary key  (StrategyID);
+go
+create unique  index Indx_CapCntrlStrat_name_UNQ on CapControlStrategy (
+StrategyName
+);
+go
+
+alter table CapControlFeeder add StrategyID numeric;
+go
+update CapControlFeeder set StrategyID = feederid;
+go
+alter table CapControlFeeder alter column StrategyID numeric not null;
+go
+
+insert into CapControlStrategy
+select feederid, 'Fdr: '  paoname, 'IndividualFeeder',0,'N',0,0,0,0,0,0,'NYYYYYNN','(none)',0,0,
+PEAKSETPOINT+UpperBandwidth, PEAKSETPOINT-LowerBandwidth, OFFPEAKSETPOINT+UpperBandwidth, OFFPEAKSETPOINT-LowerBandwidth
+from capcontrolfeeder, yukonpaobject
+where paobjectid = feederid;
+go
+
+update CapControlFeeder set StrategyID = 0
+where PEAKSETPOINT = 0.0 and OFFPEAKSETPOINT = 0.0 and
+UpperBandwidth = 0.0 and LowerBandwidth = 0.0;
+go
+
+delete from CapControlStrategy where strategyid not in
+(select f.strategyid from CapControlFeeder f)
+and strategyid > 0;
+go
+
+alter table CapControlSubstationBus add StrategyID numeric;
+go
+update CapControlSubstationBus set StrategyID = substationbusid;
+go
+alter table CapControlSubstationBus alter column StrategyID numeric not null;
+go
+
+insert into CapControlStrategy
+select substationbusid, 'Sub: '  paoname, ControlMethod,MAXDAILYOPERATION,
+MaxOperationDisableFlag,PEAKSTARTTIME,PEAKSTOPTIME,CONTROLINTERVAL,MINRESPONSETIME,
+MINCONFIRMPERCENT,FAILUREPERCENT,DAYSOFWEEK,ControlUnits,ControlDelayTime,ControlSendRetries,
+PEAKSETPOINT+UpperBandwidth, PEAKSETPOINT-LowerBandwidth, OFFPEAKSETPOINT+UpperBandwidth, OFFPEAKSETPOINT-LowerBandwidth
+from capcontrolsubstationbus, yukonpaobject
+where paobjectid = substationbusid;
+go
+
+alter table capcontrolfeeder drop column PEAKSETPOINT;
+alter table capcontrolfeeder drop column OFFPEAKSETPOINT;
+alter table capcontrolfeeder drop column UpperBandwidth;
+alter table capcontrolfeeder drop column LowerBandwidth;
+go
+
+alter table CapControlSubstationBus drop column ControlMethod;
+alter table CapControlSubstationBus drop column MAXDAILYOPERATION;
+alter table CapControlSubstationBus drop column MaxOperationDisableFlag;
+alter table CapControlSubstationBus drop column PEAKSETPOINT;
+alter table CapControlSubstationBus drop column OFFPEAKSETPOINT;
+alter table CapControlSubstationBus drop column PEAKSTARTTIME;
+alter table CapControlSubstationBus drop column PEAKSTOPTIME;
+alter table CapControlSubstationBus drop column UpperBandwidth;
+alter table CapControlSubstationBus drop column CONTROLINTERVAL;
+alter table CapControlSubstationBus drop column MINRESPONSETIME;
+alter table CapControlSubstationBus drop column MINCONFIRMPERCENT;
+alter table CapControlSubstationBus drop column FAILUREPERCENT;
+alter table CapControlSubstationBus drop column DAYSOFWEEK;
+alter table CapControlSubstationBus drop column LowerBandwidth;
+alter table CapControlSubstationBus drop column ControlUnits;
+alter table CapControlSubstationBus drop column ControlDelayTime;
+alter table CapControlSubstationBus drop column ControlSendRetries;
+go
+
+alter table CAPCONTROLSUBSTATIONBUS add constraint FK_CCSUBB_CCSTR foreign key (StrategyID) references CapControlStrategy (StrategyID);
+go
+alter table CapControlFeeder add constraint FK_CCFDR_CCSTR foreign key (StrategyID) references CapControlStrategy (StrategyID);
+go
+
+
+alter table dynamicccsubstationbus add CurrentVoltPointValue numeric;
+go
+update dynamicccsubstationbus set CurrentVoltPointValue = 0;
+go
+alter table dynamicccsubstationbus alter column CurrentVoltPointValue numeric not null;
+go
+
+alter table dynamicccfeeder add CurrentVoltPointValue numeric;
+go
+update dynamicccfeeder set CurrentVoltPointValue = 0;
+go
+alter table dynamicccfeeder alter column CurrentVoltPointValue numeric not null;
+go
+
+alter table capcontrolsubstationbus add CurrentVoltLoadPointID numeric;
+go
+update capcontrolsubstationbus set CurrentVoltLoadPointID = 0;
+go
+alter table capcontrolsubstationbus alter column CurrentVoltLoadPointID numeric not null;
+go
+
+alter table capcontrolfeeder add CurrentVoltLoadPointID numeric;
+go
+update capcontrolfeeder set CurrentVoltLoadPointID = 0;
+go
+alter table capcontrolfeeder alter column CurrentVoltLoadPointID numeric not null;
+go
+
+insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
+go
+
+alter table CapBank add MaxDailyOps numeric;
+go
+update CapBank set MaxDailyOps = 0;
+go
+alter table CapBank alter column MaxDailyOps numeric not null;
+go
+
+alter table CapBank add MaxOpDisable char(1);
+go
+update CapBank set MaxOpDisable = 'N';
+go
+alter table CapBank alter column MaxOpDisable char(1) not null;
+go
+
+sp_rename 'dynamiccccapbank.currentdailyoperations', 'totaloperation', 'column';
+go
+alter table dynamiccccapbank add currentdailyoperation numeric;
+go
+update dynamiccccapbank set currentdailyoperation = 0;
+go
+alter table dynamiccccapbank alter column currentdailyoperation numeric not null;
+go
+
+
+
+
+
+
+
+
+
+
 
 
 

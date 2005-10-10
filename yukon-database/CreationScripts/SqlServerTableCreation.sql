@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/22/2005 2:51:50 PM                         */
+/* Created on:     10/10/2005 12:05:50 PM                       */
 /*==============================================================*/
 
 
@@ -154,6 +154,16 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CapControlFeeder.Indx_CPCNFDVARPT
+go
+
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CapControlStrategy')
+            and   name  = 'Indx_CapCntrlStrat_name_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index CapControlStrategy.Indx_CapCntrlStrat_name_UNQ
 go
 
 
@@ -2155,7 +2165,9 @@ create table CAPBANK (
    TypeOfSwitch         varchar(20)          not null,
    SwitchManufacture    varchar(20)          not null,
    MapLocationID        varchar(64)          not null,
-   RecloseDelay         numeric              not null
+   RecloseDelay         numeric              not null,
+   MaxDailyOps          numeric              not null,
+   MaxOpDisable         char(1)              not null
 )
 go
 
@@ -2360,28 +2372,36 @@ create table CapControlStrategy (
    ControlMethod        varchar(32)          null,
    MAXDAILYOPERATION    numeric              not null,
    MaxOperationDisableFlag char(1)              not null,
-   PEAKSETPOINT         float                not null,
-   OFFPEAKSETPOINT      float                not null,
    PEAKSTARTTIME        numeric              not null,
    PEAKSTOPTIME         numeric              not null,
-   UpperBandwidth       float                not null,
    CONTROLINTERVAL      numeric              not null,
    MINRESPONSETIME      numeric              not null,
    MINCONFIRMPERCENT    numeric              not null,
    FAILUREPERCENT       numeric              not null,
    DAYSOFWEEK           char(8)              not null,
-   LowerBandwidth       float                not null,
-   ControlUnits         varchar(20)          not null,
+   ControlUnits         varchar(32)          not null,
    ControlDelayTime     numeric              not null,
-   ControlSendRetries   numeric              not null
+   ControlSendRetries   numeric              not null,
+   PeakLag              float                not null,
+   PeakLead             float                not null,
+   OffPkLag             float                not null,
+   OffPkLead            float                not null
 )
 go
 
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N',	0.0, 0.0, 0, 0, 0.0, 0, 0, 0, 0, 'NYYYYYNN', 0.0, '(none)', 0, 0);
-
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0);
 alter table CapControlStrategy
    add constraint PK_CAPCONTROLSTRAT primary key  (StrategyID)
+go
+
+
+/*==============================================================*/
+/* Index: Indx_CapCntrlStrat_name_UNQ                           */
+/*==============================================================*/
+create unique  index Indx_CapCntrlStrat_name_UNQ on CapControlStrategy (
+StrategyName
+)
 go
 
 
@@ -2579,6 +2599,14 @@ insert into command values(-94, 'control cycle terminate relay 3', 'Terminate Cy
 insert into command values(-95, 'putconfig service out', 'Set to Out-of-Service', 'All LCRs');
 insert into command values(-96, 'putconfig service in', 'Set to In-Service', 'All LCRs');
 insert into command values(-97, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'All LCRs');
+
+insert into command values(-98, 'putconfig emetcon disconnect', 'Upload Disconnect Address', 'MCT-410IL');
+insert into command values(-99, 'getconfig disconnect', 'Read Disconnect Address/Status', 'MCT-410IL');
+insert into command values(-100, 'scan general', 'General Meter Scan', 'SENTINEL');
+insert into command values(-101, 'scan general frozen', 'General Meter Scan Frozen', 'SENTINEL');
+insert into command values(-102, 'scan general update', 'General Meter Scan and DB Update', 'SENTINEL');
+insert into command values(-103, 'scan general frozen update', 'General Meter Scan Frozen and DB Update', 'SENTINEL');
+insert into command values(-104, 'putvalue reset', 'Reset Demand', 'SENTINEL');
 alter table Command
    add constraint PK_COMMAND primary key  (CommandID)
 go
@@ -2946,10 +2974,10 @@ go
 insert into display values(-4, 'Yukon Server', 'Static Displays', 'Yukon Servers', 'com.cannontech.tdc.windows.WinServicePanel');
 insert into display values(-1, 'All Categories', 'Scheduler Client', 'Metering And Control Scheduler', 'com.cannontech.macs.gui.Scheduler');
 
-/**insert into display values(-2, 'All Areas', 'Cap Control Client', 'Cap Control', 'com.cannontech.cbc.gui.StrategyReceiver');**/
-/**insert into display values(-3, 'All Control Areas', 'Load Management Client', 'Load Management', 'com.cannontech.loadcontrol.gui.LoadControlMainPanel');**/
-/**insert into display values(2, 'Historical Viewer', 'Alarms and Events', 'Historical Event Viewer', 'This display will allow the user to select a range of dates and show the events that occured.');**/
-/**insert into display values(3, 'Raw Point Viewer', 'Alarms and Events', 'Current Raw Point Viewer', 'This display will recieve current raw point updates as they happen in the system.');**/
+/** insert into display values(-2, 'All Areas', 'Cap Control Client', 'Cap Control', 'com.cannontech.cbc.gui.StrategyReceiver'); **/
+/** insert into display values(-3, 'All Control Areas', 'Load Management Client', 'Load Management', 'com.cannontech.loadcontrol.gui.LoadControlMainPanel'); **/
+/** insert into display values(2, 'Historical Viewer', 'Alarms and Events', 'Historical Event Viewer', 'This display will allow the user to select a range of dates and show the events that occured.'); **/
+/** insert into display values(3, 'Raw Point Viewer', 'Alarms and Events', 'Current Raw Point Viewer', 'This display will recieve current raw point updates as they happen in the system.'); **/
 
 
 insert into display values(1, 'Event Viewer', 'Alarms and Events', 'Current Event Viewer', 'This display will recieve current events as they happen in the system.');
@@ -3946,6 +3974,15 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-375, -12, 'MCT-410CL', 12, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-376, -13, 'MCT-410CL', 13, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-377, -30, 'MCT-248', 14, 'Y');
 INSERT INTO DEVICETYPECOMMAND VALUES (-378, -31, 'MCT-248', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-379, -98, 'MCT-410IL', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-380, -99, 'MCT-410IL', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-381, -98, 'MCT-410CL', 14, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-382, -99, 'MCT-410CL', 15, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-383, -100, 'SENTINEL', 1, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-384, -101, 'SENTINEL', 2, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-385, -102, 'SENTINEL', 3, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-386, -103, 'SENTINEL', 4, 'Y');
+INSERT INTO DEVICETYPECOMMAND VALUES (-387, -104, 'SENTINEL', 5, 'Y');
 alter table DeviceTypeCommand
    add constraint PK_DEVICETYPECOMMAND primary key  (DeviceCommandID)
 go
@@ -3993,7 +4030,7 @@ go
 create table DynamicCCCapBank (
    CapBankID            numeric              not null,
    ControlStatus        numeric              not null,
-   CurrentDailyOperations numeric              not null,
+   TotalOperations      numeric              not null,
    LastStatusChangeTime datetime             not null,
    TagsControlStatus    numeric              not null,
    CTITimeStamp         datetime             not null,
@@ -4002,7 +4039,8 @@ create table DynamicCCCapBank (
    AssumedStartVerificationStatus numeric              not null,
    PrevVerificationControlStatus numeric              not null,
    VerificationControlIndex numeric              not null,
-   AdditionalFlags      varchar(32)          not null
+   AdditionalFlags      varchar(32)          not null,
+   CurrentDailyOperation numeric              not null
 )
 go
 
@@ -4480,6 +4518,8 @@ insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
 insert into fdrinterface values (20, 'BEPC','Send','f');
 insert into FDRInterface values (21, 'PI','Receive', 't' );
 insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
+insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
+
 alter table FDRInterface
    add constraint PK_FDRINTERFACE primary key  (InterfaceID)
 go
@@ -4536,7 +4576,10 @@ insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(21, 'Period (sec)', 2, 'Text', '(none)' );
 insert into FDRInterfaceOption values(22, 'Address', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(22, 'Data Type', 2, 'Combo', 'Data_RealExtended,Data_DiscreteExtended,Data_StateExtended,Data_RealQ,Data_DiscreteQ,Data_State,Data_Discrete,Data_Real,Data_RealQTimeTag,Data_StateQTimeTag,Data_DiscreteQTimeTag' );
-
+insert into FDRInterfaceOption values(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
+insert into FDRInterfaceOption values(23, 'Remote', 2, 'Text', '(none)' );
+insert into FDRInterfaceOption values(23, 'Point', 3, 'Text', '(none)' );
+insert into FDRInterfaceOption values(23, 'Destination/Source', 4, 'Text', '(none)' );
 alter table FDRInterfaceOption
    add constraint PK_FDRINTERFACEOPTION primary key  (InterfaceID, Ordering)
 go
@@ -5848,15 +5891,22 @@ create table POINT (
 go
 
 
-INSERT into point  values (0,   'System', 'System Point', 0, 'Default', 0, 'N', 'N', 'S', 0  ,'None', 0);
-INSERT into point  values (-1,  'System', 'Porter', 0, 'Default', 0, 'N', 'N', 'S', 1  ,'None', 0);
-INSERT into point  values (-2,  'System', 'Scanner', 0, 'Default', 0, 'N', 'N', 'S', 2  ,'None', 0);
-INSERT into point  values (-3,  'System', 'Dispatch', 0, 'Default', 0, 'N', 'N', 'S', 3  ,'None', 0);
-INSERT into point  values (-4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4  ,'None', 0);
-INSERT into point  values (-5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
-INSERT into point  values (-6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
-INSERT into point  values (-10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-INSERT into point  values (-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+insert into point values( 7, 'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
+insert into point values( 6, 'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
+insert into point values( 5, 'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
+insert into point values( 4, 'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
+insert into point values( 3, 'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
+insert into point values( 2, 'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
+insert into point values( 1, 'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
+INSERT into point values( 0,   'System', 'System Point', 0, 'Default', 0, 'N', 'N', 'S', 0  ,'None', 0);
+INSERT into point values( -1,  'System', 'Porter', 0, 'Default', 0, 'N', 'N', 'S', 1  ,'None', 0);
+INSERT into point values( -2,  'System', 'Scanner', 0, 'Default', 0, 'N', 'N', 'S', 2  ,'None', 0);
+INSERT into point values( -3,  'System', 'Dispatch', 0, 'Default', 0, 'N', 'N', 'S', 3  ,'None', 0);
+INSERT into point values( -4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S', 4  ,'None', 0);
+INSERT into point values( -5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
+INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
+INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 alter table POINT
    add constraint Key_PT_PTID primary key  (POINTID)
 go
@@ -6192,6 +6242,10 @@ create table STATE (
 go
 
 
+insert into state values(-7, 0, 'Normal',0,6,0);
+insert into state values(-7, 1, 'NonCriticalFailure',1,6,0);
+insert into state values(-7, 2, 'CriticalFailure',2,6,0);
+insert into state values(-7, 3, 'Unresponsive',3,6,0);
 insert into state values(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
 insert into state values(-6, 1, 'Connected', 0, 6, 0);
 insert into state values(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
@@ -6253,6 +6307,7 @@ create table STATEGROUP (
 go
 
 
+insert into stategroup values(-7, 'Thread Monitor', 'Status');
 insert into stategroup values(-6, '410 Disconnect', 'Status');
 INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
 INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator' );
@@ -6776,11 +6831,11 @@ insert into YukonGroupRole values(-271,-1,-7,-1601,'(none)');
 insert into YukonGroupRole values(-272,-1,-7,-1602,'(none)');
 insert into YukonGroupRole values(-273,-1,-7,-1603,'(none)');
 insert into YukonGroupRole values(-274,-1,-7,-1604,'(none)');
-insert into YukonGroupRole values(-280,-1,-7,-1610,'(none)');
-insert into YukonGroupRole values(-281,-1,-7,-1611,'(none)');
-insert into YukonGroupRole values(-282,-1,-7,-1612,'(none)');
-insert into YukonGroupRole values(-283,-1,-7,-1613,'(none)');
-insert into YukonGroupRole values(-284,-1,-7,-1614,'(none)');
+insert into YukonGroupRole values(-275,-1,-7,-1605,'(none)');
+insert into YukonGroupRole values(-276,-1,-7,-1606,'(none)');
+insert into YukonGroupRole values(-277,-1,-7,-1607,'(none)');
+insert into YukonGroupRole values(-278,-1,-7,-1608,'(none)');
+insert into YukonGroupRole values(-279,-1,-7,-1609,'(none)');
 
 /* Assign roles to the default Esub Users */
 insert into YukonGroupRole values(-300,-200,-206,-20600,'(none)');
@@ -6952,6 +7007,7 @@ insert into yukongrouprole values (-793,-301,-209,-20902,'(none)');
 insert into yukongrouprole values (-794,-301,-209,-20903,'(none)');
 insert into yukongrouprole values (-795,-301,-209,-20904,'(none)');
 insert into yukongrouprole values (-796,-301,-209,-20905,'(none)');
+insert into yukongrouprole values (-797,-301,-209,-20906,'(none)');
 
 insert into yukongrouprole values (-800,-301,-201,-20800,'(none)');
 insert into yukongrouprole values (-801,-301,-201,-20801,'(none)');
@@ -7266,6 +7322,7 @@ insert into yukongrouprole values (-2082,-303,-209,-20902,'(none)');
 insert into yukongrouprole values (-2083,-303,-209,-20903,'(none)');
 insert into yukongrouprole values (-2084,-303,-209,-20904,'(none)');
 insert into yukongrouprole values (-2085,-303,-209,-20905,'(none)');
+insert into yukongrouprole values (-2086,-303,-209,-20906,'(none)');
 
 insert into yukongrouprole values (-2100,-303,-201,-20800,'(none)');
 insert into yukongrouprole values (-2101,-303,-201,-20801,'(none)');
@@ -8007,16 +8064,16 @@ insert into YukonRoleProperty values(-1507,-6,'Remove Multiplier','false','Remov
 insert into YukonRoleProperty values(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
 
 /* Multispeak Role Properties */
-insert into YukonRoleProperty values(-1600,-7,'OMS WebServices URL','(none)','The OMS vendor Webservices endpoint URL. (ex. http://127.0.0.1:80/soap/)');
-insert into YukonRoleProperty values(-1601,-7,'OMS unique key','meterNumber','The OMS and Yukon unique key field.  Valid values [meterNumber | deviceName]');
-insert into YukonRoleProperty values(-1602,-7,'OMS username','','The OMS username.');
-insert into YukonRoleProperty values(-1603,-7,'OMS password','','The OMS password.');
-insert into YukonRoleProperty values(-1604,-7,'OMS OA_OD Service','OA_ODSoap','The OMS OA_OD service name.');
-insert into YukonRoleProperty values(-1610,-7,'CIS WebServices URL','(none)','The CIS vendor Webservices endpoint URL. (ex. http://127.0.0.1:80/soap/)');
-insert into YukonRoleProperty values(-1611,-7,'CIS unique key','meterNumber','The CIS and Yukon unique key field.  Valid values [meterNumber | deviceName]');
-insert into YukonRoleProperty values(-1612,-7,'CIS username','','The CIS username.');
-insert into YukonRoleProperty values(-1613,-7,'CIS password','','The CIS password.');
-insert into YukonRoleProperty values(-1614,-7,'CIS CB_MR Service','CB_MRSoap','The CIS CB_MR service name.');
+insert into YukonRoleProperty values(-1600,-7,'Vendor 01 Config','cannon, (none), (none), meterNumber, http://127.0.0.1:8080/soap/,OD_OA=OD_OASoap,OA_OD=OA_ODSoap,MR_EA=MR_EASoap,EA_MR=EA_MRSoap,MR_CB=MR_CBSoap,CB_MR=CB_MRSoap,CD_CB=CD_CBSoap,CB_CD=CB_CDSoap','Vendor 01 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1601,-7,'Vendor 02 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 02 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1602,-7,'Vendor 03 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 03 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1603,-7,'Vendor 04 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 04 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1604,-7,'Vendor 05 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 05 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1605,-7,'Vendor 06 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 06 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1606,-7,'Vendor 07 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 07 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1607,-7,'Vendor 08 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 08 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1608,-7,'Vendor 09 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 09 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
+insert into YukonRoleProperty values(-1609,-7,'Vendor 10 Config','(none), (none), (none), meterNumber, http://127.0.0.1:80/soap/','Vendor 10 Webservice setup parameters, format: <companyName>,<username>,<password>,<deviceName|meterNumber>,<webserviceURL>,<service=endpoint0>...<service=endpointX>');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
@@ -8248,6 +8305,7 @@ insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Contr
 insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
 insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
+insert into YukonRoleProperty values(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
@@ -8359,6 +8417,7 @@ insert into YukonRoleProperty values(-70006,-700,'cbc_creation_name','CBC %PAONa
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-70008,-700,'cbc_allow_ovuv','false','Allows users to toggle OV/UV usage on capbanks');
 insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The rate, in seconds, all CBC clients reload data from the CBC server');
+insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
 
 /* IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
@@ -8476,6 +8535,7 @@ insert into YukonServices values( -2, 'WebGraph', 'com.cannontech.jmx.services.D
 insert into YukonServices values( -3, 'Calc_Historical', 'com.cannontech.jmx.services.DynamicCalcHist', '(none)', '(none)' );
 insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.services.DynamicCBCOneLine', '(none)', '(none)');
 insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)' );
+insert into YukonServices values( -6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', '(none)', '(none)' );
 alter table YukonServices
    add constraint PK_YUKSER primary key  (ServiceID)
 go
