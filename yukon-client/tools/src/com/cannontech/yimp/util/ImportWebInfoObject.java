@@ -24,7 +24,7 @@ public class ImportWebInfoObject
 {
 	private Vector failures;
 	
-	public final String REFRESH_RATE = "10";
+	public final String REFRESH_RATE = "45";
 	
 	public final String COLUMN_NAMES[] = 
 	{ 
