@@ -235,7 +235,6 @@ public abstract class LMProgramDirectGear
 
 			while (rset.next())
 			{
-
 				Integer gID = new Integer(rset.getInt(1)); //"GearID"));
 				String name = new String(rset.getString(2));
 				Integer gearNum = new Integer(rset.getInt(3));
@@ -244,27 +243,34 @@ public abstract class LMProgramDirectGear
 				gear.setDeviceID(deviceID);
 				gear.setGearID(gID);
 				gear.setDbConnection(conn);
-				gear.setGearName(name);
-				gear.setGearNumber(gearNum);
 				
-				gear.setMethodRate(new Integer(rset.getInt(5)));
-				gear.setMethodPeriod(new Integer(rset.getInt(6)));
-				gear.setMethodRateCount(new Integer(rset.getInt(7)));
-				gear.setCycleRefreshRate(new Integer(rset.getInt(8)));
-				gear.setMethodStopType(rset.getString(9));
-				gear.setChangeCondition(rset.getString(10));
-				gear.setChangeDuration(new Integer(rset.getInt(11)));
-				gear.setChangePriority(new Integer(rset.getInt(12)));
-				gear.setChangeTriggerNumber(new Integer(rset.getInt(13)));
-				gear.setChangeTriggerOffset(new Double(rset.getFloat(14)));
-				gear.setPercentReduction(new Integer(rset.getInt(15)));
-				gear.setGroupSelectionMethod(rset.getString(16));
-				gear.setMethodOptionType(rset.getString(17));
-				gear.setMethodOptionMax(new Integer(rset.getInt(18)));
-				gear.setRampInInterval(new Integer(rset.getInt(19)));
-				gear.setRampInPercent(new Integer(rset.getInt(20)));
-				gear.setRampOutInterval(new Integer(rset.getInt(21)));
-				gear.setRampOutPercent(new Integer(rset.getInt(22)));
+				//need to make sure we get the Thermostat specific information from its separate table
+				if(gear instanceof ThermostatSetbackGear)
+					gear.retrieve();
+				else
+				{
+					gear.setGearName(name);
+					gear.setGearNumber(gearNum);
+					
+					gear.setMethodRate(new Integer(rset.getInt(5)));
+					gear.setMethodPeriod(new Integer(rset.getInt(6)));
+					gear.setMethodRateCount(new Integer(rset.getInt(7)));
+					gear.setCycleRefreshRate(new Integer(rset.getInt(8)));
+					gear.setMethodStopType(rset.getString(9));
+					gear.setChangeCondition(rset.getString(10));
+					gear.setChangeDuration(new Integer(rset.getInt(11)));
+					gear.setChangePriority(new Integer(rset.getInt(12)));
+					gear.setChangeTriggerNumber(new Integer(rset.getInt(13)));
+					gear.setChangeTriggerOffset(new Double(rset.getFloat(14)));
+					gear.setPercentReduction(new Integer(rset.getInt(15)));
+					gear.setGroupSelectionMethod(rset.getString(16));
+					gear.setMethodOptionType(rset.getString(17));
+					gear.setMethodOptionMax(new Integer(rset.getInt(18)));
+					gear.setRampInInterval(new Integer(rset.getInt(19)));
+					gear.setRampInPercent(new Integer(rset.getInt(20)));
+					gear.setRampOutInterval(new Integer(rset.getInt(21)));
+					gear.setRampOutPercent(new Integer(rset.getInt(22)));
+				}
 				
 				gearList.add(gear);
 			}
