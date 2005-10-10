@@ -821,7 +821,8 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 				deviceIDsMap.put(device.getPAOName(), device.getPAObjectID());
 
-				java.util.Vector newScanRateVector = new java.util.Vector(3);
+
+				HashMap newScanRateMap = new HashMap();
 
 				if (devID
 					.substring(devID.length() - 2, devID.length())
@@ -835,7 +836,8 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 					Integer accumulatorGroup = new Integer(0);
 
-					newScanRateVector.addElement(
+					newScanRateMap.put(
+						DeviceScanRate.TYPE_ACCUMULATOR,
 						new DeviceScanRate(
 							deviceID,
 							DeviceScanRate.TYPE_ACCUMULATOR,
@@ -845,14 +847,16 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 					Integer integrityGroup = new Integer(0);
 					altRate = new Integer(0);
-					newScanRateVector.addElement(
+					newScanRateMap.put(
+						DeviceScanRate.TYPE_INTEGRITY,
 						new DeviceScanRate(
 							deviceID,
 							DeviceScanRate.TYPE_INTEGRITY,
 							new Integer(300),
 							integrityGroup,
 							altRate));
-					device.setDeviceScanRateVector(newScanRateVector);
+
+					device.setDeviceScanRateMap( newScanRateMap );
 				}
 
 				// address,routeid,group1,group2,LsInt
