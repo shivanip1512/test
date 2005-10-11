@@ -48,7 +48,7 @@ public class ECUtils {
 	}
 	
 	public static boolean isDefaultEnergyCompany(LiteStarsEnergyCompany company) {
-		return company.getLiteID() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+		return (company == null) ? false : company.getLiteID() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
 	}
 	
 	public static boolean isSingleEnergyCompany(LiteStarsEnergyCompany company) {
