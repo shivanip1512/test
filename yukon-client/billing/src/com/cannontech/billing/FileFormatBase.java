@@ -54,8 +54,10 @@ public abstract class FileFormatBase
 	
 	public static final int validDemandAccOffsets[] =
 	{
-		101, 102, 103, 104
+		21, 22, 23, 24, 101, 102, 103, 104
 	};
+	// Added offset 21 for 470 frozen peak kw support
+	
 	
 	public static final int noOffsets_MASK = 0x0000;
 	public static final int validAnalogPtOffsets_MASK = 0x0001;
@@ -126,13 +128,13 @@ public abstract class FileFormatBase
 		
 		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS)//special case!!!
 		{
-		    // create an instance of the record and call the dataToString, this reads a file instead
-		    // of being a preloaded vector of records from the database.
-		    MVRSRecord mvrsRecord = new MVRSRecord();
-		    mvrsRecord.setInputFile(getInputFileName());
-		    returnBuffer.append(mvrsRecord.dataToString());
-		    //set the record format's record count, based on the number of meter records in the file
-		    setRecordCount(mvrsRecord.getNumberMeters());
+			// create an instance of the record and call the dataToString, this reads a file instead
+			// of being a preloaded vector of records from the database.
+			MVRSRecord mvrsRecord = new MVRSRecord();
+			mvrsRecord.setInputFile(getInputFileName());
+			returnBuffer.append(mvrsRecord.dataToString());
+			//set the record format's record count, based on the number of meter records in the file
+			setRecordCount(mvrsRecord.getNumberMeters());
 		}
 		else
 		{

@@ -21,6 +21,12 @@ public class TurtleFormatBase extends FileFormatBase
 	
 	/**
 	 * Retrieves values from the database and inserts them in a FileFormatBase object
+	 * 
+	 * WARNING:  We could have some issues if multiple points are collecting data, the last point read in will be the ONLY 
+	 * one to show up in the file, since we only have one place holder. 
+	 * For Example:  The frozen peak demand point offsets (21-24) are all parsed into the same variable, therefore the last
+	 * one read in will be the only one in the file. (SN 20051010)
+	 * 
 	 * Creation date: (11/30/00)
 	 */
 	public boolean retrieveBillingData(String dbAlias)
@@ -48,7 +54,7 @@ public class TurtleFormatBase extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets, validDemandAccOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.DMG_METERNUMBER + ", " 
 				+ SQLStringBuilder.DMG_DEVICEID + ", " 
@@ -152,7 +158,7 @@ public class TurtleFormatBase extends FileFormatBase
 									lastRecord.setTime(ts);
 									lastRecord.setDate(ts);
 								}
-								else if (isKW(ptOffset))
+								else if (isKW(ptOffset) || isKW_demand(ptOffset))
 								{
 									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
@@ -179,7 +185,7 @@ public class TurtleFormatBase extends FileFormatBase
 									record.setDate(ts);
 		
 								}
-								else if (isKW(ptOffset))
+								else if (isKW(ptOffset) || isKW_demand(ptOffset))
 								{
 									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
