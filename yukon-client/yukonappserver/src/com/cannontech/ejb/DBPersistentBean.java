@@ -196,6 +196,8 @@ public class DBPersistentBean implements IDBPersistent
    
        java.sql.Statement stmt = null;
        
+//     everything went well, print the SQL to a file if desired
+       printSQLToFile( deleteString.toString(), columnValues, null, null );
        try
        {
          stmt = getDbConnection().createStatement();
@@ -222,7 +224,9 @@ public class DBPersistentBean implements IDBPersistent
       String deleteString = "DELETE FROM " + tableName + " WHERE " + columnName + "=" + columnValue;
    
       java.sql.Statement stmt = null;
-   
+//    everything went well, print the SQL to a file if desired
+      Object [] columnValues = new Object[]{columnValue};
+      printSQLToFile( deleteString, columnValues, null, null );
       try
       {
          stmt = getDbConnection().createStatement();
@@ -487,7 +491,10 @@ public class DBPersistentBean implements IDBPersistent
          for( int i = 0; i < constraintColumnValue.length; i++ )
             pstmt.setObject(i+setColumnValue.length+1, constraintColumnValue[i]);
             
-         pstmt.executeUpdate();  
+         pstmt.executeUpdate();
+         //everything went well, print the SQL to a file if desired
+         printSQLToFile( pSql.toString(), setColumnValue, constraintColumnValue, null );
+
       }
       catch( SQLException e )
       {
@@ -595,12 +602,12 @@ public class DBPersistentBean implements IDBPersistent
          pstmt.executeUpdate();
    
          //everything went well, print the SQL to a file if desired
-         printSQLToFile( pSql.toString(), values, null );
+         printSQLToFile( pSql.toString(), values, null, null );
       }
       catch( SQLException e )
       {
          //something bad happened, print the SQL with the Exception to a file if desired
-         printSQLToFile( pSql.toString(), values, e );
+         printSQLToFile( pSql.toString(), values, null, e );
          
          throw e;
       }
@@ -663,7 +670,7 @@ public class DBPersistentBean implements IDBPersistent
          return o;
    }
    
-   private void printSQLToFile(String line, Object[] columnValues, SQLException exception )
+   private void printSQLToFile(String line, Object[] columnValues, Object[] constraintValues, SQLException exception )
    {
 
 	String printSQLfile =
@@ -680,6 +687,7 @@ public class DBPersistentBean implements IDBPersistent
       {
          StringBuffer buffer = new StringBuffer(line);
          boolean missingColumnValue = false;
+         boolean missingConstraintValue = false;
          
          if( columnValues != null )
          {
@@ -694,8 +702,21 @@ public class DBPersistentBean implements IDBPersistent
             }
          }
    
+         if( constraintValues != null )
+         {
+            for( int i = 0; i < constraintValues.length; i++ )
+            {
+               int index = buffer.toString().indexOf("?");
+               if( index != -1 )
+                  buffer = buffer.replace( index, index+1, prepareObjectForSQLStatement(constraintValues[i]).toString() );
+               else
+                  missingConstraintValue = true;
+            }
+         }
          if( missingColumnValue )
             buffer.insert(0, "/*** MISSING COLUMN VALUE FOUND IN THE BELOW STATEMENT */\n");
+         if( missingConstraintValue )
+             buffer.insert(0, "/*** MISSING CONSTRAINT VALUE FOUND IN THE BELOW STATEMENT */\n");
             
          pw = new java.io.PrintWriter(new java.io.FileWriter( printSQLfile, true), true);
          pw.write(buffer + "; \r\n");
