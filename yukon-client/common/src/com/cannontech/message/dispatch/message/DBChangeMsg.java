@@ -52,6 +52,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_COMMAND_DB = 23;
 	public static final int CHANGE_TOU_SCHEDULE_DB = 24;
 	public static final int CHANGE_CBC_STRATEGY_DB = 25;
+	public static final int CHANGE_PAO_SCHEDULE_DB = 26;
 	
 
 
@@ -79,6 +80,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_COMMAND = "Command";
 	public static final String CAT_TOU_SCHEDULE = "TOU Schedule";
 	public static final String CAT_CBC_STRATEGY = "CBC Strategy";
+	public static final String CAT_PAO_SCHEDULE = "PAO Schedule";
 
 
 
