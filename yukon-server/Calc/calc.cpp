@@ -131,7 +131,7 @@ double CtiCalc::calculate( int &calc_quality, RWTime &calc_time, bool &calcValid
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
         }
-
+        _stack.clear();     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
 
         bool solidTime = false;             // If time is "solid" all components are the same time stamp.
