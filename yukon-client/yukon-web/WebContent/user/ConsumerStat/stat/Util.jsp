@@ -48,7 +48,7 @@
                 <tr> 
                   <td align="center" class="MainText"> 
                     <%
-	String desc = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY, "");
+	String desc = AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_DESC_UTILITY);
 	String address = ServletUtils.formatAddress(energyCompany.getCompanyAddress()) + "<br>";
 	String phoneNo = (energyCompany.getMainPhoneNumber().trim().length() > 0)?
 			"Ph: " + energyCompany.getMainPhoneNumber() + "<br>" : "";
