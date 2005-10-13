@@ -17,6 +17,8 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.cache.functions.YukonListFuncs;
+import com.cannontech.common.constants.YukonSelectionList;
 
 public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 
@@ -240,10 +242,19 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		getUsePointCheckBox().setVisible(true);
 		getPointComboBox().setEnabled(true);
 		getUsePointCheckBox().setSelected(true);
-
-		for( int i = 0; i < CalcComponentTypes.CALC_FUNCTIONS.length; i++ )
-			getOperationFunctionComboBox().addItem( CalcComponentTypes.CALC_FUNCTIONS[i] );
-
+		
+		YukonSelectionList funcList = YukonListFuncs.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
+		if(funcList == null)
+		{
+			for( int i = 0; i < CalcComponentTypes.CALC_FUNCTIONS.length; i++ )
+				getOperationFunctionComboBox().addItem( CalcComponentTypes.CALC_FUNCTIONS[i] );	
+		}
+		else
+		{
+			for( int i = 0; i < funcList.getYukonListEntries().size(); i++ )
+				getOperationFunctionComboBox().addItem( funcList.getYukonListEntries().get(i).toString() );
+		}
+			
 		revalidate();
 		repaint();
 	}

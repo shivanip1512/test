@@ -67,9 +67,9 @@ public class CalcComponentTypes
 	public static final String MAX_DIFFERENCE = "Max Difference";
 	public static final String ABS_VALUE = "Absolute Value";
    
-   public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
-   public static final String MODULO_DIVIDE = "Modulo Divide";
-   public static final String STATE_TIMER_FUNCTION = "State Timer";
+   	public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
+   	public static final String MODULO_DIVIDE = "Modulo Divide";
+   	public static final String STATE_TIMER_FUNCTION = "State Timer";
 
    
 	//our operation function strings
