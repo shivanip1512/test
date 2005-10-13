@@ -1,0 +1,362 @@
+package com.cannontech.database.db.pao;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Vector;
+
+/**
+ * DB object for the table PAOSchedule
+ */
+public class PAOSchedule extends DBPersistent implements CTIDbChange
+{
+	private Integer scheduleID = null;
+	private Date nextRunTime = CtiUtilities.get1990GregCalendar().getTime();
+	private Date lastRunTime = CtiUtilities.get1990GregCalendar().getTime();
+	private Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
+	private String scheduleName = CtiUtilities.STRING_NONE;
+	private boolean disabled = false;
+
+
+	public static final String SETTER_COLUMNS[] = 
+	{ 
+		"NextRunTime", "LastRunTime",
+		"IntervalRate", "ScheduleName",
+		"Disabled"
+	};
+
+	public static final String CONSTRAINT_COLUMNS[] = { "ScheduleID" };
+
+	public static final String TABLE_NAME = "PAOSchedule";
+
+
+	private static final String ALL_SCHEDULES_SQL = 
+			"SELECT ExclusionID, PaoID, ExcludedPaoID, PointID, Value, FunctionID," +
+			"FuncName, FuncRequeue, FuncParams " +
+			"FROM " + TABLE_NAME; 
+
+	/**
+	 * default constructor.
+	 */
+	public PAOSchedule() {
+		super();
+	}
+
+	/**
+	 * add method comment.
+	 */
+	public void add() throws java.sql.SQLException 
+	{
+		if( getScheduleID() == null )
+			setScheduleID( getNextPAOScheduleID(getDbConnection()) );
+
+		Object addValues[] = {
+			getScheduleID(), getNextRunTime(),
+			getLastRunTime(), getIntervalRate(), getScheduleName(),
+			(isDisabled() ? CtiUtilities.trueChar : CtiUtilities.falseChar)
+		};
+	
+		add( TABLE_NAME, addValues );
+	}
+	
+	
+	/**
+	 * delete method comment.
+	 */
+	public void delete() throws java.sql.SQLException 
+	{
+		Object values[] = { getScheduleID() };
+	
+		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
+	}
+	
+
+	/**
+	 * This method was created in VisualAge.
+	 */
+	public static final PAOSchedule[] getAllPAOSchedules( java.sql.Connection conn ) throws java.sql.SQLException
+	{
+		Vector tmpList = new Vector();
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+	
+		try
+		{		
+			if( conn == null )
+			{
+				throw new IllegalStateException("Database connection should not be null.");
+			}
+			else
+			{
+				pstmt = conn.prepareStatement( ALL_SCHEDULES_SQL );				
+				rset = pstmt.executeQuery();							
+		
+				while( rset.next() ) {
+					PAOSchedule item = new PAOSchedule();
+
+					item.setNextRunTime( rset.getDate(1) );
+					item.setLastRunTime( rset.getDate(2) );
+					item.setIntervalRate( new Integer(rset.getInt(3)) );
+					item.setScheduleName( new String(rset.getString(4)) );
+
+					tmpList.add( item );
+				}
+						
+			}		
+		}
+		catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		finally {
+			try {
+				if( pstmt != null ) pstmt.close();
+				if( rset != null ) rset.close();
+			} 
+			catch( java.sql.SQLException e2 ) {
+				CTILogger.error( e2.getMessage(), e2 );//something is up
+			}	
+		}
+
+
+		PAOSchedule retVal[] = new PAOSchedule[ tmpList.size() ];
+		tmpList.toArray( retVal );
+		return retVal;
+	}
+
+	/**
+	 * This method was created by Cannon Technologies Inc.
+	 * @return boolean
+	 * @param deviceID java.lang.Integer
+	 */
+	public static synchronized boolean deleteAllPAOExclusions(int paoID, java.sql.Connection conn )
+	{
+		try
+		{
+			if( conn == null )
+				throw new IllegalStateException("Database connection should not be null.");
+	
+			java.sql.Statement stat = conn.createStatement();
+			
+			stat.execute( 
+					"DELETE FROM " + TABLE_NAME + 
+					" WHERE PAOid=" + paoID );
+	
+			if( stat != null )
+				stat.close();
+		}
+		catch(Exception e)
+		{
+			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			return false;
+		}
+	
+	
+		return true;
+	}
+	
+	/**
+	 * This method was created in VisualAge.
+	 * @return java.lang.Integer
+	 */
+	public final static Integer getNextPAOScheduleID( java.sql.Connection conn )
+	{
+		if( conn == null )
+			throw new IllegalStateException("Database connection should not be null.");
+		
+			
+		java.sql.Statement stmt = null;
+		java.sql.ResultSet rset = null;
+			
+		try {
+			 stmt = conn.createStatement();
+			 rset = stmt.executeQuery( "SELECT Max(ScheduleID)+1 FROM " + TABLE_NAME );	
+					
+			 //get the first returned result
+			 rset.next();
+			 return new Integer( rset.getInt(1) );
+		}
+		catch (java.sql.SQLException e) {
+			 e.printStackTrace();
+		}
+		finally 
+		{
+			 try {
+				if ( stmt != null) stmt.close();
+			 }
+			 catch (java.sql.SQLException e2) {
+				e2.printStackTrace();
+			 }
+		}
+			
+		//strange, should not get here
+		return new Integer(CtiUtilities.NONE_ZERO_ID);
+	}
+
+	/**
+	 * retrieve method comment.
+	 */
+	public void retrieve() throws java.sql.SQLException 
+	{
+		Object constraintValues[] = { getScheduleID() };
+		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+	
+		if( results.length == SETTER_COLUMNS.length )
+		{
+			setNextRunTime( new Date( ((Timestamp)results[0]).getTime() ) );		
+			setLastRunTime( new Date( ((Timestamp)results[1]).getTime() ) );			
+			setIntervalRate( (Integer) results[2] );
+			setScheduleName( (String)results[3] );
+			
+			setDisabled(
+				CtiUtilities.trueChar.charValue() == results[3].toString().charAt(0) );			
+		}
+		else
+			throw new Error(getClass() + " - Incorrect Number of results retrieved");
+	}
+	
+	
+	/**
+	 * update method comment.
+	 */
+	public void update() throws java.sql.SQLException 
+	{
+		Object setValues[] = {
+			getNextRunTime(), getLastRunTime(),
+			getIntervalRate(), getScheduleName(),
+			(isDisabled() ? CtiUtilities.trueChar : CtiUtilities.falseChar)			
+		};
+						
+		Object constraintValues[] = { getScheduleID() };
+	
+		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+	}
+
+
+	/**
+	 * Generates a DB Change message for this db object
+	 */
+	public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+	{
+		DBChangeMsg[] msgs = {
+			new DBChangeMsg(
+				getScheduleID().intValue(),
+				DBChangeMsg.CHANGE_PAO_SCHEDULE_DB,
+				DBChangeMsg.CAT_PAO_SCHEDULE,
+				DBChangeMsg.CAT_PAO_SCHEDULE,
+				typeOfChange)
+		};
+
+
+		return msgs;
+	}
+
+	/*
+	public final static boolean isMasterProgram(Integer anID, String databaseAlias) throws java.sql.SQLException 
+	{
+		com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
+			"SELECT ExclusionID from " + TABLE_NAME + " WHERE PaoID = " + anID, databaseAlias);
+			
+		try
+		{
+			stmt.execute();
+			return (stmt.getRowCount() > 0 );
+		}
+		catch( Exception e )
+		{
+			return false;
+		}
+	
+	}
+	*/
+	
+
+	/**
+	 * @return
+	 */
+	public Integer getIntervalRate() {
+		return intervalRate;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getLastRunTime() {
+		return lastRunTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getNextRunTime() {
+		return nextRunTime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getScheduleID() {
+		return scheduleID;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getScheduleName() {
+		return scheduleName;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setIntervalRate(Integer integer) {
+		intervalRate = integer;
+	}
+
+	/**
+	 * @param date
+	 */
+	public void setLastRunTime(Date date) {
+		lastRunTime = date;
+	}
+
+	/**
+	 * @param date
+	 */
+	public void setNextRunTime(Date date) {
+		nextRunTime = date;
+	}
+
+	/**
+	 * @param integer
+	 */
+	public void setScheduleID(Integer integer) {
+		scheduleID = integer;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setScheduleName(String string) {
+		scheduleName = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setDisabled(boolean b) {
+		disabled = b;
+	}
+
+}
