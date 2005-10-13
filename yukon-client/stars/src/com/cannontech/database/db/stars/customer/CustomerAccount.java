@@ -174,7 +174,7 @@ public class CustomerAccount extends DBPersistent {
     {
 		String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + CICustomerBase.TABLE_NAME + " cust "
 				   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
-				   + "AND acct.CustomerID = cust.CustomerID AND UPPER(acct.AccountNumber) LIKE UPPER(" + searchName + ")";
+				   + "AND acct.CustomerID = cust.CustomerID AND UPPER(cust.CompanyName) LIKE UPPER('" + searchName + "')";
 		
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 	    	
