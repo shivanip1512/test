@@ -22,6 +22,15 @@ public class CalcComponentTypes
 	
 	
 	/*** START OF CALC FUNCTIONS  ***/
+	/*
+	 * These calc functions are now added to the YukonListEntry table under ListID = 100
+	 * They were moved there for the ease of Corey since he loves adding new ones 
+	 * whenever it tickles his fancy.
+	 * If there is special functionality with a selected entry, than they will still
+	 * need to be added as a constant to this class for comparison purposes.
+	 */ 
+	public static final int CALC_FUNCTION_LIST_ID = 100; 
+	
 	public static final String ADDITION_FUNCTION = "Addition";
 	public static final String SUBTRACTION_FUNCTION = "Subtraction";
 	public static final String MULTIPLICATION_FUNCTION = "Multiplication";
@@ -60,6 +69,7 @@ public class CalcComponentTypes
    
    public static final String KW_FROM_KVAKVAR_FUNCTION = "kW from kVA/kVAr";
    public static final String MODULO_DIVIDE = "Modulo Divide";
+   public static final String STATE_TIMER_FUNCTION = "State Timer";
 
    
 	//our operation function strings
@@ -98,7 +108,8 @@ public class CalcComponentTypes
       PFACTOR_KW_KQ_FUNCTION,
       PFACTOR_KW_KVA_FUNCTION,
       SQUARED_FUNCTION,
-      SQUARE_ROOT_FUNCTION
+      SQUARE_ROOT_FUNCTION,
+      STATE_TIMER_FUNCTION
 	};
 
 
