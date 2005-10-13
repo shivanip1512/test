@@ -1,6 +1,7 @@
 <%
 	// Table of (link, page name) pairs
 	String linkPairs[][] = {{"General.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_GENERAL)},
+						  {"Contacts.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTACTS)},
 						  {"TOU.jsp", "Usage"},
 						  {"ProgramHist.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_CONTROL_HISTORY)},
 						  {"Enrollment.jsp", AuthFuncs.getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_ENROLLMENT)},
@@ -41,6 +42,10 @@
           <tr> 
             <td width="10"><%= ((String[]) links.get("General.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("General.jsp"))[1] %></td>
+          </tr>
+           <tr> 
+            <td width="10"><%= ((String[]) links.get("Contacts.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("Contacts.jsp"))[1] %></td>
           </tr>
         </table>
       </div>

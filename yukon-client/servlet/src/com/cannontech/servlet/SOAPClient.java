@@ -248,8 +248,17 @@ public class SOAPClient extends HttpServlet {
 		}
 		else if (action.equalsIgnoreCase("UpdateContacts")) {
 			clientAction = new UpdateContactsAction();
-			if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
-			if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
+			//needed for residential access to contacts
+			if(referer.indexOf("/stat/Contacts.jsp") != -1)
+			{
+				if (destURL == null) destURL = req.getContextPath() + "/user/ConsumerStat/stat/Contacts.jsp";
+				if (errorURL == null) errorURL = req.getContextPath() + "/user/ConsumerStat/stat/General.jsp";					
+			}
+			else
+			{
+				if (destURL == null) destURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";
+				if (errorURL == null) errorURL = req.getContextPath() + "/operator/Consumer/Contacts.jsp";		
+			}
 		}
 		else if (action.equalsIgnoreCase("DeleteCustAccount")) {
 			clientAction = new DeleteCustAccountAction();
