@@ -1,9 +1,11 @@
 package com.cannontech.database.data.point;
 
+import com.cannontech.database.data.pao.TypeBase;
+
 /**
  * This type was created in VisualAge.
  */
-public final class PointTypes implements IPointOffsets
+public final class PointTypes implements IPointOffsets, TypeBase
 {
 	//System point id constants - these mirror the #defines
 	// in pointtypes.h
@@ -22,55 +24,55 @@ public final class PointTypes implements IPointOffsets
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)
 	//The Point Types
-	public static final int STATUS_POINT = 0;
-	public static final int ANALOG_POINT = 1;
-	public static final int PULSE_ACCUMULATOR_POINT = 2;
-	public static final int DEMAND_ACCUMULATOR_POINT = 3;	
-	public static final int CALCULATED_POINT = 4;
-	public static final int STATUS_OUTPUT_POINT = 5;
-	public static final int ANALOG_OUTPUT_POINT = 6;
-	public static final int SYSTEM_POINT = 7;
-	public static final int CALCULATED_STATUS_POINT = 8;
+	public static final int STATUS_POINT = 0 + TypeBase.POINT_OFFSET;
+	public static final int ANALOG_POINT = 1 + TypeBase.POINT_OFFSET;
+	public static final int PULSE_ACCUMULATOR_POINT = 2 + TypeBase.POINT_OFFSET;
+	public static final int DEMAND_ACCUMULATOR_POINT = 3 + TypeBase.POINT_OFFSET;
+	public static final int CALCULATED_POINT = 4 + TypeBase.POINT_OFFSET;
+	public static final int STATUS_OUTPUT_POINT = 5 + TypeBase.POINT_OFFSET;
+	public static final int ANALOG_OUTPUT_POINT = 6 + TypeBase.POINT_OFFSET;
+	public static final int SYSTEM_POINT = 7 + TypeBase.POINT_OFFSET;
+	public static final int CALCULATED_STATUS_POINT = 8 + TypeBase.POINT_OFFSET;
 
-	public static final int INVALID_POINT = 9;
+	public static final int INVALID_POINT = 9 + TypeBase.POINT_OFFSET;
 	
 	//Control Type constants
-	public static final int CONTROLTYPE_NONE = 20;
-	public static final int CONTROLTYPE_LATCH = 21;
-	public static final int CONTROLTYPE_NORMAL = 22;
-	public static final int CONTROLTYPE_PSEUDO = 23;
+	public static final int CONTROLTYPE_NONE = 20 + TypeBase.POINT_OFFSET;
+	public static final int CONTROLTYPE_LATCH = 21 + TypeBase.POINT_OFFSET;
+	public static final int CONTROLTYPE_NORMAL = 22 + TypeBase.POINT_OFFSET;
+	public static final int CONTROLTYPE_PSEUDO = 23 + TypeBase.POINT_OFFSET;
 
 	//Accumulator point reading types
-	public static final int ACCUMULATOR_DIALREAD = 24;
-	public static final int ACCUMULATOR_DEMAND = 25;
-	public static final int ACCUMULATOR_PEAKDEMAND = 26;
+	public static final int ACCUMULATOR_DIALREAD = 24 + TypeBase.POINT_OFFSET;
+	public static final int ACCUMULATOR_DEMAND = 25 + TypeBase.POINT_OFFSET;
+	public static final int ACCUMULATOR_PEAKDEMAND = 26 + TypeBase.POINT_OFFSET;
 
 	//Transducer Types
-	public static final int TRANSDUCER_NONE = 27;
-	public static final int TRANSDUCER_PSEUDO = 28;
-	public static final int TRANSDUCER_DIGITAL = 29;
-	public static final int TRANSDUCER_01MA = 30;
-	public static final int TRANSDUCER_420MA = 31;
+	public static final int TRANSDUCER_NONE = 27 + TypeBase.POINT_OFFSET;
+	public static final int TRANSDUCER_PSEUDO = 28 + TypeBase.POINT_OFFSET;
+	public static final int TRANSDUCER_DIGITAL = 29 + TypeBase.POINT_OFFSET;
+	public static final int TRANSDUCER_01MA = 30 + TypeBase.POINT_OFFSET;
+	public static final int TRANSDUCER_420MA = 31 + TypeBase.POINT_OFFSET;
 
 	//Data filter types
-	public static final int DATAFILTERTYPE_NONE = 32;
-	public static final int DATAFILTERTYPE_USELAST = 33;
-	public static final int DATAFILTERTYPE_USEDEFAULT = 34;
+	public static final int DATAFILTERTYPE_NONE = 32 + TypeBase.POINT_OFFSET;
+	public static final int DATAFILTERTYPE_USELAST = 33 + TypeBase.POINT_OFFSET;
+	public static final int DATAFILTERTYPE_USEDEFAULT = 34 + TypeBase.POINT_OFFSET;
 	
 	//Outage points (for MCT410 and maybe more?), these types cannot be "created", it is only to give them a reference 
-	public static final int OUTAGE_1 = 35;
-	public static final int OUTAGE_2 = 36;
-	public static final int OUTAGE_3 = 37;
-	public static final int OUTAGE_4 = 38;
-	public static final int OUTAGE_5 = 39;
-	public static final int OUTAGE_6 = 40;
+	public static final int OUTAGE_1 = 35 + TypeBase.POINT_OFFSET;
+	public static final int OUTAGE_2 = 36 + TypeBase.POINT_OFFSET;
+	public static final int OUTAGE_3 = 37 + TypeBase.POINT_OFFSET;
+	public static final int OUTAGE_4 = 38 + TypeBase.POINT_OFFSET;
+	public static final int OUTAGE_5 = 39 + TypeBase.POINT_OFFSET;
+	public static final int OUTAGE_6 = 40 + TypeBase.POINT_OFFSET;
 	
-	public static final int LP_PEAK_REPORT = 41;
-	public static final int LP_ARCHIVED_DATA = 42;
+	public static final int LP_PEAK_REPORT = 41 + TypeBase.POINT_OFFSET;
+	public static final int LP_ARCHIVED_DATA = 42 + TypeBase.POINT_OFFSET;
 	
 	//More Control Type constants
-	public static final int CONTROLTYPE_SBO_LATCH = 43;
-	public static final int CONTROLTYPE_SBO_PULSE = 44;
+	public static final int CONTROLTYPE_SBO_LATCH = 43 + TypeBase.POINT_OFFSET;
+	public static final int CONTROLTYPE_SBO_PULSE = 44 + TypeBase.POINT_OFFSET;
 	
 	
 	//All the strings associated with points and the database

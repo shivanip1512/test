@@ -6,10 +6,18 @@ package com.cannontech.database.data.pao;
  * 
  * Used to keep all subclasses from conflicting with int types
  */
-abstract interface TypeBase
+public interface TypeBase
 {
-   final static int DEVICE_OFFSET      = 0;
-   final static int ROUTE_OFFSET       = 1000;
-   final static int PORT_OFFSET        = 2000;
-   final static int CAPCONTROL_OFFSET  = 3000;
+	public final static int POINT_OFFSET      = 0;
+	
+	public final static int DEVICE_OFFSET      = 1000;
+	public final static int ROUTE_OFFSET       = 2000;
+	public final static int PORT_OFFSET        = 3000;
+	public final static int CAPCONTROL_OFFSET  = 4000;
+	
+
+
+
+	//used for non-pao objects (soon to be paos hopefully!)
+	public final static int MISC_OFFSET  = 100000;
 }
