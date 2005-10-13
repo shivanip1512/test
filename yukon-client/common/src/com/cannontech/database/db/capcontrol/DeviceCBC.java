@@ -149,15 +149,6 @@ public Integer getSerialNumber() {
 }
 /**
  * This method was created in VisualAge.
- */
-public void initialize( Integer deviceID, Integer serialNumber, Integer routeID ) {
-
-	setDeviceID( deviceID );
-	setSerialNumber( serialNumber );
-	setRouteID( routeID );
-}
-/**
- * This method was created in VisualAge.
  * @return String[]
  *
  * This method returns the name of the PAOBjects that have the same address,
