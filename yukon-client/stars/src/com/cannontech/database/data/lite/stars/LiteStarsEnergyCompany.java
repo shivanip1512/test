@@ -30,6 +30,7 @@ import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -2497,6 +2498,62 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		return accountList;
 	}
+	
+	/**
+	* Search customer account by company name, search results based on partial match
+	* If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
+	* otherwise the return type is LiteStarsCustAccountInformation.
+	*/
+   	public ArrayList searchAccountByCompanyName(String searchName, boolean searchMembers) {
+	   	ArrayList accountList = new ArrayList();
+		
+	   	if (isAccountsLoaded()) 
+	   	{
+		   	ArrayList custAcctInfoList = getAllCustAccountInformation();
+		   	for (int i = 0; i < custAcctInfoList.size(); i++) 
+		   	{
+			   LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) custAcctInfoList.get(i);
+			   LiteCustomer liteDude = liteAcctInfo.getCustomer();
+				if (liteDude instanceof LiteCICustomer) 
+				{
+					LiteCICustomer liteCICust = (LiteCICustomer) liteDude;
+			  	 	if (liteCICust.getCompanyName().toUpperCase().startsWith( searchName.toUpperCase() ))
+			   		{
+				   		if (searchMembers)
+					   		accountList.add( new Pair(liteAcctInfo, this) );
+				   		else
+					   		accountList.add( liteAcctInfo );
+			   		}
+		   		}
+	   		}
+	   	}
+	   	else 
+	   	{
+			int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCompanyName( searchName + "%", getLiteID() );
+		   	if (accountIDs != null) {
+			   for (int i = 0; i < accountIDs.length; i++) {
+				   LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+				   if (searchMembers)
+					   accountList.add( new Pair(liteAcctInfo, this) );
+				   else
+					   accountList.add( liteAcctInfo );
+			   }
+		   }
+	   }
+		
+	   if (searchMembers) {
+		   ArrayList children = getChildren();
+		   synchronized (children) {
+			   for (int i = 0; i < children.size(); i++) {
+				   LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) children.get(i);
+				   ArrayList memberList = company.searchAccountByCompanyName( searchName, searchMembers );
+				   accountList.addAll( memberList );
+			   }
+		   }
+	   }
+		
+	   return accountList;
+   }
 	
 	/**
 	 * Search customer account by residence map #, search results based on partial match

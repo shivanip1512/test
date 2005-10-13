@@ -7,6 +7,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.customer.CICustomerBase;
 
 /**
  * <p>Title: </p>
@@ -168,6 +169,30 @@ public class CustomerAccount extends DBPersistent {
     	
 		return null;
     }
+    
+    public static int[] searchByCompanyName(String searchName, int energyCompanyID) 
+    {
+		String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + CICustomerBase.TABLE_NAME + " cust "
+				   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
+				   + "AND acct.CustomerID = cust.CustomerID AND UPPER(acct.AccountNumber) LIKE UPPER(" + searchName + ")";
+		
+		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+	    	
+		try {
+			stmt.execute();
+	    		
+			int[] accountIDs = new int[ stmt.getRowCount() ];
+			for (int i = 0; i < stmt.getRowCount(); i++)
+				accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+				
+			return accountIDs;
+		}
+		catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+	    	
+		return null;
+}
     
     public static int[] searchByAddress(String address, int energyCompanyID) {
     	String sql = "SELECT DISTINCT acct.AccountID " +

@@ -80,6 +80,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ADDRESS			= 1606;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_ALT_TRACK_NO		= 1607;
 	public static final int YUK_DEF_ID_SEARCH_TYPE_METER_NO			= 1608;
+	public static final int YUK_DEF_ID_SEARCH_TYPE_COMPANY_NAME		= 1609;
 	public static final int YUK_DEF_ID_DEV_STAT_AVAIL				= 1701;
 	public static final int YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL		= 1702;
 	public static final int YUK_DEF_ID_DEV_STAT_UNAVAIL				= 1703;
