@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
-import javax.faces.model.SelectItem;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;

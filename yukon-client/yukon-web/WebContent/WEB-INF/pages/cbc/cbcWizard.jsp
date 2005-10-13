@@ -6,7 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 
 <%
 	//****
@@ -50,8 +50,8 @@
 				    <f:verbatim><br/><fieldset><legend>General</legend></f:verbatim>
 
 					<f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="cbcName" value="Name: " title="A label for the item in the system"/>
-					<x:inputText id="cbcName" required="true" maxlength="32" styleClass="char32Label"
+					<x:outputLabel for="Name" value="Name: " title="A label for the item in the system"/>
+					<x:inputText id="Name" required="true" maxlength="32" styleClass="char32Label"
 							value="#{capControlForm.wizData.name}" />
 	
 			        <f:verbatim><br/></f:verbatim>
@@ -61,18 +61,20 @@
 				</x:panelGroup>
 
 
-				<x:panelGroup rendered="#{capControlForm.visibleTabs['CBCController']}" >
+				<x:panelGroup rendered="#{capControlForm.visibleTabs['CBCType']}" >
 			        <f:verbatim><br/><br/></f:verbatim>
 				    <f:verbatim><fieldset><legend>Item Type</legend></f:verbatim>
-					<x:selectOneRadio id="itemType" value="#{capControlForm.wizData.secondaryType}" layout="pageDirection" 
-							required="true" onclick="submit();" >
+					<x:outputLabel for="CBC_Type" value="CBC Type: "
+							title="Type of CBC this object will be"/>
+					<x:selectOneMenu id="CBC_Type" value="#{capControlForm.wizData.secondaryType}"
+							required="true" onchange="submit();" >
 						<f:selectItems value="#{selLists.CBCTypes}" />
-					</x:selectOneRadio>
-					
-			        <f:verbatim><br/></f:verbatim>
-					<x:outputLabel for="cbcComm" value="Comm. Channel: "
-							title="The communication channel this CBC will use (only applies to a subset of CBC types)"/>
-					<x:selectOneMenu id="cbcComm" disabled="#{!capControlForm.wizData.portNeeded}"
+					</x:selectOneMenu>
+
+			        <f:verbatim><br/><br/></f:verbatim>
+					<x:outputLabel for="CBC_Comm_Channel" value="Comm. Channel: "
+							title="The communication channel this CBC will use (only applies to two-way CBC types)"/>
+					<x:selectOneMenu id="CBC_Comm_Channel" disabled="#{!capControlForm.wizData.portNeeded}"
 							value="#{capControlForm.wizData.portID}" >
 						<f:selectItems value="#{selLists.commChannels}"/>
 					</x:selectOneMenu>

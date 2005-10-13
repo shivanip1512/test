@@ -37,6 +37,18 @@ public class CBCSelectionLists {
 		new SelectItem(new Integer(PointTypes.STATUS_POINT), PointTypes.getType(PointTypes.STATUS_POINT) )
 	};
 
+	private static final SelectItem[] daySelection =  {
+		//value, label
+		new SelectItem("0", "Sunday" ),
+		new SelectItem("1", "Monday" ),
+		new SelectItem("2", "Tuesday" ),
+		new SelectItem("3", "Wednesday" ),
+		new SelectItem("4", "Thursday" ),
+		new SelectItem("5", "Friday" ),
+		new SelectItem("6", "Saturday" )
+	};
+
+
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
 		new SelectItem(CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER,
@@ -184,6 +196,13 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getCapBankSizes() {
 		return capBankSizes;
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getDaySelections() {
+		return daySelection;
 	}
 
 	/**

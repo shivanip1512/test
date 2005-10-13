@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 
 <f:subview id="feederSub" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
@@ -32,25 +32,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" imageLocation="/editor/images/myfaces"
-			clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="rootLink" action="#{t.toggleExpanded}" value="#{node.description}" immediate="true" />
+					<x:outputText id="rootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="paoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="paChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+               			rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID == node.identifier}" />
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.varPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -81,25 +81,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subWattListTree" value="#{capControlForm.wattTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" imageLocation="/editor/images/myfaces/"
-			showLines="true" showNav="true" clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="wRootLink" action="#{t.toggleExpanded}" value="#{node.description}"/>
+					<x:outputText id="wRootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="wPaoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="wPAChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+                  		rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID == node.identifier}" />
 		            <x:commandLink id="wPtLink" value="#{node.description}"
 						actionListener="#{capControlForm.wattPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -128,25 +128,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subVoltPaoListTree" value="#{capControlForm.voltTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" showLines="true" imageLocation="/editor/images/myfaces/"
-			showNav="true" clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="vltRootLink" action="#{t.toggleExpanded}" value="#{node.description}"/>
+					<x:outputText id="vltRootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="vltPaoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="vltChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+                  		rendered="#{capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID == node.identifier}" />
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.voltPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -193,25 +193,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="varPaoListTree" value="#{capControlForm.varTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" imageLocation="/editor/images/myfaces/"
-			showLines="true" showNav="true" clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="fdrRootLink" action="#{t.toggleExpanded}" value="#{node.description}"/>
+					<x:outputText id="fdrRootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="fdrPaoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="paChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID == node.identifier}" />
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.varPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -242,25 +242,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="paoWattListTree" value="#{capControlForm.wattTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" imageLocation="/editor/images/myfaces/"
-			showLines="true" showNav="true" clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="fdrwRootLink" action="#{t.toggleExpanded}" value="#{node.description}"/>
+					<x:outputText id="fdrwRootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="fdrwPaoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="wPAChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="wPAChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="/editor/images/blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID == node.identifier}" />
 		            <x:commandLink id="wPtLink" value="#{node.description}"
 						actionListener="#{capControlForm.wattPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>
@@ -289,25 +289,25 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="voltPaoListTree" value="#{capControlForm.voltTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" imageLocation="/editor/images/myfaces/"
-			showLines="true" showNav="true" clientSideToggle="false" >
+			showRootNode="true" varNodeToggler="t" preserveToggle="false"
+			clientSideToggle="true" >
 
 	        <f:facet name="root">
 	        	<x:panelGroup>
-		            <h:commandLink id="fdrvltRootLink" action="#{t.toggleExpanded}" value="#{node.description}"/>
+					<x:outputText id="fdrvltRootLink" value="#{node.description}" />
 	        	</x:panelGroup>
 	        </f:facet>
 
 	        <f:facet name="paos">
 				<x:panelGroup>
-		            <h:commandLink id="fdrvltPaoLinkNodes" action="#{t.toggleExpanded}" value="#{node.description}"/>
-					<x:outputText id="vltChCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+					<x:outputText id="vltChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 	        	</x:panelGroup>
 	        </f:facet>
 
 			<f:facet name="points">
 				<x:panelGroup>
-                  	<h:graphicImage value="blue_check.gif" rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == node.identifier}" border="0"/>
+                  	<x:graphicImage value="blue_check.gif" height="14" width="14" hspace="2"
+                  		rendered="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID == node.identifier}" />
 		            <x:commandLink id="ptLink" value="#{node.description}"
 						actionListener="#{capControlForm.voltPtTeeClick}">
 			            <f:param name="ptID" value="#{node.identifier}"/>

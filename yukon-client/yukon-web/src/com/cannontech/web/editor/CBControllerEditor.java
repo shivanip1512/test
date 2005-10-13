@@ -1,7 +1,5 @@
 package com.cannontech.web.editor;
 
-import java.util.HashMap;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -19,9 +17,7 @@ import com.cannontech.yukon.cbc.CBCUtils;
 public class CBControllerEditor {
 	
 	private YukonPAObject deviceCBC = null;
-	
-	//contains <String, Boolean>  (type, isEditing)
-	//private HashMap scanEditMap = new HashMap(8);
+
 
 	/**
 	 * Accepts a paoID and creates the DBPersistent from it, and then retrieves the
@@ -78,22 +74,6 @@ public class CBControllerEditor {
 	public boolean isTwoWay() {
 		return CBCUtils.isTwoWay( getPaoCBC() );
 	}
-
-//	/**
-//	 * @return
-//	 */
-//	protected boolean isEditingScan( String type ) {
-//
-//		Boolean isEditing = scanEditMap.get(type) == null ? Boolean.FALSE : (Boolean)scanEditMap.get(type);
-//		return isTwoWay() && isEditing.booleanValue();
-//	}
-//
-//	/**
-//	 * @return
-//	 */
-//	protected void setEditingScan( String type, Boolean val ) {
-//		scanEditMap.put( type, val );
-//	}
 
 	/**
 	 * @return

@@ -40,6 +40,13 @@
 		<filter-name>htmlFilter</filter-name>
 		<filter-class>com.cannontech.esub.web.filter.HTMLFilter</filter-class>
 	</filter>
+
+    <!-- A MyFaces filter used to find resources in jar files -->
+	<filter>
+		<filter-name>extensionsFilter</filter-name>
+		<filter-class>org.apache.myfaces.component.html.util.ExtensionsFilter</filter-class>
+	</filter>
+
 	
 	<filter-mapping>
 		<filter-name>timerFilter</filter-name>
@@ -84,6 +91,16 @@
 		<filter-name>htmlFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>	
+
+	<filter-mapping>
+		<filter-name>extensionsFilter</filter-name>
+		<url-pattern>*.jsf</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>extensionsFilter</filter-name>
+		<url-pattern>/faces/*</url-pattern>
+	</filter-mapping>
 
 
     <!-- Faces Listener, that does all the startup work (configuration, init). -->

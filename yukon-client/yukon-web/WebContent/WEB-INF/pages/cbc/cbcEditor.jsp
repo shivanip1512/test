@@ -6,20 +6,21 @@
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x"%>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 
 <%
 	//****
 	// Entry point file for all operations that edit a PAObject
 	//****
 
+	int type = ParamUtil.getInteger(request, "type", PAOGroups.INVALID);
 	int id = ParamUtil.getInteger(request, "itemid", PAOGroups.INVALID);
 
 	if( id != PAOGroups.INVALID ) {
 		CapControlForm capControlForm =
 			(CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 
-		capControlForm.initItem( id );
+		capControlForm.initItem( id, type );
 	}
 %>
 
@@ -48,7 +49,7 @@
 				</f:facet>
 
 
-                <x:panelTabbedPane id="tabPane" styleClass="tabPane">
+                <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" >
                     <x:panelTab id="tab1" label="General" rendered="#{capControlForm.visibleTabs['General']}">
 		               	<jsp:include page="cbcGeneralEditor.jsp"/>
                     </x:panelTab>
@@ -73,7 +74,9 @@
 		               	<jsp:include page="cbcCBController.jsp"/>
                     </x:panelTab>
 
-
+                    <x:panelTab id="tab7" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
+		               	<jsp:include page="cbcSchedule.jsp"/>
+                    </x:panelTab>
 
 
 

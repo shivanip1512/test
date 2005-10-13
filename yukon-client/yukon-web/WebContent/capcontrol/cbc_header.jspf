@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.web.editor.DBEditorNav" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
+<%@ page import="com.cannontech.web.editor.DBEditorTypes" %>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -71,11 +72,12 @@
 			<input type="hidden" name="value">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">New Substation</a>
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">New Feeder</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">New CapBank</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">New CBC</a> 
-<!--					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">New Point</a>  -->
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">Substation</a>
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">CapBank</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">CBC</a> 
+					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(DBEditorTypes.PAO_SCHEDULE)%>');">Schedule</a> 
+<!--					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">Point</a>  -->
 				  </div>
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorNav.getEditorURL(DBEditorNav.EDITOR_CAPCONTROL)%>');">Edit</a>

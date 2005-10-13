@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
 
@@ -178,16 +178,10 @@
 
 			<f:verbatim><br/></f:verbatim>
 		    <f:verbatim><fieldset><legend>Peak Operating Days</legend></f:verbatim>
-			<h:selectManyCheckbox id="pkOpDays" value="#{capControlForm.stratDaysOfWeek}"
+			<x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
 					disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection" >
-				<f:selectItem itemLabel="Sunday" itemValue="0" />
-				<f:selectItem itemLabel="Monday" itemValue="1" />
-				<f:selectItem itemLabel="Tuesday" itemValue="2" />
-				<f:selectItem itemLabel="Wednesday" itemValue="3" />
-				<f:selectItem itemLabel="Thursday" itemValue="4" />
-				<f:selectItem itemLabel="Friday" itemValue="5" />
-				<f:selectItem itemLabel="Saturday" itemValue="6" />
-			</h:selectManyCheckbox>
+				<f:selectItems value="#{selLists.daySelections}"/>
+			</x:selectManyCheckbox>
 			<f:verbatim></fieldset></f:verbatim>
 
 		</h:column>

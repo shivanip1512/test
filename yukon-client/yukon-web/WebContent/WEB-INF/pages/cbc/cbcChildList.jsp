@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 
 <f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
@@ -50,22 +50,22 @@
 	                        paginatorMaxPages="9" paginatorTableClass="paginator"
 	                        paginatorActiveColumnStyle="font-weight:bold;">
 	                    <f:facet name="first" >
-	                        <h:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page"/>
+	                        <x:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page"/>
 	                    </f:facet>
 	                    <f:facet name="last">
-	                        <h:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page"/>
+	                        <x:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page"/>
 	                    </f:facet>
 	                    <f:facet name="previous">
-	                        <h:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page"/>
+	                        <x:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page"/>
 	                    </f:facet>
 	                    <f:facet name="next">
-	                        <h:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page"/>
+	                        <x:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page"/>
 	                    </f:facet>
 	                    <f:facet name="fastforward">
-	                        <h:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages"/>
+	                        <x:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages"/>
 	                    </f:facet>
 	                    <f:facet name="fastrewind">
-	                        <h:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages"/>
+	                        <x:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages"/>
 	                    </f:facet>
 	                </x:dataScroller>
 	
@@ -175,22 +175,22 @@
 	                        paginatorMaxPages="9" paginatorTableClass="paginator"
 	                        paginatorActiveColumnStyle="font-weight:bold;">
 	                    <f:facet name="first" >
-	                        <h:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page"/>
+	                        <x:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page"/>
 	                    </f:facet>
 	                    <f:facet name="last">
-	                        <h:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page"/>
+	                        <x:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page"/>
 	                    </f:facet>
 	                    <f:facet name="previous">
-	                        <h:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page"/>
+	                        <x:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page"/>
 	                    </f:facet>
 	                    <f:facet name="next">
-	                        <h:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page"/>
+	                        <x:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page"/>
 	                    </f:facet>
 	                    <f:facet name="fastforward">
-	                        <h:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages"/>
+	                        <x:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages"/>
 	                    </f:facet>
 	                    <f:facet name="fastrewind">
-	                        <h:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages"/>
+	                        <x:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages"/>
 	                    </f:facet>
 	                </x:dataScroller>
 	

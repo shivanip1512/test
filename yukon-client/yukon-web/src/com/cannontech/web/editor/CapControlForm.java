@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -41,14 +40,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.web.util.CBCSelectionLists;
 
 /**
@@ -61,6 +62,7 @@ public class CapControlForm extends DBEditorForm
 	private String childLabel = "Children";
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
+	private int itemID = -1;
 	
 	//contains <Integer(stratID), CapControlStrategy>
 	private HashMap cbcStrategiesMap = null;
@@ -180,10 +182,10 @@ public class CapControlForm extends DBEditorForm
 
 		int stratID = CtiUtilities.NONE_ZERO_ID;
 		
-		if( getPAOBase() instanceof CapControlFeeder )
-			stratID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getStrategyID().intValue();
-		else if( getPAOBase() instanceof CapControlSubBus )
-			stratID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getStrategyID().intValue();
+		if( getDbPersistent() instanceof CapControlFeeder )
+			stratID = ((CapControlFeeder)getDbPersistent()).getCapControlFeeder().getStrategyID().intValue();
+		else if( getDbPersistent() instanceof CapControlSubBus )
+			stratID = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().getStrategyID().intValue();
 
 		return stratID;
 	}
@@ -194,7 +196,7 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public TreeNode getVarTreeData() {
 		
-		TreeNode rootData = new TreeNodeBase("root", "VAR Points", true);
+		TreeNode rootData = new TreeNodeBase("root", "VAR Points", false);
 		
 		PointLists pLists = new PointLists();
 		LiteYukonPAObject[] lPaos =
@@ -204,13 +206,13 @@ public class CapControlForm extends DBEditorForm
 		for( int i = 0; i < lPaos.length; i++ ) {
 
 			paos[i] = new TreeNodeBase( //type, description, leaf
-				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), true);
+				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), false);
 			
 			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i].getYukonID(), PointUnits.CAP_CONTROL_VAR_UOMIDS);							
 			for( int j = 0; j < lPoints.length; j++ ) {
 				paos[i].getChildren().add(
 					new TreeNodeBase("points", lPoints[j].getPointName(), 
-						String.valueOf(lPoints[j].getPointID()), false) );
+						String.valueOf(lPoints[j].getPointID()), true) );
 			}
 
 			rootData.getChildren().add( paos[i] );
@@ -226,7 +228,7 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public TreeNode getWattTreeData() {
 		
-		TreeNode rootData = new TreeNodeBase("root", "WATT Points", true);
+		TreeNode rootData = new TreeNodeBase("root", "WATT Points", false);
 		
 		PointLists pLists = new PointLists();
 		LiteYukonPAObject[] lPaos =
@@ -236,13 +238,13 @@ public class CapControlForm extends DBEditorForm
 		for( int i = 0; i < lPaos.length; i++ ) {
 
 			paos[i] = new TreeNodeBase( //type, description, leaf
-				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), true);
+				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), false);
 			
 			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i].getYukonID(), PointUnits.CAP_CONTROL_WATTS_UOMIDS);							
 			for( int j = 0; j < lPoints.length; j++ ) {
 				paos[i].getChildren().add(
 					new TreeNodeBase("points", lPoints[j].getPointName(), 
-						String.valueOf(lPoints[j].getPointID()), false) );
+						String.valueOf(lPoints[j].getPointID()), true) );
 			}
 
 			rootData.getChildren().add( paos[i] );
@@ -258,7 +260,7 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public TreeNode getVoltTreeData() {
 		
-		TreeNode rootData = new TreeNodeBase("root", "Volt Points", true);
+		TreeNode rootData = new TreeNodeBase("root", "Volt Points", false);
 		
 		PointLists pLists = new PointLists();
 		LiteYukonPAObject[] lPaos =
@@ -268,13 +270,13 @@ public class CapControlForm extends DBEditorForm
 		for( int i = 0; i < lPaos.length; i++ ) {
 
 			paos[i] = new TreeNodeBase( //type, description, leaf
-				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), true);
+				"paos", lPaos[i].getPaoName(), String.valueOf(lPaos[i].getYukonID()), false);
 			
 			LitePoint[] lPoints = pLists.getPointsByUofMPAOs(lPaos[i].getYukonID(), PointUnits.CAP_CONTROL_VOLTS_UOMIDS);							
 			for( int j = 0; j < lPoints.length; j++ ) {
 				paos[i].getChildren().add(
 					new TreeNodeBase("points", lPoints[j].getPointName(), 
-						String.valueOf(lPoints[j].getPointID()), false) );
+						String.valueOf(lPoints[j].getPointID()), true) );
 			}
 
 			rootData.getChildren().add( paos[i] );
@@ -291,11 +293,11 @@ public class CapControlForm extends DBEditorForm
 	public TreeNode getCapBankPoints() {
 
 		TreeNode rootNode = new TreeNodeBase("root", "Devices With Status Points", false);		
-		if( !(getPAOBase() instanceof CapBank) ) return rootNode;
+		if( !(getDbPersistent() instanceof CapBank) ) return rootNode;
 
 
 		LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
-					((CapBank)getPAOBase()).getCapBank().getControlDeviceID() );
+					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
 		
 		Vector typeList = new Vector(32);
 		Arrays.sort( lPaos, LiteComparators.litePaoTypeComparator );
@@ -358,10 +360,10 @@ public class CapControlForm extends DBEditorForm
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
-		if( getPAOBase() instanceof CapControlFeeder )
-			((CapControlFeeder)getPAOBase()).getCapControlFeeder().setCurrentVarLoadPointID( new Integer(val) );
-		else if( getPAOBase() instanceof CapControlSubBus )
-			((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().setCurrentVarLoadPointID( new Integer(val) );
+		if( getDbPersistent() instanceof CapControlFeeder )
+			((CapControlFeeder)getDbPersistent()).getCapControlFeeder().setCurrentVarLoadPointID( new Integer(val) );
+		else if( getDbPersistent() instanceof CapControlSubBus )
+			((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setCurrentVarLoadPointID( new Integer(val) );
 
 
 	}
@@ -374,10 +376,10 @@ public class CapControlForm extends DBEditorForm
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
-		if( getPAOBase() instanceof CapControlFeeder )
-			((CapControlFeeder)getPAOBase()).getCapControlFeeder().setCurrentWattLoadPointID( new Integer(val) );
-		else if( getPAOBase() instanceof CapControlSubBus )
-			((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().setCurrentWattLoadPointID( new Integer(val) );
+		if( getDbPersistent() instanceof CapControlFeeder )
+			((CapControlFeeder)getDbPersistent()).getCapControlFeeder().setCurrentWattLoadPointID( new Integer(val) );
+		else if( getDbPersistent() instanceof CapControlSubBus )
+			((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setCurrentWattLoadPointID( new Integer(val) );
 	}
 
 	/**
@@ -388,8 +390,8 @@ public class CapControlForm extends DBEditorForm
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
-		if( getPAOBase() instanceof CapBank ) {
-			((CapBank)getPAOBase()).getCapBank().setControlPointID( new Integer(val) );
+		if( getDbPersistent() instanceof CapBank ) {
+			((CapBank)getDbPersistent()).getCapBank().setControlPointID( new Integer(val) );
 
 			resetCBCEditor();
 		}
@@ -405,20 +407,37 @@ public class CapControlForm extends DBEditorForm
 		String val = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
 		if( val == null ) return;
 
-		if( getPAOBase() instanceof CapControlFeeder )
-			((CapControlFeeder)getPAOBase()).getCapControlFeeder().setCurrentVoltLoadPointID( new Integer(val) );
-		else if( getPAOBase() instanceof CapControlSubBus )
-			((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().setCurrentVoltLoadPointID( new Integer(val) );
+		if( getDbPersistent() instanceof CapControlFeeder )
+			((CapControlFeeder)getDbPersistent()).getCapControlFeeder().setCurrentVoltLoadPointID( new Integer(val) );
+		else if( getDbPersistent() instanceof CapControlSubBus )
+			((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setCurrentVoltLoadPointID( new Integer(val) );
 	}
 
 	
 	/**
 	 * Restores the object from the database
 	 */
-	public void initItem( int id ) {
+	public void initItem( int id, int type ) {
 
-		YukonPAObject paoDB = PAOFactory.createPAObject( id );
-		setDbPersistent( paoDB );
+		DBPersistent dbObj = null;
+
+		switch( type ) {
+
+			case DBEditorTypes.EDITOR_CAPCONTROL:
+				dbObj = PAOFactory.createPAObject( id );
+				break;
+
+			case DBEditorTypes.EDITOR_SCHEDULE:
+				dbObj = new PAOSchedule();
+				((PAOSchedule)dbObj).setScheduleID( new Integer(id) );
+				break;			
+
+//			case DBEditorTypes.EDITOR_POINT:
+//				dbObj = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
+//				break;			
+		}
+
+		setDbPersistent( dbObj );
 		initItem();
 	}
 
@@ -427,9 +446,6 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public void initWizard( int paoType ) {
 
-		//YukonPAObject paoDB = PAOFactory.createPAObject( id );
-		//setDbPersistent( paoDB );
-		//initItem();		
 		getWizData().setWizPaoType( paoType );
 
 		initPanels( paoType );
@@ -441,18 +457,18 @@ public class CapControlForm extends DBEditorForm
 	protected void initItem() {
 
 		Connection conn = null;
-		if( getPAOBase() == null ) return;
+		if( getDbPersistent() == null ) return;
 
 		try {
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			getPAOBase().setDbConnection( conn );
-			getPAOBase().retrieve();
+			getDbPersistent().setDbConnection( conn );
+			getDbPersistent().retrieve();
 		}
 		catch( SQLException sql ) {
 			CTILogger.error("Unable to retrieve YukonPAObject", sql );
 		}
 		finally {
-			getPAOBase().setDbConnection( null );
+			getDbPersistent().setDbConnection( null );
 			
 			try {
 			if( conn != null ) conn.close();
@@ -460,7 +476,27 @@ public class CapControlForm extends DBEditorForm
 		}
 
 
-		initPanels( PAOGroups.getPAOType(getPAOBase().getPAOCategory(), getPAOBase().getPAOType()) );
+		//decide what editor type should be used
+		if( getDbPersistent() instanceof YukonPAObject ) {
+			itemID = ((YukonPAObject)getDbPersistent()).getPAObjectID().intValue();
+			initPanels(
+				PAOGroups.getPAOType(
+					((YukonPAObject)getDbPersistent()).getPAOCategory(),
+					((YukonPAObject)getDbPersistent()).getPAOType()) );
+
+		}
+		else if( getDbPersistent() instanceof PointBase ) {
+			itemID = ((PointBase)getDbPersistent()).getPoint().getPointID().intValue();
+			initPanels(
+				PointTypes.getType(
+					((PointBase)getDbPersistent()).getPoint().getPointType()) );
+
+		} else if( getDbPersistent() instanceof PAOSchedule ) {
+			itemID = ((PAOSchedule)getDbPersistent()).getScheduleID().intValue();
+			initPanels( DBEditorTypes.PAO_SCHEDULE );
+		}
+		
+
 		initEditorPanels();
 	}
 
@@ -513,11 +549,15 @@ public class CapControlForm extends DBEditorForm
 		getVisibleTabs().put( "General", new Boolean(true) );
 
 		//all type specifc panels
+		getVisibleTabs().put( "GeneralPAO", new Boolean(true) );
 		getVisibleTabs().put( "BaseCapControl", new Boolean(false) );
 		getVisibleTabs().put( "CBCSubstation", new Boolean(false) );
 		getVisibleTabs().put( "CBCFeeder", new Boolean(false) );
 		getVisibleTabs().put( "CBCCapBank", new Boolean(false) );
+		getVisibleTabs().put( "CBCType", new Boolean(false) );
 		getVisibleTabs().put( "CBCController", new Boolean(false) );
+		getVisibleTabs().put( "GeneralSchedule", new Boolean(false) );
+		getVisibleTabs().put( "CBCSchedule", new Boolean(false) );
 
 
 		switch( paoType ) {
@@ -540,7 +580,6 @@ public class CapControlForm extends DBEditorForm
 				setEditorTitle("Capacitor Bank");			
 				setPaoDescLabel( "Street Location" );
 				getVisibleTabs().put( "CBCCapBank", new Boolean(true) );
-
 				break;
 
 			case PAOGroups.CAPBANKCONTROLLER:
@@ -551,8 +590,24 @@ public class CapControlForm extends DBEditorForm
 			case PAOGroups.CBC_7020:
 				setEditorTitle("CBC");
 				setPaoDescLabel(null);
-				getVisibleTabs().put( "CBCController", new Boolean(true) );
+				
+				getVisibleTabs().put( "CBCType", new Boolean(true) );
+
+				//------------------------------------------------------------------------------
+				// todo: Boolean should be TRUE, but this CBC panel is not currently
+				// working, will fix later
+				//------------------------------------------------------------------------------
+				getVisibleTabs().put( "CBCController", new Boolean(false) );
 				break;
+
+
+			case DBEditorTypes.PAO_SCHEDULE:		
+				setEditorTitle("Schedule");			
+				getVisibleTabs().put( "GeneralPAO", new Boolean(false) );
+				getVisibleTabs().put( "GeneralSchedule", new Boolean(true) );
+				getVisibleTabs().put( "CBCSchedule", new Boolean(true) );
+				break;
+
 
 			//-------- todo ----------
 			case PointTypes.ANALOG_POINT:
@@ -570,10 +625,12 @@ public class CapControlForm extends DBEditorForm
 	 * The instance of the underlying base object
 	 *
 	 */
-	public YukonPAObject getPAOBase() {
-		return (YukonPAObject)getDbPersistent();
+//	public YukonPAObject getPAOBase() {
+//		return (YukonPAObject)getDbPersistent();
+//	}
+	public DBPersistent getPAOBase() {
+		return getDbPersistent();
 	}
-
 
 	/**
 	 * Fired when the kwkvarPaos component is changed
@@ -616,10 +673,10 @@ public class CapControlForm extends DBEditorForm
 			if( isEditingCBCStrategy() ) {
 			
 				int stratID = CtiUtilities.NONE_ZERO_ID;
-				if( getPAOBase() instanceof CapControlFeeder )
-					stratID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getStrategyID().intValue();
-				else if( getPAOBase() instanceof CapControlSubBus )
-					stratID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getStrategyID().intValue();
+				if( getDbPersistent() instanceof CapControlFeeder )
+					stratID = ((CapControlFeeder)getDbPersistent()).getCapControlFeeder().getStrategyID().intValue();
+				else if( getDbPersistent() instanceof CapControlSubBus )
+					stratID = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().getStrategyID().intValue();
 
 				updateDBObject(
 					(CapControlStrategy)getCbcStrategiesMap().get( new Integer(stratID) ), facesMsg );
@@ -638,7 +695,7 @@ public class CapControlForm extends DBEditorForm
 				resetCBCEditor();
 			}
 
-			updateDBObject( getPAOBase(), facesMsg );
+			updateDBObject( getDbPersistent(), facesMsg );
 			
 			facesMsg.setDetail( "Database update was SUCCESSFUL" );
 		}
@@ -686,29 +743,45 @@ public class CapControlForm extends DBEditorForm
 			
 			//if there is a secondaryType set, use that value to creat the PAO
 			int paoType = getWizData().getSelectedType();
+			DBPersistent dbObj = null;
+			int editorType = -1;
 
-			YukonPAObject dbObj = 
-				(YukonPAObject)CCYukonPAOFactory.createCapControlPAO(paoType);
+			//todo: do this in a better way later
+			if( paoType == DBEditorTypes.PAO_SCHEDULE ) {
 
-			dbObj.setDisabled( getWizData().getDisabled().booleanValue() );
-			dbObj.setPAOName( getWizData().getName() );
-			
+				dbObj = new PAOSchedule();				
+				((PAOSchedule)dbObj).setDisabled( getWizData().getDisabled().booleanValue() );
+				((PAOSchedule)dbObj).setScheduleName( getWizData().getName() );
 
-			//for CBCs that have a portID with it
-			if( DeviceTypesFuncs.cbcHasPort(paoType) )
-				((ICapBankController)dbObj).setCommID( getWizData().getPortID() );
+				addDBObject( dbObj, facesMsg );
+				itemID = ((PAOSchedule)dbObj).getScheduleID().intValue();
+				editorType = DBEditorTypes.EDITOR_SCHEDULE;
+			}
+			else {
+				dbObj = (YukonPAObject)CCYukonPAOFactory.createCapControlPAO(paoType);
+					
+				((YukonPAObject)dbObj).setDisabled( getWizData().getDisabled().booleanValue() );
+				((YukonPAObject)dbObj).setPAOName( getWizData().getName() );
+
+				//for CBCs that have a portID with it
+				if( DeviceTypesFuncs.cbcHasPort(paoType) )
+					((ICapBankController)dbObj).setCommID( getWizData().getPortID() );
 
 
-			addDBObject( dbObj, facesMsg );
+				addDBObject( dbObj, facesMsg );
+				itemID = ((YukonPAObject)dbObj).getPAObjectID().intValue();
+				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
+			}
+
+
 			
 			//creates any extra db objects if need be
-			createSupportItems( paoType, dbObj.getPAObjectID().intValue(), facesMsg );
-
+			createSupportItems( paoType, itemID, facesMsg );
 
 			facesMsg.setDetail( "Database add was SUCCESSFUL" );
 			
-			//init this form with the newly created DB object
-			initItem( dbObj.getPAObjectID().intValue() );
+			//init this form with the newly created DB object wich should be in the cache
+			initItem( itemID, editorType );
 
 			//redirect to this form as the editor for this new DB object
 			return "cbcEditor";
@@ -722,27 +795,6 @@ public class CapControlForm extends DBEditorForm
 		}
 
 		return ""; //go nowhere since this action failed
-	}
-
-	/**
-	 * Puts our form into CBC editing mode 
-	 */
-	public void editController( ValueChangeEvent ev ) {
-		
-//		if(ev == null || ev.getNewValue() == null) return;
-//		
-//		if( isControllerCBC() ) {
-//
-//			int devID = PointFuncs.getLitePoint( 
-//				((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
-//
-//			if( devID >= 0 )
-//				setCBControllerEditor(
-//					new CBControllerEditor( (DeviceCBC)getCbcDevicesMap().get(new Integer(devID)) ) );
-//			else
-//				setCBControllerEditor( null );
-//		}
-
 	}
 
 	/**
@@ -792,10 +844,10 @@ public class CapControlForm extends DBEditorForm
 		
 		if( cbControllerEditor == null ) {
 
-			if( getPAOBase() instanceof CapBank ) {
+			if( getDbPersistent() instanceof CapBank ) {
 				
 				int paoId = PointFuncs.getLitePoint(
-					((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
+					((CapBank)getDbPersistent()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
 				
 				cbControllerEditor =
 					new CBControllerEditor( paoId );
@@ -845,10 +897,10 @@ public class CapControlForm extends DBEditorForm
 			
 
 			//set the current object to use this new Strategy
-			if( getPAOBase() instanceof CapControlFeeder )
-				((CapControlFeeder)getPAOBase()).getCapControlFeeder().setStrategyID( newID );
-			else if( getPAOBase() instanceof CapControlSubBus )
-				((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().setStrategyID( newID );
+			if( getDbPersistent() instanceof CapControlFeeder )
+				((CapControlFeeder)getDbPersistent()).getCapControlFeeder().setStrategyID( newID );
+			else if( getDbPersistent() instanceof CapControlSubBus )
+				((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setStrategyID( newID );
 			
 			//clear out the memory of the any list of Strategies
 			resetStrategies();
@@ -879,23 +931,23 @@ public class CapControlForm extends DBEditorForm
 			setEditingCBCStrategy( false );
 
 			int stratID = CtiUtilities.NONE_ZERO_ID;
-			if( getPAOBase() instanceof CapControlFeeder ) {
-				stratID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getStrategyID().intValue();
-				((CapControlFeeder)getPAOBase()).getCapControlFeeder().setStrategyID( new Integer(CtiUtilities.NONE_ZERO_ID) );
+			if( getDbPersistent() instanceof CapControlFeeder ) {
+				stratID = ((CapControlFeeder)getDbPersistent()).getCapControlFeeder().getStrategyID().intValue();
+				((CapControlFeeder)getDbPersistent()).getCapControlFeeder().setStrategyID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 			}
-			else if( getPAOBase() instanceof CapControlSubBus ) {
-				stratID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getStrategyID().intValue();
-				((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().setStrategyID( new Integer(CtiUtilities.NONE_ZERO_ID) );
+			else if( getDbPersistent() instanceof CapControlSubBus ) {
+				stratID = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().getStrategyID().intValue();
+				((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().setStrategyID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 			}
 
 
 			//decide if we need to do any special handling of this transaction
 			// based on what other PAOs use this Strategy
-			int[] paos = CapControlStrategy.getAllPAOSUsingStrategy( stratID, getPAOBase().getPAObjectID().intValue() );			
+			int[] paos = CapControlStrategy.getAllPAOSUsingStrategy( stratID, itemID );			
 			if( paos.length <= 0 ) {
 
 				//update the current PAOBase object just in case it uses the strategy we are deleting
-				updateDBObject( getPAOBase(), null );
+				updateDBObject( getDbPersistent(), null );
 
 				deleteDBObject(
 					(CapControlStrategy)getCbcStrategiesMap().get( new Integer(stratID) ), facesMsg );
@@ -943,10 +995,10 @@ public class CapControlForm extends DBEditorForm
 				
 		int parentID = CtiUtilities.NONE_ZERO_ID;		
 
-		if( getPAOBase() instanceof CapControlFeeder )
-			parentID = com.cannontech.database.db.capcontrol.CapControlFeeder.getParentSubBusID( getPAOBase().getPAObjectID().intValue() );
-		else if( getPAOBase() instanceof CapBank )
-			parentID = com.cannontech.database.db.capcontrol.CapBank.getParentFeederID( getPAOBase().getPAObjectID().intValue() );
+		if( getDbPersistent() instanceof CapControlFeeder )
+			parentID = com.cannontech.database.db.capcontrol.CapControlFeeder.getParentSubBusID( itemID );
+		else if( getDbPersistent() instanceof CapBank )
+			parentID = com.cannontech.database.db.capcontrol.CapBank.getParentFeederID( itemID );
 
 		if( parentID == CtiUtilities.NONE_ZERO_ID )
 			return CtiUtilities.STRING_NONE;
@@ -979,9 +1031,9 @@ public class CapControlForm extends DBEditorForm
 					if( elemID == ((LiteYukonPAObject)unassignedBanks.get(i)).getLiteID() ) {
 						
 						//Add the mapping for the given CapBank id to this Feeder
-						CapControlFeeder currFdr = (CapControlFeeder)getPAOBase();
+						CapControlFeeder currFdr = (CapControlFeeder)getDbPersistent();
 						currFdr.getChildList().add( new CCFeederBankList(
-							getPAOBase().getPAObjectID(),
+							new Integer(itemID),
 							new Integer(elemID),
 							new Integer(currFdr.getChildList().size()+1)) );
 						
@@ -999,10 +1051,10 @@ public class CapControlForm extends DBEditorForm
 			
 					if( elemID == ((LiteYukonPAObject)unassignedFeeders.get(i)).getLiteID() ) {
 						//Add the mapping for the given Feeders id to this Sub
-						CapControlSubBus currSub = (CapControlSubBus)getPAOBase();
+						CapControlSubBus currSub = (CapControlSubBus)getDbPersistent();
 						currSub.getChildList().add( new CCFeederSubAssignment(
 							new Integer(elemID),
-							getPAOBase().getPAObjectID(),
+							new Integer(itemID),
 							new Integer(currSub.getChildList().size()+1)) );
 						
 						unassignedFeeders.remove(i);
@@ -1028,7 +1080,7 @@ public class CapControlForm extends DBEditorForm
 
 		if( "CapBank".equalsIgnoreCase(swapType) ) {
 			//a table that swaps CapBanks, must be for a Feeder object			
-			CapControlFeeder currFdr = (CapControlFeeder)getPAOBase();
+			CapControlFeeder currFdr = (CapControlFeeder)getDbPersistent();
 			for( int i = 0; i < currFdr.getChildList().size(); i++ ) {
 		
 				CCFeederBankList listItem = (CCFeederBankList)currFdr.getChildList().get(i);
@@ -1047,7 +1099,7 @@ public class CapControlForm extends DBEditorForm
 		}
 		else if( "Feeder".equalsIgnoreCase(swapType) ) {
 			//a table that swaps Feeders, must be for a SubBus object
-			CapControlSubBus currSub = (CapControlSubBus)getPAOBase();
+			CapControlSubBus currSub = (CapControlSubBus)getDbPersistent();
 
 			for( int i = 0; i < currSub.getChildList().size(); i++ ) {		
 				CCFeederSubAssignment listItem = (CCFeederSubAssignment)currSub.getChildList().get(i);
@@ -1073,15 +1125,15 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public void initEditorPanels() 
 	{
-		if( getPAOBase() instanceof CapControlFeeder ) {
-			int fdrVarPtID = ((CapControlFeeder)getPAOBase()).getCapControlFeeder().getCurrentVarLoadPointID().intValue();
+		if( getDbPersistent() instanceof CapControlFeeder ) {
+			int fdrVarPtID = ((CapControlFeeder)getDbPersistent()).getCapControlFeeder().getCurrentVarLoadPointID().intValue();
 			kwkvarPaosChanged(
 				new ValueChangeEvent(
 					DUMMY_UI, null,
 					new Integer(PointFuncs.getLitePoint(fdrVarPtID).getPaobjectID())) );
 		}
-		else if( getPAOBase() instanceof CapControlSubBus ) {
-			int varPtID = ((CapControlSubBus)getPAOBase()).getCapControlSubstationBus().getCurrentVarLoadPointID().intValue();
+		else if( getDbPersistent() instanceof CapControlSubBus ) {
+			int varPtID = ((CapControlSubBus)getDbPersistent()).getCapControlSubstationBus().getCurrentVarLoadPointID().intValue();
 			if( varPtID > CtiUtilities.NONE_ZERO_ID )				
 				kwkvarPaosChanged(
 					new ValueChangeEvent(
@@ -1174,7 +1226,7 @@ public class CapControlForm extends DBEditorForm
 	/**
 	 * Converter for allowing an array of Integers for our DaysofWeek string
 	 */
-	public void setStratDaysOfWeek(int[] newDaysOfWeek) {
+	public void setStratDaysOfWeek(String[] newDaysOfWeek) {
 
 		CapControlStrategy strat = (CapControlStrategy)
 				getCbcStrategiesMap().get( new Integer(getCurrentStrategyID()) );
@@ -1183,7 +1235,7 @@ public class CapControlForm extends DBEditorForm
 		
 		StringBuffer buff = new StringBuffer("NNNNNNNN");
 		for( int i = 0; i < newDaysOfWeek.length; i++ ) {
-			buff.setCharAt( newDaysOfWeek[i], 'Y' );
+			buff.setCharAt( Integer.parseInt(newDaysOfWeek[i]), 'Y' );
 		}
 
 		strat.setDaysOfWeek( buff.toString() );
@@ -1192,20 +1244,21 @@ public class CapControlForm extends DBEditorForm
 	/**
 	 * Converter for allowing an array of Integers for our DaysofWeek string
 	 */
-	public int[] getStratDaysOfWeek() {
+	public String[] getStratDaysOfWeek() {
 		
 		CapControlStrategy strat = (CapControlStrategy)
 				getCbcStrategiesMap().get( new Integer(getCurrentStrategyID()) );
 
-		if( strat == null ) return new int[0];
+		if( strat == null ) return new String[0];
 
-		NativeIntVector retList = new NativeIntVector(8);
+		Vector retList = new Vector(8);
 		for( int i = 0; i < strat.getDaysOfWeek().length(); i++ ) {			
 			if( strat.getDaysOfWeek().charAt(i) == 'Y' )
-				retList.add( i );
+				retList.add( String.valueOf(i) );
 		}
 
-		return retList.toArray();
+		String[] strArray = new String[ retList.size() ];
+		return (String[])retList.toArray( strArray );
 	}
 
 	/**
@@ -1213,10 +1266,10 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public boolean isControllerCBC() {
 		
-		if( getPAOBase() instanceof CapBank ) {
+		if( getDbPersistent() instanceof CapBank ) {
 			
 			int paoID = PointFuncs.getLitePoint( 
-					((CapBank)getPAOBase()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
+					((CapBank)getDbPersistent()).getCapBank().getControlPointID().intValue() ).getPaobjectID();
 			
 			if( paoID != CtiUtilities.NONE_ZERO_ID )
 				return DeviceTypesFuncs.isCapBankController(
@@ -1232,8 +1285,8 @@ public class CapControlForm extends DBEditorForm
 	 */
 	public boolean isBankControlPtVisible() {
 
-		if( getPAOBase() instanceof CapBank ) {			
-			return !CapBank.FIXED_OPSTATE.equals( ((CapBank)getPAOBase()).getCapBank().getOperationalState() );
+		if( getDbPersistent() instanceof CapBank ) {			
+			return !CapBank.FIXED_OPSTATE.equals( ((CapBank)getDbPersistent()).getCapBank().getOperationalState() );
 		}
 		else
 			return false;

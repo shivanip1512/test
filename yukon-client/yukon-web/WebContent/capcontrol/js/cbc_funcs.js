@@ -502,7 +502,7 @@ function editorPost( href )
 		alert('You must check the item you want to edit first');
 	else
 		window.location =
-			href + '?itemid=' + validElems[0].getAttribute('value');
+			href + '&itemid=' + validElems[0].getAttribute('value');
 }
 
 // -------------------------------------------

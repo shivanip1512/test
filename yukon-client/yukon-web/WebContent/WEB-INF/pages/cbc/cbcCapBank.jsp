@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-<%@ taglib uri="http://myfaces.apache.org/extensions" prefix="x" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 <f:subview id="cbcCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
 
@@ -45,8 +45,8 @@
 
 
 			<x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
-				showRootNode="false" varNodeToggler="t" imageLocation="/editor/images/myfaces"
-				showLines="true" showNav="true" clientSideToggle="true" >
+				showRootNode="false" varNodeToggler="t" preserveToggle="false"
+				clientSideToggle="true" >
 			
 		        <f:facet name="root">
 		        	<x:panelGroup>
@@ -56,21 +56,19 @@
 	
 		        <f:facet name="paoTypes">
 					<x:panelGroup>
-			            <h:commandLink id="paoTypeNode" action="#{t.toggleExpanded}" value="#{node.description}"/>
-						<x:outputText id="paoTypeNodeCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+						<x:outputText id="paoTypeNodeCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 		        	</x:panelGroup>
 		        </f:facet>
 
 		        <f:facet name="paos">
 					<x:panelGroup>
-			            <h:commandLink id="paoNode" action="#{t.toggleExpanded}" value="#{node.description}"/>
-						<x:outputText id="paoNodeCnt" value=" (#{node.childCount})" rendered="#{!empty node.children}"/>
+						<x:outputText id="paoNodeCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}"/>
 		        	</x:panelGroup>
 		        </f:facet>
 	
 				<f:facet name="points">
 					<x:panelGroup>
-	                  	<h:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
+	                  	<x:graphicImage value="/editor/images/blue_check.gif" height="14" width="14" hspace="2"
                   			rendered="#{capControlForm.PAOBase.capBank.controlPointID == node.identifier}" />
 			            <x:commandLink id="pointNode" value="#{node.description}"
 							actionListener="#{capControlForm.capBankTeeClick}">
@@ -133,8 +131,7 @@
 	<x:panelGroup id="editCBCCheck" rendered="#{capControlForm.controllerCBC}" >
 			<f:verbatim><br/><br/></f:verbatim>
 			<h:selectBooleanCheckbox id="editCntrl" value="#{capControlForm.editingController}"
-					onclick="submit();"
-					valueChangeListener="#{capControlForm.editController}" />
+					onclick="submit();" />
 			<x:outputLabel for="editCntrl" value="Edit Controller" title="Allows editing of the controller this CapBank currently uses" />
 	</x:panelGroup>
 

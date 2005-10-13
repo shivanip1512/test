@@ -18,30 +18,30 @@ public class DBEditorNav implements DBEditorTypes {
 	}
 
 	/**
-	 * Retuns the wizard URL for the given editorType. Add all editor types
-	 * and their starting panel here.
-	 * 
+	 * Retuns the wizard URL for the given editorType.
 	 */
 	public static String getWizardURL( int wizardType ) {
 		
 		switch(wizardType) {
-			case PointTypes.ANALOG_POINT:
-				return "/editor/pointWizBase.jsf";
 
 			case PAOGroups.CAP_CONTROL_SUBBUS:
 			case PAOGroups.CAP_CONTROL_FEEDER:
 			case PAOGroups.CAPBANK:
 			case PAOGroups.CAPBANKCONTROLLER:
+			case DBEditorTypes.PAO_SCHEDULE:
 				return "/editor/cbcWizBase.jsf?type=" + wizardType;
 
 
-			
+			case PointTypes.ANALOG_POINT:
+				return "/editor/pointWizBase.jsf";
+
+
 			default:
 				CTILogger.info("Uknown WizardType ("+wizardType+"), redirecting to same page");
 				return "";
 		}
-
 	}
+
 
 	/**
 	 * Retuns the editor URL for the  given editorType. Add all editor types
@@ -55,8 +55,10 @@ public class DBEditorNav implements DBEditorTypes {
 				return "/editor/pointBase.jsf";
 
 			case DBEditorNav.EDITOR_CAPCONTROL:
-				return "/editor/cbcBase.jsf";
-				//return "/editor/pao/cbcEditor.jsf";
+				return "/editor/cbcBase.jsf?type=" + DBEditorNav.EDITOR_CAPCONTROL;
+
+			case DBEditorNav.EDITOR_SCHEDULE:
+				return "/editor/cbcBase.jsf?type=" + DBEditorNav.EDITOR_SCHEDULE;
 			
 			default:
 				CTILogger.info("Uknown EditorType ("+editorType+"), redirecting to same page");
