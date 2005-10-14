@@ -542,8 +542,45 @@ go
 alter table dynamiccccapbank alter column currentdailyoperations numeric not null;
 go
 
+insert into YukonListEntry values(1138, 1011, 0, 'Company', 1609);
 
+insert into YukonSelectionList values( 100, 'A', 'Calc Functions', 'DBEditor calc point functions', 'CalcFunctions', 'N' );
 
+insert into YukonListEntry values (100, 100, 0, 'Addition', 0);
+insert into YukonListEntry values (101, 100, 0, 'Subtraction', 0);
+insert into YukonListEntry values (102, 100, 0, 'Multiplication', 0);
+insert into YukonListEntry values (103, 100, 0, 'Division', 0);
+insert into YukonListEntry values (104, 100, 0, 'Logical AND', 0);
+insert into YukonListEntry values (105, 100, 0, 'Logical OR', 0);
+insert into YukonListEntry values (106, 100, 0, 'Logical NOT', 0);
+insert into YukonListEntry values (107, 100, 0, 'Logical XOR', 0);
+insert into YukonListEntry values (108, 100, 0, 'Greater than', 0);
+insert into YukonListEntry values (109, 100, 0, 'Geq than', 0);
+insert into YukonListEntry values (110, 100, 0, 'Less than', 0);
+insert into YukonListEntry values (111, 100, 0, 'Leq than', 0);
+insert into YukonListEntry values (112, 100, 0, 'Min', 0);
+insert into YukonListEntry values (113, 100, 0, 'Max', 0);
+insert into YukonListEntry values (114, 100, 0, 'Baseline', 0);
+insert into YukonListEntry values (115, 100, 0, 'Baseline Percent', 0);
+insert into YukonListEntry values (116, 100, 0, 'DemandAvg15', 0);
+insert into YukonListEntry values (117, 100, 0, 'DemandAvg30', 0);
+insert into YukonListEntry values (118, 100, 0, 'DemandAvg60', 0);
+insert into YukonListEntry values (119, 100, 0, 'P-Factor kW/kVAr', 0);
+insert into YukonListEntry values (120, 100, 0, 'P-Factor kW/kQ', 0);
+insert into YukonListEntry values (121, 100, 0, 'P-Factor kW/kVA', 0);
+insert into YukonListEntry values (122, 100, 0, 'kVAr from kW/kQ', 0);
+insert into YukonListEntry values (123, 100, 0, 'kVA from kW/kVAr', 0);
+insert into YukonListEntry values (124, 100, 0, 'kVA from kW/kQ', 0);
+insert into YukonListEntry values (125, 100, 0, 'COS from P/Q', 0);
+insert into YukonListEntry values (126, 100, 0, 'Squared', 0);
+insert into YukonListEntry values (127, 100, 0, 'Square Root', 0);
+insert into YukonListEntry values (128, 100, 0, 'ArcTan', 0);
+insert into YukonListEntry values (129, 100, 0, 'Max Difference', 0);
+insert into YukonListEntry values (130, 100, 0, 'Absolute Value', 0);
+insert into YukonListEntry values (131, 100, 0, 'kW from kVA/kVAr', 0);
+insert into YukonListEntry values (132, 100, 0, 'Modulo Divide', 0);
+insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
+go
 
 
 
