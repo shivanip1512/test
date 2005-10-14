@@ -388,6 +388,9 @@ private Vector getListData( Object obj )
 	return data;
 }
 
+/**
+ * Returns the length of the actual method given without the valid prefix string 
+ */
 public int getValidMethodLength( String methName ) {
 
 	if( methName == null ) return 0;
