@@ -390,10 +390,12 @@ private Vector getListData( Object obj )
 
 public int getValidMethodLength( String methName ) {
 
-	if( "get".equalsIgnoreCase(methName) )
+	if( methName == null ) return 0;
+
+	if( methName.startsWith("get") )
 		return "get".length();
 	else
-	if( "is".equalsIgnoreCase(methName) )
+	if( methName.startsWith("is") )
 		return "is".length();
 	else
 		return 0; //not a valid method
