@@ -70,7 +70,7 @@ alter table NotificationGroup drop column emailfromaddress;
 alter table NotificationGroup drop column emailmessage;
 alter table NotificationGroup drop column numericpagermessage;
 
-alter table CapBank modify OperationalState varchar2(16) not null;
+alter table CapBank modify OperationalState varchar2(16);
 
 update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
 update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
