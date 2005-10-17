@@ -33,7 +33,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 
 	public com.cannontech.multispeak.ArrayOfString getMethods() throws java.rmi.RemoteException {
 		init();
-		String [] methods = new String[]{"pingURL", "getMethods", "getAMRSupportedMeters", "getLatestReadingByMeterNo", "isAMRMeter"};				
+		String [] methods = new String[]{"pingURL", "getMethods", "getAMRSupportedMeters", "getLatestReadingByMeterNo", "isAMRMeter"};		
 		return MultispeakFuncs.getMethods(INTERFACE_NAME , methods);
 	}
 
@@ -88,7 +88,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 			endIndex = (maxSize> allMeters.size()? allMeters.size(): maxSize);	//index is the lesser of allMeters.size or 1000
 					
 		meters = new Meter[endIndex - startIndex];
-		CTILogger.info("Returning " + meters.length + " of " + allMeters.size() +" Meters (" + startIndex + " through " + endIndex + ")");				
+		CTILogger.info("Returning " + meters.length + " of " + allMeters.size() + " Meters (" + startIndex + " through " + endIndex + ")");				
 		for (int i = startIndex; i < endIndex; i++)
 		{
 			LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber)allMeters.get(i);
@@ -156,21 +156,21 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 //		init();	//init is already performed on the call to isAMRMeter()
 		if( ! isAMRMeter(meterNo))
 		{
-			MeterRead errorMR = new MeterRead();
-			errorMR.setDeviceID(meterNo);
-			errorMR.setObjectID(meterNo);
-			errorMR.setMeterNo(meterNo);
-			errorMR.setErrorString("MeterNumber (" + meterNo + "): NOT found.");
-			return errorMR;
+		    MeterRead errorMR = new MeterRead();
+		    errorMR.setDeviceID(meterNo);
+		    errorMR.setObjectID(meterNo);
+		    errorMR.setMeterNo(meterNo);
+		    errorMR.setErrorString("MeterNumber (" + meterNo + "): NOT found.");
+		    return errorMR;
 		}
 		if ( ! Multispeak.getInstance().getPilConn().isValid() )	//perform this after isAMRMeter so init() is called.
 		{
-			MeterRead errorMR = new MeterRead();
-			errorMR.setDeviceID(meterNo);
-			errorMR.setObjectID(meterNo);
-			errorMR.setMeterNo(meterNo);
-			errorMR.setErrorString("Connection to Yukon Porter is not valid.  Please contact your Yukon administrator.");
-			return errorMR;
+		    MeterRead errorMR = new MeterRead();
+		    errorMR.setDeviceID(meterNo);
+		    errorMR.setObjectID(meterNo);
+		    errorMR.setMeterNo(meterNo);
+		    errorMR.setErrorString("Connection to Yukon Porter is not valid.  Please contact your Yukon administrator.");
+		    return errorMR;
 		}		
 		String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
 		return Multispeak.getInstance().MeterReadEvent(companyName, meterNo);

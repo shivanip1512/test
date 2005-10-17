@@ -6,11 +6,6 @@
  */
 package com.cannontech.multispeak.client;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Vector;
-
 import com.cannontech.multispeak.OutageDetectionEvent;
 
 /**
@@ -33,18 +28,18 @@ public class ODEvent extends MultispeakEvent{
 	}
 
 	
-	/**
-	 * @return
-	 */
-	public OutageDetectionEvent getOutageDetectionEvent()
-	{
-		return outageDetectionEvent;
-	}
-	/**
-	 * @param outageDetectionEvent_
-	 */
-	public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_)
-	{
-		this.outageDetectionEvent = outageDetectionEvent_;
-	}
+    /**
+     * @return
+     */
+    public OutageDetectionEvent getOutageDetectionEvent()
+    {
+        return outageDetectionEvent;
+    }
+    /**
+     * @param outageDetectionEvent_
+     */
+    public void setOutageDetectionEvent(OutageDetectionEvent outageDetectionEvent_)
+    {
+        this.outageDetectionEvent = outageDetectionEvent_;
+    }
 }

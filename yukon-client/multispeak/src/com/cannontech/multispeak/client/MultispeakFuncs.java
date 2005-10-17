@@ -20,13 +20,11 @@ import org.apache.axis.message.SOAPHeaderElement;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.functions.DeviceFuncs;
 import com.cannontech.database.cache.functions.PAOFuncs;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.ArrayOfErrorObject;
 import com.cannontech.multispeak.ArrayOfString;
 import com.cannontech.multispeak.ErrorObject;
-import com.cannontech.roles.yukon.MultispeakRole;
 
 /**
  * @author stacey

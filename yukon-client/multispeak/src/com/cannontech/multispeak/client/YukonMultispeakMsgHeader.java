@@ -8,7 +8,6 @@ package com.cannontech.multispeak.client;
 
 import java.math.BigInteger;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.multispeak.MessageHeaderCSUnits;
 import com.cannontech.multispeak.MultiSpeakMsgHeader;

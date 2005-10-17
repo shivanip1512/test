@@ -10,11 +10,9 @@ package com.cannontech.multispeak;
 import java.util.GregorianCalendar;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.roles.yukon.MultispeakRole;
 
 public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.OD_OASoap_PortType{
 
