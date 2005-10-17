@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/09/28 21:07:09 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/10/17 16:47:04 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,20 +15,20 @@
 
 #include <rw/db/db.h>
 #include "dbaccess.h"
+#include "config_device.h"
+#include "config_parts.h"
+#include "config_base.h"
 #include "config_resolvers.h"
-#include "dev_base.h"
-
-#include "config_type_general.h"
-#include "config_type_mct_tou.h"
-#include "config_type_mct_addressing.h"
-#include "config_type_mct_configuration.h"
-#include "config_type_mct_demand_LP.h"
-#include "config_type_mct_dst.h"
-#include "config_type_mct_vthreshold.h"
-
 #include "mgr_config.h"
 
+
+
+
+
 class RWCString;
+
+using namespace Cti;
+using namespace Config;
 
 CtiConfigManager::CtiConfigManager()
 {
@@ -40,10 +40,6 @@ CtiConfigManager::~CtiConfigManager()
 
 void CtiConfigManager::refreshConfigurations()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Refresh Configurations was called." << endl;
-    }
     CtiConfigDeviceSPtr  pTempCtiConfigDevice;
 
     RWTime start, stop, querytime;
@@ -81,7 +77,8 @@ void CtiConfigManager::refreshConfigurations()
     
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
-            int partID, type;
+            int partID;
+            CtiConfig_type type;
             RWCString tempString,value,valueid;
     
             rdr[confTbl["partid"]]>>partID;
@@ -91,7 +88,7 @@ void CtiConfigManager::refreshConfigurations()
             rdr["value"] >> value;
             rdr["valueid"] >> valueid;
     
-            if(_typeConfig.find(partID)==_typeConfig.end())//This key is not in the map yet
+            if(_typeConfig.find(partID)==_typeConfig.end() && type != ConfigTypeInvalid)//This key is not in the map yet
             {
                 _typeConfig.insert(ConfigTypeMap::value_type(partID,createConfigByType(type)));//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
             }
@@ -250,52 +247,40 @@ RWCString CtiConfigManager::getConfigTypeTableName()
     return "ConfigurationPartsName";
 }
 
-CtiConfigBaseSPtr CtiConfigManager::createConfigByType(const int &type)
+BaseSPtr CtiConfigManager::createConfigByType(const int type)
 {   //This function MUST set the type variable in config_base.
     try
     {
         switch(type)
         {
-            case ConfigTypeGeneral:
-            {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new General());
-                tempBasePtr->setType(type);
-                return tempBasePtr;
-            }
             case ConfigTypeMCTTOU:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTTOU());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_TOU>());
                 return tempBasePtr;
             }
             case ConfigTypeMCTAddressing:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTAddressing());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTAddressing>());
                 return tempBasePtr;
             }
             case ConfigTypeMCTConfiguration:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTConfiguration());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTConfiguration>());
                 return tempBasePtr;
             }
             case ConfigTypeMCTDemandLP:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTDemandLoadProfile());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTDemandLoadProfile>());
                 return tempBasePtr;
             }
             case ConfigTypeMCTDST:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTDST());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCT_DST>());
                 return tempBasePtr;
             }
             case ConfigTypeMCTVThreshold:
             {
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new MCTVThreshold());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTVThreshold>());
                 return tempBasePtr;
             }
             default:
@@ -304,8 +289,7 @@ CtiConfigBaseSPtr CtiConfigManager::createConfigByType(const int &type)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << "*** CHECKPOINT *** " << " No constructor for config type "<<type<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-                CtiConfigBaseSPtr tempBasePtr (CTIDBG_new Base());
-                tempBasePtr->setType(type);
+                BaseSPtr tempBasePtr (CTIDBG_new Base());
                 return tempBasePtr;
                 break;//Im adding to code bloat!
             }
@@ -316,13 +300,13 @@ CtiConfigBaseSPtr CtiConfigManager::createConfigByType(const int &type)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << "*** CHECKPOINT *** " << " Exception thrown in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return  CtiConfigBaseSPtr();
+        return  BaseSPtr();
     }
 }
 
-bool CtiConfigManager::insertValueIntoConfigMap(const int &partID, const RWCString &value, const RWCString &valueid)
+bool CtiConfigManager::insertValueIntoConfigMap(const int partID, const RWCString &value, const RWCString &valueid)
 {
-    CtiConfigBaseSPtr    pTempCtiConfigBase;
+    BaseSPtr    pTempCtiConfigBase;
 
     pTempCtiConfigBase = (_typeConfig.find(partID)->second);
     if(!pTempCtiConfigBase)
@@ -332,14 +316,14 @@ bool CtiConfigManager::insertValueIntoConfigMap(const int &partID, const RWCStri
     }
     else
     {
-        int resolvedKey = pTempCtiConfigBase->getResolvedKey(valueid);
+        int resolvedKey = pTempCtiConfigBase->getProtectedResolvedKey(valueid);
         if(resolvedKey == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << "*** CHECKPOINT *** "<< " No resolver for " << valueid<<" in " << __FILE__ << " (" << __LINE__ << ")" << endl;
             return false;
         }
-        return pTempCtiConfigBase->setValueWithKey(value,resolvedKey);
+        return pTempCtiConfigBase->setProtectedValueWithKey(value,resolvedKey);
     }
     return false;
 
