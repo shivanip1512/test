@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_resolvers.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/09/28 21:13:55 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/10/17 16:41:13 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,11 +19,13 @@
 
 #include "logger.h"
 #include "dllbase.h"
+namespace Cti    {
+namespace Config {
 
-enum CtiConfig_t
+
+enum CtiConfig_type
 {
     ConfigTypeInvalid = 0,
-    ConfigTypeGeneral,
     ConfigTypeMCTTOU,
     ConfigTypeMCTAddressing,
     ConfigTypeMCTConfiguration,
@@ -34,6 +36,9 @@ enum CtiConfig_t
     ConfigTypeMax
 };
 
-IM_EX_CONFIG INT resolveConfigType(RWCString rwsTemp);
+IM_EX_CONFIG CtiConfig_type resolveConfigType(RWCString rwsTemp);
+
+}//Config
+}//Cti
 
 #endif //__CONFIG_RESOLVERS_H__

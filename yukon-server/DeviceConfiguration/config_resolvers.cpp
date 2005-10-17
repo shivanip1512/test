@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/09/28 14:32:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/17 16:41:13 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -18,10 +18,13 @@
 
 #include "config_resolvers.h"
 #include "logger.h"
+namespace Cti    {
+namespace Config {
 
-INT resolveConfigType(RWCString rwsTemp)
+
+CtiConfig_type resolveConfigType(RWCString rwsTemp)
 {
-    INT Ret = 0;
+    CtiConfig_type Ret = ConfigTypeInvalid;
     rwsTemp.toLower();
     rwsTemp = rwsTemp.strip(RWCString::both);
 
@@ -57,7 +60,7 @@ INT resolveConfigType(RWCString rwsTemp)
         }
 
     }
-    else
+/*  else
     {
             if(rwsTemp == "config type general")
             {
@@ -67,7 +70,10 @@ INT resolveConfigType(RWCString rwsTemp)
             {
                 Ret = ConfigTypeInvalid;
             }
-    }
+    }*/
 
     return Ret;
 }
+
+}//Config
+}//Cti
