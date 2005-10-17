@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/09/28 03:34:25 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/10/17 16:51:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,9 +20,10 @@
 
 
 #include "dev_mct.h"
+#include "dev_mct4xx.h"
 #include <map>
 
-class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT
+class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT4xx
 {
 protected:
 
@@ -47,26 +48,41 @@ protected:
 
     enum MemoryLocations
     {
-        Memory_StatusPos         = 0x05,
-        Memory_StatusLen         =    5,
-
-        Memory_PowerfailCountPos = 0x23,
-        Memory_PowerfailCountLen =    2,
-
-        Memory_AlarmsPos         = 0x15,
-        Memory_AlarmsLen         =    2,
-
-        Memory_IntervalsPos      = 0x1a,
-        Memory_IntervalsLen      =    4,
-
-        Memory_LastFreezePos     = 0x26,
-        Memory_LastFreezeLen     =   10,
-
-        Memory_RTCPos            = 0x40,
-        Memory_RTCLen            =    4,
-
-        Memory_LastTSyncPos      = 0x44,
-        Memory_LastTSyncLen      =    4
+        Memory_StatusPos          = 0x05,
+        Memory_StatusLen          =    5,
+                                  
+        Memory_PowerfailCountPos  = 0x23,
+        Memory_PowerfailCountLen  =    2,
+                                  
+        Memory_AlarmsPos          = 0x15,
+        Memory_AlarmsLen          =    2,
+                                  
+        Memory_IntervalsPos       = 0x1a,
+        Memory_IntervalsLen       =    4,
+                                  
+        Memory_LastFreezePos      = 0x26,
+        Memory_LastFreezeLen      =   10,
+                                  
+        Memory_RTCPos             = 0x40,
+        Memory_RTCLen             =    4,
+                                  
+        Memory_LastTSyncPos       = 0x44,
+        Memory_LastTSyncLen       =    4,
+                                  
+        Memory_DSTBeginPos        = 0x37,
+        Memory_DSTBeginLen        =    4,
+                                  
+        Memory_DSTEndPos          = 0x3B,
+        Memory_DSTEndLen          =    4,
+                                  
+        Memory_TimeZoneOffsetPos  = 0x3F,
+        Memory_TimeZoneOffsetLen  =    1,
+                                  
+        Memory_OverVThresholdPos  = 0x1E,
+        Memory_OverVThresholdLen  =    2,
+                                  
+        Memory_UnderVThresholdPos = 0x20,
+        Memory_UnderVThresholdLen =    2,
     };
 
     enum Functions
@@ -265,6 +281,10 @@ public:
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     virtual INT executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+
+    int executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
+    int executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
+    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
