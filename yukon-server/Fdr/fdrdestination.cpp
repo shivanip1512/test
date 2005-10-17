@@ -50,20 +50,17 @@ CtiFDRDestination& CtiFDRDestination::operator=( const CtiFDRDestination &other 
 
 bool CtiFDRDestination::operator<(const CtiFDRDestination& other) const
 {
-    if (iParentPoint->getPointID() == other.getParentPoint()->getPointID())
+    if (iParentPoint->getPointID() != other.getParentPoint()->getPointID())
     {
-        if (iDestination == other.iDestination)
-        {
-            return iTranslation < other.iTranslation;
-        }
-        else
-        {
-            return iDestination < other.iDestination;
-        }
+        return iParentPoint->getPointID() < other.getParentPoint()->getPointID();
+    }
+    else if (iDestination != other.iDestination)
+    {
+        return iDestination < other.iDestination;
     }
     else
     {
-        return iParentPoint->getPointID() == other.getParentPoint()->getPointID();
+        return iTranslation < other.iTranslation;
     }
 }
 
