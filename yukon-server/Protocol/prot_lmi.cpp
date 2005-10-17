@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/10/04 20:10:10 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/10/17 19:27:53 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,6 +230,7 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
         //  note that this will be analog offset LMIPointOffsetTransmitterPower + 1 when it gets back to the system
         pdm = CTIDBG_new CtiPointDataMsg(LMIPointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
         pdm->setTime(_transmitter_power_time);
+        pdm->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
         pointList.append(pdm);
 
@@ -662,7 +663,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
                         }
 
-                        if( _codes.empty() || (viable_codes.size() == slots_available) )
+                        if( !slots_available || _codes.empty() || (viable_codes.size() == slots_available) )
                         {
                             _final_code_block = true;
                         }
