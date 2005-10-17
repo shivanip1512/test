@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/10/17 16:54:24 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/10/17 17:18:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1392,7 +1392,7 @@ int CtiDeviceMCT410::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
             MCT_DST_SPtr dstConfig = boost::static_pointer_cast< ConfigurationPart<MCT_DST> >(tempBasePtr);
             value = dstConfig->getLongValueFromKey(DstBegin);
 
-            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Cfg_DSTStartTime) != value)
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime) != value)
             {
                 OutMess.Buffer.BSt.Function   = Memory_DSTBeginPos;
                 OutMess.Buffer.BSt.Length     = Memory_DSTBeginLen;
@@ -1407,7 +1407,7 @@ int CtiDeviceMCT410::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
 
             value = dstConfig->getLongValueFromKey(DstEnd);
 
-            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Cfg_DSTEndTime) != value)
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime) != value)
             {
 
                 OutMess.Buffer.BSt.Function   = Memory_DSTEndPos;
@@ -1423,7 +1423,7 @@ int CtiDeviceMCT410::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
 
             value = dstConfig->getLongValueFromKey(TimeZoneOffset);
 
-            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Cfg_TimeZoneOffset) != value)
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != value)
             {
                 OutMess.Buffer.BSt.Function   = Memory_TimeZoneOffsetPos;
                 OutMess.Buffer.BSt.Length     = Memory_TimeZoneOffsetLen;
@@ -1465,7 +1465,7 @@ int CtiDeviceMCT410::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
             MCTVThresholdSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTVThreshold> >(tempBasePtr);
             value = config->getLongValueFromKey(UnderVoltageThreshold);
             
-            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Cfg_UnderVoltageThreshold) != value)
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold) != value)
             {
                 OutMess.Buffer.BSt.Function   = Memory_UnderVThresholdPos;
                 OutMess.Buffer.BSt.Length     = Memory_UnderVThresholdPos;
@@ -1478,7 +1478,7 @@ int CtiDeviceMCT410::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
 
             value = config->getLongValueFromKey(OverVoltageThreshold);
 
-            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Cfg_OverVoltageThreshold) != value)
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold) != value)
             {
 
                 OutMess.Buffer.BSt.Function   = Memory_OverVThresholdPos;
