@@ -1611,7 +1611,19 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
     {
         if(!(CmdStr.match("install")).isNull())
         {
+            token = CmdStr.match("install +[a-z]* *[a-z]*");
+            RWCTokenizer cmdtok(token);
+            cmdtok();  //  go past install
+                
             _cmd["install"] = CtiParseValue(TRUE);
+            _cmd["installvalue"] = CtiParseValue(cmdtok());
+
+            token = cmdtok();
+            if(!(token.match("force")).isNull())
+            {
+                _cmd["force"] = CtiParseValue(true);
+            }
+            
         }
         if(!(CmdStr.match("ied")).isNull())
         {
