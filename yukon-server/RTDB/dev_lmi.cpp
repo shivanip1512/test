@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/10/04 20:13:35 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/10/17 19:28:02 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,9 +46,9 @@ int CtiDeviceLMI::decode(CtiXfer &xfer, int status)
 
     if( _lmi.isTransactionComplete() )
     {
-        //  it shouldn't be evaluated until then, anyway, given the way that
-        //    cycle time exclusion works, but I figured I should just be nice and explicit
-        _lmi_exclusion.setEvaluateNextAt(_lmi.getTransmissionEnd());
+        //  this should make sure that we're not looked at until the next cycle - this is redone in the
+        //    preload pass after CommunicateDevice()
+        getExclusion().setEvaluateNextAt(_lmi.getTransmissionEnd());
     }
 
     return retval;
@@ -462,16 +462,24 @@ RWTime CtiDeviceLMI::getPreloadEndTime() const
     //  make sure at least half of the period has passed before we allow another download - this should protect us against transmitting too soon
     next_preload = _lastPreload + ((_seriesv.getTickTime() * 60) / 2);
 
-    //  make sure it's not zero - otherwise, return something crazy like now()
-    if( _seriesv.getTickTime() )
+    if( isInhibited() )
     {
-        preload_end -= preload_end.seconds() % (_seriesv.getTickTime() * 60);
-        preload_end += _seriesv.getTimeOffset();
-
-        while( preload_end < now ||
-               preload_end < next_preload )
+        //  device is inhibited, we're not executing at all
+        preload_end = now;
+    }
+    else
+    {
+        //  make sure it's not zero - otherwise, return something crazy like now()
+        if( _seriesv.getTickTime() )
         {
-            preload_end += (_seriesv.getTickTime() * 60);
+            preload_end -= preload_end.seconds() % (_seriesv.getTickTime() * 60);
+            preload_end += _seriesv.getTimeOffset();
+
+            while( preload_end < now ||
+                   preload_end < next_preload )
+            {
+                preload_end += (_seriesv.getTickTime() * 60);
+            }
         }
     }
 
@@ -541,28 +549,31 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
     bool retval = false;
     RWTime now;
 
-    if( now > (_lastPreload + (_seriesv.getTickTime() * 60) / 2) )
+    if( !isInhibited() )
     {
-        if( !OutMessage )
+        if( now > (_lastPreload + (_seriesv.getTickTime() * 60) / 2) )
         {
-            OutMessage = new CtiOutMessage();
+            if( !OutMessage )
+            {
+                OutMessage = new CtiOutMessage();
+            }
+
+            OutMessage->DeviceID = getID();
+            OutMessage->Sequence = CtiProtocolLMI::Sequence_Preload;
+            OutMessage->Priority = MAXPRIORITY - 1;
+
+            OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
+
+            _lastPreload = now;
         }
-
-        OutMessage->DeviceID = getID();
-        OutMessage->Sequence = CtiProtocolLMI::Sequence_Preload;
-        OutMessage->Priority = MAXPRIORITY - 1;
-
-        OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
-
-        _lastPreload = now;
-    }
-    else
-    {
-        if( OutMessage )
+        else
         {
-            delete OutMessage;
+            if( OutMessage )
+            {
+                delete OutMessage;
 
-            OutMessage = 0;
+                OutMessage = 0;
+            }
         }
     }
 
