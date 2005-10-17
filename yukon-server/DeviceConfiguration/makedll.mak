@@ -42,14 +42,7 @@ DLLOBJS = \
 config_base.obj \
 config_device.obj \
 config_resolvers.obj \
-config_type_general.obj \
-config_type_mct_tou.obj \
-config_type_mct_vthreshold.obj \
-config_type_mct_demand_LP.obj \
-config_type_mct_configuration.obj \
-config_type_mct_addressing.obj \
-config_type_mct_dst.obj \
-
+config_parts_mct.obj \
 
 CTIPROGS=\
 cticonfig.dll
@@ -108,44 +101,10 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 ######################################################################################
 
 #UPDATE#
-config_base.obj:	yukon.h precompiled.h ctidbgmem.h config_base.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h
-config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h dllbase.h \
-		os2_2w32.h types.h cticalls.h dsm2.h config_base.h
-config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_resolvers.h logger.h dlldefs.h thread.h mutex.h \
-		guard.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h
-config_type_general.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_general.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-config_type_mct_addressing.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_addressing.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-config_type_mct_configuration.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_configuration.h config_base.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h
-config_type_mct_demand_lp.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_demand_LP.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-config_type_mct_dst.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_dst.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-config_type_mct_tou.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_tou.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-config_type_mct_vthreshold.obj:	yukon.h precompiled.h ctidbgmem.h \
-		config_type_mct_vthreshold.h config_base.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h
-id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
-		dsm2.h mutex.h dlldefs.h guard.h id_build.h id_vinfo.h
-precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+config_base.obj:	config_base.h config_resolvers.h
+config_device.obj:	config_device.h config_base.h config_resolvers.h
+config_parts_mct.obj:	config_parts.h config_base.h config_resolvers.h
+config_resolvers.obj:	config_resolvers.h
+config_test_a.obj:	config_test_a.h config_base.h config_resolvers.h
+id_dcdll.obj:	id_dcdll.h
 #ENDUPDATE#
