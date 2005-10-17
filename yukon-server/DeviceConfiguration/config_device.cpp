@@ -6,14 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_device.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/09/28 14:33:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/17 16:42:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "config_device.h"
+#include "config_resolvers.h"
 namespace Cti       {
 namespace Config    {
 
@@ -25,7 +26,7 @@ CtiConfigDevice::~CtiConfigDevice()
 {
 }
 
-CtiConfigBaseSPtr CtiConfigDevice::getConfigFromType(int type)
+BaseSPtr CtiConfigDevice::getConfigFromType(CtiConfig_type type)
 {
     LockGuard config_guard(_mux);
 
@@ -36,11 +37,11 @@ CtiConfigBaseSPtr CtiConfigDevice::getConfigFromType(int type)
     }
     else
     {
-        return CtiConfigBaseSPtr();
+        return BaseSPtr();
     }
 }
 
-void CtiConfigDevice::insertConfig(CtiConfigBaseSPtr configuration)
+void CtiConfigDevice::insertConfig(BaseSPtr configuration)
 {
     LockGuard config_guard(_mux);
 

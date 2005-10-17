@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/09/28 14:33:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/17 16:42:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,15 +35,15 @@ protected:
     mutable CtiMutex    _mux;
 
 private:
-    typedef map <int,Cti::Config::CtiConfigBaseSPtr> BasePointerMap;
+    typedef map <int,Cti::Config::BaseSPtr> BasePointerMap;
 
     BasePointerMap _baseConfigurations;
 public:
         
     CtiConfigDevice();
     ~CtiConfigDevice();
-    CtiConfigBaseSPtr getConfigFromType(int type);
-    void insertConfig(CtiConfigBaseSPtr configuration);//Type should be set in this pointer, so its not necessary
+    BaseSPtr getConfigFromType(CtiConfig_type type);
+    void insertConfig(BaseSPtr configuration);//Type should be set in this pointer, so its not necessary
     string getAllOutputStrings();//Returns strings from every base configuration
 };
 
