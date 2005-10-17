@@ -17,10 +17,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.RoleFuncs;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.yimp.util.ImportFuncs;
 import com.cannontech.yimp.util.DBFuncs;
+import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.data.device.MCT410IL;
@@ -243,11 +247,9 @@ public void runImport(Vector imps)
 	Vector failures = new Vector();
 	Vector successVector = new Vector();
 	boolean badEntry = false;
+	Integer updateDeviceID = null;
 	int successCounter = 0;
 	Connection conn = null;
-	
-	
-	int ids[] = DBFuncs.getNextPAObjectID(imps.size());
 	
 	for(int j = 0; j < imps.size(); j++)
 	{
@@ -256,7 +258,6 @@ public void runImport(Vector imps)
 		//mark entry for deletion
 		((ImportData)imps.elementAt(j)).setOpCode(Transaction.DELETE);
 		
-		Integer deviceID = new Integer(ids[j]);
 		String name = currentEntry.getName();
 		String address = currentEntry.getAddress();
 		String routeName = currentEntry.getRouteName();
@@ -269,6 +270,7 @@ public void runImport(Vector imps)
 		//validation
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
 		badEntry = false;
+		updateDeviceID = null;
 		
 		if(name.length() < 1 || name.length() > 60)
 		{
@@ -286,6 +288,12 @@ public void runImport(Vector imps)
 		}
 		else
 		{
+			updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
+			if( updateDeviceID != null)
+		   	{
+				CTILogger.info("Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.");
+			   	logger = ImportFuncs.writeToImportLog(logger, 'F', "Address " + address + " is already used by an MCT-410 in the Yukon database.  Attempting to modify device.", "", "");
+		   	}
 			boolean isDuplicate = DBFuncs.IsDuplicateName(name);
 			if(isDuplicate)
 			{
@@ -368,10 +376,62 @@ public void runImport(Vector imps)
 			currentFailure = new ImportFail(address, name, routeName, meterNumber, collectionGrp, altGrp, templateName, errorMsg.toString(), now.getTime());
 			failures.addElement(currentFailure);
 		}
-		
+		else if( updateDeviceID != null)
+				{
+					YukonPAObject pao = new YukonPAObject();
+					pao.setPaObjectID(updateDeviceID);
+		    
+					try
+					{
+						//update the paobject if the name has changed
+						Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
+						pao = (YukonPAObject)t.execute();
+
+						if( !pao.getPaoName().equals(name))
+						{
+							pao.setPaoName(name);
+							t = Transaction.createTransaction(Transaction.UPDATE, pao);
+							pao = (YukonPAObject)t.execute();
+						}
+                
+						//update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
+						DeviceMeterGroup dmg = new DeviceMeterGroup();
+						dmg.setDeviceID(updateDeviceID);
+						t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
+						dmg = (DeviceMeterGroup)t.execute();
+                
+						if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
+								!dmg.getTestCollectionGroup().equals(altGrp))
+						{
+							dmg.setMeterNumber(meterNumber);
+							dmg.setCollectionGroup(collectionGrp);
+							dmg.setTestCollectionGroup(altGrp);
+							t = Transaction.createTransaction( Transaction.UPDATE, dmg);
+							dmg = (DeviceMeterGroup)t.execute();
+						}
+                
+						//update teh deviceRotues table if hte routeID has changed.
+						DeviceRoutes dr = new DeviceRoutes();
+						dr.setDeviceID(updateDeviceID);
+						t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
+						dr = (DeviceRoutes)t.execute();
+						if( dr.getRouteID().intValue() != routeID.intValue())
+						{
+							dr.setRouteID(routeID);
+							t = Transaction.createTransaction(Transaction.UPDATE, dr);
+							dr = (DeviceRoutes)t.execute();
+						}
+                
+					} catch (TransactionException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 		//actual 410 creation
 		else
 		{
+			Integer deviceID = YukonPAObject.getNextYukonPAObjectID();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
 			Integer templateID = template410.getPAObjectID();

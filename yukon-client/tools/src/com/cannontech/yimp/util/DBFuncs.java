@@ -10,6 +10,7 @@ import java.util.Vector;
 import java.sql.Connection; 
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.cache.functions.PAOFuncs;
@@ -18,6 +19,8 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.PoolManager;
 import java.util.Date;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -116,7 +119,63 @@ public class DBFuncs
 		
 		return false;
 	}
+	/**
+	 * returns the paobjectid of the device with address.  Else null
+	 * @param address
+	 * @return
+	 */
+	public static Integer getDeviceIDByAddress(String address)
+	{
+		Integer returnDeviceID = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+		Connection conn = null;
+		
+		try
+		{
+			String sql = "SELECT DEVICEID FROM " + DeviceCarrierSettings.TABLE_NAME + " WHERE ADDRESS = '" + address + "'";
+		    
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			if( conn == null )
+			{
+				CTILogger.error("Error getting database connection.");
+				return null;	//this might not be the best thing to return, its assuming the address is NOT already in t
+			}
+			else
+			{
 	
+				pstmt= conn.prepareStatement( sql);
+				rset = pstmt.executeQuery();
+	
+				if(rset != null && rset.next() )
+				{
+					returnDeviceID = new Integer(rset.getInt(1));
+				}
+			}
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( rset != null)
+					rset.close();
+				if( pstmt != null )
+					pstmt.close();
+				if( conn != null )
+					conn.close();
+			}
+			catch( java.sql.SQLException e )
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return returnDeviceID;
+	}
 	public static int[] getNextPAObjectID(int numberOfImportEntries)
 	{
 		int retVal = 0;
