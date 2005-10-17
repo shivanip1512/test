@@ -12,7 +12,7 @@ public class TurtleFormatBase extends FileFormatBase
 	public String header = "H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
 
 	/**
-	 * Default SEDC constructor
+	 * Default Turtle (default format) constructor
 	 */
 	public TurtleFormatBase() 
 	{

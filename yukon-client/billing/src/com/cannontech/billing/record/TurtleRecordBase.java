@@ -56,7 +56,7 @@ public class TurtleRecordBase implements BillingRecordBase
 		KWH_FORMAT_NODECIMAL.setMaximumIntegerDigits(5);
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * TurtleRecordBase constructor comment.
 	 */
 	public TurtleRecordBase(String newMeterNumber, java.sql.Timestamp newTimestamp)
 	{
@@ -66,7 +66,7 @@ public class TurtleRecordBase implements BillingRecordBase
 		setTime(newTimestamp);
 	}
 	/**
-	 * Converts data in a SEDCFormat to a formatted StringBuffer for stream use.
+	 * Converts data in a TurtleFormatBase to a formatted StringBuffer for stream use.
 	 * Creation date: (5/24/00 10:58:48 AM)
 	 *@return java.lang.String
 	*/

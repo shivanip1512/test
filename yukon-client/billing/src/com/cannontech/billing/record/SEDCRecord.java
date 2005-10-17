@@ -7,9 +7,6 @@ package com.cannontech.billing.record;
  */
 public class SEDCRecord extends TurtleRecordBase 
 {
-	private static java.text.DecimalFormat KW_FORMAT_3v3 = new java.text.DecimalFormat("##0.000");
-	private static int KW_FIELD_SIZE = 7;
-
 	/**
 	 * SEDCRecord constructor comment.
 	 */
@@ -48,25 +45,5 @@ public class SEDCRecord extends TurtleRecordBase
 		return ( (o != null) &&
 				   (o instanceof SEDCRecord) &&
 				   ((SEDCRecord)o).getMeterNumber().equalsIgnoreCase(getMeterNumber()) );
-	}
-	
-	/**
-	 * Returns the KW reading field size.
-	 * Creation date: (7/31/2001 2:34:50 PM)
-	 * @return int
-	 */
-	public int getKwFieldSize()
-	{
-		return KW_FIELD_SIZE;
-	}
-
-	/**
-	 * Returns the KW reading format.
-	 * Creation date: (7/31/2001 2:34:50 PM)
-	 * @return DecimalFormat
-	 */
-	public java.text.DecimalFormat getKwFormat()
-	{
-		return KW_FORMAT_3v3;
 	}
 }

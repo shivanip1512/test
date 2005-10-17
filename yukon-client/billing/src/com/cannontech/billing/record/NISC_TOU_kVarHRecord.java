@@ -76,7 +76,7 @@ public class NISC_TOU_kVarHRecord extends TurtleRecordBase
 		super(newMeterNumber, newTimestamp);
 	}
 	/**
-	 * Converts data in a SEDCFormat to a formatted StringBuffer for stream use.
+	 * Converts data in a NISC_TOU_kVarHFormat to a formatted StringBuffer for stream use.
 	 * Creation date: (5/24/00 10:58:48 AM)
 	 *@return java.lang.String
 	*/

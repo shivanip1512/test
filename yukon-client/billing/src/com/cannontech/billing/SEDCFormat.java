@@ -1,5 +1,8 @@
 package com.cannontech.billing;
 
+import com.cannontech.billing.record.SEDCRecord;
+import com.cannontech.billing.record.TurtleRecordBase;
+
 
 /**
  * Insert the type's description here.
@@ -8,8 +11,6 @@ package com.cannontech.billing;
  */
 public class SEDCFormat extends TurtleFormatBase 
 {
-
-	private static final String HEADER = "H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase\r\n";
 	/**
 	 * Default SEDC constructor
 	 */
@@ -18,17 +19,12 @@ public class SEDCFormat extends TurtleFormatBase
 		super();
 	}
 	
-	public com.cannontech.billing.record.TurtleRecordBase createRecord(String meterNumber)
+	public TurtleRecordBase createRecord(String meterNumber)
 	{
-		return new com.cannontech.billing.record.SEDCRecord(meterNumber);
+		return new SEDCRecord(meterNumber);
 	}
-	public com.cannontech.billing.record.TurtleRecordBase getRecord(int index)
+	public TurtleRecordBase getRecord(int index)
 	{
-		return (com.cannontech.billing.record.SEDCRecord)getRecordVector().get(index);
-	}
-	
-	public String getHeader()
-	{
-		return HEADER;
+		return (SEDCRecord)getRecordVector().get(index);
 	}
 }

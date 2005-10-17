@@ -10,27 +10,27 @@ public class NISC_NCDCRecord extends NISCRecord
 	//Single Phase Meters, only has KWH, meter cannot/doesnot have a recorded demand(KW) reading
 	private static java.text.SimpleDateFormat DATE_FORMAT = new java.text.SimpleDateFormat("MM/dd/yyyy");	
 	/**
-	 * SEDCRecord constructor comment.
+	 * NISC_NCDCRecord constructor comment.
 	 */
 	public NISC_NCDCRecord() {
 		super();
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * NISC_NCDCRecord constructor comment.
 	 */
 	public NISC_NCDCRecord(String newMeterNumber)
 	{
 		super(newMeterNumber);
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * NISC_NCDCRecord constructor comment.
 	 */
 	public NISC_NCDCRecord(String newMeterNumber, double reading, java.sql.Timestamp newTimestamp)
 	{
 		super(newMeterNumber, reading, newTimestamp);
 	}
 	/**
-	 * SEDCRecord constructor comment.
+	 * NISC_NCDCRecord constructor comment.
 	 */
 	public NISC_NCDCRecord(String newMeterNumber, java.sql.Timestamp newTimestamp)
 	{
