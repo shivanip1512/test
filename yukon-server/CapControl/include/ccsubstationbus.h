@@ -31,16 +31,6 @@
 #include "msg_pcrequest.h"
 #include "ccstrategy.h"
 
-/*
-#define ALLBANKS 0
-#define FAILEDANDQUESTIONABLEBANKS 1
-#define FAILEDBANKS 2
-#define QUESTIONABLEBANKS 3
-#define SELECTEDFORVERIFICATIONBANKS 4
-#define BANKSINACTIVEFORXTIME 5
-#define STANDALONEBANKS 6
-*/
-
 class CtiCCSubstationBus : public RWCollectable
 {
 
@@ -335,8 +325,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _verificationDoneFlag;
     BOOL _overlappingSchedulesVerificationFlag;
 
-    BOOL _startVerificationFlag;
-    BOOL _verificationAlreadyStartedFlag;
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;

@@ -28,12 +28,18 @@ CtiPAOSchedule::CtiPAOSchedule()
 }
 
 CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
-{                                            
+{    
+    RWCString tempBoolString;
+
     rdr["scheduleid"] >> _scheduleId;
     rdr["schedulename"] >> _scheduleName;
     rdr["nextruntime"] >> _nextRunTime;
     rdr["lastruntime"] >> _lastRunTime;
     rdr["intervalrate"] >> _intervalRate;
+    rdr["disabled"] >> tempBoolString;
+    tempBoolString.toLower();
+    _disabledFlag = (tempBoolString=="y"?TRUE:FALSE);
+
 
     _dirty = false;
 
@@ -54,6 +60,7 @@ CtiPAOSchedule& CtiPAOSchedule::operator=(const CtiPAOSchedule& right)
     _nextRunTime  = right._nextRunTime;
     _lastRunTime  = right._lastRunTime;
     _intervalRate = right._intervalRate;
+    _disabledFlag = right._disabledFlag;
 
     _dirty = right._dirty;
 
@@ -88,6 +95,11 @@ RWDBDateTime CtiPAOSchedule::getLastRunTime()
 long CtiPAOSchedule::getIntervalRate()
 {
     return _intervalRate;
+}
+
+bool CtiPAOSchedule::isDisabled()
+{
+    return _disabledFlag;
 }
 
 void CtiPAOSchedule::setScheduleId(long schedId)
@@ -133,6 +145,15 @@ void CtiPAOSchedule::setIntervalRate(long intervalRate)
         _dirty = true;
     }
     _intervalRate = intervalRate;
+    return;
+}
+void CtiPAOSchedule::setDisabledFlag(bool disabledFlag)
+{
+    if (_disabledFlag != disabledFlag)
+    {
+        _dirty = true;
+    }
+    _disabledFlag = disabledFlag;
     return;
 }
 

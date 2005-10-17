@@ -42,8 +42,7 @@ CtiCCFeeder::CtiCCFeeder()
 
 CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr)
 {
-     restoreFeederTableValues(rdr);
-    //restore(rdr);
+    restore(rdr);
 }
 
 CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
@@ -1398,7 +1397,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     RWCString text = RWCString("CapBank Exceeded Max Daily Operations");
                     RWCString additional = RWCString("CapBank: ");
                     additional += getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalAlarm0));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
 
                     //we should disable feeder if the flag says so
                     if( currentCapBank->getMaxOpsDisableFlag() )
@@ -1408,7 +1407,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         RWCString text = RWCString("CapBank Disabled");
                         RWCString additional = RWCString("CapBank: ");
                         additional += getPAOName();
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalAlarm0));
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
 
                         //keepGoing = FALSE;
                         // feeder disable flag is already set, so it will return false.
@@ -1432,7 +1431,32 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                   currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
                   currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ) )
             {
-                returnCapBank = currentCapBank;
+                //have we went past the max daily ops
+                if( currentCapBank->getMaxDailyOps() > 0 &&
+                    currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() )//only send once
+                {
+                    RWCString text = RWCString("CapBank Exceeded Max Daily Operations");
+                    RWCString additional = RWCString("CapBank: ");
+                    additional += getPAOName();
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
+
+                    //we should disable feeder if the flag says so
+                    if( currentCapBank->getMaxOpsDisableFlag() )
+                    {
+                        currentCapBank->setDisableFlag(TRUE);
+                   //     setBusUpdatedFlag(TRUE);
+                        RWCString text = RWCString("CapBank Disabled");
+                        RWCString additional = RWCString("CapBank: ");
+                        additional += getPAOName();
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
+
+                        //keepGoing = FALSE;
+                        // feeder disable flag is already set, so it will return false.
+                    }
+                }
+
+                if( !currentCapBank->getDisableFlag() )
+                    returnCapBank = currentCapBank;
                 break;
             }
         }
@@ -1471,7 +1495,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, RWOr
             text += tempchar;
             RWCString additional = RWCString("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1504,7 +1528,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ***JULIE***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
+            dout << RWTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
         }
 
         setLastCapBankControlledDeviceId(capBank->getPAOId());
@@ -1523,7 +1547,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
             text += tempchar;
             RWCString additional = RWCString("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1560,7 +1584,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ***JULIE***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
+            dout << RWTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
         }
 
         setLastCapBankControlledDeviceId(capBank->getPAOId());
@@ -1579,7 +1603,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
             text += tempchar;
             RWCString additional = RWCString("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1637,7 +1661,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, RWOr
             text += tempchar;
             RWCString additional = RWCString("Feeder: ");
             additional += getPAOName();
-            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+            pointChanges.insert(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
             pointChanges.insert(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
@@ -1756,7 +1780,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
         RWCString text = RWCString("Feeder Exceeded Max Daily Operations");
         RWCString additional = RWCString("Feeder: ");
         additional += getPAOName();
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalAlarm0));
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
 
         //we should disable feeder if the flag says so
         if( getMaxOperationDisableFlag() )
@@ -1766,7 +1790,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
             RWCString text = RWCString("Feeder Disabled");
             RWCString additional = RWCString("Feeder: ");
             additional += getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalAlarm0));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
 
             //keepGoing = FALSE;
             // feeder disable flag is already set, so it will return false.
@@ -2164,7 +2188,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                 if( text.length() > 0 )
                 {//if control failed or questionable, create event to be sent to dispatch
                     long tempLong = currentCapBank->getStatusPointId();
-                    pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,GeneralLogType,SignalEvent));
+                    pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent));
                     ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                 }
                 pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
@@ -2337,7 +2361,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
                         RWCString text = RWCString("Resending Open");
                         RWCString additional = RWCString("Feeder: ");
                         additional += getPAOName();
-                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                     }
                     else
@@ -2361,7 +2385,7 @@ BOOL CtiCCFeeder::attemptToResendControl(const RWDBDateTime& currentDateTime, RW
                         RWCString text = RWCString("Resending Close");
                         RWCString additional = RWCString("Feeder: ");
                         additional += getPAOName();
-                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,GeneralLogType,SignalEvent));
+                        pointChanges.insert(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent));
                         ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                     }
                     else
@@ -2716,6 +2740,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _paodescription
     >> _disableflag
     >> _parentId
+    >> _maxdailyoperation
+    >> _maxoperationdisableflag
     >> _currentvarloadpointid
     >> _currentvarloadpointvalue
     >> _currentwattloadpointid
@@ -2733,9 +2759,7 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _recentlycontrolledflag
     >> tempTime2
     >> _varvaluebeforecontrol
-    >> _lastcapbankcontrolleddeviceid
     >> _powerfactorvalue
-    >> _kvarsolution
     >> _estimatedpowerfactorvalue
     >> _currentvarpointquality
     >> _waivecontrolflag
@@ -2789,6 +2813,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _paodescription
     << _disableflag
     << _parentId
+    << _maxdailyoperation
+    << _maxoperationdisableflag
     << _currentvarloadpointid
     << _currentvarloadpointvalue
     << _currentwattloadpointid
@@ -2806,9 +2832,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _recentlycontrolledflag
     << _lastoperationtime.rwtime()
     << _varvaluebeforecontrol
-    << _lastcapbankcontrolleddeviceid
     << temppowerfactorvalue
-    << _kvarsolution
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
@@ -2934,154 +2958,8 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
+
 void CtiCCFeeder::restore(RWDBReader& rdr)
-{
-    RWDBNullIndicator isNull;
-    RWDBDateTime currentDateTime = RWDBDateTime();
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
-
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
-    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
-    rdr["currentvarloadpointid"] >> _currentvarloadpointid;
-    rdr["currentwattloadpointid"] >> _currentwattloadpointid;
-    rdr["maplocationid"] >> _maplocationid;
-    rdr["displayorder"] >> _displayorder;
-
-    _estimatedvarloadpointid = 0;
-    _dailyoperationsanalogpointid = 0;
-    _powerfactorpointid = 0;
-    _estimatedpowerfactorpointid = 0;
-
-    rdr["currentvarpointvalue"] >> isNull;
-    if( !isNull )
-    {
-        rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
-        rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
-        rdr["newpointdatareceivedflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
-        rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
-        rdr["currentdailyoperations"] >> _currentdailyoperations;
-        rdr["recentlycontrolledflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastoperationtime"] >> _lastoperationtime;
-        rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
-        rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
-        rdr["busoptimizedvarcategory"] >> _busoptimizedvarcategory;
-        rdr["busoptimizedvaroffset"] >> _busoptimizedvaroffset;
-        rdr["ctitimestamp"] >> dynamicTimeStamp;
-        rdr["powerfactorvalue"] >> _powerfactorvalue;
-        rdr["kvarsolution"] >> _kvarsolution;
-        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
-        rdr["currentvarpointquality"] >> _currentvarpointquality;
-        rdr["waivecontrolflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["additionalflags"] >> _additionalFlags;
-        _additionalFlags.toLower();
-
-        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
-
-
-        _insertDynamicDataFlag = FALSE;
-    }
-    else
-    {
-        //initialize dynamic data members
-        /*setCurrentVarLoadPointValue(0.0);
-        setCurrentWattLoadPointValue(0.0);
-        setCurrentVoltLoadPointValue(0.0);
-        */
-        setNewPointDataReceivedFlag(FALSE);
-        setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
-        setEstimatedVarLoadPointValue(0.0);
-        setCurrentDailyOperations(0);
-        setRecentlyControlledFlag(FALSE);
-        setLastOperationTime(gInvalidRWDBDateTime);
-        setVarValueBeforeControl(0.0);
-        setLastCapBankControlledDeviceId(0);
-        _busoptimizedvarcategory = 1;
-        _busoptimizedvaroffset = 0.0;
-        _powerfactorvalue = -1000000.0;
-        _kvarsolution = 0.0;
-        _estimatedpowerfactorvalue = -1000000.0;
-        _currentvarpointquality = NormalQuality;
-        _waivecontrolflag = FALSE;
-        setVerificationFlag(FALSE);
-        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
-        setPerformingVerificationFlag(FALSE);
-        setVerificationDoneFlag(FALSE);
-
-        _insertDynamicDataFlag = TRUE;
-    }
-
-    rdr["pointid"] >> isNull;
-    if( !isNull )
-    {
-        LONG tempPointId = -1000;
-        LONG tempPointOffset = -1000;
-        RWCString tempPointType = "(none)";
-        rdr["pointid"] >> tempPointId;
-        rdr["pointoffset"] >> tempPointOffset;
-        rdr["pointtype"] >> tempPointType;
-        if( resolvePointType(tempPointType) == AnalogPointType )
-        {
-            if( tempPointOffset==1 )
-            {//estimated vars point
-                _estimatedvarloadpointid = tempPointId;
-            }
-            else if( tempPointOffset==2 )
-            {//daily operations point
-                _dailyoperationsanalogpointid = tempPointId;
-            }
-            else if( tempPointOffset==3 )
-            {//power factor point
-                _powerfactorpointid = tempPointId;
-            }
-            else if( tempPointOffset==4 )
-            {//estimated power factor point
-                _estimatedpowerfactorpointid = tempPointId;
-            }
-            else
-            {//undefined feeder point
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Undefined Feeder point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Undefined Feeder point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
-    }
-
-    if( _currentvarloadpointid <= 0 )
-    {
-        _currentvarloadpointvalue = 0;
-    }
-    if( _currentwattloadpointid <= 0 )
-    {
-        _currentwattloadpointvalue = 0;
-    }
-    if( _currentvoltloadpointid <= 0 )
-    {
-        _currentvoltloadpointvalue = 0;
-    }
-}
-
-void CtiCCFeeder::restoreFeederTableValues(RWDBReader& rdr)
 {
     RWDBNullIndicator isNull;
     RWDBDateTime currentDateTime = RWDBDateTime();
@@ -3134,10 +3012,11 @@ void CtiCCFeeder::restoreFeederTableValues(RWDBReader& rdr)
 
     
     //initialize dynamic data members
-    /*setCurrentVarLoadPointValue(0.0);
+    setCurrentVarLoadPointValue(0.0);
     setCurrentWattLoadPointValue(0.0);
     setCurrentVoltLoadPointValue(0.0);
-    */
+
+
     setNewPointDataReceivedFlag(FALSE);
     setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
     setEstimatedVarLoadPointValue(0.0);

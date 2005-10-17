@@ -98,6 +98,12 @@ RWSockAddr CtiCCClientConnection::getConnectionName()
     return ((RWSocketPortal*)_portal)->socket().getsockname();
 }
 
+
+RWSockAddr CtiCCClientConnection::getPeerName()
+{
+    return ((RWSocketPortal*)_portal)->socket().getpeername();
+}
+
 /*---------------------------------------------------------------------------
     close
     

@@ -43,6 +43,16 @@ class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock >
 {
 public:   
 
+    typedef enum 
+    {
+        Unknown = 0,
+        CapBank,
+        Feeder,
+        SubBus,
+        Strategy,
+        Schedule
+    } CtiCapControlObjectType;
+
     RWOrdered* getCCSubstationBuses(ULONG secondsFrom1901);
     RWOrdered* getCCCapBankStates(ULONG secondsFrom1901);
     RWOrdered* getCCGeoAreas(ULONG secondsFrom1901);

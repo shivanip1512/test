@@ -40,6 +40,7 @@ public:
     void write(RWCollectable* msg);
 
     RWSockAddr getConnectionName();
+    RWSockAddr getPeerName();
 
 protected:
     RWPCPtrQueue< RWCollectable > _queue;

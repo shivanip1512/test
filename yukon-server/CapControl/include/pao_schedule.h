@@ -44,13 +44,15 @@ public:
     RWCString getScheduleName();
     RWDBDateTime getNextRunTime();
     RWDBDateTime getLastRunTime();
-    long getIntervalRate();
+    long getIntervalRate();  
+    bool isDisabled();
 
     void setScheduleId(long schedId);
     void setScheduleName(RWCString schedName);
     void setNextRunTime(RWDBDateTime nextTime);
     void setLastRunTime(RWDBDateTime lastTime);
     void setIntervalRate(long intervalRate);
+    void setDisabledFlag(bool disabledFlag);
 
     void printSchedule();
 
@@ -72,6 +74,7 @@ private:
     RWDBDateTime _nextRunTime;
     RWDBDateTime _lastRunTime;
     long _intervalRate; //in seconds!
+    bool _disabledFlag;                    
 
     
 };

@@ -45,7 +45,7 @@
 class CtiCapController
 {
 public:
-    
+
     static CtiCapController* getInstance();
 
     void start();

@@ -1557,7 +1557,7 @@ void CtiCCCommandExecutor::SendAllData()
     delete executor;
     executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(RWDBDateTime().seconds())));
     executor->Execute();
-    delete executor;
+    delete executor;   
 
 }
 

@@ -46,8 +46,7 @@ CtiCCSubstationBus::CtiCCSubstationBus()
 
 CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr)
 {
-    restoreSubstationBusTableValues(rdr);
-    //restore(rdr);
+    restore(rdr);
 }
 
 CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
@@ -1545,7 +1544,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
         RWCString additional = RWCString("Substation Bus: ");
         additional += getPAOName();
         //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalEvent));
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,GeneralLogType,SignalAlarm0));
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
 
 
         //we should disable bus if the flag says so
@@ -1558,7 +1557,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const RW
             RWCString additional = RWCString("Bus: ");
             additional += getPAOName();
             //CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalAlarm0));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
             //CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, pPoint->getAlarming().getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
             
             keepGoing = FALSE;
@@ -2791,7 +2790,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        if( text.length() > 0 )
                        {//if control failed or questionable, create event to be sent to dispatch
                            long tempLong = currentCapBank->getStatusPointId();
-                           pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,GeneralLogType,SignalEvent));
+                           pointChanges.insert(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent));
                            ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(1);
                        }
                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
@@ -3590,20 +3589,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(LONG 
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::setVerificationAlreadyStartedFlag(BOOL verificationFlag)
-{
-
-    if( _verificationAlreadyStartedFlag != verificationFlag )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-    _verificationAlreadyStartedFlag = verificationFlag;
-    return *this;
-}
 
 
 CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages)
@@ -3624,7 +3609,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::sendNextCapBankVerificationControl(const
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " *** JULIE *** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " ***WARNING*** Should not get here! vCtrlIdx = 1, sendNextVControl? NO. " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else if (currentCapBank->getVCtrlIndex() == 2)
@@ -4695,7 +4680,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
 --------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
 {
-    RWTime tempTime1;
     RWTime tempTime2;
     RWTime tempTime3;
     RWCString tempString;
@@ -4710,26 +4694,15 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _paodescription
     >> _disableflag
     >> _parentId
-    >> _controlmethod
     >> _maxdailyoperation
     >> _maxoperationdisableflag
-    >> _peakstarttime
-    >> _peakstoptime
     >> _currentvarloadpointid
     >> _currentvarloadpointvalue
     >> _currentwattloadpointid
     >> _currentwattloadpointvalue
-    >> _controlinterval
-    >> _maxconfirmtime
-    >> _minconfirmpercent
-    >> _failurepercent
-    >> _daysofweek
     >> _maplocationid
     >> _controlunits
-    >> _controldelaytime
-    >> _controlsendretries
     >> _decimalplaces
-    >> tempTime1
     >> _newpointdatareceivedflag
     >> _busupdatedflag
     >> tempTime2
@@ -4743,23 +4716,19 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _recentlycontrolledflag
     >> tempTime3
     >> _varvaluebeforecontrol
-    >> _lastfeedercontrolledpaoid
-    >> _lastfeedercontrolledposition
     >> _powerfactorvalue
-    >> _kvarsolution
     >> _estimatedpowerfactorvalue
     >> _currentvarpointquality
     >> _waivecontrolflag
-    >> _additionalFlags
     >> _peaklag
     >> _offpklag
     >> _peaklead
     >> _offpklead
     >> _currentvoltloadpointid
     >> _currentvoltloadpointvalue
+    >> _verificationFlag
     >> _ccfeeders;
 
-    _nextchecktime = RWDBDateTime(tempTime1);
     _lastcurrentvarpointupdatetime = RWDBDateTime(tempTime2);
     _lastoperationtime = RWDBDateTime(tempTime3);
 }
@@ -4792,26 +4761,15 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _paodescription
     << _disableflag
     << _parentId
-    << _controlmethod
     << _maxdailyoperation
     << _maxoperationdisableflag
-    << _peakstarttime
-    << _peakstoptime
     << _currentvarloadpointid
     << _currentvarloadpointvalue
     << _currentwattloadpointid
     << _currentwattloadpointvalue
-    << _controlinterval
-    << _maxconfirmtime
-    << _minconfirmpercent
-    << _failurepercent
-    << _daysofweek
     << _maplocationid
     << _controlunits
-    << _controldelaytime
-    << _controlsendretries
     << _decimalplaces
-    << _nextchecktime.rwtime()
     << _newpointdatareceivedflag
     << _busupdatedflag
     << _lastcurrentvarpointupdatetime.rwtime()
@@ -4825,20 +4783,17 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _recentlycontrolledflag
     << _lastoperationtime.rwtime()
     << _varvaluebeforecontrol
-    << _lastfeedercontrolledpaoid
-    << _lastfeedercontrolledposition
     << temppowerfactorvalue
-    << _kvarsolution
     << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
-    << RWCString(_additionalFlags) 
     << _peaklag
     << _offpklag
     << _peaklead
     << _offpklead
     << _currentvoltloadpointid
     << _currentvoltloadpointvalue
+    << _verificationFlag
     << _ccfeeders;
 }
 
@@ -4909,7 +4864,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _currentVerificationCapBankId = right._currentVerificationCapBankId; 
         _currentVerificationFeederId = right._currentVerificationFeederId; 
         _verificationStrategy = right._verificationStrategy;
-        _capBankToVerifyInactivityTime = right._capBankToVerifyInactivityTime;
+        _capBankToVerifyInactivityTime = right._capBankToVerifyInactivityTime; 
+        _verificationFlag = right._verificationFlag;
         
         _ccfeeders.clearAndDestroy();
         for(LONG i=0;i<right._ccfeeders.entries();i++)
@@ -4953,203 +4909,6 @@ CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBus::restore(RWDBReader& rdr)
 {
-    RWDBNullIndicator isNull;
-    RWDBDateTime currentDateTime = RWDBDateTime();
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
-
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
-    _disableflag = (tempBoolString=="y"?TRUE:FALSE);
-   // rdr["parentId"] >> _parentId;
-    rdr["controlmethod"] >> _controlmethod;
-    rdr["maxdailyoperation"] >> _maxdailyoperation;
-    rdr["maxoperationdisableflag"] >> tempBoolString;
-    tempBoolString.toLower();
-    _maxoperationdisableflag = (tempBoolString=="y"?TRUE:FALSE);
-    rdr["peakstarttime"] >> _peakstarttime;
-    rdr["peakstoptime"] >> _peakstoptime;
-    rdr["currentvarloadpointid"] >> _currentvarloadpointid;
-    rdr["currentwattloadpointid"] >> _currentwattloadpointid;
-    rdr["controlinterval"] >> _controlinterval;
-    rdr["minresponsetime"] >> _maxconfirmtime;//will become "minconfirmtime" in the DB in 3.1
-    rdr["minconfirmpercent"] >> _minconfirmpercent;
-    rdr["failurepercent"] >> _failurepercent;
-    rdr["daysofweek"] >> _daysofweek;
-    rdr["maplocationid"] >> _maplocationid;
-    rdr["controlunits"] >> _controlunits;
-    rdr["controldelaytime"] >> _controldelaytime;
-    rdr["controlsendretries"] >> _controlsendretries;
-    rdr["decimalplaces"] >> isNull;
-    if( !isNull )
-    {
-        rdr["decimalplaces"] >> _decimalplaces;
-    }
-    else
-    {
-        _decimalplaces = 2;
-    }
-
-    _estimatedvarloadpointid = 0;
-    _dailyoperationsanalogpointid = 0;
-    _powerfactorpointid = 0;
-    _estimatedpowerfactorpointid = 0;
-
-    rdr["currentvarpointvalue"] >> isNull;
-    if( !isNull )
-    {
-        rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
-        rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
-        rdr["nextchecktime"] >> _nextchecktime;
-        rdr["newpointdatareceivedflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["busupdatedflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _busupdatedflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
-        rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
-        rdr["currentdailyoperations"] >> _currentdailyoperations;
-        rdr["peaktimeflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _peaktimeflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["recentlycontrolledflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastoperationtime"] >> _lastoperationtime;
-        rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
-        rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
-        rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
-        rdr["ctitimestamp"] >> dynamicTimeStamp;
-        rdr["powerfactorvalue"] >> _powerfactorvalue;
-        rdr["kvarsolution"] >> _kvarsolution;
-        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
-        rdr["currentvarpointquality"] >> _currentvarpointquality;
-        rdr["waivecontrolflag"] >> tempBoolString;
-        tempBoolString.toLower();
-        _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["additionalflags"] >> _additionalFlags;
-        _additionalFlags.toLower();
-        rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
-
-        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
-        _overlappingSchedulesVerificationFlag = (_additionalFlags.data()[3]=='y'?TRUE:FALSE);
-
-
-        rdr["currverifycbid"] >> _currentVerificationCapBankId;
-        rdr["currverifyfeederid"] >> _currentVerificationFeederId;
-        rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
-        rdr["verificationstrategy"] >> _verificationStrategy;
-        rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
-
-        _insertDynamicDataFlag = FALSE;
-    }
-    else
-    {
-        //initialize dynamic data members
-        /*setCurrentVarLoadPointValue(0.0);
-        setCurrentWattLoadPointValue(0.0);
-        setCurrentVoltLoadPointValue(0.0);
-        */
-        figureNextCheckTime();
-        setNewPointDataReceivedFlag(FALSE);
-        setBusUpdatedFlag(FALSE);
-        setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
-        setEstimatedVarLoadPointValue(0.0);
-        setCurrentDailyOperations(0);
-        setPeakTimeFlag(TRUE);
-        setRecentlyControlledFlag(FALSE);
-        setLastOperationTime(gInvalidRWDBDateTime);
-        setVarValueBeforeControl(0.0);
-        setLastFeederControlledPAOId(0);
-        setLastFeederControlledPosition(-1);
-        setPowerFactorValue(-1000000.0);
-        setKVARSolution(0.0);
-        setEstimatedPowerFactorValue(-1000000.0);
-        setCurrentVarPointQuality(NormalQuality);
-        setWaiveControlFlag(FALSE);
-        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
-
-        setVerificationFlag(FALSE);
-        setPerformingVerificationFlag(FALSE);
-        setVerificationDoneFlag(FALSE);
-
-        setCurrentVerificationCapBankId(-1);
-        setCurrentVerificationFeederId(-1);
-        setCurrentVerificationCapBankState(0);
-        setVerificationStrategy(-1);
-        setCapBankInactivityTime(-1);
-
-        _insertDynamicDataFlag = TRUE;
-    }
-
-    rdr["pointid"] >> isNull;
-    if( !isNull )
-    {
-        LONG tempPointId = -1000;
-        LONG tempPointOffset = -1000;
-        RWCString tempPointType = "(none)";
-        rdr["pointid"] >> tempPointId;
-        rdr["pointoffset"] >> tempPointOffset;
-        rdr["pointtype"] >> tempPointType;
-        if( resolvePointType(tempPointType) == AnalogPointType )
-        {
-            if( tempPointOffset==1 )
-            {//estimated vars point
-                _estimatedvarloadpointid = tempPointId;
-            }
-            else if( tempPointOffset==2 )
-            {//daily operations point
-                _dailyoperationsanalogpointid = tempPointId;
-            }
-            else if( tempPointOffset==3 )
-            {//power factor point
-                _powerfactorpointid = tempPointId;
-            }
-            else if( tempPointOffset==4 )
-            {//estimated power factor point
-                _estimatedpowerfactorpointid = tempPointId;
-            }
-            else
-            {//undefined bus point
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
-    }
-
-    if( _currentvarloadpointid <= 0 )
-    {
-        _currentvarloadpointvalue = 0;
-    }
-    if( _currentwattloadpointid <= 0 )
-    {
-        _currentwattloadpointvalue = 0;
-    }
-    if( _currentvoltloadpointid <= 0 )
-    {
-        _currentvoltloadpointvalue = 0;
-    }
-}
-
-void CtiCCSubstationBus::restoreSubstationBusTableValues(RWDBReader& rdr)
-{
-    //RWDBNullIndicator isNull;
-    //RWDBDateTime currentDateTime = RWDBDateTime();
-    //RWDBDateTime dynamicTimeStamp;
     RWCString tempBoolString;
 
     rdr["paobjectid"] >> _paoid;
@@ -5176,7 +4935,7 @@ void CtiCCSubstationBus::restoreSubstationBusTableValues(RWDBReader& rdr)
 
 
     //initialize strategy members
-	setStrategyName("default");
+	setStrategyName("(none)");
     setControlMethod("SubstationBus");
     setMaxDailyOperation(0);
     setMaxOperationDisableFlag(FALSE);
@@ -5196,10 +4955,10 @@ void CtiCCSubstationBus::restoreSubstationBusTableValues(RWDBReader& rdr)
     setControlSendRetries(0);
     
     //initialize dynamic data members
-    /*setCurrentVarLoadPointValue(0.0);
+    setCurrentVarLoadPointValue(0.0);
     setCurrentWattLoadPointValue(0.0);
     setCurrentVoltLoadPointValue(0.0);
-    */
+    
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);
@@ -5278,9 +5037,9 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
     RWCString tempBoolString;
 
 
-    rdr["currentvarpointvalue"] >> isNull;
+    /*rdr["currentvarpointvalue"] >> isNull;
     if( !isNull )
-    {
+    { */
         rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
         rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
         rdr["nextchecktime"] >> _nextchecktime;
@@ -5329,7 +5088,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _insertDynamicDataFlag = FALSE;
 
         _dirty = false;
-    }
+    //}
 }
 
 /*---------------------------------------------------------------------------

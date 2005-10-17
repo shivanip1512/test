@@ -35,8 +35,7 @@ CtiCCCapBank::CtiCCCapBank()
 
 CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
 {
-    restoreCapBankTableValues(rdr);
-    //restore(rdr);
+    restore(rdr);
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
@@ -391,15 +390,7 @@ int CtiCCCapBank::getAssumedOrigVerificationState() const
 ---------------------------------------------------------------------------*/
 LONG CtiCCCapBank::getControlStatus() const
 {
-
-   /* if (_verificationFlag)
-    {
-        return _verificationControlStatus;
-    }
-    else */
-    {
-        return _controlstatus;
-    }
+   return _controlstatus;
 }
 
 /*---------------------------------------------------------------------------
@@ -943,7 +934,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " ***JULIE*** Check This $#!&* out, Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << RWTime() << " ***WARNING*** Shouldn't get HERE ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         break;
     }
@@ -1042,15 +1033,6 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
         _controlstatus = status;
     }
 
-    if (_controlstatus == CtiCCCapBank::OpenPending ||
-        _controlstatus == CtiCCCapBank::ClosePending)
-    {
-        {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " CB: " << getPAOId()<< " _controlStatus = ----Pending  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-    }
     return *this;
 }
 
@@ -1180,12 +1162,13 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _paodescription
     >> _disableflag
     >> _parentId
+    >> _maxdailyops
+    >> _maxopsdisableflag
     >> _alarminhibitflag
     >> _controlinhibitflag
     >> _operationalstate
     >> _controllertype
     >> _controldeviceid
-    >> _controlpointid
     >> _banksize
     >> _typeofswitch
     >> _switchmanufacture
@@ -1198,17 +1181,9 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _totaloperations
     >> tempTime1
     >> _tagscontrolstatus
-    >> _originalfeederid;
-    //>> _originalswitchingorder;
-    /*>> _assumedOrigCapBankPos
-    >> _prevVerificationControlStatus
-    >> _vCtrlIndex
-    >> _additionalFlags;
+    >> _originalfeederid
+    >> _currentdailyoperations;
 
-    _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-    _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-    _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
-     */
     _laststatuschangetime = RWDBDateTime(tempTime1);
 }
 
@@ -1229,12 +1204,13 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _paodescription
     << _disableflag
     << _parentId
+    << _maxdailyops
+    << _maxopsdisableflag
     << _alarminhibitflag
     << _controlinhibitflag
     << _operationalstate
     << _controllertype
     << _controldeviceid
-    << _controlpointid
     << _banksize
     << _typeofswitch
     << _switchmanufacture
@@ -1247,14 +1223,8 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _totaloperations
     << _laststatuschangetime.rwtime()
     << _tagscontrolstatus
-    << _originalfeederid;
-    /*<< _originalswitchingorder;/*
-    << _assumedOrigCapBankPos
-    << _prevVerificationControlStatus
-    << _vCtrlIndex
-    << RWCString(_additionalFlags);
-
-  */
+    << _originalfeederid
+    << _currentdailyoperations;
 }
 
 /*---------------------------------------------------------------------------
@@ -1343,13 +1313,6 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     tempBoolString.toLower();
     setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
-    //rdr["parentid"] >> _parentId;
-    rdr["alarminhibit"] >> tempBoolString;
-    tempBoolString.toLower();
-    setAlarmInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
-    rdr["controlinhibit"] >> tempBoolString;
-    tempBoolString.toLower();
-    setControlInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
     rdr["operationalstate"] >> _operationalstate;
     rdr["controllertype"] >> _controllertype;
     rdr["controldeviceid"] >> _controldeviceid;
@@ -1360,154 +1323,33 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     rdr["maplocationid"] >> _maplocationid;
     rdr["reclosedelay"] >> _reclosedelay;
     rdr["maxdailyops"] >> _maxdailyops;
-    rdr["maxopsdisable"] >> _maxopsdisableflag;
-    rdr["controlorder"] >> _controlorder;
+    rdr["maxopdisable"] >> tempBoolString;
+    tempBoolString.toLower();
+    setMaxOpsDisableFlag(tempBoolString=='y'?TRUE:FALSE);
+            
 
+    setAlarmInhibitFlag(false);
+    setControlInhibitFlag(false);
+    _controlorder = 0;
     setStatusPointId(0);
     setOperationAnalogPointId(0);
 
-    rdr["controlstatus"] >> isNull;
-    if( !isNull )
-    {
-        rdr["controlstatus"] >> _controlstatus;
-        rdr["totaloperations"] >> _totaloperations;
-        rdr["laststatuschangetime"] >> _laststatuschangetime;
-        rdr["tagscontrolstatus"] >> _tagscontrolstatus;
-        rdr["ctitimestamp"] >> dynamicTimeStamp;
-        rdr["originalfeederid"] >> _originalfeederid;
-        rdr["originalswitchingorder"] >> _originalswitchingorder;
-        rdr["assumedstartverificationstatus"] >> _assumedOrigCapBankPos;
-        rdr["prevverificationcontrolstatus"] >> _prevVerificationControlStatus;
-        rdr["verificationcontrolindex"] >> _vCtrlIndex;
-        rdr["additionalflags"] >> _additionalFlags;
-        _additionalFlags.toLower();
-
-        _verificationFlag = (_additionalFlags.data()[0]=='y'?TRUE:FALSE);
-        _performingVerificationFlag = (_additionalFlags.data()[1]=='y'?TRUE:FALSE);
-        _verificationDoneFlag = (_additionalFlags.data()[2]=='y'?TRUE:FALSE);
-        rdr["currentdailyoperations"] >> _currentdailyoperations;
-
-        _controlDeviceType = "";
-
-        _insertDynamicDataFlag = FALSE;
-        _dirty = FALSE;
-    }
-    else
-    {
-        //initialize dynamic data members
-        setTotalOperations(0);
-        setLastStatusChangeTime(gInvalidRWDBDateTime);
-        setControlStatus(CtiCCCapBank::Open);
-        setTagsControlStatus(0);
-        setOriginalFeederId(0);
-        setOriginalSwitchingOrder(0);
-        setAssumedOrigVerificationState(CtiCCCapBank::Open);
-        setPreviousVerificationControlStatus(CtiCCCapBank::Open);
-        _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
-
-        setVerificationFlag(FALSE);
-        setPerformingVerificationFlag(FALSE);
-        setVerificationDoneFlag(FALSE);
-        
-
-        _insertDynamicDataFlag = TRUE;
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = TRUE;
-    }
-
-    rdr["pointid"] >> isNull;
-    if( !isNull )
-    {
-        LONG tempPointId = -1000;
-        LONG tempPointOffset = -1000;
-        RWCString tempPointType = "(none)";
-        rdr["pointid"] >> tempPointId;
-        rdr["pointoffset"] >> tempPointOffset;
-        rdr["pointtype"] >> tempPointType;
-        if( tempPointOffset == 1 )
-        {
-            if( resolvePointType(tempPointType) == StatusPointType )
-            {//control status point
-                setStatusPointId(tempPointId);
-            }
-            else if( resolvePointType(tempPointType) == AnalogPointType )
-            {//daily operations point
-                setOperationAnalogPointId(tempPointId);
-            }
-            else
-            {//undefined cap bank point
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
-    }
-}
-void CtiCCCapBank::restoreCapBankTableValues(RWDBReader& rdr)
-{
-    RWDBNullIndicator isNull;
-    RWDBDateTime currentDateTime = RWDBDateTime();
-    RWDBDateTime dynamicTimeStamp;
-    RWCString tempBoolString;
-
-    rdr["paobjectid"] >> _paoid;
-    rdr["category"] >> _paocategory;
-    rdr["paoclass"] >> _paoclass;
-    rdr["paoname"] >> _paoname;
-    rdr["type"] >> _paotype;
-    rdr["description"] >> _paodescription;
-    rdr["disableflag"] >> tempBoolString;
-    tempBoolString.toLower();
-    setDisableFlag(tempBoolString=="y"?TRUE:FALSE);
-    //rdr["alarminhibit"] >> tempBoolString;
-    //tempBoolString.toLower();
-    //setAlarmInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
-    //rdr["controlinhibit"] >> tempBoolString;
-    //tempBoolString.toLower();
-    //setControlInhibitFlag(tempBoolString=="y"?TRUE:FALSE);
-    rdr["operationalstate"] >> _operationalstate;
-    rdr["controllertype"] >> _controllertype;
-    rdr["controldeviceid"] >> _controldeviceid;
-    rdr["controlpointid"] >> _controlpointid;
-    rdr["banksize"] >> _banksize;
-    rdr["typeofswitch"] >> _typeofswitch;
-    rdr["switchmanufacture"] >> _switchmanufacture;
-    rdr["maplocationid"] >> _maplocationid;
-    rdr["reclosedelay"] >> _reclosedelay;
-    rdr["maxdailyops"] >> _maxdailyops;
-    rdr["maxopsdisable"] >> tempBoolString;
-    tempBoolString.toLower();
-    setMaxOpsDisableFlag(tempBoolString=='y'?TRUE:FALSE);
-    //rdr["controlorder"] >> _controlorder;
-
-
-    //setAlarmInhibitFlag(false);
-  //  setControlInhibitFlag(false);
-  //  _controlorder = 0;
-  //  setStatusPointId(0);
-   // setOperationAnalogPointId(0);
-
  //initialize dynamic data members
-  //  setTotalOperations(0);
-  //  setLastStatusChangeTime(gInvalidRWDBDateTime);
-   // setControlStatus(CtiCCCapBank::Open);
-  //  setTagsControlStatus(0);
-   // setOriginalFeederId(0);
- //   setOriginalSwitchingOrder(0);
+    setTotalOperations(0);
+    setLastStatusChangeTime(gInvalidRWDBDateTime);
+    setControlStatus(CtiCCCapBank::Open);
+    setTagsControlStatus(0);
+    setOriginalFeederId(0);
+    setOriginalSwitchingOrder(0);
+    setAssumedOrigVerificationState(CtiCCCapBank::Open);
+    setPreviousVerificationControlStatus(CtiCCCapBank::Open);
+    setVCtrlIndex(-1);
+    setVerificationFlag(FALSE);
+    _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
+    setCurrentDailyOperations(0);
+    
 
-  //  setVerificationFlag(FALSE);
-  //  _additionalFlags = RWCString("NNNNNNNNNNNNNNNNNNNN");
- //
-
-
-    _insertDynamicDataFlag = FALSE;
+    _insertDynamicDataFlag = TRUE;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;

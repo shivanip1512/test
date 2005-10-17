@@ -982,7 +982,7 @@ void CtiCCSubstationBusStore::reset()
                                 << capBankTable["maplocationid"]
                                 << capBankTable["reclosedelay"]
                                 << capBankTable["maxdailyops"]
-                                << capBankTable["maxopsdisable"];
+                                << capBankTable["maxopdisable"];
 
                                 selector.from(yukonPAObjectTable);
                                 selector.from(capBankTable);
@@ -1247,77 +1247,7 @@ void CtiCCSubstationBusStore::reset()
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                         reloadCapBankStatesFromDatabase();
                         reloadGeoAreasFromDatabase();
-                        /*{
-
-                            if ( _ccCapBankStates->entries() > 0 )
-                            {
-                                _ccCapBankStates->clearAndDestroy();
-                            }
-
-                            RWDBTable stateTable = db.table("state");
-
-                            RWDBSelector selector = db.selector();
-                            selector << stateTable["text"]
-                            << stateTable["foregroundcolor"]
-                            << stateTable["backgroundcolor"];
-
-                            selector.from(stateTable);
-
-                            selector.where(stateTable["stategroupid"]==3 && stateTable["rawstate"]>=0);
-
-                            selector.orderBy(stateTable["rawstate"]);
-
-                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - " << selector.asString().data() << endl;
-                            }
-
-                            RWDBReader rdr = selector.reader(conn);
-
-                            while ( rdr() )
-                            {
-                                CtiCCState* ccState = new CtiCCState(rdr);
-                                _ccCapBankStates->insert( ccState );
-                            }
-                        
-                        }
-                        {
-                            if ( _ccGeoAreas->entries() > 0 )
-                            {
-                                _ccGeoAreas->clearAndDestroy();
-                            }
-
-                            RWDBSelector selector = db.selector();
-                            selector.distinct();
-                            selector << yukonPAObjectTable["description"];
-
-                            selector.from(yukonPAObjectTable);
-                            selector.from(capControlSubstationBusTable);
-
-                            selector.where(yukonPAObjectTable["paobjectid"]==capControlSubstationBusTable["substationbusid"]);
-
-                            selector.orderBy(yukonPAObjectTable["description"]);
-
-                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << RWTime() << " - " << selector.asString().data() << endl;
-                            }
-
-                            RWDBReader rdr = selector.reader(conn);
-
-                            while ( rdr() )
-                            {
-                                RWCollectableString* areaString = NULL;
-                                RWCString tempStr;
-                                rdr["description"] >> tempStr;
-                                areaString = new RWCollectableString(tempStr);
-                                _ccGeoAreas->insert( areaString );
-                            }
-                        }
-                          */
-                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                                                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - DataBase Reload End - " << endl;
@@ -1473,7 +1403,7 @@ void CtiCCSubstationBusStore::reset()
         delete executor;
         executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
         executor->Execute();
-        delete executor;
+        delete executor;  
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Store DONE sending messages to clients." << endl;
@@ -1486,27 +1416,6 @@ void CtiCCSubstationBusStore::reset()
     }
 }
 
-/*bool CtiCCSubstationBusStore::findPointId(long pointId)
-{
-    bool retVal = false;
-
-    if (!_pointIdList.empty())
-    {
-        list <long>::iterator iter = _pointIdList.begin();
-        while (iter != _pointIdList.end())
-        {
-            if (*iter == pointId)
-            {
-                retVal = true;
-                break;
-            }
-            iter++;
-        }
-    }
-
-    return retVal;
-}
-    */
 /*---------------------------------------------------------------------------
     checkAMFMSystemForUpdates
 
@@ -4024,7 +3933,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId)
                         << capBankTable["maplocationid"]
                         << capBankTable["reclosedelay"]
                         << capBankTable["maxdailyops"]
-                        << capBankTable["maxopsdisable"];
+                        << capBankTable["maxopdisable"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(capBankTable);
@@ -4601,7 +4510,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 switch (reloadTemp.objecttype)
                 {
                     //capbank
-                    case 1:
+                    case CapBank:
                     {
                         if (reloadTemp.action == ChangeTypeUpdate)
                         {
@@ -4614,7 +4523,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         break;
                     }
                     //feeder                           
-                    case 2:
+                    case Feeder:
                     {
                         if (reloadTemp.action == ChangeTypeUpdate)
                         {
@@ -4627,7 +4536,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         break;
                     }
                     //subbus
-                    case 3:
+                    case SubBus:
                     {
                         if (reloadTemp.action == ChangeTypeDelete)
                         {
@@ -4639,7 +4548,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         }
                         break;
                     }
-                case 4:
+                case Strategy:
                     {
                         if (reloadTemp.action != ChangeTypeDelete)
                         {
@@ -4654,15 +4563,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     default:
                         break;
                 }
-
-                /*if (reloadTemp.action == ChangeTypeDelete)
-                {
-                    CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM,reloadTemp.objectId));
-                    executor->Execute();
-                    delete executor;
-                } */
-
 
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4689,7 +4589,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 delete executor;
                 executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
                 executor->Execute();
-                delete executor;
+                delete executor; 
             }
 
         }

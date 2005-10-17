@@ -288,7 +288,7 @@ void CtiCCClientListener::_check()
 							if( _CC_DEBUG & CC_DEBUG_CLIENT )
 							{    
 								CtiLockGuard<CtiLogger> logger_guard(dout);
-								dout << RWTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
+								dout << RWTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() <<" : "<<toDelete->getPeerName() << endl;
 							}
                             delete toDelete;
                         }

@@ -1020,24 +1020,24 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         //CtiCCSubstationBusStore::getInstance()->setValid(false);
                         //CtiPAOScheduleManager::getInstance()->setValid(false);
 
-                        long objType = 0;
+                        long objType = CtiCCSubstationBusStore::Unknown;
                         if (dbChange->getDatabase() == ChangeCBCStrategyDb)
                         {
-                            objType = 4;
+                            objType = CtiCCSubstationBusStore::Strategy;
                         }
                         else if (dbChange->getDatabase() == ChangePAODb && !(dbChange->getObjectType().compareTo("cap bank", RWCString::ignoreCase)))
                         {
-                            objType = 1;
+                            objType = CtiCCSubstationBusStore::CapBank;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
                         {
-                            objType = 3;
+                            objType = CtiCCSubstationBusStore::SubBus;
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
                         {
-                            objType = 2;
+                            objType = CtiCCSubstationBusStore::Feeder;
                         }
-                        else if (objType == 0)
+                        else if (objType == CtiCCSubstationBusStore::Unknown)
                         {
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  

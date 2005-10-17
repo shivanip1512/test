@@ -234,14 +234,14 @@ bool CtiPAOScheduleManager::checkSchedules(RWDBDateTime currentTime, list<CtiPAO
         {
             if ((*iter)->getNextRunTime() < currentTime)
             {
-                if ((*iter)->getIntervalRate() > 0)
+                if ((*iter)->getIntervalRate() > 0 && !(*iter)->isDisabled())
                 {                               
                     schedules.push_back(*iter);
                     retVal = true;
                 }
                 else
                 {
-                    if ((*iter)->getNextRunTime() != (*iter)->getLastRunTime())
+                    if ((*iter)->getNextRunTime() != (*iter)->getLastRunTime() && !(*iter)->isDisabled())
                     {
                         schedules.push_back(*iter);
                         retVal = true;
@@ -524,7 +524,8 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                         << paoScheduleTable["schedulename"]
                         << paoScheduleTable["nextruntime"]
                         << paoScheduleTable["lastruntime"]
-                        << paoScheduleTable["intervalrate"];
+                        << paoScheduleTable["intervalrate"]
+                        << paoScheduleTable["disabled"];
 
 
                         selector.from(paoScheduleTable);
