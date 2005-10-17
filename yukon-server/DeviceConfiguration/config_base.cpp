@@ -6,19 +6,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_base.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/09/28 14:30:51 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/17 16:43:15 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "config_base.h"
+#include "config_resolvers.h"
 namespace Cti       {
 namespace Config    {
 
-Base::Base():
-_type(0)
+Base::Base()
 {
 }
 
@@ -36,14 +36,9 @@ string Base::getID()
     return _identifier;
 }*/
 
-int Base::getType()
+CtiConfig_type Base::getType()
 {
-    return _type;
-}
-
-void Base::setType(int type)
-{
-    _type = type;
+    return ConfigTypeInvalid;
 }
 
 string Base::getOutputStrings()
@@ -55,34 +50,12 @@ string Base::getOutputStrings()
 }
 
 //should contain a map of all of the possible types (subtypes). (TouRateA, TouRateB).
-int Base::getResolvedKey(RWCString key)
+int Base::getProtectedResolvedKey(RWCString key)
 {
     return 0;
 }
 
-RWCString Base::getValueFromKey(const int &key)
-{
-    return RWCString();
-}
-
-//Returns LONG_MIN or LONG_MAX if overflow, LONG_MIN + 1 if invalid (null)
-long Base::getLongValueFromKey(const int &key)
-{
-    RWCString tempStr = getValueFromKey(key);
-
-    if(tempStr)
-    {
-        char *endStr;
-        
-        return strtol(tempStr.data(),&endStr,16);
-    }
-    else
-    {
-        return LONG_MIN+1;
-    }
-}
-
-bool Base::setValueWithKey(const RWCString& value, const int &key)
+bool Base::setProtectedValueWithKey(const RWCString& value, const int key)
 {
     return false;
 }
