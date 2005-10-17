@@ -304,10 +304,12 @@
 
 #ifdef _DLL_CONFIG                // The ctibase.dll
    #define IM_EX_CONFIG      __declspec(dllexport)
+   #define EXTERN_CONFIG
 #elif defined( STI_UNDERSTAND )
    #define IM_EX_CONFIG
 #else
    #define IM_EX_CONFIG      __declspec(dllimport)
+   #define EXTERN_CONFIG    extern
 #endif
 
 #ifdef  EXPORT
