@@ -16,6 +16,7 @@ import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.axis.AxisFault;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
@@ -147,85 +148,22 @@ public class Multispeak implements MessageListener, DBChangeListener {
 				CTILogger.debug("A MESSAGE: (ExpectMore=" + returnMsg.getExpectMore() + ") " + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 				if( returnMsg.getExpectMore() == 0)
 				{
+				    boolean done = false;
 					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 					ODEvent event = (ODEvent)getODEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 					if( event != null)
 					{
-						MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
-						String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
-						String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
-							
-						OutageDetectionEvent ode = new OutageDetectionEvent();
-						GregorianCalendar cal = new GregorianCalendar();
-						cal.setTime(returnMsg.getTimeStamp());
-						ode.setEventTime(cal);
-						ode.setObjectID(keyValue);
-						ode.setOutageDetectDeviceID(keyValue);
-						ode.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
-						OutageLocation loc = new OutageLocation();
-						loc.setMeterNo(keyValue);
-						ode.setOutageLocation(loc);
-					    
-					    if( returnMsg.getStatus() != 0)
-						{
-					        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ")");
-							ode.setOutageEventType(OutageEventType.Outage);
-							//ode.setErrorString("Ping failed");	//Not Valid (info received from Luis @ Milsoft
-						}
-					    else
-					    {
-					        CTILogger.info("OutageDetectionEvent: Ping Successful (" + keyValue + ")");
-					    	ode.setOutageEventType(OutageEventType.Restoration);
-					    }
-					    
-					    event.setOutageDetectionEvent(ode);
-						ODEventNotification(event);
-
-						getODEventsMap().remove(new Long(event.getPilMessageID()));
+					    messageReceived_ODEvent(event, returnMsg);
+					    done = true;
 					}
-					else
+
+					if( !done )
 					{
 						MeterReadEvent mrEvent = (MeterReadEvent)getMeterReadEventsMap().get(new Long (returnMsg.getUserMessageID()) );
 						if( mrEvent != null)
 						{
-							MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
-							String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
-							String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
-							
-							MeterRead meterRead = new MeterRead();
-							meterRead.setDeviceID(keyValue);
-							meterRead.setMeterNo(keyValue);
-							meterRead.setObjectID(keyValue);
-							meterRead.setUtility(MultispeakFuncs.AMR_TYPE);
-
-						    if( returnMsg.getStatus() != 0)
-							{
-						        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
-						        CTILogger.info(result);
-						        meterRead.setErrorString(result);
-							}
-						    else
-						    {
-						        if(returnMsg.getVector().size() > 0 )
-								{
-									for (int i = 0; i < returnMsg.getVector().size(); i++)
-									{
-										Object o = returnMsg.getVector().elementAt(i);
-										//TODO SN - Hoping at this point that only one value comes back in the point data vector 
-										if (o instanceof PointData)
-										{
-											PointData point = (PointData) o;
-											Double val = new Double(point.getValue());
-											meterRead.setPosKWh(new BigInteger(String.valueOf(val.intValue())));
-											GregorianCalendar cal = new GregorianCalendar();
-											cal.setTimeInMillis(point.getPointDataTimeStamp().getTime());
-											meterRead.setReadingDate(cal);
-											CTILogger.info("MeterReadEvent:  Reading Successful (" + keyValue + ") - " );
-										}
-									}
-								}
-						    }
-						    mrEvent.setMeterRead(meterRead);
+						    messageReceived_MeterReadEvent(mrEvent, returnMsg);
+						    done = true;
 						}
 					}
 				}
@@ -233,6 +171,110 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		}
 	}
 	/**
+     * @param mrEvent
+     * @param returnMsg
+     */
+    private void messageReceived_MeterReadEvent(MeterReadEvent mrEvent, Return returnMsg)
+    {
+        MultispeakVendor vendor = getMultispeakVendor(mrEvent.getVendorName());
+		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+		String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
+		
+		MeterRead meterRead = new MeterRead();
+		meterRead.setDeviceID(keyValue);
+		meterRead.setMeterNo(keyValue);
+		meterRead.setObjectID(keyValue);
+		meterRead.setUtility(MultispeakFuncs.AMR_TYPE);
+
+	    if( returnMsg.getStatus() != 0)
+		{
+	        String result = "MeterReadEvent: Reading Failed (" + keyValue + ") " + returnMsg.getResultString();
+	        CTILogger.info(result);
+	        meterRead.setErrorString(result);
+		}
+	    else
+	    {
+	        if(returnMsg.getVector().size() > 0 )
+			{
+				for (int i = 0; i < returnMsg.getVector().size(); i++)
+				{
+					Object o = returnMsg.getVector().elementAt(i);
+					//TODO SN - Hoping at this point that only one value comes back in the point data vector 
+					if (o instanceof PointData)
+					{
+						PointData point = (PointData) o;
+						Double val = new Double(point.getValue());
+						meterRead.setPosKWh(new BigInteger(String.valueOf(val.intValue())));
+						GregorianCalendar cal = new GregorianCalendar();
+						cal.setTimeInMillis(point.getPointDataTimeStamp().getTime());
+						meterRead.setReadingDate(cal);
+						CTILogger.info("MeterReadEvent:  Reading Successful (" + keyValue + ") - " );
+					}
+				}
+			}
+	    }
+	    mrEvent.setMeterRead(meterRead);
+	}
+
+    /**
+     * 
+     */
+    private void messageReceived_ODEvent(ODEvent event, Return returnMsg)
+    {
+		MultispeakVendor vendor = getMultispeakVendor(event.getVendorName());
+		String key = (vendor != null ? vendor.getUniqueKey(): "meternumber");
+		String keyValue = MultispeakFuncs.getKeyValue(key, returnMsg.getDeviceID());						
+			
+		OutageDetectionEvent ode = new OutageDetectionEvent();
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(returnMsg.getTimeStamp());
+		ode.setEventTime(cal);
+		ode.setObjectID(keyValue);
+		ode.setOutageDetectDeviceID(keyValue);
+		ode.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
+		OutageLocation loc = new OutageLocation();
+		loc.setMeterNo(keyValue);
+		ode.setOutageLocation(loc);
+	    
+		/** ERRORCODE								Description
+		 * 1 (Bad BCH)								Powerline carrier checksum failed.  Powerline is noisy, and the return message is incomplete when received by Yukon.
+		 * 17 (Word 1 Nack)							CCU receives a partial return message from any 2-way device.
+		 * 74 (Route Failed on CCU Queue Entry)		Essentially the same as an error 17.  CCU receives a partial return message from any 2-way device.  The only difference being that a 74 will be the 							error generated for a queued message and an error 17 will be generated for a non-queued message.
+		 * 31 (Timeout reading from port)			This is a communications error between Yukon and the CCU.  Not a carrier error.
+		 * 32 (Sequence Reject Frame Received)		This is a communications error between Yukon and the CCU.  Not a carrier error.
+		 * 33 (Framing error)						This is a communications error between Yukon and the CCU.  Not a carrier error.
+		 * 65 (No DCD on return message)			This is a communications error between Yukon and the CCU.  Not a carrier error.
+		 *
+		 * The following codes constitute and OUTAGE 
+		 * 20 (Word 1 Nack Padded)					No return message received at the CCU.  Failed 2-way device.
+		 * 57 (E-Word Received in Return Message)	This message only occurs in systems containing repeaters.  The repeater did not receive an expected return message from a 2-way device.							Failed 2-way device.
+		 * 72 (DLC Read Timeout On CCU Queue Entry)	Essentially the same as an error 20.  No return message received.  The only difference is that a 72 will be the error code during a queued message and 						an error 20 will be the error for a non-queued message.
+		*/
+		if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
+		{
+	        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ") " + returnMsg.getResultString());
+			ode.setOutageEventType(OutageEventType.Outage);
+			//ode.setErrorString("Ping failed");	//Not Valid (info received from Luis @ Milsoft
+		}
+	    else if( returnMsg.getStatus() != 0)
+		{
+	        CTILogger.info("OutageDetectionEvent: Communication Failure (" + keyValue + ") " + returnMsg.getResultString());
+	        //TODO OutageEventType.UNKNOWN
+			ode.setOutageEventType(OutageEventType.Outage);
+		}
+	    else
+	    {
+	        CTILogger.info("OutageDetectionEvent: Ping Successful (" + keyValue + ")");
+	    	ode.setOutageEventType(OutageEventType.Restoration);
+	    }
+	    
+	    event.setOutageDetectionEvent(ode);
+		ODEventNotification(event);
+
+		getODEventsMap().remove(new Long(event.getPilMessageID()));        
+    }
+
+    /**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @param meterNumbers
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
@@ -254,6 +296,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
             port = service.getOA_ODSoap();
 	        SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 			((OA_ODSoap_BindingStub)port).setHeader(header);
+			((OA_ODSoap_BindingStub)port).setTimeout(10000);	//should respond within 10 seconds, right?
 			//Ping the URL make sure it exists and we aren't reading meters for the fun of it..
 			ArrayOfErrorObject errObjects = port.pingURL();
 	
@@ -298,8 +341,13 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			err.setErrorString("OA_OD service is not defined for company name: " + vendor.getCompanyName()+ ".  initiateOutageDetection cancelled.");
 			errorObjects.add(err);
 			CTILogger.info(err.getErrorString());
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+		} catch (AxisFault e) {
+			ErrorObject err = new ErrorObject();
+			err.setEventTime(new GregorianCalendar());
+			err.setErrorString(e.getFaultReason() + " :  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
+			errorObjects.add(err);
+		    CTILogger.info(err.getErrorString());
+		}catch (RemoteException e) {
 			ErrorObject err = new ErrorObject();
 			err.setEventTime(new GregorianCalendar());
 			err.setErrorString("Could not find a target service to invoke!  targetService: " + endpointURL + " companyName: " + vendor.getCompanyName() + ".  initiateOutageDetection cancelled.");
@@ -387,6 +435,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org", "MultiSpeakMsgHeader", new YukonMultispeakMsgHeader());
 			((OA_ODSoap_BindingStub)port).setHeader(header);
+			((OA_ODSoap_BindingStub)port).setTimeout(10000);	//should respond within 10 seconds, right?
 	
 			OutageDetectionEvent[] odEventArray = new OutageDetectionEvent[1];
 			odEventArray[0] = odEvent.getOutageDetectionEvent();
@@ -435,8 +484,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			int port = 1510;
 			try
 			{
-				host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-				port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+			    host = RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
+			    port = Integer.parseInt(RoleFuncs.getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
 			}
 			catch( Exception e)
 			{
@@ -457,7 +506,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 			
 			try
 			{
-				connToDispatch.connectWithoutWait();
+			    connToDispatch.connectWithoutWait();
 			}
 			catch( Exception e ) 
 			{
