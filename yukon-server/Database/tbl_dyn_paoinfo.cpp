@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/04 19:04:56 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/10/17 17:20:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,15 @@ const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval     = "mct lo
 const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2    = "mct load profile interval 2";
 const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval = "mct ied load profile rate";
 const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
+
+const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
+const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
+const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset         = "mct time zone offset";
+const string CtiTableDynamicPaoInfo::_key_mct_over_v_threshold         = "mct over v threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_under_v_threshold        = "mct under v threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_demand_interval          = "mct demand interval";
+const string CtiTableDynamicPaoInfo::_key_mct_voltage_lp_interval      = "mct voltage lp interval";
+const string CtiTableDynamicPaoInfo::_key_mct_voltage_demand_interval  = "mct voltage demand interval";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();

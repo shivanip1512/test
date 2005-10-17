@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/10/04 19:05:29 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/10/17 17:20:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,14 @@ public:
         Key_MCT_LoadProfileInterval,
         Key_MCT_LoadProfileInterval2,
         Key_MCT_IEDLoadProfileInterval,
+        Key_MCT_DSTStartTime,
+        Key_MCT_DSTEndTime,
+        Key_MCT_TimeZoneOffset,
+        Key_MCT_UnderVoltageThreshold,
+        Key_MCT_OverVoltageThreshold,
+        Key_MCT_DemandInterval,
+        Key_MCT_VoltageLPInterval,
+        Key_MCT_VoltageDemandInterval,
         Key_VerificationSequence,
         //  make sure to add any new enum values to the string map
     };
@@ -66,6 +74,15 @@ protected:
     static const string _key_mct_loadprofile_interval2;
     static const string _key_mct_ied_loadprofile_interval;
     static const string _key_verification_sequence;
+
+    static const string _key_mct_dst_start_time;
+    static const string _key_mct_dst_end_time;
+    static const string _key_mct_time_zone_offset;
+    static const string _key_mct_over_v_threshold;
+    static const string _key_mct_under_v_threshold;
+    static const string _key_mct_demand_interval;
+    static const string _key_mct_voltage_lp_interval;
+    static const string _key_mct_voltage_demand_interval;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
