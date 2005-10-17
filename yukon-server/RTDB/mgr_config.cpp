@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/17 16:47:04 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/17 20:46:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,15 +59,15 @@ void CtiConfigManager::refreshConfigurations()
         selector << typeTbl["partid"]
             << typeTbl["value"]
             << typeTbl["valueid"]
-            << typeTbl["rowid"];
+            << typeTbl["configrowid"];
     
         selector.from(typeTbl);
 
         RWDBTable confTbl = db.table(getConfigTypeTableName() );
     
         selector << confTbl["partid"]
-            << confTbl["name"]
-            << confTbl["type"];
+            << confTbl["partname"]
+            << confTbl["parttype"];
     
         selector.from(confTbl);
        
@@ -82,7 +82,7 @@ void CtiConfigManager::refreshConfigurations()
             RWCString tempString,value,valueid;
     
             rdr[confTbl["partid"]]>>partID;
-            rdr["type"] >>tempString;
+            rdr["parttype"] >>tempString;
             type = resolveConfigType(tempString);
     
             rdr["value"] >> value;
@@ -124,7 +124,7 @@ void CtiConfigManager::refreshConfigurations()
     
         selector << typeTbl["configid"]
             << typeTbl["partid"]
-            << typeTbl["rowid"];
+            << typeTbl["configrowid"];
     
         selector.from(typeTbl);
        
