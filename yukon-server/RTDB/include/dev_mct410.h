@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/10/17 16:51:41 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/10/17 16:59:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -284,7 +284,7 @@ public:
 
     int executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
     int executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
-    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
+//    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
