@@ -34,6 +34,7 @@ public final class FileFormatTypes {
 	public static final int NCDC_HANDHELD = 15;
 	public static final int NISC_TOU_KVARH = 16;
 	public static final int SEDC_yyyyMMdd = 17;
+	public static final int ATS = 18;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -51,6 +52,7 @@ public final class FileFormatTypes {
 	public static final String NCDC_HANDHELD_STRING = "NCDC-Handheld";
 	public static final String NISC_TOU_KVARH_STRING = "NISC TOU (kVarH)";
 	public static final String SEDC_yyyyMMdd_STRING = "SEDC (yyyyMMdd)";
+	public static final String ATS_STRING = "ATS";
 	
 	private static int[] validFormatIDs = null;
 	private static String[] validFormatTypes = null;
@@ -191,7 +193,8 @@ public static synchronized boolean retrieveFileFormats()
                 		SEDC_5_4,
                 		NISC,
                 		NISC_NCDC,
-                		NCDC_HANDHELD
+                		NCDC_HANDHELD,
+                		ATS
                 };
             }
         }
@@ -217,7 +220,8 @@ public static synchronized boolean retrieveFileFormats()
 	            		SEDC_5_4_STRING,
 	            		NISC_STRING,
 	            		NISC_NCDC_STRING,
-	            		NCDC_HANDHELD_STRING
+	            		NCDC_HANDHELD_STRING,
+	            		ATS_STRING
 	            };
 	        }
 	    }

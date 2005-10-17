@@ -17,7 +17,9 @@ public final static FileFormatBase createFileFormat(int type)
 	{
 		case FileFormatTypes.SEDC:
 			return new SEDCFormat();
-		
+			
+		case FileFormatTypes.ATS:
+			return new ATSFormat();		
 		case FileFormatTypes.CADP:
 			return new CADPFormat();
 
