@@ -17,7 +17,7 @@ public final class VersionTools
 	
 	public static String yukonVersion = null;
 	private static CTIDatabase db_obj = null;
-		
+	
 
 	//we need a set of query strings for backward compatability
 	// since this is used in DBUpdates that get executed before
@@ -129,7 +129,8 @@ public synchronized static CTIDatabase getDatabaseVersion()
 public static boolean starsExists()
 {
 	//case sensitive in Oracle (very important)
-	return VersionTools.tableExists("CUSTOMERACCOUNT");
+	//this is not a save check by itself anymore
+	return VersionTools.tableExists("CUSTOMERACCOUNT") && checkForStarsActivity();
 }
 
 public static void main ( String[] args )
@@ -207,5 +208,36 @@ public synchronized final static java.lang.String getYUKON_VERSION()
 	}
 	
 	return yukonVersion;
+}
+
+public static boolean checkForStarsActivity()
+{
+	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	
+	boolean hasNonDefaultEC = false;
+	java.sql.PreparedStatement preparedStatement = null;
+	java.sql.ResultSet rset = null;
+	
+	if( conn == null )
+		throw new IllegalArgumentException("Database connection should not be (null)");
+	
+	try
+	{
+		String statement = ("SELECT ENERGYCOMPANYID FROM ENERGYCOMPANY WHERE ENERGYCOMPANYID > -1");
+
+		preparedStatement = conn.prepareStatement( statement );
+		rset = preparedStatement.executeQuery();
+
+		if(rset != null && rset.next() )
+		{
+			hasNonDefaultEC = true;
+		}
+	}
+	catch( java.sql.SQLException e )
+	{
+		e.printStackTrace();
+	}
+	
+	return hasNonDefaultEC;
 }
 }
