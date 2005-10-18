@@ -36,7 +36,7 @@
 						required="true" maxlength="64" />
 			<f:verbatim><br/></f:verbatim>
 			<h:selectBooleanCheckbox id="disableSched" value="#{capControlForm.PAOBase.disabled}"/>
-			<x:outputLabel for="disableSched" value="Disable" title="Disable this item and prohibit usage" />
+			<x:outputLabel for="disableSched" value="Disable" title="Do not allow this schedule to run in the future" />
 		</h:panelGroup>
 
 

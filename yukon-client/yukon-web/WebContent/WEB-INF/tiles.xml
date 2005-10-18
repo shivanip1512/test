@@ -31,6 +31,10 @@
 		<put name="content" type="page" value="/WEB-INF/pages/cbc/cbcWizard.jsp"/>
     </definition>
 
+    <definition name="paoSchedList.tiles" extends="cbcEditor.tiles">
+        <put name="title"  value="CapControl Schedule(s)" />
+		<put name="content" type="page" value="/WEB-INF/pages/cbc/cbcScheduleList.jsp"/>
+    </definition>
 
 
 

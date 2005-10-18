@@ -4,7 +4,7 @@
 
 <f:subview id="cbcSchedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}" >
 
-	<h:panelGrid id="cbcBody" columns="1" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
+	<h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
 		<h:column>
 		    <f:verbatim><br/><fieldset><legend>Schedule</legend></f:verbatim>
@@ -13,15 +13,37 @@
 			<x:outputLabel for="interval" value="Repeat Interval: " title="How often this schedule will execute" />
 			<x:selectOneMenu id="interval" value="#{capControlForm.PAOBase.intervalRate}" >
 				<f:selectItems value="#{capControlForm.timeInterval}"/>
+				<f:selectItem itemLabel="2 days" itemValue="17280" />
+				<f:selectItem itemLabel="5 days" itemValue="432000" />
+				<f:selectItem itemLabel="7 days" itemValue="604800" />
 			</x:selectOneMenu>
 
 
 			<f:verbatim><br/></f:verbatim>
-            <h:outputText id="nextRunTime" value="Next Run Time: "/>
+            <h:outputText id="nextRunTime" value="Next Run Time: " title="The next time this shedule will run" />
             <x:inputDate id="nextRunTimeVal" value="#{capControlForm.PAOBase.nextRunTime}"
             	type="both" popupCalendar="true" />
 
 
+
+			<f:verbatim></fieldset></f:verbatim>
+
+		</h:column>
+
+
+		<h:column>
+		    <f:verbatim><br/><fieldset><legend>Info</legend></f:verbatim>
+
+			<f:verbatim><br/></f:verbatim>
+            <h:outputText id="lastRunTime" value="Last Run Time: " title="The last time this schedule ran" />
+			<h:outputText id="lastRunTimeVal" value="#{capControlForm.PAOBase.lastRunTime}"
+					rendered="#{capControlForm.PAOBase.lastRunTime.time > selLists.startOfTime}"
+					styleClass="staticLabel" >
+				<f:convertDateTime type="both" dateStyle="short" />
+			</h:outputText>
+			<h:outputText id="lastRunTimeDash" value="---"
+					styleClass="staticLabel"
+					rendered="#{capControlForm.PAOBase.lastRunTime.time <= selLists.startOfTime}" />
 
 
 

@@ -28,6 +28,7 @@
     </managed-bean>
 
 
+
 	
 	<!-- Database specific (DBPersistent) managed beans -->
     <managed-bean>
@@ -48,6 +49,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
+    <managed-bean>
+        <managed-bean-name>paoScheduleForm</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.editor.PAOScheduleForm</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
 
 
 
@@ -74,13 +80,13 @@
 			<to-view-id>/editor/cbcBase.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
-	
+
 	<navigation-rule>
-		<from-view-id>/page2.jsp</from-view-id>
 		<navigation-case>
-			<from-outcome>back</from-outcome>
-			<to-view-id>/helloWorld.jsp</to-view-id>
+			<from-outcome>paoSchedList</from-outcome>
+			<to-view-id>/editor/paoSchedListBase.jsp</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+
 
 </faces-config>

@@ -72,12 +72,12 @@
 			<input type="hidden" name="value">
                 <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">Substation</a>
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">CapBank</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">CBC</a> 
-					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(DBEditorTypes.PAO_SCHEDULE)%>');">Schedule</a> 
-<!--					<a href="#" class="submenuLink" onclick="wizardPost('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">Point</a>  -->
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">Substation</a>
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">CapBank</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">CBC</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(DBEditorTypes.PAO_SCHEDULE)%>');">Schedule</a> 
+<!--					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">Point</a>  -->
 				  </div>
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorNav.getEditorURL(DBEditorNav.EDITOR_CAPCONTROL)%>');">Edit</a>
@@ -94,6 +94,7 @@
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', 'type', '<%=CBCWebUtils.TYPE_ORPH_CBCS%>')">Orphaned CBCs</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getEditorURL(DBEditorNav.LIST_SCHEDULE)%>');">Schedules</a> 
 
 					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 

@@ -14,6 +14,7 @@ public interface DBEditorTypes {
 	public final static int EDITOR_POINT = 1;
 	public final static int EDITOR_CAPCONTROL = 2;
 	public final static int EDITOR_SCHEDULE = 3;
+	public final static int LIST_SCHEDULE = 4;
 
 	//delete types
 	public final static int DELETE_PAO = 100;
@@ -22,5 +23,6 @@ public interface DBEditorTypes {
 
 	//misc types
 	public final static int PAO_SCHEDULE = 0 + TypeBase.MISC_OFFSET;
+
 
 }

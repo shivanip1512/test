@@ -27,13 +27,27 @@ public class CtiNavActionListener implements ActionListener {
 			VariableResolver vr = context.getApplication().getVariableResolver();
 			CtiNavObject ctiNav = (CtiNavObject)vr.resolveVariable(context, "CtiNavObject");
 
-			if( ctiNav != null )
-				context.getExternalContext().redirect( ctiNav.getModuleExitPage() );
+			if( ctiNav != null ) {
+				
+				String red = "";
+
+				//redirect to our module redirect page first, if it set, else
+				// we return to the module exit page
+				if( ctiNav.getModuleRedirectPage() != null ) {
+					red = ctiNav.getModuleRedirectPage();
+					ctiNav.setModuleRedirectPage( null );
+				}
+				else {
+					red = ctiNav.getModuleExitPage();
+				}
+
+				context.getExternalContext().redirect( red );
+			}
 			else
 				CTILogger.warn("CtiNavObject not found in session, ignoring redirect request" );
 
 
-			//remove any & all session variables that are not longer needed
+			//remove any & all session variables that are no longer needed
 			JSFParamUtil.removeJSFVar("capControlForm");
 			JSFParamUtil.removeJSFVar("ptEditorForm");
 			JSFParamUtil.removeJSFVar("paoDeleteForm");

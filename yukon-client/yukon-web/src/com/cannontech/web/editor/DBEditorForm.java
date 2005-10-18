@@ -48,11 +48,16 @@ public abstract class DBEditorForm
 	/**
 	 * Initializes the dbpersistent object from the database
 	 */
-	protected abstract void initItem();
+	protected void initItem() {
+		//does something only in subclasses
+	}
+	
 	/**
 	 * Updates the content of the current dbpersistent object into the database
 	 */
-	public abstract void update();
+	public void update() {
+		//does something only in subclasses
+	}
 
 
 	/**

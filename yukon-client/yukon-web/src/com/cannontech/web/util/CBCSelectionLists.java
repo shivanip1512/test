@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -146,6 +147,15 @@ public class CBCSelectionLists {
 		}
 		
 		return selItems;
+	}
+
+	/**
+	 * Returns the valid start of time for Yukon
+	 * @return
+	 */
+	public long getStartOfTime() {
+
+		return CtiUtilities.get1990GregCalendar().getTime().getTime();
 	}
 
 	/**

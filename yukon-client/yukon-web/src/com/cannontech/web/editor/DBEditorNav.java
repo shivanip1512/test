@@ -60,6 +60,9 @@ public class DBEditorNav implements DBEditorTypes {
 			case DBEditorNav.EDITOR_SCHEDULE:
 				return "/editor/cbcBase.jsf?type=" + DBEditorNav.EDITOR_SCHEDULE;
 			
+			case DBEditorNav.LIST_SCHEDULE:
+				return "/editor/paoSchedListBase.jsf";
+
 			default:
 				CTILogger.info("Uknown EditorType ("+editorType+"), redirecting to same page");
 				return "";

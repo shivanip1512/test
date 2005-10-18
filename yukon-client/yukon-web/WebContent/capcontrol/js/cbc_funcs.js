@@ -533,7 +533,7 @@ function deletePost( href )
 // -------------------------------------------
 //Simple post for a Wizard->Create action
 // -------------------------------------------
-function wizardPost( href )
+function post( href )
 {
 	window.location = href;
 }

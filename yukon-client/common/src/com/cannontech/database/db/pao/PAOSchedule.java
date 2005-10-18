@@ -2,6 +2,7 @@ package com.cannontech.database.db.pao;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -36,15 +37,23 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 
 
 	private static final String ALL_SCHEDULES_SQL = 
-			"SELECT ExclusionID, PaoID, ExcludedPaoID, PointID, Value, FunctionID," +
-			"FuncName, FuncRequeue, FuncParams " +
-			"FROM " + TABLE_NAME; 
+			"select ScheduleID, NextRunTime, LastRunTime, IntervalRate, " +
+			"ScheduleName, Disabled FROM " + TABLE_NAME +
+			" order by ScheduleName"; 
 
 	/**
 	 * default constructor.
 	 */
 	public PAOSchedule() {
 		super();
+	}
+
+	/**
+	 * default constructor.
+	 */
+	public PAOSchedule( Integer schedID ) {
+		this();
+		setScheduleID( schedID );
 	}
 
 	/**
@@ -72,6 +81,9 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 	{
 		Object values[] = { getScheduleID() };
 	
+		//delete any potential foreign keys to this object
+		delete( "PAOScheduleAssignment", "ScheduleID", getScheduleID() );
+		
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 	}
 	
@@ -79,35 +91,34 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 	/**
 	 * This method was created in VisualAge.
 	 */
-	public static final PAOSchedule[] getAllPAOSchedules( java.sql.Connection conn ) throws java.sql.SQLException
+	public static final PAOSchedule[] getAllPAOSchedules()
 	{
 		Vector tmpList = new Vector();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
+		java.sql.Connection conn = null;
 	
 		try
-		{		
-			if( conn == null )
-			{
-				throw new IllegalStateException("Database connection should not be null.");
+		{
+			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+
+			pstmt = conn.prepareStatement( ALL_SCHEDULES_SQL );				
+			rset = pstmt.executeQuery();							
+	
+			while( rset.next() ) {
+				PAOSchedule item = new PAOSchedule();
+
+				item.setScheduleID( new Integer(rset.getInt(1)) );
+				item.setNextRunTime( rset.getDate(2) );
+				item.setLastRunTime( rset.getDate(3) );
+				item.setIntervalRate( new Integer(rset.getInt(4)) );
+				item.setScheduleName( new String(rset.getString(5)) );
+				item.setDisabled(
+					CtiUtilities.trueChar.charValue() == rset.getString(6).charAt(0) );			
+
+				tmpList.add( item );
 			}
-			else
-			{
-				pstmt = conn.prepareStatement( ALL_SCHEDULES_SQL );				
-				rset = pstmt.executeQuery();							
-		
-				while( rset.next() ) {
-					PAOSchedule item = new PAOSchedule();
-
-					item.setNextRunTime( rset.getDate(1) );
-					item.setLastRunTime( rset.getDate(2) );
-					item.setIntervalRate( new Integer(rset.getInt(3)) );
-					item.setScheduleName( new String(rset.getString(4)) );
-
-					tmpList.add( item );
-				}
 						
-			}		
 		}
 		catch( java.sql.SQLException e ) {
 			CTILogger.error( e.getMessage(), e );
@@ -115,7 +126,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 		finally {
 			try {
 				if( pstmt != null ) pstmt.close();
-				if( rset != null ) rset.close();
+				if( conn != null ) conn.close();
 			} 
 			catch( java.sql.SQLException e2 ) {
 				CTILogger.error( e2.getMessage(), e2 );//something is up
@@ -213,7 +224,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 			setScheduleName( (String)results[3] );
 			
 			setDisabled(
-				CtiUtilities.trueChar.charValue() == results[3].toString().charAt(0) );			
+				CtiUtilities.trueChar.charValue() == results[4].toString().charAt(0) );			
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");

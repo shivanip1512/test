@@ -20,7 +20,6 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
 
 import com.cannontech.database.TransactionException;
