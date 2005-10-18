@@ -40,6 +40,8 @@ import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.*;
 import com.cannontech.roles.yukon.BillingRole;
+import com.cannontech.database.data.point.PointTypes;
+
 
 public class DatabaseEditor
 	implements
@@ -393,7 +395,7 @@ public void actionPerformed(ActionEvent event)
 				f.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
 				f.repaint();
 			}
-			
+
 		}
 		catch(Exception e)
 		{
@@ -828,9 +830,21 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 
 			//always do this
 			generateDBChangeMsg( selectedObject, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			
+			//for some reason, the new 410 points never show up after a ChangeType
+			if(com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(newType))
+			{
+				DBChangeMsg ptChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
+					0,
+					DBChangeMsg.CHANGE_POINT_DB,
+					DBChangeMsg.CAT_POINT, 
+					PointTypes.getType(PointTypes.ACCUMULATOR_DEMAND),
+					DBChangeMsg.CHANGE_TYPE_ADD );
+				getConnToDispatch().write(ptChange);
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+				getTreeViewPanel().refresh();
+			}
 
-
-			//getTreeViewPanel().refresh();
 			getTreeViewPanel().selectObject(selectedObject);
 
 			//make sure there isnt already an editor frame showing for this node
@@ -843,7 +857,6 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 				if (current != null)
 					current.fireCancelButtonPressed();
 			}
-			
 			
 			String messageString = selectedObject + " successfully changed Type.";
 			fireMessage(new MessageEvent(this, messageString));

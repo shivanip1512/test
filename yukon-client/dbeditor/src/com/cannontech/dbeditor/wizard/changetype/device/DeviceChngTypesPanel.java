@@ -25,11 +25,25 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import java.util.Vector;
+import com.cannontech.database.data.device.MCT310ID;
+import com.cannontech.database.data.device.MCT410IL;
+import com.cannontech.database.data.device.MCTBase;
+
 
 public class DeviceChngTypesPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.ListSelectionListener {
 	
 	private DeviceBase currentDevice = null;	
 	private DBPersistent extraObj = null;
+	private Vector extra410Objs = null;
+	boolean loadProfileExists = false;
+	boolean blinkCountExists = false;
+	boolean totalKWhExists = false;
+	boolean isDisconnect = false;
 
 	private static final int DEVICE_CATEGORIES[] =
    {
@@ -347,7 +361,6 @@ public Object getValue(Object val)
 {
 	String type = (String) getJListDevices().getSelectedValue();
 
-
 	if (val == null)
 	{
 		return new Integer( PAOGroups.getDeviceType(type) );
@@ -379,8 +392,6 @@ public Object getValue(Object val)
 			return val;
 		}
 
-
-
 		//create a brand new DeviceBase object
 		val = DeviceFactory.createDevice( PAOGroups.getDeviceType(type) );
 		
@@ -401,8 +412,6 @@ public Object getValue(Object val)
 		((DeviceBase) val).getPAOExclusionVector().removeAllElements();
 		((DeviceBase) val).getPAOExclusionVector().addAll(
 			((DeviceBase) oldDevice).getPAOExclusionVector() );
-
-
 
 		if( val instanceof CarrierBase
 			 && oldDevice instanceof CarrierBase )
@@ -441,7 +450,6 @@ public Object getValue(Object val)
 					((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup() );			 			
 		}
 
-
 		if( val instanceof TwoWayDevice
 	 	    && oldDevice instanceof TwoWayDevice )
 		{
@@ -454,48 +462,212 @@ public Object getValue(Object val)
 			((CapBankController) val).setDeviceCBC(((CapBankController)oldDevice).getDeviceCBC());
 		}
 		
-		//execute the actual command in the database 
-		try
+		if( val instanceof MCT410IL)
 		{
-			Transaction t2 =
-				Transaction.createTransaction(
-					Transaction.ADD_PARTIAL,
-					((DBPersistent) val));
-
-			val = t2.execute();
-
-		}
-		catch (TransactionException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-
-		}
-
-
-		//execute the actual command in the database to create extra objects 
-		try
-		{
-			if( extraObj != null )  {
-				Transaction.createTransaction(
-					Transaction.INSERT,
-					((DBPersistent) extraObj)).execute();
+			Integer[] insertedIDs = new Integer[10];
 			
-				SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
-				multi.addDBPersistent( (DBPersistent)val );
-				multi.addDBPersistent( extraObj );
-				multi.setOwnerDBPersistent( (DBPersistent)val );
-				
-				return multi;
+			if(loadProfileExists)
+			{
+				StringBuffer lp = new StringBuffer(((MCTBase)oldDevice).getDeviceLoadProfile().getLoadProfileCollection());
+				lp.delete(1, 4);
+				lp.append("NNN");
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileCollection(lp.toString());
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(((MCTBase)oldDevice).getDeviceLoadProfile().getLoadProfileDemandRate());
 			}
+			else
+			{
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileCollection("NNNN");
+				((MCT410IL)val).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(3600));
+			}
+			
+			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdRate(new Integer(3600));
+			((MCT410IL)val).getDeviceLoadProfile().setVoltageDmdInterval(new Integer(60));
+			
+			try
+			{
+				for(int j = 0; j < extra410Objs.size(); j++)
+				{
+					Transaction.createTransaction(Transaction.UPDATE,
+						((DBPersistent) extra410Objs.elementAt(j))).execute();
+				}
+			
+				if(!totalKWhExists)
+				{
+					Transaction.createTransaction(Transaction.INSERT, 
+						PointFactory.createPulseAccumPoint(
+						   "kWh",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_TOTAL_KWH,
+						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
+						   0.1) ).execute();
+				}
+				
+				if(!blinkCountExists)	
+				{   
+					Transaction.createTransaction(Transaction.INSERT, 
+						PointFactory.createPulseAccumPoint(
+						   "Blink Count",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_BLINK_COUNT,
+						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
+						   0.1) ).execute();
+				}
+				
+				if(!loadProfileExists)
+				{
+					Transaction.createTransaction(Transaction.INSERT,  
+						PointFactory.createDmdAccumPoint(
+						   "kW-LP",
+						   ((DeviceBase) val).getDevice().getDeviceID(),
+						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						   0.1) ).execute();
+				}
+				
+				Transaction.createTransaction(Transaction.INSERT,  
+					PointFactory.createDmdAccumPoint(
+						"Voltage-LP",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+		   	
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Peak kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Peak Demand",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();			
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Max Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Frozen Min Volts",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"kW",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_KW_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_KW,
+						0.1) ).execute();
+			
+				Transaction.createTransaction(Transaction.INSERT, 
+					PointFactory.createDmdAccumPoint(
+						"Voltage",
+						((DeviceBase) val).getDevice().getDeviceID(),
+						new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
+						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
+						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
+						0.1) ).execute();
+				
+				Transaction t2 =
+					Transaction.createTransaction(
+						Transaction.ADD_PARTIAL,
+						((DBPersistent) val));
+						val = t2.execute();
+						
+				
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 
+			}	
+			
+			return val;
 		}
-		catch (TransactionException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-
+		
+		else
+		{//execute the actual command in the database 
+			try
+			{
+				Transaction t2 =
+					Transaction.createTransaction(
+						Transaction.ADD_PARTIAL,
+						((DBPersistent) val));
+	
+				val = t2.execute();
+	
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	
+			}
+		
+			//execute the actual command in the database to create extra objects 
+			try
+			{
+				if( extraObj != null )  {
+					Transaction.createTransaction(
+						Transaction.INSERT,
+						((DBPersistent) extraObj)).execute();
+				
+					SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
+					multi.addDBPersistent( (DBPersistent)val );
+					multi.addDBPersistent( extraObj );
+					multi.setOwnerDBPersistent( (DBPersistent)val );
+					
+					return multi;
+				}
+	
+			}
+			catch (TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	
+			}
+	
+			return val;
 		}
-
-		return val;
 	}
 
 }
@@ -608,6 +780,11 @@ private void listDeviceType_Selection( javax.swing.event.ListSelectionEvent ev )
 	//clear our text pane every time
 	getJTextPaneNotes().setText("");
 	
+	loadProfileExists = false;
+	blinkCountExists = false;
+	totalKWhExists = false;
+	isDisconnect = false;
+	
 	Object selObj = getJListDevices().getSelectedValue();
 	
 	if( selObj != null ) {
@@ -686,38 +863,101 @@ private void handleMCT_310IL()
 
 private void handleMCT_410IL()
 {
+	getJTextPaneNotes().setText( "Default MCT410 points will be added." );
 	
+	/*
+	 * Now required to do many special things for 310 to 410 jumps.
+	 * Multipliers need to be changed, handle the disconnects, existing lp points, etc.
+	 */
+
 	LitePoint[] ltPoints = PAOFuncs.getLitePointsForPAObject( 
 					getCurrentDevice().getPAObjectID().intValue() );
 	
-	for( int i = 0; i < ltPoints.length; i++ ) {
+	extra410Objs = new Vector(ltPoints.length);
+	
+	for( int i = 0; i < ltPoints.length; i++ ) 
+	{
 		LitePoint point = ltPoints[i];	
 
 		if( point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ){
-
-			getJTextPaneNotes().setText(
+			 && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND )
+		{
+			/*getJTextPaneNotes().setText(
 				"A Load Profile Demand point will NOT be " +
 				"generated for this change type since one already exists." );
+			extraObj = null;*/
 			
-			extraObj = null;
-			return;
+			AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+			try
+			{
+				alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+				alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+				extra410Objs.addElement(alteredPoint);
+				loadProfileExists = true;
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The current LP point multiplier will be adjusted." );
+			}
+			catch (com.cannontech.database.TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The Load Profile Demand point could NOT be " +
+					"correctly altered for this change type.  Multiplier will be INCORRECT." );
+			}
+
+		}
+		if( point.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
+			 && point.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH )
+		{
+			AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+			try
+			{
+				alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+				alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+				extra410Objs.addElement(alteredPoint);
+				totalKWhExists = true;
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The current Total kWh point multiplier will be adjusted." );
+			}
+			catch (com.cannontech.database.TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The Total KWH point could NOT be " +
+					"correctly altered for this change type.  Multiplier will be INCORRECT." );
+			}
+		}
+		if( point.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
+			 && point.getPointOffset() == PointTypes.PT_OFFSET_BLINK_COUNT )
+		{
+			AccumulatorPoint alteredPoint = (AccumulatorPoint)LiteFactory.createDBPersistent(point);
+			try
+			{
+				alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
+				alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+				extra410Objs.addElement(alteredPoint);
+				blinkCountExists = true;
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The current Blink Count point multiplier will be adjusted." );
+			}
+			catch (com.cannontech.database.TransactionException e)
+			{
+				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+					"\n --The Blink Count point could NOT be " +
+					"correctly altered for this change type.  Multiplier will be INCORRECT." );
+			}
 		}
 	}
-	
-	getJTextPaneNotes().setText(
-		"A Load Profile Demand point will be " +
-		"generated for this change type" );
-
-	extraObj = 
-		 PointFactory.createDmdAccumPoint(
-			"kW-LP",
-			getCurrentDevice().getPAObjectID(),
-			new Integer( PointFuncs.getMaxPointID() + 1 ),
-			PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
-			PointUnits.UOMID_KW,
-			.1 );
-
+		
+	if(currentDevice instanceof MCT310ID)
+	{
+		isDisconnect = true;
+		
+		getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 
+			"\n --When changed to a 410, this device will REQUIRE a disconnect address. " );
+	}
+		
 }
 
 private void handleMCT_470()
@@ -823,9 +1063,7 @@ private void setList(int deviceClass, String type)
 		}
 
 	}
-
 }
-
 
 /**
  * This method was created in VisualAge.
@@ -836,17 +1074,14 @@ public void setValue(Object val )
 	
 }
 
-
 public void valueChanged( javax.swing.event.ListSelectionEvent ev )
 {
 	if( !ev.getValueIsAdjusting() )  // make sure we have the last event in a
 	{												// sequence of events.			
 	   if( ev.getSource() == getJListDevices() )
 	      listDeviceType_Selection( ev );
-	}
-	
+	}	
 }
-
 
 	/**
 	 * Returns the currentDevice.

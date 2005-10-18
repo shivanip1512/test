@@ -11,6 +11,7 @@ public class DeviceChangeTypeWizardPanel extends WizardPanel
 {
 	private com.cannontech.database.db.DBPersistent changeObject = null;
 	private DeviceChngTypesPanel deviceTypesPanel;
+	private AddDisconnectOptionPanel addDisconnectOptionPanel;
 
 /**
  * DeviceWizardPanel constructor comment.
@@ -58,6 +59,13 @@ protected DeviceChngTypesPanel getDeviceTypesPanel() {
 		
 	return deviceTypesPanel;
 }
+
+protected AddDisconnectOptionPanel getAddDisconnectOptionPanel() {
+	if( addDisconnectOptionPanel == null )
+		addDisconnectOptionPanel = new AddDisconnectOptionPanel();
+		
+	return addDisconnectOptionPanel;
+}
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -79,9 +87,13 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
     com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
 {
 
-    if (currentInputPanel == null) {
-    	  
-        return getDeviceTypesPanel();
+    if (currentInputPanel == null) 
+    {
+    	return getDeviceTypesPanel();
+    }
+    else if(currentInputPanel == getDeviceTypesPanel() && getDeviceTypesPanel().isDisconnect)
+    {
+    	return getAddDisconnectOptionPanel();
     }
     else
         throw new Error(getClass() + "::" + "getNextInputPanel() - Could not determine next DataInputPanel");
@@ -91,8 +103,14 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
  */
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel)
 {
-    if( currentPanel == getDeviceTypesPanel() )
-        return true;
+    if( currentPanel == getDeviceTypesPanel() && !getDeviceTypesPanel().isDisconnect)
+    {
+    	return true;
+    }
+    else if(currentPanel == getAddDisconnectOptionPanel())
+    {
+    	return true;
+    }
     else
     {
         return false;
