@@ -20,7 +20,7 @@ import com.cannontech.stars.util.StarsUtils;
 public class StarsYukonUser {
 
 	private LiteYukonUser yukonUser = null;
-	private int energyCompanyID = 0;
+	private int energyCompanyID = -1;
 	private LiteCustomer customer = null;
 	
 	private StarsYukonUser(LiteYukonUser user) {
