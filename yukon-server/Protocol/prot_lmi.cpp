@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/10/17 19:27:53 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/10/18 16:34:06 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -519,6 +519,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
     RWTime NowTime;
     RWDate NowDate;
 
+    if( gConfigParms.getValueAsULong("LMI_DEBUGLEVEL", 0) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(slog);
         slog << RWTime() << " **** prot_lmi generating with command = " << _command << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
