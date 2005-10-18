@@ -470,6 +470,144 @@ insert into YukonListEntry values (131, 100, 0, 'kW from kVA/kVAr', 0);
 insert into YukonListEntry values (132, 100, 0, 'Modulo Divide', 0);
 insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
 
+alter table DynamicTags modify UserName varchar2(64) not null;
+alter table DynamicPointAlarming modify UserName varchar2(64) not null;
+alter table TagLog modify UserName varchar2(64) not null;
+alter table SYSTEMLOG modify UserName varchar2(64) not null;
+
+create table ConfigurationName  (
+   ConfigID             NUMBER                          not null,
+   ConfigName           VARCHAR2(40)                    not null
+);
+alter table ConfigurationName
+   add constraint PK_CONFIGURATIONNAME primary key (ConfigID);
+create unique index AK_CONFNM_NAME on ConfigurationName (
+   ConfigName ASC
+);
+
+create table DeviceConfiguration  (
+   DeviceID             NUMBER                          not null,
+   ConfigID             NUMBER                          not null
+);
+alter table DeviceConfiguration
+   add constraint PK_DEVICECONFIGURATION primary key (DeviceID);
+alter table DeviceConfiguration
+   add constraint FK_DevConf_ConfName foreign key (ConfigID)
+      references ConfigurationName (ConfigID);
+alter table DeviceConfiguration
+   add constraint FK_DevConf_YukPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID);
+
+create table ConfigurationPartsName  (
+   PartID               NUMBER                          not null,
+   PartName             VARCHAR2(40)                    not null,
+   PartType             VARCHAR2(40)                    not null
+);
+alter table ConfigurationPartsName
+   add constraint PK_CONFIGURATIONPARTSNAME primary key (PartID);
+create unique index AK_CONFPTNM_NAME on ConfigurationPartsName (
+   PartName ASC
+);
+
+create table ConfigurationParts  (
+   ConfigID             NUMBER                          not null,
+   PartID               NUMBER                          not null,
+   ConfigRowID          NUMBER                          not null
+);
+alter table ConfigurationParts
+   add constraint PK_CONFIGURATIONPARTS primary key (ConfigRowID);
+alter table ConfigurationParts
+   add constraint FK_ConfPart_ConfName foreign key (ConfigID)
+      references ConfigurationName (ConfigID);
+alter table ConfigurationParts
+   add constraint FK_ConfPart_ConfPartName foreign key (PartID)
+      references ConfigurationPartsName (PartID);
+
+create table ConfigurationValue  (
+   PartID               NUMBER                          not null,
+   ValueID              VARCHAR2(40)                    not null,
+   Value                VARCHAR2(40)                    not null,
+   ConfigRowID          NUMBER                          not null
+);
+alter table ConfigurationValue
+   add constraint PK_CONFIGURATIONVALUE primary key (ConfigRowID);
+alter table ConfigurationValue
+   add constraint FK_ConfVal_ConfPart foreign key (PartID)
+      references ConfigurationPartsName (PartID);
+
+
+insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
+insert into billingfileformats values( -18, 'ATS');
+
+insert into YukonGroupRole values(-175,-100,-103,-10305,'(none)');
+insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
+insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
+insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
+
+create table CommandGroup(
+   CommandGroupID              NUMBER		     not null,
+   CommandGroupName            VARCHAR2(60)          not null
+);
+insert into CommandGroup values (-1, 'Default Commands');
+alter table CommandGroup
+   add constraint PK_COMMANDGROUP primary key (CommandGroupID);
+alter table CommandGroup
+   add constraint AK_KEY_CmdGrp_Name unique  (CommandGroupName);
+
+
+alter table DeviceTypeCommand drop constraint PK_DEVICETYPECOMMAND;
+alter table DeviceTypeCommand add CommandGroupID NUMBER;
+update DeviceTypeCommand set CommandGroupID = -1;
+alter table DeviceTypeCommand modify CommandGroupID not null;
+
+alter table DeviceTypeCommand
+   add constraint PK_DEVICETYPECOMMAND primary key  (CommandGroupID, DeviceCommandID);
+
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
+      references CommandGroup (CommandGroupID);
+
+create unique index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
+CommandGroupID ASC
+);
+
+insert into command values(-105, 'getvalue lp channel ?''Channel (1 or 4)'' ?''MM/DD/YYYY HH:mm''', 'Read block of data (six intevals) from start date/time specified', 'MCT-410IL');
+insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1 (returns 1&2), 3 (returns 3&4), 5 (returns 5&6)', 'MCT-410IL');
+insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
+insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
+insert into command values(-109, 'getvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
+insert into command values(-110, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
+insert into command values(-111, 'getconfig intervals', 'Read rates for Last Interval Demand, Load Profile Demand, Voltage Last Interval Demand, Voltage Profile Demand', 'MCT-410IL');
+insert into command values(-112, 'putconfig emetcon intervals', 'Write rate intervals from database to MCT', 'MCT-410IL');
+insert into command values(-113, 'putstatus emetcon freeze ?''(one or two)''', 'Reset current peak demand, write current peak demand - kW and kWh to frozen register', 'MCT-410IL');
+insert into command values(-114, 'putstatus emetcon freeze voltage ?''(one or two)''', 'Reset current min/max voltage, write current min/max voltage to frozen register', 'MCT-410IL');
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-388, -105, 'MCT-410IL', 16, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-389, -106, 'MCT-410IL', 17, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-390, -107, 'MCT-410IL', 18, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-391, -108, 'MCT-410IL', 19, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-392, -109, 'MCT-410IL', 20, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-393, -110, 'MCT-410IL', 21, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-394, -111, 'MCT-410IL', 22, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-395, -112, 'MCT-410IL', 23, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-396, -113, 'MCT-410IL', 24, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-397, -114, 'MCT-410IL', 25, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-398, -105, 'MCT-410CL', 16, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-399, -106, 'MCT-410CL', 17, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-400, -107, 'MCT-410CL', 18, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-401, -108, 'MCT-410CL', 19, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-402, -109, 'MCT-410CL', 20, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-403, -110, 'MCT-410CL', 21, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-404, -111, 'MCT-410CL', 22, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-405, -112, 'MCT-410CL', 23, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-406, -113, 'MCT-410CL', 24, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-407, -114, 'MCT-410CL', 25, 'Y', -1);
+
+
+
+
+
+
 
 
 
