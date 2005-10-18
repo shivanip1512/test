@@ -9,8 +9,11 @@ public class CtiNavObject
 {
 	private String currentPage;
 	private String previousPage;
+
 	private String moduleExitPage;
+	private String moduleRedirectPage;
 	private String moduleLabel;
+	
 	
 	/**
 	 * This field is for use only in STARS.
@@ -77,6 +80,20 @@ public class CtiNavObject
 	 */
 	public void setModuleExitPage(String string) {
 		moduleExitPage = string;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getModuleRedirectPage() {
+		return moduleRedirectPage;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setModuleRedirectPage(String string) {
+		moduleRedirectPage = string;
 	}
 
 	/**
