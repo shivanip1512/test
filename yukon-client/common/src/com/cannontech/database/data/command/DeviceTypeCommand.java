@@ -126,6 +126,10 @@ public Integer getCommandID()
 {
 	return getDeviceTypeCommand().getCommandID();
 }
+public Integer getCommandGroupID()
+{
+	return getDeviceTypeCommand().getCommandGroupID();
+}
 public String getDeviceType()
 {
 	return getDeviceTypeCommand().getDeviceType();
@@ -153,6 +157,10 @@ public void setCommandID(Integer cmdID)
 {
 	getDeviceTypeCommand().setCommandID(cmdID);
 	getCommand().setCommandID(cmdID);
+}
+public void setCommandGroupID(Integer cmdGrpID)
+{
+	getDeviceTypeCommand().setCommandGroupID(cmdGrpID);
 }
 public void setDeviceType(String devType)
 {

@@ -106,6 +106,8 @@ public DeviceTypeCommandSetupPanel() {
 							dbP.setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 							dbP.setVisibleFlag(new Character('Y'));
 							dbP.setCommand(cmd);
+							//TODO - Change to be the RoleProperty id for this user
+							dbP.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
 							writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 						}
 						if( dbP  != null)
@@ -120,6 +122,9 @@ public DeviceTypeCommandSetupPanel() {
 						dbP.setDisplayOrder(new Integer(20));//hey, default it, we're going to update it in a bit anyway right? 
 						dbP.setVisibleFlag(new Character('Y'));
 						dbP.setCommand(cmd);
+
+						//TODO - Change to be the RoleProperty id for this user
+						dbP.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
 						writeDBChange(dbP, Transaction.INSERT, DBChangeMsg.CHANGE_TYPE_ADD);
 
 						((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dbP);						

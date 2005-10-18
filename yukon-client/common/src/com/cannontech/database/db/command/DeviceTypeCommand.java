@@ -11,6 +11,7 @@ import com.cannontech.database.db.DBPersistent;
  */
 public class DeviceTypeCommand extends DBPersistent 
 {
+	public static int DEFAULT_COMMANDS_GROUP_ID = -1;
 	private Integer deviceCommandID = null;
 	private Integer commandID = null;
 	
@@ -20,9 +21,11 @@ public class DeviceTypeCommand extends DBPersistent
 	private Integer displayOrder = new Integer(99);	//default to "end of the list"ish area
 	private Character visibleFlag = new Character('Y');	//default on
 	
+	private Integer commandGroupID = null;
+	
 	public static final String[] SETTER_COLUMNS = 
 	{ 
-		"CommandID", "DeviceType", "DisplayOrder", "VisibleFlag"
+		"CommandID", "DeviceType", "DisplayOrder", "VisibleFlag", "CommandGroupID"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "DeviceCommandID" };
@@ -49,7 +52,8 @@ public void add() throws java.sql.SQLException
 		getCommandID(),
 		getDeviceType(),
 		getDisplayOrder(),
-		getVisibleFlag()
+		getVisibleFlag(),
+		getCommandGroupID()
 	};
 
 	//if any of the values are null, return
@@ -132,6 +136,13 @@ public static long[] getAllCommandIDsForType(String dbAlias, String deviceType_)
 	return new long[0];
 }
 
+
+/**
+ * @return java.lang.Integer
+ */
+public java.lang.Integer getCommandGroupID() {
+	return commandGroupID;
+}
 /**
  * @return java.lang.Integer
  */
@@ -176,11 +187,19 @@ public void retrieve() throws java.sql.SQLException
 		setDisplayOrder( (Integer)results[2] );
 		String temp = (String) results[3];
 		if( temp != null )
-			setVisibleFlag( new  Character( temp.charAt(0) ) );		
+			setVisibleFlag( new  Character( temp.charAt(0) ) );
+			
+		setCommandGroupID( (Integer) results[4]);
 	}
 	else
 		throw new RuntimeException("Incorrect number of columns in result");
 	
+}
+/**
+ * @param newCommandGroupID java.lang.Integer
+ */
+public void setCommandGroupID(java.lang.Integer newCommandGroupID) {
+	commandGroupID = newCommandGroupID;
 }
 /**
  * @param newCommandID java.lang.Integer
@@ -211,7 +230,8 @@ public void update() throws java.sql.SQLException
 		getCommandID(),
 		getDeviceType(),
 		getDisplayOrder(),
-		getVisibleFlag()
+		getVisibleFlag(),
+		getCommandGroupID()
 	};
 
 	//if any of the values are null, return
