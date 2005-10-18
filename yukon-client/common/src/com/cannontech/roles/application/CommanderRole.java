@@ -14,5 +14,7 @@ public interface CommanderRole {
 	public static final int DCU_SA205_SERIAL_MODEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 3;
 	public static final int DCU_SA305_SERIAL_MODEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 4;
 	
+	public static final int COMMANDS_GROUP = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 5;
+	
 //	public static final int LOG_LEVEL = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE;
 }
