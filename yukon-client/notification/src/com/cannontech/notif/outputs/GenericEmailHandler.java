@@ -20,6 +20,10 @@ public abstract class GenericEmailHandler extends OutputHandler {
     public void handleNotification(NotificationBuilder notifFormatter,
             Contactable contact) {
         try {
+            List emailList = contact.getNotifications(getTypeChecker());
+            if (emailList.size() == 0) {
+                return;
+            }
 
             Notification notif = notifFormatter.buildNotification(contact);
 
@@ -34,7 +38,6 @@ public abstract class GenericEmailHandler extends OutputHandler {
             emailMsg.setSubject(emailSubject);
             emailMsg.setBody(emailBody);
 
-            List emailList = contact.getNotifications(getTypeChecker());
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
                 LiteContactNotification emailNotif = (LiteContactNotification) iter.next();
                 String emailTo = emailNotif.getNotification();
