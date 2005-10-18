@@ -6,7 +6,7 @@
 
 <%
 	int MAX_PAOIDS = 3;
-	int PREV_DAY_COUNT = 5;
+	int PREV_DAY_COUNT = 7;
 
 	String type = ParamUtil.getString(request, "type", "");
 	String[] strPaoids = ParamUtil.getStrings(request, "value");

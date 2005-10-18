@@ -1,4 +1,5 @@
 <%@ page import="com.cannontech.web.editor.*" %>
+<%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:useBean id="capControlCache"
@@ -9,21 +10,25 @@
 	String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, "searchCriteria", "");
 	LiteWrapper[] items = new LiteWrapper[0];
+	String chkBoxName = "cti_chkbxSubs";
 
 	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(type) )
 	{
 		items = capControlCache.getOrphanedFeeders();
 		srchCriteria = "Orphaned Feeders";
+		chkBoxName = "cti_chkbxFdrs";
 	}
 	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(type) )
 	{
 		items = capControlCache.getOrphanedCapBanks();
 		srchCriteria = "Orphaned CapBanks";
+		chkBoxName = "cti_chkbxBanks";
 	}
 	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(type) )
 	{
 		items = capControlCache.getOrphanedCBCs();
 		srchCriteria = "Orphaned CBCs";
+		chkBoxName = "cti_chkbxBanks";
 	}
 	else
 	{	
@@ -89,8 +94,14 @@ pageEncoding="ISO-8859-1"
         <tr>
           <td class="cellImgFill lAlign" background="images\Side_left.gif"></td>
           <td>
-          
-          <div class="scrollLarge">
+
+
+
+<form id="parentForm" action="feeders.jsp" method="post">
+	<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
+	<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
+
+          <div class="scrollLarge">          
             <table id="resTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnheader lAlign">				
 				<td>Name</td>
@@ -107,16 +118,38 @@ for( int i = 0; i < items.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-				<a href="???">
-				<%=item.toString()%></a></td>
+	<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
+				<input type="checkbox" name="<%=chkBoxName%>" value="<%=item.getItemID()%>"/>
+	<% } %>
+				<%=item.toString()%></td>
 				<td><%=item.getItemType()%></td>
 				<td><%=item.getDescription()%></td>
-				<td><%=item.getParent()%></td>
+				<td>
+	<% 
+		int parID = item.getParentID();
+		if( parID > CtiUtilities.NONE_ZERO_ID ) { %>
+				<%=item.getParent()%>
+	<% } else {
+			parID = capControlCache.getParentSubBusID(item.getItemID());
+				
+			if( parID <= CtiUtilities.NONE_ZERO_ID ) { %>
+				<%=item.getParent()%>
+		<% } else { 
+				SubBus pBus = capControlCache.getSubBus( new Integer(parID) ); %>
+
+				<a href="#" class="<%=css%>"
+					onclick="postMany('parentForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=pBus.getCcId()%>, '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=pBus.getCcArea()%>')">
+				<%=pBus.getCcName()%></a>
+		<% } %>
+	<% } %>
+				</td>
 			</tr>
 <% } %>
 
             </table>
         </div>
+</form>
+
 
           </td>
           <td class="cellImgFill rAlign" background="images\Side_right.gif"></td>

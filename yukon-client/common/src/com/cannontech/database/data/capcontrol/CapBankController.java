@@ -162,7 +162,8 @@ public static int[] getUnassignedDeviceCBCIds()
 		"SELECT PAObjectID FROM " + YukonPAObject.TABLE_NAME + " where " +
 			"Category = '" + PAOGroups.STRING_CAT_DEVICE + "' " + 
 			"and PAOClass = '" + PAOGroups.getPAOClass(PAOGroups.CAT_CAPCONTROL, PAOGroups.CLASS_CAPCONTROL) +
-			"' and PAObjectID not in (select ControlDeviceID from " + CapBank.TABLE_NAME +
+			"' and type like 'CBC%'" +
+			" and PAObjectID not in (select ControlDeviceID from " + CapBank.TABLE_NAME +
 			") ORDER BY PAOName";
 
 	try

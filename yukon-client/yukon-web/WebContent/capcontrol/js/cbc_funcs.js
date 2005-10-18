@@ -250,16 +250,15 @@ function menuShow(menuDiv, visIndx)
 //Allows a check box to control the visiblily of
 // a set of row <tr> elements
 // -------------------------------------------
-function showRowElems( elemName, chkBox )
+function showRowElems( elemName, visible )
 {
 	var elem = document.getElementById(elemName);
 	var rows = elem.getElementsByTagName('tr');
 	//var currentMenus = elem.childNodes;
 
-	for( i = 0; i < rows.length; i++ )
-	{
+	for( i = 0; i < rows.length; i++ ) {
 		rows[i].style.display = 
-			(chkBox.checked ? 'inline' : 'none');
+			(visible ? 'inline' : 'none');
 	}
 }
 

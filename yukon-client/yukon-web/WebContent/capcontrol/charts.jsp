@@ -8,6 +8,7 @@
 	int MAX_TRENDS = 3;
 
 	String type = ParamUtil.getString(request, "type", CBCWebUtils.TYPE_VARWATTS );
+	String period = ParamUtil.getString(request, "period", ServletUtil.PREVTHIRTYDAYS );
 	String[] chartParam = ParamUtil.getStrings(request, "value");
 	String[] titles = new String[ chartParam.length ];
 	if( chartParam == null ) chartParam = new String[0];
@@ -15,8 +16,8 @@
 	for( int i = 0; i < chartParam.length && i < MAX_TRENDS; i++ )
 	{
 		int id = Integer.parseInt( chartParam[i] );
-		chartParam[i] = CBCWebUtils.genGraphURL( id, capControlCache, type );
-		
+		chartParam[i] = CBCWebUtils.genGraphURL( id, capControlCache, period, type );
+
 		titles[i] = "Trend for: " + capControlCache.getCapControlPAO(new Integer(id));//.getCcName();
 	}
 

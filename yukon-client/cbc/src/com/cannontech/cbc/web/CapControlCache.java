@@ -19,6 +19,7 @@ import javax.swing.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.StateFuncs;
@@ -26,7 +27,6 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.CapControlFeeder;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -361,6 +361,22 @@ public LiteState getCapBankState( int rawState )
 	return StateFuncs.getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
 }
 
+/**
+ * Returns the Parent SubBus ID for the given child id
+ */
+public int getParentSubBusID( int childID ) {
+
+	if( isSubBus(childID) )
+		return childID;
+	else if( isFeeder(childID) )
+		return getFeeder(new Integer(childID)).getParentID();
+	else if( isCapBank(childID) )
+		return getFeeder(
+			new Integer(getCapBankDevice(
+				new Integer(childID)).getParentID())).getParentID();
+	else
+		return CtiUtilities.NONE_ZERO_ID;
+}
 
 /**
 * Stores all areas in memory. We need to ensure that the areas we make available

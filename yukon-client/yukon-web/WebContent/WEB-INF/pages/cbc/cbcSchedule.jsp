@@ -12,6 +12,7 @@
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="interval" value="Repeat Interval: " title="How often this schedule will execute" />
 			<x:selectOneMenu id="interval" value="#{capControlForm.PAOBase.intervalRate}" >
+				<f:selectItem itemLabel="(none)" itemValue="0" />
 				<f:selectItems value="#{capControlForm.timeInterval}"/>
 				<f:selectItem itemLabel="2 days" itemValue="17280" />
 				<f:selectItem itemLabel="5 days" itemValue="432000" />

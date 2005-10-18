@@ -17,6 +17,19 @@ pageEncoding="ISO-8859-1"
 	// Page scoped javascript variables
 	// -------------------------------------------
 	var intSubID = -1;
+	
+	function toggleImg( imgID ) {	
+		var imgElem = document.getElementById(imgID);
+
+		if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
+			imgElem.src='images/nav-plus.gif';
+			return false;
+		}
+		else {
+			imgElem.src = 'images/nav-minus.gif';
+			return true;
+		}
+	}	
 //-->
 </script>
 <link rel="stylesheet" href="base.css" type="text/css">
@@ -73,8 +86,8 @@ pageEncoding="ISO-8859-1"
               <tr class="columnheader lAlign">				
 				<td>Area Name</td>
                 <td>Setup</td>
-                <td>kVARS</td>
-                <td>Avail. kVARS</td>
+                <td>Closed kVARS</td>
+                <td>Tripped kVARS</td>
                 <td>PFactor/Est.</td>
               </tr>
 
@@ -101,7 +114,9 @@ pageEncoding="ISO-8859-1"
 %>
 	        <tr class="<%=css%>">
 				<td>				
-				<input type="checkbox" id="chkBxAreas" onclick="showRowElems( 'allAreas<%=i%>', this );"/>
+				<input type="image" id="showAreas<%=i%>"
+					src="images/nav-plus.gif"
+					onclick="showRowElems( 'allAreas<%=i%>', toggleImg('showAreas<%=i%>') ); return false;"/>
 				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=areaStr%>')">
 				<%=areaStr%></a>
 				</td>

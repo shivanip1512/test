@@ -1,5 +1,6 @@
 package com.cannontech.web.lite;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.UnitMeasureFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -17,7 +18,7 @@ import com.cannontech.database.data.point.PointUnits;
  */
 public class LiteWrapper
 {
-	private static final String NO_DATA = "---";	
+	public static final String NO_DATA = "---";	
 	private LiteBase liteBase = null;
 
 
@@ -87,18 +88,33 @@ public class LiteWrapper
 		return _getLiteBase().getLiteType();
 	}
 
+	/**
+	 * Returns the string representation of our Parent object if this
+	 * is a Point
+	 */
 	public String getParent()
 	{
-		if( _getLiteBase() instanceof LitePoint )
-		{
+		int id = CtiUtilities.NONE_ZERO_ID;
+		if( (id = getParentID()) != CtiUtilities.NONE_ZERO_ID ) {
 			return 
-				PAOFuncs.getLiteYukonPAO(
-				((LitePoint)_getLiteBase()).getPaobjectID()).getPaoName();			
+				PAOFuncs.getLiteYukonPAO(id).getPaoName();
 		}
 		else
 			return NO_DATA;
 	}
-	
+
+	/**
+	 * Returns the PAObjectID if we are a point, or we return an invalid value
+	 */
+	public int getParentID()
+	{
+		if( _getLiteBase() instanceof LitePoint ) {
+			return ((LitePoint)_getLiteBase()).getPaobjectID();			
+		}
+		else
+			return CtiUtilities.NONE_ZERO_ID;
+	}
+
 	public String toString()
 	{
 		if( _getLiteBase() != null )

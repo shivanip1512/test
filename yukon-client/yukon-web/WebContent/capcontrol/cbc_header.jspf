@@ -8,6 +8,8 @@
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" height="96">
 <tr> 
@@ -86,6 +88,9 @@
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> -->
 				  </div>
 				  <div class="subMenuPopup">
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>&period=<%=ServletUtil.TODAY%>')">Today kVAR/Watt</a>
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>&period=<%=ServletUtil.TODAY%>')">Today PF</a>
+
 					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a>
 					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a>
 					<a href="#" class="submenuLink" onclick="window.location=showRecentCmds('tabledata.jsp?type=<%=CBCWebUtils.TYPE_RECENT_CNTRLS%>');">Recent Controls</a>
