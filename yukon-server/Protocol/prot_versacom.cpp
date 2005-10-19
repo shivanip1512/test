@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/10/07 20:48:30 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/10/19 02:54:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -313,6 +313,26 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                     if(_vst[_last]->ELoad.ControlTime % 60L)
                         _vst[_last]->ELoad.ControlTime += 60L;
                 }
+                #if 1
+                /*
+                 *  20051010 CGP: Things learned late:  All LMT/LCRs support only a 16 bit hexidecimal half second timer...
+                 *  The means 65535 hhs / 7200 hhs/hr ~= 9 hours max control.
+                 *  Limit all controls to 9 hours like the switches. (9hrs = 32400 seconds by the way)
+                 */
+                else if(_vst[_last]->ELoad.ControlTime <= 32400)
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                    if(_vst[_last]->ELoad.ControlTime % 300L)
+                        _vst[_last]->ELoad.ControlTime += 300L;
+                }
+                else
+                {
+                    Flag = 2;
+                    Divisor = 300L;
+                    _vst[_last]->ELoad.ControlTime = 32400;
+                }
+                #else
                 else if(_vst[_last]->ELoad.ControlTime <= 76500L)
                 {
                     Flag = 2;
@@ -333,6 +353,7 @@ INT CtiProtocolVersacom::assembleCommandToMessage()
                     Divisor = 900L;
                     _vst[_last]->ELoad.ControlTime = 229500L;
                 }
+                #endif
 
                 Mask = Flag << 2;
 
@@ -1788,10 +1809,10 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         UINT hasdelay = parse.isKeyValid("delaytime_sec");
         INT shed_time = parse.getiValue("shed");
 
-        // 8 hour max shed time if we are LMT-3000s.
-        if(shed_time > 28800 && (getTransmitterType() == TYPE_CCU700 || getTransmitterType() == TYPE_CCU710 || getTransmitterType() == TYPE_CCU711))
+        // 8 hour max shed time if we are talking to LMT-3000s.
+        if(shed_time > 32400 && (getTransmitterType() == TYPE_CCU700 || getTransmitterType() == TYPE_CCU710 || getTransmitterType() == TYPE_CCU711))
         {
-            shed_time = 28800;
+            shed_time = 32400;
         }
 
         // Add these two items to the list for control accounting!
