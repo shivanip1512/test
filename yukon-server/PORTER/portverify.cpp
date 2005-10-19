@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/08/01 16:20:19 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/10/19 19:10:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,7 @@ void CtiPorterVerification::verificationThread( void )
 
             ptime next_db_check = second_clock::universal_time() + queue_read_interval;
 
-            while( second_clock::universal_time() < next_db_check )
+            while( !isSet(SHUTDOWN) && second_clock::universal_time() < next_db_check )
             {
                 //  3 seconds, in order to allow reasonable shutdown behavior
                 if( base = _input.getQueue(3000) )
