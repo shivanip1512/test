@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/09/27 20:41:51 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/10/19 02:56:43 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ RWCString CtiTransdataDatalink::buildMsg( RWCString command, RWCString wantToGet
    {
       _index = 0;
    }
-    
+
    return( cmd );
 }
 
@@ -109,7 +109,7 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
       //tack on the new byte(s) we got from the meter
       _received.insert( _offset, ( const char*)xfer.getInBuffer(), xfer.getInCountActual() );
       _offset += xfer.getInCountActual();
-   
+
       if( _received.contains( ( const char*)_lookFor, RWCString::exact ) )
       {
          memcpy( _storage, _received, _received.length() );
@@ -128,7 +128,12 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
          setError();
       }
    }
-   
+   else                             // 20051014 CGP Added this else clause to keep us from becoming permanent fixtures in the code.
+   {
+      setError();
+   }
+
+
    return( _finished );
 }
 
@@ -137,6 +142,9 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
 
 bool CtiTransdataDatalink::isTransactionComplete( void )
 {
+   if( getError() == failed )      // 20051014 CGP Added this to keep us from becoming permanent fixtures in the code.
+      _finished = true;
+
    return( _finished );
 }
 
@@ -165,7 +173,7 @@ void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
 
 void CtiTransdataDatalink::setError( void )
 {
-   if( ++_failCount > 3 )
+   if( ++_failCount > 5 )                       // 20051014 CGP Changed the constant to 5. //   3 )
       _error = failed;
    else
       _error = working;
