@@ -121,7 +121,7 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
 
     if(getUser().mbLength() > DEFAULT_USERLENGTH)
     {
-        RWCString temp = getText();
+        RWCString temp = getUser();
         temp.resize(DEFAULT_USERLENGTH - 1);
         setUser(temp);
     }

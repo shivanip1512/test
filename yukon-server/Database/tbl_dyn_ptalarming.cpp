@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/10/19 20:41:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,11 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_ptalarming.h"
+
+#define DEFAULT_ACTIONLENGTH        60
+#define DEFAULT_DESCRIPTIONLENGTH   120
+#define DEFAULT_USERLENGTH          64
+
 
 CtiTableDynamicPointAlarming::CtiTableDynamicPointAlarming() :
 _tags(0),
@@ -159,6 +164,28 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         setUser("(none)");
     }
 
+    if(getAction().mbLength() > DEFAULT_ACTIONLENGTH)
+    {
+        RWCString temp = getAction();
+        temp.resize(DEFAULT_ACTIONLENGTH - 1);
+        setAction(temp);
+    }
+
+    if(getDescription().mbLength() > DEFAULT_DESCRIPTIONLENGTH)
+    {
+        RWCString temp = getDescription();
+        temp.resize(DEFAULT_DESCRIPTIONLENGTH - 1);
+        setDescription(temp);
+    }
+
+    if(getUser().mbLength() > DEFAULT_USERLENGTH)
+    {
+        RWCString temp = getUser();
+        temp.resize(DEFAULT_USERLENGTH - 1);
+        setUser(temp);
+    }
+
+
     updater <<
     table["categoryid"].assign(getCategoryID()) <<
     table["alarmtime"].assign(getAlarmTime()) <<
@@ -182,6 +209,13 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << updater.asString() << endl << endl;
+    }
+
+    if( stat.errorCode() != RWDBStatus::ok )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Error Code = " << stat.errorCode() << endl;
+        dout << updater.asString() << endl;
     }
 
     if( ec == RWDBStatus::ok && rowsAffected > 0)
