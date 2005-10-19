@@ -3011,12 +3011,6 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _estimatedpowerfactorpointid = 0;
 
     
-    //initialize dynamic data members
-    setCurrentVarLoadPointValue(0.0);
-    setCurrentWattLoadPointValue(0.0);
-    setCurrentVoltLoadPointValue(0.0);
-
-
     setNewPointDataReceivedFlag(FALSE);
     setLastCurrentVarPointUpdateTime(gInvalidRWDBDateTime);
     setEstimatedVarLoadPointValue(0.0);
@@ -3133,5 +3127,21 @@ RWCString CtiCCFeeder::doubleToString(DOUBLE doubleVal)
     retString += tempchar;
 
     return retString;
+}
+
+void CtiCCFeeder::deleteCCCapBank(long capBankId)
+{
+    RWOrdered& ccCapBanks = getCCCapBanks();
+    for (LONG j = 0; j < ccCapBanks.entries(); j++)
+    {
+        CtiCCCapBank *capBank = (CtiCCCapBank*)ccCapBanks[j];
+        if (capBank->getPAOId() == capBankId)
+        {
+            getCCCapBanks().removeAt(j);
+            break;
+        }
+
+    }
+    return;
 }
 

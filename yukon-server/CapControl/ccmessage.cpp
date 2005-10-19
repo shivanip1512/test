@@ -87,7 +87,7 @@ CtiCCCommand::CtiCCCommand(LONG command) :
 }
     
 CtiCCCommand::CtiCCCommand(LONG command, LONG id) :
-    CtiCCMessage( RWCString("" + command) ),
+    CtiCCMessage( RWCString("CtiCCCommand" + command) ),
     _command(command),
     _id( id )
 {
@@ -166,6 +166,11 @@ CtiCCCommand& CtiCCCommand::operator=(const CtiCCCommand& right)
     }
 
     return *this;
+}
+
+CtiMessage* CtiCCCommand::replicateMessage() const
+{
+    return new CtiCCCommand(*this);
 }
 
 /*===========================================================================
@@ -326,6 +331,10 @@ CtiCCSubstationVerificationMsg& CtiCCSubstationVerificationMsg::operator=(const 
 }
 
 
+CtiMessage* CtiCCSubstationVerificationMsg::replicateMessage() const
+{
+    return new CtiCCSubstationVerificationMsg(*this);
+}
 
 
 /*===========================================================================

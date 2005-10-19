@@ -110,7 +110,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     RWOrdered& getCCFeeders();
-    void deleteCCFeeder(CtiCCFeeder *feeder) { _ccfeeders.removeAndDestroy(feeder); };
+    void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setPAOId(LONG id);
     CtiCCSubstationBus& setPAOCategory(const RWCString& category);

@@ -127,7 +127,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPeakTimeFlag() const;
     
     RWSortedVector& getCCCapBanks();
-    void deleteCCCapBank(CtiCCCapBank *capBank) {_cccapbanks.removeAndDestroy(capBank);};
+    void deleteCCCapBank(long capBankId);
 
 
     CtiCCFeeder& setPAOId(LONG id);

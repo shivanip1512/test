@@ -86,6 +86,8 @@ public:
     void saveGuts(RWvostream&) const;
 
     CtiCCCommand& operator=(const CtiCCCommand& right);
+
+    virtual CtiMessage* replicateMessage() const;
 private:
     
     CtiCCCommand() { }; //provided for polymorphic persitence only
@@ -149,6 +151,8 @@ public:
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
+
+    virtual CtiMessage* replicateMessage() const;
 
     CtiCCSubstationVerificationMsg& operator=(const CtiCCSubstationVerificationMsg& right);
 private:

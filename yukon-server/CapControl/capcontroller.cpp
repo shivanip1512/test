@@ -256,6 +256,7 @@ void CtiCapController::controlLoop()
 
                 RWOrdered& pointChanges = multiDispatchMsg->getData();
                 RWOrdered& pilMessages = multiPilMsg->getData();
+
                 for(LONG i=0;i<ccSubstationBuses.entries();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
@@ -454,7 +455,7 @@ void CtiCapController::controlLoop()
                         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
-
+                
                 try
                 {
                     //send point changes to dispatch
@@ -501,6 +502,15 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+                        /*try
+                        {
+                            store->checkDBReloadList();
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        } */
                         CtiCCExecutorFactory f1;
                         CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges));
                         try
@@ -917,7 +927,23 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
             {
                 regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
             }
-
+            if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
+            {
+                regMsg->insert(currentSubstationBus->getEstimatedVarLoadPointId());
+            }
+            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+            {
+                regMsg->insert(currentSubstationBus->getDailyOperationsAnalogPointId());
+            }
+            if (currentSubstationBus->getPowerFactorPointId() > 0)
+            {
+                regMsg->insert(currentSubstationBus->getPowerFactorPointId());
+            }
+            if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
+            {
+                regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
+            }
+            
             RWOrdered& ccFeeders = currentSubstationBus->getCCFeeders();
 
             for(LONG j=0;j<ccFeeders.entries();j++)
@@ -936,6 +962,22 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
                 {
                     regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
                 }
+                if (currentFeeder->getEstimatedVarLoadPointId() > 0)
+                {
+                    regMsg->insert(currentFeeder->getEstimatedVarLoadPointId());
+                }
+                if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
+                {
+                    regMsg->insert(currentFeeder->getDailyOperationsAnalogPointId());
+                }
+                if (currentFeeder->getPowerFactorPointId() > 0)
+                {
+                    regMsg->insert(currentFeeder->getPowerFactorPointId());
+                }
+                if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
+                {
+                    regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
+                }                
 
                 RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
 
@@ -954,6 +996,7 @@ void CtiCapController::registerForPoints(const RWOrdered& subBuses)
                 }
             }
         }
+
     }
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1009,7 +1052,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Relavant database change.  Setting reload flag." << endl;
+                            dout << RWTime() << " - Relevant database change.  Setting reload flag." << endl;
                         }
 
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
@@ -1035,7 +1078,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
                         {
-                            objType = CtiCCSubstationBusStore::Feeder;
+                            objType =  CtiCCSubstationBusStore::Feeder;
                         }
                         else if (objType == CtiCCSubstationBusStore::Unknown)
                         {

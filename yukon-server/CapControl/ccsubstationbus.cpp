@@ -4954,11 +4954,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setControlDelayTime(0);
     setControlSendRetries(0);
     
-    //initialize dynamic data members
-    setCurrentVarLoadPointValue(0.0);
-    setCurrentWattLoadPointValue(0.0);
-    setCurrentVoltLoadPointValue(0.0);
-    
+   
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);
@@ -5104,6 +5100,22 @@ RWCString CtiCCSubstationBus::doubleToString(DOUBLE doubleVal)
     retString += tempchar;
 
     return retString;
+}
+
+void CtiCCSubstationBus::deleteCCFeeder(long feederId)
+{
+    RWOrdered& ccFeeders = getCCFeeders();
+    for (LONG j = 0; j < ccFeeders.entries(); j++)
+    {
+        CtiCCFeeder *feeder = (CtiCCFeeder*)ccFeeders[j];
+        if (feeder->getPAOId() == feederId)
+        {
+            getCCFeeders().removeAt(j);
+            break;
+        }
+
+    }
+    return;
 }
 
 /* Public Static members */

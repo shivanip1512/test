@@ -97,10 +97,22 @@ public:
     void deleteSubBus(long subBusId);
     void deleteStrategy(long strategyId);
 
-    void reloadCapBankFromDatabase(long capBankId);
-    void reloadFeederFromDatabase(long feederId);
-    void reloadSubBusFromDatabase(long subBusId);
-    void reloadStrategyFromDataBase(long strategyId);
+    void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                   map< long, CtiCCCapBankPtr > *pointid_capbank_map,
+                                   map< long, long> *capbank_subbus_map,
+                                   map< long, long> *capbank_feeder_map,
+                                   map< long, long> *feeder_subbus_map);
+    void reloadFeederFromDatabase(long feederId, map< long, CtiCCStrategyPtr > *strategy_map, 
+                                  map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                  map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                  map< long, CtiCCFeederPtr > *pointid_feeder_map, 
+                                  map< long, long> *feeder_subbus_map);
+    void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
+                                  map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                  map< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
+                                  RWOrdered *cCSubstationBuses );
+    void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
 
@@ -190,7 +202,6 @@ private:
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
 
-    list <long> _pointIdList;
     list <CC_DBRELOAD_INFO> _reloadList;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
