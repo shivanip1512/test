@@ -6,7 +6,7 @@
 
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
-
+#define DEFAULT_USERLENGTH          64
 
 CtiTableSignal::CtiTableSignal() :
 _logID(0),
@@ -119,6 +119,13 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
         setText(temp);
     }
 
+    if(getUser().mbLength() > DEFAULT_USERLENGTH)
+    {
+        RWCString temp = getText();
+        temp.resize(DEFAULT_USERLENGTH - 1);
+        setUser(temp);
+    }
+
     inserter <<
     getLogID() <<
     getPointID() <<
@@ -132,6 +139,13 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     getMillis();
 
     RWDBStatus stat = inserter.execute( conn ).status();
+
+    if(stat.vendorError1() == 1401)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "Error Code = " << stat.errorCode() << endl;
+        dout << inserter.asString() << endl;
+    }
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
