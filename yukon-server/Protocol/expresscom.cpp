@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/10/05 19:22:47 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/10/19 02:54:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1062,14 +1062,9 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
         }
         else if(parse.isKeyValid("xctservicecancel"))
         {
-            if( parse.getCommandStr().contains(" restore") ||
-                gConfigParms.getValueAsString("EXPRESSCOM_TOOS_RESTORE_FIRST", "false").contains("true", RWCString::ignoreCase) )
-            {
-                // This is special syntax to cause any controlled load to restore before going o.o.s.
-                priority(0);                    // Need to make certain the restore is high priority.
-                restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
-            }
-
+            // This is special syntax to cause any controlled load to restore before going o.o.s.
+            priority(0);                    // Need to make certain the restore is high priority.
+            restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
             status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
                                        (bool)parse.getiValue("xctservicecancel"),
                                        (bool)parse.getiValue("xctservicebitp"),
