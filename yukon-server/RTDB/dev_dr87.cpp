@@ -297,7 +297,7 @@ INT CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, RWTPtrSlist< Ct
                 for (int z=0; z < passwordLength; z++)
                 {
                     password[(8-passwordLength+z)/2] <<= 4;
-                    password[(8-passwordLength+z)/2] |= getIED().getPassword().data()[z]-'0'; 
+                    password[(8-passwordLength+z)/2] |= getIED().getPassword().data()[z]-'0';
                 }
 
                 /**************************
@@ -1653,7 +1653,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
 
     DR87ScanData_t  *scanData = (DR87ScanData_t*) DUPRep->Message;
 
-    if (isScanPending())
+    if (isScanFlagSet(ScanRateGeneral))
     {
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
@@ -1718,7 +1718,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
     }
 
     // reset this flag so device makes it on the queue later
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if (pPIL->PointData().entries() > 0)
     {

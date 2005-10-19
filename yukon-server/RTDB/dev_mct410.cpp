@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/10/17 17:18:38 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1575,12 +1575,6 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
         // No error occured, we must do a real decode!
@@ -1685,8 +1679,8 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
-    setMCTScanPending(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -2567,10 +2561,6 @@ INT CtiDeviceMCT410::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending( );
-    resetScanFreezeFailed( );
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

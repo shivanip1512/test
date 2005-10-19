@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1662,7 +1662,7 @@ INT CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     INT status = NORMAL;
 
 
-    if (!isScanPending())
+    if (!isScanFlagSet(ScanRateGeneral))
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1934,8 +1934,8 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
                 }
                 setLastLPTime (logTime);
 
-                resetScanPending();
-                resetScanException();
+                resetScanFlag(ScanRateGeneral);
+                resetScanFlag(ScanException);
             }
         }
         else
@@ -1967,8 +1967,8 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, RWTime &TimeNow
 
 INT CtiDeviceSixnet::decodeResultScan(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    resetScanForced();
-    resetScanPending();
+    resetScanFlag(ScanForced);
+    resetScanFlag(ScanRateGeneral);
 
     return NORMAL;
 }

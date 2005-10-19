@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/10/04 19:09:27 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,7 +145,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
     {
         if(_lcuType == LCU_T3026)
         {
-            setScanPending();
+            setScanFlag(ScanRateGeneral);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
 
             OUTMESS *pNewOutMessage = CTIDBG_new OUTMESS(*OutMessage);
@@ -161,7 +161,7 @@ INT CtiDeviceLCU::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
         }
         else
         {
-            setScanPending();
+            setScanFlag(ScanRateGeneral);
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             status = lcuScanAll(OutMessage);
 
@@ -184,7 +184,7 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
     if(OutMessage != NULL)
     {
-        setScanFreezePending();
+        setScanFlag(ScanFreezePending);
         EstablishOutMessagePriority( OutMessage, ScanPriority );
         status = lcuFreeze(OutMessage);
 
@@ -221,6 +221,7 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
 
     /* Load all the other stuff that is needed */
     OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
 
@@ -239,7 +240,7 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 {
     INT status = NORMAL;
 
-    setScanResetting();
+    setScanFlag(ScanResetting);
 
     /* Load the reset freeze message */
     if((status = MasterHeader(OutMessage->Buffer.OutMessage + PREIDLEN, (USHORT)getAddress(), MASTERRESET, 0)) != NORMAL)
@@ -247,6 +248,7 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
 
     /* Load all the other stuff that is needed */
     OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
 
@@ -277,6 +279,7 @@ INT CtiDeviceLCU::lcuScanAll(OUTMESS *&OutMessage)            /* Priority to pla
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID        = getID();
+        OutMessage->TargetID        = getID();
         OutMessage->Port            = getPortID();
         OutMessage->Remote          = getAddress();
         OutMessage->TimeOut         = 2;
@@ -301,6 +304,7 @@ INT CtiDeviceLCU::lcuScanInternalStatus(OUTMESS *&OutMessage)
 
     /* Load all the other stuff that is needed */
     OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
     OutMessage->TimeOut         = 2;
@@ -324,6 +328,7 @@ INT CtiDeviceLCU::lcuScanExternalStatus(OUTMESS *&OutMessage)
 
     /* Load all the other stuff that is needed */
     OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
     OutMessage->TimeOut         = 2;
@@ -351,15 +356,15 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
         {
         case MASTERFREEZE:
             {
-                if(isScanFreezePending())
+                if(isScanFlagSet(ScanFreezePending))
                 {
-                    resetScanFreezePending();
-                    setScanFrozen();
+                    resetScanFlag(ScanFreezePending);
+                    setScanFlag(ScanFrozen);
 
                     /* update the accumulator criteria for this RTU */
                     // Done in the reset... which zeros it out.  // setPrevFreezeTime(getLastFreezeTime());
                     setLastFreezeTime( RWTime(InMessage->Time) );
-                    resetScanFreezeFailed();
+                    resetScanFlag(ScanFreezeFailed);
 
                     setPrevFreezeNumber(getLastFreezeNumber());
                     setLastFreezeNumber(getLastFreezeNumber() + 1);
@@ -389,7 +394,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Throwing away unexpected freeze response" << endl;
                     }
-                    setScanFreezeFailed();
+                    setScanFlag(ScanFreezeFailed);
                     /* message for screwed up freeze */
                 }
 
@@ -403,7 +408,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                 }
                 setPrevFreezeTime(RWTime(InMessage->Time));
                 setLastFreezeTime(RWTime(InMessage->Time));
-                resetScanResetting();
+                resetScanFlag(ScanResetting);
                 /* LCU is unaware of these */
                 break;
             }
@@ -423,7 +428,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                     retList.insert( Msg );
                 }
 
-                resetScanPending();
+                resetScanFlag(ScanRateGeneral);
 
                 break;
             }
@@ -436,7 +441,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                     retList.insert( Msg );
                 }
 
-                resetScanPending();
+                resetScanFlag(ScanRateGeneral);
 
                 break;
             }
@@ -444,57 +449,25 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
             {
                 if(useScanFlags())
                 {
-                    if(isScanPending())
-                    {
+                    CtiMessage *Msg = lcuDecodeStatus(InMessage);
+                    if(Msg != NULL) retList.insert( Msg );
 
-                        CtiMessage *Msg = lcuDecodeStatus(InMessage);
+                    Msg = lcuDecodeDigitalInputs(InMessage);
+                    if(Msg != NULL) retList.insert( Msg );
 
-                        if(Msg != NULL)
-                        {
-                            retList.insert( Msg );
-                        }
+                    Msg = lcuDecodeAnalogs(InMessage);
+                    if(Msg != NULL) retList.insert( Msg );
 
-                        Msg = lcuDecodeDigitalInputs(InMessage);
-
-                        if(Msg != NULL)
-                        {
-                            retList.insert( Msg );
-                        }
-
-                        Msg = lcuDecodeAnalogs(InMessage);
-
-                        if(Msg != NULL)
-                        {
-                            retList.insert( Msg );
-                        }
-
-                        Msg = lcuDecodeAccumulators(InMessage, outList);
-
-                        if(Msg != NULL)
-                        {
-                            retList.insert( Msg );
-                        }
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " LCU response unexpected.. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
+                    Msg = lcuDecodeAccumulators(InMessage, outList);
+                    if(Msg != NULL) retList.insert( Msg );
                 }
                 else
                 {
                     CtiMessage *Msg = lcuDecodeStatus(InMessage);
-
-                    if(Msg != NULL)
-                    {
-                        // Msg->dump();
-                        retList.insert(Msg);
-                    }
+                    if(Msg != NULL) retList.insert( Msg );
                 }
 
-                resetScanPending();
+                resetScanFlag(ScanRateGeneral);
 
                 break;
             }
@@ -512,12 +485,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
         case MASTERSEND:
             {
                 CtiMessage *Msg = lcuDecodeStatus(InMessage);
-
-                if(Msg != NULL)
-                {
-                    // Msg->dump();
-                    retList.insert(Msg);
-                }
+                if(Msg != NULL) retList.insert( Msg );
                 break;
             }
         case MASTERLOCKOUTSET:
@@ -545,8 +513,8 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " " << getName() << " Unknown Mastercom response " << __FILE__ << " (" << __LINE__ << ") " << hex << setw(2) << (int)(InMessage->Buffer.InMessage[2]) << endl;
                 }
-                resetScanFlags();
-                setScanStarting();
+                resetScanFlag();
+                setScanFlag(ScanStarting);
 
                 break;
             }
@@ -565,6 +533,46 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< Cti
     return status;
 }
 
+
+INT CtiDeviceLCU::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
+{
+    INT status = NoError;
+
+    if(InMessage) resetForScan(desolveScanRateType(RWCString(InMessage->Return.CommandStr)));
+    /* see what handshake was */
+    if( useScanFlags() )            // Do we care about any of the scannable flags?
+    {
+        if(isScanFlagSet(ScanFreezePending))
+        {
+            resetScanFlag(ScanRateAccum);
+            resetScanFlag(ScanFreezePending);
+            setScanFlag(ScanFreezeFailed);
+            setPrevFreezeTime(getLastFreezeTime());
+            setPrevFreezeNumber(getLastFreezeNumber());
+            setLastFreezeNumber(0);
+            setLastFreezeTime(InMessage->Time + rwEpoch);
+        }
+        else if(isScanFlagSet(ScanRateGeneral))
+        {
+            resetScanFlag(ScanRateGeneral);
+
+            /* Check if we need to plug accumulators */
+            if(isScanFlagSet(ScanFreezeFailed) || isScanFlagSet(ScanFrozen))
+            {
+                resetScanFlag(ScanFreezeFailed);
+                resetScanFlag(ScanFrozen);
+                setLastFreezeNumber(0);
+            }
+        }
+        else if(isScanFlagSet(ScanResetting))
+        {
+            resetScanFlag(ScanResetting);
+            setScanFlag(ScanResetFailed);
+        }
+    }
+
+    return status;
+}
 
 INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList,RWTPtrSlist< OUTMESS > &outList)
 {
@@ -789,6 +797,7 @@ INT CtiDeviceLCU::lcuLoop(OUTMESS *&OutMessage)
 
         /* Load up the pieces of the structure */
         OutMessage->DeviceID                = getID();
+        OutMessage->TargetID                = getID();
         OutMessage->Port                    = getPortID();
         OutMessage->Remote                  = getAddress();
         OutMessage->Retry                   = 2; //VSt->Retry;
@@ -1057,7 +1066,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
 
     CtiPointAccumulator *pAccumPoint;
 
-    if(isScanFreezePending())
+    if(isScanFlagSet(ScanFreezePending))
     {
         if((pAccumPoint = (CtiPointAccumulator *)getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)) != NULL)
         {
@@ -1080,16 +1089,16 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
         setPrevFreezeNumber(0);
 
         /* if it was just a reset let this one be */
-        if(isScanFrozen() && !isScanFreezeFailed())
+        if(isScanFlagSet(ScanFrozen) && !isScanFlagSet(ScanFreezeFailed))
             setLastFreezeNumber(!0);
         else
             setLastFreezeNumber(0);
 
-        resetScanFrozen();
-        resetScanFreezeFailed();
-        resetScanFreezePending();
+        resetScanFlag(ScanFrozen);
+        resetScanFlag(ScanFreezeFailed);
+        resetScanFlag(ScanFreezePending);
     }
-    else if(isScanFrozen())
+    else if(isScanFlagSet(ScanFrozen))
     {
         pPIL  = CTIDBG_new CtiReturnMsg(getID(),
                                         RWCString(InMessage->Return.CommandStr),
@@ -1165,8 +1174,8 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, RWTPtrSlist
             }
         }
 
-        resetScanFrozen();
-        resetScanFreezeFailed();
+        resetScanFlag(ScanFrozen);
+        resetScanFlag(ScanFreezeFailed);
 
         // Need to perform an lcuReset here!
         OUTMESS *OutMessage = CTIDBG_new OUTMESS;
@@ -2299,6 +2308,7 @@ INT CtiDeviceLCU::lcuLockout(OUTMESS *&OutMessage, bool set)
     /* Load all the other stuff that is needed */
     OverrideOutMessagePriority( OutMessage, MAXPRIORITY - 2 );
     OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
     OutMessage->TimeOut         = 2;
@@ -2387,3 +2397,31 @@ bool CtiDeviceLCU::popControlledGroupInfo(LONG &LMGIDControl, UINT &TrxID)
 
     return got_one;
 }
+
+void CtiDeviceLCU::resetForScan(int scantype)
+{
+    if(isScanFlagSet(scantype))
+    {
+        resetScanFlag(scantype);
+    }
+
+    switch(scantype)
+    {
+    case ScanRateAccum:
+        {
+            if(isScanFlagSet(ScanFreezePending))
+            {
+                resetScanFlag(ScanFreezePending);
+                setScanFlag(ScanFreezeFailed);
+            }
+
+            if(isScanFlagSet(ScanResetting))
+            {
+                resetScanFlag(ScanResetting);
+                setScanFlag(ScanResetFailed);
+            }
+            break;
+        }
+    }
+}
+

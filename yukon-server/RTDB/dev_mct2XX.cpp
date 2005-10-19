@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/07/11 20:06:44 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -232,11 +232,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-    setMCTScanPending(ScanRateAccum, false);
+    setScanFlag(ScanRateAccum, false);
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
@@ -317,8 +313,8 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    setMCTScanPending(ScanRateIntegrity, false);
-    resetScanPending();
+    setScanFlag(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

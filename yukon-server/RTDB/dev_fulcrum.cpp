@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_fulcrum.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1885,7 +1885,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     RWTime peakTime;
 
 
-    if (isScanPending())
+    if (isScanFlagSet(ScanRateGeneral))
     {
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
@@ -1943,7 +1943,7 @@ INT CtiDeviceFulcrum::decodeResultScan (INMESS *InMessage,
     }
 
     // reset this flag so device makes it on the queue later
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if (pPIL->PointData().entries() > 0)
     {

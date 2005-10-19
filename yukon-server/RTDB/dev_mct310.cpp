@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2005/07/11 20:06:44 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -722,11 +722,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     ULONG RecentValue = 0;
     USHORT TempDevType;
 
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-    setMCTScanPending(ScanRateAccum, false);
+    setScanFlag(ScanRateAccum, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -822,8 +818,8 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
     }
 
 
-    setMCTScanPending(ScanRateIntegrity, false);
-    resetScanPending();
+    setScanFlag(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -912,7 +908,7 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();
+    setScanFlag(ScanRateGeneral, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1006,10 +1002,6 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1287,11 +1279,6 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, RWTime &Time
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

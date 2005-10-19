@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/10/17 19:28:02 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,7 +318,7 @@ INT CtiDeviceLMI::ResultDecode( INMESS *InMessage, RWTime &Now, RWTPtrSlist< Cti
 
     if( !ErrReturn && !_lmi.recvCommResult(InMessage, outList) )
     {
-        resetScanFlags();
+        resetScanFlag();
 
         if( _lmi.hasInboundData() )
         {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/06/29 19:51:17 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ CtiDevicePagingReceiver::~CtiDevicePagingReceiver()
 INT CtiDevicePagingReceiver::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     //So far I am doing nothing with the result...
-    resetScanPending();
+    resetScanFlag();
     return NORMAL;
 }
 
@@ -168,7 +168,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     xfer.setInCountActual(&_inCountActual);
                     xfer.setNonBlockingReads(true);//try to flush buffer.
                     xfer.setInCountExpected(0);//no delay if there are 0 bytes available.
-                    
+
                     _cmdVectorIterator = _commandVector.begin();//This must be set to the first value to be sent
                     strncpy((char *)xfer.getOutBuffer(),_change_mode,25);//Change Mode command
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
@@ -194,7 +194,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     {
                         setPreviousState(SendCapcodeNumber);// ADD_CODE_HERE
                         break;
-                    }                  
+                    }
                     break;
                 }
             case SendCapcodeNumber:
@@ -260,10 +260,10 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                 }
             case ReadAndCheck:
                 {
-					xfer.setInBuffer(_inBuffer);
+                    xfer.setInBuffer(_inBuffer);
                     xfer.setOutBuffer(_outBuffer);
                     xfer.setBufferSize(DEV_PAGERRECEIVE_IN_BUFFER_SIZE);
-					xfer.setOutCount(0);
+                    xfer.setOutCount(0);
                     xfer.setInCountActual(&_inCountActual);
                     xfer.setNonBlockingReads(true);//reads dont block
                     xfer.setInCountExpected(0);//no delay.
@@ -273,19 +273,19 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     break;
 
                 }
-			default:
-				{
-					resetStates();
-					_command = Complete;
-				}
+            default:
+                {
+                    resetStates();
+                    _command = Complete;
+                }
         }
     }
     catch(...)
     {
         //Do catch stuff here ADD_CODE_HERE
-		resetStates();
-		_command = Complete;
-		status = FinalError;
+        resetStates();
+        _command = Complete;
+        status = FinalError;
         throw;
     }
     return status;
@@ -297,7 +297,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
     int headLocation = 0;
     int footLocation = 0;
     string reportString;
-    try 
+    try
     {
         switch(getCurrentState())
         {
@@ -362,14 +362,14 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                                 report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_SNPP, getID(), reportString.c_str(), second_clock::universal_time());
                                 _verification_objects.push(report);
 
-                                //remove current message from the string. 
+                                //remove current message from the string.
                                 _messageString = _messageString.substr(footLocation+5);//Dont remove more than the footer, that would cause errors.
 
                                 if(_messageString.length()>9)
                                 {
                                     //there could be another message in the buffer, check for it before we exit.
-                                    
-                                    
+
+
                                 }
                                 else
                                 {
@@ -381,7 +381,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                             }
                             else
                             {
-                                //My Parser screwed up somewhere?? It probably didnt remove a footer that should have been removed. 
+                                //My Parser screwed up somewhere?? It probably didnt remove a footer that should have been removed.
                                 // Im going to strip off all of the data before the footer and let the function re-try
                                 _messageString = _messageString.substr(footLocation+4);
                             }
@@ -401,11 +401,11 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                             {
                                 //Strip off the header, let function re-run. Any more junk will be cleaned off in next function run.
                                 _messageString = _messageString.substr(headLocation+4);//header with no footer for a full loop, no footer is coming.
-								_hadHeader = false;
+                                _hadHeader = false;
                             }
                             else
                             {
-								//This assumes there is enough buffer space to read in an entire message in 2 reads!!! 
+                                //This assumes there is enough buffer space to read in an entire message in 2 reads!!!
                                 _messageString = _messageString.substr(headLocation);//take off anything before headLocation
                                 _hadHeader = true;
                                 _command = Complete;
@@ -413,8 +413,8 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                                 resetStates();
                                 break;
                             }
-                             
-                            
+
+
                         }
                     }
                     else
@@ -429,7 +429,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                         status = Normal;
                         resetStates();
                     }
-    
+
                     setPreviousState(InitializeAndRead);
                     setCurrentState(ReadAndCheck);
                     break;
@@ -446,18 +446,18 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                     resetStates(true);
                     break;
                 }
-			default:
-				{
-					resetStates();
-					_command = Complete;
-				}
+            default:
+                {
+                    resetStates();
+                    _command = Complete;
+                }
         }
     }
     catch(...)
     {
         resetStates();
-		_command = Complete;
-		status = FinalError;
+        _command = Complete;
+        status = FinalError;
         throw;
     }
     return status;
@@ -514,13 +514,13 @@ string CtiDevicePagingReceiver::getFormattedFrequency()
     string tempString;
     float frequency = _tbl.getFrequency();
 
-	//boundary value.
-	if(frequency<130)
-		return "F00 00";
+    //boundary value.
+    if(frequency<130)
+        return "F00 00";
 
     frequency -= 130;
     frequency = frequency/.0125;
-	int intFreq = (int)frequency;
+    int intFreq = (int)frequency;
     tempString = "F" + CtiNumStr(intFreq).hex().zpad(4);
     if(tempString.length()==3)
         tempString.insert(1,"00");
@@ -550,7 +550,7 @@ string CtiDevicePagingReceiver::getFormattedHexCapcodeNumber(int number)
 
     }
     else
-    { 
+    {
         return "0";
     }
 }

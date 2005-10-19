@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -442,8 +442,8 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();
-    setMCTScanPending(ScanRateIntegrity, false);
+    resetScanFlag(ScanRateGeneral);
+    resetScanFlag(ScanRateIntegrity);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -568,10 +568,6 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -745,9 +741,6 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, RWTime &TimeNow, RW
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    resetScanFreezePending();
-    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

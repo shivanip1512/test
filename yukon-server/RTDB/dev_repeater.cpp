@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/04/11 20:08:58 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -625,7 +625,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, RWTime &TimeNow, RWT
 
    CtiCommandParser parse(InMessage->Return.CommandStr);
 
-   resetScanPending();
+   resetScanFlag(ScanRateGeneral);
 
    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
    {

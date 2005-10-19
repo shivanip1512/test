@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/11 16:17:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -161,7 +161,7 @@ INT CtiDeviceCCU::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     /* Clear the Scan Pending flag, if neccesary it will be reset */
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     switch( InMessage->Sequence )
     {

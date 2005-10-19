@@ -5,8 +5,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ INT CtiDeviceDavis::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
         }
     }
 
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     /* Now Calculate up the derived values */
     for (i = 100; i <= 111; i++)

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/09/26 16:30:38 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,6 +94,7 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
 
             /* Load all the other stuff that is needed */
             OutMessage->DeviceID              = getID();
+            OutMessage->TargetID              = getID();
             OutMessage->Buffer.OutMessage[4]  = 0x08;
             OutMessage->Port                  = getPortID();
             OutMessage->Remote                = getAddress();
@@ -114,7 +115,8 @@ INT CtiDeviceWelco::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->Sequence              = 0;
             OutMessage->Retry                 = 2;
 
-            setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
+            setScanFlag(ScanRateIntegrity);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
+            setScanFlag(ScanFreezePending);
             outList.insert(OutMessage);
 
             OutMessage = NULL;
@@ -137,6 +139,7 @@ INT CtiDeviceWelco::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OU
 
     if(OutMessage != NULL)
     {
+        setScanFlag(ScanRateGeneral);
         WelCoPoll(OutMessage, ScanPriority);
 
         /* Message is loaded so send it to porter */
@@ -266,7 +269,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
             StatusFirst = StatusLast = 0;
         }
 
-        if(!useScanFlags() || (isScanFrozen() || isScanFreezeFailed()))
+        if(!useScanFlags() || (isScanFlagSet(ScanFrozen) || isScanFlagSet(ScanFreezeFailed)))
         {
             /*
              *  This is our big hint that the message needs accums to be included!
@@ -316,6 +319,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
         /* Load all the other stuff that is needed */
         OutMessage->DeviceID              = getID();
+        OutMessage->TargetID              = getID();
         OutMessage->Buffer.OutMessage[4]  = 0x08 | IDLC_NUL_HDR; // IDLC_NUL_HDR is used to request 32 bit accumulators
 
         OutMessage->Port                  = getPortID();
@@ -323,7 +327,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
         EstablishOutMessagePriority( OutMessage, ScanPriority );
         OutMessage->TimeOut               = 2;
 
-        if(!useScanFlags() || (isScanFrozen() || isScanFreezeFailed()))
+        if(!useScanFlags() || (isScanFlagSet(ScanFrozen) || isScanFlagSet(ScanFreezeFailed)))
         {
             OutMessage->OutLength = 16;
         }
@@ -337,7 +341,7 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
         OutMessage->Sequence = 0;
         OutMessage->Retry = 2;
 
-        setScanIntegrity(TRUE);                         // We are an integrity scan.  Data must be propagated.
+        setScanFlag(ScanRateIntegrity);
 
         /* Message is loaded so send it to porter */
         outList.insert(OutMessage);
@@ -382,7 +386,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
     OUTMESS              *OutMessage = NULL;
 
 /* Clear the Scan Pending flag, if neccesary it will be reset */
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if(InMessage->InLength == 0)
     {
@@ -498,17 +502,17 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_FREEZE:
             {
-                if(isScanFreezePending() || !useScanFlags())
+                if(isScanFlagSet(ScanFreezePending) || !useScanFlags())
                 {
-                    resetScanFreezePending();
-                    setScanFrozen();
+                    resetScanFlag(ScanFreezePending);
+                    setScanFlag(ScanFrozen);
 
                     /* update the accumulator criteria for this RTU */
                     if(useScanFlags())
                     {
                         setPrevFreezeTime(getLastFreezeTime());
                         setLastFreezeTime( RWTime(InMessage->Time) );
-                        resetScanFreezeFailed();
+                        resetScanFlag(ScanFreezeFailed);
 
                         setPrevFreezeNumber(getLastFreezeNumber());
                         setLastFreezeNumber(TRUE);
@@ -535,7 +539,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         }
                         else
                         {
-                            setScanPending();
+                            setScanFlag(ScanRateGeneral);
                         }
                     }
                 }
@@ -546,7 +550,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         dout << RWTime() << " Throwing away unexpected freeze response" << endl;
                     }
                     // What is this ??? DeviceRecord->ScanStatus &= SCANFREEZEFAILED;
-                    setScanFreezeFailed();   // FIX FIX FIX 090799 CGP ?????
+                    setScanFlag(ScanFreezeFailed);   // FIX FIX FIX 090799 CGP ?????
                     /* message for screwed up freeze */
                 }
 
@@ -554,6 +558,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_ACCUM32DUMP:
             {
+                resetScanFlag(ScanRateIntegrity);
                 accums_spill_frame = continue_required && last_sectn;
 
                 CtiPointAccumulator *pAccumPoint;
@@ -564,7 +569,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 // get the current pulse count
                 ULONG curPulseValue;
 
-                if(isScanFreezePending())
+                if(isScanFlagSet(ScanFreezePending))
                 {
 
                     // This is a per device message, not per point....
@@ -601,17 +606,17 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         setPrevFreezeNumber(0);
 
                         /* if it was just a reset let this one be */
-                        if(isScanFrozen() && !isScanFreezeFailed())
+                        if(isScanFlagSet(ScanFrozen) && !isScanFlagSet(ScanFreezeFailed))
                             setLastFreezeNumber(!0);
                         else
                             setLastFreezeNumber(0);
 
-                        resetScanFrozen();
-                        resetScanFreezeFailed();
-                        resetScanFreezePending();
+                        resetScanFlag(ScanFrozen);
+                        resetScanFlag(ScanFreezeFailed);
+                        resetScanFlag(ScanFreezePending);
                     }
                 }
-                else if(isScanFrozen() || !useScanFlags())
+                else if(isScanFlagSet(ScanFrozen) || !useScanFlags())
                 {
                     if(useScanFlags())
                     {
@@ -704,8 +709,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                     if(!accums_spill_frame)
                     {
-                        resetScanFrozen();
-                        resetScanFreezeFailed();
+                        resetScanFlag(ScanFrozen);
+                        resetScanFlag(ScanFreezeFailed);
                     }
                 }
 
@@ -713,6 +718,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_ACCUMDUMP:
             {
+                resetScanFlag(ScanRateIntegrity);
                 accums_spill_frame = continue_required && last_sectn;
 
                 CtiPointAccumulator *pAccumPoint;
@@ -720,7 +726,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                 StartPoint = MyInMessage[2] + 1;
                 FinishPoint = StartPoint + (MyInMessage[1] - 1 / 2) - 1;
 
-                if(isScanFreezePending())
+                if(isScanFlagSet(ScanFreezePending))
                 {
 
                     // This is a per device message, not per point....
@@ -757,17 +763,17 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
                         setPrevFreezeNumber(0);
 
                         /* if it was just a reset let this one be */
-                        if(isScanFrozen() && !isScanFreezeFailed())
+                        if(isScanFlagSet(ScanFrozen) && !isScanFlagSet(ScanFreezeFailed))
                             setLastFreezeNumber(!0);
                         else
                             setLastFreezeNumber(0);
 
-                        resetScanFrozen();
-                        resetScanFreezeFailed();
-                        resetScanFreezePending();
+                        resetScanFlag(ScanFrozen);
+                        resetScanFlag(ScanFreezeFailed);
+                        resetScanFlag(ScanFreezePending);
                     }
                 }
-                else if(isScanFrozen() || !useScanFlags())
+                else if(isScanFlagSet(ScanFrozen) || !useScanFlags())
                 {
                     Pointer = 1;
 
@@ -878,8 +884,8 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
 
                     if(!accums_spill_frame)
                     {
-                        resetScanFrozen();
-                        resetScanFreezeFailed();
+                        resetScanFlag(ScanFrozen);
+                        resetScanFlag(ScanFreezeFailed);
                     }
                 }
 
@@ -887,6 +893,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_STATUSDUMP:
             {
+                resetScanFlag(ScanRateIntegrity);
                 StartPoint = MAKEUSHORT (MyInMessage[2], MyInMessage[3]) + 1;
                 FinishPoint = StartPoint + ((MyInMessage[1] - 2) / 2) * 8;
 
@@ -966,6 +973,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_STATUSEXCEPTION:
             {
+                resetScanFlag(ScanException);
                 /* Now loop through and update received points as needed */
                 /* FinishPoint is used as COUNT of points in exception dump */
                 FinishPoint = MyInMessage[1] / 2;
@@ -1040,6 +1048,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_ANALOGDUMP:
             {
+                resetScanFlag(ScanRateIntegrity);
                 StartPoint = MAKEUSHORT (MyInMessage[2], MyInMessage[3]) + 1;
 
                 if((*(InMessage->Buffer.InMessage - 3)) & 0x08)
@@ -1110,7 +1119,7 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             }
         case IDLC_ANALOGEXCEPTION:
             {
-
+                resetScanFlag(ScanException);
                 // memcpy (PointRecord.getName(), DeviceRecord->getName(), STANDNAMLEN);
                 // PointRecord.PointType = ANALOGPOINT;
 
@@ -1242,12 +1251,10 @@ INT CtiDeviceWelco::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist
             else
             {
                 outList.insert(OutMessage);
-                setScanPending();
+                setScanFlag(ScanRateGeneral);
             }
         }
     }
-
-    resetScanIntegrity();
 
     if(ReturnMsg != NULL)
     {
@@ -1278,6 +1285,7 @@ INT CtiDeviceWelco::WelCoGetError(OUTMESS *OutMessage, INT Priority)            
 
     /* Load all the other stuff that is needed */
     OutMessage->DeviceID     = getID();
+    OutMessage->TargetID     = getID();
     OutMessage->Buffer.OutMessage[4] = 0x08;
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
@@ -1316,6 +1324,7 @@ INT CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
     OutMessage->Buffer.OutMessage[4] = 0x08;
 
     OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
     OutMessage->Port      = getPortID();
     OutMessage->Remote    = getAddress();
     EstablishOutMessagePriority( OutMessage, Priority );
@@ -1343,6 +1352,7 @@ INT CtiDeviceWelco::WelCoPoll (OUTMESS *OutMessage, INT Priority)
     /* Load all the other stuff that is needed */
     OutMessage->Buffer.OutMessage[4] = 0x08 | IDLC_NUL_HDR;
     OutMessage->DeviceID     = getID();
+    OutMessage->TargetID     = getID();
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
     EstablishOutMessagePriority( OutMessage, Priority );
@@ -1395,6 +1405,7 @@ INT CtiDeviceWelco::WelCoTimeSync(OUTMESS *OutMessage, INT Priority)
 
         /* send a time sync to this guy */
         OutMessage->DeviceID           = getID();
+        OutMessage->TargetID           = getID();
         OutMessage->Port               = getPortID();
         OutMessage->Remote             = getAddress();
         OutMessage->TimeOut            = 2;
@@ -1433,6 +1444,7 @@ INT CtiDeviceWelco::WelCoReset(OUTMESS *OutMessage, INT Priority)
     /* Load all the other stuff that is needed */
     OutMessage->Buffer.OutMessage[4] = 0x08;
     OutMessage->DeviceID     = getID();
+    OutMessage->TargetID     = getID();
     OutMessage->Port         = getPortID();
     OutMessage->Remote       = getAddress();
     EstablishOutMessagePriority( OutMessage, Priority );
@@ -1584,6 +1596,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, RWTPtrSlist< OUTMESS > &
 
                         /* Load all the other stuff that is needed */
                         MyOutMessage->DeviceID                 = getID();
+                        MyOutMessage->TargetID                 = getID();
                         MyOutMessage->Port                     = getPortID();
                         MyOutMessage->Remote                   = getAddress();
                         OverrideOutMessagePriority( MyOutMessage, Priority );
@@ -1637,113 +1650,13 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
 {
     INT nRet = NoError;
 
-#ifdef OLD_WAY
-    memcpy (PointRecord.getName(), DeviceRecord.getName(), STANDNAMLEN);
-    if(!(PointgetDeviceFirst (&PointRecord)))
-    {
-        do
-        {
-            /* Load up the common parts of the DRP message */
-            memcpy (DRPValue.getName(), PointRecord.getName(), STANDNAMLEN);
-            memcpy (DRPValue.PointName, PointRecord.PointName, STANDNAMLEN);
-            DRPValue.TimeStamp = InMessage.Time;
-
-            switch(PointRecord.PointType)
-            {
-            case ACCUMULATORPOINT:
-            case DEMANDACCUMPOINT:
-                if(DoAccums)
-                {
-                    DRPValue.Type = DRPTYPEVALUE;
-
-                    PointLock (&PointRecord);
-
-                    /* Move the pulse count */
-                    PointRecord.PreviousPulses = PointRecord.PresentPulses;
-
-                    /* Clear the pulse counts */
-                    PointRecord.PresentPulses = 0;
-
-                    CheckDataStateQuality (&DeviceRecord,
-                                           &PointRecord,
-                                           &PValue,
-                                           PLUGGED,
-                                           InMessage.Time,
-                                           InMessage.MilliTime & DSTACTIVE,
-                                           NORMAL,
-                                           LogFlag);
-                }
-
-                break;
-
-            case ANALOGPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-                break;
-
-            case TWOSTATEPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-
-                break;
-
-            case THREESTATEPOINT:
-                DRPValue.Type = DRPTYPEVALUE;
-                PointLock (&PointRecord);
-
-                CheckDataStateQuality (&DeviceRecord,
-                                       &PointRecord,
-                                       &PValue,
-                                       PLUGGED,
-                                       InMessage.Time,
-                                       InMessage.MilliTime & DSTACTIVE,
-                                       NORMAL,
-                                       LogFlag);
-
-
-                break;
-
-            default:
-                continue;
-            }
-
-            /* Send the point to drp */
-            DRPValue.Value = PointRecord.CurrentValue;
-            DRPValue.Quality = PointRecord.CurrentQuality;
-            DRPValue.AlarmState = PointRecord.AlarmStatus;
-
-            SendDRPPoint (&DRPValue);
-        } while(!(PointgetDeviceNext (&PointRecord)));
-    }
-#else
-
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
     if(pMsg != NULL)
     {
         pMsg->insert( -1 );                 // This is the dispatch token and is unimplemented at this time
         pMsg->insert(OP_DEVICEID);          // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-        pMsg->insert(getID());        // The id (device or point which failed)
+        pMsg->insert(getID());              // The id (device or point which failed)
         pMsg->insert(ScanRateGeneral);      // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
         if(InMessage->EventCode != 0)
@@ -1758,7 +1671,42 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
         retList.insert( pMsg );
     }
 
-#endif
+    if(InMessage)
+    {
+        resetForScan(desolveScanRateType(RWCString(InMessage->Return.CommandStr)));
+    }
+
+    /* see what handshake was */
+    if( useScanFlags() )            // Do we care about any of the scannable flags?
+    {
+        if(isScanFlagSet(ScanFreezePending))
+        {
+            resetScanFlag(ScanRateAccum);
+            resetScanFlag(ScanFreezePending);
+            setScanFlag(ScanFreezeFailed);
+            setPrevFreezeTime(getLastFreezeTime());
+            setPrevFreezeNumber(getLastFreezeNumber());
+            setLastFreezeNumber(0);
+            setLastFreezeTime(InMessage->Time + rwEpoch);
+        }
+        else if(isScanFlagSet(ScanRateGeneral))
+        {
+            resetScanFlag(ScanRateGeneral);
+
+            /* Check if we need to plug accumulators */
+            if(isScanFlagSet(ScanFreezeFailed) || isScanFlagSet(ScanFrozen))
+            {
+                resetScanFlag(ScanFreezeFailed);
+                resetScanFlag(ScanFrozen);
+                setLastFreezeNumber(0);
+            }
+        }
+        else if(isScanFlagSet(ScanResetting))
+        {
+            resetScanFlag(ScanResetting);
+            setScanFlag(ScanResetFailed);
+        }
+    }
 
     return nRet;
 }
@@ -2072,5 +2020,61 @@ INT CtiDeviceWelco::RefreshDevicePoints()
 {
     setDeadbandsSent(false);                    // Make them go again on next general scan!!
     return Inherited::RefreshDevicePoints();
+}
+
+
+bool CtiDeviceWelco::clearedForScan(int scantype)
+{
+    bool status = false;
+
+    switch(scantype)
+    {
+    case ScanRateGeneral:
+        {
+            status = (!isScanFlagSet(ScanRateIntegrity) && !isScanFlagSet(scantype) && !isScanFlagSet(ScanFreezePending) && !isScanFlagSet(ScanResetting)) || ( isScanFlagSet(ScanForced) );
+            break;
+        }
+    case ScanRateIntegrity:
+        {
+            status = (!isScanFlagSet(ScanRateAccum) && !isScanFlagSet(scantype) && !isScanFlagSet(ScanFreezePending) && !isScanFlagSet(ScanResetting));
+            break;
+        }
+    case ScanRateAccum:
+        {
+            status = (!isScanFlagSet(scantype) && !isScanFlagSet(ScanFreezePending) && !isScanFlagSet(ScanResetting));
+            break;
+        }
+    }
+
+    status = validatePendingStatus(status, scantype);
+
+    return status;
+}
+
+void CtiDeviceWelco::resetForScan(int scantype)
+{
+    if(isScanFlagSet(scantype))
+    {
+        resetScanFlag(scantype);
+    }
+
+    switch(scantype)
+    {
+    case ScanRateAccum:
+        {
+            if(isScanFlagSet(ScanFreezePending))
+            {
+                resetScanFlag(ScanFreezePending);
+                setScanFlag(ScanFreezeFailed);
+            }
+
+            if(isScanFlagSet(ScanResetting))
+            {
+                resetScanFlag(ScanResetting);
+                setScanFlag(ScanResetFailed);
+            }
+            break;
+        }
+    }
 }
 

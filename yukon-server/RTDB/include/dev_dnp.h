@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/07/11 18:26:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,6 @@ protected:
     Protocol::Interface::stringlist_t _string_results;
     Protocol::Interface::pointlist_t  _point_results;
 
-    void setDNPScanPending( int scantype, bool pending );
     void resetDNPScansPending( void );
 
     virtual Protocol::Interface *getProtocol();
@@ -115,7 +114,6 @@ public:
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
 
     virtual bool clearedForScan( int scantype );
-    virtual void resetForScan  ( int scantype );
 
     virtual INT IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);

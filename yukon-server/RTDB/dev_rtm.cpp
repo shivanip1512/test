@@ -7,11 +7,18 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/08/15 15:12:06 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.12  2005/10/19 02:50:23  cplender
+* Altered the dev_single.h inherited scanflags methods.
+* They are always available.
+* They are a map of boolean values.
+*
+* Some of the elements moved out of the table object into the dev_single object
+*
 * Revision 1.11  2005/08/15 15:12:06  cplender
 * Altered the protocol to do a reverse decode on RTM receipts.
 *
@@ -330,11 +337,11 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
     RWCString resultString;
     CtiReturnMsg *retMsg;
 
-    resetScanFlags();
+    resetScanFlag();
 
     if( !ErrReturn )
     {
-        resetScanFlags();
+        resetScanFlag();
 
         CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                        RWCString(InMessage->Return.CommandStr),
@@ -395,7 +402,7 @@ INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< C
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
 
-    resetScanFlags();
+    resetScanFlag();
 
     if( pPIL != NULL )
     {

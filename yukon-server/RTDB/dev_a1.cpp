@@ -6,12 +6,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/05/12 19:57:48 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.13  2005/10/19 02:50:22  cplender
+      Altered the dev_single.h inherited scanflags methods.
+      They are always available.
+      They are a map of boolean values.
+
+      Some of the elements moved out of the table object into the dev_single object
+
       Revision 1.12  2005/05/12 19:57:48  mfisher
       removed duplicate pointdata sends for load profile
 
@@ -1790,7 +1797,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     setReadClass (InMessage->Buffer.DUPSt.DUPRep.ReqSt.Command[2]);
 
     //check scan pending
-    if (isScanPending())
+    if (isScanFlagSet(ScanRateGeneral))
     {
 
         if ((tmpCurrentState == StateScanAbort)  ||
@@ -1848,7 +1855,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
     }
 
     // reset this flag so device makes it on the queue later
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     /*
      *  Do some common status point update stuff like power fail etc.

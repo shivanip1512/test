@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/02/10 23:23:59 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,7 +100,8 @@ INT CtiDeviceILEX::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse,
         OutMessage->Buffer.OutMessage[9]  = setFreezeNumber((BYTE)getLastFreezeNumber()).getFreezeNumber();
         OverrideOutMessagePriority( OutMessage, (MAXPRIORITY - 3) );
 
-        setScanIntegrity(TRUE);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
+        setScanFlag(ScanFreezePending);                     // This is an outbound freeze request.  We need a response to knowthey are frozen.
+        setScanFlag(ScanRateIntegrity);                         // We are an integrity scan (equiv. anyway).  Data must be propagated.
 
         outList.insert(OutMessage);
         OutMessage = NULL;
@@ -227,15 +228,15 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
         {
         case ILEXFREEZE:
             {
-                if(isScanFreezePending())
+                if(isScanFlagSet(ScanFreezePending))
                 {
-                    resetScanFreezePending();
-                    setScanFrozen();
+                    resetScanFlag(ScanFreezePending);
+                    setScanFlag(ScanFrozen);
                     setPrevFreezeTime(getLastFreezeTime());
                     setLastFreezeTime( RWTime(InMessage->Time) );
                     setPrevFreezeNumber( getLastFreezeNumber() );
                     setLastFreezeNumber(InMessage->Buffer.InMessage[2]);
-                    resetScanFreezeFailed();
+                    resetScanFlag(ScanFreezeFailed);
 
                     /* then force a scan */
                     OutMessage = CTIDBG_new OUTMESS;
@@ -252,7 +253,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         }
                         else
                         {
-                            setScanPending();
+                            setScanFlag(ScanRateGeneral);
                         }
                     }
                 }
@@ -263,16 +264,16 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << RWTime() << " Throwing away unexpected freeze response" << endl;
                     }
-                    setScanFreezeFailed();   // FIX FIX FIX 090799 CGP ?????
+                    setScanFlag(ScanFreezeFailed);   // FIX FIX FIX 090799 CGP ?????
                     /* message for screwed up freeze */
                 }
                 break;
             }
         case ILEXSCAN:
             {
-                if(isScanPending())
+                if(isScanFlagSet(ScanRateGeneral))
                 {
-                    resetScanPending();
+                    resetScanFlag(ScanRateGeneral);
 
                     /* update the scan time */
                     // 04302002 CGP These don't seem to be used anywhere around here...
@@ -330,7 +331,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         }
                         else
                         {
-                            setScanPending();
+                            setScanFlag(ScanRateGeneral);
                         }
                     }
                 }
@@ -378,7 +379,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 }
 
                 /* now check if we need to plug accums because of missed freeze */
-                if(((isScanFrozen()) || (isScanFreezeFailed())) && (NumAccum == 0))
+                if(((isScanFlagSet(ScanFrozen)) || (isScanFlagSet(ScanFreezeFailed))) && (NumAccum == 0))
                 {
                     /* make sure this guy is marked as a bad freeze */
                     setLastFreezeNumber( 0 );
@@ -413,8 +414,8 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         }
                     }
 
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
+                    resetScanFlag(ScanFrozen);
+                    resetScanFlag(ScanFreezeFailed);
                 }
 
                 /* Now process them in order */
@@ -496,7 +497,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 {
                     if((InMessage->Buffer.InMessage[0] & 0x07) == ILEXSCAN)
                     {
-                        if(isScanFrozen() || isScanFreezeFailed())
+                        if(isScanFlagSet(ScanFrozen) || isScanFlagSet(ScanFreezeFailed))
                         {
                             if( getScanRate(ScanRateGeneral) < getScanRate(ScanRateAccum) )
                             {
@@ -516,7 +517,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                     }
                                     else
                                     {
-                                        setScanPending();
+                                        setScanFlag(ScanRateGeneral);
                                     }
                                 }
                             }
@@ -525,9 +526,9 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                     /* Check the freeze number */
                     if(
-                      ((getLastFreezeNumber() != InMessage->Buffer.InMessage[Offset]) && isScanFrozen()) ||
-                      (isScanFreezeFailed() && getPrevFreezeNumber() + 1 != 0 && getPrevFreezeNumber() + 1 != InMessage->Buffer.InMessage[Offset]) ||
-                      (isScanFreezeFailed() && getPrevFreezeNumber() + 1 == 0 && getPrevFreezeNumber() + 2 != InMessage->Buffer.InMessage[Offset])
+                      ((getLastFreezeNumber() != InMessage->Buffer.InMessage[Offset]) && isScanFlagSet(ScanFrozen)) ||
+                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 != 0 && getPrevFreezeNumber() + 1 != InMessage->Buffer.InMessage[Offset]) ||
+                      (isScanFlagSet(ScanFreezeFailed) && getPrevFreezeNumber() + 1 == 0 && getPrevFreezeNumber() + 2 != InMessage->Buffer.InMessage[Offset])
                       )
                     {
                         /* Process wrong freeze number */
@@ -551,7 +552,7 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         ULONG curPulseValue;
 
                         /* mark the freeze as valid */
-                        if(isScanFreezeFailed())
+                        if(isScanFlagSet(ScanFreezeFailed))
                             setLastFreezeNumber(InMessage->Buffer.InMessage[Offset]);
 
                         /* Calculate the part of an hour involved here */
@@ -688,8 +689,8 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                             Offset += 2;
                         }
                     }
-                    resetScanFrozen();
-                    resetScanFreezeFailed();
+                    resetScanFlag(ScanFrozen);
+                    resetScanFlag(ScanFreezeFailed);
                 }
 
                 if(NumSOE)
@@ -778,13 +779,13 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                         }
                         else
                         {
-                            setScanPending();
+                            setScanFlag(ScanRateGeneral);
                         }
                     }
                 }
-                else if(isScanPending())
+                else if(isScanFlagSet(ScanRateGeneral))
                 {
-                    resetScanPending();
+                    resetScanFlag(ScanRateGeneral);
 
                     // 04302002 CGP This doesn't seem to be used anywhere around here...
                     // DeviceRecord->LastFullScan = TimeB->time;
@@ -828,6 +829,50 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 INT CtiDeviceILEX::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage >   &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
     INT status = NoError;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    if(InMessage)
+    {
+        resetForScan(desolveScanRateType(RWCString(InMessage->Return.CommandStr)));
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    /* see what handshake was */
+    if( useScanFlags() )            // Do we care about any of the scannable flags?
+    {
+        if(isScanFlagSet(ScanFreezePending))
+        {
+            resetScanFlag(ScanRateAccum);
+            resetScanFlag(ScanFreezePending);
+            setScanFlag(ScanFreezeFailed);
+            setPrevFreezeTime(getLastFreezeTime());
+            setPrevFreezeNumber(getLastFreezeNumber());
+            setLastFreezeNumber(0);
+            setLastFreezeTime(InMessage->Time + rwEpoch);
+        }
+        else if(isScanFlagSet(ScanRateGeneral))
+        {
+            resetScanFlag(ScanRateGeneral);
+
+            /* Check if we need to plug accumulators */
+            if(isScanFlagSet(ScanFreezeFailed) || isScanFlagSet(ScanFrozen))
+            {
+                resetScanFlag(ScanFreezeFailed);
+                resetScanFlag(ScanFrozen);
+                setLastFreezeNumber(0);
+            }
+        }
+        else if(isScanFlagSet(ScanResetting))
+        {
+            resetScanFlag(ScanResetting);
+            setScanFlag(ScanResetFailed);
+        }
+    }
 
     return status;
 }

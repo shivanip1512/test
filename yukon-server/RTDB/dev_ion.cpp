@@ -384,103 +384,6 @@ void CtiDeviceION::initEventLogPosition( void )
     }
 }
 
-
-/*
-void CtiDeviceION::resetIONScansPending( void )
-{
-    _scanGeneralPending     = false;
-    _scanIntegrityPending   = false;
-    _scanAccumulatorPending = false;
-}
-
-
-void CtiDeviceION::setIONScanPending(int scantype, bool pending)
-{
-    switch(scantype)
-    {
-        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
-        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
-        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-}
-
-
-bool CtiDeviceION::clearedForScan(int scantype)
-{
-    bool status = false;
-
-    switch(scantype)
-    {
-        case ScanRateGeneral:
-        {
-            status = !_scanGeneralPending;
-            break;
-        }
-        case ScanRateIntegrity:
-        {
-            status = !_scanIntegrityPending;
-            break;
-        }
-        case ScanRateAccum:
-        {
-            status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
-            break;
-        }
-        case ScanRateLoadProfile:
-        {
-           status = true;
-           break;
-        }
-    }
-
-    status = validatePendingStatus(status, scantype);
-
-    return status;
-}
-
-
-void CtiDeviceION::resetForScan(int scantype)
-{
-    // OK, it is five minutes past the time I expected to have scanned this bad boy..
-    switch(scantype)
-    {
-        case ScanRateGeneral:
-        case ScanRateIntegrity:
-        case ScanRateAccum:
-        {
-            setIONScanPending(scantype, false);
-
-            if(isScanFreezePending())
-            {
-                resetScanFreezePending();
-                setScanFreezeFailed();
-            }
-
-            if(isScanPending())
-            {
-                resetScanPending();
-            }
-
-            if(isScanResetting())
-            {
-                resetScanResetting();
-                setScanResetFailed();
-            }
-            break;
-        }
-    }
-}
-*/
-
-
 INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
 {
     INT status = NORMAL;
@@ -495,8 +398,6 @@ INT CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     pReq->setCommandString("scan general");
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
-
-//    setIONScanPending(ScanRateGeneral, true);
 
     if(OutMessage)
     {
@@ -524,8 +425,6 @@ INT CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &parse, O
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
-//    setIONScanPending(ScanRateIntegrity, true);
-
     if(OutMessage)
     {
         delete OutMessage;
@@ -551,8 +450,6 @@ INT CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse,
 
     status = ExecuteRequest(pReq,newParse,OutMessage,vgList,retList,outList);
 
-//    setIONScanPending(ScanRateAccum, true);
-
     if(OutMessage)
     {
         delete OutMessage;
@@ -574,7 +471,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
     RWCString commandStr(InMessage->Return.CommandStr);
 
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if( !ErrReturn && !_ion.recvCommResult(InMessage, outList) )
     {
@@ -786,14 +683,6 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
 
                 break;
             }
-
-    /*        case CtiProtocolION::Command_ExceptionScan:
-            {
-                setIONScanPending(ScanRateGeneral, false);
-
-                break;
-            }*/
-
         }
 
         processInboundData(InMessage, TimeNow, vgList, retList, outList, pointData, eventData, returnInfo, expectMore);

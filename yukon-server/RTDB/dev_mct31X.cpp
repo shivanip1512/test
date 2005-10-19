@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/07/11 20:06:44 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -549,7 +549,7 @@ INT CtiDeviceMCT31X::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case Emetcon::Scan_Integrity:
         {
             //  to catch the IED case
-            setMCTScanPending(ScanRateIntegrity, false);  //  resetScanPending();
+            setScanFlag(ScanRateIntegrity, false);  //  resetScanFlag(ScanPending);
         }
         case Emetcon::GetValue_Demand:
         {
@@ -643,7 +643,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         dout << RWTime() << " **** Status Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    setMCTScanPending(ScanRateGeneral, false);  //resetScanPending();
+    setScanFlag(ScanRateGeneral, false);  //resetScanFlag(ScanPending);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1361,7 +1361,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
             {
                 double demandValue, kvarValue;
 
-                setMCTScanPending(ScanRateIntegrity, false);
+                setScanFlag(ScanRateIntegrity, false);
 
                 //  get KW
                 pPoint = getDevicePointOffsetTypeEqual( pid, AnalogPointType );
@@ -2114,11 +2114,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
-
-    setMCTScanPending(ScanRateAccum, false);  //resetScanPending();
+    setScanFlag(ScanRateAccum, false);  //resetScanFlag(ScanPending);
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
@@ -2219,8 +2215,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
-    setMCTScanPending(ScanRateIntegrity, false);
+    setScanFlag(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -2339,7 +2334,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -2433,10 +2428,6 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

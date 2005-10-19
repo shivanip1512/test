@@ -1982,7 +1982,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
 
     LGS4ScanData_t  *scanData = (LGS4ScanData_t*) DUPRep->Message;
 
-    if (isScanPending())
+    if (isScanFlagSet(ScanRateGeneral))
     {
         // if we bombed, we need an error condition and to plug values
         if ((tmpCurrentState == StateScanAbort)  ||
@@ -2040,7 +2040,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
     }
 
     // reset this flag so device makes it on the queue later
-    resetScanPending();
+    resetScanFlag(ScanRateGeneral);
 
     if (pPIL->PointData().entries() > 0)
     {

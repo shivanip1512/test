@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/10/17 16:59:58 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,10 +67,6 @@ protected:
     unsigned long _nextLPScanTime;
 
     unsigned long _disconnectAddress;
-
-    bool _scanGeneralPending,
-         _scanIntegrityPending,
-         _scanAccumulatorPending;
 
     static bool getMCTDebugLevel(int mask);
 
@@ -169,11 +165,7 @@ public:
     static bool initCommandStore( );
     virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
-    void setMCTScanPending( int scantype, bool pending );
     void resetMCTScansPending( void );
-
-    virtual bool clearedForScan( int scantype );
-    virtual void resetForScan  ( int scantype );
 
     virtual INT GeneralScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4 );
     virtual INT AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 3 );

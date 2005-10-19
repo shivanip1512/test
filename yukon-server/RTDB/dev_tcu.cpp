@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:24:00 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,7 +90,7 @@ INT CtiDeviceTCU::GeneralScan(CtiRequestMsg *pReq,
 
    if(OutMessage != NULL)
    {
-      setScanPending();
+      setScanFlag(ScanRateGeneral);
 
       EstablishOutMessagePriority( OutMessage, ScanPriority );
       status = TCUScanAll(OutMessage);
@@ -194,9 +194,9 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
       {
          if(useScanFlags())
          {
-            if(isScanPending())
+            if(isScanFlagSet(ScanRateGeneral))
             {
-               resetScanPending();
+               resetScanFlag(ScanRateGeneral);
 
                CtiMessage *Msg = TCUDecodeStatus(InMessage);
 
@@ -215,7 +215,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
                dout << RWTime() << " TCU response unexpected.. " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
                /* Something screwed up message goes here */
-               resetScanPending();
+               resetScanFlag(ScanRateGeneral);
             }
          }
          else
@@ -255,8 +255,8 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, RWTime &ScanTime, RWTPtrSlist< C
       dout << "This is peculiar " << __FILE__ << " (" << __LINE__ << ")" << endl;
       if(useScanFlags())
       {
-         resetScanFlags();
-         setScanStarting();
+         resetScanFlag();
+         setScanFlag(ScanStarting);
       }
 
       break;
@@ -547,7 +547,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
                                      temp);
          if(pData != NULL)
          {
-            if(isScanException())
+            if(isScanFlagSet(ScanException))
             {
                pData->setExemptionStatus(TRUE);                 // May be short circuited!
             }

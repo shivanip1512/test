@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2005/08/01 21:57:01 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,98 +264,10 @@ LONG CtiDeviceMCT::getDemandInterval() const
 
 void CtiDeviceMCT::resetMCTScansPending( void )
 {
-    _scanGeneralPending     = false;
-    _scanIntegrityPending   = false;
-    _scanAccumulatorPending = false;
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
+    setScanFlag(ScanRateAccum, false);
 }
-
-
-
-
-
-void CtiDeviceMCT::setMCTScanPending(int scantype, bool pending)
-{
-    switch(scantype)
-    {
-        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
-        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
-        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint - invalid scantype \"" << scantype << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-}
-
-bool CtiDeviceMCT::clearedForScan(int scantype)
-{
-    bool status = false;
-
-    switch(scantype)
-    {
-        case ScanRateGeneral:
-        {
-            status = !_scanGeneralPending;
-            break;
-        }
-        case ScanRateIntegrity:
-        {
-            status = !_scanIntegrityPending;
-            break;
-        }
-        case ScanRateAccum:
-        {
-            status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
-            break;
-        }
-        case ScanRateLoadProfile:
-        {
-           status = true;
-           break;
-        }
-    }
-
-    status = validatePendingStatus(status, scantype);
-
-    return status;
-}
-
-void CtiDeviceMCT::resetForScan(int scantype)
-{
-    // OK, it is five minutes past the time I expected to have scanned this bad boy..
-    switch(scantype)
-    {
-        case ScanRateGeneral:
-        case ScanRateIntegrity:
-        case ScanRateAccum:
-        {
-            setMCTScanPending(scantype, false);
-
-            if(isScanFreezePending())
-            {
-                resetScanFreezePending();
-                setScanFreezeFailed();
-            }
-
-            if(isScanPending())
-            {
-                resetScanPending();
-            }
-
-            if(isScanResetting())
-            {
-                resetScanResetting();
-                setScanResetFailed();
-            }
-            break;
-        }
-    }
-}
-
 
 RWTime CtiDeviceMCT::adjustNextScanTime(const INT scanType)
 {
@@ -724,7 +636,7 @@ INT CtiDeviceMCT::GeneralScan(CtiRequestMsg *pReq,
             outList.insert(OutMessage);
             OutMessage = NULL;
 
-            setMCTScanPending(ScanRateGeneral, true);  //resetScanPending();
+            setScanFlag(ScanRateGeneral, true);  //resetScanFlag(ScanPending);
         }
         else
         {
@@ -784,7 +696,7 @@ INT CtiDeviceMCT::IntegrityScan(CtiRequestMsg *pReq,
             outList.insert(OutMessage);
             OutMessage = NULL;
 
-            setMCTScanPending(ScanRateIntegrity, true);  //resetScanPending();
+            setScanFlag(ScanRateIntegrity, true);  //resetScanFlag(ScanPending);
         }
         else
         {
@@ -845,7 +757,7 @@ INT CtiDeviceMCT::AccumulatorScan(CtiRequestMsg *pReq,
             outList.insert(OutMessage);
             OutMessage = NULL;
 
-            setMCTScanPending(ScanRateAccum, true);  //resetScanPending();
+            setScanFlag(ScanRateAccum, true);  //resetScanFlag(ScanPending);
         }
         else
         {
@@ -3425,10 +3337,6 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, RWTime &TimeNow, 
 
     double    Value;
     RWCString resultStr, defaultStateName;
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

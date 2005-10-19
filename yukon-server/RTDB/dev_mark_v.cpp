@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/09/27 20:45:20 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -296,7 +296,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       dout << RWTime() << " ----Scanner Message Process For " << getName() << "----" << endl;
    }
 
-   if( isScanPending() )
+   if( isScanFlagSet(ScanRateGeneral) )
    {
       for( index = 0; index < transVector.size() - 1; index++ )
       {
@@ -713,7 +713,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
       }
    }
 
-   resetScanPending();
+   resetScanFlag(ScanRateGeneral);
 
    return( 1 );   //bs
 }
@@ -824,8 +824,8 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       for( index = 0; index < lp->numLpRecs; )
       {
-	      for( int x = 3; x >= 0; x-- )      // the 3 here should be a define, reps # of channels   
-			{
+          for( int x = 3; x >= 0; x-- )      // the 3 here should be a define, reps # of channels
+            {
             if( lp->enabledChannels[x] )
             {
                pPoint = getDevicePointOffsetTypeEqual( getChannelOffset( x ) + LOAD_PROFILE, AnalogPointType );
@@ -1006,9 +1006,10 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
       case 0xc000:
       case 0x4000:
          quality = QuestionableQuality;
+         break;
 
       default:
-         quality = AbnormalQuality;
+         quality = NormalQuality; // 20051014 CGP. // AbnormalQuality;
          break;
       }
    }

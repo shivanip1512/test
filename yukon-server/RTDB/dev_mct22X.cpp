@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/04/22 19:00:28 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,7 +186,7 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    setMCTScanPending(ScanRateIntegrity, false);    //    resetScanPending();
+    setScanFlag(ScanRateIntegrity, false);    //    resetScanFlag(ScanPending);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

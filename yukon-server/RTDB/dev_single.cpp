@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/07/25 16:37:14 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -14,6 +14,7 @@
 
 #include <vector>
 using namespace std;
+#include "cparms.h"
 #include "dev_single.h"
 #include "logger.h"
 #include "porter.h"
@@ -119,13 +120,6 @@ void CtiDeviceSingle::validateScanTimes(bool force)
 
             if( force == true || scanChanged )
             {
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << getName() << (scanChanged ? " scanChanged " : " force " ) << "  rate " << rate << endl;
-                }
-#endif
                 setNextScan(rate, firstScan(Now, rate));
 
                 if(rate == ScanRateAccum && scanChanged)
@@ -136,7 +130,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
                     setPrevFreezeTime(RWTime());
                 }
             }
-            else if(isScanPending() || isScanFreezePending())
+            else if(isScanFlagSet(rate) || isScanFlagSet(ScanFreezePending))
             {
                 // if we're pending, do the calculation anyway
                 setNextScan(rate, firstScan(Now, rate));
@@ -185,7 +179,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
         }
         else if( clearedForScan(ScanRateAccum) )
         {
-            resetScanForced();            // Reset this guy since we're doing it
+            resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
             if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
             {
@@ -195,6 +189,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
                 return SCAN_ERROR_GLOBAL_ADDRESS; // Cannot scan a global address.
             }
 
+            strncpy(OutMessage->Request.CommandStr, "scan accumulator", sizeof(OutMessage->Request.CommandStr));
             OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
             // Do the device's AccumulatorScan!
@@ -203,16 +198,17 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
 
             if(nRet && nRet != ACCUMSNOTSUPPORTED)
             {
-                setScanFreezeFailed();
-                // This should be done in Scanner 083199  ReportError(this, nRet);
-            }
-            else if(nRet != ACCUMSNOTSUPPORTED)
-            {
-                setScanFreezePending();
+                setScanFlag(ScanFreezeFailed);
             }
         }
         else
         {
+            if(  SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+            }
+
             if( getScanRate(ScanRateAccum) < 60 )
             {
                 setNextScan(ScanRateAccum, firstScan(Now, ScanRateAccum));
@@ -238,7 +234,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
 
     if(nRet != ACCUMSNOTSUPPORTED)
     {
-        if(!isScanForced())
+        if(!isScanFlagSet(ScanForced))
         {
             if(getNextScan(ScanRateGeneral) <= getNextScan(ScanRateAccum) &&
                !(getScanRate(ScanRateAccum) % getScanRate(ScanRateGeneral)))
@@ -296,6 +292,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
 
     if(OutMessage != NULL)
     {
+        strncpy(OutMessage->Request.CommandStr, "scan integrity", sizeof(OutMessage->Request.CommandStr));
         OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(isInhibited())
@@ -320,7 +317,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
         {
             if( clearedForScan(ScanRateIntegrity) )
             {
-                resetScanForced();            // Reset this guy since we're doing it
+                resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
                 if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
                 {
@@ -349,16 +346,18 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
                 }
                 else
                 {
-                    setScanPending();
+                    setScanFlag(ScanRateIntegrity);
                 }
 
             }
             else
             {
+                if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
                 }
+
                 if( getScanRate(ScanRateIntegrity) < 60 )
                 {
                     setNextScan(ScanRateIntegrity, firstScan(Now, ScanRateIntegrity));
@@ -415,6 +414,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 
     if(OutMessage != NULL)
     {
+        strncpy(OutMessage->Request.CommandStr, "scan general", sizeof(OutMessage->Request.CommandStr));
         OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(getNextScan(ScanRateGeneral).seconds() == 0)
@@ -447,9 +447,9 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
             }
             else // if(isInhibited()) ... so it isn't inhibited
             {
-                if( clearedForScan(ScanRateGeneral) )    // FIX FIX FIX 082999 CGP We have no PostCount.
+                if( clearedForScan(ScanRateGeneral) )
                 {
-                    resetScanForced();            // Reset this guy since we're doing it
+                    resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
                     if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
                     {
@@ -467,7 +467,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
 
                     if( !nRet )
                     {
-                        setScanPending();
+                        setScanFlag(ScanRateGeneral);
                     }
                     else     // Error occured
                     {
@@ -483,6 +483,12 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                 }
                 else
                 {
+                    if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                    }
+
                     if( getScanRate(ScanRateGeneral) < 60 )
                     {
                         setNextScan(ScanRateGeneral, firstScan(Now, ScanRateGeneral));
@@ -504,7 +510,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
      *  Calculate the next time we see this guy...
      *  But only if we are about to do something now (as indicated by OutMessages in the list!).
      */
-    if(!isScanForced() && outList.entries() > 0)
+    if(!isScanFlagSet(ScanForced) && outList.entries() > 0)
     {
         adjustNextScanTime(ScanRateGeneral);
     }
@@ -552,6 +558,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
 
     if(OutMessage != NULL)
     {
+        strncpy(OutMessage->Request.CommandStr, "scan loadprofile", sizeof(OutMessage->Request.CommandStr));
         OutMessage->Request.CheckSum = getUniqueIdentifier();  // Mark the OUTMESS with this DEVICE's CRC Id.
 
         if(isInhibited())
@@ -576,7 +583,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
         {
             if( clearedForScan(ScanRateLoadProfile) )
             {
-                resetScanForced();            // Reset this guy since we're doing it
+                resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
                 if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
                 {
@@ -736,16 +743,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             InEchoToOut( InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID,
-                                                    RWCString(InMessage->Return.CommandStr),
-                                                    InMessage->Return.UserID,
-                                                    InMessage->Return.TrxID,
-                                                    InMessage->Return.RouteID,
-                                                    InMessage->Return.MacroOffset,
-                                                    InMessage->Return.Attempt,
-                                                    0,
-                                                    InMessage->Priority);
-
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, RWCString(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
 
             pReq->setConnectionHandle( InMessage->Return.Connection );
 
@@ -803,11 +801,11 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             //    so we have to send it here
             if( InMessage->DeviceID != InMessage->TargetID )
             {
-                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
-
                 //  Log the communication success on this route.
                 if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
                 {
+                    CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+
                     if( retMsg != NULL )
                     {
                         commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
@@ -822,12 +820,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                         retMsg = 0;
                     }
                 }
-
-                if(retMsg)
-                {
-                    delete retMsg;
-                    retMsg = 0;
-                }
             }
 
             /* something went wrong so start by printing error */
@@ -837,86 +829,10 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
             }
 
-            /* Form up a general FAILURE message for the client to digest as needed. */
-            // dout << "Error return is being sent" << endl;
-
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
-
             retList.insert( Ret );
 
-            /* see what handshake was */
-            if( useScanFlags() )            // Do we care about any of the scannable flags?
-            {
-                if(isScanFreezePending())
-                {
-                    resetScanPending();
-                    resetScanFreezePending();
-                    setScanFreezeFailed();
-                    setPrevFreezeTime(getLastFreezeTime());
-                    setPrevFreezeNumber(getLastFreezeNumber());
-                    setLastFreezeNumber(0);
-                    setLastFreezeTime(InMessage->Time + rwEpoch);
-
-                    if(getNextScan(ScanRateGeneral) - getScanRate(ScanRateGeneral) <= TimeNow)
-                    {
-                        /* this device was due for regular scan so scan */
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " Forced Scan sent to Remote: " << getAddress() << endl;
-                        }
-
-                        resetScanException();                  // This is not an exception scan request...
-                        initiateGeneralScan(outList, MAXPRIORITY - 4);
-                    }
-                }
-                else if(isScanPending())
-                {
-                    resetScanPending();
-                    // FIX FIX FIX 090899 CGP ???? DeviceRecord.LastFullScan = InMessage.Time;
-
-                    /* Check if we need to plug accumulators */
-                    if(isScanFreezeFailed() || isScanFrozen())
-                    {
-                        resetScanFreezeFailed();
-                        resetScanFrozen();
-                        setLastFreezeNumber(0);
-                        DoAccums = TRUE;
-                    }
-                    else
-                    {
-                        DoAccums = FALSE;
-                    }
-
-                    ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
-
-                    // Add this to dev_lcu later CGP ..... 090899
-                    /* Check if we need to issue a reset */
-                    if(DoAccums && isLCU(getType()))
-                    {
-#if 1
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-#else
-                        if((i = LCUReset (&RemoteRecord, &DeviceRecord, 0, MAXPRIORITY - 4)) != NORMAL)
-                        {
-                            /* Send Error to logger */
-                            ReportError (&RemoteRecord, (USHORT)i);
-                        }
-                        else
-                        {
-                            setScanResetting();
-                        }
-#endif
-                    }
-                }
-                else if(isScanResetting())
-                {
-                    resetScanResetting();
-                    setScanResetFailed();
-                }
-            }
+            ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
         }
     }
     else
@@ -925,11 +841,10 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
         //    so we have to send it here
         if( InMessage->DeviceID != InMessage->TargetID )
         {
-            CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
-
             //  Log the communication success on this route.
             if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
             {
+                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
                 if( retMsg != NULL )
                 {
                     commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
@@ -943,11 +858,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                     vgList.append(retMsg);
                     retMsg = 0;
                 }
-            }
-
-            if(retMsg)
-            {
-                delete retMsg;
             }
         }
     }
@@ -973,253 +883,61 @@ INT CtiDeviceSingle::doDeviceInit(void)
     return nRet;
 }
 
-
-BOOL     CtiDeviceSingle::isScanStarting() const
+BOOL CtiDeviceSingle::isScanFlagSet(int scantype) const
 {
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanStarting();
+    BOOL val = FALSE;
 
-    return bRet;
+    try
+    {
+        if(scantype != -1)
+        {
+            if(_pending_map.find(scantype) != _pending_map.end())
+            {
+                val = _pending_map[scantype];                       // The specific pending will be checked if asked for...
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    return val;
 }
-BOOL     CtiDeviceSingle::setScanStarting(BOOL b)
+BOOL     CtiDeviceSingle::setScanFlag(int scantype, BOOL b)
 {
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanStarting(b);
+    BOOL val = b;
 
-    return bRet;
+    try
+    {
+        if(scantype != -1)
+        {
+            _pending_map[scantype] = b; // The specific pending is also set.
+        }
+        else
+        {
+            if(b == FALSE)
+            {
+                _pending_map.clear();   // If we were nonspecific and asked for a clear, we must blank all pending flags.
+            }
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return val;
 }
-BOOL     CtiDeviceSingle::resetScanStarting(BOOL b)
+BOOL CtiDeviceSingle::resetScanFlag(int scantype)
 {
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanStarting(b);
-
-    return bRet;
+    return setScanFlag(scantype,FALSE);
 }
-
-BOOL     CtiDeviceSingle::isScanIntegrity() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanIntegrity();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanIntegrity(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanIntegrity(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanIntegrity(BOOL b)
-{
-    return setScanIntegrity(b);
-}
-
-BOOL     CtiDeviceSingle::isScanFrozen() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanFrozen();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanFrozen(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFrozen(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanFrozen(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFrozen(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanFreezePending() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanFreezePending();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanFreezePending(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFreezePending(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanFreezePending(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFreezePending(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanPending() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanPending();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanPending(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanPending(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanPending(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanPending(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanFreezeFailed() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanFreezeFailed();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanFreezeFailed(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFreezeFailed(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanFreezeFailed(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanFreezeFailed(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanResetting() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanResetting();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanResetting(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanResetting(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanResetting(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanResetting(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanResetFailed() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanResetFailed();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanResetFailed(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanResetFailed(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanResetFailed(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanResetFailed(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanForced() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanForced();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanForced(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanForced(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanForced(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanForced(b);
-
-    return bRet;
-}
-
-BOOL     CtiDeviceSingle::isScanException() const
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData()->isScanException();
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::setScanException(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanException(b);
-
-    return bRet;
-}
-BOOL     CtiDeviceSingle::resetScanException(BOOL b)
-{
-    BOOL bRet = FALSE;
-    if(useScanFlags())
-        bRet = getScanData().setScanException(b);
-
-    return bRet;
-}
-
 
 LONG  CtiDeviceSingle::getLastFreezeNumber() const
 {
@@ -1401,20 +1119,25 @@ bool CtiDeviceSingle::clearedForScan(int scantype)
 
     switch(scantype)
     {
-    case ScanRateGeneral:
+        case ScanRateGeneral:
         {
-            status = (!isScanFreezePending() && !isScanPending() && !isScanResetting()) || ( isScanForced() );
+            status = !isScanFlagSet(scantype);
             break;
         }
-    case ScanRateIntegrity:
+        case ScanRateIntegrity:
         {
-            status = (!isScanFreezePending() && !isScanResetting());
+            status = !isScanFlagSet(scantype);
             break;
         }
-    case ScanRateAccum:
+        case ScanRateAccum:
         {
-            status = (!isScanFreezePending() && !isScanResetting());
+            status = !isScanFlagSet(scantype);
             break;
+        }
+        case ScanRateLoadProfile:
+        {
+           status = true;
+           break;
         }
     }
 
@@ -1423,48 +1146,17 @@ bool CtiDeviceSingle::clearedForScan(int scantype)
     return status;
 }
 
-void CtiDeviceSingle::resetForScan(int scantype)
+void CtiDeviceSingle::resetForScan(int scantype = -1)
 {
-    switch(scantype)
-    {
-    case ScanRateGeneral:
-    case ScanRateAccum:
-        {
-            if(isScanFreezePending())
-            {
-                resetScanFreezePending();
-                setScanFreezeFailed();
-            }
-
-            if(isScanPending())
-            {
-                resetScanPending();
-            }
-
-            if(isScanResetting())
-            {
-                resetScanResetting();
-                setScanResetFailed();
-            }
-            break;
-        }
-    }
+    resetScanFlag(scantype);        // Clears ALL scan flags!
 }
 
 CtiDeviceSingle::CtiDeviceSingle() :
-_useScanFlags(0),
-_scanData(NULL)
+_useScanFlags(0)
 {
     int i;
 
     LockGuard guard(monitor());
-
-    #ifdef CTIOLDSTATS
-    for(i = 0; i < StatTypeInvalid; i++)
-    {
-        _statistics[i] = NULL;
-    }
-    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1472,8 +1164,7 @@ _scanData(NULL)
     }
 }
 
-CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef) :
-_scanData(NULL)
+CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef)
 {
     int i;
 
@@ -1483,13 +1174,6 @@ _scanData(NULL)
     }
 
     LockGuard guard(monitor());
-
-    #ifdef CTIOLDSTATS
-    for(i = 0; i < StatTypeInvalid; i++)
-    {
-        _statistics[i] = NULL;
-    }
-    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1506,17 +1190,6 @@ CtiDeviceSingle::~CtiDeviceSingle()
 
     LockGuard guard(monitor());
 
-    #ifdef CTIOLDSTATS
-    for(i = 0; i < StatTypeInvalid; i++)
-    {
-        if(_statistics[i] != NULL)
-        {
-            delete _statistics[i];
-            _statistics[i] = NULL;
-        }
-    }
-    #endif
-
     for(i = 0; i < ScanRateInvalid; i++)
     {
         if( _scanRateTbl[i] != NULL)
@@ -1526,21 +1199,16 @@ CtiDeviceSingle::~CtiDeviceSingle()
         }
     }
 
-    if(_scanData != NULL)
+    if(_scanData.isDirty())
     {
-        if(_scanData->isDirty())
+        if( _scanData.Update().errorCode() != RWDBStatus::ok )
         {
-            if( _scanData->Update().errorCode() != RWDBStatus::ok )
+            if( _scanData.Insert().errorCode() != RWDBStatus::ok )
             {
-                if( _scanData->Insert().errorCode() != RWDBStatus::ok )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
             }
         }
-        delete _scanData;
-        _scanData = NULL;
     }
     // dump the vector if needed
     _windowVector.erase(_windowVector.begin(), _windowVector.end());
@@ -1556,19 +1224,6 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
 
         _twoWay = aRef.getTwoWay();
 
-#ifdef CTIOLDSTATS
-        for(i = 0; i < StatTypeInvalid; i++)
-        {
-            if(aRef.isStatValid(i))
-            {
-                if(!_statistics[i])
-                    _statistics[i] = CTIDBG_new CtiTableDeviceStatistics;
-
-                if(_statistics[i])    // Make sure we got some.
-                    *_statistics[i] = aRef.getStatistics(i);
-            }
-        }
-#endif
         for(i = 0; i < ScanRateInvalid; i++)
         {
             if(aRef.isRateValid(i))
@@ -1581,15 +1236,9 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
             }
         }
 
-        if( _scanData != NULL )
-        {
-            delete _scanData;       // Destructor stores it if it is dirty
-            _scanData = NULL;
-        }
-
         if(aRef.isScanDataValid())
         {
-            _scanData = CTIDBG_new CtiTableDeviceScanData( (const)aRef.getScanData());
+            _scanData = (const)aRef.getScanData();
         }
     }
     return *this;
@@ -1611,43 +1260,6 @@ CtiDeviceSingle& CtiDeviceSingle::setTwoWay( const CtiTableDevice2Way & aTwoWay 
     _twoWay = aTwoWay;
     return *this;
 }
-
-#ifdef CTIOLDSTATS
-BOOL CtiDeviceSingle::isStatValid(const INT stat) const
-{
-    BOOL status = FALSE;
-    if(_statistics[stat] != NULL)
-    {
-        status = TRUE;
-    }
-
-    return status;
-}
-
-CtiTableDeviceStatistics CtiDeviceSingle::getStatistics(const INT i) const
-{
-    return *_statistics[i];
-}
-CtiTableDeviceStatistics&  CtiDeviceSingle::getStatistics(const INT i)
-{
-    LockGuard guard(monitor());
-    return *_statistics[i];
-}
-CtiDeviceSingle&  CtiDeviceSingle::setStatistics(const INT i, CtiTableDeviceStatistics *aStatistics )
-{
-    LockGuard guard(monitor());
-
-    if(_statistics[i])
-    {
-        delete _statistics[i];
-        _statistics[i] = NULL;
-    }
-
-    _statistics[i] = aStatistics;
-
-    return *this;
-}
-#endif
 
 BOOL CtiDeviceSingle::isRateValid(const INT i) const
 {
@@ -1942,36 +1554,6 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     _twoWay.DecodeDatabaseReader(rdr);
 }
 
-#ifdef CTIOLDSTATS
-
-void CtiDeviceSingle::DecodeStatisticsDatabaseReader(RWDBReader &rdr)
-{
-    LockGuard guard(monitor());
-
-    RWCString rwsTemp;
-
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    rdr["statistictype"] >> rwsTemp;
-
-    INT i = resolveStatisticsType(rwsTemp);
-
-    if(i < StatTypeInvalid)
-    {
-        if(!_statistics[i])
-        {
-            _statistics[i] = CTIDBG_new CtiTableDeviceStatistics;
-        }
-
-        if(_statistics[i])
-            _statistics[i]->DecodeDatabaseReader(rdr);
-    }
-}
-#endif
-
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 {
     LockGuard guard(monitor());
@@ -2037,6 +1619,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         }
         else
         {
+            removeWindowType( newWindow.getType() );
             _windowVector.push_back (newWindow);
         }
     }
@@ -2049,20 +1632,6 @@ void CtiDeviceSingle::DumpData()
     Inherited::DumpData();
 
     LockGuard guard(monitor());
-
-    #ifdef CTIOLDSTATS
-    for(i = 0; i < StatTypeInvalid; i++)
-    {
-        if(_statistics[i])    // Make sure we got some.
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Stats Record                                : " << i  << endl;
-            }
-            _statistics[i]->DumpData();
-        }
-    }
-    #endif
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -2077,18 +1646,6 @@ void CtiDeviceSingle::DumpData()
     }
 }
 
-/*
- *  Things which make me into a scannable object.
- */
-INT  CtiDeviceSingle::resetScanFlags(INT i)
-{
-    INT flags = 0;
-
-    if(useScanFlags())
-        flags = getScanData().resetScanFlags(i);
-
-    return flags;
-}
 BOOL CtiDeviceSingle::useScanFlags() const
 {
     return _useScanFlags;
@@ -2100,12 +1657,12 @@ CtiTableDeviceScanData& CtiDeviceSingle::getScanData()
     validateScanData();
 
     LockGuard guard(monitor());
-    return *_scanData;
+    return _scanData;
 }
 
 const CtiTableDeviceScanData* CtiDeviceSingle::getScanData() const
 {
-    return _scanData;
+    return &_scanData;
 }
 
 BOOL     CtiDeviceSingle::setUseScanFlags(BOOL b)
@@ -2120,7 +1677,7 @@ BOOL     CtiDeviceSingle::resetUseScanFlags(BOOL b)
 
 bool CtiDeviceSingle::isScanDataValid() const
 {
-    return(_scanData != NULL);
+    return true;
 }
 
 INT CtiDeviceSingle::validateScanData()
@@ -2129,25 +1686,18 @@ INT CtiDeviceSingle::validateScanData()
 
     LockGuard guard(monitor());
 
-    if(_scanData == NULL)
+    if( !isScanFlagSet(ScanDataValid) )
     {
-        _scanData = CTIDBG_new CtiTableDeviceScanData( getID() );
-        if(_scanData != NULL)
+        setScanFlag(ScanDataValid, true);
+        if( !(_scanData.Restore().errorCode() == RWDBStatus::ok ))
         {
-            if( !(_scanData->Restore().errorCode() == RWDBStatus::ok ))
+            if( !(_scanData.Insert().errorCode() == RWDBStatus::ok ))
             {
-                if( !(_scanData->Insert().errorCode() == RWDBStatus::ok ))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-        }
-        else
-        {
-            status = MEMORY;
         }
     }
     return status;
@@ -2211,7 +1761,7 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, RWTime &n
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " " << getName() << "'s pending flags reset due to timeout on prior scan" << endl;
+                dout << RWTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan" << endl;
             }
             resetForScan(scantype);
             getScanData().setLastCommunicationTime(scantype, now);
@@ -2267,34 +1817,7 @@ bool CtiDeviceSingle::hasLongScanRate(const RWCString &cmd) const
 
     if( useScanFlags() )
     {
-        // First decide what scan rate we are.
-        INT scanratetype = ScanRateInvalid;
-
-        if(cmd.contains(" general") || cmd.contains(" status"))
-        {
-            scanratetype = ScanRateGeneral;
-        }
-        else if(cmd.contains(" integrity"))
-        {
-            scanratetype = ScanRateIntegrity;
-        }
-        else if(cmd.contains(" accumulator"))
-        {
-            scanratetype = ScanRateAccum;
-        }
-        else if(cmd.contains(" loadprofile"))
-        {
-            //  not applicable
-            scanratetype = ScanRateInvalid;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Cmd: " << cmd << endl;
-            }
-        }
+        int scanratetype = desolveScanRateType(cmd);
 
         if(getScanRate(scanratetype) > 3600)
         {
@@ -2364,3 +1887,57 @@ BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
     return status;
 }
 
+/*
+ * This method allows the command string to re-discover the scan type that was asked for.
+ */
+int CtiDeviceSingle::desolveScanRateType( const RWCString &cmd )
+{
+    // First decide what scan rate we are.
+    int scanratetype = ScanRateInvalid;
+
+    if(cmd.contains(" general") || cmd.contains(" status"))
+    {
+        scanratetype = ScanRateGeneral;
+    }
+    else if(cmd.contains(" integrity"))
+    {
+        scanratetype = ScanRateIntegrity;
+    }
+    else if(cmd.contains(" accumulator"))
+    {
+        scanratetype = ScanRateAccum;
+    }
+    else if(cmd.contains(" loadprofile"))
+    {
+        //  not applicable
+        scanratetype = ScanRateLoadProfile;
+    }
+
+    return scanratetype;
+}
+
+bool CtiDeviceSingle::removeWindowType( int window_type )
+{
+    bool found = false;
+    bool detect = false;
+    bool again = true;
+
+    while(again)
+    {
+        detect = false;
+        for(int x = 0; x < _windowVector.size(); x++)
+        {
+            if(_windowVector[x].getType() == window_type)
+            {
+                _windowVector.erase(_windowVector.begin()+x);
+                found = true;
+                detect = true;
+                break;
+            }
+        }
+
+        if(!detect) again = false;
+    }
+
+    return found;
+}

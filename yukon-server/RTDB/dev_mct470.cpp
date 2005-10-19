@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/08/12 14:47:37 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/10/19 02:50:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1134,8 +1134,8 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
 
     //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending();
-    resetScanFreezeFailed();
+    resetScanFlag(ScanFreezePending);
+    resetScanFlag(ScanFreezeFailed);
 
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -1227,8 +1227,8 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
-    setMCTScanPending(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1483,8 +1483,8 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
         dout << RWTime() << " **** IED Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
-    setMCTScanPending(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1672,8 +1672,8 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, RWTime &TimeNow, RWTP
         dout << RWTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    resetScanPending();  //  needed for dev_single...  sets this in initiateIntegrityScan
-    setMCTScanPending(ScanRateIntegrity, false);
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -1855,10 +1855,6 @@ INT CtiDeviceMCT470::decodeScanLoadProfile(INMESS *InMessage, RWTime &TimeNow, R
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFreezePending( );
-    resetScanFreezeFailed( );
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {

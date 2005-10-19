@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/09/08 21:39:31 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,7 +98,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                                                     InMessage->Return.TrxID,
                                                     InMessage->Return.UserID);
 
-            resetScanPending();
+            resetScanFlag();
 
             //  expect two ACK characters
             expectedAck = Parity_C( 0x40 | (getAddress() & 0x03) );

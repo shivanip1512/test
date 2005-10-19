@@ -1896,7 +1896,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
 
         //  here's where we filter through the returned data.
 
-        if( !useScanFlags( ) || isScanPending( ) )
+        if( !useScanFlags( ) || isScanFlagSet(ScanRateGeneral) )
         {
             //  if we bombed, we need an error condition and to plug values
             if( (tmpCurrentState == StateScanAbort)      ||
@@ -1981,7 +1981,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
         delete processedScanData;
     }
     // reset this flag so device makes it on the queue later
-    resetScanPending( );
+    resetScanFlag(ScanRateGeneral);
 
     //  this is where the messages get sent to Dispatch
     if( pPIL != NULL )

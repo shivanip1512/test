@@ -85,7 +85,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
                                           pReq->TransmissionId(),
                                           pReq->UserMessageId());
           retMsg->setExpectMore(1);
-          retList.insert(retMsg);    
+          retList.insert(retMsg);
 
           retMsg = 0;
 
@@ -171,10 +171,10 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
     for (int a = 0; a < 10; a++)
-    {       
+    {
         nibble = 0;
         for (int nib = 0; nib < 2; nib++)
-        {   
+        {
             pwdTemp = 0;
             for (int i = 0; i < 16; i++)
             {
@@ -227,7 +227,7 @@ INT CtiDeviceKV2::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
             &flags, sizeof(UINT));
 
 
-    
+
     outList.insert( OutMessage );
     OutMessage = 0;
    }
@@ -357,7 +357,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
         } */
 
         //executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
-    } 
+    }
 
     return nRet;
 }
@@ -403,7 +403,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                                             InMessage->Return.Attempt,
                                             InMessage->Return.TrxID,
                                             InMessage->Return.UserID);
-        }   
+        }
     }
     else
     {
@@ -446,7 +446,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                 lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
                 if (lastLpTime != NULL && *lastLpTime != 0)
-                {  
+                {
                     setLastLPTime(RWTime(*lastLpTime));
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
@@ -463,9 +463,9 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist<
                     }
                 }
             }
-            resetScanPending();
+            resetScanFlag(ScanRateGeneral);
         }
-        
+
     }
     if( retMsg != NULL )
     {
@@ -488,7 +488,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
     if (getKV2Protocol().getScanOperation() == 2) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
-        {                                
+        {
             RWCString returnString("demand reset successful");
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
@@ -502,21 +502,21 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
             int sizeOfReturnString = returnString.length();
             memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
-        }  
+        }
     }
     else //general Scan
     {
-    
+
         //if (useScanFlags())
-        
+
         if (InMessage->EventCode == NORMAL)
-        {                                
+        {
             if (getKV2Protocol().getlastLoadProfileTime() != 0 || getKV2Protocol().getScanOperation() == 0) //scanner
-            {                   
+            {
                 ULONG lptime = getKV2Protocol().getlastLoadProfileTime();
                 memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
                 InMessage->InLength = sizeof (unsigned long);
-                
+
                 if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -531,7 +531,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
                 InMessage->InLength = sizeOfReturnString;
 
                 InMessage->EventCode = NORMAL;
-            } 
+            }
         }
         else
         {
@@ -540,7 +540,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
             memcpy( InMessage->Buffer.InMessage, returnString, sizeOfReturnString );
             InMessage->InLength = sizeOfReturnString;
         }
-           
+
     }
    return( InMessage->EventCode ); //just a val
    //return( 0 ); //just a val
@@ -636,10 +636,10 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
     for (int a = 0; a < 10; a++)
-    {       
+    {
         nibble = 0;
         for (int nib = 0; nib < 2; nib++)
-        {   
+        {
             pwdTemp = 0;
             for (int i = 0; i < 16; i++)
             {
@@ -749,7 +749,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
         { 33,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 52,     0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         {  -1,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
-        
+
     };
     RWCString pswdTemp;
     pswdTemp = getIED().getPassword();
@@ -784,10 +784,10 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
     for (int aa = 0; aa < 20; aa++)
         password[aa] = 0;
     for (int a = 0; a < 10; a++)
-    {       
+    {
         nibble = 0;
         for (int nib = 0; nib < 2; nib++)
-        {   
+        {
             pwdTemp = 0;
             for (int i = 0; i < 16; i++)
             {
@@ -847,7 +847,7 @@ int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
             &flags, sizeof(UINT));
 
 
-    
+
     // keep the list on the scanner side for decode
     //getKV2Protocol().buildWantedTableList (aMsg);
     return NORMAL;
@@ -885,8 +885,8 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
     RWTime lastLoadProfileTime;
     RWCString resultString = "";
 
-    _result_string = "";    
-    
+    _result_string = "";
+
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << RWTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
@@ -905,10 +905,10 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
         }
 
         x =  OFFSET_TOTAL_KWH;
-        while (x <= OFFSET_METER_TIME_STATUS)  
+        while (x <= OFFSET_METER_TIME_STATUS)
         {
             pPoint = (CtiPointAnalog*)getDevicePointOffsetTypeEqual(x, AnalogPointType);
-            if (pPoint != NULL) 
+            if (pPoint != NULL)
             {
 
                 {
@@ -980,7 +980,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                         }
                         break;
                     }
-                    case OFFSET_LOADPROFILE_KW:  
+                    case OFFSET_LOADPROFILE_KW:
                     case OFFSET_LOADPROFILE_KVAR:
                     case OFFSET_LOADPROFILE_QUADRANT1_KVAR:
                     case OFFSET_LOADPROFILE_QUADRANT2_KVAR:
@@ -994,22 +994,22 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     {
 
                         gotLPValues = getKV2Protocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
-                        break;  
+                        break;
                     }
                     case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:  
+                    case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:  
+                    case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:  
+                    case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_A_CURRENT:  
+                    case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
                     case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_B_CURRENT:  
+                    case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
                     case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_C_CURRENT:  
+                    case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
                     case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
-                    case OFFSET_LOADPROFILE_NEUTRAL_CURRENT: 
+                    case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
                     case OFFSET_POWER_FACTOR:
                     {
                         gotValue = getKV2Protocol().retreivePresentValue(x, &value);
@@ -1027,12 +1027,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                         break;
                     }
                     default:
-                    {  
+                    {
                         gotValue = false;
                         gotLPValues = false;
                     }
                 }
-                if (gotValue) 
+                if (gotValue)
                 {
                     pData = CTIDBG_new CtiPointDataMsg();
                     pData->setId( pPoint->getID() );
@@ -1067,7 +1067,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
 
                     msgPtr = new CtiReturnMsg;
 
-                    msgPtr->insert(pData); 
+                    msgPtr->insert(pData);
                     retList.insert(msgPtr);
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
@@ -1078,7 +1078,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     pData = NULL;
                     msgPtr = NULL;
                 }
-                else if (gotLPValues) 
+                else if (gotLPValues)
                 {
                     if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
@@ -1093,8 +1093,8 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
 
                     int msgCntr = 0;
                     msgPtr = new CtiReturnMsg;
-                    
-                    for (y = getKV2Protocol().getTotalWantedLPBlockInts()-1; y >= 0; y--) 
+
+                    for (y = getKV2Protocol().getTotalWantedLPBlockInts()-1; y >= 0; y--)
                     {
                         if (getKV2Protocol().getLPTime(y) > lastLoadProfileTime.seconds())
                         {
@@ -1113,7 +1113,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
                             pData->setTime( RWTime(getKV2Protocol().getLPTime(y)) );
 
-                            msgPtr->insert(pData); 
+                            msgPtr->insert(pData);
 
                             if (msgCntr >= 400 || y <= 0 )
                             {
@@ -1124,8 +1124,8 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                                     msgPtr = new CtiReturnMsg;
                             }
                             else
-                                msgCntr++; 
-                            
+                                msgCntr++;
+
                             pData = NULL;
 
                         }
@@ -1133,11 +1133,11 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                         {
                             y = -1;
                             if (msgPtr->getCount() > 0)
-                            {                         
+                            {
                                 retList.insert(msgPtr);
                             }
                         }
-                        
+
 
                     }
                     //setLastLPTime(RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1)));
@@ -1148,11 +1148,11 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << "lastLPTime "<<RWTime(getKV2Protocol().getLPTime(getKV2Protocol().getTotalWantedLPBlockInts()-1))<< endl;
                     }
-                    if (pData != NULL) 
+                    if (pData != NULL)
                     {
                         delete []pData;
                         pData = NULL;
-                    }  
+                    }
                 }
                 pPoint = NULL;
             }
@@ -1169,7 +1169,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                     if (x == OFFSET_METER_TIME_STATUS)
                     {
                         gotValue = getKV2Protocol().retreiveMeterTimeDiffStatus(x, &value);
-                        if (gotValue) 
+                        if (gotValue)
                         {
                             pData = CTIDBG_new CtiPointDataMsg();
                             pData->setId( pStatusPoint->getID() );
@@ -1180,12 +1180,12 @@ void CtiDeviceKV2::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg > &re
                             if (archiveFlag & CMD_FLAG_UPDATE)
                             {
                                 pData->setTags(TAG_POINT_MUST_ARCHIVE);
-                            }          
+                            }
                             pData->setTime( RWTime() );
                             pData->setType( pStatusPoint->getType() );
 
                             msgPtr = new CtiReturnMsg;
-                            msgPtr->insert(pData); 
+                            msgPtr->insert(pData);
 
                             retList.insert(msgPtr);
 

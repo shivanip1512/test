@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/03/10 19:29:20 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/10/19 02:50:24 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,21 @@ class CtiVerificationBase;  //  this is so boost_time.h isn't included via verif
  */
 class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 {
+public:
+    enum ScanFlags
+    {
+        ScanStarting = ScanRateInvalid + 1,     // This allows us to be stored in the same set as ScanRateGeneral - ScanRateLoadProfile
+        ScanFrozen,                             // This flag is used to indicate a device state.  The device has had its accums frozen.
+        ScanFreezePending,                      // This flag is used to indicate device state.  The device has been asked to freeze accumulators.
+        ScanFreezeFailed,                       // This flag is used to indicate device state.  The device failed to complete when asked to freeze accumulators.
+        ScanResetting,
+        ScanResetFailed,
+        ScanForced,
+        ScanException,
+        ScanMeterRead,
+        ScanDataValid
+    };
+
 protected:
 
     enum ScanPriorities
@@ -61,10 +76,6 @@ protected:
 
     CtiTableDevice2Way           _twoWay;
 
-    #ifdef CTIOLDSTATS
-    CtiTableDeviceStatistics     *_statistics[StatTypeInvalid];
-    #endif
-
     CtiTableDeviceScanRate       *_scanRateTbl[ScanRateInvalid];    // Multiple Scan Rates
 
     vector<CtiTableDeviceWindow> _windowVector;
@@ -74,7 +85,7 @@ protected:
      */
 
     BOOL                       _useScanFlags;          // Do we really need to deal with the ScanData?
-    CtiTableDeviceScanData     *_scanData;             // Dynamic data only loaded if needed.
+    CtiTableDeviceScanData     _scanData;
 
     bool validatePendingStatus(bool status, int scantype, RWTime &now = RWTime());
 
@@ -82,11 +93,14 @@ protected:
 
 private:
 
+    typedef map< int, bool > ScanFlagsPending_t;
+    mutable ScanFlagsPending_t _pending_map;       // Scantype, bool pendingState
+
     ULONG getTardyTime(int scantype) const;
     bool hasRateOrClockChanged(int rate, RWTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, RWTime &aNow=RWTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
-
+    bool removeWindowType( int window_type );
 
 public:
 
@@ -105,13 +119,6 @@ public:
     CtiDeviceSingle& setTwoWay( const CtiTableDevice2Way & aTwoWay );
 
     BOOL isStatValid(const INT stat) const;
-
-    #ifdef CTIOLDSTATS
-    CtiTableDeviceStatistics getStatistics(const INT i) const;
-    CtiTableDeviceStatistics&  getStatistics(const INT i);
-    CtiDeviceSingle&  setStatistics(const INT i, CtiTableDeviceStatistics *aStatistics );
-    virtual void DecodeStatisticsDatabaseReader(RWDBReader &rdr);
-    #endif
 
     BOOL isRateValid(const INT i) const;
 
@@ -137,7 +144,6 @@ public:
     /*
      *  Things which make me into a scannable object.
      */
-    INT  resetScanFlags(INT i = 0);
     BOOL useScanFlags() const;
 
     CtiTableDeviceScanData& getScanData();
@@ -179,46 +185,9 @@ public:
 
     INT validateScanData();
 
-    BOOL     isScanStarting() const;
-    BOOL     setScanStarting(BOOL b = TRUE);
-    BOOL     resetScanStarting(BOOL b = FALSE);
-
-    BOOL     isScanIntegrity() const;
-    BOOL     setScanIntegrity(BOOL b = TRUE);
-    BOOL     resetScanIntegrity(BOOL b = FALSE);
-
-    BOOL     isScanFrozen() const;
-    BOOL     setScanFrozen(BOOL b = TRUE);
-    BOOL     resetScanFrozen(BOOL b = FALSE);
-
-    BOOL     isScanFreezePending() const;
-    BOOL     setScanFreezePending(BOOL b = TRUE);
-    BOOL     resetScanFreezePending(BOOL b = FALSE);
-
-    BOOL     isScanPending() const;
-    BOOL     setScanPending(BOOL b = TRUE);
-    BOOL     resetScanPending(BOOL b = FALSE);
-
-    BOOL     isScanFreezeFailed() const;
-    BOOL     setScanFreezeFailed(BOOL b = TRUE);
-    BOOL     resetScanFreezeFailed(BOOL b = FALSE);
-
-    BOOL     isScanResetting() const;
-    BOOL     setScanResetting(BOOL b = TRUE);
-    BOOL     resetScanResetting(BOOL b = FALSE);
-
-    BOOL     isScanResetFailed() const;
-    BOOL     setScanResetFailed(BOOL b = TRUE);
-    BOOL     resetScanResetFailed(BOOL b = FALSE);
-
-    BOOL     isScanForced() const;
-    BOOL     setScanForced(BOOL b = TRUE);
-    BOOL     resetScanForced(BOOL b = FALSE);
-
-    BOOL     isScanException() const;
-    BOOL     setScanException(BOOL b = TRUE);
-    BOOL     resetScanException(BOOL b = FALSE);
-
+    BOOL     isScanFlagSet(int scantype = -1) const;
+    BOOL     setScanFlag(int scantype = -1, BOOL b = TRUE);
+    BOOL     resetScanFlag(int scantype = -1);
 
     LONG  getLastFreezeNumber() const;
     LONG& getLastFreezeNumber();
@@ -249,6 +218,8 @@ public:
     RWTime peekDispatchTime() const;
 
     RWTime getNextWindowOpen() const;
+    static int desolveScanRateType( const RWCString &cmd );
+
 };
 
 #endif // #ifndef __DEV_SINGLE_H__

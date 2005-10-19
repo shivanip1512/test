@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/08/01 21:30:55 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/10/19 02:50:22 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,30 +81,10 @@ LONG DNP::getAddress() const
 
 void DNP::resetDNPScansPending( void )
 {
-    _scanGeneralPending     = false;
-    _scanIntegrityPending   = false;
-    _scanAccumulatorPending = false;
+    setScanFlag(ScanRateGeneral, false);
+    setScanFlag(ScanRateIntegrity, false);
+    setScanFlag(ScanRateAccum, false);
 }
-
-
-void DNP::setDNPScanPending(int scantype, bool pending)
-{
-    switch(scantype)
-    {
-        case ScanRateGeneral:   _scanGeneralPending     = pending;  break;
-        case ScanRateIntegrity: _scanIntegrityPending   = pending;  break;
-        case ScanRateAccum:     _scanAccumulatorPending = pending;  break;
-
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-}
-
 
 bool DNP::clearedForScan(int scantype)
 {
@@ -116,17 +96,17 @@ bool DNP::clearedForScan(int scantype)
         {
             case ScanRateGeneral:
             {
-                status = !(_scanGeneralPending || _scanIntegrityPending || _scanAccumulatorPending);
+                status = !(isScanFlagSet(ScanRateGeneral) || isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
                 break;
             }
             case ScanRateIntegrity:
             {
-                status = !(_scanIntegrityPending || _scanAccumulatorPending);
+                status = !(isScanFlagSet(ScanRateIntegrity) || isScanFlagSet(ScanRateAccum));
                 break;
             }
             case ScanRateAccum:
             {
-                status = !_scanAccumulatorPending;  //  MSKF 2003-01-31 true; // CGP 032101  (!isScanFreezePending()  && !isScanResetting());
+                status = !isScanFlagSet(ScanRateAccum);
                 break;
             }
             case ScanRateLoadProfile:
@@ -147,46 +127,12 @@ bool DNP::clearedForScan(int scantype)
 }
 
 
-void DNP::resetForScan(int scantype)
-{
-    // OK, it is five minutes past the time I expected to have scanned this bad boy..
-    switch(scantype)
-    {
-        case ScanRateGeneral:
-        case ScanRateIntegrity:
-        case ScanRateAccum:
-        {
-            setDNPScanPending(scantype, false);
-
-            if(isScanFreezePending())
-            {
-                resetScanFreezePending();
-                setScanFreezeFailed();
-            }
-
-            if(isScanPending())
-            {
-                resetScanPending();
-            }
-
-            if(isScanResetting())
-            {
-                resetScanResetting();
-                setScanResetFailed();
-            }
-            break;
-        }
-    }
-}
-
-
-
 INT DNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  RWTPtrSlist< CtiMessage > &vgList,RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
 
-    setDNPScanPending(ScanRateGeneral, true);
+    setScanFlag(ScanRateGeneral, true);
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -214,7 +160,7 @@ INT DNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&O
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
 
-    setDNPScanPending(ScanRateIntegrity, true);
+    setScanFlag(ScanRateIntegrity, true);
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
@@ -970,7 +916,7 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
             case Protocol::DNPInterface::Command_Class0Read:
             case Protocol::DNPInterface::Command_Class1230Read:
             {
-                setDNPScanPending(ScanRateIntegrity, false);
+                setScanFlag(ScanRateIntegrity, false);
                 break;
             }
             case Protocol::DNPInterface::Command_Class123Read:
@@ -978,7 +924,7 @@ INT DNP::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessag
             case Protocol::DNPInterface::Command_Class2Read:
             case Protocol::DNPInterface::Command_Class3Read:
             {
-                setDNPScanPending(ScanRateGeneral, false);
+                setScanFlag(ScanRateGeneral, false);
                 break;
             }
         }
@@ -1048,7 +994,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
         case Protocol::DNPInterface::Command_Class0Read:
         case Protocol::DNPInterface::Command_Class1230Read:
         {
-            setDNPScanPending(ScanRateIntegrity, false);
+            setScanFlag(ScanRateIntegrity, false);
             break;
         }
         case Protocol::DNPInterface::Command_Class123Read:
@@ -1056,7 +1002,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage
         case Protocol::DNPInterface::Command_Class2Read:
         case Protocol::DNPInterface::Command_Class3Read:
         {
-            setDNPScanPending(ScanRateGeneral, false);
+            setScanFlag(ScanRateGeneral, false);
             break;
         }
     }
