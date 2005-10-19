@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/18/2005 1:50:52 PM                        */
+/* Created on:     10/19/2005 3:09:40 PM                        */
 /*==============================================================*/
 
 
@@ -6108,7 +6108,7 @@ go
 
 
 alter table PAOScheduleAssignment
-   add constraint PK_PAOSCHEDULEASSIGNMENT primary key  (EventID, ScheduleID)
+   add constraint PK_PAOSCHEDULEASSIGNMENT primary key  (EventID)
 go
 
 
