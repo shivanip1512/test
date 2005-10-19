@@ -231,6 +231,7 @@ const CHAR * CtiFDR_XA21LM::KEY_QUEUE_FLUSH_RATE = "FDR_XA21LM_QUEUE_FLUSH_RATE"
 const CHAR * CtiFDR_XA21LM::KEY_DEBUG_MODE = "FDR_XA21LM_DEBUG_MODE";
 const CHAR * CtiFDR_XA21LM::KEY_OUTBOUND_SEND_RATE = "FDR_XA21LM_SEND_RATE";
 const CHAR * CtiFDR_XA21LM::KEY_OUTBOUND_SEND_INTERVAL = "FDR_XA21LM_SEND_INTERVAL";
+const CHAR * CtiFDR_XA21LM::KEY_LINK_TIMEOUT = "FDR_XA21LM_LINK_TIMEOUT_SECONDS";
 
 // Constructors, Destructor, and Operators
 CtiFDR_XA21LM::CtiFDR_XA21LM()
@@ -270,6 +271,16 @@ int CtiFDR_XA21LM::readConfig()
     else
     {
         setPortNumber (XA21LMPORTNUMBER);
+    }
+
+    tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
+    if (tempStr.length() > 0)
+    {
+        setLinkTimeout (atoi(tempStr));
+    }
+    else
+    {
+        setLinkTimeout (60);
     }
 
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);

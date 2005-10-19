@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/06/24 20:10:34 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2005/10/19 16:53:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.11  2005/10/19 16:53:22  dsutton
+      Added the ability to set the connection timeout using a cparm.  Interfaces will
+      kill the connection if they haven't heard anything from the other system after
+      this amount of time.  Defaults to 60 seconds.  Also changed the logging to
+      the system log so we don't log every unknown point as it comes in from the
+      foreign system.  It will no log these points only if a debug level is set.
+
       Revision 1.10  2005/06/24 20:10:34  dsutton
       When an unknown point arrives in Yukon, FDR logs that information to the
       system log.  At one site there were 270 items arriving once every ten
@@ -175,7 +182,8 @@ const CHAR * CtiFDR_ACS::KEY_OUTBOUND_SEND_INTERVAL = "FDR_ACS_SEND_INTERVAL";
 const CHAR * CtiFDR_ACS::KEY_TIMESYNC_VARIATION = "FDR_ACS_MAXIMUM_TIMESYNC_VARIATION";
 const CHAR * CtiFDR_ACS::KEY_TIMESYNC_UPDATE = "FDR_ACS_RESET_PC_TIME_ON_TIMESYNC";
 const CHAR * CtiFDR_ACS::KEY_POINT_TIME_VARIATION = "FDR_ACS_POINT_TIME_VARIATION";
-                                    
+const CHAR * CtiFDR_ACS::KEY_LINK_TIMEOUT = "FDR_ACS_LINK_TIMEOUT_SECONDS";
+
 // Constructors, Destructor, and Operators
 CtiFDR_ACS::CtiFDR_ACS()
 : CtiFDRSingleSocket(RWCString("ACS"))
@@ -208,6 +216,16 @@ int CtiFDR_ACS::readConfig()
     else
     {
         setPortNumber (ACS_PORTNUMBER);
+    }
+
+    tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
+    if (tempStr.length() > 0)
+    {
+        setLinkTimeout (atoi(tempStr));
+    }
+    else
+    {
+        setLinkTimeout (60);
     }
 
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);

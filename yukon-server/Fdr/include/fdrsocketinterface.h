@@ -48,6 +48,9 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int  getPortNumber () const;
         CtiFDRSocketInterface& setPortNumber(int aPort);
 
+        int  getLinkTimeout () const;
+        CtiFDRSocketInterface& setLinkTimeout(int aLinkTimeout);
+
         int  getConnectPortNumber () const;
         CtiFDRSocketInterface& setConnectPortNumber(int aPort);
         int  getTimestampReasonabilityWindow () const;
@@ -98,7 +101,12 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int     iConnectPortNumber;
 
 
-
+        /********************************
+        * long overdue change that allows the user to set the connection timeout between
+        * two systems.  It defaults to 60 seconds
+        *********************************
+        */
+        int                   iLinkTimeout;
 };                              
 
 #endif

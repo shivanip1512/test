@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/09/13 20:47:23 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2005/10/19 16:53:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,13 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.11  2005/10/19 16:53:22  dsutton
+*     Added the ability to set the connection timeout using a cparm.  Interfaces will
+*     kill the connection if they haven't heard anything from the other system after
+*     this amount of time.  Defaults to 60 seconds.  Also changed the logging to
+*     the system log so we don't log every unknown point as it comes in from the
+*     foreign system.  It will no log these points only if a debug level is set.
+*
 *     Revision 1.10  2005/09/13 20:47:23  tmack
 *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
 *
@@ -55,7 +62,8 @@ CtiFDRSocketInterface::CtiFDRSocketInterface(RWCString & interfaceType, int aPor
     iConnectPortNumber (aPortNumber),
     iTimestampReasonabilityWindow(aWindow),
     iPointTimeVariation(0),
-    iRegistered(true)
+    iRegistered(true),
+    iLinkTimeout(60)
 
 {
     iListener = new CtiFDRSocketConnection();
@@ -100,6 +108,16 @@ int CtiFDRSocketInterface::getPortNumber () const
 CtiFDRSocketInterface& CtiFDRSocketInterface::setPortNumber (int aPort)
 {
     iPortNumber = aPort;
+    return *this;
+}
+
+int CtiFDRSocketInterface::getLinkTimeout () const
+{
+    return iLinkTimeout;
+}
+CtiFDRSocketInterface& CtiFDRSocketInterface::setLinkTimeout (int aTimeout)
+{
+    iLinkTimeout = aTimeout;
     return *this;
 }
 

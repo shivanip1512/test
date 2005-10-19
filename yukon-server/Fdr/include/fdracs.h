@@ -16,6 +16,13 @@
 *				  design document for more information
 *    History: 
       $Log: fdracs.h,v $
+      Revision 1.5  2005/10/19 16:53:23  dsutton
+      Added the ability to set the connection timeout using a cparm.  Interfaces will
+      kill the connection if they haven't heard anything from the other system after
+      this amount of time.  Defaults to 60 seconds.  Also changed the logging to
+      the system log so we don't log every unknown point as it comes in from the
+      foreign system.  It will no log these points only if a debug level is set.
+
       Revision 1.4  2004/02/13 20:37:04  dsutton
       Added a new cparm for ACS interface that allows the user to filter points
       being routed to ACS by timestamp.  The filter is the number of seconds
@@ -216,6 +223,7 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
         static const CHAR * KEY_TIMESYNC_UPDATE;
         static const CHAR * KEY_TIMESYNC_VARIATION;
         static const CHAR * KEY_POINT_TIME_VARIATION;
+        static const CHAR * KEY_LINK_TIMEOUT;
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

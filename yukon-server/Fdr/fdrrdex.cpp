@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrdex.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/10/19 16:53:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrdex.cpp,v $
+      Revision 1.9  2005/10/19 16:53:22  dsutton
+      Added the ability to set the connection timeout using a cparm.  Interfaces will
+      kill the connection if they haven't heard anything from the other system after
+      this amount of time.  Defaults to 60 seconds.  Also changed the logging to
+      the system log so we don't log every unknown point as it comes in from the
+      foreign system.  It will no log these points only if a debug level is set.
+
       Revision 1.8  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -124,7 +131,7 @@ const CHAR * CtiFDR_Rdex::KEY_QUEUE_FLUSH_RATE = "FDR_RDEX_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_Rdex::KEY_DEBUG_MODE = "FDR_RDEX_DEBUG_MODE";
 const CHAR * CtiFDR_Rdex::KEY_OUTBOUND_SEND_RATE = "FDR_RDEX_SEND_RATE";
 const CHAR * CtiFDR_Rdex::KEY_OUTBOUND_SEND_INTERVAL = "FDR_RDEX_SEND_INTERVAL";
-
+const CHAR * CtiFDR_Rdex::KEY_LINK_TIMEOUT = "FDR_RDEX_LINK_TIMEOUT_SECONDS";
 // Constructors, Destructor, and Operators
 CtiFDR_Rdex::CtiFDR_Rdex()
 : CtiFDRSingleSocket(RWCString("RDEX"))
@@ -163,6 +170,16 @@ int CtiFDR_Rdex::readConfig()
     else
     {
         setPortNumber (RDEX_PORTNUMBER);
+    }
+
+    tempStr = getCparmValueAsString(KEY_LINK_TIMEOUT);
+    if (tempStr.length() > 0)
+    {
+        setLinkTimeout (atoi(tempStr));
+    }
+    else
+    {
+        setLinkTimeout (60);
     }
 
     tempStr = getCparmValueAsString(KEY_TIMESTAMP_WINDOW);
@@ -676,25 +693,30 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for analog point " << translationName;
-                    dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Translation for analog point " << translationName;
+                        dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    }
+                    desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                desc = getInterfaceName() + RWCString (" analog point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
             }
             else
             {         
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Analog point " << translationName;
-                    dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Analog point " << translationName;
+                        dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+                    }
+                    CHAR pointID[20];
+                    desc = getInterfaceName() + RWCString (" analog point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" analog point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
             }
             retVal = !NORMAL;
         }
@@ -792,25 +814,30 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for status point " <<  translationName;
-                    dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Translation for status point " <<  translationName;
+                        dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    }
+                    desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                desc = getInterfaceName() + RWCString (" status point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
             }
             else
             {
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Status point " << translationName;
-                    dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Status point " << translationName;
+                        dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
+                    }
+                    CHAR pointID[20];
+                    desc = getInterfaceName() + RWCString (" status point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" status point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
             }
             retVal = !NORMAL;
         }
@@ -897,41 +924,49 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Translation for control point " <<  translationName;
-                    dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Translation for control point " <<  translationName;
+                        dout << " from " << getLayer()->getName() << " was not found" << endl;
+                    }
+                    desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                desc = getInterfaceName() + RWCString (" control point is not listed in the translation table");
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
 
             }
             else if (!point.isControllable())
             {
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
-                    dout << " received from " << getLayer()->getName();
-                    dout << " was not configured receive for control for point " << point.getPointID() << endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Control point " << translationName;
+                        dout << " received from " << getLayer()->getName();
+                        dout << " was not configured receive for control for point " << point.getPointID() << endl;
+                    }
+                    desc = getInterfaceName() + RWCString (" control point is not configured to receive controls");
+                    _snprintf(action,60,"%s for pointID %d", 
+                              translationName,
+                              point.getPointID());
+                    logEvent (desc,RWCString (action));
                 }
-                desc = getInterfaceName() + RWCString (" control point is not configured to receive controls");
-                _snprintf(action,60,"%s for pointID %d", 
-                          translationName,
-                          point.getPointID());
-                logEvent (desc,RWCString (action));
             }
             else
             {
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Control point " << translationName;
-                    dout << " received from " << getLayer()->getName();
-                    dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Control point " << translationName;
+                        dout << " received from " << getLayer()->getName();
+                        dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
+                    }
+                    CHAR pointID[20];
+                    desc = getInterfaceName() + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                    _snprintf(action,60,"%s", translationName);
+                    logEvent (desc,RWCString (action));
                 }
-                CHAR pointID[20];
-                desc = getInterfaceName() + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
-                _snprintf(action,60,"%s", translationName);
-                logEvent (desc,RWCString (action));
             }
             retVal = !NORMAL;
         }

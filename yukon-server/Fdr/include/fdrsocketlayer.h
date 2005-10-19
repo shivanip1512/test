@@ -75,6 +75,8 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         CtiFDRClientConnection * getOutBoundConnection ();
         CtiFDRSocketLayer& setOutBoundConnection (CtiFDRClientConnection *aClient);
 
+        int getLinkTimeout () const;
+
         // convience functions used to get from layer to interface
         int getMessageSize(CHAR *data);
         RWCString decodeClientName(CHAR *data);

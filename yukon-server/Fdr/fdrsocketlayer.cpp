@@ -171,6 +171,11 @@ CtiFDRSocketLayer& CtiFDRSocketLayer::setConnectionType (CtiFDRSocketLayer::FDRC
   return *this;
 }
 
+int CtiFDRSocketLayer::getLinkTimeout( void ) const
+{   
+    return iParent->getLinkTimeout();
+}
+
 USHORT CtiFDRSocketLayer::getPortNumber () const
 {
     return iParent->getPortNumber();
@@ -457,7 +462,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     ULONG postCount;
-    int   loopCnt=0;
+    int   loopCnt=1;
     int   failedStatus = 0;
     DWORD semRet;
     RWTime logTime;
@@ -480,7 +485,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
 
                 ResetEvent (iSemaphore);
 
-                semRet = WaitForSingleObject(iSemaphore, 15000L);
+                semRet = WaitForSingleObject(iSemaphore, 5000L);
 
                 // returns an error 1 for a timeout, error or otherwise
                 if(semRet == WAIT_TIMEOUT)
@@ -490,12 +495,13 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                     /**********************
                     * because we want to be able to cancel this thread, 
                     * we are checking the time out more often
-                    * still only fail the connection if we have timed out
+                    * still only fail the connection when the set timeout occurs
+                    *********************
                     * for 60 seconds
                     ***********************
                     */
 
-                    if (loopCnt < 3)
+                    if ((loopCnt*5) < getLinkTimeout())
                     {
                         loopCnt++;
                     }
@@ -515,7 +521,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
                 else
                 {
                     // we were tripped so a timeout is at least 60 seconds away
-                    loopCnt = 0;
+                    loopCnt = 1;
 
                     pSelf.serviceCancellation( );
 

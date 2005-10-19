@@ -16,6 +16,13 @@
 *             design document for more information
 *    History: 
       $Log: fdrrdex.h,v $
+      Revision 1.4  2005/10/19 16:53:23  dsutton
+      Added the ability to set the connection timeout using a cparm.  Interfaces will
+      kill the connection if they haven't heard anything from the other system after
+      this amount of time.  Defaults to 60 seconds.  Also changed the logging to
+      the system log so we don't log every unknown point as it comes in from the
+      foreign system.  It will no log these points only if a debug level is set.
+
       Revision 1.3  2002/04/16 15:58:46  softwarebuild
       20020416_1031_2_16
 
@@ -241,6 +248,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         static const CHAR * KEY_DEBUG_MODE;
         static const CHAR * KEY_OUTBOUND_SEND_RATE;
         static const CHAR * KEY_OUTBOUND_SEND_INTERVAL;
+        static const CHAR * KEY_LINK_TIMEOUT;
 
         RWCString   YukonToForeignTime (RWTime aTimeStamp);
         ULONG         YukonToForeignQuality (ULONG aQuality);
