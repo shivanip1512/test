@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/10/19 19:11:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,7 +114,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
 
         LONG scanrate = getScanRate(rate);
 
-        if(scanrate >= 0)
+        if( scanrate >= 0 && isWindowOpen() )
         {
             bool scanChanged = hasRateOrClockChanged(rate, Now);
 
@@ -172,7 +172,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
             adjustNextScanTime(ScanRateAccum);
             nRet = DEVICEINHIBITED;
         }
-        else if(!isScanWindowOpen())
+        else if(!isWindowOpen())
         {
             adjustNextScanTime(ScanRateAccum);
             nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
@@ -305,7 +305,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
 
         }
-        else if(!isScanWindowOpen())
+        else if(!isWindowOpen())
         {
             //          {
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -440,7 +440,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                 adjustNextScanTime(ScanRateGeneral);
                 nRet = SCAN_ERROR_DEVICE_INHIBITED;
             }
-            else if(!isScanWindowOpen())
+            else if(!isWindowOpen())
             {
                 adjustNextScanTime(ScanRateGeneral);
                 nRet=SCAN_ERROR_DEVICE_WINDOW_CLOSED;
@@ -571,7 +571,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, IN
             nRet =  SCAN_ERROR_DEVICE_INHIBITED;
 
         }
-        else if(!isScanWindowOpen())
+        else if(!isWindowOpen())
         {
             //          {
             //             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1042,7 +1042,21 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const RWTime &b)
     LockGuard guard(monitor());
 
     scheduleSignaledAlternateScan(a);
-    getScanData().setNextScan(a, b);
+
+    RWTime Now, When;
+
+    if( !isWindowOpen(Now, When) )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << endl;
+        }
+
+        getScanData().setNextScan(a, When);
+    }
+    else
+        getScanData().setNextScan(a, b);
+
     return *this;
 }
 
@@ -1339,14 +1353,14 @@ CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableD
     return *this;
 }
 
-BOOL CtiDeviceSingle::isScanWindowOpen(RWTime &aNow) const
+BOOL CtiDeviceSingle::isWindowOpen(RWTime &aNow, RWTime &opensAt, CtiDeviceWindow_t windowType) const
 {
     BOOL status = TRUE;
 
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
-        if(_windowVector[x].getType() == DeviceWindowScan)
+        if(_windowVector[x].getType() == windowType)
         {
             RWTime lastMidnight(RWDate());
             RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
@@ -1361,6 +1375,7 @@ BOOL CtiDeviceSingle::isScanWindowOpen(RWTime &aNow) const
             }
             else if((aNow < open) || (aNow > close))
             {
+                opensAt = open + 86400L;    // The next Window open time (open is today's open).
                 status = FALSE;
             }
         }
@@ -1927,7 +1942,7 @@ bool CtiDeviceSingle::removeWindowType( int window_type )
         detect = false;
         for(int x = 0; x < _windowVector.size(); x++)
         {
-            if(_windowVector[x].getType() == window_type)
+            if(window_type < 0 || _windowVector[x].getType() == window_type)    // if window_type < 0, we remove all, this is the default argument.
             {
                 _windowVector.erase(_windowVector.begin()+x);
                 found = true;

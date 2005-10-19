@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2005/10/19 19:11:48 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,7 +100,6 @@ private:
     bool hasRateOrClockChanged(int rate, RWTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, RWTime &aNow=RWTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
-    bool removeWindowType( int window_type );
 
 public:
 
@@ -180,7 +179,7 @@ public:
     INT         initiateLoadProfileScan(RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = ScanPriority_LoadProfile);
 
     bool isScanDataValid() const;
-    BOOL isScanWindowOpen(RWTime &aNow=RWTime()) const;
+    BOOL isWindowOpen(RWTime &aNow=RWTime(), RWTime &opensAt = RWTime(), CtiDeviceWindow_t windowType = DeviceWindowScan) const;
     void checkSignaledAlternateRateForExpiration();
 
     INT validateScanData();
@@ -219,6 +218,7 @@ public:
 
     RWTime getNextWindowOpen() const;
     static int desolveScanRateType( const RWCString &cmd );
+    bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
 };
 

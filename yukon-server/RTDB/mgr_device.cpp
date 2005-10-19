@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2005/10/04 19:42:28 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2005/10/19 19:11:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -585,6 +585,12 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
     if(id > 0)
     {
         selector.where(keyTable["deviceid"] == id && selector.where());
+
+        CtiDeviceSPtr devsptr = getEqual(id);
+        if(devsptr && devsptr->isSingle())
+        {
+            ((CtiDeviceSingle*)devsptr.get())->removeWindowType();  // This should remove ALL windows.  It is needed in case they have deleted the window on the device.
+        }
     }
 
     if(DebugLevel & 0x00020000)
@@ -599,7 +605,7 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
     {
         rdr["deviceid"] >> lTemp;            // get the DeviceID
 
-        CtiDeviceSPtr devsptr = getEqual(id);
+        CtiDeviceSPtr devsptr = getEqual(lTemp);
         pTempCtiDevice = devsptr.get();
 
         if( pTempCtiDevice )
@@ -617,7 +623,7 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " There are scan windows in the device window table for a nonscannable device." << endl;
+                    dout << RWTime() << " There are scan windows in the device window table for a nonscannable device. " << pTempCtiDevice->getName() << endl;
                 }
             }
         }
