@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/10/19 19:10:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,8 +26,7 @@ prevFreezeNumber(0),
 lastLPTime(RWTime( RWTime() - (30 * 24 * 3600) )),       // Thirty days ago.
 lastFreezeTime((unsigned)1985, (unsigned)1, (unsigned)1),
 prevFreezeTime((unsigned)1985, (unsigned)1, (unsigned)1),
-_deviceID(did),
-_flags(0)
+_deviceID(did)
 {
     for(int i=0; i < ScanRateInvalid; i++)
     {
@@ -83,159 +82,6 @@ RWTime CtiTableDeviceScanData::nextNearestTime(int maxrate) const
 
     return Win.rwtime();
 }
-
-INT      CtiTableDeviceScanData::clearScanFlags(INT i)
-{
-    return _flags = i;
-}
-
-INT      CtiTableDeviceScanData::resetScanFlags(INT i)
-{
-    setDirty(true);
-    return _flags = i;
-}
-
-BOOL CtiTableDeviceScanData::isScanStarting() const
-{
-    return starting;
-}
-BOOL CtiTableDeviceScanData::setScanStarting(BOOL b)
-{
-    setDirty(true);
-    return starting = b;
-}
-BOOL CtiTableDeviceScanData::resetScanStarting(BOOL b)
-{
-    return setScanStarting(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanIntegrity() const
-{
-    return integrity;
-}
-BOOL CtiTableDeviceScanData::setScanIntegrity(BOOL b)
-{
-    setDirty(true);
-    return integrity = b;
-}
-BOOL CtiTableDeviceScanData::resetScanIntegrity(BOOL b)
-{
-    return setScanIntegrity(b);
-}
-
-
-BOOL CtiTableDeviceScanData::isScanFrozen() const
-{
-    return frozen;
-}
-BOOL CtiTableDeviceScanData::setScanFrozen(BOOL b)
-{
-    setDirty(true);
-    return frozen = b;
-}
-BOOL CtiTableDeviceScanData::resetScanFrozen(BOOL b)
-{
-    return setScanFrozen(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanFreezePending() const
-{
-    return freezePending;
-}
-BOOL CtiTableDeviceScanData::setScanFreezePending(BOOL b)
-{
-    setDirty(true);
-    return freezePending = b;
-}
-BOOL CtiTableDeviceScanData::resetScanFreezePending(BOOL b)
-{
-    return setScanFreezePending(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanPending() const
-{
-    return pending;
-}
-BOOL CtiTableDeviceScanData::setScanPending(BOOL b)
-{
-    setDirty(true);
-    return pending = b;
-}
-BOOL CtiTableDeviceScanData::resetScanPending(BOOL b)
-{
-    return setScanPending(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanFreezeFailed() const
-{
-    return freezeFailed;
-}
-BOOL CtiTableDeviceScanData::setScanFreezeFailed(BOOL b)
-{
-    setDirty(true);
-    return freezeFailed = b;
-}
-BOOL CtiTableDeviceScanData::resetScanFreezeFailed(BOOL b)
-{
-    return setScanFreezeFailed(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanResetting() const
-{
-    return resetting;
-}
-BOOL CtiTableDeviceScanData::setScanResetting(BOOL b)
-{
-    setDirty(true);
-    return resetting = b;
-}
-BOOL CtiTableDeviceScanData::resetScanResetting(BOOL b)
-{
-    return setScanResetting(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanResetFailed() const
-{
-    return resetFailed;
-}
-BOOL CtiTableDeviceScanData::setScanResetFailed(BOOL b)
-{
-    setDirty(true);
-    return resetFailed = b;
-}
-BOOL CtiTableDeviceScanData::resetScanResetFailed(BOOL b)
-{
-    return setScanResetFailed(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanForced() const
-{
-    return forced;
-}
-BOOL CtiTableDeviceScanData::setScanForced(BOOL b)
-{
-    setDirty(true);
-    return forced = b;
-}
-BOOL CtiTableDeviceScanData::resetScanForced(BOOL b)
-{
-    return setScanForced(b);
-}
-
-BOOL CtiTableDeviceScanData::isScanException() const
-{
-    return exception;
-}
-BOOL CtiTableDeviceScanData::setScanException(BOOL b)
-{
-    setDirty(true);
-    return exception = b;
-}
-BOOL CtiTableDeviceScanData::resetScanException(BOOL b)
-{
-    return setScanException(b);
-}
-
 
 LONG  CtiTableDeviceScanData::getLastFreezeNumber() const
 {
@@ -457,26 +303,6 @@ void CtiTableDeviceScanData::DecodeDatabaseReader(RWDBReader& rdr )
     }
 #endif
 
-    _flags = 0;
-}
-
-UINT  CtiTableDeviceScanData::getFlags() const
-{
-    return _flags;
-}
-
-BOOL CtiTableDeviceScanData::isMeterRead() const
-{
-    return meterread;
-}
-BOOL CtiTableDeviceScanData::setMeterRead(BOOL b)
-{
-    if(meterread != b) setDirty(true);
-    return meterread = b;
-}
-BOOL CtiTableDeviceScanData::resetMeterRead(BOOL b)
-{
-    return setMeterRead(b);
 }
 
 CtiTableDeviceScanData::CtiTableDeviceScanData(const CtiTableDeviceScanData& aRef)
@@ -503,8 +329,6 @@ CtiTableDeviceScanData& CtiTableDeviceScanData::operator=(const CtiTableDeviceSc
             _nextScan[i] = aRef.getNextScan(i);
             _lastCommunicationTime[i] = aRef.getLastCommunicationTime(i);
         }
-
-        _flags = aRef.getFlags();
     }
 
     return *this;
