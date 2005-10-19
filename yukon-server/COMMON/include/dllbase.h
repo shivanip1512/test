@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/09/29 21:19:24 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/10/19 02:55:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,10 +32,11 @@ using namespace std;
 
 #define SCANNERSEM "SCANNER.SEM"
 
+// Used with "DB_DEBUGLEVEL"
 #define DEBUGLEVEL_LUDICROUS        0x00000001
+#define DEBUGLEVEL_ACTIVITY_INFO    0x00000002
 #define DEBUGLEVEL_DATA_INFO        0x00000004
 #define DEBUGLEVEL_PORTCOMM         0x00000010
-#define DEBUGLEVEL_ACTIVITY_INFO    0x00000020
 #define DEBUGLEVEL_CONNECTION       0x00000200
 #define DEBUGLEVEL_FACTORY          0x00000400
 #define DEBUGLEVEL_DATABASE         0x00000800
@@ -58,6 +59,21 @@ using namespace std;
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
 #define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
+
+
+// Used in conjunction with "SCANNER_DEBUGLEVEL"
+#define SCANNER_DEBUG_ACCUMSCAN         0x00000002
+#define SCANNER_DEBUG_INTEGRITYSCAN     0x00000004
+#define SCANNER_DEBUG_GENERALSCAN       0x00000008
+#define SCANNER_DEBUG_LPSCAN            0x00000010
+#define SCANNER_DEBUG_DEVICEANALYSIS    0x00000020
+#define SCANNER_DEBUG_DBRELOAD          0x00000040
+#define SCANNER_DEBUG_OUTLIST           0x00000080
+#define SCANNER_DEBUG_NEXTSCAN          0x00000100
+#define SCANNER_DEBUG_OUTREQUESTS       0x00000200
+#define SCANNER_DEBUG_INREPLYS          0x00000400
+#define SCANNER_DEBUG_DYNAMICDATA       0x00001000
+
 
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;
 IM_EX_CTIBASE extern RWMutexLock       coutMux;
