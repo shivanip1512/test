@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.153 $
-* DATE         :  $Date: 2005/10/04 20:12:35 $
+* REVISION     :  $Revision: 1.154 $
+* DATE         :  $Date: 2005/10/19 02:59:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -136,6 +136,7 @@ extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &trace
 extern HCTIQUEUE* QueueHandle(LONG pid);
 extern void commFail(CtiDeviceSPtr &Device, INT state);
 
+bool isTimedOut( const RWTime &start_time, const unsigned int &duration_seconds);
 bool deviceCanSurviveThisStatus(INT status);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
@@ -1606,7 +1607,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                 case TYPE_TDMARKV:
                     {
-                        extern CtiConnection VanGoghConnection;
                         BYTE   inBuffer[5000];
                         BYTE   outBuffer[5000];     //smaller?
                         ULONG  bytesReceived = 0;
@@ -1623,11 +1623,24 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         transdata.reinitalize();
 
-                        while( !transdata.isTransactionComplete() )
+                        /*
+                         *  20051014 CGP... What happens if the transdata device never decides it is finished??
+                         *  Big bandaid.  Eric will have to clean this up.
+                         */
+
+                        RWTime td_start;
+
+                        while( !isTimedOut(td_start, 900) && !transdata.isTransactionComplete() )
                         {
                             transdata.generate( trx );
 
                             status = Port->outInMess( trx, Device, traceList );
+
+                            if( status != NORMAL )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " "<< markv->getName() << " loop is A-B-N-O-R-M-A-L " << endl;
+                            }
 
                             error = transdata.decode( trx, status );
 
@@ -1637,6 +1650,15 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             }
 
                             DisplayTraceList( Port, traceList, true );
+                        }
+
+                        if(isTimedOut(td_start, 900))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << markv->getName() << " has timed out on its operations." << endl;
+                            }
                         }
 
                         //debug
@@ -4274,4 +4296,8 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
 }
 
 
-
+bool isTimedOut( const RWTime &start_time, const unsigned int &duration_seconds)
+{
+    RWTime now;
+    return now > start_time + duration_seconds;
+}
