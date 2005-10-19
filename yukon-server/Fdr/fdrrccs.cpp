@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2005/10/19 16:54:02 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.11  2005/10/19 16:54:02  dsutton
+      Changed the logging to the system log so we don't log every unknown
+      point as it comes in from the foreign system.  It will now log these points
+      only if a debug level is set.
+
       Revision 1.10  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -966,41 +971,48 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Translation for control point " <<  translationName;
-                        dout << " from " << getInterfaceName() << " was not found" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Translation for control point " <<  translationName;
+                            dout << " from " << getInterfaceName() << " was not found" << endl;
+                        }
+                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is not listed in the translation table");
+                        _snprintf(action,60,"%s", translationName);
+                        logEvent (desc,RWCString (action));
                     }
-                    desc = decodeClientName((CHAR*)data) + RWCString (" control point is not listed in the translation table");
-                    _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
                 }
                 else if (!point.isControllable())
                 {
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << translationName;
-                        dout << " received from " << getInterfaceName();
-                        dout << " was not configured receive for control for point " << point.getPointID() << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Control point " << translationName;
+                            dout << " received from " << getInterfaceName();
+                            dout << " was not configured receive for control for point " << point.getPointID() << endl;
+                        }
+                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is not configured to receive controls");
+                        _snprintf(action,60,"%s for pointID %d", 
+                                  translationName,
+                                  point.getPointID());
+                        logEvent (desc,RWCString (action));
                     }
-                    desc = decodeClientName((CHAR*)data) + RWCString (" control point is not configured to receive controls");
-                    _snprintf(action,60,"%s for pointID %d", 
-                              translationName,
-                              point.getPointID());
-                    logEvent (desc,RWCString (action));
                 }
                 else
                 {
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Control point " << translationName;
-                        dout << " received from " << getInterfaceName();
-                        dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Control point " << translationName;
+                            dout << " received from " << getInterfaceName();
+                            dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
+                        }
+                        CHAR pointID[20];
+                        desc = decodeClientName((CHAR*)data) + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
+                        _snprintf(action,60,"%s", translationName);
+                        logEvent (desc,RWCString (action));
                     }
-
-                    CHAR pointID[20];
-                    desc = decodeClientName((CHAR*)data) + RWCString (" control point is incorrectly mapped to point ") + RWCString (ltoa(point.getPointID(),pointID,10));
-                    _snprintf(action,60,"%s", translationName);
-                    logEvent (desc,RWCString (action));
                 }
 
                 retVal = !NORMAL;

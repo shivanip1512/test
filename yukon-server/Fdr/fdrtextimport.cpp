@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2005/10/19 16:54:02 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.9  2005/10/19 16:54:02  dsutton
+      Changed the logging to the system log so we don't log every unknown
+      point as it comes in from the foreign system.  It will now log these points
+      only if a debug level is set.
+
       Revision 1.8  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -270,13 +275,15 @@ bool CtiFDR_TextImport::processFunctionOne (RWCString &aLine, CtiMessage **aRetM
                     {
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Translation for point " << translationName;
-                            dout << " from " << getFileName() << " was not found" << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " Translation for point " << translationName;
+                                dout << " from " << getFileName() << " was not found" << endl;
+                            }
+                            desc = getFileName() + RWCString (" point is not listed in the translation table");
+                            _snprintf(action,60,"%s", translationName);
+                            logEvent (desc,RWCString (action));
                         }
-                        desc = getFileName() + RWCString (" point is not listed in the translation table");
-                        _snprintf(action,60,"%s", translationName);
-                        logEvent (desc,RWCString (action));
                     }
 
                     break;
@@ -438,11 +445,12 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Status point " << aTranslationName;
-                    dout << " received an invalid state " << (int)aValue;
-                    dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
-
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " Status point " << aTranslationName;
+                        dout << " received an invalid state " << (int)aValue;
+                        dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
+                    }
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);

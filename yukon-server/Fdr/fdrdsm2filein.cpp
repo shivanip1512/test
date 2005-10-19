@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2005/06/24 20:08:47 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2005/10/19 16:54:02 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.7  2005/10/19 16:54:02  dsutton
+      Changed the logging to the system log so we don't log every unknown
+      point as it comes in from the foreign system.  It will now log these points
+      only if a debug level is set.
+
       Revision 1.6  2005/06/24 20:08:47  dsutton
       Added support for DSM2's function 2
 
@@ -526,18 +531,22 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                 }
                 else
                 {
+                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Invalid control state " << aValue;
-                        dout << " for " << aTranslationName << " received from " << getFileName() << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Invalid control state " << aValue;
+                            dout << " for " << aTranslationName << " received from " << getFileName() << endl;
+                        }
+
+                        CHAR state[20];
+                        _snprintf (state,20,"%.0f",aValue);
+                        desc = getFileName() + RWCString (" control point received with an invalid state ") + RWCString (state);
+                        _snprintf(action,60,"%s for pointID %d",
+                                  aTranslationName,
+                                  aPoint.getPointID());
+                        logEvent (desc,RWCString (action));
                     }
-                    CHAR state[20];
-                    _snprintf (state,20,"%.0f",aValue);
-                    desc = getFileName() + RWCString (" control point received with an invalid state ") + RWCString (state);
-                    _snprintf(action,60,"%s for pointID %d",
-                              aTranslationName,
-                              aPoint.getPointID());
-                    logEvent (desc,RWCString (action));
                 }
             }
             else
@@ -569,20 +578,22 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Status point " << aTranslationName;
-                        dout << " received an invalid state " << (int)aValue;
-                        dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
-                    }
-                    CHAR state[20];
-                    _snprintf (state,20,"%.0f",aValue);
-                    desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);
-                    _snprintf(action,60,"%s for pointID %d",
-                              aTranslationName,
-                              aPoint.getPointID());
-                    logEvent (desc,RWCString (action));
-
+                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                   {
+                       {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " Status point " << aTranslationName;
+                            dout << " received an invalid state " << (int)aValue;
+                            dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
+                       }
+                        CHAR state[20];
+                        _snprintf (state,20,"%.0f",aValue);
+                        desc = getFileName() + RWCString (" status point received with an invalid state ") + RWCString (state);
+                        _snprintf(action,60,"%s for pointID %d",
+                                aTranslationName,
+                                aPoint.getPointID());
+                        logEvent (desc,RWCString (action));
+                   }
                 }
             }
             break;
