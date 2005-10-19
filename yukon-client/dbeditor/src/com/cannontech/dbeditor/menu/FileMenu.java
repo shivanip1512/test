@@ -39,10 +39,10 @@ public class FileMenu extends javax.swing.JMenu
 														
 		endSessionMenuItem = new JMenuItem("End Session");
 		endSessionMenuItem.setFont( font );
-		endSessionMenuItem.setMnemonic('z');
+		/*endSessionMenuItem.setMnemonic('z');
 		endSessionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke( 
 														java.awt.event.KeyEvent.VK_Z,
-														java.awt.Event.CTRL_MASK));
+														java.awt.Event.CTRL_MASK));*/
 	
 		setText("File");
 		setFont( font );
@@ -70,11 +70,11 @@ public class FileMenu extends javax.swing.JMenu
 						exitMenuItem.doClick();
 						return true;
 					}
-					if( e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown() )
+					/*if( e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown() )
 					{
 						endSessionMenuItem.doClick();
 						return true;
-					}
+					}*/
 
 					//its this the last handling of the KeyEvent in this KeyboardFocusManager?
 					return false;
