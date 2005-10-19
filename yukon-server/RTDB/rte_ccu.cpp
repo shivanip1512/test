@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/06/15 19:17:48 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/10/19 02:53:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,6 +96,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
     INT            i, j;
     INT            status = NORMAL;
     RWCString      resultString;
+    RWCString      byteString;
     BSTRUCT        BSt;
     VSTRUCT        VSt;
 
@@ -147,6 +148,13 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
              *  finish it off by performing the emetcon wrap.
              */
             VSt = Versacom.getVStruct(j);           // Copy in the structure
+
+            // Generate a protocol string to return to the client application.
+            for(i = 0; i < VSt.Nibbles / 2 ; i++)
+            {
+                byteString += CtiNumStr((int)VSt.Message[i]).hex().zpad(2)+ " ";
+            }
+            byteString += "\n";
 
             /* Calcultate the number of words that will be involved */
             if(VSt.Nibbles <= 6)
@@ -257,7 +265,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
 
     if(Versacom.entries() > 0)
     {
-        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName();
+        resultString = CtiNumStr(Versacom.entries()) + " Versacom commands sent on route " + getName() + "\n" + byteString;
     }
     else
     {
