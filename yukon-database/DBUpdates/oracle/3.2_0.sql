@@ -124,7 +124,7 @@ create table PAOScheduleAssignment  (
    Command              VARCHAR2(128)                   not null
 );
 alter table PAOScheduleAssignment
-   add constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID, ScheduleID);
+   add constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID);
 alter table PAOScheduleAssignment
    add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
       references PAOSchedule (ScheduleID);

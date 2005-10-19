@@ -161,7 +161,7 @@ create table PAOScheduleAssignment (
 );
 go
 alter table PAOScheduleAssignment
-   add constraint PK_PAOSCHEDULEASSIGNMENT primary key  (EventID, ScheduleID);
+   add constraint PK_PAOSCHEDULEASSIGNMENT primary key  (EventID);
 go
 alter table PAOScheduleAssignment
    add constraint FK_PAOSCHASS_PAOSCH foreign key (ScheduleID)
