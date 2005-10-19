@@ -9,8 +9,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2005/08/09 22:36:01 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2005/10/19 15:55:39 $
  */
 
 #include <windows.h>
@@ -352,7 +352,7 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
       // This would happen if the point had one of the system wide statuses set for it.
       // For instance, it could be set to "Shutdown" which is a valid status, but isn't one
       // of the expected statuses for this point (valid statuses for this point have a numerical
-      // value between 0 and info.digitalLength - 1, inclusive). Because the numerical value of 
+      // value between 0 and info.digitalLastIndex, inclusive). Because the numerical value of 
       // "Shutdown" is meaningless to Yukon, we'll send the NonUpdatedQuality and the last state.
       if ( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
       {
