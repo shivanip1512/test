@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/10/04 19:15:41 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/10/19 19:12:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1321,6 +1321,9 @@ INT RequeueLCUCommand( CtiDeviceLCU *lcu )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " " << lcu->getName() << " has been marked as LCUNEVERRETRY" << endl;
             }
+
+            // 20051011 CGP ACH.  When this occurs, we should set the pseudo status for LCU Transmit to state 1
+            // The expected state names are 0/1 = Fired/Failed.
 
             if(OutMessage != NULL)
             {
