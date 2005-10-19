@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/08/01 21:58:08 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/10/19 02:51:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,21 +180,7 @@ static void applyResetScanFlags(const long key, CtiDeviceSPtr Device, void *d)
     if( Device->isSingle() )
     {
         CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*) Device.get();
-
-        if(DeviceRecord->isScanFreezePending())
-        {
-            DeviceRecord->resetScanFreezePending();;
-            DeviceRecord->setScanFreezeFailed();
-        }
-        else if(DeviceRecord->isScanPending())
-        {
-            DeviceRecord->resetScanPending();
-        }
-        else if(DeviceRecord->isScanResetting())
-        {
-            DeviceRecord->resetScanResetting();
-            DeviceRecord->setScanResetFailed();
-        }
+        DeviceRecord->resetScanFlag();  // Reset the flags?
     }
 }
 
@@ -226,7 +212,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                 dout << RWTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
-            DeviceRecord->resetScanException();   // Results should be forced though the exception system
+            DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
             nRet = DeviceRecord->initiateAccumulatorScan(outList);
         }
 
@@ -242,7 +228,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                 dout << RWTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
-            DeviceRecord->resetScanException();   // Results should be forced though the exception system
+            DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
             DeviceRecord->initiateIntegrityScan(outList);
         }
 
@@ -264,7 +250,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
                 }
-                DeviceRecord->setScanException();   // Results need NOT be forced though the exception system
+                DeviceRecord->setScanFlag(CtiDeviceSingle::ScanException);   // Results need NOT be forced though the exception system
             }
         }
 
@@ -689,13 +675,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
             NextScan[WINDOW_OPENS] = TimeOfNextWindow();
         }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
 
         //  check if we need to do any DLC load profile scans
         if(!SuspendLoadProfile && TimeNow >= NextScan[DLC_LP_SCAN])
@@ -1044,20 +1023,6 @@ static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, voi
 
         if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
         {
-            #if 0
-            if( DeviceRecord->getNextScan(ScanRateGeneral)     < TimeNow ||
-                DeviceRecord->getNextScan(ScanRateAccum)       < TimeNow ||
-                DeviceRecord->getNextScan(ScanRateIntegrity)   < TimeNow)
-            {
-                if(!(DeviceRecord->isScanPending()) && !(DeviceRecord->isScanFreezePending()) && !(DeviceRecord->isScanResetting()))
-                {
-                    nextRemoteScanTime = TimeNow;
-                    barkAboutCurrentTime( Device, TimeNow, __LINE__ );
-                    return;
-                }
-            }
-            #endif
-
             TempTime = DeviceRecord->nextRemoteScan();
 
             if(TempTime < TimeNow)
@@ -1616,7 +1581,7 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
         if(OutMessage->ExpirationTime == 0)
         {
             // Scanner is about to make some big decisions...
-            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 10800);
+            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("SCANNER_REQUEST_EXPIRATION_TIME", 600);
         }
 
         while(PorterNexus.NexusState == CTINEXUS_STATE_NULL && !ScannerQuit)
@@ -1661,8 +1626,18 @@ INT MakePorterRequests(RWTPtrSlist< OUTMESS > &outList)
 
             if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
+                if(ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " OutMessage to TargetID: " << OutMessage->TargetID << endl;
+                    }
+                }
             }
 
             if(PorterNexus.CTINexusWrite (OutMessage, sizeof(OUTMESS), &BytesWritten, 30L) || BytesWritten == 0)
