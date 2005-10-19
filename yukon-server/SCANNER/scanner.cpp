@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/10/19 02:51:11 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/10/19 19:11:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,7 +153,12 @@ void barkAboutCurrentTime(CtiDeviceSPtr Device, RWTime &rt, INT line)
     if(ScannerDebugLevel & SCANNER_DEBUG_NEXTSCAN)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt << " on " << line << endl;
+        dout << RWTime() << " Next scan is for " << Device->getName() << " at " << rt;
+        if(ScannerDebugLevel & 0x00000001)
+        {
+            dout << " on " << line;
+        }
+        dout << endl;
     }
 }
 
@@ -697,7 +702,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << LastPorterOutTime << " > " << LastPorterInTime << " + 300 seconds? " << endl;
+                dout << LastPorterOutTime << " > " << LastPorterInTime << " + (3600 * 6) seconds? " << endl;
             }
 
             LastPorterOutTime = rwEpoch;  // Make sure we don't repeat this forever!
@@ -1021,7 +1026,7 @@ static void applyAnalyzeNextRemoteScan(const long key, CtiDeviceSPtr Device, voi
     {
         CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
 
-        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
         {
             TempTime = DeviceRecord->nextRemoteScan();
 
@@ -1068,7 +1073,7 @@ static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d
     {
             CtiDeviceMCT  *DeviceRecord = (CtiDeviceMCT *)Device.get();
 
-        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
         {
             TempTime = DeviceRecord->calcNextLPScanTime();
 
@@ -1101,7 +1106,7 @@ static void applyAnalyzeNextWindow(const long key, CtiDeviceSPtr Device, void *d
     {
         CtiDeviceSingle *DeviceRecord = (CtiDeviceSingle*)Device.get();
 
-        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isScanWindowOpen()))
+        if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
         {
             TempTime = DeviceRecord->getNextWindowOpen();
 
