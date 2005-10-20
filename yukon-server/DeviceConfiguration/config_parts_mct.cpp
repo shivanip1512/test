@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/10/17 16:39:52 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/10/20 18:26:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,17 +61,9 @@ MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(RWCString key)
     {
         return DaySchedule4;
     }
-    else if(key == "rate")//both curent and default rates
+    else if(key == "default rate")
     {
-        return CurAndDefRate;
-    }
-    else if(key == "switch")//schedule and time
-    {
-        return SwtchSchdAndTime;
-    }
-    else if(key == "crit peak end")
-    {
-        return CritPkEndTime;
+        return DefaultTOURate;
     }
     else
     {
@@ -146,16 +138,20 @@ MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(RWC
     }
 }
 
-MCTConfiguration ConfigurationPart<MCTConfiguration>::getResolvedKey(RWCString key)
+MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(RWCString key)
 {
     key.toLower();
     if(key == "configuration")
     {
         return Configuration;
     }
+    if(key == "options")
+    {
+        return Options;
+    }
     else
     {
-        return MCTConfigurationInvalid;
+        return MCTOptionsInvalid;
     }
 }
 
@@ -177,9 +173,9 @@ CtiConfig_type ConfigurationPart<MCTDemandLoadProfile>::getType()
     return ConfigTypeMCTDemandLP;
 }
 
-CtiConfig_type ConfigurationPart<MCTConfiguration>::getType()
+CtiConfig_type ConfigurationPart<MCTOptions>::getType()
 {
-    return ConfigTypeMCTConfiguration;
+    return ConfigTypeMCTOptions;
 }
 
 CtiConfig_type ConfigurationPart<MCT_DST>::getType()

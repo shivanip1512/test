@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/10/17 16:41:13 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/10/20 18:26:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
     *-----------------------------------------------------------------------------*/
@@ -30,27 +30,27 @@ CtiConfig_type resolveConfigType(RWCString rwsTemp)
 
     if(rwsTemp.contains(" mct "))
     {
-        if(rwsTemp == "config type mct tou")
+        if(rwsTemp == "mct tou")
         {
             Ret = ConfigTypeMCTTOU;
         }
-        else if(rwsTemp == "config type mct addressing")
+        else if(rwsTemp == "mct addressing")
         {
             Ret = ConfigTypeMCTAddressing;
         }
-        else if(rwsTemp == "config type mct configuration")
+        else if(rwsTemp == "mct options")
         {
-            Ret = ConfigTypeMCTConfiguration;
+            Ret = ConfigTypeMCTOptions;
         }
-        else if(rwsTemp == "config type mct demand LP")
+        else if(rwsTemp == "mct demand and load profile")
         {
             Ret = ConfigTypeMCTDemandLP;
         }
-        else if(rwsTemp == "config type mct dst")
+        else if(rwsTemp == "mct daylight savings time")
         {
             Ret = ConfigTypeMCTDST;
         }
-        else if(rwsTemp == "config type mct vthreshold")
+        else if(rwsTemp == "mct voltage threshold")
         {
             Ret = ConfigTypeMCTVThreshold;
         }

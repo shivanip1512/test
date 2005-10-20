@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/10/17 16:39:52 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/10/20 18:26:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,10 +38,7 @@ enum MCT_TOU
     DaySchedule2,
     DaySchedule3,
     DaySchedule4,
-    CurAndDefRate,
-    SwtchSchdAndTime,
-    CritPkEndTime
-
+    DefaultTOURate,
 };
 
 enum MCT_DST
@@ -52,10 +49,11 @@ enum MCT_DST
     TimeZoneOffset
 };
 
-enum MCTConfiguration
+enum MCTOptions
 {
-    MCTConfigurationInvalid,
-    Configuration = 1
+    MCTOptionsInvalid,
+    Configuration = 1,
+    Options
 };
 
 enum MCTDemandLoadProfile
@@ -101,7 +99,7 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTAddressing>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT_TOU>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT_DST>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTVThreshold>;
-EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTConfiguration>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTOptions>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTDemandLoadProfile>;
 
 template <class T>
@@ -136,7 +134,7 @@ template <class T>
 long ConfigurationPart<T>::getLongValueFromKey(T enumKey)
 {
     RWCString tempStr = getValueFromKey(enumKey);
-    long tempLong = numeric_limits<long>::min();;
+    long tempLong = numeric_limits<long>::min();
 
     if(tempStr)
     {
@@ -181,14 +179,14 @@ typedef ConfigurationPart<MCTAddressing> *          MCTAddressingSPtr;
 typedef ConfigurationPart<MCT_TOU> *                MCT_TOU_SPtr;
 typedef ConfigurationPart<MCT_DST> *                MCT_DST_SPtr;
 typedef ConfigurationPart<MCTVThreshold> *          MCTVThresholdSPtr;
-typedef ConfigurationPart<MCTConfiguration> *       MCTConfigurationSPtr;
+typedef ConfigurationPart<MCTOptions> *             MCTOptionsSPtr;
 typedef ConfigurationPart<MCTDemandLoadProfile> *   MCTDemandLoadProfileSPtr;
 #else
 typedef shared_ptr< ConfigurationPart<MCTAddressing> >          MCTAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<MCT_TOU> >                MCT_TOU_SPtr;
 typedef shared_ptr< ConfigurationPart<MCT_DST> >                MCT_DST_SPtr;
 typedef shared_ptr< ConfigurationPart<MCTVThreshold> >          MCTVThresholdSPtr;
-typedef shared_ptr< ConfigurationPart<MCTConfiguration> >       MCTConfigurationSPtr;
+typedef shared_ptr< ConfigurationPart<MCTOptions> >             MCTOptionsSPtr;
 typedef shared_ptr< ConfigurationPart<MCTDemandLoadProfile> >   MCTDemandLoadProfileSPtr;
 #endif
 
