@@ -36,6 +36,7 @@ public class CommandCategory
 	public static final String STRING_CMD_STATUSINPUT_BASE = "All Status Input";
 	public static final String STRING_CMD_PING_BASE = "All Ping-able";
 	public static final String STRING_CMD_LCR_BASE = "All LCRs";
+	public static final String STRING_CMD_MCT_4XX_SERIES_BASE = "All MCT-4xx Series";
 
 	//Strings that commander uses to decide what "category" it is displaying, these are for specific items
 	// that don't necessarily have a deviceType, or where deviceType doesn't help find the commands.	
@@ -67,7 +68,8 @@ public class CommandCategory
 		STRING_CMD_TCU_BASE,
 		STRING_CMD_STATUSINPUT_BASE,
 		STRING_CMD_PING_BASE,
-		STRING_CMD_LCR_BASE
+		STRING_CMD_LCR_BASE,
+		STRING_CMD_MCT_4XX_SERIES_BASE
 //		STRING_CMD_VERSACOM_SERIAL,
 //		STRING_CMD_EXPRESSCOM_SERIAL,
 //		STRING_CMD_SERIALNUMBER
@@ -92,6 +94,8 @@ public class CommandCategory
 	private static ArrayList CAT_STATUSINPUT_BASE_DEVTYPES = null;
 	private static ArrayList CAT_PING_BASE_DEVTYPES = null;
 	private static ArrayList CAT_LCR_BASE_DEVTYPES = null;
+	private static ArrayList CAT_MCT_4XX_SERIES_DEVTYPES = null;
+	
 //	private static ArrayList CAT_EXPRESSCOMSERIAL_BASE_DEVTYPES = null;
 //	private static ArrayList CAT_SERIALNUMBER_BASE_DEVTYPES = null;
 //	private static ArrayList CAT_VERSACOMSERIAL_BASE_DEVTYPES = null;
@@ -191,6 +195,10 @@ public class CommandCategory
 		else if (category.equalsIgnoreCase(STRING_CMD_LCR_BASE))
 		{
 		    return getAllLCRDevTypes();
+		}
+		else if (category.equalsIgnoreCase(STRING_CMD_MCT_4XX_SERIES_BASE) )
+		{
+			return getAllMCT4XXSeriesDevTypes();
 		}
 //		else if( category.equalsIgnoreCase(STRING_CMD_VERSACOM_SERIAL))
 //		{
@@ -485,6 +493,20 @@ public class CommandCategory
 			}
 		}
 		return CAT_DISCONNECT_BASE_DEVTYPES;
+	}
+
+	public final static ArrayList getAllMCT4XXSeriesDevTypes() 
+	{
+		if( CAT_MCT_4XX_SERIES_DEVTYPES == null)
+		{
+			CAT_MCT_4XX_SERIES_DEVTYPES = new ArrayList();
+			for (int i = 0; i < DeviceTypes.DEVICE_TYPES_COUNT; i++)
+			{
+				if( DeviceTypesFuncs.isMCT4XX(i) )
+					CAT_MCT_4XX_SERIES_DEVTYPES.add(PAOGroups.getPAOTypeString(i));
+			}
+		}
+		return CAT_MCT_4XX_SERIES_DEVTYPES;
 	}
 
 	public final static ArrayList getAllIONDevTypes() 
