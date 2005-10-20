@@ -801,6 +801,7 @@ BOOL CtiCCCapBank::updateVerificationState(void)
 
     int ctrlIdx = getVCtrlIndex();
     _verificationDoneFlag = FALSE;
+    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " CB: "<<getPAOId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;

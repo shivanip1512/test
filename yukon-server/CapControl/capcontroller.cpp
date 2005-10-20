@@ -327,6 +327,7 @@ void CtiCapController::controlLoop()
                                         {
                                             if(currentSubstationBus->areThereMoreCapBanksToVerify())
                                             {
+                                                if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                                         dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
@@ -343,6 +344,7 @@ void CtiCapController::controlLoop()
                                                 CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
                                                 executor->Execute();
                                                 delete executor;
+                                                if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                                 {
                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
                                                    dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
@@ -359,6 +361,7 @@ void CtiCapController::controlLoop()
                                 }
                                 else
                                 {
+                                    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                     {
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
                                        dout << RWTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;
@@ -368,6 +371,7 @@ void CtiCapController::controlLoop()
                                     currentSubstationBus->setCapBanksToVerifyFlags(strategy);
                                     if(currentSubstationBus->areThereMoreCapBanksToVerify())
                                     {
+                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                              CtiLockGuard<CtiLogger> logger_guard(dout);
                                              dout << RWTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPAOId()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
@@ -388,6 +392,8 @@ void CtiCapController::controlLoop()
                                         CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
                                         executor->Execute();
                                         delete executor;
+
+                                        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                                         {
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
                                            dout << RWTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPAOId() << endl;

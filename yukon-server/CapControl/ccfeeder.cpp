@@ -1526,6 +1526,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
     {
+        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
@@ -1582,6 +1583,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     CtiRequestMsg* reqMsg = NULL;
     if( capBank != NULL )
     {
+        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
