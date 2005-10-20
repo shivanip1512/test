@@ -464,7 +464,10 @@ public class DateComboBox extends JComboBox
          
          for (int i = 0; i < 7; i++)
          {
-            int dayInt = setupCalendar.get(Calendar.DAY_OF_WEEK);
+         	//The below dayInt caused the wrong labels to appear when advancing months SN 20051020 Defect-105
+//			int dayInt = setupCalendar.get(Calendar.DAY_OF_WEEK);
+			int dayInt = i + 1;	//Add one, since days of week start at 1 and our incr starts at 0
+
             JLabel label = new JLabel();
             label.setHorizontalAlignment(JLabel.CENTER);
             label.setForeground(foreground);
@@ -503,7 +506,7 @@ public class DateComboBox extends JComboBox
             days.add(label);
             // Removed the roll function.  Failed on Day Light Savings Time.
             // Calendar.roll function doesn't work.  SN & RN 10.28.02
-			setupCalendar.set(Calendar.DAY_OF_WEEK, setupCalendar.get(Calendar.DAY_OF_WEEK) + 1);
+//			setupCalendar.set(Calendar.DAY_OF_WEEK, setupCalendar.get(Calendar.DAY_OF_WEEK) + 1);	//not needed - SN 20051020
 //            setupCalendar.roll(Calendar.DAY_OF_WEEK, true);
          }
 
