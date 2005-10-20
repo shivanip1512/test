@@ -905,6 +905,8 @@ public void setDeviceType(String string)
 				dtc = new DeviceTypeCommand();
 				dtc.setCommand((Command)LiteFactory.createDBPersistent((LiteCommand)liteObject));
 			}
+			//TODO - change to set CommandGroupID correctly based on either lite object or current user.
+			dtc.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
 			((DeviceTypeCommandsTableModel)getDandDCommandTable().getModel()).addRowToEnd(dtc);
 		}
 	}
