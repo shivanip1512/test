@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/10/17 16:59:18 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/10/20 18:27:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,12 +48,21 @@ protected:
 
     enum MemoryLocations
     {
+        Memory_OptionsPos         = 0x02,
+        Memory_OptionsLen         =    1,
+
+        Memory_ConfigurationPos   = 0x03,
+        Memory_ConfigurationLen   =    1,
+
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
-                                  
+
         Memory_PowerfailCountPos  = 0x23,
         Memory_PowerfailCountLen  =    2,
-                                  
+
+        Memory_AddressingPos      = 0x13,
+        Memory_AddressingLen      = 5,
+
         Memory_AlarmsPos          = 0x15,
         Memory_AlarmsLen          =    2,
                                   
@@ -68,6 +77,9 @@ protected:
                                   
         Memory_LastTSyncPos       = 0x44,
         Memory_LastTSyncLen       =    4,
+
+        Memory_TOUDailySchedPos   = 0x52,
+        Memory_TOUDailySchedLen   =    7,
                                   
         Memory_DSTBeginPos        = 0x37,
         Memory_DSTBeginLen        =    4,
@@ -83,6 +95,7 @@ protected:
                                   
         Memory_UnderVThresholdPos = 0x20,
         Memory_UnderVThresholdLen =    2,
+
     };
 
     enum Functions
@@ -92,6 +105,12 @@ protected:
 
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
+
+        FuncWrite_TOUSchedule1Pos = 0x30,
+        FuncWrite_TOUSchedule1Len = 0x15,
+
+        FuncWrite_TOUSchedule2Pos = 0x31,
+        FuncWrite_TOUSchedule2Len = 0x15,
 
         FuncRead_MReadPos         = 0x90,
         FuncRead_MReadLen         =    9,
@@ -284,7 +303,10 @@ public:
 
     int executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
     int executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
-//    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
+    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
+    int executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist<OUTMESS> &outList);
+    int executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
