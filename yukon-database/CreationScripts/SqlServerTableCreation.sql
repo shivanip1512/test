@@ -4236,7 +4236,7 @@ go
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
 /*==============================================================*/
-create unique  index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
+create index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
 CommandGroupID
 )
 go

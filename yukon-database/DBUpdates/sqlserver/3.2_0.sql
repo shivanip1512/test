@@ -708,7 +708,7 @@ alter table DeviceTypeCommand
       references CommandGroup (CommandGroupID);
 go
 
-create unique index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
+create index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
 CommandGroupID
 );
 go

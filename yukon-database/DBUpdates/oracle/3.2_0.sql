@@ -567,7 +567,7 @@ alter table DeviceTypeCommand
    add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
       references CommandGroup (CommandGroupID);
 
-create unique index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
+create index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
 CommandGroupID ASC
 );
 
