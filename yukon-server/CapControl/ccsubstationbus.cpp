@@ -4641,30 +4641,33 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
         default:
             break;
     }
+    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout <<" CapBank LIST:  ";
-    }
-        for (x = 0; x < _ccfeeders.entries(); x++)
-    {
-        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
-        RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-        for(j=0;j<ccCapBanks.entries();j++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-            if (currentCapBank->getVerificationFlag())
-            { 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout <<"  " << currentCapBank->getPAOId();
-                }
-            }
-
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout <<" CapBank LIST:  ";
         }
-    }
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout <<endl;
+        for (x = 0; x < _ccfeeders.entries(); x++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
+            RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(j=0;j<ccCapBanks.entries();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
+                if (currentCapBank->getVerificationFlag())
+                { 
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout <<"  " << currentCapBank->getPAOId();
+                    }
+                }
+
+            }
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout <<endl;
+        }
     }
 
 
