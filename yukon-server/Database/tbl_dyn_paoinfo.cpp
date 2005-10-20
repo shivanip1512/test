@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/10/17 17:20:22 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/10/20 18:21:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,11 +45,25 @@ const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verifi
 const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
 const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
 const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset         = "mct time zone offset";
-const string CtiTableDynamicPaoInfo::_key_mct_over_v_threshold         = "mct over v threshold";
-const string CtiTableDynamicPaoInfo::_key_mct_under_v_threshold        = "mct under v threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_over_voltage_threshold   = "mct over voltage threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_under_voltage_threshold  = "mct under voltage threshold";
 const string CtiTableDynamicPaoInfo::_key_mct_demand_interval          = "mct demand interval";
-const string CtiTableDynamicPaoInfo::_key_mct_voltage_lp_interval      = "mct voltage lp interval";
+const string CtiTableDynamicPaoInfo::_key_mct_voltage_profile_interval = "mct voltage profile interval";
 const string CtiTableDynamicPaoInfo::_key_mct_voltage_demand_interval  = "mct voltage demand interval";
+
+const string CtiTableDynamicPaoInfo::_key_mct_day_table                = "mct day table";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_1           = "mct day schedule 1";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_2           = "mct day schedule 2";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_3           = "mct day schedule 3";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_4           = "mct day schedule 4";
+const string CtiTableDynamicPaoInfo::_key_mct_default_rate             = "mct default tou rate";
+
+const string CtiTableDynamicPaoInfo::_key_mct_bronze_address           = "mct bronze address";
+const string CtiTableDynamicPaoInfo::_key_mct_lead_address             = "mct lead address";
+const string CtiTableDynamicPaoInfo::_key_mct_collection_address       = "mct collection address";
+
+const string CtiTableDynamicPaoInfo::_key_mct_configuration            = "mct configuration";
+const string CtiTableDynamicPaoInfo::_key_mct_options                  = "mct options";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();

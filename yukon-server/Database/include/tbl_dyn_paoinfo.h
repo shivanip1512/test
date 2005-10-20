@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/10/17 17:20:22 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/10/20 18:21:01 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,17 @@ public:
         Key_MCT_DemandInterval,
         Key_MCT_VoltageLPInterval,
         Key_MCT_VoltageDemandInterval,
+        Key_MCT_DayTable,
+        Key_MCT_DaySchedule1,
+        Key_MCT_DaySchedule2,
+        Key_MCT_DaySchedule3,
+        Key_MCT_DaySchedule4,
+        Key_MCT_DefaultTOURate,
+        Key_MCT_AddressBronze,
+        Key_MCT_AddressCollection,
+        Key_MCT_AddressLead,
+        Key_MCT_Configuration,
+        Key_MCT_Options,
         Key_VerificationSequence,
         //  make sure to add any new enum values to the string map
     };
@@ -78,11 +89,25 @@ protected:
     static const string _key_mct_dst_start_time;
     static const string _key_mct_dst_end_time;
     static const string _key_mct_time_zone_offset;
-    static const string _key_mct_over_v_threshold;
-    static const string _key_mct_under_v_threshold;
+    static const string _key_mct_over_voltage_threshold;
+    static const string _key_mct_under_voltage_threshold;
     static const string _key_mct_demand_interval;
-    static const string _key_mct_voltage_lp_interval;
+    static const string _key_mct_voltage_profile_interval;
     static const string _key_mct_voltage_demand_interval;
+
+    static const string _key_mct_day_table;
+    static const string _key_mct_day_schedule_1;
+    static const string _key_mct_day_schedule_2;
+    static const string _key_mct_day_schedule_3;
+    static const string _key_mct_day_schedule_4;
+    static const string _key_mct_default_rate;
+
+    static const string _key_mct_bronze_address;
+    static const string _key_mct_lead_address;
+    static const string _key_mct_collection_address;
+
+    static const string _key_mct_configuration;
+    static const string _key_mct_options;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
