@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/10/20 22:22:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -295,14 +295,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
                 << table["updatetime"].assign(RWTime::now());
 
         long rowsAffected;
-        stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__&rowsAffected);
-
-        if(DebugLevel & DEBUGLEVEL_LUDICROUS)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << updater.asString() << endl << endl;
-        }
+        stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
         if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
         {
