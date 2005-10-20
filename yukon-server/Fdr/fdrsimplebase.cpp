@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2005/09/13 20:44:58 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2005/10/20 16:27:25 $
  */
 
 #include <windows.h>
@@ -317,7 +317,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
       return;
     }
 
-    ctiPoint->setValue(value);
+    ctiPoint->setValue(valueConverted);
     ctiPoint->setLastTimeStamp(rwTime);
 
     pData->setTime(rwTime);
