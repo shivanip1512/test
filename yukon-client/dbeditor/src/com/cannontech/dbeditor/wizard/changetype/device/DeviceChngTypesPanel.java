@@ -512,7 +512,7 @@ public Object getValue(Object val)
 						   new Integer(com.cannontech.database.db.point.Point.getNextPointID()),
 						   PointTypes.PT_OFFSET_BLINK_COUNT,
 						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
-						   0.1) ).execute();
+						   1.0) ).execute();
 				}
 				
 				if(!loadProfileExists)
@@ -934,7 +934,7 @@ private void handleMCT_410IL()
 			try
 			{
 				alteredPoint = (AccumulatorPoint)Transaction.createTransaction(Transaction.RETRIEVE, alteredPoint).execute();
-				alteredPoint.getPointAccumulator().setMultiplier(new Double(0.1));
+				alteredPoint.getPointAccumulator().setMultiplier(new Double(1));
 				extra410Objs.addElement(alteredPoint);
 				blinkCountExists = true;
 				getJTextPaneNotes().setText(getJTextPaneNotes().getText() + 

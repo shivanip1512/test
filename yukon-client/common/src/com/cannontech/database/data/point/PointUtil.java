@@ -56,6 +56,7 @@ public class PointUtil {
 			int pointID = com.cannontech.database.cache.functions.PointFuncs.getMaxPointID();
 
 			double multiplier = 0.01;
+			double blinkCountMult = 1.0;
 			//multiplier is 0.1 for 410LE, 0.01 for all older MCTs
 			if(val instanceof MCT410_KWH_Only || val instanceof MCT410IL || val instanceof MCT410CL)
 				multiplier = 0.1;
@@ -77,7 +78,7 @@ public class PointUtil {
 				   new Integer(++pointID),
 				   PointTypes.PT_OFFSET_BLINK_COUNT,
 				   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
-				   multiplier) );
+				   blinkCountMult) );
 
 			//only certain devices get this DemandAccum point auto created
 			if( val instanceof MCT310IL
