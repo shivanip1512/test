@@ -6,6 +6,8 @@ package com.cannontech.graph;
  * Creation date: (10/23/00 3:24:57 PM)
  * @author: 
  */
+import java.awt.Color;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -552,7 +554,11 @@ private javax.swing.JTable getGraphGDSTable() {
 			ivjGraphGDSTable.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 			ivjGraphGDSTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
+			ivjGraphGDSTable.setRowSelectionAllowed(true);
+			ivjGraphGDSTable.setSelectionBackground(Color.BLUE);
+			ivjGraphGDSTable.setSelectionForeground(Color.WHITE);
+			
+			
 			//Column inits.
 			javax.swing.table.TableColumnModel colModel = ivjGraphGDSTable.getColumnModel();
 			colModel.getColumn(GDSTableModel.DEVICE_NAME_COLUMN).setPreferredWidth(80);
