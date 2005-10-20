@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,18 +159,18 @@ RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
         getDataType() <<
         getDataValue();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
     else
     {
-        RWDBResult res =  inserter.execute( conn );
+        RWDBStatus stat =  ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-        if( res.status().errorCode() != RWDBStatus::ok )
+        if( stat.errorCode() != RWDBStatus::ok )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << res.status().errorCode() << endl;
+            dout << RWTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << stat.errorCode() << endl;
             dout << "   " << inserter.asString() << endl;
         }
         else
@@ -201,14 +201,10 @@ RWDBStatus CtiTableGatewayEndDevice::Update()
 
     updater << table["datavalue"].assign( getDataValue() );
 
-    RWDBResult myResult = updater.execute( conn );
-    RWDBStatus stat = myResult.status();
-    RWDBStatus::ErrorCode ec = stat.errorCode();
+    long rowsAffected;
+    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    RWDBTable myTable = myResult.table();
-    long rowsAffected = myResult.rowCount();
-
-    if( ec == RWDBStatus::ok && rowsAffected > 0)
+    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }

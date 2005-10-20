@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2005/04/15 18:28:40 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.12  2005/10/20 21:41:27  cplender
+      Added ExecuteUpdater ad ExecuteInserter to wrap the updater.execute and insert.execute and print on error.
+
       Revision 1.11  2005/04/15 18:28:40  mfisher
       got rid of magic number debuglevel checks
 
@@ -345,7 +348,7 @@ RWDBStatus CtiTableDeviceWindow::Insert()
     getAlternateOpen () <<
     calculateClose (getAlternateOpen(),getAlternateDuration());
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -371,7 +374,7 @@ RWDBStatus CtiTableDeviceWindow::Update()
     table["winclose"].assign(calculateClose (getOpen(),getDuration())) <<
     table["alternateopen"].assign(getAlternateOpen() ) <<
     table["alternateclose"].assign(calculateClose (getAlternateOpen(),getAlternateDuration()));
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

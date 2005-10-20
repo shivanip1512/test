@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/10/19 19:10:21 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -225,7 +225,7 @@ RWDBStatus CtiTableDeviceScanData::Update(RWDBConnection &conn)
         updater.set( table[ temp ].assign( getNextScan(i) ) );
     }
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -261,7 +261,7 @@ RWDBStatus CtiTableDeviceScanData::Insert()
         inserter << (RWDBDateTime)getNextScan(i);
     }
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

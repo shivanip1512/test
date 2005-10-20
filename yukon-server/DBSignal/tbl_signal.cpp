@@ -138,7 +138,7 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
     getUser() <<
     getMillis();
 
-    RWDBStatus stat = inserter.execute( conn ).status();
+    RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(stat.vendorError1() == 1401)
     {
@@ -227,8 +227,7 @@ void CtiTableSignal::Update()
 
     updater.where( table["logid"] == getLogID() );
 
-
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 }
 
 void CtiTableSignal::Delete()

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtroute.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/10/20 21:41:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ void CtiTableRoute::Insert()
         RWDBInserter inserter = table.inserter();
 
         inserter << getRouteID() << getName() << getType();
-        inserter.execute( conn );
+        ExecuteInserter(conn,inserter,__FILE__,__LINE__);
     }
 }
 
@@ -145,7 +145,7 @@ void CtiTableRoute::Update()
 
         updater << table["name"].assign(getName()) << table["type"].assign(getType());
 
-        updater.execute( conn );
+        ExecuteUpdater(conn,updater,__FILE__,__LINE__);
     }
 }
 
@@ -198,7 +198,7 @@ void CtiTableRoute::DecodeDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;

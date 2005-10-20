@@ -10,8 +10,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_ngroup.cpp-arc  $
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2005/07/19 22:48:52 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2005/10/20 21:41:27 $
  *
  * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ RWDBStatus CtiTableNotificationGroup::Insert()
         getGroupName() <<
         RWCString( ( isDisabled() ? 'Y': 'N' ) );
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     return inserter.status();
 }
@@ -114,7 +114,7 @@ RWDBStatus CtiTableNotificationGroup::Update()
         table["groupname"].assign( getGroupName() ) <<
         table["disableflag"].assign( isDisabled() );
 
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
     return updater.status();
 }

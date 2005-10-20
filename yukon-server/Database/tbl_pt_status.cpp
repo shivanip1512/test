@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ void CtiTablePointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
     RWCString rwsTemp;
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -315,7 +315,7 @@ void CtiTablePointStatus::Update()
         updater.where( table["pointid"] == getPointID() );
         updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? RWCString("Y") : RWCString("N") );
 
-        if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+        if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
         {
             setDirty(false);
         }

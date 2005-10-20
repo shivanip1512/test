@@ -24,7 +24,7 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
     getValue() <<
     getMillis();
 
-    RWDBStatus stat = inserter.execute( conn ).status();
+    RWDBStatus stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
@@ -41,7 +41,7 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
             }
 
             setChangeID( newcid );
-            stat = inserter.execute( conn ).status();
+            stat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
             if( stat.errorCode() != RWDBStatus::ok )
             {

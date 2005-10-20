@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_commerrhist.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,7 +203,7 @@ void CtiTableCommErrorHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTableCommErrorHistory::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -302,7 +302,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     getOutMessage() <<
     getInMessage();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -332,7 +332,7 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
 
                 setCommErrorID( newcid );
 
-                if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok )
+                if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() != RWDBStatus::ok )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -376,7 +376,7 @@ RWDBStatus CtiTableCommErrorHistory::Update()
     table["outmessage"].assign( getOutMessage() ) <<
     table["inmessage"].assign( getInMessage() );
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

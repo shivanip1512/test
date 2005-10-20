@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_nloc.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:47 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,7 +188,7 @@ RWDBStatus CtiTableGroupRecipient::Insert()
     RWCString( ( isDisabled() ? 'Y': 'N' ) ) <<
     getRecipientType();
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     return inserter.status();
 }
@@ -212,7 +212,7 @@ RWDBStatus CtiTableGroupRecipient::Update()
     table["disableflag"].assign( RWCString( ( isDisabled() ? 'Y': 'N' ) ) ) <<
     table["recipienttype"].assign( getRecipientType() );
 
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
     return updater.status();
 }

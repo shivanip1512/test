@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_state.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/10/20 21:41:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ RWDBStatus CtiTableState::Insert()
     (INT)0 <<      // Foreground
     (INT)6;        // Background
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     return inserter.status();
 }
@@ -107,7 +107,7 @@ RWDBStatus CtiTableState::Update()
 
     updater << table["text"].assign( getText() );
 
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
     return updater.status();
 }

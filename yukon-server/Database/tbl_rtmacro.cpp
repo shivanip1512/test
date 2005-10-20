@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtmacro.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:40 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/10/20 21:41:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,7 +187,7 @@ RWDBStatus CtiTableMacroRoute::Insert()
     getSingleRouteID() <<
     getRouteOrder();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -213,7 +213,7 @@ RWDBStatus CtiTableMacroRoute::Update()
     table["singlerouteid"].assign( getSingleRouteID() ) <<
     table["routeorder"].assign(getRouteOrder());
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

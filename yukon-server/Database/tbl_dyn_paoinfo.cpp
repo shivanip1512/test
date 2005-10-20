@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/10/20 18:21:01 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,7 +228,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
             dout << inserter.asString() << endl << endl;
         }
 
-        inserter.execute(conn);
+        ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
         if(inserter.status().errorCode() != RWDBStatus::ok)    // error occured!
         {
@@ -263,7 +263,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
 {
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
-    RWDBStatus  dbstatus(RWDBStatus::ok);
+    RWDBStatus  stat(RWDBStatus::ok);
 
     updater.where( table["entryid"] == getEntryID() );
 
@@ -294,11 +294,8 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
                 << table["value"].assign(tmp_value.data())
                 << table["updatetime"].assign(RWTime::now());
 
-        RWDBResult myResult = updater.execute( conn );
-
-        dbstatus = myResult.status();
-
-        long rowsAffected = myResult.rowCount();
+        long rowsAffected;
+        stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__&rowsAffected);
 
         if(DebugLevel & DEBUGLEVEL_LUDICROUS)
         {
@@ -307,17 +304,17 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
             dout << updater.asString() << endl << endl;
         }
 
-        if( dbstatus.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+        if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
         {
             setDirty(false);
         }
         else
         {
-            dbstatus = Insert(conn);        // Try a vanilla insert if the update failed!
+            stat = Insert(conn);        // Try a vanilla insert if the update failed!
         }
     }
 
-    return dbstatus;
+    return stat;
 }
 
 RWDBStatus CtiTableDynamicPaoInfo::Restore()

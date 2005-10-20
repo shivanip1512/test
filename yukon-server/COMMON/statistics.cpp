@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/08/22 20:27:49 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -548,7 +548,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn)
             RWDBDateTime(_startStopTimePairs[i].first) <<
             RWDBDateTime(_startStopTimePairs[i].second);
 
-        stat = ins.execute(conn).status();
+        stat = ExecuteInserter(conn,ins,__FILE__,__LINE__);
 
         if( stat.errorCode() != RWDBStatus::ok )
         {
@@ -600,7 +600,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
 
             updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
 
-            stat = updater.execute(conn).status();
+            stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
             if( stat.errorCode() != RWDBStatus::ok )
             {

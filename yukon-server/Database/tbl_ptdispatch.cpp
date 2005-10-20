@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/02/10 23:23:48 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,7 +178,7 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
     table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
     table["millis"].assign(getTimeStampMillis());
 
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
     if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
     {
@@ -220,7 +220,7 @@ RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
     getLastAlarmLogID() <<
     getTimeStampMillis();
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pthist.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ void CtiTablePointHistory::Update()
     updater << table["quality"].assign(getQuality())
     << table["value"].assign(getValue());
 
-    updater.execute( conn );
+    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 }
 
 void CtiTablePointHistory::Insert()
@@ -115,7 +115,7 @@ void CtiTablePointHistory::Insert()
     << getQuality()
     << getValue();
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 }
 
 void CtiTablePointHistory::Delete()

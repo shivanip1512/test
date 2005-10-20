@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/10/19 19:10:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/10/20 21:41:28 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -549,7 +549,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
              << "-"
              << CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Sent);
 
-    if( err = inserter.execute(conn).status().errorCode() )
+    if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::recordUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -568,7 +568,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
                  << "Y"
                  << code_status;
 
-        if( err = inserter.execute(conn).status().errorCode() )
+        if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::recordUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -588,7 +588,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
                  << "N"
                  << code_status;
 
-        if( err = inserter.execute(conn).status().errorCode() )
+        if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::recordUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -632,7 +632,7 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &report)
     }
 
 
-    if( e = inserter.execute(conn).status().errorCode() )
+    if( e = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " **** Checkpoint - error \"" << e << "\" while inserting in CtiPorterVerification::recordUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

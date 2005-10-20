@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_2way.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/04/15 18:28:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -288,7 +288,7 @@ RWDBStatus CtiTableDevice2Way::Insert()
     getPerform24Alarm() <<
     getPerformanceThreshold();// <<
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -319,7 +319,7 @@ RWDBStatus CtiTableDevice2Way::Update()
     table["performtwentyfouralarm"].assign(getPerform24Alarm() ) <<
     table["performancethreshold"].assign(getPerformanceThreshold() );// <<
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

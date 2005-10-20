@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_direct.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,7 +70,7 @@ void CtiTableDeviceDirectComm::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
 
 void CtiTableDeviceDirectComm::DecodeDatabaseReader(RWDBReader &rdr)
 {
-	if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -124,7 +124,7 @@ RWDBStatus CtiTableDeviceDirectComm::Insert()
     getDeviceID() <<
     getPortID();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -149,7 +149,7 @@ RWDBStatus CtiTableDeviceDirectComm::Update()
     updater <<
     table["portid"].assign(getPortID());
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

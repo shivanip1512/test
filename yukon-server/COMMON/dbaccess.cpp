@@ -315,3 +315,64 @@ dbErrorHandler2 (const RWDBStatus& aStatus)
 {
     dbErrorHandler(aStatus, db_info[1]);
 }
+
+/*
+ *  rowsAffected can be used to detect an Update of a non-existent row... It will be zero if no update occurred.
+ */
+DLLEXPORT
+RWDBStatus ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file, int line, long *rowsAffected)
+{
+    RWDBResult myResult = updater.execute( conn );
+    RWDBStatus stat = myResult.status();
+
+    if(rowsAffected)
+    {
+        RWDBTable myTable = myResult.table();
+        *rowsAffected = myResult.rowCount();
+    }
+
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " **** Checkpoint **** ";
+        if(file != 0) dout << file << " (" << line << ")";
+        dout << endl << updater.asString() << endl;
+    }
+
+    if( stat.errorCode() != RWDBStatus::ok )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
+        if(file != 0) dout << file << " (" << line << ")";
+        dout << endl;
+        dout << updater.asString() << endl;
+    }
+
+    return stat;
+}
+
+DLLEXPORT
+RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const char *file, int line)
+{
+    RWDBStatus stat = inserter.execute( conn ).status();
+
+    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << RWTime() << " **** Checkpoint **** ";
+        if(file != 0) dout << file << " (" << line << ")";
+        dout << endl << inserter.asString() << endl;
+    }
+
+    if( stat.errorCode() != RWDBStatus::ok )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
+        if(file != 0) dout << file << " (" << line << ")";
+        dout << endl;
+        dout << inserter.asString() << endl;
+    }
+
+    return stat;
+}
+

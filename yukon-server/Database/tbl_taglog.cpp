@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:23:49 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/20 21:41:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
         dout << inserter.asString() << endl << endl;
     }
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
@@ -213,21 +213,10 @@ RWDBStatus CtiTableTagLog::Update(RWDBConnection &conn)
     table["refstr"].assign(getReferenceStr()) <<
     table["forstr"].assign(getTaggedForStr());
 
-    RWDBResult myResult = updater.execute( conn );
-    RWDBStatus stat = myResult.status();
-    RWDBStatus::ErrorCode ec = stat.errorCode();
+    long rowsAffected;
+    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__&rowsAffected);
 
-    RWDBTable myTable = myResult.table();
-    long rowsAffected = myResult.rowCount();
-
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl << endl;
-    }
-
-    if( ec == RWDBStatus::ok && rowsAffected > 0)
+    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }

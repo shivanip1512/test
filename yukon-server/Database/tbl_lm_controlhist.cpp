@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/07/25 16:40:53 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -412,7 +412,7 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
         dout << updater.asString() << endl;
     }
 
-    if( updater.execute( conn ).status().errorCode() != RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() != RWDBStatus::ok)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -581,7 +581,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
-        if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+        if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
         {
             setDirty(false);
         }
@@ -633,7 +633,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["activerestore"].assign( getActiveRestore() ) <<
     table["reductionvalue"].assign( getReductionValue() );
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -928,21 +928,10 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["activerestore"].assign( getActiveRestore() ) <<
     table["reductionvalue"].assign( getReductionValue() );
 
-    RWDBResult myResult = updater.execute( conn );
-    RWDBStatus stat = myResult.status();
-    RWDBStatus::ErrorCode ec = stat.errorCode();
+    long rowsAffected;
+    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    RWDBTable myTable = myResult.table();
-    long rowsAffected = myResult.rowCount();
-
-    if(DebugLevel & DEBUGLEVEL_LUDICROUS)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl << endl;
-    }
-
-    if( ec != RWDBStatus::ok || rowsAffected <= 0)
+    if( stat.errorCode() != RWDBStatus::ok || rowsAffected <= 0)
     {
         stat = InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }
@@ -975,14 +964,12 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
-        if( inserter.execute( conn ).status().errorCode() != RWDBStatus::ok)
+        if( (dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__)).errorCode() != RWDBStatus::ok)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "   " << inserter.asString() << endl;
         }
-
-        dbstat = inserter.status();
     }
     else
     {

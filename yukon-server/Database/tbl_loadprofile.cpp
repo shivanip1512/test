@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_loadprofile.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/06/15 23:56:34 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
     RWDBNullIndicator isNull;
     RWCString   rwsTemp;
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -217,7 +217,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Insert()
     getLastIntervalDemandRate() <<
     getLoadProfileDemandRate();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -243,7 +243,7 @@ RWDBStatus CtiTableDeviceLoadProfile::Update()
     table["lastintervaldemandrate"].assign(getLastIntervalDemandRate() ) <<
     table["loadprofiledemandrate"].assign(getLoadProfileDemandRate() );
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }

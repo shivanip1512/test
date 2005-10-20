@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/10/19 20:41:15 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
         dout << inserter.asString() << endl << endl;
     }
 
-    inserter.execute( conn );
+    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
     if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
     {
@@ -197,12 +197,8 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
     table["type"].assign(getLogType());
     table["username"].assign(getUser());
 
-    RWDBResult myResult = updater.execute( conn );
-    RWDBStatus stat = myResult.status();
-    RWDBStatus::ErrorCode ec = stat.errorCode();
-
-    RWDBTable myTable = myResult.table();
-    long rowsAffected = myResult.rowCount();
+    long rowsAffected;
+    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
     if(DebugLevel & DEBUGLEVEL_LUDICROUS)
     {
@@ -218,7 +214,7 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         dout << updater.asString() << endl;
     }
 
-    if( ec == RWDBStatus::ok && rowsAffected > 0)
+    if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
     {
         setDirty(false);
     }

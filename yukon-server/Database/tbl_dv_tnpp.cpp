@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/07/08 18:04:05 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/10/20 21:41:27 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "logger.h"
 
 CtiTableDeviceTnpp::CtiTableDeviceTnpp() :
-_inertia(2),           
+_inertia(2),
 _destinationAddress(0)
 {}
 
@@ -77,24 +77,24 @@ void CtiTableDeviceTnpp::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 void CtiTableDeviceTnpp::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     rdr["deviceid"]           >>   _deviceID;
-    rdr["inertia"]            >>   _inertia;              
+    rdr["inertia"]            >>   _inertia;
     rdr["destinationaddress"] >>   _destinationAddress;
-    rdr["originaddress"]      >>   _originAddress; 
+    rdr["originaddress"]      >>   _originAddress;
     rdr["identifierformat"]   >>   _identifierFormat;
-    rdr["protocol"]           >>   _pagerProtocol;  
+    rdr["protocol"]           >>   _pagerProtocol;
     rdr["dataformat"]         >>   _dataFormat;
     rdr["channel"]            >>   _channel;
     rdr["zone"]               >>   _zone;
     rdr["functioncode"]       >>   _functionCode;
     rdr["pagerid"]            >>   _pagerID;
-                              
+
 }
 
 RWCString CtiTableDeviceTnpp::getTableName()
@@ -151,7 +151,7 @@ RWDBStatus CtiTableDeviceTnpp::Insert()
     inserter <<
     getDeviceID();
 
-    if( inserter.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -171,7 +171,7 @@ RWDBStatus CtiTableDeviceTnpp::Update()
 
     updater.where( table["deviceid"] == getDeviceID() );
 
-    if( updater.execute( conn ).status().errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
     {
         setDirty(false);
     }
@@ -224,17 +224,17 @@ const char* CtiTableDeviceTnpp::getPagerDataFormat()
     return _dataFormat.data();
 }
 
-const char* CtiTableDeviceTnpp::getChannel() 
+const char* CtiTableDeviceTnpp::getChannel()
 {
     return _channel.data();
 }
 
-const char* CtiTableDeviceTnpp::getZone() 
+const char* CtiTableDeviceTnpp::getZone()
 {
     return _zone.data();
 }
 
-const char* CtiTableDeviceTnpp::getFunctionCode() 
+const char* CtiTableDeviceTnpp::getFunctionCode()
 {
     return _functionCode.data();
 }
