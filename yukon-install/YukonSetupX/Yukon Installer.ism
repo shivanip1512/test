@@ -696,7 +696,6 @@
 		<row><td>memoryrealmform.class</td><td>Tomcat</td><td>MemoryRealmForm.class</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\webapps\admin\WEB-INF\classes\org\apache\webapp\admin\realm\MemoryRealmForm.class</td><td>1</td><td>NewSubFolder41</td></row>
 		<row><td>memtest.exe</td><td>Test Applications</td><td>memtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\memtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>monitor.jar</td><td>Alarm Monitor</td><td>monitor.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\monitor.jar</td><td>1</td><td>NewSubFolder73</td></row>
-		<row><td>ms4j_rimpl.jar</td><td>Common Bin</td><td>ms4j-rimpl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\ms4j-rimpl.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>msq15d.dll</td><td>Common Dlls</td><td>msq15d.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_ROGUEWAVE&gt;\msq15d.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>msvcp60d.dll</td><td>Common Dlls</td><td>MSVCP60D.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCP60D.DLL</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>msvcrtd.dll</td><td>Common Dlls</td><td>MSVCRTD.DLL</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\MSVCRTD.DLL</td><td>1</td><td>NewSubFolder72</td></row>
@@ -706,6 +705,7 @@
 		<row><td>mx4j_jmx.jar</td><td>Tomcat</td><td>mx4j-jmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\server\lib\mx4j-jmx.jar</td><td>1</td><td>NewSubFolder13</td></row>
 		<row><td>mx4j_jmx.jar1</td><td>Common Bin</td><td>mx4j-jmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-jmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j_remote.jar</td><td>Common Bin</td><td>mx4j-remote.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-remote.jar</td><td>1</td><td>NewSubFolder85</td></row>
+		<row><td>mx4j_rimpl.jar</td><td>Common Bin</td><td>mx4j-rimpl.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-rimpl.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j_rjmx.jar</td><td>Common Bin</td><td>mx4j-rjmx.jar</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_CLIENT_FILES&gt;\mx4j-rjmx.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>mx4j_tools.jar</td><td>Common Bin</td><td>mx4j-tools.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\client\mx4j-tools.jar</td><td>1</td><td>NewSubFolder85</td></row>
 		<row><td>naming_common.jar</td><td>Tomcat</td><td>naming-common.jar</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\Tomcat Service Install\common\lib\naming-common.jar</td><td>1</td><td>NewSubFolder8</td></row>
