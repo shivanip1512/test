@@ -6,6 +6,7 @@ package com.cannontech.calchist;
  * @author: 
  */
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
@@ -17,10 +18,10 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.functions.RoleFuncs;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -112,29 +113,30 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 	
 	for(int i=0;i<calcComponentVector.size();i++)
 	{
-		if( ((CalcComponent)calcComponentVector.get(i)).getComponentType().equalsIgnoreCase(CalcComponentTypes.OPERATION_COMP_TYPE) )
+	    CalcComponent calcComponent = (CalcComponent)calcComponentVector.get(i);
+		if( calcComponent.getComponentType().equalsIgnoreCase(CalcComponentTypes.OPERATION_COMP_TYPE) )
 		{
 			for(int j=0;j<currentRawPointHistoryVector.size();j++)
 			{
-				if( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue() == ((RawPointHistory)currentRawPointHistoryVector.get(j)).getPointID().intValue() )
+				if( calcComponent.getComponentPointID().intValue() == ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getPointID() )
 				{
-					if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.ADDITION_OPERATION) )
+					if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.ADDITION_OPERATION) )
 					{
-						returnValue = returnValue + ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						returnValue = returnValue + ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 					}
-					else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.SUBTRACTION_OPERATION) )
+					else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.SUBTRACTION_OPERATION) )
 					{
-						returnValue = returnValue - ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						returnValue = returnValue - ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 					}
-					else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.MULTIPLICATION_OPERATION) )
+					else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.MULTIPLICATION_OPERATION) )
 					{
-						returnValue = returnValue * ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						returnValue = returnValue * ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 					}
-					else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.DIVISION_OPERATION) )
+					else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.DIVISION_OPERATION) )
 					{
-						if( ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue() != 0.0 )
+						if( ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue() != 0.0 )
 						{
-							returnValue = returnValue / ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+							returnValue = returnValue / ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 						}
 						else
 						{
@@ -144,14 +146,14 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 						}
 					}
 /*				//Calc-logic way of processing power factor.  CalcHistorical uses the setup of powerfactor_xx_xx_function.
-					else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase("push") )
+					else if( calcComponent.getOperation().equalsIgnoreCase("push") )
 					{
 						if( powerFactor == null)
 						{
 							powerFactor = new PF();
 						}
 						
-						LitePointUnit ltPU = new LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue());
+						LitePointUnit ltPU = new LitePointUnit( calcComponent.getComponentPointID().intValue());
 						ltPU.retrieve(CtiUtilities.getDatabaseAlias());
 					
 					
@@ -174,32 +176,32 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 					}	*/
 					else
 					{
-						logEvent("Can not determine the Operation " + ((CalcComponent)calcComponentVector.get(i)).getOperation().toString()+ " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
-						CTILogger.info("Can not determine the Operation  " + ((CalcComponent)calcComponentVector.get(i)).getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()");
+						logEvent("Can not determine the Operation " + calcComponent.getOperation().toString()+ " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
+						CTILogger.info("Can not determine the Operation  " + calcComponent.getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()");
 						return null;
 					}
 				}
 			}
 		}
-		else if( ((CalcComponent)calcComponentVector.get(i)).getComponentType().equalsIgnoreCase(CalcComponentTypes.CONSTANT_COMP_TYPE) )
+		else if( calcComponent.getComponentType().equalsIgnoreCase(CalcComponentTypes.CONSTANT_COMP_TYPE) )
 		{
-			if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.ADDITION_OPERATION) )
+			if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.ADDITION_OPERATION) )
 			{
-				returnValue = returnValue + ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue();
+				returnValue = returnValue + calcComponent.getConstant().doubleValue();
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.SUBTRACTION_OPERATION) )
+			else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.SUBTRACTION_OPERATION) )
 			{
-				returnValue = returnValue - ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue();
+				returnValue = returnValue - calcComponent.getConstant().doubleValue();
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.MULTIPLICATION_OPERATION) )
+			else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.MULTIPLICATION_OPERATION) )
 			{
-				returnValue = returnValue * ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue();
+				returnValue = returnValue * calcComponent.getConstant().doubleValue();
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getOperation().equalsIgnoreCase(CalcComponentTypes.DIVISION_OPERATION) )
+			else if( calcComponent.getOperation().equalsIgnoreCase(CalcComponentTypes.DIVISION_OPERATION) )
 			{
-				if( ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue() != 0.0 )
+				if( calcComponent.getConstant().doubleValue() != 0.0 )
 				{
-					returnValue = returnValue / ((CalcComponent)calcComponentVector.get(i)).getConstant().doubleValue();
+					returnValue = returnValue / calcComponent.getConstant().doubleValue();
 				}
 				else
 				{
@@ -210,15 +212,15 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 			}
 			else
 			{
-				logEvent("Can not determine the Operation " + ((CalcComponent)calcComponentVector.get(i)).getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
-				CTILogger.info("Can not determine the Operation " + ((CalcComponent)calcComponentVector.get(i)).getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()");
+				logEvent("Can not determine the Operation " + calcComponent.getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
+				CTILogger.info("Can not determine the Operation " + calcComponent.getOperation().toString() + " in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
-		else if( ((CalcComponent)calcComponentVector.get(i)).getComponentType().equalsIgnoreCase(CalcComponentTypes.FUNCTION_COMP_TYPE) )
+		else if( calcComponent.getComponentType().equalsIgnoreCase(CalcComponentTypes.FUNCTION_COMP_TYPE) )
 		{
 
-			if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION) )
+			if( calcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -227,27 +229,27 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				powerFactor.pfType = KW_KVAR_PFTYPE;				
 
 				//Original way of processing Power Fail.  It is done using push in calc-logic.				
-				LitePointUnit ltPU = new LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue());
+				LitePointUnit ltPU = new LitePointUnit( calcComponent.getComponentPointID().intValue());
 				ltPU.retrieve(CtiUtilities.getDatabaseAlias());
 
 				for(int j = 0; j < currentRawPointHistoryVector.size(); j++)
 				{
-					if( ((CalcComponent)calcComponentVector.get(i)).getComponentPointID().intValue() == ((RawPointHistory)currentRawPointHistoryVector.get(j)).getPointID().intValue() )
+					if( calcComponent.getComponentPointID().intValue() == ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getPointID() )
 					{
 					
 						if( ltPU.getUomID() == KW_UNITMEASURE)
 						{
-							powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+							powerFactor.kw_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 						}
 						else if( ltPU.getUomID() == KVAR_UNITMEASURE)
 						{
-							powerFactor.kvar_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+							powerFactor.kvar_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 						}
 					}
 				}				
 			}
 
-			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
+			else if( calcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -255,19 +257,19 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				}
 				powerFactor.pfType = KW_KQ_PFTYPE;
 				
-				LitePointUnit ltPU = new LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getPointID().intValue());
+				LitePointUnit ltPU = new LitePointUnit( calcComponent.getPointID().intValue());
 				ltPU.retrieve(CtiUtilities.getDatabaseAlias());
 				
 				for(int j = 0; j < currentRawPointHistoryVector.size(); j++)
 				{
 					CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
 					if( ltPU.getUomID() == KW_UNITMEASURE)
-						powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						powerFactor.kw_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 					else if( ltPU.getUomID() == KQ_UNITMEASURE)
-						powerFactor.kq_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						powerFactor.kq_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 				}				
 			}
-			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVA_FUNCTION) )
+			else if( calcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.PFACTOR_KW_KVA_FUNCTION) )
 			{
 				if( powerFactor == null)
 				{
@@ -275,36 +277,36 @@ public Double figurePointDataMsgValue(Vector calcComponentVector, Vector current
 				}
 				powerFactor.pfType = KW_KVA_PFTYPE;
 				
-				LitePointUnit ltPU = new LitePointUnit( ((CalcComponent)calcComponentVector.get(i)).getPointID().intValue());
+				LitePointUnit ltPU = new LitePointUnit( calcComponent.getPointID().intValue());
 				ltPU.retrieve(CtiUtilities.getDatabaseAlias());
 				
 				for(int j = 0; j < currentRawPointHistoryVector.size(); j++)
 				{
 					CTILogger.info(" Current RawPointHistoryVector.size() = " + currentRawPointHistoryVector.size());
 					if( ltPU.getUomID() == KW_UNITMEASURE)
-						powerFactor.kw_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						powerFactor.kw_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 					else if( ltPU.getUomID() == KVA_UNITMEASURE)
-						powerFactor.kva_value = ((RawPointHistory)currentRawPointHistoryVector.get(j)).getValue().doubleValue();
+						powerFactor.kva_value = ((LiteRawPointHistory)currentRawPointHistoryVector.get(j)).getValue();
 				}
 			}
 			//For this to ever work the query in getCalcComponentPoints(...)
 			// must be changed at the spot of != 'Function'
 //			CTILogger.info("Can not handle ComponentType of Function yet CalcHistorical::figurePointDataMsgValue()");
-			else if( ((CalcComponent)calcComponentVector.get(i)).getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
+			else if( calcComponent.getFunctionName().equalsIgnoreCase(CalcComponentTypes.BASELINE_FUNCTION) )
 			{
 				//This is handled in main, not here!
 				return null;
 			}
 			else
 			{
-				logEvent("Can not determine the Function " + ((CalcComponent)calcComponentVector.get(i)).getFunctionName().toString() + " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
-				CTILogger.info("Can not determine the Function " + ((CalcComponent)calcComponentVector.get(i)).getFunctionName().toString() + " in CalcHistorical::figurePointDataMsgValue()");
+				logEvent("Can not determine the Function " + calcComponent.getFunctionName().toString() + " in CalcHistorical::figurePointDataMsgValue()", LogWriter.ERROR);
+				CTILogger.info("Can not determine the Function " + calcComponent.getFunctionName().toString() + " in CalcHistorical::figurePointDataMsgValue()");
 				return null;
 			}
 		}
 		else
 		{
-			CTILogger.info("Can not determine the ComponentType " + ((CalcComponent)calcComponentVector.get(i)).getComponentType().toString() + " in CalcHistorical::figurePointDataMsgValue()");
+			CTILogger.info("Can not determine the ComponentType " + calcComponent.getComponentType().toString() + " in CalcHistorical::figurePointDataMsgValue()");
 			return null;
 		}
 	}
@@ -349,28 +351,37 @@ public static GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPoi
 		preparedStatement = conn.prepareStatement("SELECT LASTUPDATE FROM DYNAMICCALCHISTORICAL WHERE POINTID = " + String.valueOf(calcPointID));
 		rset = preparedStatement.executeQuery();
 		
-		if( rset == null)
+		if( rset != null) 
+	    {
+		    java.sql.Timestamp tempTimestamp = null;
+			while (rset.next())
+			{
+				tempTimestamp = rset.getTimestamp(1);
+				if( tempTimestamp != null )
+				{
+					returnTimeStamp.setTime(tempTimestamp);
+				}
+			}
+	    }
+		else
 		{
+		    //Default lastUpdate to TODAY, insert lastupdate and pointid into DynamicCalcHistorical table for future use.
 			GregorianCalendar tempCal = new GregorianCalendar();
 			returnTimeStamp.set(java.util.Calendar.YEAR, tempCal.get(java.util.Calendar.YEAR));
 			returnTimeStamp.set(java.util.Calendar.DAY_OF_YEAR, tempCal.get(java.util.Calendar.DAY_OF_YEAR));
-
-			logEvent(" ####    UPDATE DYNAMICCALCHISTORICAL WITH POINTID = "+ String.valueOf(calcPointID), LogWriter.INFO);
-			logEvent(" ####    USING LASTUPDATE = " + returnTimeStamp, LogWriter.INFO);
-	
-			CTILogger.info(" ####    UPDATE DYNAMICCALCHISTORICAL WITH POINTID = "+ String.valueOf(calcPointID));
-			CTILogger.info(" ####    USING LASTUPDATE = " + returnTimeStamp);
+			
+			if( preparedStatement != null)
+			    preparedStatement.close();
+			
+			preparedStatement = conn.prepareStatement("INSERT INTO DYNAMICCALCHISTORICAL VALUES ( ?, ?)");
+			preparedStatement.setInt(1, calcPointID);
+			preparedStatement.setTimestamp(2, new java.sql.Timestamp(returnTimeStamp.getTime().getTime()));
+			preparedStatement.executeUpdate();
+			
+			logEvent("POINTID: " + calcPointID + "   Missing from DynamicCalcHistorical.  PointID was added with LastUpdate= " + returnTimeStamp.getTime(), LogWriter.INFO);
+			CTILogger.info("POINTID: " + calcPointID + "   Missing from DynamicCalcHistorical.  PointID was added with LastUpdate= " + returnTimeStamp.getTime());
 		}
 		
-		java.sql.Timestamp tempTimestamp = null;
-		while (rset.next())
-		{
-			tempTimestamp = rset.getTimestamp(1);
-			if( tempTimestamp != null )
-			{
-				returnTimeStamp.setTime(tempTimestamp);
-			}
-		}
 	}
 	catch( java.sql.SQLException e )
 	{
@@ -378,6 +389,7 @@ public static GregorianCalendar getCalcHistoricalLastUpdateTimeStamp(int calcPoi
 	}
 	finally
 	{
+		CTILogger.debug("CalcPointID:  " + calcPointID + "    Timestamp: " + returnTimeStamp.getTime() + "  Found in DynamicCalcHistorical");
 		try
 		{
 			if( preparedStatement != null )
@@ -413,35 +425,37 @@ public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, Greg
 	try
 	{
 		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		preparedStatement =	conn.prepareStatement("SELECT CHANGEID, POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID = ? AND TIMESTAMP > ? ORDER BY TIMESTAMP");
 		for (int i = 0; i < calcComponentVector.size(); i++)
 		{
 			if (((CalcComponent) calcComponentVector.get(i)).getComponentPointID().intValue() > 0)
 			{
-				preparedStatement.setInt(1, ((CalcComponent) calcComponentVector.get(i)).getComponentPointID().intValue());
+			    int compPointID = ((CalcComponent) calcComponentVector.get(i)).getComponentPointID().intValue();
+			    
+			    CTILogger.debug("Starting RPH Retrieve loop for PointID: " + compPointID + " - Timestamp: " + lastCalcPointRawPointHistoryTimeStamp.getTime());
+				preparedStatement =	conn.prepareStatement("SELECT DISTINCT POINTID, TIMESTAMP, QUALITY, VALUE FROM RAWPOINTHISTORY WHERE POINTID = ? AND TIMESTAMP > ? ORDER BY TIMESTAMP");			    
+				preparedStatement.setInt(1, compPointID);
 				preparedStatement.setTimestamp(2, new java.sql.Timestamp(lastCalcPointRawPointHistoryTimeStamp.getTime().getTime()));
 				
 				rset = preparedStatement.executeQuery();
 				tempRawPointHistoryVector = new Vector();
 
 				int count = 0;
-				//CTILogger.info(" ** RSET RETRIEVED * getCalcHistoricalPointDataMsgVector");
+				CTILogger.debug(" ** RSET RETRIEVED * getCalcHistoricalPointDataMsgVector");
 				while (rset.next())
 				{
-					Integer changeID = new Integer(rset.getInt(1));
-					Integer pointID = new Integer(rset.getInt(2));
-					GregorianCalendar timestamp = new GregorianCalendar();
-					timestamp.setTime(rset.getTimestamp(3));
+//					int changeID = rset.getInt(1);
+				    int changeID = -1;	//HACK, we just need some value here, and we wanted to do distinct in the query.
+					int pointID = rset.getInt(1);
+					long time = rset.getTimestamp(2).getTime(); 
+					int quality = rset.getInt(3);
+					double value = rset.getDouble(4);
 
-					Integer quality = new Integer(rset.getInt(4));
-					Double value = new Double(rset.getDouble(5));
+					LiteRawPointHistory lrph = new LiteRawPointHistory(changeID, pointID, time, quality, value);
 
-					RawPointHistory rph = new RawPointHistory(changeID, pointID, timestamp, quality, value);
-
-					tempRawPointHistoryVector.add(rph);
+					tempRawPointHistoryVector.add(lrph);
 					count++;
 				}
-				//CTILogger.info(" ** RSET FINISHED *" + count + "* getCalcHistoricalPointDataMsgVector");
+				CTILogger.debug(" ** RSET FINISHED *" + count + "* getCalcHistoricalPointDataMsgVector");
 				if (tempRawPointHistoryVector != null && tempRawPointHistoryVector.size() > 0)
 				{
 					rawPointHistoryVectorOfVectors.add(tempRawPointHistoryVector);
@@ -453,6 +467,8 @@ public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, Greg
 
 				tempRawPointHistoryVector = null;
 			}
+			if(preparedStatement != null)
+			    preparedStatement.close();
 		}
 	}
 	catch (java.sql.SQLException e)
@@ -946,11 +962,13 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 
 	boolean done = false;
 	PointData pointDataMsg = null;
-	GregorianCalendar targetRawPointHistoryTimeStamp = null;
+//	GregorianCalendar targetRawPointHistoryTimeStamp = null;
+	long targetRPHTimeInMillis = 0;
 
 	if (arrayOfIndexes[0] < ((Vector) rawPointHistoryVectorOfVectors.get(0)).size())
 	{
-		targetRawPointHistoryTimeStamp = ((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(0)).get(arrayOfIndexes[0]))).getTimeStamp();
+	    targetRPHTimeInMillis = ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(0)).get(arrayOfIndexes[0]))).getTimeStamp();
+//		targetRawPointHistoryTimeStamp = ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(0)).get(arrayOfIndexes[0]))).getTimeStamp();
 	}
 	else
 	{
@@ -967,10 +985,12 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 			{
 				if (arrayOfIndexes[i] < ((Vector) rawPointHistoryVectorOfVectors.get(i)).size())
 				{
-					if (targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) > 0)
+//					if (targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) > 0)
+				    if (targetRPHTimeInMillis > ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp())
 					{
 						while (arrayOfIndexes[i] < ((Vector) rawPointHistoryVectorOfVectors.get(i)).size()
-							&& targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) > 0)
+//							&& targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) > 0)
+								&& targetRPHTimeInMillis > ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp())
 						{
 							arrayOfIndexes[i]++;
 						}
@@ -984,17 +1004,21 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 						}
 						break;
 					}
-					else if ( targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) < 0)
+//					else if ( targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) < 0)
+					else if ( targetRPHTimeInMillis < ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp())					    
 					{
 						if( tempRawPointHistoryVector != null)
 							tempRawPointHistoryVector.clear();
 							
-						targetRawPointHistoryTimeStamp = ((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp();
+//						targetRawPointHistoryTimeStamp = ((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp();
+						targetRPHTimeInMillis = ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp();
 						break;
 					}
-					else if (targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) == 0)
+//					else if (targetRawPointHistoryTimeStamp.getTime().compareTo(((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp().getTime()) == 0)					
+					else if (targetRPHTimeInMillis == ((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i]))).getTimeStamp())
 					{
-						tempRawPointHistoryVector.addElement((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i])));
+//						tempRawPointHistoryVector.addElement((RawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i])));
+						tempRawPointHistoryVector.addElement((LiteRawPointHistory) (((Vector) rawPointHistoryVectorOfVectors.get(i)).get(arrayOfIndexes[i])));
 					}
 				}
 				else
@@ -1017,8 +1041,8 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg = new PointData();
 				pointDataMsg.setId(pointID);
 				pointDataMsg.setValue(value.doubleValue());
-				pointDataMsg.setTimeStamp(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
-				pointDataMsg.setTime(((RawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp().getTime());
+				pointDataMsg.setTimeStamp(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
+				pointDataMsg.setTime(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
 				pointDataMsg.setQuality(PointQualities.NORMAL_QUALITY);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				pointDataMsg.setTags(PointData.TAG_POINT_LP_NO_REPORT); //load profile tag setting
