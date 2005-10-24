@@ -292,25 +292,31 @@ insert into state values(-7,3,'Unresponsive',3,6,0);
 
 insert into point values (-200,'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 insert into point values (-200,'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
-
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 
 
 create table CapControlStrategy  (
@@ -545,7 +551,7 @@ insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default 
 insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
 
 create table CommandGroup(
-   CommandGroupID              NUMBER		     not null,
+   CommandGroupID              NUMBER          not null,
    CommandGroupName            VARCHAR2(60)          not null
 );
 insert into CommandGroup values (-1, 'Default Commands');

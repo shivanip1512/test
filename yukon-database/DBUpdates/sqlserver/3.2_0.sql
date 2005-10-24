@@ -88,7 +88,7 @@ alter table NotificationGroup drop column numericpagermessage;
 go
 
 alter table CapBank alter column OperationalState varchar(16) not null;
- 
+
 update YukonRoleProperty set Description = 'The number of seconds to wait for a confirmation from the time the call is initiated until the user listens to the notification.' where RolePropertyID = -1402;
 update YukonRoleProperty set Description = 'The number of seconds to wait for a call to be connected.' where RolePropertyID = -1401;
 go
@@ -366,24 +366,31 @@ go
 
 insert into point values (-200,'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 insert into point values (-200,'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
+insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
 go
 
 
@@ -691,7 +698,7 @@ go
 
 
 alter table DeviceTypeCommand drop constraint PK_DEVICETYPECOMMAND;
-go 
+go
 alter table DeviceTypeCommand add CommandGroupID numeric;
 go
 update DeviceTypeCommand set CommandGroupID = -1;
