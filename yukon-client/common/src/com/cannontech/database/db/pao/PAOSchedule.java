@@ -144,7 +144,7 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 	 * @return boolean
 	 * @param deviceID java.lang.Integer
 	 */
-	public static synchronized boolean deleteAllPAOExclusions(int paoID, java.sql.Connection conn )
+	public static synchronized boolean deleteAllPAOSchedules(int paoID, java.sql.Connection conn )
 	{
 		try
 		{

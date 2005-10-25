@@ -1,9 +1,11 @@
 package com.cannontech.database.data.pao;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.pao.PAOExclusion;
+import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.user.UserPaoOwner;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.NestedDBPersistent;
@@ -19,6 +21,8 @@ public abstract class YukonPAObject extends com.cannontech.database.db.DBPersist
 	//contains com.cannontech.database.db.pao.PAOExclusion
 	private Vector paoExclusionVector = null;
 
+	//may have zero or more schedules, instance of PAOScheduleAssign
+	private ArrayList schedules = null;
 
 /**
  * YukonPAObject constructor comment.
@@ -36,7 +40,10 @@ public void add() throws java.sql.SQLException
 	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
 		((DBPersistent)getPAOExclusionVector().get(i)).add();
 
+	for( int i = 0; i < getSchedules().size(); i++ )
+		((DBPersistent)getSchedules().get(i)).add();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/15/2001 9:44:28 AM)
@@ -65,6 +72,8 @@ public void delete() throws java.sql.SQLException
     delete( UserPaoOwner.TABLE_NAME, "PaoID", getPAObjectID() );
 
 	PAOExclusion.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
+	
+	PAOScheduleAssign.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
 	
 	getYukonPAObject().delete();
 }
@@ -234,12 +243,20 @@ public void retrieve() throws java.sql.SQLException
 {
 	getYukonPAObject().retrieve();
 	
-	Vector exc =
-		PAOExclusion.getAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
-	
+
 	getPAOExclusionVector().removeAllElements();
+	Vector exc =
+		PAOExclusion.getAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );	
 	for( int i = 0; i < exc.size(); i++ )
 		getPAOExclusionVector().add( exc.elementAt(i) );	
+
+
+
+	getSchedules().clear();
+	PAOScheduleAssign[] paoScheds =
+		PAOScheduleAssign.getAllPAOSchedAssignments(getPAObjectID().intValue(), getDbConnection());	
+	for( int i = 0; i < paoScheds.length; i++ )
+		getSchedules().add( paoScheds[i] );	
 }
 
 /**
@@ -255,6 +272,9 @@ public void setDbConnection(java.sql.Connection conn)
 
 	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
 		((DBPersistent)getPAOExclusionVector().get(i)).setDbConnection( conn );
+
+	for( int i = 0; i < getSchedules().size(); i++ )
+		((DBPersistent)getSchedules().get(i)).setDbConnection( conn );
 }
 
 /**
@@ -272,7 +292,14 @@ protected void setPAObjectID( Integer id )
 
 		((PAOExclusion)getPAOExclusionVector().get(i)).setPaoID( id );
 	}
+
 	
+	for( int i = 0; i < getSchedules().size(); i++ ) {
+		//we must null out the PK since there is a new PAObjectID owner
+		((PAOScheduleAssign)getSchedules().get(i)).setEventID( null );
+		((PAOScheduleAssign)getSchedules().get(i)).setPaoID( id );
+	}
+
 }
 
 /**
@@ -350,6 +377,10 @@ public void update() throws java.sql.SQLException
 
 	}
 
+	//compeletly remove and add the entire set of PAOScheduleAssignments
+	PAOScheduleAssign.deleteAllPAOExclusions( getPAObjectID().intValue(), getDbConnection() );
+	for( int i = 0; i < getSchedules().size(); i++ )
+		((PAOScheduleAssign)getSchedules().get(i)).add();
 }
 
 	/**
@@ -361,6 +392,24 @@ public void update() throws java.sql.SQLException
 			paoExclusionVector = new Vector();
 
 		return paoExclusionVector;
+	}
+
+	/**
+	 * @return
+	 */
+	public ArrayList getSchedules() {
+		
+		if( schedules == null )
+			schedules = new ArrayList(8);
+
+		return schedules;
+	}
+
+	/**
+	 * @param assigns
+	 */
+	public void setSchedules(ArrayList assigns) {
+		schedules = assigns;
 	}
 
 }
