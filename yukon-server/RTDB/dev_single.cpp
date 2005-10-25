@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/10/19 19:11:48 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/10/25 22:08:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1357,29 +1357,42 @@ BOOL CtiDeviceSingle::isWindowOpen(RWTime &aNow, RWTime &opensAt, CtiDeviceWindo
 {
     BOOL status = TRUE;
 
-    // loop the vector
-    for(int x=0; x <_windowVector.size(); x++)
-    {
-        if(_windowVector[x].getType() == windowType)
-        {
-            RWTime lastMidnight(RWDate());
-            RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
-            RWTime close (open.seconds()+_windowVector[x].getDuration());
 
-            if(open == close)
+    try
+    {
+        // loop the vector
+        for(int x=0; x <_windowVector.size(); x++)
+        {
+            if(_windowVector[x].getType() == windowType)
             {
+                RWTime lastMidnight(RWDate());
+                RWTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
+                RWTime close (open.seconds()+_windowVector[x].getDuration());
+
+                if(open == close)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
+                    }
                 }
-            }
-            else if((aNow < open) || (aNow > close))
-            {
-                opensAt = open + 86400L;    // The next Window open time (open is today's open).
-                status = FALSE;
+                else if((aNow < open) || (aNow > close))
+                {
+                    opensAt = open + 86400L;    // The next Window open time (open is today's open).
+                    status = FALSE;
+                }
             }
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        status = FALSE;
+    }
+
     return status;
 }
 
