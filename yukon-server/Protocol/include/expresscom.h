@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2003/06/10 21:03:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/10/25 14:36:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,6 +241,7 @@ public:
         ccControlClose                  = 0x02,     // No data
         ccControlDisableOVUV            = 0x03,     // No data
         ccControlEnableOVUV             = 0x04,     // No data
+        ccControlSwap                   = 0x05,     // No data
         ccOneByteConfigControlRelayTime = 0x01,     // One byte data in seconds
         ccTwoByteConfigOVUVCalcTime     = 0x01      // Two bytes data in seconds.
 

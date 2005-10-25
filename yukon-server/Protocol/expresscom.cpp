@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/10/19 02:54:28 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/10/25 14:36:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1033,6 +1033,10 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse, CtiOutMessag
                                    parse.getiValue("xctf", 0),
                                    parse.getiValue("xcdsf", 0),
                                    hold);
+    }
+    else if(parse.isKeyValid("xcflip"))
+    {
+        status = capControl( ccControl, ccControlSwap );
     }
     else
     {

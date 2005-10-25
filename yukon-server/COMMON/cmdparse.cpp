@@ -1614,7 +1614,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
             token = CmdStr.match("install +[a-z]* *[a-z]*");
             RWCTokenizer cmdtok(token);
             cmdtok();  //  go past install
-                
+
             _cmd["install"] = CtiParseValue(TRUE);
             _cmd["installvalue"] = CtiParseValue(cmdtok());
 
@@ -1623,7 +1623,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
             {
                 _cmd["force"] = CtiParseValue(true);
             }
-            
+
         }
         if(!(CmdStr.match("ied")).isNull())
         {
@@ -3482,7 +3482,11 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
         }
     }
 
-    if(!(token = CmdStr.match(" tcycle +[0-9]+")).isNull())
+    if( CmdStr.contains(" flip", RWCString::ignoreCase) )
+    {
+        _cmd["xcflip"] = CtiParseValue( TRUE );
+    }
+    else if(!(token = CmdStr.match(" tcycle +[0-9]+")).isNull())
     {
         _cmd["xctcycle"] = CtiParseValue( TRUE );
 
