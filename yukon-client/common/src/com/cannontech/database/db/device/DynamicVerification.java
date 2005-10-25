@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.db.device;
 
+import java.util.Date;
+
 /**
  * @author jdayton
  *
@@ -15,18 +17,19 @@ package com.cannontech.database.db.device;
 public class DynamicVerification extends com.cannontech.database.db.DBPersistent 
 {
 	private Integer logID;
-	private Integer timestamp;
+	private Date timeArrival;
 	private Integer receiverID;
 	private Integer transmitterID;
 	private String command;
-	private String received;
+	private String code;
+	private Character received;
 	private Integer codeSequence;
 	private String codeStatus;
 	
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"LOGID", "TIMESTAMP", "RECEIVERID", 
-		"TRANSMITTERID", "COMMAND", "CODESEQUENCE", "CODESTATUS"
+		"LOGID", "TIMEARRIVAL", "RECEIVERID", 
+		"TRANSMITTERID", "COMMAND", "CODE", "CODESEQUENCE", "RECEIVED", "CODESTATUS"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LOGID" };
@@ -37,25 +40,27 @@ public DynamicVerification() {
 	super();
 }
 
-public DynamicVerification(Integer lgID, Integer stamp, Integer recID, Integer transID, String com, Integer codeSeq, String stat) {
+public DynamicVerification(Integer lgID, Date date_, Integer recID, Integer transID, String command_, String code_, Integer codeSeq, Character received_, String stat) {
 	super();
 	logID = lgID;
-	timestamp = stamp;
+	timeArrival = date_;
 	receiverID = recID;
 	transmitterID = transID;
-	command = com;
+	command = command_;
+	code = code_;
 	codeSequence = codeSeq;
+	received = received_;
 	codeStatus = stat;
-	
 }
 
 public void add() throws java.sql.SQLException
 {
 	Object addValues[] = 
 	{ 
-		getLogID(), getTimestamp(),
+		getLogID(), getTimeArrival(),
 		getReceiverID(), getTransmitterID(), 
-		getCommand(), getCodeSequence(),
+		getCommand(), getCode(), 
+		getCodeSequence(), getReceived(), 
 		getCodeStatus()
 	};
 
@@ -68,49 +73,49 @@ public void delete() throws java.sql.SQLException
 }
 
 public static synchronized Integer getNextLogID( java.sql.Connection conn )
-	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
+{
+	if( conn == null )
+		throw new IllegalStateException("Database connection should not be null.");
+
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
 	
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try 
-		{		
-			stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(LogID)+1 FROM " + TABLE_NAME );	
-				
-			 //get the first returned result
-			 rset.next();
-			return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) 
-		{
-			e.printStackTrace();
-		}
-		finally 
-		{
-			try 
-			{
-				if ( stmt != null) stmt.close();
-			}
-			catch (java.sql.SQLException e2) 
-			{
-				e2.printStackTrace();
-			}
-		}
-		
-		//strange, should not get here
-		return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
+	try 
+	{		
+		stmt = conn.createStatement();
+		 rset = stmt.executeQuery( "SELECT Max(LogID)+1 FROM " + TABLE_NAME );	
+			
+		 //get the first returned result
+		 rset.next();
+		return new Integer( rset.getInt(1) );
 	}
+	catch (java.sql.SQLException e) 
+	{
+		e.printStackTrace();
+	}
+	finally 
+	{
+		try 
+		{
+			if ( stmt != null) stmt.close();
+		}
+		catch (java.sql.SQLException e2) 
+		{
+			e2.printStackTrace();
+		}
+	}
+	
+	//strange, should not get here
+	return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
+}
 
 
 public Integer getLogID() {
 	return logID;
 	}
 
-public Integer getTimestamp() {
-	return timestamp;
+public Date getTimeArrival() {
+	return timeArrival;
 }
 
 public Integer getReceiverID() {
@@ -143,12 +148,15 @@ public void retrieve()
 	
 		if( results.length == SETTER_COLUMNS.length )
 		{
-			setTimestamp( (Integer) results[1] );
+			setLogID( (Integer) results[0]);
+			setTimeArrival( (Date) results[1] );
 			setReceiverID( (Integer) results[2] );
 			setTransmitterID( (Integer) results[3] );
 			setCommand( (String) results[4] );
-			setCodeSequence( (Integer) results[5]);
-			setCodeStatus( (String) results[6] );
+			setCode( (String) results[5]);
+			setCodeSequence( (Integer) results[6]);
+			setReceived( (Character) results[7]);
+			setCodeStatus( (String) results[8]);
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -163,8 +171,8 @@ public void setLogID(Integer lgID) {
 	logID = lgID;
 }
 
-public void setTimestamp(Integer stamp) {
-	timestamp = stamp;
+public void setTimeArrival(Date date_) {
+	timeArrival = date_;
 }
 
 public void setReceiverID(Integer recID) {
@@ -191,10 +199,10 @@ public void update()
 {
 	Object setValues[] =
 	{ 
-		getLogID(), getTimestamp(),
+		getLogID(), getTimeArrival(),
 		getReceiverID(), getTransmitterID(), 
 		getCommand(), getCodeSequence(),
-		getCodeStatus()
+		getReceived(), getCodeStatus()
 	};
 	
 	Object constraintValues[] = { getLogID() };
@@ -208,5 +216,34 @@ public void update()
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
 }
-}
+	/**
+	 * @return
+	 */
+	public Character getReceived()
+	{
+		return received;
+	}
 
+	/**
+	 * @param character
+	 */
+	public void setReceived(Character character)
+	{
+		received = character;
+	}
+	/**
+	 * @return
+	 */
+	public String getCode()
+	{
+		return code;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setCode(String string)
+	{
+		code = string;
+	}
+}
