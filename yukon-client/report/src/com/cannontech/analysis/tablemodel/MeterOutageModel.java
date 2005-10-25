@@ -123,9 +123,9 @@ public class MeterOutageModel extends ReportModelBase
 			" AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
 		sql.append(" ORDER BY ");	//TODO what to order by?
-		if (getOrderBy() == ORDER_BY_DURATION)
+		if (getOrderBy() == ORDER_BY_TIMESTAMP)
 			sql.append(" TIMESTAMP " );		
-		else if (getOrderBy() == ORDER_BY_TIMESTAMP)
+		else if (getOrderBy() == ORDER_BY_DURATION)
 		    sql.append(" VALUE ");
 		else //if (getOrderBy() == ORDER_BY_DEVICE_NAME) //default
 			sql.append(" PAO.PAONAME " );
