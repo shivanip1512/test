@@ -50,31 +50,39 @@
 
 
                 <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" >
-                    <x:panelTab id="tab1" label="General" rendered="#{capControlForm.visibleTabs['General']}">
+                    <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
 		               	<jsp:include page="cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab2" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
-		               	<jsp:include page="cbcFeederSubEditor.jsp"/>
+                    <x:panelTab id="tabSubSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+		               	<jsp:include page="cbcSubSetup.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab3" label="Control Strategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabSubSchedSetup" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+		               	<jsp:include page="cbcSubSchedule.jsp"/>
+                    </x:panelTab>
+
+                    <x:panelTab id="tabFeederSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}">
+		               	<jsp:include page="cbcFeederSetup.jsp"/>
+                    </x:panelTab>
+
+                    <x:panelTab id="tabStrategy" label="Control Strategy" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
 		               	<jsp:include page="cbcStrategyEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab4" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabChild" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
 		               	<jsp:include page="cbcChildList.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab5" label="Setup" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
+                    <x:panelTab id="tabCapBank" label="Setup" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
 		               	<jsp:include page="cbcCapBank.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab6" label="Setup" rendered="#{capControlForm.visibleTabs['CBCController']}">
+                    <x:panelTab id="tabController" label="Setup" rendered="#{capControlForm.visibleTabs['CBCController']}">
 		               	<jsp:include page="cbcCBController.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab7" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
+                    <x:panelTab id="tabSchedule" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
 		               	<jsp:include page="cbcSchedule.jsp"/>
                     </x:panelTab>
 

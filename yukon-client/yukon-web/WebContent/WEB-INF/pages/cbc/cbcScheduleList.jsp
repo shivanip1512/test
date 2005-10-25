@@ -84,14 +84,24 @@
 	                   	<f:facet name="header">
 							<h:outputText value="Interval" title="The number of seconds this schedule will repeat" />
 	                   	</f:facet>
-						<h:outputText value="#{paoSched.intervalRate}" />
+						<x:selectOneMenu id="interval" value="#{paoSched.intervalRate}" displayValueOnly="true" >
+							<f:selectItem itemLabel="(none)" itemValue="0" />
+							<f:selectItems value="#{capControlForm.timeInterval}"/>
+							<f:selectItem itemLabel="2 days" itemValue="172800" />
+							<f:selectItem itemLabel="5 days" itemValue="432000" />
+							<f:selectItem itemLabel="7 days" itemValue="604800" />
+							<f:selectItem itemLabel="14 days" itemValue="1209600" />
+							<f:selectItem itemLabel="30 days" itemValue="2592000" />
+						</x:selectOneMenu>
+						
 	               </h:column>
 
 	               <h:column>
 	                   	<f:facet name="header">
 							<h:outputText value="Disabled" title="Is the schedule disabled" />
 	                   	</f:facet>
-						<h:outputText value="#{paoSched.disabled}" />
+						<h:outputText value="yes" rendered="#{paoSched.disabled}" styleClass="alert" />
+						<h:outputText value="no" rendered="#{!paoSched.disabled}" />
 	               </h:column>
 
 	               <h:column>
