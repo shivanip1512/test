@@ -49,6 +49,7 @@ import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
+import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.web.util.CBCSelectionLists;
 
 /**
@@ -390,7 +391,14 @@ public class CapControlForm extends DBEditorForm
 		if( val == null ) return;
 
 		if( getDbPersistent() instanceof CapBank ) {
-			((CapBank)getDbPersistent()).getCapBank().setControlPointID( new Integer(val) );
+
+			((CapBank)getDbPersistent()).getCapBank().setControlPointID(
+				new Integer(val) );
+
+			((CapBank)getDbPersistent()).getCapBank().setControlDeviceID(
+				new Integer(PointFuncs.getLitePoint(
+					((CapBank)getDbPersistent()).getCapBank().getControlPointID().intValue()).getPaobjectID()) );
+
 
 			resetCBCEditor();
 		}
@@ -1290,6 +1298,25 @@ public class CapControlForm extends DBEditorForm
 		else
 			return false;
 	}
+
+	/**
+	 * Adds a schedule for a PAO
+	 */
+	public void addSchedule() {
+
+		if( !(getDbPersistent() instanceof CapControlSubBus) ) return;
+
+		CapControlSubBus subBus = (CapControlSubBus)getDbPersistent();
+		if( subBus.getSchedules().size() < PAOScheduleAssign.MAX_SHEDULES_PER_PAO ) {
+
+			PAOScheduleAssign paoSched = new PAOScheduleAssign();
+			paoSched.setPaoID( subBus.getPAObjectID() );
+			
+			subBus.getSchedules().add( paoSched );
+		}
+
+	}
+
 
 	/**
 	 * @return

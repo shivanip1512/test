@@ -49,6 +49,14 @@ public class CBCSelectionLists {
 		new SelectItem("6", "Saturday" )
 	};
 
+	private static final SelectItem[] scheduleCmds =  {
+		//value, label
+		new SelectItem("Verify ALL CapBanks", "Verify ALL CapBanks" ),
+		new SelectItem("Verify Failed and Questionable CapBanks", "Verify Failed and Questionable CapBanks" ),
+		new SelectItem("Verify Failed CapBanks", "Verify Failed CapBanks" ),
+		new SelectItem("Verify Questionable CapBanks", "Verify Questionable CapBanks" )
+	};
+
 
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
@@ -227,6 +235,13 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getCbcControlAlgorithim() {
 		return cbcControlAlgorithim;
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getScheduleCmds() {
+		return scheduleCmds;
 	}
 
 }

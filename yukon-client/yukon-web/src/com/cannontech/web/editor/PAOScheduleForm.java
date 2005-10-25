@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.pao.PAOSchedule;
@@ -15,6 +16,10 @@ import com.cannontech.web.navigation.CtiNavObject;
  * @author ryan
  */
 public class PAOScheduleForm extends DBEditorForm {
+
+	private SelectItem[] selectScheds = null;
+	private Integer currentSchedID = null;
+
 	
 	/**
 	 * 
@@ -61,6 +66,7 @@ public class PAOScheduleForm extends DBEditorForm {
 		return "cbcEditor";
 	}
 
+
 	/**
 	 * Edit a schedule with the given id
 	 * -- TODO: this is a workaround for a bug in MyFaces 1.1.0,
@@ -94,6 +100,40 @@ public class PAOScheduleForm extends DBEditorForm {
 
 		//context.
 		return "";		
+	}
+
+
+	/**
+	 * Hold all the PAOSchedules in memory for quicker access.
+	 */
+	public SelectItem[] getPAOSchedulesSelItems() {
+		
+		if( selectScheds == null ) {
+			PAOSchedule[] scheds = getPAOSchedules();
+			selectScheds = new SelectItem[scheds.length];
+				
+			for( int i = 0; i < scheds.length; i++ ) {
+				selectScheds[i] = new SelectItem( //value, label
+					scheds[i].getScheduleID(), //.toString(),
+					scheds[i].getScheduleName() );
+			}
+		}
+
+		return selectScheds;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getCurrentSchedID() {
+		return currentSchedID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setCurrentSchedID(Integer i) {
+		currentSchedID = i;
 	}
 
 }
