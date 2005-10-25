@@ -966,7 +966,9 @@ void CtiLMCommandExecutor::DisableGroup()
                             currentLMGroup->setLastControlSent(RWDBDateTime());
                         }
 
+                        currentLMGroup->resetInternalState();
                         currentLMGroup->setDisableFlag(TRUE);
+                        
                         if( !found )
                         {
                             CtiLMControlAreaStore::getInstance()->UpdateGroupDisableFlagInDB(currentLMGroup);
@@ -1152,38 +1154,21 @@ void CtiLMManualControlRequestExecutor::Execute()
     }
     }
 
-    //move the disabled checks into general constraint checking, manual requests should be affected by ablement
-/*    if( controlArea->getDisableFlag() )
+    // Set up a response if this was wrapped up in a request message
+    // Fill in the response as we figure out what to say to the client
+    // and then send it at the end of this function
+    CtiServerResponseMsg* response = NULL; 
+    if(_request != NULL)
     {
-        if( _request != NULL)
-        {
-            CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::ERR, " Control Area is disabled");
-            CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
-            resp->setPayload(lmResp);
-            CtiLoadManager::getInstance()->sendMessageToClients(resp);
-            return;
-        }
+        response = new CtiServerResponseMsg();
+
     }
-
-    if( program->getDisableFlag() )
-    {
-        if( _request != NULL)
-        {
-            CtiServerResponseMsg* resp = new CtiServerResponseMsg(_request->getID(), CtiServerResponseMsg::ERR, " Program is disabled");
-            CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
-            resp->setPayload(lmResp);
-            CtiLoadManager::getInstance()->sendMessageToClients(resp);
-            return;
-        }
-        }*/
-
     
     RWDBDateTime startTime;
     RWDBDateTime stopTime;
 
     //prepare to send a response to the clients
-    CtiLMConstraintChecker checker;
-    vector<string> result_vec;
+    CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, RWTime().seconds());
     bool passed_check = false;
     
     switch ( _controlMsg->getCommand() )
@@ -1199,40 +1184,94 @@ void CtiLMManualControlRequestExecutor::Execute()
 //      startTime = RWDBDateTime();
         stopTime = _controlMsg->getStopTime();
 
-        if( _controlMsg->getCoerceStartStopTime() )
+
+        switch(_controlMsg->getConstraintCmd())
         {
-            CoerceStartStopTime(program, startTime, stopTime);
-        }
-        
-        if( !_controlMsg->getOverrideConstraints() &&
-            (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
-        {
-            if((passed_check = checker.checkConstraints((const CtiLMProgramDirect&)*program, _controlMsg->getStartGear()-1, RWTime::now().seconds(), startTime.seconds(), stopTime.seconds(), result_vec)))
+        case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
+            passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
+                                                         startTime.seconds(),
+                                                         stopTime.seconds());
+
+            if(response != NULL)
             {
-                StartProgram(program, controlArea, startTime, stopTime);
+                if(passed_check)
+                {
+                    response->setStatus(CtiServerResponseMsg::OK);
+                    response->setMessage("Manual Control Request Constraint Check OK");
+                }
+                else
+                {
+                    response->setStatus(CtiServerResponseMsg::ERR);
+                    response->setMessage("Manual Control Request Constraint Check Violations");             
+                }
             }
-        }
-        else
-        {
+            //Do not actually start the program
+            break;
+            
+        case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
+            ((CtiLMProgramDirect*)program)->setConstraintOverride(true);
             StartProgram(program, controlArea, startTime, stopTime);
-        }
+            if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::OK);
+                response->setMessage("Manual Control Request OK, Overriding Constraints");
+            }
+            break;
+            
+        case CtiLMManualControlRequest::USE_CONSTRAINTS:
+            // Fix up program control window if necessary
+            ((CtiLMProgramDirect*)program)->setConstraintOverride(false);
+            CoerceStartStopTime(program, startTime, stopTime);
+            StartProgram(program, controlArea, startTime, stopTime);
+            if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::OK);
+                response->setMessage("Manual Control Request OK, Using Constraints");
+            }       
+            break;
+        };
         break;
         
     case CtiLMManualControlRequest::SCHEDULED_STOP:
-        stopTime = _controlMsg->getStopTime();
-        
     case CtiLMManualControlRequest::STOP_NOW:
         stopTime = _controlMsg->getStopTime();
 
-        if( _controlMsg->getCoerceStartStopTime() &&
-            (program->getPAOType() == TYPE_LMPROGRAM_DIRECT ) )
+        switch(_controlMsg->getConstraintCmd())
         {
-            startTime = ((const CtiLMProgramDirect*) program)->getDirectStartTime();
+        case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
+            if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::OK);
+                response->setMessage("Manual Control Request Constraint Check OK (doesn't do anything on stop)");
+            }               
+            //Do not actually start the program
+            break;
+            
+        case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
+            ((CtiLMProgramDirect*)program)->setConstraintOverride(true);
+            StopProgram(program, controlArea, stopTime);
+            if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::OK);
+                response->setMessage("Manual Control Request OK, Overriding Constraints");
+            }                       
+
+            break;
+            
+        case CtiLMManualControlRequest::USE_CONSTRAINTS:
+            ((CtiLMProgramDirect*)program)->setConstraintOverride(false);           
+            // Fix up program control window if necessary
+            startTime = ((const CtiLMProgramDirect*) program)->getDirectStartTime();        
             CoerceStartStopTime(program, startTime, stopTime);
-        }
+            StopProgram(program, controlArea, stopTime);
+            if(response != NULL)
+            {
+                response->setStatus(CtiServerResponseMsg::OK);
+                response->setMessage("Manual Control Request OK, Using Constraints");
+            }                               
+            break;
+        };
         
-        passed_check = true; //check constraints on stop?
-        StopProgram(program, controlArea, stopTime);
         break;
 
     default:
@@ -1244,36 +1283,24 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     }
     //Only send a response if we received a request
-    if(_request != NULL)
+    if(response != NULL)
     {
-        CtiServerResponseMsg* resp = new CtiServerResponseMsg();
-	resp->setMessagePriority(1);	
+        response->setMessagePriority(1);
         CtiLMManualControlResponse* lmResp = new CtiLMManualControlResponse();
         lmResp->setPAOId(_controlMsg->getPAOId());
-        lmResp->setConstraintViolations(result_vec);
-        resp->setPayload(lmResp);
-        resp->setID(_request->getID());
-    
-        if(_controlMsg->getOverrideConstraints() || passed_check)
-        {
-            resp->setStatus(CtiServerResponseMsg::OK);
-            resp->setMessage("Manual Control Request Accepted");
-        }
-        else
-        {
-            resp->setStatus(CtiServerResponseMsg::ERR);
-            resp->setMessage("Manual Control Request Violated Constraints");
-        }
+        lmResp->setConstraintViolations(checker.getViolations());       
+        response->setPayload(lmResp);
+        response->setID(_request->getID());     
 
         //Send the response to all the clients
         CtiLMConnectionPtr connection = _controlMsg->getConnection();
         if(connection)
         {
-            connection->write(resp);
+            connection->write(response);
         }
         else
         {
-            CtiLoadManager::getInstance()->sendMessageToClients(resp);
+            CtiLoadManager::getInstance()->sendMessageToClients(response);
         }
     }
 }
@@ -1428,13 +1455,12 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirect* l
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
     lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
 
-//    lmProgramDirect->incrementDailyOps(); 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
 
     // Let any notification groups know if they care
     lmProgramDirect->scheduleNotification(start, stop);
-    
+                                   
     if( stop.seconds() < RWDBDateTime(1991,1,1,0,0,0,0).seconds() )
     {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
         RWDBDateTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
@@ -1479,8 +1505,8 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirect* lm
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
         lmProgramDirect->setDirectStopTime(stopTime);
 
-	lmProgramDirect->scheduleStopNotification(stopTime);
-	
+        lmProgramDirect->scheduleStopNotification(stopTime);
+         
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }
@@ -2605,10 +2631,10 @@ void CtiLMForwardMsgToDispatchExecutor::Execute()
     Execute
     
     Executes a shutdown on the server
-    THIS EXECUTOR IS THE EXCEPTION
-    IT MUST NOT BE EXECUTED ON THE MAIN THREAD AS THE REST OF THEM SHOULD BE
-    THE REASON IS BECAUSE IT SHUTS DOWN THE CTILOADMANAGER WHICH OWNS
-    THE MAIN THREAD
+    THIS EXECUTOR IS THE EXCEPTION 
+    IT MUST NOT BE EXECUTED ON THE MAIN THREAD AS THE REST OF THEM SHOULD BE 
+    THE REASON IS BECAUSE IT SHUTS DOWN THE CTILOADMANAGER WHICH OWNS 
+    THE MAIN THREAD 
 ---------------------------------------------------------------------------*/
 void CtiLMShutdownExecutor::Execute()
 {

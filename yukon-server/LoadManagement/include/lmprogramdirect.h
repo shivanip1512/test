@@ -63,6 +63,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     const RWDBDateTime& getNotifyActiveTime() const;
     const RWDBDateTime& getNotifyInactiveTime() const;
     const RWDBDateTime& getStartedRampingOutTime() const;
+    BOOL getConstraintOverride() const;
     
     bool getIsRampingIn();
     bool getIsRampingOut();
@@ -83,13 +84,14 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     
     CtiLMProgramDirect& setCurrentGearNumber(LONG currentgear);
     CtiLMProgramDirect& setLastGroupControlled(LONG lastcontrolled);
-//    CtiLMProgramDirect& incrementDailyOps();
-//    CtiLMProgramDirect& resetDailyOps();
+
+    
     CtiLMProgramDirect& setDirectStartTime(const RWDBDateTime& start);
     CtiLMProgramDirect& setDirectStopTime(const RWDBDateTime& stop);
     CtiLMProgramDirect& setNotifyActiveTime(const RWDBDateTime& notify);    
     CtiLMProgramDirect& setNotifyInactiveTime(const RWDBDateTime& notify);
     CtiLMProgramDirect& setStartedRampingOutTime(const RWDBDateTime& started);
+    CtiLMProgramDirect& setConstraintOverride(BOOL override);
     
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, RWDBDateTime& currentDateTime);
@@ -100,9 +102,9 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL maintainProgramControl(LONG currentPriority, RWOrdered& controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority, RWOrdered controlAreaTriggers, ULONG secondsFrom1901, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
-    DOUBLE updateProgramControlForGearChange(LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE updateProgramControlForGearChange(ULONG secondsFrom1901, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL refreshStandardProgramControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
-    DOUBLE manualReduceProgramLoad(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE manualReduceProgramLoad(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     BOOL doesGroupHaveAmpleControlTime(CtiLMGroupPtr& currentLMGroup, LONG estimatedControlTimeInSeconds) const;
     BOOL hasGroupExceededMaxDailyOps(CtiLMGroupPtr& lm_group) const;
@@ -128,6 +130,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     double getCurrentLoadReduction();
     ULONG estimateOffTime(ULONG proposed_Gear, ULONG start, ULONG stop);
 
+    void startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
+    void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);    
+    bool restoreGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
+    bool terminateGroup(ULONG seconds_from_1901, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
+    
     void scheduleNotification(const RWDBDateTime& start_time, const RWDBDateTime& stop_time);
     void scheduleStartNotification(const RWDBDateTime& start_time);
     void scheduleStopNotification(const RWDBDateTime& stop_time);
@@ -162,13 +169,15 @@ private:
 	
     LONG _currentgearnumber;
     LONG _lastgroupcontrolled;
-//    LONG _dailyops;
+
     RWDBDateTime _directstarttime;
     RWDBDateTime _directstoptime;
     RWDBDateTime _notify_active_time;
     RWDBDateTime _notify_inactive_time;
-    RWDBDateTime _startedrampingout;
 
+    RWDBDateTime _startedrampingout;
+    BOOL _constraint_override;
+    
     //When the dynamic data was last saved
     RWDBDateTime  _dynamictimestamp;
     
@@ -182,13 +191,13 @@ private:
 
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;
-    bool _announced_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations
+    bool _announced_program_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations
     
     void ResetGroups();
+    void ResetGroupsControlState();
+    void ResetGroupsInternalState();    
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
-
-
     
     void restore(RWDBReader& rdr);
 };

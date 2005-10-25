@@ -26,9 +26,7 @@
 #define GROUP_RAMPING_OUT 0x00000002
 
 extern ULONG _LM_DEBUG;
-#ifdef _DEBUG_MEMORY    
-LONG CtiLMGroupBase::numberOfReferences = 0;
-#endif
+
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -36,16 +34,9 @@ CtiLMGroupBase::CtiLMGroupBase()
     : _next_control_time(gInvalidRWDBDateTime),
       _controlstarttime(gInvalidRWDBDateTime),
       _controlcompletetime(gInvalidRWDBDateTime),
-      _daily_ops(0),      
+      _daily_ops(0),
       _insertDynamicDataFlag(TRUE)
 {
-#ifdef _DEBUG_MEMORY    
-        numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Constructor, Number of CtiLMGroupBase increased to: " << numberOfReferences << endl;
-    }
-#endif   
     resetInternalState();
 }
 
@@ -56,26 +47,12 @@ CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
       _daily_ops(0),
       _insertDynamicDataFlag(TRUE)
 {
-#ifdef _DEBUG_MEMORY    
-        numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Constructor(dbreader), Number of CtiLMGroupBaes increased to: " << numberOfReferences << endl;
-    }
-#endif    
     resetInternalState();
     restore(rdr);
 }
 
 CtiLMGroupBase::CtiLMGroupBase(const CtiLMGroupBase& groupbase)
 {
-#ifdef _DEBUG_MEMORY    
-    numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Copy Constructor, Number of CtiLMGroupBaseincreased to: " << numberOfReferences << endl;
-    }
-#endif    
     operator=(groupbase);
 }
 
@@ -84,13 +61,6 @@ CtiLMGroupBase::CtiLMGroupBase(const CtiLMGroupBase& groupbase)
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase::~CtiLMGroupBase()
 {
-#ifdef _DEBUG_MEMORY    
-    numberOfReferences--;
-{
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << "Destructor, Number of CtiLMGroupBase decreased to: " << numberOfReferences << endl;
-}
-#endif
 }
 
 /*---------------------------------------------------------------------------
@@ -335,7 +305,7 @@ const RWDBDateTime& CtiLMGroupBase::getDynamicTimestamp() const
 
     Returns the number of times this program has operated today
  ---------------------------------------------------------------------------*/
-LONG CtiLMGroupBase::getDailyOps() 
+LONG CtiLMGroupBase::getDailyOps()
 {
     updateDailyOps();
     return _daily_ops; //TODO: check if this is the value for today!
@@ -366,11 +336,11 @@ bool CtiLMGroupBase::getIsRampingOut() const
 
   Returns the amount of time in seconds that we have been controlling.
   If the group is inactive this will be zero.
------------------------------------------------------------------------------*/  
+-----------------------------------------------------------------------------*/
 ULONG CtiLMGroupBase::getCurrentControlDuration() const
 {
     return (getGroupControlState() == ActiveState ?
-	    RWTime::now().seconds() - getControlStartTime().seconds() : 0);
+            RWTime::now().seconds() - getControlStartTime().seconds() : 0);
 }
 
 /*---------------------------------------------------------------------------
@@ -724,15 +694,15 @@ CtiLMGroupBase& CtiLMGroupBase::setDynamicTimestamp(const RWDBDateTime& timestam
 {
     if(_dynamic_timestamp != timestamp)
     {
-	_dynamic_timestamp = timestamp;
-	setDirty(true);
+        _dynamic_timestamp = timestamp;
+        setDirty(true);
     }
     return *this;
 }
 
 /*-----------------------------------------------------------------------------
   incrementDailyOps
------------------------------------------------------------------------------*/  
+-----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 {
     updateDailyOps();
@@ -744,7 +714,7 @@ CtiLMGroupBase& CtiLMGroupBase::incrementDailyOps()
 /*-----------------------------------------------------------------------------
   resetDailyOps
   This only exists so the controlareastore can set the dailyops when
-  it reads it from the database.  usually you won't call this directly. 
+  it reads it from the database.  usually you won't call this directly.
 -----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::resetDailyOps(int ops)
 {
@@ -850,7 +820,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingRequestMsg(LONG rawState, int prior
 
     returnCommandMsg->setMessagePriority(priority);
 
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    if( _LM_DEBUG & LM_DEBUG_STANDARD)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
@@ -902,7 +872,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     RWTime tempTime2;
     RWTime tempTime3;
     RWTime tempTime4;
-    
+
     istrm >> _paoid
           >> _paocategory
           >> _paoclass
@@ -925,7 +895,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
           >> tempTime3
           >> tempTime4
           >> _internalState
-	  >> _daily_ops;
+          >> _daily_ops;
 
     _lastcontrolsent = RWDBDateTime(tempTime1);
     _controlstarttime = RWDBDateTime(tempTime2);
@@ -964,7 +934,7 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
           << _controlcompletetime.rwtime()
           << _next_control_time.rwtime()
           << _internalState
-	  << _daily_ops;
+          << _daily_ops;
 
     return;
 }
@@ -975,7 +945,7 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
 CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
 {
     CtiMemDBObject::operator=(right);
-    
+
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -1006,7 +976,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _controlstatuspointid = right._controlstatuspointid;
         _lastcontrolstring = right._lastcontrolstring;
         _internalState = right._internalState;
-	_daily_ops = right._daily_ops;
+        _daily_ops = right._daily_ops;
     }
 
     return *this;
@@ -1033,7 +1003,7 @@ int CtiLMGroupBase::operator!=(const CtiLMGroupBase& right) const
   operator<
 
   This is defined to indicate this groups order inside a program
-----------------------------------------------------------------------------*/  
+----------------------------------------------------------------------------*/
 bool CtiLMGroupBase::operator<(const CtiLMGroupBase& right) const
 {
     return (getGroupOrder() < right.getGroupOrder() ||
@@ -1143,7 +1113,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
     }
     */
 //    rdr["programid"] >> _lmprogramid;
-#ifdef _SHOULD_WE_LOAD_THIS_HERE_    
+#ifdef _SHOULD_WE_LOAD_THIS_HERE_
     rdr["groupcontrolstate"] >> isNull;
     if( !isNull )
     {
@@ -1158,12 +1128,12 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         rdr["controlcompletetime"] >> _controlcompletetime;
         rdr["nextcontroltime"] >> _next_control_time;
         rdr["internalstate"] >> _internalState;
-        
+
         _insertDynamicDataFlag = FALSE;
         setDirty(false);
     }
     else
-#endif  
+#endif
     {
         setGroupControlState(InactiveState);
         setCurrentHoursDaily(0);
@@ -1174,9 +1144,9 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
         setControlStartTime(gInvalidRWDBDateTime);
         setControlCompleteTime(gInvalidRWDBDateTime);
         setNextControlTime(gInvalidRWDBDateTime);
-	resetDailyOps(0);
+        resetDailyOps(0);
         _internalState = 0;
-        
+
         _insertDynamicDataFlag = TRUE;
         setDirty(true);
     }
@@ -1244,7 +1214,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
     {
         return;
     }
-    
+
     {
         if( conn.isValid() )
         {
@@ -1265,8 +1235,8 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                         << dynamicLMGroupTable["controlcompletetime"].assign( getControlCompleteTime() )
                         << dynamicLMGroupTable["nextcontroltime"].assign( getNextControlTime() )
                         << dynamicLMGroupTable["internalstate"].assign( _internalState )
-			<< dynamicLMGroupTable["dailyops"].assign( _daily_ops );
-                
+                        << dynamicLMGroupTable["dailyops"].assign( getDailyOps() );
+
 
                 updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
 
@@ -1277,7 +1247,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 }
 
                 updater.execute( conn );
-		_dynamic_timestamp = currentDateTime;
+                _dynamic_timestamp = currentDateTime;
                 setDirty(false);
             }
             else
@@ -1301,7 +1271,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                          << getControlCompleteTime()
                          << getNextControlTime()
                          << _internalState
-			 << _daily_ops;;
+                         << getDailyOps();
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -1312,7 +1282,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
                 _insertDynamicDataFlag = FALSE;
 
                 inserter.execute( conn );
-		_dynamic_timestamp = currentDateTime;
+                _dynamic_timestamp = currentDateTime;
                 setDirty(false);
             }
         }
@@ -1326,6 +1296,7 @@ void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, RWDBDateTime& current
 
 /*----------------------------------------------------------------------------
   resetInternalState
+  Reset internal state, that is, ramp in, ramp out currently
 ----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::resetInternalState()
 {
@@ -1338,15 +1309,43 @@ CtiLMGroupBase& CtiLMGroupBase::resetInternalState()
 }
 
 /*----------------------------------------------------------------------------
+  resetGroupControlState
+  Will reset a pending state to inactive.
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::resetGroupControlState()
+{
+    int state = getGroupControlState();
+    if(InactivePendingState == state || ActivePendingState == state)
+    {
+        setGroupControlState(InactiveState);
+        setDirty(true);
+    }
+    return *this;
+}
+
+/*----------------------------------------------------------------------------
   setIsRampingIn
 ----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setIsRampingIn(bool in)
 {
     if(getIsRampingIn() != in)
     {
-        _internalState = (in ?
-                          _internalState | GROUP_RAMPING_IN :
-                          _internalState & ~GROUP_RAMPING_IN);
+        if(in)
+        {
+            // We can't be ramping out and ramping in at the same time!
+            if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingOut())
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " Load Group: " << getPAOName() << " was ramping out and is now ramping in." <<  endl;
+            }
+            setIsRampingOut(false);
+
+            _internalState |= GROUP_RAMPING_IN;
+        }
+        else
+        {
+           _internalState &= ~GROUP_RAMPING_IN;
+        }
         setDirty(true);
     }
     return *this;
@@ -1359,9 +1358,23 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
 {
     if(getIsRampingOut() != out)
     {
-        _internalState = (out ?
-                          _internalState | GROUP_RAMPING_OUT :
-                          _internalState & ~GROUP_RAMPING_OUT);
+        if(out)
+        {
+            // We can't be ramping out and ramping in at the same time!
+            if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingIn())
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << RWTime() << " Load Group: " << getPAOName() << " was ramping in and is now ramping out." <<  endl;
+            }
+            setIsRampingIn(false);
+
+            _internalState |= GROUP_RAMPING_OUT;
+        }
+        else
+        {
+           _internalState &= ~GROUP_RAMPING_OUT;
+        }
+
         setDirty(true);
     }
     return *this;
@@ -1387,4 +1400,3 @@ int CtiLMGroupBase::InactiveState = STATEZERO;
 int CtiLMGroupBase::ActiveState = STATEONE;
 int CtiLMGroupBase::InactivePendingState = STATETWO;
 int CtiLMGroupBase::ActivePendingState = STATETHREE;
-

@@ -28,45 +28,20 @@
 
 extern ULONG _LM_DEBUG;
 
-#ifdef _DEBUG_MEMORY    
-LONG CtiLMProgramBase::numberOfReferences = 0;
-#endif
-
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase()
 {
-#ifdef _DEBUG_MEMORY    
-    numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Default Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }
-#endif    
 }
 
 CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr)
 {
-#ifdef _DEBUG_MEMORY        
-    numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Restore Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }
-#endif    
     restore(rdr);
 }
 
 CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 {
-#ifdef _DEBUG_MEMORY        
-    numberOfReferences++;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Copy Constructor, Number of CtiLMProgramBase increased to: " << numberOfReferences << endl;
-    }
-#endif    
     operator=(lmprog);
 }
 
@@ -76,13 +51,6 @@ CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog)
 CtiLMProgramBase::~CtiLMProgramBase()
 {
     _lmprogramcontrolwindows.clearAndDestroy();
-#ifdef _DEBUG_MEMORY            
-    numberOfReferences--;
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Destructor, Number of CtiLMProgramBase decreased to: " << numberOfReferences << endl;
-    }
-#endif    
 }
 
 /*---------------------------------------------------------------------------

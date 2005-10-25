@@ -591,7 +591,8 @@ void CtiLMControlAreaStore::reset()
                          << dynamicLMGroupTable["controlcompletetime"]
                          << dynamicLMGroupTable["nextcontroltime"]
                          << dynamicLMGroupTable["internalstate"]
-			 << dynamicLMGroupTable["dailyops"];
+                         << dynamicLMGroupTable["dailyops"];
+
                 selector.from(dynamicLMGroupTable);
 
                 RWDBReader rdr = selector.reader(conn);
@@ -609,8 +610,10 @@ void CtiLMControlAreaStore::reset()
                     RWDBDateTime control_complete_time;
                     RWDBDateTime next_control_time;
                     long internal_state;
-		    long daily_ops;
+                    long daily_ops;
+                    bool constraint_override;
 
+                    RWCString tempBoolString;
                     rdr["groupid"] >> group_id;
                     rdr["groupcontrolstate"] >> group_control_state;
                     rdr["currenthoursdaily"] >> cur_hours_daily;
@@ -623,7 +626,8 @@ void CtiLMControlAreaStore::reset()
                     rdr["controlcompletetime"] >> control_complete_time;
                     rdr["nextcontroltime"] >> next_control_time;
                     rdr["internalstate"] >> internal_state;
-		    rdr["dailyops"] >> daily_ops;
+                    rdr["dailyops"] >> daily_ops;
+
 
                     CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
                     lm_group->setGroupControlState(group_control_state);
@@ -637,8 +641,8 @@ void CtiLMControlAreaStore::reset()
                     lm_group->setControlCompleteTime(control_complete_time);
                     lm_group->setNextControlTime(next_control_time);
                     lm_group->setInternalState(internal_state);
-		    lm_group->resetDailyOps(daily_ops);
-		    
+                    lm_group->resetDailyOps(daily_ops);
+
                     lm_group->setDirty(false);
                     lm_group->_insertDynamicDataFlag = FALSE;
                 }
@@ -822,10 +826,10 @@ void CtiLMControlAreaStore::reset()
                                  << lmProgramDirectTable["heading"]
                                  << lmProgramDirectTable["messageheader"]
                                  << lmProgramDirectTable["messagefooter"]
-				 << lmProgramDirectTable["notifyactiveoffset"]
+                                 << lmProgramDirectTable["notifyactiveoffset"]
                                  << lmProgramDirectTable["notifyinactiveoffset"]
                                  << lmProgramDirectTable["triggeroffset"]
-                                 << lmProgramDirectTable["restoreoffset"]			    
+                                 << lmProgramDirectTable["restoreoffset"]
                                  << dynamicLMProgramTable["programstate"]
                                  << dynamicLMProgramTable["reductiontotal"]
                                  << dynamicLMProgramTable["startedcontrolling"]
@@ -836,10 +840,10 @@ void CtiLMControlAreaStore::reset()
                                  << dynamicLMProgramDirectTable["starttime"]
                                  << dynamicLMProgramDirectTable["stoptime"]
                                  << dynamicLMProgramDirectTable["timestamp"]
-//                                 << dynamicLMProgramDirectTable["dailyops"]
-				 << dynamicLMProgramDirectTable["notifyactivetime"]
+                                 << dynamicLMProgramDirectTable["notifyactivetime"]
                                  << dynamicLMProgramDirectTable["notifyinactivetime"]
                                  << dynamicLMProgramDirectTable["startedrampingout"]
+                                 << dynamicLMProgramDirectTable["constraintoverride"]
                                  << pointTable["pointid"]
                                  << pointTable["pointoffset"]
                                  << pointTable["pointtype"];
@@ -1828,7 +1832,7 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << lmControlAreaTriggerTable["triggerid"]
-				 << lmControlAreaTriggerTable["deviceid"]
+                                 << lmControlAreaTriggerTable["deviceid"]
                                  << lmControlAreaTriggerTable["triggernumber"]
                                  << lmControlAreaTriggerTable["triggertype"]
                                  << lmControlAreaTriggerTable["pointid"]
@@ -1952,8 +1956,8 @@ void CtiLMControlAreaStore::reset()
         }
         _wascontrolareadeletedflag = false;
 
-	// Make sure all the clients get the new control areas, let the main thread do it
-	CtiLoadManager::getInstance()->handleMessage(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
+        // Make sure all the clients get the new control areas, let the main thread do it
+        CtiLoadManager::getInstance()->handleMessage(new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
     catch(...)
     {
@@ -2026,20 +2030,21 @@ void CtiLMControlAreaStore::doResetThr()
         }
 
         RWDBDateTime lastPeriodicDatabaseRefresh;
-	RWDBDateTime lastCheck;
+        RWDBDateTime lastCheck;
+
         while(TRUE)
         {
             rwRunnable().serviceCancellation();
             RWDBDateTime now;
 
-	    // When we cross midnight these dates won't match and we can do our daily midnight maintenance
+            // When we cross midnight these dates won't match and we can do our daily midnight maintenance
             if( now.rwdate() != lastCheck.rwdate() )
             {//check to see if it is midnight
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Resetting midnight defaults" << endl;
-                }		
+                }
                 checkMidnightDefaultsForReset();
             }
 
@@ -2055,9 +2060,11 @@ void CtiLMControlAreaStore::doResetThr()
                 setValid(false);
                 lastPeriodicDatabaseRefresh = RWDBDateTime();
             }
-         
-	    lastCheck = now;		
-	    rwRunnable().sleep(5000);
+            else
+            {
+                lastCheck = now;
+                rwRunnable().sleep(5000);
+            }
         }
     }
     catch(RWCancellation& )
@@ -2662,5 +2669,3 @@ CtiLMSavedControlString& CtiLMSavedControlString::operator=(const CtiLMSavedCont
 
     return *this;
 }
-
-

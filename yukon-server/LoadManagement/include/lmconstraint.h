@@ -11,36 +11,80 @@
 using std::vector;
 using std::string;
 
-class CtiLMConstraintChecker
+class CtiLMProgramConstraintChecker
 {
 public:
-    CtiLMConstraintChecker();
+    CtiLMProgramConstraintChecker(CtiLMProgramDirect& lm_program, ULONG seconds_from_1901);
 
-    bool checkConstraints(const CtiLMProgramDirect& lm_program, ULONG now, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>& results);
+    const vector<string>& getViolations();
+    void clearViolations();
 
-    bool checkAblement(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkSeason(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkWeekDays(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxHoursDaily(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxHoursMonthly(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxHoursSeasonal(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxHoursAnnually(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMinActivateTime(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMinRestartTime(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxDailyOps(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkMaxActivateTime(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkControlWindows(const CtiLMProgramDirect& lm_program, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
-    bool checkNotifyActiveOffset(const CtiLMProgramDirect& lm_program, ULONG now, ULONG proposed_start_from_1901, vector<string>* results = 0);
+    void dumpViolations();
     
-    bool checkMasterActive(const CtiLMProgramDirect& lm_program, vector<string>* results = 0);
+    bool checkConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkGroupConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     
+    bool checkSeason(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkWeekDays(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkControlWindows(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMasterActive();
+    bool checkNotifyActiveOffset(ULONG proposed_start_from_1901);
+    
+    // Group related constraings
+    bool checkMaxHoursDaily(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMaxHoursMonthly(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMaxHoursSeasonal(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMaxHoursAnnually(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMinActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkMinRestartTime(ULONG proposed_start_from_1901);
+    bool checkMaxDailyOps();
+    bool checkMaxActivateTime(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
 
 //    bool checkWeekDays(const CtiLMProgram
 
-    CtiLMConstraintChecker* getInstance();
+    CtiLMProgramConstraintChecker* getInstance();
 private:
 
-    ULONG estimateGroupControlTime(const CtiLMGroupBase& lm_group, const CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
+    ULONG estimateGroupControlTime(CtiLMGroupBase& lm_group, CtiLMProgramDirectGear& lm_gear, ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901, vector<string>* results = 0);
+
+    CtiLMProgramDirect& _lm_program;
+    ULONG _seconds_from_1901;
+    vector<string> _results;
 };
 
+class CtiLMGroupConstraintChecker
+{
+public:
+    CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, ULONG control_start_from_1901); 
+
+    const vector<string>& getViolations();
+    void clearViolations();
+
+    void dumpViolations();
+
+    bool checkControl(LONG& control_duration, bool adjust_duration);
+    bool checkCycle(LONG& counts, ULONG period, ULONG percent, bool adjust_counts);
+    bool checkRestore();
+    bool checkTerminate();
+	
+    bool checkEnabled();
+    bool checkMaxActivateTime(LONG& control_duration, bool adjust_duration=false);
+    bool checkMinActivateTime();
+    bool checkMinRestartTime();
+    bool checkMaxDailyOps();
+    bool checkMaxHoursDaily(LONG& control_duration, bool adjust_duration = false);
+    bool checkMaxHoursMonthly(LONG& control_duration, bool adjust_duration = false);
+    bool checkMaxHoursSeasonal(LONG& control_duration, bool adjust_duration = false);
+    bool checkMaxHoursAnnually(LONG& control_duration, bool adjust_duration = false);
+    bool checkProgramControlWindow(LONG& control_duration, bool adjust_duration = false);
+    
+private:
+    bool checkDurationConstraint(LONG current_duration, LONG max_duration, LONG& control_duration, bool adjust_duration);
+    CtiLMProgramBase& _lm_program;
+    CtiLMGroupPtr& _lm_group;
+    ULONG _seconds_from_1901;
+    
+    vector<string> _results;
+};
 #endif

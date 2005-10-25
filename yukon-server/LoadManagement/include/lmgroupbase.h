@@ -37,10 +37,6 @@ class CtiLMGroupBase : public CtiMemDBObject, public RWCollectable
 {
 
 public:
-#ifdef _DEBUG_MEMORY    
-    static LONG numberOfReferences;
-#endif    
-    
     CtiLMGroupBase();
     CtiLMGroupBase(RWDBReader& rdr);
     CtiLMGroupBase(const CtiLMGroupBase& groupbase);
@@ -112,6 +108,7 @@ public:
     virtual CtiLMGroupBase& setIsRampingIn(bool in);
     virtual CtiLMGroupBase& setIsRampingOut(bool out);
     virtual CtiLMGroupBase& resetInternalState();
+    virtual CtiLMGroupBase& resetGroupControlState();
 
     virtual CtiLMGroupBase& setHoursDailyPointId(LONG dailyid);
     virtual CtiLMGroupBase& setHoursMonthlyPointId(LONG monthlyid);
@@ -137,8 +134,6 @@ public:
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const = 0;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const = 0;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const = 0;
-    //virtual CtiRequestMsg* createRequestMsg() const = 0;
-    //pure virtuals
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
 
@@ -193,7 +188,7 @@ private:
     RWDBDateTime _lastcontrolsent;
     RWDBDateTime _controlstarttime;
     RWDBDateTime _controlcompletetime;
-//FIXME    
+
     RWDBDateTime _next_control_time;
     LONG _daily_ops;
     

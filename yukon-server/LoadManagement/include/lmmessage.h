@@ -120,7 +120,15 @@ public:
         SCHEDULED_STOP,
         START_NOW,
         STOP_NOW
-    };
+    } Command;      
+    
+     enum   
+     {   // How to deal with constraint checking   
+         USE_CONSTRAINTS = 0,  // accept the request and use constraints   
+         OVERRIDE_CONSTRAINTS,  // accept the request and set the override constraints flag on the groups   
+         CHECK_CONSTRAINTS    // don't accept the request if constraints look like they will be violated   
+    
+     } ConstraintFlag; 
 
     CtiLMManualControlRequest() { }; //provided for polymorphic persitence only
     CtiLMManualControlRequest(LONG cmd,
@@ -131,14 +139,10 @@ public:
 			      LONG start_gear,
 			      LONG start_priority,
 			      const RWCString& addl_info,
-			      BOOL override_constraints,
-			      BOOL coerce_start_stop_time
+			      LONG constraint_cmd
+			      
 			      );
     CtiLMManualControlRequest(const CtiLMManualControlRequest& req);
-    
-    /*CtiLMControlMsg(LONG command);
-    CtiLMControlMsg(LONG command, LONG id);
-    CtiLMControlMsg(const CtiLMCommand& commandMsg);*/
     
     virtual ~CtiLMManualControlRequest();
 
@@ -150,8 +154,7 @@ public:
     LONG getStartGear() const;
     LONG getStartPriority() const;
     const RWCString& getAdditionalInfo() const;
-    BOOL getOverrideConstraints() const;
-    BOOL getCoerceStartStopTime() const;
+    LONG getConstraintCmd() const;
     
     virtual CtiMessage* replicateMessage() const;
 	
@@ -169,8 +172,7 @@ private:
     LONG _startgear;
     LONG _startpriority;
     RWCString _additionalinfo;
-    BOOL _override_constraints;
-    BOOL _coerce_start_stop_time;
+    LONG _constraint_cmd;
 };
 
 class CtiLMManualControlResponse : public CtiLMMessage

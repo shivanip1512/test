@@ -78,8 +78,6 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
     OnStop();
     dout.interrupt(CtiThread::SHUTDOWN);
     dout.join();
-
-    SetStatus( SERVICE_STOPPED );
 }
 
 void CtiLMService::Init()
@@ -201,7 +199,7 @@ void CtiLMService::OnStop()
         dout << RWTime().asString() << " - Load Management shut down!" << endl;
     }
 
-    SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
+    SetStatus(SERVICE_STOP_PENDING, 75, 30000 );
 
     _quit = true;
 }

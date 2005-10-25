@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------
+x/*-----------------------------------------------------------------------------
   Filename:  loadmanager.cpp
 
   Programmer:  Josh Wolberg
@@ -13,7 +13,7 @@
   COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
   -----------------------------------------------------------------------------*/
 #include "yukon.h"
-#include "msg_notif_lmcontrol.h"
+
 #include "dbaccess.h"
 #include "connection.h"
 #include "message.h"
@@ -194,8 +194,8 @@ void CtiLoadManager::controlLoop()
     RWOrdered controlAreaChanges;
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();    
-
+    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
+    
     CtiMessage* msg = NULL;
     CtiLMExecutorFactory executorFactory;
 
@@ -204,8 +204,8 @@ void CtiLoadManager::controlLoop()
 
     loadControlLoopCParms();
 
-    // Fire up the notification server
-    getNotificationConnection();
+    // Fire up the notification server 
+    getNotificationConnection(); 
     
     while(TRUE)
     {
@@ -291,7 +291,7 @@ void CtiLoadManager::controlLoop()
                         currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
                     }
 
-//                    if( !currentControlArea->getDisableFlag() ) // how about control area windows?
+                if( !currentControlArea->getDisableFlag() ) // how about control area windows?
                 {
                     currentControlArea->updateTimedPrograms(secondsFromBeginningOfDay);
                     currentControlArea->handleTimeBasedControl(secondsFrom1901, secondsFromBeginningOfDay, multiPilMsg, multiDispatchMsg, multiNotifMsg);
@@ -313,7 +313,7 @@ void CtiLoadManager::controlLoop()
                                     dout << RWTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
                                 }
 
-				if( currentControlArea->getControlInterval() != 0 ||
+                                if( currentControlArea->getControlInterval() != 0 ||
                                     currentControlArea->isThresholdTriggerTripped() )
                                 {
                                     currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
@@ -329,23 +329,9 @@ void CtiLoadManager::controlLoop()
                                     if( currentControlArea->isManualControlReceived() )
                                     {
                                         currentControlArea->handleManualControl(secondsFrom1901, multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                    }                                                               				    
-                                }
-
-#ifdef OLDFEEDBACKCONTROL
-                                if( currentControlArea->getControlInterval() != 0 ||
-                                    currentControlArea->isThresholdTriggerTripped() )
-                                {
-                                    currentControlArea->reduceControlAreaLoad(loadReductionNeeded,secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                }
-                                else
-                                {
-                                    //Special Case: if only a status trigger is tripped and the control interval is 0,
-                                    //then we need make the control area fully active.  If some of the programs are disabled
-                                    //or out of their control windows they will not be controlled
-                                    currentControlArea->takeAllAvailableControlAreaLoad(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
-                                }
-#endif                          
+                                    }                                                                                               
+                                }                                    
+                                
                                 currentControlArea->setUpdatedFlag(TRUE);
                                 }
                                 else if( currentControlArea->isThresholdTriggerTripped() )
@@ -368,12 +354,12 @@ void CtiLoadManager::controlLoop()
                                 {
                                     //don't have to do anything, just don't take any stop priorities
                                 }
-				else if(currentControlArea->hasStatusTrigger() &&
+                                else if(currentControlArea->hasStatusTrigger() &&
                                         !currentControlArea->isStatusTriggerTripped() &&
                                         (!currentControlArea->hasThresholdTrigger() || (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
                                         currentControlArea->getControlInterval() == 0)
                                 {   // Only stop them manually if there is no control interval!
-                                    currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg);
+                                    currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg); 
                                     // Potentially this control area is ready for manual control
                                     // If so lets do it now otherwise we have to wait for the top
                                     // of the main loop which could be a while
@@ -473,22 +459,22 @@ void CtiLoadManager::controlLoop()
             dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
 
-        try
-        {
-            if( multiNotifMsg->getCount() > 0 )
-            {
-                multiNotifMsg->setMessagePriority(13);
-                multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
-                getNotificationConnection()->WriteConnQue(multiNotifMsg);
-                multiNotifMsg = new CtiMultiMsg();
-            }
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-
+	try 
+	{          
+	    if( multiNotifMsg->getCount() > 0 ) 
+	    { 
+		multiNotifMsg->setMessagePriority(13); 
+		multiNotifMsg->resetTime();                       // CGP 5/21/04 Update its time to current time. 
+		getNotificationConnection()->WriteConnQue(multiNotifMsg); 
+		multiNotifMsg = new CtiMultiMsg(); 
+	    } 
+	} 
+	catch(...) 
+	{ 
+	    CtiLockGuard<CtiLogger> logger_guard(dout); 
+	    dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
+	} 
+	
         try
         {
             // Only send control area changes so often to avoid overwhelming the system
@@ -715,51 +701,51 @@ CtiConnection* CtiLoadManager::getPILConnection()
     }
 }
 
-/*---------------------------------------------------------------------------
-  getNotificationConnection
-
-  Returns a connection to the Notification Server
-  ---------------------------------------------------------------------------*/
-CtiConnection* CtiLoadManager::getNotificationConnection()
-{
-    try
-    {
-        if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) )
-        {
-            //Set up the defaults
-            string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
-            int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
-
-            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << RWTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl;
-                dout << RWTime() << " - NOTIFICATION_PORT: " << notification_port << endl;
-            }
-
-            if( _notificationConnection != NULL && _notificationConnection->verifyConnection() )
-            {
-                delete _notificationConnection;
-                _notificationConnection = NULL;
-            }
-
-            if( _notificationConnection == NULL )
-            {
-                //Connect to Pil
-                _notificationConnection  = new CtiConnection( notification_port, notification_host.data() );
-            }
-        } 
-
-        return _notificationConnection;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-
-        return NULL;
-    }
-}
+/*--------------------------------------------------------------------------- 
+  getNotificationConnection 
+    
+  Returns a connection to the Notification Server 
+  ---------------------------------------------------------------------------*/ 
+CtiConnection* CtiLoadManager::getNotificationConnection() 
+{ 
+    try 
+    { 
+	if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) ) 
+	{ 
+	    //Set up the defaults 
+	    string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1"); 
+	    int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS); 
+    
+	    if( _LM_DEBUG & LM_DEBUG_STANDARD ) 
+	    { 
+		CtiLockGuard<CtiLogger> logger_guard(dout); 
+		dout << RWTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl; 
+		dout << RWTime() << " - NOTIFICATION_PORT: " << notification_port << endl; 
+	    } 
+    
+	    if( _notificationConnection != NULL && _notificationConnection->verifyConnection() ) 
+	    { 
+		delete _notificationConnection; 
+		_notificationConnection = NULL; 
+	    } 
+    
+	    if( _notificationConnection == NULL ) 
+	    { 
+		//Connect to Pil 
+		_notificationConnection  = new CtiConnection( notification_port, notification_host.data() ); 
+	    } 
+	} 
+    
+	return _notificationConnection; 
+    } 
+    catch(...) 
+    { 
+	CtiLockGuard<CtiLogger> logger_guard(dout); 
+	dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
+    
+	return NULL; 
+    } 
+} 
 
 /*---------------------------------------------------------------------------
   checkDispatch
@@ -1249,6 +1235,17 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             }
             if( lm_group->getControlStatusPointId() == pointID )
             {
+                // Did this group just go from active to inactive?
+                if(CtiLMGroupBase::ActiveState == lm_group->getGroupControlState() &&
+                   CtiLMGroupBase::InactiveState == value)
+                {
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << RWTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
+                    }
+                    lm_group->setControlCompleteTime(RWDBDateTime(RWTime(secondsFrom1901)));
+                }
                 lm_group->setGroupControlState(value);
             }
 
@@ -1257,65 +1254,6 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 currentControlArea->setUpdatedFlag(TRUE);
             }
         }
-#ifdef _BUNG_
-        RWOrdered& lmPrograms = currentControlArea->getLMPrograms();
-
-        for(LONG k=0;k<lmPrograms.entries();k++)
-        {
-            CtiLMProgramBase* currentProgram = (CtiLMProgramBase*)lmPrograms[k];
-            if( currentProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
-            {
-                RWOrdered& lmGroups = ((CtiLMProgramDirect*)currentProgram)->getLMProgramDirectGroups();
-                for(LONG l=0;l<lmGroups.entries();l++)
-                {
-                    CtiLMGroupBase* currentGroup = (CtiLMGroupBase*)lmGroups[l];
-                    if( currentGroup->getHoursDailyPointId() == pointID )
-                    {
-                        RWTime now;
-                        struct tm now_tm, timestamp_tm;
-
-                        now.extract(&now_tm);
-                        timestamp.extract(&timestamp_tm);
-
-                        long nowDaysSince1900 = (now_tm.tm_year*365) + now_tm.tm_yday;
-                        long timestampDaysSince1900 = (timestamp_tm.tm_year*365) + timestamp_tm.tm_yday;
-
-                        if( nowDaysSince1900 == timestampDaysSince1900  )
-                        {//i.e. is this daily control history from today or from some previous day
-                            currentGroup->setCurrentHoursDaily(value);
-                            currentControlArea->setUpdatedFlag(TRUE);
-                        }
-                        else
-                        {
-                            if( currentGroup->getCurrentHoursDaily() != 0 )
-                                currentControlArea->setUpdatedFlag(TRUE);
-                            currentGroup->setCurrentHoursDaily(0.0);
-                        }
-                    }
-                    if( currentGroup->getHoursMonthlyPointId() == pointID )
-                    {
-                        currentGroup->setCurrentHoursMonthly(value);
-                        currentControlArea->setUpdatedFlag(TRUE);
-                    }
-                    if( currentGroup->getHoursSeasonalPointId() == pointID )
-                    {
-                        currentGroup->setCurrentHoursSeasonal(value);
-                        currentControlArea->setUpdatedFlag(TRUE);
-                    }
-                    if( currentGroup->getHoursAnnuallyPointId() == pointID )
-                    {
-                        currentGroup->setCurrentHoursAnnually(value);
-                        currentControlArea->setUpdatedFlag(TRUE);
-                    }
-                    if( currentGroup->getControlStatusPointId() == pointID )
-                    {
-                        currentGroup->setGroupControlState(value);
-                        currentControlArea->setUpdatedFlag(TRUE);
-                    }
-                }
-            }
-        }
-#endif
     }
 }
 
@@ -1417,7 +1355,6 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
-
 
 /*---------------------------------------------------------------------------
   sendMessageToClients

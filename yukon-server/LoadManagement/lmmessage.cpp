@@ -232,9 +232,7 @@ CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
 						     LONG start_gear,
 						     LONG start_priority,
 						     const RWCString& addl_info,
-						     BOOL override_constraints,
-						     BOOL coerce_start_stop_time
-    ) :
+						     LONG constraint_cmd) :
     _command(cmd),
     _paoid(pao_id),
     _notifytime(notify_time),
@@ -243,8 +241,7 @@ CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
     _startgear(start_gear),
     _startpriority(start_priority),
     _additionalinfo(addl_info),
-    _override_constraints(override_constraints),
-    _coerce_start_stop_time(coerce_start_stop_time)
+    _constraint_cmd(constraint_cmd)
 {
 }
 
@@ -343,18 +340,13 @@ const RWCString& CtiLMManualControlRequest::getAdditionalInfo() const
 }
 
 /*----------------------------------------------------------------------------
-  getOverrideConstraints
+  getConstraintCmd
 
-  Returns whether to override constraint checking
-----------------------------------------------------------------------------*/
-BOOL CtiLMManualControlRequest::getOverrideConstraints() const
+  Returns the constraint command (how to handle constraints) for this request
+---------------------------------------------------------------------------*/ 
+LONG CtiLMManualControlRequest::getConstraintCmd() const
 {
-    return _override_constraints;
-}
-
-BOOL CtiLMManualControlRequest::getCoerceStartStopTime() const
-{
-    return _coerce_start_stop_time;
+    return _constraint_cmd;
 }
 
 /*---------------------------------------------------------------------------
@@ -385,8 +377,7 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
          >> _startgear
          >> _startpriority
          >> _additionalinfo
-         >> _override_constraints
-	 >> _coerce_start_stop_time;
+	 >>_constraint_cmd;
 
     _notifytime = RWDBDateTime(tempTime1);
     _starttime = RWDBDateTime(tempTime2);
@@ -411,8 +402,7 @@ void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
          << _startgear
          << _startpriority
          << _additionalinfo
-	 << _override_constraints
-	 << _coerce_start_stop_time;
+	 << _constraint_cmd;
 
     return;
 }
@@ -432,6 +422,7 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
         _startgear = right._startgear;
         _startpriority = right._startpriority;
         _additionalinfo = right._additionalinfo;
+	_constraint_cmd = right._constraint_cmd;
     }
 
     return *this;
