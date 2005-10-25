@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -14,8 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.DeviceTreeModel;
 import com.cannontech.database.model.ModelFactory;
@@ -393,7 +397,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			for(int i = 0; i < getFilterModelTypes().length; i++)
 			{
 				html += "      <div id='Div"+ ModelFactory.getModelString(getFilterModelTypes()[i]) +"' style='display:"+(i==0?"true":"none")+"'>" + LINE_SEPARATOR;
-				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:250px;'>" + LINE_SEPARATOR;
+				html += "        <select name='" + ATT_FILTER_MODEL_VALUES+ "' size='10' multiple style='width:350px;'>" + LINE_SEPARATOR;
 				List objects = getObjectsByModelType(getFilterModelTypes()[i]);
 				if (objects != null)
 				{
@@ -544,15 +548,6 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	}
 	
 	/**
-	 * Override this function if an extended model does not have a Billing Group
-	 * @return
-	 */
-//	public boolean useFilterModel()
-//	{
-//		return false;
-//	}
-		
-	/**
 	 * Override this function if an extended model does not use a Start Date
 	 * @return
 	 */
@@ -611,6 +606,39 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	            return cache.getAllDMG_BillingGroups();
 	        case ModelFactory.ROUTE:
 	        	return cache.getAllRoutes();
+	        case ModelFactory.TRANSMITTER:
+	        {
+	        	List allPaos = cache.getAllYukonPAObjects();
+	        	List trans = null;
+	        	if( allPaos != null)
+	        	{
+					trans = new ArrayList();
+		        	for (int i = 0; i < allPaos.size(); i++)
+		        	{
+		        		LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+		        		if (lPao.getPaoClass() == DeviceClasses.TRANSMITTER)
+		        			trans.add(lPao);
+		        	}
+	        	}
+	        	return trans; 
+	        }
+			case ModelFactory.RTU:	//SUPER HACK!!! for LoadControlVerification report, just a factory that we can use for RECEIVERS.
+			{
+				List allPaos = cache.getAllYukonPAObjects();
+				List receivers = null;
+				if( allPaos != null)
+				{
+					receivers = new ArrayList();
+					for (int i = 0; i < allPaos.size(); i++)
+					{
+						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+						if( (DeviceTypesFuncs.isRTU(lPao.getType()) && !DeviceTypesFuncs.isIon(lPao.getType()) )  || 
+							lPao.getType() == DeviceTypes.SERIES_5_LMI)
+							receivers.add(lPao);
+					}
+				}
+				return receivers; 
+			}
         }
 		return null;
 	}
