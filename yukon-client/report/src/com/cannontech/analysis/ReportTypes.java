@@ -16,6 +16,7 @@ import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.LMControlLogModel;
 import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
+import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
@@ -81,6 +82,8 @@ public class ReportTypes
 	public static final int POINT_DATA_INTERVAL_DATA = 24;	//Coincidental
 	public static final int POINT_DATA_SUMMARY_DATA = 25;	//Peaks/Usage
 	
+	public static final int LOAD_CONTROL_VERIFICATION_DATA = 26;
+	
 	private static Class[] typeToClassMap =
 	{
 		StatisticModel.class,
@@ -113,7 +116,9 @@ public class ReportTypes
 		CapControlNewActivityModel.class,
 		
 		PointDataIntervalModel.class,
-		PointDataSummaryModel.class		
+		PointDataSummaryModel.class,
+		
+		LoadControlVerificationModel.class	
 	};
 		
 	/** String names for report types */
@@ -150,6 +155,8 @@ public class ReportTypes
 	
 	public static final String POINT_DATA_INTERVAL_DATA_STRING = "PointData Interval";
 	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
+	
+	public static final String LOAD_CONTROL_VERIFICATION_STRING = "Load Control Verification";
 
 	/** Report String to enum mapping */
 	public static final String[] reportName = {
@@ -185,7 +192,9 @@ public class ReportTypes
 		CAP_CONTROL_NEW_ACTIVITY_STRING,
 		
 		POINT_DATA_INTERVAL_DATA_STRING,
-		POINT_DATA_SUMMARY_DATA_STRING
+		POINT_DATA_SUMMARY_DATA_STRING,
+		
+		LOAD_CONTROL_VERIFICATION_STRING
 	};
 
 
@@ -227,7 +236,7 @@ public class ReportTypes
 			EC_ACTIVITY_LOG_DATA, SYSTEM_LOG_DATA},	//archive data, admin log reports
 		{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
-		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA},		//lm reports
+		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA},		//lm reports
 		{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA }, //cap control reports
 		{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA}, //database reports
 		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 

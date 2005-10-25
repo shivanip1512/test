@@ -83,6 +83,8 @@ public class ReportFuncs
 	        returnVal = new CapBankReport();
 	    else if( model instanceof CapControlNewActivityModel)
 	        returnVal = new CapControlNewActivityReport();
+		else if( model instanceof LoadControlVerificationModel)
+			returnVal = new LoadControlVerificationReport();	        
 	    else
 	        return null;
 
