@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/10/25 14:36:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -920,7 +920,7 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["stopdatetime"].assign(getStopTime() ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
     table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
-    table["controltype"].assign( getControlType() ) <<
+    table["controltype"].assign( (getControlType().isNull() ? "(none)" : getControlType()) ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
     table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
