@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/09/02 16:19:46 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/25 14:36:22 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.13  2005/10/25 14:36:22  cplender
+* Have reportControlStart use the command sent as the last command... it is for these guys.
+*
 * Revision 1.12  2005/09/02 16:19:46  cplender
 * Modified the getPutConfigAssignment() method to allow modifier parameters.
 *
@@ -247,7 +250,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             else
             {
                 if(parse.getCommand() == ControlRequest)
-                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, getLastCommand() );
+                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
 
                 delete pRet;
             }
