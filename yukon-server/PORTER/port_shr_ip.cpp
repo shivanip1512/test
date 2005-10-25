@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/10/25 14:36:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,6 +249,7 @@ void CtiPortShareIP::inThread()
                             else
                             {
                                 // broadcast message - tell inThread to read again, we expect no reply from this type of message
+                                if(DebugLevel & DEBUGLEVEL_LUDICROUS)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Intercepted RTU broadcast message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
