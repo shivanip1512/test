@@ -293,30 +293,37 @@ insert into state values(-7,3,'Unresponsive',3,6,0);
 insert into point values (-200,'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 insert into point values (-200,'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 
 
 create table CapControlStrategy  (
@@ -476,10 +483,10 @@ insert into YukonListEntry values (131, 100, 0, 'kW from kVA/kVAr', 0);
 insert into YukonListEntry values (132, 100, 0, 'Modulo Divide', 0);
 insert into YukonListEntry values (133, 100, 0, 'State Timer', 0);
 
-alter table DynamicTags modify UserName varchar2(64) not null;
-alter table DynamicPointAlarming modify UserName varchar2(64) not null;
-alter table TagLog modify UserName varchar2(64) not null;
-alter table SYSTEMLOG modify UserName varchar2(64) not null;
+alter table DynamicTags modify UserName varchar2(64);
+alter table DynamicPointAlarming modify UserName varchar2(64);
+alter table TagLog modify UserName varchar2(64);
+alter table SYSTEMLOG modify UserName varchar2(64);
 
 create table ConfigurationName  (
    ConfigID             NUMBER                          not null,

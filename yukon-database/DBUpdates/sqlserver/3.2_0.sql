@@ -31,12 +31,16 @@ insert into YukonListEntry values( 7, 1, 0, 'Voice PIN', 3 );
 go
 
 alter table CustomerAdditionalContact add Ordering smallint;
+go
 update CustomerAdditionalContact set Ordering = 0;
+go
 alter table CustomerAdditionalContact alter column Ordering smallint not null;
 go
 
 alter table ContactNotification add Ordering smallint;
+go
 update ContactNotification set Ordering = 0;
+go
 alter table ContactNotification alter column Ordering smallint not null;
 go
 
@@ -367,30 +371,37 @@ go
 insert into point values (-200,'Status','Porter Monitor',0,'Default',-7,'N','N','R',1000,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','Dispatch Monitor',0,'Default',-7,'N','N','R',1001,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','Scanner Monitor',0,'Default',-7,'N','N','R',1002,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','Calc Monitor',0,'Default',-7,'N','N','R',1003,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','Cap Control Monitor',0,'Default',-7,'N','N','R',1004,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','FDR Monitor',0,'Default',-7,'N','N','R',1005,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 insert into point values (-200,'Status','Macs Monitor',0,'Default',-7,'N','N','R',1006,'None',0);
 update point set pointID = (select max(pointID)+1 from point) where pointID = -200;
 insert into pointstatus select max(pointID), 0, 'none', 'N', 0, 0, 0, 'none','none',0 from point;
+insert into pointalarming select max(pointID), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0  from point;
 go
 
 

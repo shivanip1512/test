@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/19/2005 3:09:40 PM                        */
+/* Created on:     10/25/2005 9:48:02 AM                        */
 /*==============================================================*/
 
 
@@ -4236,7 +4236,7 @@ go
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
 /*==============================================================*/
-create index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
+create   index Indx_DevTypeCmd_GroupID on DeviceTypeCommand (
 CommandGroupID
 )
 go
@@ -6251,6 +6251,14 @@ create table POINTSTATUS (
 )
 go
 
+
+insert into pointstatus values( 7, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 6, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 5, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 4, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 3, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 2, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 1, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
 
 alter table POINTSTATUS
    add constraint PK_PtStatus primary key  (POINTID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/19/2005 3:12:18 PM                        */
+/* Created on:     10/25/2005 9:49:05 AM                        */
 /*==============================================================*/
 
 
@@ -4031,6 +4031,14 @@ create table POINTSTATUS  (
    StateOneControl      VARCHAR2(100)                   not null,
    CommandTimeOut       NUMBER                          not null
 );
+
+insert into pointstatus values( 7, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 6, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 5, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 4, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 3, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 2, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 1, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
 
 alter table POINTSTATUS
    add constraint PK_PtStatus primary key (POINTID);
