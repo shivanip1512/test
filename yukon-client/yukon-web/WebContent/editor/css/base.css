@@ -109,8 +109,7 @@ legend {
 }
 
 .pageLayout, .pageNavigation, .pageFooter,
-.pageBody, .pageFooter,
-.gridLayout, .pageHeader {
+.pageBody, .pageFooter, .gridLayout, .pageHeader {
 	vertical-align: top;
 	width: 100%;
 }
