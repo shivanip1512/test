@@ -1202,6 +1202,13 @@ public class CapControlForm extends DBEditorForm
 	}
 
 	/**
+	 * @return all time values >= 5 minutes
+	 */
+	public SelectItem[] getScheduleRepeatTime() {
+		return CBCSelectionLists.getTimeSubList(300);
+	}
+
+	/**
 	 * @return
 	 */
 	public List getUnassignedBanks() {

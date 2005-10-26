@@ -86,7 +86,7 @@
 	                   	</f:facet>
 						<x:selectOneMenu id="interval" value="#{paoSched.intervalRate}" displayValueOnly="true" >
 							<f:selectItem itemLabel="(none)" itemValue="0" />
-							<f:selectItems value="#{capControlForm.timeInterval}"/>
+							<f:selectItems value="#{capControlForm.scheduleRepeatTime}"/>
 							<f:selectItem itemLabel="2 days" itemValue="172800" />
 							<f:selectItem itemLabel="5 days" itemValue="432000" />
 							<f:selectItem itemLabel="7 days" itemValue="604800" />

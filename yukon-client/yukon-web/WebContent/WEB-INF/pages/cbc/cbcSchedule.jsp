@@ -13,7 +13,7 @@
 			<x:outputLabel for="interval" value="Repeat Interval: " title="How often this schedule will execute" />
 			<x:selectOneMenu id="interval" value="#{capControlForm.PAOBase.intervalRate}" >
 				<f:selectItem itemLabel="(none)" itemValue="0" />
-				<f:selectItems value="#{capControlForm.timeInterval}"/>
+				<f:selectItems value="#{capControlForm.scheduleRepeatTime}"/>
 				<f:selectItem itemLabel="2 days" itemValue="172800" />
 				<f:selectItem itemLabel="5 days" itemValue="432000" />
 				<f:selectItem itemLabel="7 days" itemValue="604800" />

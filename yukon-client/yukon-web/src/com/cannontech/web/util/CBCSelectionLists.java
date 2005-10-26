@@ -203,7 +203,7 @@ public class CBCSelectionLists {
 	}
 
 	/**
-	 * @return
+	 * @return SelectItem[]
 	 */
 	public SelectItem[] getCapBankOpStates() {
 		return capBankOpStates;
@@ -242,6 +242,42 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getScheduleCmds() {
 		return scheduleCmds;
+	}
+
+	/**
+	 * Returns a sublist of Time Interval SelectItem[]
+	 */
+	public static SelectItem[] getTimeSubList( int startSecs, int endSecs ) {
+
+		if( startSecs >= endSecs )
+			return CBCSelectionLists.TIME_INTERVAL;
+
+		int startIndx = 0, endIndx = CBCSelectionLists.TIME_INTERVAL.length;
+
+		for( int i = 0; i < CBCSelectionLists.TIME_INTERVAL.length; i++ ) {
+			
+			int secsVal = ((Integer)CBCSelectionLists.TIME_INTERVAL[i].getValue()).intValue();
+
+			if( secsVal >= startSecs && startIndx <= 0 )
+				startIndx = i;
+
+			if( secsVal >= endSecs ) {
+				endIndx = i;
+				break;
+			}
+		}
+		
+		SelectItem[] items = new SelectItem[endIndx - startIndx];
+		System.arraycopy( CBCSelectionLists.TIME_INTERVAL, startIndx, items, 0, items.length );
+		return items;
+	}
+
+	/**
+	 * Returns a sublist of Time Interval SelectItem[].
+	 * Starts at the given startSecs value and returns the entire upper list
+	 */
+	public static SelectItem[] getTimeSubList( int startSecs ) {
+		return getTimeSubList( startSecs, Integer.MAX_VALUE );
 	}
 
 }

@@ -45,7 +45,7 @@
 
 
 			<x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
-				showRootNode="false" varNodeToggler="t" preserveToggle="false"
+				showRootNode="false" varNodeToggler="t" preserveToggle="false" 
 				clientSideToggle="true" >
 			
 		        <f:facet name="root">

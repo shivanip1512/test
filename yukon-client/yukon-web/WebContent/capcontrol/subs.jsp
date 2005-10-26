@@ -7,6 +7,8 @@
 <%
 	SubBus[] areaSubs =
 		capControlCache.getSubsByArea( cbcSession.getLastArea() );
+
+	boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
 <HTML>
@@ -103,17 +105,18 @@ for( int i = 0; i < areaSubs.length; i++ )
 				</a></td>
 				
 				<td>
-<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-	<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);" onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')" onmouseout="menuDisappear(event, 'subPopupMenu')">
-</cti:isPropertyTrue>
-<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ALLOW_CONTROLS %>">
-	<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
-</cti:isPropertyFalse>
+			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
+				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
+						onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')"
+						onmouseout="menuDisappear(event, 'subPopupMenu')">
+			<% } else { %>
+				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
+			<% } %>
 
-<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
-<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
-</font>
-</a>
+			<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
+			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+			</font>
+			</a>
 				</td>
 
 				<td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
