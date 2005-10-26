@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/09/26 17:11:08 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/10/26 21:39:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -353,8 +353,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
+                dout << RWTime() << " MacroOffset specified, generating a request for the next macro. " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             OUTMESS *NewOutMessage = CTIDBG_new OUTMESS;
@@ -362,14 +361,13 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, RWTPtrSlist< Cti
             if(NewOutMessage)
             {
                 InEchoToOut( InMessage, NewOutMessage);
+                NewOutMessage->Port = InMessage->Port;
+                NewOutMessage->DeviceID = InMessage->DeviceID;
+                NewOutMessage->TargetID = InMessage->TargetID;
+                NewOutMessage->Request.BuildIt = TRUE;
+
                 outList.insert( NewOutMessage );
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  We should be filling out an OutMessage here if there is a MacroOffset > 0 specified! " << endl;
         }
     }
     else
