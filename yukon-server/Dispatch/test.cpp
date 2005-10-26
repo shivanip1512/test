@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/10/07 15:13:22 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/10/26 21:39:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,8 @@ void multiExecute(int argc, char **argv);
 void multiHelp();
 void historyExecute(int argc, char **argv);
 void historyHelp();
+void dbtimeExecute(int argc, char **argv);
+void dbtimeHelp();
 int tagProcessInbounds(CtiMessage *&pMsg, int clientId);
 void tagExecute(int argc, char **argv);
 void tagHelp();
@@ -353,6 +355,7 @@ TESTFUNC_t testfunction[] = {
     {"socket", socketExecute, lmHelp},
     {"thread", testThreads, defaultHelp },
     {"history", historyExecute, historyHelp},
+    {"dbtime", dbtimeExecute, dbtimeHelp},
     {"", 0, 0}
 };
 
@@ -1794,6 +1797,56 @@ void historyHelp()
             " Arg2: <pointid to search> " << endl <<
             " Arg3: <number of history points> " <<
             endl;
+    }
+    return;
+}
+
+void dbtimeExecute(int argc, char **argv)
+{
+    try
+    {
+        RWTime now;
+        RWTime ttime;
+
+        RWDBDateTime dbt(2005, 10, 29, 23, 30, 0);
+        RWTime tt = dbt.rwtime();
+
+        int period = 300;
+
+        for(int i = 0; i < 250; i++)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << i << "  DBTime " << dbt.asString() << " Time " << tt.asString() << endl;
+            }
+
+            tt = tt.now();
+            dbt =  RWDBDateTime(RWTime(dbt.seconds() + period));
+            if(dbt.rwtime() < tt)
+            {
+                dbt =  RWDBDateTime(tt);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return;
+}
+
+void dbtimeHelp()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " dbtimeExecute - Help" << endl;
+        dout << " Arg1: dbtime " << endl << endl;
     }
     return;
 }
