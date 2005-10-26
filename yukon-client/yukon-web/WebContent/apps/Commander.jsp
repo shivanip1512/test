@@ -91,13 +91,13 @@ else
               <tr> 
                 <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
                 <td width="70%" height="2"> 
-                  <select id="routeID" name="routeID">
+                  <select id="routeID" name="routeID" onchange='document.commandForm.routeID.value = document.commandForm.routeID.options[document.commandForm.routeID.selectedIndex].value'>
 				    <OPTION VALUE="-1">Select a Route
                     <%
 				  LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
                   for (int i = 0; i < validRoutes.length; i++)
                   {%>
-                      <OPTION VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>"><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
+                      <OPTION VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>" <%=YC_BEAN.getRouteID()==((LiteYukonPAObject)validRoutes[i]).getYukonID() ? "selected" : ""%>><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
                   <%}
                   %>
                   </select>
