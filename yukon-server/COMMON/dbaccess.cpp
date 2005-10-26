@@ -344,8 +344,7 @@ RWDBStatus ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
         if(file != 0) dout << file << " (" << line << ")";
-        dout << endl;
-        dout << updater.asString() << endl;
+        dout << endl << endl << updater.asString() << endl << endl;
     }
 
     return stat;
@@ -369,8 +368,7 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
         if(file != 0) dout << file << " (" << line << ")";
-        dout << endl;
-        dout << inserter.asString() << endl;
+        dout << endl << endl << inserter.asString() << endl << endl;
     }
 
     return stat;
