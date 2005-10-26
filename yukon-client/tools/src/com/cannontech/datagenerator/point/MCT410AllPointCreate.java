@@ -35,6 +35,7 @@ public class MCT410AllPointCreate extends PointCreate
 		boolean frozenPeakDemand = true;	//offset 21 (demandAcc)
 		boolean frozenMaxVolts = true;	//offset 24 (demandAcc)
 		boolean frozenMinVolts = true;	//offset 25 (demandAcc)
+		boolean blinkCount = true;		//offset 20 (pulseAcc)
 	}
 
 
@@ -233,6 +234,20 @@ public class MCT410AllPointCreate extends PointCreate
 					pointID++;
 					addCount++;
 			}
+			if( createPoint.blinkCount)
+			{
+			    multi.addDBPersistent(
+				        PointFactory.createPulseAccumPoint(
+						   "Blink Count",
+						   new Integer(paobjectID),
+						   new Integer(pointID),
+						   PointTypes.PT_OFFSET_BLINK_COUNT,
+						   PointUnits.UOMID_COUNTS,
+						   1.0) );
+				    CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
+					pointID++;
+					addCount++;
+			}
 		}
 	
 		boolean success = writeToSQLDatabase(multi);
@@ -291,6 +306,8 @@ public class MCT410AllPointCreate extends PointCreate
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMaxVolts = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMinVolts = false;
+		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).blinkCount = false;
 		
 		return false;
 	}	
