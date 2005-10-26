@@ -264,9 +264,10 @@ void CtiCapController::controlLoop()
                     try
                     {
                         currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
-                        if( currentSubstationBus->isVarCheckNeeded(currentDateTime) ||
-                            currentSubstationBus->isConfirmCheckNeeded() ||
-                            currentSubstationBus->getVerificationFlag()) /**/
+                        if( currentSubstationBus->getStrategyId() > 0 &&
+                            ( currentSubstationBus->isVarCheckNeeded(currentDateTime) ||
+                              currentSubstationBus->isConfirmCheckNeeded() ||
+                              currentSubstationBus->getVerificationFlag() )) 
                         {
                             if( currentSubstationBus->getRecentlyControlledFlag() )
                             {
@@ -1053,7 +1054,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                           (dbChange->getDatabase() == ChangePAODb && resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE) ||
                           dbChange->getDatabase() == ChangePointDb ||
                           (dbChange->getDatabase() == ChangeStateGroupDb && dbChange->getId() == 3) ||
-                          dbChange->getDatabase() == ChangeCBCStrategyDb) )
+                          dbChange->getDatabase() == ChangeCBCStrategyDb ||
+                          dbChange->getDatabase() == ChangePAOScheduleDB ))
                     {
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
@@ -1081,10 +1083,16 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
                         {
                             objType = CtiCCSubstationBusStore::SubBus;
+
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
                         {
                             objType =  CtiCCSubstationBusStore::Feeder;
+                        }
+                        else if (dbChange->getDatabase() == ChangePAOScheduleDB)
+                        {
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (objType == CtiCCSubstationBusStore::Unknown)
                         {

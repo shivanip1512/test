@@ -699,7 +699,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                 {
                     found = TRUE;
 
-                    if (!currentSubstationBus->getVerificationFlag())
+                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {    
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                         savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -743,7 +743,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             if( !savedBusRecentlyControlledFlag ||
                                 (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
                             {
-                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
@@ -757,7 +757,7 @@ void CtiCCCommandExecutor::OpenCapBank()
 
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
                         }
 
@@ -817,9 +817,18 @@ void CtiCCCommandExecutor::OpenCapBank()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                         <<".  Cannot perform OPEN on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        if (currentSubstationBus->getVerificationFlag())
+                        {                                              
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                                          << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                        }
                     }
                     break;
                 }
@@ -884,7 +893,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
-                    if (!currentSubstationBus->getVerificationFlag())
+                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {    
 
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
@@ -929,7 +938,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             if( !savedBusRecentlyControlledFlag ||
                                 (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) )
                             {
-                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
@@ -940,10 +949,10 @@ void CtiCCCommandExecutor::CloseCapBank()
                             dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                         }
-
+                        
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
                         }
 
@@ -985,9 +994,15 @@ void CtiCCCommandExecutor::CloseCapBank()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                            }
+                            /*if (currentSubstationBus->getStrategyId() <= 0)
+                            {
+                                confirmImmediately = TRUE;
+                            }*/
                         }
 
                         if( !confirmImmediately && !currentSubstationBus->isBusPerformingVerification())
@@ -1003,9 +1018,18 @@ void CtiCCCommandExecutor::CloseCapBank()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                         <<".  Cannot perform CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        if (currentSubstationBus->getVerificationFlag())
+                        {                                              
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                                          << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                        }
                     }
                     break;
                 }
@@ -1070,7 +1094,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
-                    if (!currentSubstationBus->getVerificationFlag())
+                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {   
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                         savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -1115,7 +1139,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                   (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&
                                  savedControlStatus != CtiCCCapBank::Open )
                             {
-                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
@@ -1129,7 +1153,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
                         }
 
@@ -1194,9 +1218,18 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                         <<".  Cannot perform CONFIRM OPEN on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        if (currentSubstationBus->getVerificationFlag())
+                        {                                              
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                                          << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                        }
                     }
                     break;
                 }
@@ -1261,7 +1294,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
                     found = TRUE;
-                    if (!currentSubstationBus->getVerificationFlag())
+                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                     {
                         savedBusRecentlyControlledFlag = currentSubstationBus->getRecentlyControlledFlag();
                         savedFeederRecentlyControlledFlag = currentFeeder->getRecentlyControlledFlag();
@@ -1306,7 +1339,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                                   (!currentSubstationBus->getControlMethod().compareTo(CtiCCSubstationBus::IndividualFeederControlMethod,RWCString::ignoreCase) && !savedFeederRecentlyControlledFlag) ) &&
                                 savedControlStatus != CtiCCCapBank::Close )
                             {
-                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(2);
                                 currentCapBank->setLastStatusChangeTime(RWDBDateTime());
                             }
@@ -1320,7 +1353,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(3);
                         }
 
@@ -1367,9 +1400,15 @@ void CtiCCCommandExecutor::ConfirmClose()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << RWTime() << " - Unknown Control Method: " << currentSubstationBus->getControlMethod()
                                           << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                            }
+                            /*if (currentSubstationBus->getStrategyId() <= 0)
+                            {
+                                confirmImmediately = TRUE;
+                            }*/
                         }
 
                         if( !confirmImmediately )
@@ -1384,10 +1423,19 @@ void CtiCCCommandExecutor::ConfirmClose()
                         break;
                     }
                     else
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                    {   
+                        if (currentSubstationBus->getVerificationFlag())
+                        {                                              
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
                                          <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << RWTime() << " - No Control Method: " << currentSubstationBus->getControlMethod()
+                                          << " PAOID: " << currentSubstationBus->getPAOId() << " Name: " << currentSubstationBus->getPAOName() << endl;
+                        }
                     }
                     break;
                 }
@@ -1436,7 +1484,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
-                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
+                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                     ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
                 }
                 else
@@ -1451,7 +1499,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 currentCapBank->setControlStatus(CtiCCCapBank::Open);
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
-                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
+                    pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                     ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
                 }
                 else
@@ -1494,7 +1542,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
                         }
                         else
@@ -1509,7 +1557,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             ((CtiPointDataMsg*)pointChanges[pointChanges.entries()-1])->setSOE(4);
                         }
                         else
@@ -1685,7 +1733,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                     if( currentCapBank->getOperationAnalogPointId() > 0 )
                     {
-                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                        pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                     }
                     else
                     {
@@ -1712,7 +1760,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                            pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         }
                         else
                         {
@@ -1736,7 +1784,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         {
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
                             {
-                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType));
+                                pointChanges.insert(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                             }
                             else
                             {

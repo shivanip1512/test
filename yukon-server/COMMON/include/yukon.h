@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/10/07 14:17:46 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/10/26 22:57:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -408,7 +408,8 @@ enum CtiDBChanged_t
     ChangeDeviceTypeCommandDb,
     ChangeCommandDb,
     ChangeTOUScheduleDb,
-    ChangeCBCStrategyDb
+    ChangeCBCStrategyDb,
+    ChangePAOScheduleDB
 };
 
 
