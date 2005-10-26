@@ -106,10 +106,6 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		if( lpDate != null)
 			localBean.setLPDateStr(lpDate);
 			
-		/** Specific route to send on, only used in the case of loops or serial number is used
-		 * When sending to a device, the route is ignored and the porter connection takes care
-		 * of sending the command on the device's assigned route. */
-		String routeID = req.getParameter("routeID");
 		//Flag to clear the resultText, no commands sent
 		String clear = req.getParameter("clearText");
 
@@ -193,6 +189,12 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		{
 			String function = req.getParameter("function");	//user friendly command string
 			String command = req.getParameter("command");	//system command string
+			/** Specific route to send on, only used in the case of loops or serial number is used
+			 * When sending to a device, the route is ignored and the porter connection takes care
+			 * of sending the command on the device's assigned route. */
+			String routeID = req.getParameter("routeID");
+			if( routeID != null)
+				localBean.setRouteID(Integer.valueOf(routeID).intValue());
 
 			//HANDLE LP command - special case for "getvalue lp channel" command
 			if ( command.toLowerCase().startsWith("getvalue lp channel"))
