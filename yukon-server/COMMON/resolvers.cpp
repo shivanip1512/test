@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2005/08/23 19:59:38 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2005/10/26 21:38:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1111,7 +1111,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
     case TYPE_MODBUS:
     case TYPELMT2:
     case TYPECBC6510:
-    case TYPECBC7010:
     case TYPECBC7020:
     case TYPE_RTC:
     case TYPE_RTM:
@@ -1122,6 +1121,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         }
     case TYPE_SYSTEM:
     case TYPEVERSACOMCBC:
+    case TYPECBC7010:
     case TYPEEXPRESSCOMCBC:
     case TYPEFISHERPCBC:
     case TYPE_LMGROUP_EMETCON:

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/04/15 19:04:10 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/26 21:38:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,7 @@ INT CtiDeviceCBC::ExecuteRequest(CtiRequestMsg                  *pReq,
             nRet = executeVersacomCBC(pReq, parse, OutMessage, vgList, retList, outList);
             break;
         }
+    case TYPECBC7010:
     case TYPEEXPRESSCOMCBC:
         {
             nRet = executeExpresscomCBC(pReq, parse, OutMessage, vgList, retList, outList);
@@ -473,11 +474,10 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
          * OK, these are the items we are about to set out to perform..  Any additional signals will
          * be added into the list upon completion of the Execute!
          */
-        if(parse.getActionItems().entries() == 1)
-        {
-            pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
 
-            if(pPoint != NULL)
+        if((pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType)) != NULL)
+        {
+            if( parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_CLOSE) )
             {
                 RWCString resultString;
                 double val = (parse.getFlags() & CMD_FLAG_CTL_OPEN) ? (double)OPENED : (double)CLOSED;
@@ -488,18 +488,20 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
 
                 vgList.insert(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
             }
-            else
+            else if( parse.isKeyValid("xcflip") )
             {
-                RWCString actn = parse.getActionItems()[0];
-                RWCString desc = getDescription(parse);
+                RWCString actn;
+                RWCString desc("CBC Flip Command Executed");
 
-                vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                vgList.insert(CTIDBG_new CtiSignalMsg(pPoint->getPointID(), pReq->getSOE(), desc, actn, CapControlLogType, SignalEvent, pReq->getUser()));
             }
         }
-        else
+        else if(parse.getActionItems().entries() == 1)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            RWCString actn = parse.getActionItems()[0];
+            RWCString desc = getDescription(parse);
+
+            vgList.insert(CTIDBG_new CtiSignalMsg(SYS_PID_CAPCONTROL, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
         }
 
         /*

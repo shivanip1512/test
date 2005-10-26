@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.154 $
-* DATE         :  $Date: 2005/10/19 02:59:58 $
+* REVISION     :  $Revision: 1.155 $
+* DATE         :  $Date: 2005/10/26 21:38:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1364,7 +1364,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                 case TYPE_ION7700:
                 case TYPE_ION8300:
                 case TYPECBC6510:
-                case TYPECBC7010:
                 case TYPECBC7020:
                 case TYPE_DNPRTU:
                 case TYPE_DARTRTU:
@@ -2182,7 +2181,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
                         }
                     case TYPECBC6510:
-                    case TYPECBC7010:
                     case TYPECBC7020:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -2241,7 +2239,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ION7700:
                     case TYPE_ION8300:
                     case TYPE_SNPP:
-                    case TYPECBC7010:
                     case TYPECBC6510:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
@@ -2305,7 +2302,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_CCU710:
                     case TYPE_DAVIS:
                     case TYPECBC6510:
-                    case TYPECBC7010:
                     case TYPECBC7020:
                         {
                             {
