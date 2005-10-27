@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2005/10/27 17:49:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,7 +76,9 @@ CtiDeviceMCT::CtiDeviceMCT() :
     _lpIntervalSent(false),
     _configType(ConfigInvalid),
     _peakMode(PeakModeInvalid),
-    _disconnectAddress(0)
+    _disconnectAddress(0),
+    _freeze_counter(-1),
+    _expected_freeze(-1)
 {
     for( int i = 0; i < MCTConfig_ChannelCount; i++ )
     {
@@ -1462,7 +1464,8 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
 
             int channels = 0;  //  so we'll bypass the point-cropping code if /channels/ doesn't get set by the following:
 
-            if( getType() == TYPEMCT318 || getType() == TYPEMCT318L || getType() == TYPEMCT360 || getType() == TYPEMCT370 )
+            if( getType() == TYPEMCT310 || getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL || getType() == TYPEMCT310IL ||
+                getType() == TYPEMCT318 || getType() == TYPEMCT318L  || getType() == TYPEMCT360    || getType() == TYPEMCT370 )
             {
                 channels = CtiDeviceMCT31X::MCT31X_ChannelCount;
             }
@@ -4679,5 +4682,31 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
 
             _wireConfig[i] = WireConfigInvalid;
         }
+    }
+}
+
+
+void CtiDeviceMCT::setNextFreeze( int next_freeze )
+{
+    //  this function should probably be called even when a manual freeze is sent
+
+    if( next_freeze == 1 || next_freeze == 2 )
+    {
+        _expected_freeze = next_freeze - 1;
+
+        //  if it's initialized
+        if( (_freeze_counter > 0) )
+        {
+            if( (_freeze_counter + 1) % 2 != _expected_freeze )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setNextFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+        }
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, RWTime::now().seconds());
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, (long)_expected_freeze);
     }
 }
