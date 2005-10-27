@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/10/27 17:57:02 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -990,12 +990,12 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg              *pReq,
             switch( parse.getOffset() )
             {
                 //  both 0 and 1 resolve to the first register
-                case 0:     break;
+                case 0:     break;                                          //  0x93
                 case 1:     break;
                 //  please note the magic numbers
-                case 2:     OutMessage->Buffer.BSt.Function += 2;   break;
-                case 3:     OutMessage->Buffer.BSt.Function += 6;   break;
-                case 4:     OutMessage->Buffer.BSt.Function += 8;   break;
+                case 2:     OutMessage->Buffer.BSt.Function += 2;   break;  //  0x95
+                case 3:     OutMessage->Buffer.BSt.Function += 5;   break;  //  0x98
+                case 4:     OutMessage->Buffer.BSt.Function += 7;   break;  //  0x9a
 
                 //  anything outside the range from 0-4 is invalid
                 default:    found = false;  break;
@@ -1063,10 +1063,12 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.SOE,
                                                    RWOrdered( ));
 
+/*
     if( parse.isKeyValid("channels") )
     {
 
     }
+*/
     if( parse.isKeyValid("ied") )
     {
         //  ACH:  add a dynamic info check to ensure that we're reading from Precanned Table 1
@@ -1151,6 +1153,8 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        //  add freeze smarts here
 
         for( i = 0; i < MCT470_ChannelCount; i++ )
         {
@@ -1391,6 +1395,10 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         pi.value *= double(3600 / getDemandInterval());
 
         pointTime = RWTime(pi_time.value + rwEpoch);
+
+        //  we can do a rudimentary frozen peak time check here with the dynamicInfo stuff - we can't
+        //    do much more, since we don't get the freeze count back with the frozen demand, so we have to
+        //    take the device's word for it
 
         if( pPoint = getDevicePointOffsetTypeEqual(point_offset, DemandAccumulatorPointType) )
         {
