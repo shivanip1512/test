@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/09/26 17:11:28 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/10/27 17:47:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -878,7 +878,15 @@ bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string 
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const int &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
 bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long &value)
+{
+    return setInfo(_paoInfo, getID(), k, value);
+}
+bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned long &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
@@ -908,7 +916,15 @@ bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &desti
 {
     return getInfo(_paoInfo, getID(), k, destination);
 }
+bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, int &destination) const
+{
+    return getInfo(_paoInfo, getID(), k, destination);
+}
 bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long &destination) const
+{
+    return getInfo(_paoInfo, getID(), k, destination);
+}
+bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, unsigned long &destination) const
 {
     return getInfo(_paoInfo, getID(), k, destination);
 }
@@ -943,6 +959,12 @@ bool CtiDeviceBase::getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info)
     }
 
     return retval;
+}
+
+
+void CtiDeviceBase::setNextFreeze(int freeze)
+{
+    return;
 }
 
 

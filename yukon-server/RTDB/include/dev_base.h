@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/10/04 19:08:41 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/10/27 17:46:45 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -244,12 +244,16 @@ public:
 
     bool hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k);
     bool setDynamicInfo(const CtiTableDynamicPaoInfo &paoinfo);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long   &value);
-    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double &value);
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long   &destination) const;
-    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const;
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string        &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const int           &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long          &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned long &value);
+    bool setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double        &value);
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string        &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, int           &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long          &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, unsigned long &destination) const;
+    bool getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double        &destination) const;
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     long getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const;
 
@@ -307,6 +311,8 @@ public:
     virtual LONG deviceMaxCommunicationTime() const;            // maximum transmitter transmit time that this device is permitted to grab.  Assigned by db or CPARM "PORTER_MAX_TRANSMITTER_TIME"
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
     virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
+
+    virtual void setNextFreeze(int freeze);  //  for frozen reads
 
     INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
     INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
