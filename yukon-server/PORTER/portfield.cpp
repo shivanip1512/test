@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.155 $
-* DATE         :  $Date: 2005/10/26 21:38:54 $
+* REVISION     :  $Revision: 1.156 $
+* DATE         :  $Date: 2005/10/27 17:54:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1205,10 +1205,14 @@ void processPreloads(CtiPortSPtr Port)
     {
         dev = DeviceManager.getEqual(*itr);
 
-        preload.time     = dev->getPreloadEndTime();
-        preload.deviceid = dev->getID();
+        //  do not consider the device if it's inhibited
+        if( !dev->isInhibited() )
+        {
+            preload.time     = dev->getPreloadEndTime();
+            preload.deviceid = dev->getID();
 
-        times.insert(preload);
+            times.insert(preload);
+        }
     }
 
     //  a possible optimization here would be to also order the devices by the amount of work they have,
