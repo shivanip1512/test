@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2005/10/20 18:27:25 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2005/10/27 18:00:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2102,21 +2102,29 @@ INT CtiDeviceMCT410::decodeGetValueDemand(INMESS *InMessage, RWTime &TimeNow, RW
 
 INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
-    int             status = NORMAL, pointoffset;
-    unsigned long   timeOfPeak;
-    point_info_t    pi;
+    int          status = NORMAL,
+                 pointoffset;
+    point_info_t pi_kw,
+                 pi_kw_time,
+                 pi_kwh,
+                 pi_freezecount;
+    RWTime       kw_time,
+                 kwh_time;
+    bool         valid_data = true;
+
+    CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
 
     RWCString result_string, freeze_info_string;
-    RWTime    pointTime;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    CtiPointBase    *pPoint = NULL;
+    CtiPointBase    *kw_point  = NULL,
+                    *kwh_point = NULL;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg *pData = NULL;
+    CtiPointDataMsg *pData     = NULL;
 
     if( getMCTDebugLevel(MCTDebug_Scanrates) )
     {
@@ -2125,31 +2133,31 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
     }
 
     /*
+        Computed TOU point offsets, for reference:
 
-        pulse accumulators:
+            pulse accumulators:
 
-        kwh rate a: 101
-        kwh rate b: 121
-        kwh rate c: 141
-        kwh rate d: 161
+                kwh rate a: 101
+                kwh rate b: 121
+                kwh rate c: 141
+                kwh rate d: 161
 
-        frozen kwh rate a:  111
-        frozen kwh rate b:  131
-        frozen kwh rate c:  151
-        frozen kwh rate d:  171
+                frozen kwh rate a:  111
+                frozen kwh rate b:  131
+                frozen kwh rate c:  151
+                frozen kwh rate d:  171
 
-        demand accumulators:
+            demand accumulators:
 
-        peak kw rate a: 111
-        peak kw rate b: 131
-        peak kw rate c: 151
-        peak kw rate d: 171
+                peak kw rate a: 111
+                peak kw rate b: 131
+                peak kw rate c: 151
+                peak kw rate d: 171
 
-        peak frozen kw rate a:  121
-        peak frozen kw rate b:  141
-        peak frozen kw rate c:  161
-        peak frozen kw rate d:  181
-
+                peak frozen kw rate a:  121
+                peak frozen kw rate b:  141
+                peak frozen kw rate c:  161
+                peak frozen kw rate d:  181
     */
 
     pointoffset = 1;
@@ -2159,11 +2167,17 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         pointoffset += MCT410_PointOffset_TOUBase;
 
         //  need to add smarts for multiple channels when applicable
-        //  no increment for rate A
-        if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += MCT4XX_PointOffset_RateOffset * 1;
-        if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += MCT4XX_PointOffset_RateOffset * 2;
-        if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += MCT4XX_PointOffset_RateOffset * 3;
+        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  pointoffset += 0; //  no increment for rate A
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  pointoffset += MCT4XX_PointOffset_RateOffset * 1;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  pointoffset += MCT4XX_PointOffset_RateOffset * 2;
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  pointoffset += MCT4XX_PointOffset_RateOffset * 3;
     }
+
+    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateAPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateBPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateCPeakTimestamp;
+    else if( parse.getFlags() & CMD_FLAG_GV_RATED )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateDPeakTimestamp;
+    else                                             key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemandPeakTimestamp;
 
     if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
     {
@@ -2179,92 +2193,161 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        pi = getData(DSt->Message, 2, ValueType_KW);
+        pi_kw          = getData(DSt->Message,     2, ValueType_KW);
+        pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
-        timeOfPeak = DSt->Message[2] << 24 |
-                     DSt->Message[3] << 16 |
-                     DSt->Message[4] <<  8 |
-                     DSt->Message[5];
+        pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
 
-        pointTime = RWTime(timeOfPeak + rwEpoch);
+        pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
 
         //  turn raw pulses into a demand reading
-        pi.value *= DOUBLE(3600 / getDemandInterval());
+        pi_kw.value *= double(3600 / getDemandInterval());
+
+        kw_time      = RWTime(pi_kw_time.value + rwEpoch);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
-            pPoint = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset + MCT4XX_PointOffset_FrozenOffset, DemandAccumulatorPointType);
-        }
-        else
-        {
-            pPoint = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
-        }
-
-        if( pPoint )
-        {
-            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
-
-            result_string = getName() + " / " + pPoint->getName() + " = "
-                                      + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces())
-                                      + " @ " + pointTime.asString();
-
-            if( pData = makePointDataMsg(pPoint, pi, result_string) )
+            if( kw_time.seconds() > getDynamicInfo(key_peak_timestamp) )
             {
-                pData->setTime(pointTime);
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                if( ((int)pi_kwh.value % 2) == _expected_freeze )
+                {
+                    if( _freeze_counter < 0 || pi_freezecount.value >= (_freeze_counter + 1) )
+                    {
+                        if( pi_freezecount.value > _freeze_counter )
+                        {
+                            //  it's incremented by more than one, yet seems to be valid, parity-wise - we need to yelp, at least
+
+                            valid_data = false;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                                    ") has increased by more than expected value (" << _freeze_counter + 1 <<
+                                                    ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        //  success - allow normal processing
+
+                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset + MCT4XX_PointOffset_FrozenOffset, DemandAccumulatorPointType);
+
+                        kwh_point = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
+
+                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                        {
+                            kwh_time  = RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        freeze_info_string  = " @ " + kwh_time.asString();
+
+                        _freeze_counter = pi_freezecount.value;
+
+                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
+                    }
+                    else
+                    {
+                        valid_data = false;
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                                ") less than expected value (" << _freeze_counter + 1 <<
+                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") != (" + CtiNumStr(_freeze_counter) + ")");
+                        status = NOTNORMAL;
+                    }
+                }
+                else
+                {
+                    valid_data = false;
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - incoming freeze parity bit (" << ((int)pi_kwh.value % 2) <<
+                                            ") does not match expected freeze bit (" << _expected_freeze <<
+                                            ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr((int)pi_kwh.value % 2) + ") != (" + CtiNumStr(_expected_freeze) + ")");
+                    status = NOTNORMAL;
+                }
+            }
+            else
+            {
+                valid_data = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ReturnMsg->setResultString("Peak time check failed (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
+                status = NOTNORMAL;
             }
         }
         else
         {
-            result_string = getName() + " / Peak Demand = " + CtiNumStr(pi.value) + " @ " + pointTime.asString() + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(result_string);
+            //  just a normal peak read, no freeze-related work needed
+
+            kw_point = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
+
+            kwh_point = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
+
+            kwh_time  = RWTime::now();
         }
 
-        //  now do the KWH/consumption reading
-
-        pi = getData(DSt->Message + 6, 3, ValueType_Accumulator);
-
-        if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
+        if( valid_data )  //  valid
         {
-            pPoint = getDevicePointOffsetTypeEqual( pointoffset + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
-
-            //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
-            //    and the freeze counter (DSt->Message[8]) is what we expect
-            //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
-
-            //freeze_info_string = " @ " + pointTime();
-            //pointTime = last freeze time, if it matches
-            pointTime  = RWTime::now();
-            pointTime -= pointTime.seconds() % 300;
-        }
-        else
-        {
-            pPoint = getDevicePointOffsetTypeEqual( pointoffset, PulseAccumulatorPointType );
-
-            pointTime  = RWTime::now();
-            pointTime -= pointTime.seconds() % 300;
-        }
-
-        if( pPoint )
-        {
-            pi.value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pi.value);
-
-            result_string = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value,
-                                                                                     ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
-
-            if( pData = makePointDataMsg(pPoint, pi, result_string) )
+            if( kw_point )
             {
-                pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
-                ReturnMsg->PointData().insert(pData);
-                pData = NULL;  // We just put it on the list...
+                pi_kw.value = ((CtiPointNumeric*)kw_point)->computeValueForUOM(pi_kw.value);
+
+                result_string = getName() + " / " + kw_point->getName() + " = "
+                                          + CtiNumStr(pi_kw.value, ((CtiPointNumeric *)kw_point)->getPointUnits().getDecimalPlaces())
+                                          + " @ " + kw_time.asString();
+
+                if( pData = makePointDataMsg(kw_point, pi_kw, result_string) )
+                {
+                    pData->setTime(kw_time);
+                    ReturnMsg->PointData().insert(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
             }
-        }
-        else
-        {
-            result_string = getName() + " / Meter Reading = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
+            else
+            {
+                result_string = getName() + " / Peak Demand = " + CtiNumStr(pi_kw.value) + " @ " + kw_time.asString() + "  --  POINT UNDEFINED IN DB";
+                ReturnMsg->setResultString(result_string);
+            }
+
+            if( kwh_point )
+            {
+                pi_kwh.value = ((CtiPointNumeric*)kwh_point)->computeValueForUOM(pi_kwh.value);
+
+                result_string = getName() + " / " + kwh_point->getName() + " = " + CtiNumStr(pi_kwh.value,
+                                                                                             ((CtiPointNumeric *)kwh_point)->getPointUnits().getDecimalPlaces());
+
+                if( pData = makePointDataMsg(kwh_point, pi_kwh, result_string) )
+                {
+                    kwh_time -= kwh_time.seconds() % getDemandInterval();
+                    pData->setTime(kwh_time);
+                    ReturnMsg->PointData().insert(pData);
+                    pData = NULL;  // We just put it on the list...
+                }
+            }
+            else
+            {
+                result_string = getName() + " / Meter Reading = " + CtiNumStr(pi_kwh.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+                ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
+            }
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
