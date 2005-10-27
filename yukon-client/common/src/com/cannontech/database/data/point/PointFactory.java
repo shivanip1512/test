@@ -268,21 +268,27 @@ public static synchronized void createBankOpCntPoint(
 
 /**
  * Creates a CapBanks analog op count point automatically
- * 
  */
 public static synchronized PointBase createBankOpCntPoint( int capBankID )
+{	
+	return createBankOpCntPoint(capBankID);
+}
+
+/**
+ * Creates a CapBanks analog op count point automatically
+ */
+public static synchronized PointBase createBankOpCntPoint( Integer capBankID )
 {	
 	//defaults pointControl
 	//an analog point is created
 	return
 		PointFactory.createAnalogPoint(
 			"OPERATION",
-			new Integer(capBankID),
+			capBankID,
 			null,
 			PointTypes.PT_OFFSET_TOTAL_KWH,
 			PointUnits.UOMID_COUNTS);
 }
-
 
 /**
  * Creates a CapBanks stutus point automatically
@@ -292,14 +298,14 @@ public static synchronized void createBankStatusPt(
 		SmartMultiDBPersistent newVal )
 {
 	newVal.addDBPersistent(
-			createBankStatusPt(YukonPAObject.getNextYukonPAObjectID().intValue()) );		
+			createBankStatusPt(YukonPAObject.getNextYukonPAObjectID()) );		
 }
 
 /**
  * Creates a CapBanks stutus point automatically
  * 
  */
-public static synchronized PointBase createBankStatusPt( int capBankID )
+public static synchronized PointBase createBankStatusPt( Integer capBankID )
 {
 
 	//a status point is created
@@ -313,7 +319,7 @@ public static synchronized PointBase createBankStatusPt( int capBankID )
 			pointID,
 			PointTypes.STATUS_POINT,
 			"BANK STATUS",
-			new Integer(capBankID),
+			capBankID,
 			new Integer(1) );
 
 	newPoint.getPoint().setStateGroupID( new Integer(3) );

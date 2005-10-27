@@ -26,9 +26,6 @@
             <h:outputText id="nextRunTime" value="Next Run Time: " title="The next time this shedule will run" />
             <x:inputDate id="nextRunTimeVal" value="#{capControlForm.PAOBase.nextRunTime}"
             	type="both" popupCalendar="true" />
-
-
-
 			<f:verbatim></fieldset></f:verbatim>
 
 		</h:column>
@@ -42,7 +39,7 @@
 			<h:outputText id="lastRunTimeVal" value="#{capControlForm.PAOBase.lastRunTime}"
 					rendered="#{capControlForm.PAOBase.lastRunTime.time > selLists.startOfTime}"
 					styleClass="staticLabel" >
-				<f:convertDateTime type="both" dateStyle="short" />
+				<f:convertDateTime pattern="#{selLists.dateOnly}" />
 			</h:outputText>
 			<h:outputText id="lastRunTimeDash" value="---"
 					styleClass="staticLabel"

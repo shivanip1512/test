@@ -20,15 +20,26 @@ public SmartMultiDBPersistent(MultiDBPersistent aMulti) {
 	super();
 	super.setDBPersistentVector(aMulti.getDBPersistentVector());
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (10/25/2001 4:18:09 PM)
- * @return boolean
+ * Adds a DB DBPersistent object to our Multi
  */
 public synchronized boolean addDBPersistent( DBPersistent value )
 {
-	return getDBPersistentVector().add(value);
+	return getDBPersistentVector().add( value );
 }
+
+/**
+ * A convience methodly to add and set the Owner DBPersistent
+ */
+public synchronized boolean addOwnerDBPersistent( DBPersistent value )
+{
+	boolean val = getDBPersistentVector().add( value );
+	setOwnerDBPersistent( value );
+
+	return val;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (4/4/2002 4:30:34 PM)

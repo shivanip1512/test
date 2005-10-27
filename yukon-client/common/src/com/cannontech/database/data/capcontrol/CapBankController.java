@@ -112,7 +112,7 @@ public void update() throws java.sql.SQLException{
 	getDeviceCBC().update();
 }
 
-public static PointBase createStatusControlPoint( int cbcDeviceID )
+public static PointBase createStatusControlPoint( Integer cbcDeviceID )
 {
 	//a status point is automatically added to all capbank controllers
 	PointBase newPoint = PointFactory.createPoint(
@@ -126,7 +126,7 @@ public static PointBase createStatusControlPoint( int cbcDeviceID )
 			pointID,
 			com.cannontech.database.data.point.PointTypes.STATUS_POINT,
 			"BANK STATUS",
-			new Integer(cbcDeviceID),
+			cbcDeviceID,
 			new Integer(1) );
 
 	newPoint.getPoint().setStateGroupID( 
@@ -145,6 +145,10 @@ public static PointBase createStatusControlPoint( int cbcDeviceID )
 	return newPoint;
 }
 
+public static PointBase createStatusControlPoint( int cbcDeviceID )
+{
+	return createStatusControlPoint( new Integer(cbcDeviceID) );
+}
 
 /**
  * This method returns all the cbc IDs that are not assgined

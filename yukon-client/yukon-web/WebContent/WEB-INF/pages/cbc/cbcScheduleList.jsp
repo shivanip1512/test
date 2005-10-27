@@ -65,7 +65,7 @@
 							<h:outputText value="Next Run Time" title="The next time this scheduled is to run" />
 	                   	</f:facet>
 						<h:outputText value="#{paoSched.nextRunTime}" rendered="#{paoSched.nextRunTime.time > selLists.startOfTime}" >
-							<f:convertDateTime type="both" dateStyle="short" />
+							<f:convertDateTime pattern="#{selLists.dateOnly}" />
 						</h:outputText>
 						<h:outputText value="---" rendered="#{paoSched.nextRunTime.time <= selLists.startOfTime}" />
 	               </h:column>
@@ -75,7 +75,7 @@
 							<h:outputText value="Last Run Time" title="The last time this scheduled ran" />
 	                   	</f:facet>
 						<h:outputText value="#{paoSched.lastRunTime}" rendered="#{paoSched.lastRunTime.time > selLists.startOfTime}" >
-							<f:convertDateTime type="both" dateStyle="short" />
+							<f:convertDateTime pattern="#{selLists.dateOnly}" />
 						</h:outputText>
 						<h:outputText value="---" rendered="#{paoSched.lastRunTime.time <= selLists.startOfTime}" />
 	               </h:column>

@@ -32,8 +32,8 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subVarPaoListTree" value="#{capControlForm.varTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" preserveToggle="false"
-			clientSideToggle="true" >
+				showRootNode="false" varNodeToggler="t"
+				preserveToggle="true" clientSideToggle="false" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
@@ -82,8 +82,8 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subWattListTree" value="#{capControlForm.wattTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" preserveToggle="false"
-			clientSideToggle="true" >
+				showRootNode="false" varNodeToggler="t"
+				preserveToggle="true" clientSideToggle="false" >
 		
 	        <f:facet name="root">
 	        	<x:panelGroup>
@@ -129,8 +129,8 @@
 
     	<x:div styleClass="scrollSmall">
 		<x:tree2 id="subVoltPaoListTree" value="#{capControlForm.voltTreeData}" var="node"
-			showRootNode="true" varNodeToggler="t" preserveToggle="false"
-			clientSideToggle="true" >
+				showRootNode="false" varNodeToggler="t"
+				preserveToggle="true" clientSideToggle="false" >
 
 	        <f:facet name="root">
 	        	<x:panelGroup>

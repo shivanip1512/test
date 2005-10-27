@@ -74,7 +74,7 @@
 	                        displayedRowsCountVar="displayedRowsCountVar"
 	                        firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex"
 	                        pageCountVar="pageCount" pageIndexVar="pageIndex">
-	                    <h:outputFormat value="{0} CapBanks found" >
+	                    <h:outputFormat value="{0} Feeders found" >
 	                        <f:param value="#{rowsCount}" />
 	                    </h:outputFormat>
 						<f:verbatim><br/></f:verbatim>

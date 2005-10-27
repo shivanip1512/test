@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -397,10 +398,11 @@ private synchronized void handleAreaList(CBCSubAreaNames areaNames_)
 	for( int i = 0; i < subBuses.length; i++ )
 		areaMap.put( subBuses[i].getCcArea(), "temp" );
 
-	// add all area names to the list
-	for( int i = 0; i < areaNames_.getNumberOfAreas(); i++ )
-		if( areaMap.containsKey(areaNames_.getAreaName(i)) )
-			areaNames.add( areaNames_.getAreaName(i) );
+	//add all area names to the list
+	Iterator it = areaMap.keySet().iterator();
+	while( it.hasNext() ) {
+		areaNames.add( it.next() );
+	}
 }
 
 /**

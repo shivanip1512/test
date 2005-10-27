@@ -1,4 +1,4 @@
-package com.cannontech.web.editor;
+package com.cannontech.web.wizard;
 
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -11,6 +11,7 @@ public class CBCWizardModel {
 	
 	private String name = null;
 	private Boolean disabled = new Boolean(false);
+	private boolean createNested = false;
 	
 
 	//what type we are currently creating
@@ -23,6 +24,9 @@ public class CBCWizardModel {
 	//only use this for CBCs that have ports
 	private Integer portID = new Integer(PAOGroups.INVALID);
 	
+	//a nested wizard that may or may not be used
+	private CBCWizardModel nestedWizard = null;
+
 
 	/**
 	 * 
@@ -117,6 +121,31 @@ public class CBCWizardModel {
 	 */
 	public void setPortID(Integer integer) {
 		portID = integer;
+	}
+
+	/**
+	 * @return
+	 */
+	public CBCWizardModel getNestedWizard() {
+		
+		if( nestedWizard == null )
+			nestedWizard = new CBCWizardModel();
+
+		return nestedWizard;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isCreateNested() {
+		return createNested;
+	}
+
+	/**
+	 * @return
+	 */
+	public void setCreateNested( boolean val ) {
+		createNested = val;
 	}
 
 }

@@ -84,6 +84,41 @@
 				</x:panelGroup>				
 
 
+				<x:panelGroup rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
+			        <f:verbatim><br/><br/></f:verbatim>
+
+					<h:selectBooleanCheckbox id="createCBC" value="#{capControlForm.wizData.createNested}"
+							onclick="submit();" />
+					<x:outputLabel for="createCBC" value="Create New CBC" title="Automatically create a CBC device for this CapBank"/>
+
+				    <f:verbatim><fieldset><legend>Controller Type</legend></f:verbatim>
+			        <f:verbatim><br/></f:verbatim>
+					<x:outputLabel for="Controller_Name" value="Controller Name: " title="A label for the Controller in the system"/>
+					<x:inputText id="Controller_Name" required="true" maxlength="32" styleClass="char32Label"
+							value="#{capControlForm.wizData.nestedWizard.name}"
+							disabled="#{!capControlForm.wizData.createNested}" />
+
+			        <f:verbatim><br/></f:verbatim>
+					<x:outputLabel for="Controller_Type" value="CBC Type: "
+							title="Type of CBC this object will be"/>
+					<x:selectOneMenu id="Controller_Type" value="#{capControlForm.wizData.nestedWizard.secondaryType}"
+							required="true" onchange="submit();"
+							disabled="#{!capControlForm.wizData.createNested}" >
+						<f:selectItems value="#{selLists.CBCTypes}" />
+					</x:selectOneMenu>
+
+			        <f:verbatim><br/></f:verbatim>
+					<x:outputLabel for="Controller_Comm_Channel" value="Comm. Channel: "
+							title="The communication channel this CBC will use (only applies to two-way CBC types)"/>
+					<x:selectOneMenu id="Controller_Comm_Channel"
+							disabled="#{!capControlForm.wizData.nestedWizard.portNeeded || !capControlForm.wizData.createNested}"
+							value="#{capControlForm.wizData.nestedWizard.portID}" >
+						<f:selectItems value="#{selLists.commChannels}"/>
+					</x:selectOneMenu>
+					
+					<f:verbatim></fieldset></f:verbatim>
+
+				</x:panelGroup>				
 
 				<f:facet name="footer">
 					<x:panelGroup>

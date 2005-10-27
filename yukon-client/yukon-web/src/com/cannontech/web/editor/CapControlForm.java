@@ -36,6 +36,7 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -43,6 +44,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
@@ -50,7 +52,9 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
+import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.util.CBCSelectionLists;
+import com.cannontech.web.wizard.*;
 
 /**
  * @author ryan
@@ -80,6 +84,8 @@ public class CapControlForm extends DBEditorForm
 	private CBControllerEditor cbControllerEditor = null;
 
 
+
+	private LiteYukonPAObject[] unusedCCPAOs = null;
 	
 	//selectable items that appear in lists on the GUI
 	private SelectItem[] kwkvarPaos = null;
@@ -286,6 +292,20 @@ public class CapControlForm extends DBEditorForm
 		return rootData;
 	}
 
+
+	/**
+	 * Returns all the unused PAOs for a control point in the system. Only do this
+	 * once with each instance of this class
+	 */
+	private LiteYukonPAObject[] getAllUnusedCCPAOs() {
+
+		if( unusedCCPAOs == null )
+			unusedCCPAOs = PAOFuncs.getAllUnusedCCPAOs(
+					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
+					
+		return unusedCCPAOs;
+	}
+
 	/**
 	 * Returns all status points that are available for a CapBank to use
 	 * for its control point
@@ -296,8 +316,9 @@ public class CapControlForm extends DBEditorForm
 		if( !(getDbPersistent() instanceof CapBank) ) return rootNode;
 
 
-		LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
-					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
+		LiteYukonPAObject[] lPaos = getAllUnusedCCPAOs();
+//		LiteYukonPAObject[] lPaos = PAOFuncs.getAllUnusedCCPAOs(
+//					((CapBank)getDbPersistent()).getCapBank().getControlDeviceID() );
 		
 		Vector typeList = new Vector(32);
 		Arrays.sort( lPaos, LiteComparators.litePaoTypeComparator );
@@ -314,8 +335,9 @@ public class CapControlForm extends DBEditorForm
 
 
 			if( currType != lPaos[i].getType() ) {
-				paoTypeNode = new TreeNodeBase( //type, description, isLeaf
-					"paoTypes", PAOGroups.getPAOTypeString(lPaos[i].getType()),
+				paoTypeNode = new TreeNodeBase( //type, description, identifier, isLeaf
+					"paoTypes",
+					"Type: " + PAOGroups.getPAOTypeString(lPaos[i].getType()),
 					PAOGroups.getPAOTypeString(lPaos[i].getType()), false);
 
 				typeList.add( paoTypeNode );
@@ -519,6 +541,7 @@ public class CapControlForm extends DBEditorForm
 		editingCBCStrategy = false;
 		unassignedBanks = null;
 		unassignedFeeders = null;
+		unusedCCPAOs = null;
 
 
 		kwkvarPaos = null;
@@ -716,25 +739,54 @@ public class CapControlForm extends DBEditorForm
 
 	/**
 	 * Creates extra points or any other supporting object for the given parent
-	 * based ont he paoType
+	 * based on the paoType
 	 */
-	private void createSupportItems( int paoType, int parentID, final FacesMessage facesMsg ) throws TransactionException {
+	private void createPostItems( int paoType, int parentID, final FacesMessage facesMsg ) throws TransactionException {
 		
-		//a status point is automatically added to all capbank controllers
-		if( DeviceTypesFuncs.isCapBankController(paoType) ) {
-			addDBObject(
-				CapBankController.createStatusControlPoint(parentID),
-				facesMsg );
-		}
-		else if( paoType == PAOGroups.CAPBANK ) {
-			addDBObject( 
-				PointFactory.createBankStatusPt(parentID), facesMsg );
+		//store the objects we add to the DB
+		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator( getWizData() );
+		
+		SmartMultiDBPersistent smartMulti =
+				cbObjCreator.createChildItems( paoType, new Integer(parentID) );
 
-			addDBObject( 
-				PointFactory.createBankOpCntPoint(parentID), facesMsg );
+		addDBObject( smartMulti, facesMsg );
+	}
+
+
+	/**
+	 * Creates extra supporting object(s) for the given parent
+	 * based on the paoType
+	 */
+	private void createPreItems( int paoType, DBPersistent dbObj, final FacesMessage facesMsg ) throws TransactionException {
+		
+		//store the objects we add to the DB
+		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator( getWizData() );
+		
+		SmartMultiDBPersistent smartMulti =
+				cbObjCreator.createParentItems( paoType );
+
+		addDBObject( smartMulti, facesMsg );
+
+
+		//set the parent to use the newly created supporting items
+		if( dbObj instanceof CapBank && getWizData().isCreateNested() ) {
+			
+			//set the CapBanks ControlDeviceID to be the ID of the CBC we just created
+			((CapBank)dbObj).getCapBank().setControlDeviceID(
+				((YukonPAObject)smartMulti.getOwnerDBPersistent()).getPAObjectID() );
+
+
+			//find the first status point in our CBC and assign its ID to our CapBank
+			// for control purposes
+			StatusPoint statusPt = (StatusPoint)SmartMultiDBPersistent.getFirstObjectOfType(
+					StatusPoint.class, smartMulti );
+
+			((CapBank)dbObj).getCapBank().setControlPointID( statusPt.getPoint().getPointID() );
+
 		}
 
 	}
+
 
 	/**
 	 * Executes the creation of the current DB object. We stuff the current
@@ -775,6 +827,8 @@ public class CapControlForm extends DBEditorForm
 					((ICapBankController)dbObj).setCommID( getWizData().getPortID() );
 
 
+				createPreItems( paoType, dbObj, facesMsg );
+
 				addDBObject( dbObj, facesMsg );
 				itemID = ((YukonPAObject)dbObj).getPAObjectID().intValue();
 				editorType = DBEditorTypes.EDITOR_CAPCONTROL;
@@ -783,7 +837,7 @@ public class CapControlForm extends DBEditorForm
 
 			
 			//creates any extra db objects if need be
-			createSupportItems( paoType, itemID, facesMsg );
+			createPostItems( paoType, itemID, facesMsg );
 
 			facesMsg.setDetail( "Database add was SUCCESSFUL" );
 			

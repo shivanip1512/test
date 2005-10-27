@@ -22,6 +22,13 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
  * @author ryan
  */
 public class CBCSelectionLists {
+	
+	/* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
+	/* so we only show date for now within our pages */
+	private static final String dateOnly = "MM-dd-yyyy";
+	private static final String dateTime = "MM-dd-yyyy HH:mm:ss";
+	private static final String dateTimeNoSeconds = "MM-dd-yyyy HH:mm";
+
 
 	private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
@@ -242,6 +249,18 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getScheduleCmds() {
 		return scheduleCmds;
+	}
+	
+	public String getDateTime() {
+		 return dateTime;
+	}
+
+	public String getDateTimeNoSeconds() {
+		 return dateTimeNoSeconds;
+	}
+
+	public String getDateOnly() {
+		 return dateOnly;
 	}
 
 	/**

@@ -269,12 +269,14 @@ for( int i = 0; i < capBanks.length; i++ )
 				<tr class="<%=css%>">
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
-						<a class="<%=css%>" href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankFldPopupMenu')" onmouseout="menuDisappear(event, 'bankFldPopupMenu')">
-					<% } else { %>
-						<a class="<%=css%>" href="javascript:void(0);">
-					<% } %>
+						<a href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankFldPopupMenu')" onmouseout="menuDisappear(event, 'bankFldPopupMenu')">
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</a>
+					<% } else { %>
+						<span>
+							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
+						</span>
+					<% } %>
 					</td>
 
 					<td>

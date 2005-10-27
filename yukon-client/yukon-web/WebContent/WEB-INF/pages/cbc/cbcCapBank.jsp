@@ -45,9 +45,8 @@
 
 
 			<x:tree2 id="capBankPoints" value="#{capControlForm.capBankPoints}" var="node"
-				showRootNode="false" varNodeToggler="t" preserveToggle="false" 
-				clientSideToggle="true" >
-			
+					showRootNode="false" varNodeToggler="t"
+					preserveToggle="true" clientSideToggle="false" >
 		        <f:facet name="root">
 		        	<x:panelGroup>
 			            <h:commandLink id="paoRoot" action="#{t.toggleExpanded}" value="#{node.description}"/>

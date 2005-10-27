@@ -137,9 +137,14 @@ for( int i = 0; i < items.length; i++ )
 		<% } else { 
 				SubBus pBus = capControlCache.getSubBus( new Integer(parID) ); %>
 
-				<a href="#" class="<%=css%>"
-					onclick="postMany('parentForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=pBus.getCcId()%>, '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=pBus.getCcArea()%>')">
-				<%=pBus.getCcName()%></a>
+				<% if( pBus != null) { %>
+					<a href="#" class="<%=css%>"
+						onclick="postMany('parentForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=pBus.getCcId()%>, '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=pBus.getCcArea()%>')">
+					<%=pBus.getCcName()%></a>
+				<% } else { %>
+					<span class="<%=css%>" >
+					<%=item.getParent()%></span>
+				<% } %>
 		<% } %>
 	<% } %>
 				</td>
