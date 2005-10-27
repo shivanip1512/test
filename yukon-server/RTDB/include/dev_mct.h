@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/10/27 17:49:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,9 @@ protected:
     unsigned long _nextLPScanTime;
 
     unsigned long _disconnectAddress;
+
+    int _freeze_counter,
+        _expected_freeze;
 
     static bool getMCTDebugLevel(int mask);
 
@@ -204,6 +207,8 @@ public:
     bool hasVariableDemandRate( int type, int sspec );
 
     void setConfigData( const RWCString &configName, int configType, const RWCString &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
+
+    void setNextFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
 
     static  DOUBLE translateStatusValue( INT PointOffset, INT PointType, INT DeviceType, PUSHORT DataValueArray );
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
