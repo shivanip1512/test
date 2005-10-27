@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/08/23 19:59:38 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/10/27 20:59:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -368,7 +368,7 @@ RWCString desolveDeviceType( INT aType )
    }
    else if(aType == TYPE_MODBUS)
    {
-      Ret = "modbus";
+      Ret = "rtu-modbus";
    }
    else if(aType == TYPELMT2)
    {

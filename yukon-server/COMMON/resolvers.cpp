@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2005/10/26 21:38:54 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2005/10/27 20:59:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,6 +318,10 @@ INT resolveDeviceType(RWCString rwsTemp)
     {
         nRet = TYPE_SERIESVLMIRTU;
     }
+    else if(rwsTemp == "rtu-modbus")
+    {
+        nRet = TYPE_MODBUS;
+    }
     else if(rwsTemp == "ion-7330")
     {
         nRet = TYPE_ION7330;
@@ -489,10 +493,6 @@ INT resolveDeviceType(RWCString rwsTemp)
     else if(rwsTemp == "mct-470")
     {
         nRet = TYPEMCT470;
-    }
-    else if(rwsTemp == "modbus")
-    {
-        nRet = TYPE_MODBUS;
     }
     else if(rwsTemp == "lmt-2")
     {
