@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/10/20 22:22:44 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/10/27 18:02:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,18 @@ const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config       = "mct lo
 const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval     = "mct load profile interval";
 const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2    = "mct load profile interval 2";
 const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval = "mct ied load profile rate";
+
+const string CtiTableDynamicPaoInfo::_key_freeze_counter               = "freeze counter";
+const string CtiTableDynamicPaoInfo::_key_expected_freeze              = "expected freeze";
 const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
+
+const string CtiTableDynamicPaoInfo::_key_frozen_demand_peak_timestamp = "frozen demand peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_a_peak_timestamp = "frozen rate a peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_b_peak_timestamp = "frozen rate b peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_c_peak_timestamp = "frozen rate c peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_d_peak_timestamp = "frozen rate d peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_demand_freeze_timestamp      = "demand freeze timestamp";
+const string CtiTableDynamicPaoInfo::_key_voltage_freeze_timestamp     = "voltage freeze timestamp";
 
 const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
 const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
@@ -91,7 +102,18 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_LoadProfileInterval,    &_key_mct_loadprofile_interval));
     retval.insert(make_pair(Key_MCT_LoadProfileInterval2,   &_key_mct_loadprofile_interval2));
     retval.insert(make_pair(Key_MCT_IEDLoadProfileInterval, &_key_mct_ied_loadprofile_interval));
+
+    retval.insert(make_pair(Key_FreezeCounter,              &_key_freeze_counter));
+    retval.insert(make_pair(Key_ExpectedFreeze,             &_key_expected_freeze));
     retval.insert(make_pair(Key_VerificationSequence,       &_key_verification_sequence));
+
+    retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,   &_key_frozen_rate_a_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,   &_key_frozen_rate_b_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateCPeakTimestamp,   &_key_frozen_rate_c_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateDPeakTimestamp,   &_key_frozen_rate_d_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenDemandPeakTimestamp,  &_key_frozen_demand_peak_timestamp));
+    retval.insert(make_pair(Key_DemandFreezeTimestamp,      &_key_demand_freeze_timestamp));
+    retval.insert(make_pair(Key_VoltageFreezeTimestamp,     &_key_voltage_freeze_timestamp));
 
     return retval;
 }
@@ -465,9 +487,27 @@ void CtiTableDynamicPaoInfo::getValue(string &destination) const
 {
     destination = _value;
 }
+void CtiTableDynamicPaoInfo::getValue(int &destination) const
+{
+    destination = atoi(_value.data());
+}
 void CtiTableDynamicPaoInfo::getValue(long &destination) const
 {
     destination = atol(_value.data());
+}
+void CtiTableDynamicPaoInfo::getValue(unsigned long &destination) const
+{
+    double tmp;
+    getValue(tmp);
+
+    if( tmp >= 0 )
+    {
+        destination = (unsigned long)tmp;
+    }
+    else
+    {
+        destination = 0UL;
+    }
 }
 void CtiTableDynamicPaoInfo::getValue(double &destination) const
 {
@@ -503,6 +543,7 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setKey(Keys k)
     setDirty();
     return *this;
 }
+
 CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(const string &s)
 {
     //  maybe put in a null check, and assign "(empty)"
@@ -521,6 +562,20 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(double d)
 CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(long l)
 {
     _value = CtiNumStr(l);
+
+    setDirty();
+    return *this;
+}
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(int i)
+{
+    _value = CtiNumStr(i);
+
+    setDirty();
+    return *this;
+}
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setValue(unsigned long ul)
+{
+    _value = CtiNumStr(ul);
 
     setDirty();
     return *this;

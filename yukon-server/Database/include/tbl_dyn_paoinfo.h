@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/20 18:21:01 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/10/27 18:01:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,18 @@ public:
         Key_MCT_AddressLead,
         Key_MCT_Configuration,
         Key_MCT_Options,
+
+        Key_FreezeCounter,
+        Key_ExpectedFreeze,
+
         Key_VerificationSequence,
+        Key_FrozenRateAPeakTimestamp,
+        Key_FrozenRateBPeakTimestamp,
+        Key_FrozenRateCPeakTimestamp,
+        Key_FrozenRateDPeakTimestamp,
+        Key_FrozenDemandPeakTimestamp,
+        Key_DemandFreezeTimestamp,
+        Key_VoltageFreezeTimestamp,
         //  make sure to add any new enum values to the string map
     };
 
@@ -84,7 +95,16 @@ protected:
     static const string _key_mct_loadprofile_interval;
     static const string _key_mct_loadprofile_interval2;
     static const string _key_mct_ied_loadprofile_interval;
+    static const string _key_freeze_counter;
+    static const string _key_expected_freeze;
     static const string _key_verification_sequence;
+    static const string _key_frozen_demand_peak_timestamp;
+    static const string _key_frozen_rate_a_peak_timestamp;
+    static const string _key_frozen_rate_b_peak_timestamp;
+    static const string _key_frozen_rate_c_peak_timestamp;
+    static const string _key_frozen_rate_d_peak_timestamp;
+    static const string _key_demand_freeze_timestamp;
+    static const string _key_voltage_freeze_timestamp;
 
     static const string _key_mct_dst_start_time;
     static const string _key_mct_dst_end_time;
@@ -161,18 +181,26 @@ public:
     long             getEntryID() const;
     CtiApplication_t getOwner()   const;
     Keys             getKey()     const;
-    string           getValue() const;
-    void             getValue(long &destination)   const;
-    void             getValue(double &destination) const;
-    void             getValue(string &destination) const;
+    string           getValue()   const;
+
+    void             getValue(int           &destination) const;
+    void             getValue(long          &destination) const;
+    void             getValue(unsigned long &destination) const;
+    void             getValue(double        &destination) const;
+    void             getValue(string        &destination) const;
 
     CtiTableDynamicPaoInfo &setPaoID(long pao_id);
     CtiTableDynamicPaoInfo &setEntryID(long entry_id);
     CtiTableDynamicPaoInfo &setOwner(CtiApplication_t o);
     CtiTableDynamicPaoInfo &setKey(Keys k);
-    CtiTableDynamicPaoInfo &setValue(const string &s);
-    CtiTableDynamicPaoInfo &setValue(double d);
+
+    //  we actually want to limit the input conversions into setValue, because we
+    //    need to be able to convert them from string form in the getValue functions
+    CtiTableDynamicPaoInfo &setValue(int i);
     CtiTableDynamicPaoInfo &setValue(long l);
+    CtiTableDynamicPaoInfo &setValue(unsigned long l);
+    CtiTableDynamicPaoInfo &setValue(double d);
+    CtiTableDynamicPaoInfo &setValue(const string &s);
 
     //CtiTableDynamicPaoInfo &setDirty(bool dirty);
 
