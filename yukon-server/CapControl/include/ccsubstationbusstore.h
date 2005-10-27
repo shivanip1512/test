@@ -117,7 +117,7 @@ public:
     void reloadGeoAreasFromDatabase();
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
-    void insertDBReloadList(CC_DBRELOAD_INFO x) {_reloadList.push_back(x);}; 
+    void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;

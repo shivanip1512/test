@@ -2430,7 +2430,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                             currentCCFeeder->setStrategyValues(currentCCStrategy);
                         }
                     }
-                }                                                                
+                }
             }
         }
     }
@@ -2918,10 +2918,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                             if (feederId > 0)
                             {               
                                 currentCCStrategy = findStrategyByStrategyID(currentCCFeeder->getStrategyId());
-                                if (currentCCStrategy != NULL)
+                                if (currentCCStrategy == NULL)
                                 {
-                                    currentCCFeeder->setStrategyValues(currentCCStrategy);
+                                    currentCCFeeder->setStrategyId(0);
+                                    currentCCStrategy = findStrategyByStrategyID(0);
                                 }
+                                currentCCFeeder->setStrategyValues(currentCCStrategy);
                             }
                             else
                             {
@@ -4022,6 +4024,18 @@ void CtiCCSubstationBusStore::checkDBReloadList()
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+void CtiCCSubstationBusStore::insertDBReloadList(CC_DBRELOAD_INFO x)
+{
+    if (x.objecttype == Strategy)
+    {
+        _reloadList.push_front(x);
+    }
+    else
+    {
+        _reloadList.push_back(x);
+    }
+} 
 
 
 /* Private Static members */

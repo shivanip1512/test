@@ -3817,7 +3817,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                 else
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    dout << RWTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                     returnBoolean = FALSE;
                                 }
                                 break;
