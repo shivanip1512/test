@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2005/10/19 19:11:48 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2005/10/27 17:54:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2831,7 +2831,8 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
          *  Only look at a given device if it has told us that it needs attention.
          *  This apply function only examines TIME excluded transmitters
          */
-        if( portid == devA->getPortID() &&
+        if( devA->getPortID() == portid &&
+            devA->isInhibited() == false &&
             devA->getExclusion().hasTimeExclusion() &&
             devA->getExclusion().getEvaluateNextAt() <= now )
         {
@@ -2906,7 +2907,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
              *  In this case, we should be filtering off all time excluded device which setEvaluateNextAt() into the future up above.
              *  We will also not evaluate any proximity excluded devices which may have been bumped into the future above.
              */
-            if(  portid == devA->getPortID() && devA->getExclusion().getEvaluateNextAt() <= now )
+            if( !devA->isInhibited() && devA->getPortID() == portid && devA->getExclusion().getEvaluateNextAt() <= now )
             {
                 if(devA->hasQueuedWork())
                 {
