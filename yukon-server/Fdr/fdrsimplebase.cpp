@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2005/10/20 16:27:25 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2005/10/27 23:24:27 $
  */
 
 #include <windows.h>
@@ -317,8 +317,9 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
       return;
     }
 
-    ctiPoint->setValue(valueConverted);
-    ctiPoint->setLastTimeStamp(rwTime);
+    // This no longer needs to be saved for the handleNonUpdate() method.
+    //ctiPoint->setValue(valueConverted);
+    //ctiPoint->setLastTimeStamp(rwTime);
 
     pData->setTime(rwTime);
 
@@ -327,48 +328,43 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
     if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "new value " << value << " for point "
-        << ctiPoint->getPointID() << " queued" << endl;
+      logNow() << "new value " << value << " for "
+        << *ctiPoint << " queued" << endl;
     }
   }
 }
 
 
 /**
- * Formats and sends an update message.
- * This function will apply the offset and multiplier.
+ * Formats and sends an UpdateFailed message.
+ * This will cause the quality of the point to change to a NonUpdatedQuality.
  */ 
 void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint, 
                                    const time_t timestamp)
 {
-  RWTime rwTime(rwEpoch + timestamp);
-  double valueConverted = ctiPoint->getValue();
+  CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-  CtiPointDataMsg   *pData = NULL;
-  pData = new CtiPointDataMsg(ctiPoint->getPointID(),
-                              valueConverted,
-                              NonUpdatedQuality,
-                              ctiPoint->getPointType());
-
-
-  if (!pData)
+  if (pMsg == NULL)
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
     logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << endl;
     return;
   }
 
-  ctiPoint->setLastTimeStamp(rwTime);
+  pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+  pMsg->insert(OP_POINTID);       // OP_POINTID indicates a point fail situation.
+  pMsg->insert(ctiPoint->getPointID());  // The pointid which failed
+  pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,
+                                  //  ScanRateIntegrity, or if unknown -> ScanRateInvalid
+  pMsg->insert(UnknownError);     // The error number from dsm2.h or yukon.h which was reported.
 
-  pData->setTime(rwTime);
-
-  queueMessageToDispatch(pData);
+  queueMessageToDispatch(pMsg);
 
   if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
   {
     CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "non-updated for point " << 
-      ctiPoint->getPointID() << " queued" << endl;
+    logNow() << "UpdateFailed command for " << 
+      *ctiPoint << " queued" << endl;
   }
 }
 
