@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2005/09/08 21:56:03 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2005/10/27 17:53:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,20 +20,23 @@
 #include <vector>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw\cstring.h>
-#include <rw\rwtime.h>
+#include <rw/cstring.h>
+#include <rw/rwtime.h>
 #include <rw/toolpro/winsock.h>
-#include <rw\thr\thrfunc.h>
+#include <rw/thr/thrfunc.h>
 #include <rw/toolpro/socket.h>
 #include <rw/toolpro/neterr.h>
 #include <rw/toolpro/inetaddr.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
+#include <rw/rwerr.h>
+#include <rw/thr/mutex.h>
+#include <rw/re.h>
+#undef mask_                // Stupid RogueWave re.h
 
 #include "os2_2w32.h"
 #include "cticalls.h"
 
 #include "dev_grp_versacom.h"
+#include "dev_mct.h"
 #include "dsm2.h"
 #include "ctinexus.h"
 #include "porter.h"
@@ -1296,6 +1299,7 @@ void CtiPILServer::vgConnThread()
 
 }
 
+
 INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, RWTPtrSlist< CtiRequestMsg > & execList, RWTPtrSlist< CtiMessage > & retList)
 {
     INT status = NORMAL;
@@ -1482,8 +1486,8 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     dout << RWTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
                 }
 
-                pReq->setCommandString(newparse);      // Make the request match our CTIDBG_new choices
-                parse = CtiCommandParser(newparse);    // Should create a CTIDBG_new actionItem list
+                pReq->setCommandString(newparse);      // Make the request match our new choices
+                parse = CtiCommandParser(newparse);    // Should create a new actionItem list
             }
         }
         else if(INT_MIN != parse.getiValue("fromutility"))
@@ -1505,9 +1509,54 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     dout << RWTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
                 }
 
-                pReq->setCommandString(newparse);       // Make the request match our CTIDBG_new choices
+                pReq->setCommandString(newparse);       // Make the request match our new choices
                 pReq->setRouteId(GrpDev->getRouteID()); // Just on this route.
-                parse = CtiCommandParser(newparse);     // Should create a CTIDBG_new actionItem list
+                parse = CtiCommandParser(newparse);     // Should create a new actionItem list
+            }
+        }
+    }
+    else if(parse.getCommand() == PutStatusRequest)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        if(parse.isKeyValid("freeze"))
+        {
+            RWCRExpr coll_grp("collection_group +((\"|')[^\"']+(\"|'))");
+            RWCString tmp, group_name;
+
+            if( !(tmp = parse.getCommandStr().match(coll_grp)).isNull() )
+            {
+                //  pull out the group name
+                group_name = tmp.match("(\"|')[^\"']+(\"|')");
+                //  trim off the quotes
+                group_name = group_name((size_t)1, (size_t)group_name.length() - 2);
+
+                {
+                    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+                    CtiDeviceManager::spiterator itr_dev;
+
+                    vector< CtiDeviceManager::ptr_type > match_coll;
+                    DeviceManager->select(findMeterGroupName, (void*)(group_name.data()), match_coll);
+                    CtiDeviceSPtr device;
+
+                    while(!match_coll.empty())
+                    {
+                        device = match_coll.back();
+                        match_coll.pop_back();
+
+                        device->setNextFreeze(parse.getdValue("freeze"));
+                    }
+
+                    //  this is where we'd attempt to correct devices that have an incorrect freeze counter
+                }
+            }
+
+            if(parse.isKeyValid("voltage"))
+            {
+
             }
         }
     }
@@ -1764,6 +1813,21 @@ static bool findAltMeterGroupName(const long key, CtiDeviceSPtr otherdevice, voi
     bool bstat = false;
     RWCString gname((char*)vptrGname);
     RWCString mgname = otherdevice->getAlternateMeterGroupName();
+    mgname.toLower();
+
+    if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
+    {
+        bstat = true;
+    }
+
+    return bstat;
+}
+
+static bool findBillingGroupName(const long key, CtiDeviceSPtr otherdevice, void *vptrGname)
+{
+    bool bstat = false;
+    RWCString gname((char*)vptrGname);
+    RWCString mgname = otherdevice->getBillingGroupName();
     mgname.toLower();
 
     if( !mgname.isNull() && !gname.compareTo(mgname, RWCString::ignoreCase) )
