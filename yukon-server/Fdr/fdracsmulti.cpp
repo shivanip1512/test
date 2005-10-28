@@ -23,6 +23,9 @@
  *    ---------------------------------------------------
  *    History: 
  *      $Log$
+ *      Revision 1.5  2005/10/28 19:27:01  tmack
+ *      Added a configuration parameter to set the link timeout value.
+ *
  *      Revision 1.4  2005/10/05 19:10:37  tmack
  *      Fixed bug with handleStatusUpdate.
  *      Fixed small bug with time sync variation when the set time was less than the allowed minimum.
@@ -94,6 +97,7 @@ const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_VARIATION = "FDR_ACSMULTI_MAXIMUM_TIME
 const CHAR * CtiFDRAcsMulti::KEY_TIMESYNC_UPDATE = "FDR_ACSMULTI_RESET_PC_TIME_ON_TIMESYNC";
 const CHAR * CtiFDRAcsMulti::KEY_POINT_TIME_VARIATION = "FDR_ACSMULTI_POINT_TIME_VARIATION";
 const CHAR * CtiFDRAcsMulti::KEY_FDR_ACS_SERVER_NAMES = "FDR_ACSMULTI_SERVER_NAMES";
+const CHAR * CtiFDRAcsMulti::KEY_LINK_TIMEOUT = "FDR_ACSMULTI_LINK_TIMEOUT_SECONDS";
                                     
 // Constructors, Destructor, and Operators
 CtiFDRAcsMulti::CtiFDRAcsMulti()
@@ -124,13 +128,15 @@ int CtiFDRAcsMulti::readConfig()
 
     setTimestampReasonabilityWindow(iConfigParameters.getValueAsInt(KEY_TIMESTAMP_WINDOW, 120));
 
-    setReloadRate (iConfigParameters.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
+    setReloadRate(iConfigParameters.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
 
-    setQueueFlushRate (iConfigParameters.getValueAsInt(KEY_QUEUE_FLUSH_RATE, 1));
+    setQueueFlushRate(iConfigParameters.getValueAsInt(KEY_QUEUE_FLUSH_RATE, 1));
 
-    setOutboundSendRate (iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1));
+    setOutboundSendRate(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_RATE, 1));
 
-    setOutboundSendInterval (iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0));
+    setOutboundSendInterval(iConfigParameters.getValueAsInt(KEY_OUTBOUND_SEND_INTERVAL, 0));
+    
+    setLinkTimeout(iConfigParameters.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
     setTimeSyncVariation(iConfigParameters.getValueAsInt(KEY_TIMESYNC_VARIATION, 30));
     if (getTimeSyncVariation() < 5)
@@ -213,19 +219,22 @@ int CtiFDRAcsMulti::readConfig()
             << getReloadRate() << endl;
         
         dout << "  " << KEY_QUEUE_FLUSH_RATE << ": "
-            << getQueueFlushRate() << "       second(s) " << endl;
+            << getQueueFlushRate() << "       second(s)" << endl;
             
         dout << "  " << KEY_OUTBOUND_SEND_RATE << ": "
             << getOutboundSendRate() << endl;
         
         dout << "  " << KEY_OUTBOUND_SEND_INTERVAL << ": "
-            << getOutboundSendInterval() << "       second(s) " << endl;
+            << getOutboundSendInterval() << "       second(s)" << endl;
             
         dout << "  " << KEY_TIMESYNC_VARIATION << ": "
-            << getTimeSyncVariation() << "       second(s) " << endl;
+            << getTimeSyncVariation() << "       second(s)" << endl;
             
         dout << "  " << KEY_POINT_TIME_VARIATION << ": "
-            << getPointTimeVariation() << "       second(s) " << endl;
+            << getPointTimeVariation() << "       second(s)" << endl;
+
+        dout << "  " << KEY_LINK_TIMEOUT << ": "
+            << getLinkTimeout() << "       second(s)" << endl;
 
         dout << "  " << KEY_TIMESYNC_UPDATE << ": "
             << (shouldUpdatePCTime() ? "TRUE" : "FALSE") << endl;

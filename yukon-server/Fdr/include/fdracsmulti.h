@@ -14,6 +14,9 @@
  *                 design document for more information
  *    History: 
  *      $Log$
+ *      Revision 1.2  2005/10/28 19:27:01  tmack
+ *      Added a configuration parameter to set the link timeout value.
+ *
  *      Revision 1.1  2005/09/13 20:37:27  tmack
  *      New file for the ACS(MULTI) implementation.
  *
@@ -252,6 +255,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         static const CHAR * KEY_TIMESYNC_VARIATION;
         static const CHAR * KEY_POINT_TIME_VARIATION;
         static const CHAR * KEY_FDR_ACS_SERVER_NAMES;
+        static const CHAR * KEY_LINK_TIMEOUT;
 
     public:
 
