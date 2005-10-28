@@ -298,7 +298,8 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 
         for ( ; ; )
         {
-            DWORD waitResult = WaitForSingleObject(_shutdownEvent, 10000);
+            int heartBeatPeriodMSecs = 10000;
+            DWORD waitResult = WaitForSingleObject(_shutdownEvent, heartBeatPeriodMSecs);
             if (waitResult == WAIT_OBJECT_0)
             {
                 // shutdown event
@@ -480,7 +481,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
     }
     
     BOOL ka = TRUE;
-//    //TODO Why oh why??? This seams like a really bad idea!!!
+//    //This seams like a really bad idea!!!
 //    int sockoptresult = setsockopt(listener, 
 //                                   SOL_SOCKET, SO_REUSEADDR, 
 //                                   (char*)&ka, sizeof(BOOL));
@@ -613,7 +614,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     // if this is a response to a registration, do nothing
     if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
     {
-        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Point registration response tag set, point " 
@@ -728,9 +729,14 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
 CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(
   const CtiFDRClientServerConnection::Destination& destination) const
 {
-    ConnectionList::const_iterator myIter;
-    for (myIter = _connectionList.begin();
-         myIter != _connectionList.end();
+    // Because new connections are put on the end of the list,
+    // we want to search the list backwards so that we find 
+    // the newest connection that matches the destination
+    // (eventually the older connections will timeout, but
+    // that could take a while).
+    ConnectionList::const_reverse_iterator myIter;
+    for (myIter = _connectionList.rbegin();
+         myIter != _connectionList.rend();
          ++myIter) {
         if ((*myIter)->getName() == destination) {
             return (*myIter);
@@ -768,4 +774,14 @@ void CtiFDRSocketServer::setTimestampReasonabilityWindow(const int window)
 {
     _timestampReasonabilityWindow= window;
 }
+
+int  CtiFDRSocketServer::getLinkTimeout() const
+{
+    return _linkTimeout;
+}
+void CtiFDRSocketServer::setLinkTimeout(const int linkTimeout)
+{
+    _linkTimeout = linkTimeout;
+}
+
 

@@ -49,6 +49,9 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         void setPointTimeVariation(const int time);
         int  getTimestampReasonabilityWindow() const;
         void setTimestampReasonabilityWindow(const int window);
+        int  getLinkTimeout() const;
+        void setLinkTimeout(const int linkTimeout);
+        
         
         typedef std::list<CtiFDRClientServerConnection*> ConnectionList;
         
@@ -87,6 +90,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         unsigned short _portNumber;
         int _pointTimeVariation;
         int _timestampReasonabilityWindow;
+        int _linkTimeout;
         
         HANDLE _shutdownEvent;
 };
