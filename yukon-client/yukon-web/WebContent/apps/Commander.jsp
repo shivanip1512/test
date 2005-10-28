@@ -91,7 +91,7 @@ else
               <tr> 
                 <td width="30%" class="SubtitleHeader" height="2" align="right">Route:</td>
                 <td width="70%" height="2"> 
-                  <select id="routeID" name="routeID" onchange='document.commandForm.routeID.value = document.commandForm.routeID.options[document.commandForm.routeID.selectedIndex].value'>
+                  <select id="routeID" name="routeID">
 				    <OPTION VALUE="-1">Select a Route
                     <%
 				  LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
