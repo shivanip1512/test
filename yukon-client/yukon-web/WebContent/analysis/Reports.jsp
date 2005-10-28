@@ -9,6 +9,8 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
+<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+
 
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
@@ -127,11 +129,15 @@ function enableDates(value)
                             <td width="49%"> 
                               <div align="right"><span class="menu">Module:</span> 
                                 <select name="select" onChange="javascript:window.location=(this[this.selectedIndex].value);">
-                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+
+								  <cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ACCESS %>">
+									<option value="<%=request.getContextPath()%>/capcontrol/subareas.jsp">Cap Control</option>
+								  </cti:isPropertyTrue>
                                   <cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
-                                  <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
-                                  </cti:checkRole>
+                                    <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
+                                  </cti:checkRole>                                
                                   <option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
+                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
                                 </select>
                                 &nbsp;&nbsp;&nbsp; <a href="#" class="menuLink">Help</a> 
                                 &nbsp;&nbsp; <a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log 
