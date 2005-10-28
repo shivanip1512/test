@@ -137,7 +137,7 @@ function enableDates(value)
                                     <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
                                   </cti:checkRole>                                
                                   <option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
-                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" selected="selected">Reporting</option>
                                 </select>
                                 &nbsp;&nbsp;&nbsp; <a href="#" class="menuLink">Help</a> 
                                 &nbsp;&nbsp; <a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log 
