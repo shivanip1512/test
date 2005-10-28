@@ -4,6 +4,13 @@
  *
  *    History: 
  *     $Log$
+ *     Revision 1.2  2005/10/28 19:30:55  tmack
+ *     Added a health thread to ensure that something is received from the remote system at least once every [link timeout] seconds.
+ *
+ *     Added a connection number to make it easy to differentiate separate connections from the same remote.
+ *
+ *     Changed formatting of some debug messages.
+ *
  *     Revision 1.1  2005/09/13 20:37:27  tmack
  *     New file for the ACS(MULTI) implementation.
  *
@@ -42,8 +49,9 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
     
         typedef RWCString Destination;
         
-        Destination getName(void) const;
+        Destination getName() const;
         void setName(Destination serverName);
+        int getConnectionNumber() const;
         bool isRegistered ();
         void setRegistered(bool registered);
         bool isFailed() const;
@@ -69,6 +77,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         //      the Template Method pattern or something.
         void threadFunctionSendDataTo( void );
         void threadFunctionGetDataFrom( void );
+        void threadFunctionHealth( void );
     
         
         //NOTE: Don't you dare make any of these public/protected!
@@ -83,6 +92,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         // variables
         RWThreadFunction _sendThread;
         RWThreadFunction _receiveThread;
+        RWThreadFunction _healthThread;
         
         SOCKET _socket;
         HCTIQUEUE _outboundQueue;
@@ -92,8 +102,11 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         bool _connectionFailed;
         bool _isRegistered;
         RWCString _connectionName;
+        int _connectionNumber;
+        static int _nextConnectionNumber;
         
         HANDLE _shutdownEvent;
+        HANDLE _stillAliveEvent;
         
         long _linkId;
         RWCString _linkName;
@@ -109,7 +122,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
 
 inline std::ostream& operator<< (std::ostream& os, const CtiFDRClientServerConnection& conn)
 {
-    return os << "[connection " << conn.getName() << "]";
+    return os << "[connection " << conn.getName() << "#" << conn.getConnectionNumber() << "]";
 }
 
 

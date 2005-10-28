@@ -8,6 +8,7 @@
 #include "fdrinterface.h"
 #include "fdrscadaserver.h"
 
+int CtiFDRClientServerConnection::_nextConnectionNumber = 1;
 
 
 /** Cti FDR Client Server Connection constructor
@@ -19,6 +20,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString& conn
                                      CtiFDRScadaServer *aParent)
 {
     _connectionName = connectionName;
+    _connectionNumber = _nextConnectionNumber++;
     _parentInterface = aParent;
     _socket = theSocket;
     _isRegistered = false;
@@ -28,8 +30,11 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString& conn
                                        &CtiFDRClientServerConnection::threadFunctionSendDataTo);
     _receiveThread = rwMakeThreadFunction(*this, 
                                           &CtiFDRClientServerConnection::threadFunctionGetDataFrom);
+    _healthThread = rwMakeThreadFunction(*this, 
+                                          &CtiFDRClientServerConnection::threadFunctionHealth);
                                           
     _shutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    _stillAliveEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
                                           
     if (CreateQueue(&_outboundQueue, QUE_PRIORITY, _shutdownEvent))
     {
@@ -44,7 +49,6 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const RWCString& conn
     }
     _parentInterface->logEvent(_linkName + ": connection created", "", true);
 }
-
 
 CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
 {   
@@ -75,7 +79,7 @@ void CtiFDRClientServerConnection::setRegistered (bool registered)
     _isRegistered = registered;
 }
 
-RWCString  CtiFDRClientServerConnection::getName(void) const
+RWCString  CtiFDRClientServerConnection::getName() const
 {
     return _connectionName;
 }
@@ -85,11 +89,17 @@ void CtiFDRClientServerConnection::setName(RWCString aName)
   _connectionName = aName;
 }
 
+int CtiFDRClientServerConnection::getConnectionNumber() const
+{
+    return _connectionNumber;
+}
+
 void CtiFDRClientServerConnection::run () 
 {
 
     _sendThread.start();
     _receiveThread.start();
+    _healthThread.start();
     sendLinkState(true);
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -104,6 +114,9 @@ void CtiFDRClientServerConnection::stop ()
     sendLinkState(false);
     failConnection();
     
+    // this will cause the health thread to unblock
+    SetEvent(_stillAliveEvent);
+    
     // this will cause the reader thread to unblock
     shutdown(_socket, SD_BOTH);
     closesocket(_socket);
@@ -111,6 +124,17 @@ void CtiFDRClientServerConnection::stop ()
     // this will cause the writer thread to unblock
     SetEvent(_shutdownEvent);
     //CloseQueue(_outboundQueue);
+    
+    try 
+    {
+        _healthThread.requestCancellation();
+        _healthThread.join();
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "exception while shutting down health thread" << endl;
+    }
     
     try 
     {
@@ -186,7 +210,7 @@ ULONG CtiFDRClientServerConnection::getDebugLevel()
 
 ostream CtiFDRClientServerConnection::logNow() 
 {
-    return _parentInterface->logNow() << "[" << getName() << "] ";
+    return _parentInterface->logNow() << "" << getName() << "#" << getConnectionNumber() << ": ";
 }
 
 
@@ -305,7 +329,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << " Fatal Error: threadFunctionSendDataTo is dead! " << endl;
+        logNow() << " Fatal Error: threadFunctionSendDataTo is dead!" << endl;
     }
 
     failConnection();
@@ -313,6 +337,72 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "threadFunctionSendDataTo shutdown" << endl;
+    }
+}
+
+void CtiFDRClientServerConnection::threadFunctionHealth( void )
+{
+    RWRunnableSelf  pSelf = rwRunnable( );
+    int retVal = NORMAL;
+
+    try
+    {
+        int linkTimeoutSecs = _parentInterface->getLinkTimeout();
+        if (linkTimeoutSecs < 1)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "No health checks will be performed on this connection" << endl;
+            return;
+        }
+        
+        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() <<"threadFunctionHealth initializing" << endl;
+        }
+        
+        int linkTimeoutMSecs = linkTimeoutSecs * 1000;
+        for ( ; ; )
+        {
+            DWORD waitResult = WaitForSingleObject(_stillAliveEvent, linkTimeoutMSecs);
+            pSelf.serviceCancellation();
+            if (waitResult == WAIT_OBJECT_0)
+            {
+                if (isFailed())
+                {
+                    // we're probably being asked to shutdown
+                    break;
+                }
+                // otherwise, we've received a message of some type, start loop over
+                continue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                logNow() << "No data received for " << _parentInterface->getLinkTimeout()
+                    << " seconds, failing connection" << endl;
+                break;
+            }
+        }
+        
+    }
+    catch ( RWCancellation &cancellationMsg )
+    {
+        // just let it fall through
+    }
+
+    // try and catch the thread death
+    catch ( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << " Fatal Error: threadFunctionHealth is dead!" << endl;
+    }
+
+    failConnection();
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "threadFunctionHealth shutdown" << endl;
     }
 }
 
@@ -383,7 +473,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
             memset (&data, '\0', maxBufferSize);
             // attempt to find out what type of message we're dealing with
             retVal = readSocket((CHAR*)&data, magicInitialMessageSize, bytesRead);
-            pSelf.serviceCancellation( );
+            pSelf.serviceCancellation();
 
             // this where we re-initialize if needed
             if (retVal == SOCKET_ERROR)
@@ -391,6 +481,10 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                 // most likely our shutdown event, but it could be a real error
                 break;
             }
+
+            // restart connection timeout
+            SetEvent(_stillAliveEvent);
+
             // figure out how many more bytes we now need
             unsigned long headerBytes = 
                 _parentInterface->getHeaderBytes(data, magicInitialMessageSize);
