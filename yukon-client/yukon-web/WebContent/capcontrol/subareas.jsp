@@ -12,25 +12,6 @@ contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
 <script type="text/javascript">
-<!--
-	// -------------------------------------------
-	// Page scoped javascript variables
-	// -------------------------------------------
-	var intSubID = -1;
-	
-	function toggleImg( imgID ) {	
-		var imgElem = document.getElementById(imgID);
-
-		if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
-			imgElem.src='images/nav-plus.gif';
-			return false;
-		}
-		else {
-			imgElem.src = 'images/nav-minus.gif';
-			return true;
-		}
-	}	
-//-->
 </script>
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">

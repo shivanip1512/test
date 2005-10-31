@@ -149,6 +149,33 @@ function menuDisappear(e, divid)
 	return false;
 }
 
+
+
+
+
+/*
+var myGoogleTxt2 =
+  '<div align="center">'
+ +'<form name="f" method="GET" autocomplete="off" target="_blank" '
+ +'action="http://www.google.com/custom">'
+ +'<input type="hidden" name="hl" value="en">'
+ +'<input type="hidden" name="ie" value='+(OLns4?'"ISO-8859-1"':'"UTF-8"')+'>'
+ +'<input type="hidden" name="oe" value='+(OLns4?'"ISO-8859-1"':'"UTF-8"')+'>'
+ +'<input type=hidden name=domains value="www.macridesweb.com">'
+ +'<input type=hidden name=cof value="S:http://www.macridesweb.com;GL:1;AH:center;T:black;'
+ +'BGC:#ddeeff;LC:#ee0000;ALC:maroon;VLC:maroon;AWFID:0574228e2618b5a9;">'
+ +'<input type=radio name=sitesearch value="www.macridesweb.com" checked> www.macridesweb.com '
+ +'&nbsp;&nbsp;&nbsp;<input type=radio name=sitesearch value=""> WWW<br><br>'
+ +'<input type="text" name="q" id="qInput" size="55" maxLength="255" '
+ +'onmouseover="return overlib2(\'Submit for &lt;b&gt;results in another window&lt;/b&gt;.\', '
+ +'FGCOLOR,\'#bbddff\',REF,\'qInput\',REFC,\'LL\',REFP,\'UL\',REFX,0,REFY,3,VAUTO,'
+ +'TIMEOUT,5000);"  onmouseout="nd2();">'
+ +'&nbsp;&nbsp;<input type="submit" name=sa id="saInput" value="Go" '
+ +'onmouseover="return overlib2(\'Submit for &lt;b&gt;results in another window&lt;/b&gt;.\', '
+ +'FGCOLOR,\'#bbddff\',REF,\'saInput\',REFC,\'LR\',REFP,\'UR\',REFX,0,REFY,3,VAUTO,'
+ +'TIMEOUT,5000);" onmouseout="nd2();"><br>'+(OLie4&&!OLopr?'':'<br>')+'<\/form><\/div>';
+*/
+
 // -------------------------------------------
 //shows a given DIV tag on a page
 // -------------------------------------------
@@ -415,7 +442,6 @@ function statusMsg(elem, msgStr)
 	{
 		nd();
 	};	
-
 	overlib( msgStr, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
@@ -556,3 +582,32 @@ function getValidChecks( elems, validElems )
 	}
 
 }
+
+// -------------------------------------------
+//Creates an IFrame to be used primarily for
+// popups
+// -------------------------------------------
+function createIFrame(src, width, height, name, frameborder) {
+
+	return '<iframe src="'+src+'" width="'+width+'" height="'+height+'"'
+		+ (name!=null?' name="'+name+'" id="'+name+'"':'')
+		+ (frameborder!=null?' frameborder="'+frameborder+'"':'')
+		+ ' scrolling="auto" marginwidth="1" marginheight="1" >'
+		+ '<div>[iframe not supported]</div></iframe>';
+}
+
+// -------------------------------------------
+//Toggles the img from an expanded state to a collapsed state
+// -------------------------------------------
+function toggleImg( imgID ) {	
+	var imgElem = document.getElementById(imgID);
+
+	if( imgElem.src.indexOf('images/nav-minus.gif') > 0 ) {
+		imgElem.src='images/nav-plus.gif';
+		return false;
+	}
+	else {
+		imgElem.src = 'images/nav-minus.gif';
+		return true;
+	}
+}	

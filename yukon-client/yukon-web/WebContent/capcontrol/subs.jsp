@@ -18,16 +18,10 @@ language="java"
 contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
-<SCRIPT type="text/javascript">
-// -------------------------------------------
-// Page scoped javascript variables
-// -------------------------------------------
-var intSubID = -1;
-</SCRIPT>
+
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<META id="GENERATOR" content="IBM WebSphere Studio">
 <TITLE>Substations</TITLE>
 </HEAD>
 
@@ -107,8 +101,12 @@ for( int i = 0; i < areaSubs.length; i++ )
 				<td>
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
-						onmouseover="intSubID=<%=subBus.getCcId()%>;menuAppear(event, 'subPopupMenu')"
-						onmouseout="menuDisappear(event, 'subPopupMenu')">
+				    onmouseover="overlib(
+						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 130, 'if1', 0),
+						STICKY, WIDTH,135, HEIGHT,130,
+						MOUSEOFF, FULLHTML);"
+				    onmouseout="nd();">
+
 			<% } else { %>
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
 			<% } %>
@@ -158,67 +156,6 @@ for( int i = 0; i < areaSubs.length; i++ )
   </table>
 
 </body>
-
-<!-------------- Form for submitting substation commands ---------------->
-<form id="frmSubCmd" action="/servlet/CBCServlet" method="post">
-<input type="hidden" name="redirectURL" value="<%=request.getRequestURL()%>">
-<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_SUB%>">
-<input type="hidden" name="paoID">
-<input type="hidden" name="cmdID">
-
-<div id="subPopupMenu" class = "popupMenu"> 
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr> 
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">SubBus Control</td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
-        <table id="subTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.CONFIRM_CLOSE%>)">Confirm Sub</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.ENABLE_SUBBUS%>)">Enable Sub</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>)">Disable Sub</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>)">Reset Op Counts</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.WAIVE_SUB%>)">Waive Sub</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', intSubID, 'cmdID', <%=CBCCommand.UNWAIVE_SUB%>)">Unwaive Sub</a>
-		  </td></tr>
-        </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
-</div>
-</form>
 
 <%@include file="cbc_footer.jspf"%>
 

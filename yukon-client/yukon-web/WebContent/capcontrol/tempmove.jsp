@@ -77,13 +77,17 @@ for( int i = 0; i < allSubs.length; i++ )
 {
 	SubBus subBus = allSubs[i];	
 	Feeder[] feeders = capControlCache.getFeedersBySub(subBus.getCcId());
+
+	if( feeders.length <= 0 ) continue;
 	
 	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
 %>
 
 			<tr class="<%=css%>">
 				<td>
-				<input type="checkbox" id="chkBxSub" onclick="showRowElems('subId<%=i%>', this);"/>
+				<input type="image" id="chkBxSub<%=i%>"
+					src="images/nav-plus.gif"
+					onclick="showRowElems( 'subId<%=i%>', toggleImg('chkBxSub<%=i%>') ); return false;"/>
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</td>
 				<td></td>
