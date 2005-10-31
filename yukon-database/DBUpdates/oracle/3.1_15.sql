@@ -2,6 +2,8 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+drop table TouRateOffset;
+drop table TOUDeviceMapping;
 
 
 

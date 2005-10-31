@@ -2,7 +2,10 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-
+drop table TouRateOffset;
+go
+drop table TOUDeviceMapping;
+go
 
 
 
