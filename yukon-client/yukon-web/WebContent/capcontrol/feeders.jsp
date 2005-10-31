@@ -21,29 +21,6 @@ language="java"
 contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
-<SCRIPT type="text/javascript">
-<!--
-// -------------------------------------------
-// Page scoped javascript variables
-// -------------------------------------------
-var intFeederID = -1;
-var intCapBankID = -1;
-var imgToggle = false;
-
-
-function toggleImg( imgID )
-{
-	var imgElem = document.getElementById(imgID);
-	if( imgToggle )
-		imgElem.src='images/arrowright.gif';
-	else
-		imgElem.src='images/arrowdown.gif';
-
-	imgToggle = !imgToggle;
-}
-
-//-->
-</SCRIPT>
 
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet"
@@ -188,7 +165,13 @@ for( int i = 0; i < feeders.length; i++ )
 
 					<td>
 <% if( hasControl ) { %>
-	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" href="javascript:void(0);" onmouseover="intFeederID=<%=feeder.getCcId()%>;menuAppear(event, 'fdrPopupMenu')" onmouseout="menuDisappear(event, 'fdrPopupMenu')">
+	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
+		href="javascript:void(0);"
+	    onmouseover="overlib(
+			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 80, 'if1', 0),
+			STICKY, WIDTH,135, HEIGHT,80,
+			MOUSEOFF, FULLHTML);"
+	    onmouseout="nd();">		
 <% } else { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>">
 <% } %>
@@ -252,8 +235,13 @@ for( int i = 0; i < feeders.length; i++ )
 				<form id="capBankForm" action="feeders.jsp" method="post">
 				<tr class="columnheader lAlign">
 					<td><input type="checkbox" name="chkAllBanksBx"
-						onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)</td>
-					<td>State</td>
+						onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)
+						<img class="rAlign popupImg" src="images\question.gif"
+			      			onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
+					</td>
+					<td>State <img class="rAlign popupImg" src="images\question.gif"
+				      		onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
+					</td>
 					<td>Bank Address</td>
 					<td>Date/Time</td>
 					<td>Bank Size</td>
@@ -269,7 +257,13 @@ for( int i = 0; i < capBanks.length; i++ )
 				<tr class="<%=css%>">
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
-						<a href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankFldPopupMenu')" onmouseout="menuDisappear(event, 'bankFldPopupMenu')">
+						<a href="javascript:void(0);"
+						    onmouseover="overlib(
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 135, 120, 'if1', 0),
+								STICKY, WIDTH,135, HEIGHT,120,
+								MOUSEOFF, FULLHTML);"
+						    onmouseout="nd();">
+							
 							<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN) %>
 						</a>
 					<% } else { %>
@@ -281,7 +275,13 @@ for( int i = 0; i < capBanks.length; i++ )
 
 					<td>
 					<% if( hasControl ) { %>
-						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" onmouseover="intCapBankID=<%=capBank.getCcId()%>;menuAppear(event, 'bankSysPopupMenu')" onmouseout="menuDisappear(event, 'bankSysPopupMenu')">
+						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);"
+						    onmouseover="overlib(
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 160, 200, 'if1', 0),
+								STICKY, WIDTH,160, HEIGHT,200,
+								MOUSEOFF, FULLHTML);"
+						    onmouseout="nd();">
+							
 					<% } else { %>
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);">
 					<% } %>
@@ -297,12 +297,17 @@ for( int i = 0; i < capBanks.length; i++ )
 					
 					<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
 					
-					<% if( capBank.isBankMoved() ) {%>
-					<td class="warning" onmouseover="statusMsg(this, 'This bank has been temporarily moved from it\'s original feeder');" >
-					<% } else { %>
 					<td>
-					<% } %>
-					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
+
+		          	<a href="#"
+		          		<% if( capBank.isBankMoved() ) {%>
+		          			class="warning" onmouseover="statusMsg(this, 'This bank has been temporarily moved from it\'s original feeder');"
+		          		<% } else { %>
+							onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
+		          			onclick="showPopUp('tempmove.jsp?bankid='+<%=capBank.getCcId()%>);"
+		          		<% } %>
+						><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%>
+					</a>					
 					</td>
 
 					<td><a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
