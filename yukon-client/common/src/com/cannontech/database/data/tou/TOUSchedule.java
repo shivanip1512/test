@@ -70,13 +70,15 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
+	java.util.Vector vectorIDs = TOUDayMapping.getAllDayIDList(getTOUSchedule().getScheduleID(), getDbConnection());
 	TOUDayMapping.deleteAMapping(getTOUSchedule().getScheduleID(), getDbConnection());
 
-	for (int i = 0; i < getTOUDayMappingVector().size(); i++)
+	for (int i = 0; i < vectorIDs.size(); i++)
 	{
 		TOUDay newDayDawning = new TOUDay();
-		newDayDawning.setDayID(((TOUDayMapping) getTOUDayMappingVector().elementAt(i)).getDayID());
-				
+		newDayDawning.setDayID((Integer)vectorIDs.elementAt(i));
+		newDayDawning.setDbConnection(this.getDbConnection());
+		newDayDawning.delete();		
 	}
 
 	getTOUSchedule().delete();	
