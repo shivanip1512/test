@@ -237,7 +237,20 @@ public static boolean checkForStarsActivity()
 	{
 		e.printStackTrace();
 	}
-	
+	finally
+	{
+		try
+		{
+			if( preparedStatement != null ) preparedStatement.close();				
+			if( conn != null ) conn.close();
+		}
+		catch( java.sql.SQLException e )
+		{
+			e.printStackTrace();
+		}
+	}
+
 	return hasNonDefaultEC;
+
 }
 }
