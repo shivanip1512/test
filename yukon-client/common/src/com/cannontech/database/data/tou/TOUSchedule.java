@@ -72,6 +72,13 @@ public void delete() throws java.sql.SQLException
 {
 	TOUDayMapping.deleteAMapping(getTOUSchedule().getScheduleID(), getDbConnection());
 
+	for (int i = 0; i < getTOUDayMappingVector().size(); i++)
+	{
+		TOUDay newDayDawning = new TOUDay();
+		newDayDawning.setDayID(((TOUDayMapping) getTOUDayMappingVector().elementAt(i)).getDayID());
+				
+	}
+
 	getTOUSchedule().delete();	
 }
 /**
