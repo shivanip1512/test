@@ -419,7 +419,7 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">County:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_COUNTY_LABEL %>" defaultvalue="County"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>" onchange="setContentChanged(true)">
@@ -427,7 +427,7 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">State:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_STATE_LABEL %>" defaultvalue="State"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SState" maxlength="2" size="14" value="<%= account.getStreetAddress().getState() %>" onchange="setContentChanged(true)">
@@ -435,7 +435,7 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">Zip:</div>
+                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>" defaultvalue="Zip"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SZip" maxlength="12" size="14" value="<%= account.getStreetAddress().getZip() %>" onchange="setContentChanged(true)">
@@ -494,7 +494,7 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">State:</div>
+                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_STATE_LABEL %>" defaultvalue="State"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="BState" maxlength="2" size="14" value="<%= account.getBillingAddress().getState() %>" onchange="setContentChanged(true)">
@@ -502,7 +502,7 @@ function confirmCancel() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell" height="2"> 
-                          <div align="right">Zip:</div>
+                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>" defaultvalue="Zip"/>:</div>
                         </td>
                         <td width="210" height="2"> 
                           <input type="text" name="BZip" maxlength="12" size="14" value="<%= account.getBillingAddress().getZip() %>" onchange="setContentChanged(true)">

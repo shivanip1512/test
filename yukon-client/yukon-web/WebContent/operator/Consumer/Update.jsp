@@ -349,7 +349,7 @@ function init() {
 					  
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">State:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_STATE_LABEL %>" defaultvalue="State"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SState" maxlength="2" size="14" value="<%= propAddr.getState() %>" onchange="setContentChanged(true)">
@@ -357,7 +357,7 @@ function init() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">Zip:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>" defaultvalue="Zip"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SZip" maxlength="12" size="14" value="<%= propAddr.getZip() %>" onchange="setContentChanged(true)">
@@ -373,7 +373,7 @@ function init() {
                       </tr>
 					  <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">County:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_COUNTY_LABEL %>" defaultvalue="County"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCounty" maxlength="30" size="24" value="<%= propAddr.getCounty() %>" onchange="setContentChanged(true)">
@@ -426,7 +426,7 @@ function init() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">State:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_STATE_LABEL %>" defaultvalue="State"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="BState" maxlength="2" size="14" value="<%= billAddr.getState() %>" onchange="setContentChanged(true)">
@@ -434,7 +434,7 @@ function init() {
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right">Zip:</div>
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>" defaultvalue="Zip"/>:</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="BZip" maxlength="12" size="14" value="<%= billAddr.getZip() %>" onchange="setContentChanged(true)">

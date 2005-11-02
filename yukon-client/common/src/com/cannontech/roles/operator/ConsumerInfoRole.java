@@ -87,5 +87,7 @@ public interface ConsumerInfoRole {
 	public static final int WEB_SUB_HEADING_SWITCHES = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 87;
 	public static final int WEB_SUB_HEADING_THERMOSTATS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 88;
 	public static final int WEB_SUB_HEADING_METERS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 89;
-	
+	public static final int ADDRESS_STATE_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 90;
+	public static final int ADDRESS_COUNTY_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 91;
+	public static final int ADDRESS_POSTALCODE_LABEL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 92;
 }
