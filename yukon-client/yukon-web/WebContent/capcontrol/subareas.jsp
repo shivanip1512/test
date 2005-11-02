@@ -43,7 +43,7 @@ pageEncoding="ISO-8859-1"
           <td valign="top">
 			<div class="rAlign">
 				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
+					<p class="main">Find: <input type="text" name="<=%CBCSessionInfo.STR_LAST_SEARCH%>">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
 			</div>

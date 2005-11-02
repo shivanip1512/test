@@ -543,12 +543,12 @@ public class CapControlForm extends DBEditorForm
 		unassignedFeeders = null;
 		unusedCCPAOs = null;
 
-
 		kwkvarPaos = null;
 		kwkvarPoints = null;
 		editingController = false;
 
-		super.resetForm();
+
+		initItem();
 	}
 
 	/**

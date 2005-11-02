@@ -49,7 +49,7 @@ pageEncoding="ISO-8859-1"
           <td valign="top">
 			<div class="rAlign">
 				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
+					<p class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
 			</div>
@@ -102,8 +102,8 @@ for( int i = 0; i < areaSubs.length; i++ )
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
 				    onmouseover="overlib(
-						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 130, 'if1', 0),
-						STICKY, WIDTH,135, HEIGHT,130,
+						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
+						STICKY, WIDTH,135, HEIGHT,90,
 						MOUSEOFF, FULLHTML);"
 				    onmouseout="nd();">
 

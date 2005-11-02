@@ -7,31 +7,36 @@
 	scope="application"></jsp:useBean>
 
 <%
-	String type = ParamUtil.getString(request, "type", "");
-	String srchCriteria = ParamUtil.getString(request, "searchCriteria", "");
+	//String type = ParamUtil.getString(request, "type", "");
+	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
+	if( srchCriteria == null )
+		srchCriteria = cbcSession.getLastSearchCriteria();
+
+	String label = srchCriteria;
+
 	LiteWrapper[] items = new LiteWrapper[0];
 	String chkBoxName = "cti_chkbxSubs";
 
-	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(type) )
+	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) )
 	{
 		items = capControlCache.getOrphanedFeeders();
-		srchCriteria = "Orphaned Feeders";
+		label = "Orphaned Feeders";
 		chkBoxName = "cti_chkbxFdrs";
 	}
-	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(type) )
+	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) )
 	{
 		items = capControlCache.getOrphanedCapBanks();
-		srchCriteria = "Orphaned CapBanks";
+		label = "Orphaned CapBanks";
 		chkBoxName = "cti_chkbxBanks";
 	}
-	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(type) )
+	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) )
 	{
 		items = capControlCache.getOrphanedCBCs();
-		srchCriteria = "Orphaned CBCs";
+		label = "Orphaned CBCs";
 		chkBoxName = "cti_chkbxBanks";
 	}
 	else
-	{	
+	{		
 		LiteBaseResults lbr = new LiteBaseResults();
 		lbr.searchLiteObjects( srchCriteria );
 		items = lbr.getFoundItems();
@@ -76,7 +81,7 @@ pageEncoding="ISO-8859-1"
           <td valign="top">
 			<div class="rAlign">
 				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
+					<p class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
 			</div>
@@ -88,7 +93,7 @@ pageEncoding="ISO-8859-1"
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr> 
           <td class="cellImgFill"><img src="images\Header_left.gif" class="cellImgFill"></td>
-          <td class="trimBGColor cellImgShort">Search Resuls For: '<%=srchCriteria%>'   (<%=items.length%> found)</td>
+          <td class="trimBGColor cellImgShort">Search Resuls For: '<%=label%>'   (<%=items.length%> found)</td>
           <td class="cellImgFill"><img src="images\Header_right.gif" class="cellImgFill"></td>
         </tr>
         <tr>

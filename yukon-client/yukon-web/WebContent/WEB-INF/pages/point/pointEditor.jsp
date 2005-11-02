@@ -49,11 +49,11 @@
 
 
                 <x:panelTabbedPane id="tabPane" styleClass="tabPane">
-                    <x:panelTab id="tab1" label="General" rendered="#{capControlForm.visibleTabs['General']}">
+                    <x:panelTab id="generalTab" label="General" rendered="#{ptEditorForm.visibleTabs['General']}">
 		               	<jsp:include page="pointBaseEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tab2" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="setupTab" label="Setup" rendered="#{ptEditorForm.visibleTabs['Alarming']}">
 		                <jsp:include page="pointAlarmEditor.jsp"/>
                     </x:panelTab>
 

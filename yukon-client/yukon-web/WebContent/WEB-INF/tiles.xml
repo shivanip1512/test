@@ -40,7 +40,7 @@
 
     <definition name="ptEditor.tiles" extends=".baseLayout">
         <put name="title"  value="Point Editor" />
-		<put name="content" type="page" value="/WEB-INF/pages/point/ptEditor.jsp"/>
+		<put name="content" type="page" value="/WEB-INF/pages/point/pointEditor.jsp"/>
     </definition>
 
 

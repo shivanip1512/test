@@ -52,7 +52,7 @@ pageEncoding="ISO-8859-1"
           <td valign="top">
 			<div class="rAlign">
 				<form id="findForm" action="results.jsp" method="post">
-					<p class="main">Find: <input type="text" name="searchCriteria">
+					<p class="main">Find: <input type="text" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
 					<INPUT type="image" name="Go" src="images\GoButton.gif" alt="Find"></p>
 				</form>
 			</div>
@@ -90,10 +90,26 @@ if( subBus != null ) {
 					<td><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
 					</td>
-					<td><a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
-					<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>"> <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN) %>
-					</font></a>
+					
+					<td>
+					<% if( hasControl ) { %>
+						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
+						    onmouseover="overlib(
+								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
+								STICKY, WIDTH,135, HEIGHT,90,
+								MOUSEOFF, FULLHTML);"
+						    onmouseout="nd();">
+					<% } else { %>
+						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
+					<% } %>
+			
+					<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
+					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+					</font>
+					</a>
 					</td>
+					
+					
 					<td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></a>
 					</td>

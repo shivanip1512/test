@@ -2,6 +2,11 @@ package com.cannontech.web.util;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * @author ryan
@@ -58,5 +63,19 @@ public class JSFParamUtil
 		return null;
 	}
 
- 
+	/**
+	 * Returns the current YukonUser in the session scope
+	 */
+	public static LiteYukonUser getYukonUser()
+	{
+		FacesContext fc = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession)fc.getExternalContext().getSession(false);
+
+		if( session != null ) {
+			CTILogger.warn("The current YukonUser inside the HttpSession is NULL");
+			return null;
+		}
+		else 
+			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
+	} 
 }

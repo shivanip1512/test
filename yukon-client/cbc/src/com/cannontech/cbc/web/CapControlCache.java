@@ -219,6 +219,9 @@ public synchronized SubBus[] getSubsByArea(String area)
 	for( int i = 0; i < subIDs.size(); i++ )
 		retVal[i] = getSubBus( new Integer(subIDs.elementAt(i)) );
 
+	//before returning, sort our SubBuses based on the name
+	Arrays.sort( retVal, CBCUtils.CCNAME_COMPARATOR );
+
 	return retVal;
 }
 

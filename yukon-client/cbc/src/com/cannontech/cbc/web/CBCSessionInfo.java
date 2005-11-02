@@ -15,10 +15,12 @@ public class CBCSessionInfo
 	private String lastArea = "";
 	private int lastSubID = 0;
 	private int lastFeederID = 0;
+	private String lastSearchCriteria = "";
 
 	public static final String STR_CBC_AREA = "cbc_lastArea";
 	public static final String STR_SUBID = "cbc_lastSubID";
 	public static final String STR_FEEDERID = "cbc_lastFeederID";
+	public static final String STR_LAST_SEARCH = "cbc_lastSearch";
 
 
 	public CBCSessionInfo()
@@ -31,6 +33,7 @@ public class CBCSessionInfo
 		setLastArea( ParamUtil.getString(req, STR_CBC_AREA, getLastArea()) );
 		setLastSubID( ParamUtil.getInteger(req, STR_SUBID, getLastSubID()) );
 		setLastFeederID( ParamUtil.getInteger(req, STR_FEEDERID, getLastFeederID()) );
+		setLastSearchCriteria( ParamUtil.getString(req, STR_LAST_SEARCH, getLastSearchCriteria()) );
 	}
 
 	/**
@@ -79,6 +82,20 @@ public class CBCSessionInfo
 	public void setLastSubID(int i)
 	{
 		lastSubID = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getLastSearchCriteria() {
+		return lastSearchCriteria;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setLastSearchCriteria(String string) {
+		lastSearchCriteria = string;
 	}
 
 }

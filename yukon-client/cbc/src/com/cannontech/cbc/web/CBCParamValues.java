@@ -17,9 +17,9 @@ interface CBCParamValues
 	public static final String TYPE_VARWATTS = "VW";
 	public static final String TYPE_RECENT_CNTRLS = "RC";
 
-	public static final String TYPE_ORPH_FEEDERS = "oFeeders";
-	public static final String TYPE_ORPH_BANKS = "oBanks";
-	public static final String TYPE_ORPH_CBCS = "oCBCs";
+	public static final String TYPE_ORPH_FEEDERS = "__cti_oFeeders__";
+	public static final String TYPE_ORPH_BANKS = "__cti_oBanks__";
+	public static final String TYPE_ORPH_CBCS = "__cti_oCBCs__";
 
 
 }

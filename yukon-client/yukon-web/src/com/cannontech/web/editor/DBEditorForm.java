@@ -14,6 +14,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
@@ -39,25 +40,26 @@ public abstract class DBEditorForm
 	/**
 	 * Resets this form with the original values from the database
 	 */
-	public void resetForm() {
-		
-		initItem();
-	}
+//	public void resetForm() {		
+//		initItem();
+//	}
 
 
 	/**
 	 * Initializes the dbpersistent object from the database
 	 */
-	protected void initItem() {
-		//does something only in subclasses
-	}
+//	protected void initItem() {
+//		//does something only in subclasses
+//	}
+	
+//	abstract void initItem();
 	
 	/**
 	 * Updates the content of the current dbpersistent object into the database
 	 */
-	public void update() {
-		//does something only in subclasses
-	}
+//	public void update() {
+//		//does something only in subclasses
+//	}
 
 
 	/**
@@ -165,13 +167,12 @@ public abstract class DBEditorForm
 
 			for( int i = 0; i < dbChange.length; i++ )
 			{
-				//handle the DBChangeMsg locally
-				//LiteBase lBase =
-					DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+				//set the username for each dbchagne to be the current Yukon User logged in
+				if( JSFParamUtil.getYukonUser() != null )
+					dbChange[i].setUserName( JSFParamUtil.getYukonUser().getUsername() );
 
-				//notify any interested GUI compnents that we may need to change
-				//updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
-         
+
+				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
 				ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
 			}
 		}

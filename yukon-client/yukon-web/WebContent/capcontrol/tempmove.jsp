@@ -60,7 +60,7 @@ pageEncoding="ISO-8859-1"
       <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
       <td>
       
-      <div class="scrollSmall">
+      <div class="scrollLarge">
         <table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td>Name</td>

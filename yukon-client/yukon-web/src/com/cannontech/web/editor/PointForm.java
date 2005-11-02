@@ -1,5 +1,7 @@
 package com.cannontech.web.editor;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +10,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AlarmCatFuncs;
@@ -258,8 +262,17 @@ public class PointForm extends DBEditorForm
 	 */
 	public void initItem( int id ) {
 
-		PointBase pointDB = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
-		setDbPersistent( pointDB );
+		//PointBase pointDB = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
+		try {
+			PointBase pointDB = PointFactory.retrievePoint(
+					new Integer(PointFuncs.getLitePoint(id).getPointID()) );
+
+			setDbPersistent( pointDB );
+		}
+		catch( SQLException sql ) {
+			CTILogger.error("Unable to retrieve YukonPAObject", sql );
+		}
+
 		initItem();
 	}
 
@@ -284,7 +297,8 @@ public class PointForm extends DBEditorForm
 		isCalcRateEnabled = false;
 		alarmTableEntries = null;
 
-		super.resetForm();
+
+		initItem();
 	}
 
 	/**
