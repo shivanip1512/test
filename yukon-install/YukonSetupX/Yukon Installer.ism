@@ -452,6 +452,7 @@
 		<row><td>cparmtest.exe</td><td>Test Applications</td><td>cparmtest.exe</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cparmtest.exe</td><td>1</td><td>NewSubFolder83</td></row>
 		<row><td>cti_fdr.dll</td><td>Foreign Data Router</td><td>cti_fdr.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cti_fdr.dll</td><td>1</td><td>NewSubFolder79</td></row>
 		<row><td>ctibase.dll</td><td>Common Dlls</td><td>ctibase.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctibase.dll</td><td>1</td><td>NewSubFolder72</td></row>
+		<row><td>cticonfig.dll</td><td>Common Dlls</td><td>cticonfig.dll</td><td>0</td><td/><td/><td/><td>1</td><td>&lt;PATH_TO_SERVER_FILES&gt;\cticonfig.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>cticparms.dll</td><td>Common Dlls</td><td>cticparms.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\cticparms.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>ctidbres.dll</td><td>Common Dlls</td><td>ctidbres.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctidbres.dll</td><td>1</td><td>NewSubFolder72</td></row>
 		<row><td>ctidbsrc.dll</td><td>Common Dlls</td><td>ctidbsrc.dll</td><td>0</td><td/><td/><td/><td>1</td><td>Z:\install\lib\server\ctidbsrc.dll</td><td>1</td><td>NewSubFolder72</td></row>
