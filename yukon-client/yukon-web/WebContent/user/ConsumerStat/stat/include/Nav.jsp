@@ -43,10 +43,12 @@
             <td width="10"><%= ((String[]) links.get("General.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("General.jsp"))[1] %></td>
           </tr>
-           <tr> 
-            <td width="10"><%= ((String[]) links.get("Contacts.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Contacts.jsp"))[1] %></td>
-          </tr>
+          <cti:checkProperty propertyid="<%= ResidentialCustomerRole.CONTACTS_ACCESS %>">
+          	<tr> 
+            	<td width="10"><%= ((String[]) links.get("Contacts.jsp"))[0] %></td>
+            	<td style="padding:1"><%= ((String[]) links.get("Contacts.jsp"))[1] %></td>
+          	</tr>
+          </cti:checkProperty>
         </table>
       </div>
     </td>
