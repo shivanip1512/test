@@ -84,7 +84,7 @@ begin
 
 Dlg_Start:
 
-	removeLegacyShortcuts();
+	//removeLegacyShortcuts();
 
 Dlg_SdWelcome:
     nResult = SdWelcome("", "");
@@ -254,7 +254,7 @@ begin
     // Enable( BACKGROUND );
 
 Dlg_Start:
-    removeLegacyShortcuts();
+    //removeLegacyShortcuts();
     
     Disable(BACKBUTTON);
     nType = SdWelcomeMaint(szTitle, szMsg, REPAIR);
