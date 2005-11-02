@@ -47,6 +47,19 @@ create table SettlementConfig (
 alter table SettlementConfig
    add constraint PK_STLMTCONFIG primary key (COnfigID);
 
+insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada.');
+insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US.');
+insert into YukonRoleProperty values(-20892,-201,'Address PostalCode Label','Zip','Labelling for the address field which is usually zip code in the US or postal code in Canada.');
+insert into YukonRoleProperty values(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
+
+insert into yukongrouprole values (-697,-300,-400,-40197,'false');
+insert into yukongrouprole values (-890,-301,-201,-20890,'(none)');
+insert into yukongrouprole values (-891,-301,-201,-20891,'(none)');
+insert into yukongrouprole values (-892,-301,-201,-20892,'(none)');
+insert into yukongrouprole values (-2190,-303,-201,-20890,'(none)');
+insert into yukongrouprole values (-2191,-303,-201,-20891,'(none)');
+insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
+insert into yukongrouprole values (-2397,-304,-400,-40197,'false');
 
 
 
