@@ -130,7 +130,7 @@ public static boolean starsExists()
 {
 	//case sensitive in Oracle (very important)
 	//this is not a save check by itself anymore
-	return VersionTools.tableExists("CUSTOMERACCOUNT") && checkForStarsActivity();
+	return VersionTools.tableExists("CUSTOMERACCOUNT");
 }
 
 public static void main ( String[] args )
@@ -210,47 +210,4 @@ public synchronized final static java.lang.String getYUKON_VERSION()
 	return yukonVersion;
 }
 
-public static boolean checkForStarsActivity()
-{
-	java.sql.Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-	boolean hasNonDefaultEC = false;
-	java.sql.PreparedStatement preparedStatement = null;
-	java.sql.ResultSet rset = null;
-	
-	if( conn == null )
-		throw new IllegalArgumentException("Database connection should not be (null)");
-	
-	try
-	{
-		String statement = ("SELECT ENERGYCOMPANYID FROM ENERGYCOMPANY WHERE ENERGYCOMPANYID > -1");
-
-		preparedStatement = conn.prepareStatement( statement );
-		rset = preparedStatement.executeQuery();
-
-		if(rset != null && rset.next() )
-		{
-			hasNonDefaultEC = true;
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		e.printStackTrace();
-	}
-	finally
-	{
-		try
-		{
-			if( preparedStatement != null ) preparedStatement.close();				
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	return hasNonDefaultEC;
-
-}
 }
