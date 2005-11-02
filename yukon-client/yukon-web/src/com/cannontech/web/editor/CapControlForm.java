@@ -52,6 +52,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.*;
@@ -1378,7 +1379,6 @@ public class CapControlForm extends DBEditorForm
 
 	}
 
-
 	/**
 	 * @return
 	 */
@@ -1388,6 +1388,24 @@ public class CapControlForm extends DBEditorForm
 			wizData = new CBCWizardModel();
 
 		return wizData;
+	}
+
+
+	/**
+	 * Returns true if our current CBCStrategy is set to do some form
+	 * of Voltage control, else false is returned
+	 */
+	public boolean isVoltageControl() {
+
+		if( getCurrentStrategyID() != CtiUtilities.NONE_ZERO_ID ) {
+			CapControlStrategy strat =
+				(CapControlStrategy)getCbcStrategiesMap().get( new Integer(getCurrentStrategyID()) );
+
+			return strat != null
+				&& CalcComponentTypes.LABEL_VOLTS.equals(strat.getControlUnits());
+		}
+		else
+			return false;
 	}
 
 }
