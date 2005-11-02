@@ -72,5 +72,6 @@ public interface ResidentialCustomerRole {
 	public static final int WEB_HEADING_TRENDING = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 194;
 	public static final int WEB_HEADING_QUESTIONS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 195;
 	public static final int WEB_HEADING_ADMINISTRATION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 196;
+	public static final int CONTACTS_ACCESS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 197;
 
 }
