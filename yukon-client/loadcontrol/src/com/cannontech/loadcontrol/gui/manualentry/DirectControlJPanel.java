@@ -73,9 +73,9 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	 * ManualChangeJPanel constructor comment.
 	 */
 	public DirectControlJPanel() {
-	super();
-	initialize();
-}
+		super();
+		initialize();
+	}
 
 	/**
 	 * ManualChangeJPanel constructor comment.
@@ -1401,6 +1401,10 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
+	
+	if( _isScenario )
+		action_Scenario( null );
+
 	// user code end
 }
 
@@ -1607,6 +1611,9 @@ private void initialize() {
 		mode = newMode;
 		getJCheckBoxStartStopNow().doClick();
 		
+		getJLabelScenario().setVisible( _isScenario );
+		getJComboBoxScenario().setVisible( _isScenario );
+
 		switch( mode )
 		{
 			case MODE_MULTI_SELECT_ONLY:
