@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/11/03 23:54:40 $
 *    History: 
       $Log: prot_ansi.cpp,v $
+      Revision 1.15  2005/11/03 23:54:40  jrichter
+      fixed handling of DST changeover.
+
       Revision 1.14  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -664,6 +667,32 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                            CtiLockGuard< CtiLogger > doubt_guard( dout );
                            dout <<  "  ** DEBUG **** _lpBlockSize  " <<_lpBlockSize << endl;
                            dout <<  "  ** DEBUG **** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
+                   }
+                   //Fall Back DST adjustment
+                   if (_tableFiveTwo != NULL)
+                   {   
+
+                       if (!_tableFiveTwo->adjustTimeForDST() && 
+                          ( RWTime(_header->lastLoadProfileTime) < RWTime().endDST(RWDate(RWTime(_header->lastLoadProfileTime)).year()) && 
+                            RWTime() > RWTime().endDST(RWDate().year()) ) )
+                       {
+                           _header->lastLoadProfileTime -= 3600;
+                           {
+                                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<RWTime(_header->lastLoadProfileTime) << endl;
+                           }
+                       }
+                       //Spring Ahead DST adjustment
+                       if (_tableFiveTwo->adjustTimeForDST() && 
+                          ( RWTime(_header->lastLoadProfileTime) < RWTime().beginDST(RWDate(RWTime(_header->lastLoadProfileTime)).year()) && 
+                            RWTime() > RWTime().beginDST(RWDate().year()) ) )
+                       {
+                           _header->lastLoadProfileTime += 3600;
+                           {
+                                   CtiLockGuard< CtiLogger > doubt_guard( dout );
+                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<RWTime(_header->lastLoadProfileTime) << endl;
+                           }
+                       }
                    }
                    if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
                    {
