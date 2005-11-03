@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/11/03 17:49:17 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2005/11/03 18:04:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,9 +45,7 @@ const string CtiTableDynamicPaoInfo::_key_freeze_counter               = "freeze
 const string CtiTableDynamicPaoInfo::_key_expected_freeze              = "expected freeze";
 const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
 
-<<<<<<< tbl_dyn_paoinfo.cpp
 const string CtiTableDynamicPaoInfo::_key_mct_time_adjust_tolerance    = "mct time adjust tolerance";
-=======
 const string CtiTableDynamicPaoInfo::_key_frozen_demand_peak_timestamp = "frozen demand peak timestamp";
 const string CtiTableDynamicPaoInfo::_key_frozen_rate_a_peak_timestamp = "frozen rate a peak timestamp";
 const string CtiTableDynamicPaoInfo::_key_frozen_rate_b_peak_timestamp = "frozen rate b peak timestamp";
@@ -56,7 +54,6 @@ const string CtiTableDynamicPaoInfo::_key_frozen_rate_d_peak_timestamp = "frozen
 const string CtiTableDynamicPaoInfo::_key_demand_freeze_timestamp      = "demand freeze timestamp";
 const string CtiTableDynamicPaoInfo::_key_voltage_freeze_timestamp     = "voltage freeze timestamp";
 
->>>>>>> 1.13
 const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
 const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
 const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset         = "mct time zone offset";
