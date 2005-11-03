@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2005/10/20 18:27:25 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2005/11/03 17:51:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,8 +35,11 @@ private:
     static const DLCCommandSet _commandStore;
 
     static QualityMap initErrorQualities( void );
+    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
 
-    typedef CtiDeviceMCT Inherited;
+    typedef CtiDeviceMCT4xx Inherited;
+
+    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
 
 protected:
 
@@ -57,42 +60,79 @@ protected:
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
 
+        Memory_OutageCyclesPos    = 0x22,
+        Memory_OutageCyclesLen    =    1,
+
         Memory_PowerfailCountPos  = 0x23,
         Memory_PowerfailCountLen  =    2,
 
         Memory_AddressingPos      = 0x13,
-        Memory_AddressingLen      = 5,
+        Memory_AddressingLen      = 6,
 
         Memory_AlarmsPos          = 0x15,
         Memory_AlarmsLen          =    2,
-                                  
+
         Memory_IntervalsPos       = 0x1a,
         Memory_IntervalsLen       =    4,
-                                  
+
         Memory_LastFreezePos      = 0x26,
         Memory_LastFreezeLen      =   10,
-                                  
+
+        Memory_LLPStartTimePos    = 0x30,
+        Memory_LLPStartTimeLen    =    4,
+
+        Memory_LLPChannelPos      = 0x34,
+        Memory_LLPChannelLen      =    1,
+
+
+        Memory_TimeAdjustTolPos   = 0x36,
+        Memory_TimeAdjustTolLen   =    1,
+
         Memory_RTCPos             = 0x40,
         Memory_RTCLen             =    4,
-                                  
+
         Memory_LastTSyncPos       = 0x44,
         Memory_LastTSyncLen       =    4,
 
-        Memory_TOUDailySchedPos   = 0x52,
-        Memory_TOUDailySchedLen   =    7,
-                                  
+        Memory_TOUDayTablePos     = 0x50,
+        Memory_TOUDayTableLen     =    2,
+
+        Memory_TOUDailySched1Pos  = 0x52,
+        Memory_TOUDailySched1Len  =    7,
+
+        Memory_TOUDailySched2Pos  = 0x59,
+        Memory_TOUDailySched2Len  =    7,
+
+        Memory_TOUDailySched3Pos  = 0x60,
+        Memory_TOUDailySched3Len  =    7,
+
+        Memory_TOUDailySched4Pos  = 0x67,
+        Memory_TOUDailySched4Len  =    7,
+
+        Memory_DefaultTOURatePos  = 0x6E,
+        Memory_DefaultTOURateLen  =    1,
+
+        Memory_Holiday1Pos        = 0xD0,
+        Memory_Holiday1Len        =    4,
+
+        Memory_Holiday2Pos        = 0xD4,
+        Memory_Holiday2Len        =    4,
+
+        Memory_Holiday3Pos        = 0xD9,
+        Memory_Holiday3Len        =    4,
+
         Memory_DSTBeginPos        = 0x37,
         Memory_DSTBeginLen        =    4,
-                                  
+
         Memory_DSTEndPos          = 0x3B,
         Memory_DSTEndLen          =    4,
-                                  
+
         Memory_TimeZoneOffsetPos  = 0x3F,
         Memory_TimeZoneOffsetLen  =    1,
-                                  
+
         Memory_OverVThresholdPos  = 0x1E,
         Memory_OverVThresholdLen  =    2,
-                                  
+
         Memory_UnderVThresholdPos = 0x20,
         Memory_UnderVThresholdLen =    2,
 
@@ -102,6 +142,15 @@ protected:
     {
         FuncWrite_IntervalsPos    = 0x03,
         FuncWrite_IntervalsLen    =    4,
+
+        FuncWrite_LLPStoragePos   = 0x04,
+        FuncWrite_LLPStorageLen   =    5,
+
+        FuncWrite_LLPInterestPos  = 0x05,
+        FuncWrite_LLPInterestLen  =    6,
+
+        FuncWrite_LLPReportingPos = 0x06,
+        FuncWrite_LLPReportingLen =    9,
 
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
@@ -136,6 +185,9 @@ protected:
         FuncRead_LPStatusPos      = 0x97,
         FuncRead_LPStatusLen      =   12,
 
+        FuncRead_LLPStatusPos     = 0x9D,
+        FuncRead_LLPStatusLen     =    8,
+
         FuncRead_LLPPeakDayPos        = 0xa0,
         FuncRead_LLPPeakHourPos       = 0xa1,
         FuncRead_LLPPeakIntervalPos   = 0xa2,
@@ -147,9 +199,6 @@ protected:
 
         FuncWrite_DisconnectConfigPos = 0xfe,
         FuncWrite_DisconnectConfigLen =    6,
-
-        FuncWrite_LLPInterestPos      = 0x05,
-        FuncWrite_LLPInterestLen      =    6,
 
         FuncWrite_LLPPeakInterestPos  = 0x06,
         FuncWrite_LLPPeakInterestLen  =    7,
@@ -295,18 +344,16 @@ public:
 
     void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
 
+    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
+
     virtual ULONG calcNextLPScanTime( void );
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
     virtual INT executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 
-    int executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
-    int executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
-    int executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist<OUTMESS> &outList);
-    int executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
-    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
 
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/08/01 22:10:26 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/11/03 17:51:31 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,11 +61,35 @@ protected:
         MCT470_Memory_LastTSyncPos         = 0x2d,
         MCT470_Memory_LastTSyncLen         =    4,
 
+        MCT470_Memory_DSTBeginPos          = 0x20,
+        MCT470_Memory_DSTBeginLen          =    4,
+
+        MCT470_Memory_DSTEndPos            = 0x24,
+        MCT470_Memory_DSTEndLen            =    4,
+
+        MCT470_Memory_TimeZoneOffsetPos    = 0x28,
+        MCT470_Memory_TimeZoneOffsetLen    =    1,
+
         MCT470_Memory_IntervalsPos         = 0x32,
-        MCT470_Memory_IntervalsLen         =    4,
+        MCT470_Memory_IntervalsLen         =    3,
+
+        MCT470_Memory_RelayATimerPos       = 0x48,
+        MCT470_Memory_RelayATimerLen       =    1,
+
+        MCT470_Memory_RelayBTimerPos       = 0x49,
+        MCT470_Memory_RelayBTimerLen       =    1,
 
         MCT470_Memory_ChannelMultiplierPos = 0x88,
         MCT470_Memory_ChannelMultiplierLen =    4,
+
+        MCT470_Memory_Holiday1Pos          = 0xE0,
+        MCT470_Memory_Holiday1Len          =    4,
+
+        MCT470_Memory_Holiday2Pos          = 0xE4,
+        MCT470_Memory_Holiday2Len          =    4,
+
+        MCT470_Memory_Holiday3Pos          = 0xE8,
+        MCT470_Memory_Holiday3Len          =    4,
 
         //  unchanged/copied
         MCT470_Memory_ModelPos             = 0x00,
@@ -78,6 +102,27 @@ protected:
         MCT470_FuncWrite_IntervalsPos      = CtiDeviceMCT410::FuncWrite_IntervalsPos,
         MCT470_FuncWrite_IntervalsLen      =    3,
 
+        MCT470_FuncWrite_RelaysPos         = 0x08,
+        MCT470_FuncWrite_RelaysLen         =    3,
+
+        MCT470_FuncWrite_LoadProfileChannelsPos = 0x07,
+        MCT470_FuncWrite_LoadProfileChannelsLen =   13,
+
+        MCT470_FuncWrite_PrecannedTablePos = 0xD3,
+        MCT470_FuncWrite_PrecannedTableLen =    4,
+
+        MCT470_Memory_AddressingPos        = 0x0D,
+        MCT470_Memory_AddressingLen        =    6,
+
+        MCT470_FuncRead_LoadProfileChannel12Pos = 0x21,
+        MCT470_FuncRead_LoadProfileChannel12Len =   10,
+
+        MCT470_FuncRead_LoadProfileChannel34Pos = 0x22,
+        MCT470_FuncRead_LoadProfileChannel34Len =   10,
+
+        MCT470_FuncRead_PrecannedTablePos  = 0x23,
+        MCT470_FuncRead_PrecannedTableLen  =   11,
+
         MCT470_FuncRead_MReadPos           = 0x90,
         MCT470_FuncRead_MReadLen           =   12,
 
@@ -89,6 +134,9 @@ protected:
 
         MCT470_FuncRead_PeakDemandBasePos  = 0x93,
         MCT470_FuncRead_PeakDemandLen      =   12,
+
+        MCT470_Memory_TimeAdjustTolPos     = 0x1F,
+        MCT470_Memory_TimeAdjustTolLen     =    1,
 
         MCT470_FuncRead_IED_TOU_CurrentKWBase  = 0xc1,
         MCT470_FuncRead_IED_TOU_CurrentKMBase  = 0xc5,
@@ -110,6 +158,9 @@ private:
 
     static DLCCommandSet initCommandStore();
     static const DLCCommandSet _commandStore;
+
+    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
+    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
 
     CtiTableDeviceMCTIEDPort _iedPort;
 
@@ -149,6 +200,8 @@ public:
 
     void setDisconnectAddress( unsigned long address );
 
+    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
+
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
 
     virtual ULONG calcNextLPScanTime( void );
@@ -161,6 +214,11 @@ public:
 
     virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    int executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
 
     INT decodeGetValueKWH          ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );

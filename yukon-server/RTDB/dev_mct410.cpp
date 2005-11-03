@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2005/10/27 18:00:05 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2005/11/03 17:51:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@ using Cti::Protocol::Emetcon;
 
 const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
 const CtiDeviceMCT410::QualityMap    CtiDeviceMCT410::_errorQualities = CtiDeviceMCT410::initErrorQualities();
+const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::_config_parts = CtiDeviceMCT410::initConfigParts();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
@@ -96,6 +97,26 @@ void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
     _disconnectAddress = address;
 }
 
+CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::initConfigParts()
+{
+    CtiDeviceMCT4xx::ConfigPartsList tempList;
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_dst);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_vthreshold);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_options);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_addressing);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_disconnect);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_holiday);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_llp);
+    tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_usage);
+
+    return tempList;
+}
+
+CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT410::getPartsList()
+{
+    return _config_parts;
+}
 
 CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 {
@@ -304,6 +325,54 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
     cs._io      = Emetcon::IO_Write;
     cs._funcLen = make_pair((int)MCT4XX_Command_FreezeVoltageTwo, 0);
     s.insert(cs);
+
+    //**************************************** Config Related starts here*************************
+    cs._cmd     = Emetcon::PutConfig_Addressing;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen  = make_pair((int)Memory_AddressingPos,Memory_AddressingLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_LongloadProfile;
+    cs._io      = Emetcon::IO_Function_Write;
+    cs._funcLen = make_pair((int)FuncWrite_LLPStoragePos, FuncWrite_LLPStorageLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::GetConfig_LongloadProfile;
+    cs._io      = Emetcon::IO_Function_Read;
+    cs._funcLen = make_pair((int)FuncRead_LLPStatusPos, FuncRead_LLPStatusLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_DST;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_DSTBeginPos, (Memory_DSTBeginLen+Memory_DSTEndLen+Memory_TimeZoneOffsetLen));
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_VThreshold;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_OverVThresholdPos, Memory_OverVThresholdLen + Memory_UnderVThresholdLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_Holiday;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_Holiday1Pos, Memory_Holiday1Len+Memory_Holiday2Len+Memory_Holiday3Len);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_Options;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_OptionsPos, Memory_OptionsLen+Memory_ConfigurationLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_Outage;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_OutageCyclesPos, Memory_OutageCyclesLen);
+    s.insert(cs);
+
+    cs._cmd     = Emetcon::PutConfig_TimeAdjustTolerance;
+    cs._io      = Emetcon::IO_Write;
+    cs._funcLen = make_pair((int)Memory_TimeAdjustTolPos, Memory_TimeAdjustTolLen);
+    s.insert(cs);
+
+    //***********************************************End Config related
 
     return s;
 }
@@ -1366,215 +1435,9 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
 using namespace Cti;
 using namespace Config;
-int CtiDeviceMCT410::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
-{
-    OUTMESS OutMess;
-
-    // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
-    long value;
-    if(_deviceConfig)
-    {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDST);
-
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDST)
-        {
-            MCT_DST_SPtr dstConfig = boost::static_pointer_cast< ConfigurationPart<MCT_DST> >(tempBasePtr);
-            value = dstConfig->getLongValueFromKey(DstBegin);
-
-            if(value == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for Dst Start Time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime) != value)
-                {
-                    OutMess.Buffer.BSt.Function   = Memory_DSTBeginPos;
-                    OutMess.Buffer.BSt.Length     = Memory_DSTBeginLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (value>>24);
-                    OutMess.Buffer.BSt.Message[1] = (value>>16);
-                    OutMess.Buffer.BSt.Message[2] = (value>>8);
-                    OutMess.Buffer.BSt.Message[3] = (value);
-            
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
-                }
-            }
-
-            value = dstConfig->getLongValueFromKey(DstEnd);
-
-            if(value == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for Dst End Time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime) != value)
-                {
-    
-                    OutMess.Buffer.BSt.Function   = Memory_DSTEndPos;
-                    OutMess.Buffer.BSt.Length     = Memory_DSTEndLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (value>>24);
-                    OutMess.Buffer.BSt.Message[1] = (value>>16);
-                    OutMess.Buffer.BSt.Message[2] = (value>>8);
-                    OutMess.Buffer.BSt.Message[3] = (value);
-    
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
-                }
-            }
-            value = dstConfig->getLongValueFromKey(TimeZoneOffset);
-
-            if(value == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for Time Zone Offset **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-    
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != value)
-                {
-                    OutMess.Buffer.BSt.Function   = Memory_TimeZoneOffsetPos;
-                    OutMess.Buffer.BSt.Length     = Memory_TimeZoneOffsetLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (value);
-    
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
-                }
-            }
-        }
-    }
-
-    return NORMAL;
-}
-
-int CtiDeviceMCT410::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
-{
-    OUTMESS OutMess;
-
-    // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
-    long value;
-    if(_deviceConfig)
-    {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTVThreshold);
-
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTVThreshold)
-        {
-            MCTVThresholdSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTVThreshold> >(tempBasePtr);
-            value = config->getLongValueFromKey(UnderVoltageThreshold);
-
-            if(value == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for UnderVoltageThreshold **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold) != value)
-                {
-                    OutMess.Buffer.BSt.Function   = Memory_UnderVThresholdPos;
-                    OutMess.Buffer.BSt.Length     = Memory_UnderVThresholdPos;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (value>>8);
-                    OutMess.Buffer.BSt.Message[1] = (value);
-            
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
-                }
-            }
-            value = config->getLongValueFromKey(OverVoltageThreshold);
-
-            if(value == numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - no or bad value stored for OverVoltageThreshold **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold) != value)
-                {
-    
-                    OutMess.Buffer.BSt.Function   = Memory_OverVThresholdPos;
-                    OutMess.Buffer.BSt.Length     = Memory_OverVThresholdLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (value>>8);
-                    OutMess.Buffer.BSt.Message[1] = (value);
-    
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
-                }
-            }
-        }
-    }
-
-    return NORMAL;
-}
-
 int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
-    OUTMESS OutMess;
-
-    // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
+    int nRet = NORMAL;
     long value;
     if(_deviceConfig)
     {
@@ -1594,6 +1457,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
             }
             else
             {
@@ -1602,46 +1466,51 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval) != voltageDemand
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
                 {
-                    OutMess.Buffer.BSt.Function   = FuncWrite_IntervalsPos;
-                    OutMess.Buffer.BSt.Length     = FuncWrite_IntervalsLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMess.Buffer.BSt.Message[0] = (demand);
-                    OutMess.Buffer.BSt.Message[1] = (loadProfile);
-                    OutMess.Buffer.BSt.Message[2] = (voltageDemand);
-                    OutMess.Buffer.BSt.Message[3] = (voltageLoadProfile);
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (demand);
+                    OutMessage->Buffer.BSt.Message[1] = (loadProfile);
+                    OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
+                    OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
             
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    OutMess.Buffer.BSt.Function   = Memory_IntervalsPos;
-                    OutMess.Buffer.BSt.Function   = Memory_IntervalsLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Read;
-                    OutMess.Priority             -= 1;//decrease for read. Only want read after a successful write.
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                    OutMess.Priority             += 1;//return to normal
+                    OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
 
                 }
             }
         }
+        else
+            nRet = NoMethod;
     }
+    else
+        nRet = NoMethod;
 
-    return NORMAL;
+    return nRet;
 }
 
-int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+/*int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
-    OUTMESS OutMess;
+    OUTMESS *OutMessage;
 
     // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
+    OutMessage->TimeOut   = 2;
+    OutMessage->Retry     = 2;
+    OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
     
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+    OutMessage->Request.RouteID   = getRouteID();
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
     long value;
     if(_deviceConfig)
@@ -1673,189 +1542,134 @@ int CtiDeviceMCT410::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3) != daySchedule3
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4) != daySchedule4)
                 {
-                    OutMess.Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                    OutMess.Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMess.Buffer.BSt.Message[0] = (dayTable>>8);
-                    OutMess.Buffer.BSt.Message[1] = (dayTable);
-                    OutMess.Buffer.BSt.Message[2] = (daySchedule1>>48);//Fun!
-                    OutMess.Buffer.BSt.Message[3] = (daySchedule1>>40);
-                    OutMess.Buffer.BSt.Message[4] = (daySchedule1>>32);
-                    OutMess.Buffer.BSt.Message[5] = (daySchedule1>>24);
-                    OutMess.Buffer.BSt.Message[6] = (daySchedule1>>16);
-                    OutMess.Buffer.BSt.Message[7] = ((daySchedule1>>4)&0xF0 || (daySchedule2>>8)&0x0F);//Fun!
-                    OutMess.Buffer.BSt.Message[8] = (daySchedule1);
-                    OutMess.Buffer.BSt.Message[9] = (daySchedule2>>48);
-                    OutMess.Buffer.BSt.Message[10] = (daySchedule2>>40);
-                    OutMess.Buffer.BSt.Message[11] = (daySchedule2>>32);
-                    OutMess.Buffer.BSt.Message[12] = (daySchedule2>>24);
-                    OutMess.Buffer.BSt.Message[13] = (daySchedule2>>16);
-                    OutMess.Buffer.BSt.Message[14] = (daySchedule2);
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (dayTable>>8);
+                    OutMessage->Buffer.BSt.Message[1] = (dayTable);
+                    OutMessage->Buffer.BSt.Message[2] = (daySchedule1>>48);//Fun!
+                    OutMessage->Buffer.BSt.Message[3] = (daySchedule1>>40);
+                    OutMessage->Buffer.BSt.Message[4] = (daySchedule1>>32);
+                    OutMessage->Buffer.BSt.Message[5] = (daySchedule1>>24);
+                    OutMessage->Buffer.BSt.Message[6] = (daySchedule1>>16);
+                    OutMessage->Buffer.BSt.Message[7] = ((daySchedule1>>4)&0xF0 || (daySchedule2>>8)&0x0F);//Fun!
+                    OutMessage->Buffer.BSt.Message[8] = (daySchedule1);
+                    OutMessage->Buffer.BSt.Message[9] = (daySchedule2>>48);
+                    OutMessage->Buffer.BSt.Message[10] = (daySchedule2>>40);
+                    OutMessage->Buffer.BSt.Message[11] = (daySchedule2>>32);
+                    OutMessage->Buffer.BSt.Message[12] = (daySchedule2>>24);
+                    OutMessage->Buffer.BSt.Message[13] = (daySchedule2>>16);
+                    OutMessage->Buffer.BSt.Message[14] = (daySchedule2);
 
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = Memory_TOUDayTablePos;
+                    OutMessage->Buffer.BSt.Function   = Memory_TOUDayTableLen + Memory_TOUDailySched1Len + Memory_TOUDailySched2Len;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
                 }
 
                 if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3) != daySchedule3
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4) != daySchedule4)
                 {
-                    OutMess.Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                    OutMess.Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Function_Write;
-                    OutMess.Buffer.BSt.Message[0] = (daySchedule3>>48);//Fun!
-                    OutMess.Buffer.BSt.Message[1] = (daySchedule3>>40);
-                    OutMess.Buffer.BSt.Message[2] = (daySchedule3>>32);
-                    OutMess.Buffer.BSt.Message[3] = (daySchedule3>>24);
-                    OutMess.Buffer.BSt.Message[4] = (daySchedule3>>16);
-                    OutMess.Buffer.BSt.Message[5] = (daySchedule3>>8);
-                    OutMess.Buffer.BSt.Message[6] = (daySchedule3);
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (daySchedule3>>48);//Fun!
+                    OutMessage->Buffer.BSt.Message[1] = (daySchedule3>>40);
+                    OutMessage->Buffer.BSt.Message[2] = (daySchedule3>>32);
+                    OutMessage->Buffer.BSt.Message[3] = (daySchedule3>>24);
+                    OutMessage->Buffer.BSt.Message[4] = (daySchedule3>>16);
+                    OutMessage->Buffer.BSt.Message[5] = (daySchedule3>>8);
+                    OutMessage->Buffer.BSt.Message[6] = (daySchedule3);
 
-                    OutMess.Buffer.BSt.Message[7] = (daySchedule4>>48);
-                    OutMess.Buffer.BSt.Message[8] = (daySchedule4>>40);
-                    OutMess.Buffer.BSt.Message[9] = (daySchedule4>>32);
-                    OutMess.Buffer.BSt.Message[10] = (daySchedule4>>24);
-                    OutMess.Buffer.BSt.Message[11] = (daySchedule4>>16);
-                    OutMess.Buffer.BSt.Message[12] = (daySchedule4>>8);
-                    OutMess.Buffer.BSt.Message[13] = (daySchedule4);
-                    OutMess.Buffer.BSt.Message[14] = (DefaultTOURate);
+                    OutMessage->Buffer.BSt.Message[7] = (daySchedule4>>48);
+                    OutMessage->Buffer.BSt.Message[8] = (daySchedule4>>40);
+                    OutMessage->Buffer.BSt.Message[9] = (daySchedule4>>32);
+                    OutMessage->Buffer.BSt.Message[10] = (daySchedule4>>24);
+                    OutMessage->Buffer.BSt.Message[11] = (daySchedule4>>16);
+                    OutMessage->Buffer.BSt.Message[12] = (daySchedule4>>8);
+                    OutMessage->Buffer.BSt.Message[13] = (daySchedule4);
+                    OutMessage->Buffer.BSt.Message[14] = (DefaultTOURate);
 
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched1Pos;
+                    OutMessage->Buffer.BSt.Function   = Memory_TOUDailySched3Len + Memory_TOUDailySched4Len + Memory_DefaultTOURateLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
                 }
             }
         }
     }
 
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    dout << RWTime() << " **** Checkpoint - TOU config not defined for MCT410 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
     return NORMAL;
-}
+}*/
 
-
-int CtiDeviceMCT410::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
-    OUTMESS OutMess;
-
-    // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+    int nRet = NORMAL;
 
     long value;
     if(_deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
+        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDisconnect);
 
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTAddressing)
+        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDisconnect)
         {
-            long lead, bronze, collection;
+            long threshold, delay;
 
-            MCTAddressingSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTAddressing> >(tempBasePtr);
-            lead = config->getLongValueFromKey(Lead);
-            bronze = config->getLongValueFromKey(Bronze);
-            collection = config->getLongValueFromKey(Collection);
+            MCTDisconnectSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTDisconnect> >(tempBasePtr);
+            threshold = config->getLongValueFromKey(DemandThreshold);
+            delay = config->getLongValueFromKey(ConnectDelay);
 
-            if(lead == numeric_limits<long>::min() || bronze == numeric_limits<long>::min() || collection == numeric_limits<long>::min() )
+            if(threshold == numeric_limits<long>::min() || delay == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressBronze) != bronze
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressLead) != lead
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressCollection) != collection )
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay) != delay )
                 {
-                    OutMess.Buffer.BSt.Function   = Memory_AddressingPos;
-                    OutMess.Buffer.BSt.Length     = Memory_AddressingLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (bronze);
-                    OutMess.Buffer.BSt.Message[1] = (lead>>8);
-                    OutMess.Buffer.BSt.Message[2] = (lead);
-                    OutMess.Buffer.BSt.Message[3] = (collection>>8);
-                    OutMess.Buffer.BSt.Message[4] = (collection);
+                    OutMessage->Buffer.BSt.Function   = FuncWrite_DisconnectConfigPos;
+                    OutMessage->Buffer.BSt.Length     = FuncWrite_DisconnectConfigLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (_disconnectAddress>>16);
+                    OutMessage->Buffer.BSt.Message[1] = (_disconnectAddress>>8);
+                    OutMessage->Buffer.BSt.Message[2] = (_disconnectAddress);
+                    OutMessage->Buffer.BSt.Message[3] = (threshold>>8);
+                    OutMessage->Buffer.BSt.Message[4] = (threshold);
+                    OutMessage->Buffer.BSt.Message[5] = (delay);
 
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = FuncRead_DisconnectConfigPos;
+                    OutMessage->Buffer.BSt.Length     = FuncRead_DisconnectConfigLen;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
                 }
             }
         }
+        else
+            nRet = NoMethod;
     }
+    else
+        nRet = NoMethod;
 
-    return NORMAL;
+    return nRet;
 }
-
-
-int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
-{
-    OUTMESS OutMess;
-
-    // Load all the other stuff that is needed
-    OutMess.DeviceID  = getID();
-    OutMess.TargetID  = getID();
-    OutMess.Port      = getPortID();
-    OutMess.Remote    = getAddress();
-    OutMess.TimeOut   = 2;
-    OutMess.Retry     = 2;
-    OutMess.Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
-    OutMess.Request.RouteID   = getRouteID();
-    strncpy(OutMess.Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
-
-    long value;
-    if(_deviceConfig)
-    {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTOptions);
-
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTOptions)
-        {
-            long options, configuration;
-
-            MCTOptionsSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTOptions> >(tempBasePtr);
-            options = config->getLongValueFromKey(Options);
-            configuration = config->getLongValueFromKey(Configuration);
-
-            if( options == numeric_limits<long>::min() )
-            {
-                //I dont care right now that options is missing, this may change....
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) != options )
-                {
-                    OutMess.Buffer.BSt.Function   = Memory_OptionsPos;
-                    OutMess.Buffer.BSt.Length     = Memory_OptionsLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (options);
-
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                }
-            }
-
-            if( configuration == numeric_limits<long>::min() )
-            {
-                //I dont care right now that options is missing, this may change....
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration )
-                {
-                    OutMess.Buffer.BSt.Function   = Memory_ConfigurationPos;
-                    OutMess.Buffer.BSt.Length     = Memory_ConfigurationLen;
-                    OutMess.Buffer.BSt.IO         = Emetcon::IO_Write;
-                    OutMess.Buffer.BSt.Message[0] = (configuration);
-
-                    outList.append( CTIDBG_new OUTMESS(OutMess) );
-                }
-            }
-        }
-    }
-
-    return NORMAL;
-}
-
 
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
