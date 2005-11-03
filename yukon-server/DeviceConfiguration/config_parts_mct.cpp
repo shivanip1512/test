@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/20 18:26:07 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/11/03 17:50:27 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,10 @@ MCTAddressing ConfigurationPart<MCTAddressing>::getResolvedKey(RWCString key)
     else if(key == "collection address")
     {
         return Collection;
+    }
+    else if(key == "service provider id")
+    {
+        return ServiceProviderID;
     }
     else
     {
@@ -71,7 +75,7 @@ MCT_TOU ConfigurationPart<MCT_TOU>::getResolvedKey(RWCString key)
     }
 }
 
-MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(RWCString key)
+MCT_DST ConfigurationPart<MCT_DST>::getResolvedKey(RWCString key)//DO NOT USE ME
 {
     key.toLower();
     if(key == "dst begin")
@@ -141,6 +145,10 @@ MCTDemandLoadProfile ConfigurationPart<MCTDemandLoadProfile>::getResolvedKey(RWC
 MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(RWCString key)
 {
     key.toLower();
+    if(key == "time adjust tolerance")
+    {
+        return TimeAdjustTolerance;
+    }
     if(key == "configuration")
     {
         return Configuration;
@@ -149,12 +157,173 @@ MCTOptions ConfigurationPart<MCTOptions>::getResolvedKey(RWCString key)
     {
         return Options;
     }
+    if(key == "outage cycles")
+    {
+        return OutageCycles;
+    }
     else
     {
         return MCTOptionsInvalid;
     }
 }
 
+MCTDisconnect ConfigurationPart<MCTDisconnect>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "demand threshold")
+    {
+        return DemandThreshold;
+    }
+    if(key == "connect delay")
+    {
+        return ConnectDelay;
+    }
+    else
+    {
+        return MCTDisconnectInvalid;
+    }
+}
+
+MCTHoliday ConfigurationPart<MCTHoliday>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "holiday date 1")
+    {
+        return HolidayDate1;
+    }
+    if(key == "holiday date 2")
+    {
+        return HolidayDate2;
+    }
+    if(key == "holiday date 3")
+    {
+        return HolidayDate3;
+    }
+    else
+    {
+        return MCTHolidayInvalid;
+    }
+}
+
+MCTLongLoadProfile ConfigurationPart<MCTLongLoadProfile>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "channel 1 length")
+    {
+        return Channel1Length;
+    }
+    if(key == "channel 2 length")
+    {
+        return Channel2Length;
+    }
+    if(key == "channel 3 length")
+    {
+        return Channel3Length;
+    }
+    if(key == "channel 4 length")
+    {
+        return Channel4Length;
+    }
+    else
+    {
+        return MCTLongLoadProfileInvalid;
+    }
+}
+
+MCTLoadProfileChannels ConfigurationPart<MCTLoadProfileChannels>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "channel config 1")
+    {
+        return ChannelConfig1;
+    }
+    else if(key == "channel config 2")
+    {
+        return ChannelConfig2;
+    }
+    else if(key == "channel config 3")
+    {
+        return ChannelConfig3;
+    }
+    else if(key == "channel config 4")
+    {
+        return ChannelConfig4;
+    }
+    else if(key == "meter ratio 1")
+    {
+        return MeterRatio1;
+    }
+    else if(key == "meter ratio 2")
+    {
+        return MeterRatio2;
+    }
+    else if(key == "meter ratio 3")
+    {
+        return MeterRatio3;
+    }
+    else if(key == "meter ratio 4")
+    {
+        return MeterRatio4;
+    }
+    else if(key == "k ratio 1")
+    {
+        return KRatio1;
+    }
+    else if(key == "k ratio 2")
+    {
+        return KRatio2;
+    }
+    else if(key == "k ratio 3")
+    {
+        return KRatio3;
+    }
+    else if(key == "k ratio 4")
+    {
+        return KRatio4;
+    }
+    else
+    {
+        return MCTLoadProfileChannelsInvalid;
+    }
+}
+
+MCTRelays ConfigurationPart<MCTRelays>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "relay a timer")
+    {
+        return RelayATimer;
+    }
+    if(key == "relay b timer")
+    {
+        return RelayBTimer;
+    }
+    else
+    {
+        return MCTRelaysInvalid;
+    }
+}
+
+MCTPrecannedTable ConfigurationPart<MCTPrecannedTable>::getResolvedKey(RWCString key)
+{
+    key.toLower();
+    if(key == "table read interval")
+    {
+        return TableReadInterval;
+    }
+    if(key == "meter number")
+    {
+        return MeterNumber;
+    }
+    if(key == "table type")
+    {
+        return TableType;
+    }
+    else
+    {
+        return MCTPrecannedTableInvalid;
+    }
+}
 
 //******************************************************************************
 //getType() begins here
@@ -183,10 +352,41 @@ CtiConfig_type ConfigurationPart<MCT_DST>::getType()
     return ConfigTypeMCTDST;
 }
 
-CtiConfig_type ConfigurationPart<MCT_TOU>::getType()
+CtiConfig_type ConfigurationPart<MCT_TOU>::getType()//DO NOT USE ME
 {
     return ConfigTypeMCTTOU;
 }
+
+CtiConfig_type ConfigurationPart<MCTDisconnect>::getType()
+{
+    return ConfigTypeMCTDisconnect;
+}
+
+CtiConfig_type ConfigurationPart<MCTHoliday>::getType()
+{
+    return ConfigTypeMCTHoliday;
+}
+
+CtiConfig_type ConfigurationPart<MCTLongLoadProfile>::getType()
+{
+    return ConfigTypeMCTLongLoadProfile;
+}
+
+CtiConfig_type ConfigurationPart<MCTLoadProfileChannels>::getType()
+{
+    return ConfigTypeMCTLoadProfileChannels;
+}
+
+CtiConfig_type ConfigurationPart<MCTRelays>::getType()
+{
+    return ConfigTypeMCTRelays;
+}
+
+CtiConfig_type ConfigurationPart<MCTPrecannedTable>::getType()
+{
+    return ConfigTypeMCTPrecannedTable;
+}
+
 
 }//Config
 }//Cti
