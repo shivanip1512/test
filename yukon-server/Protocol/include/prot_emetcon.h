@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/08/01 21:26:22 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/11/03 18:04:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -179,6 +179,7 @@ public:
         GetConfig_Intervals,
         GetConfig_ChannelSetup,
         GetConfig_LoadProfileInterval,
+        GetConfig_LongloadProfile,
         GetConfig_DemandInterval,
         GetConfig_Options,
         GetConfig_GroupAddress,
@@ -202,12 +203,20 @@ public:
         PutConfig_Intervals,
         PutConfig_LoadProfileInterest,
         PutConfig_LoadProfileReportPeriod,
+        PutConfig_LongloadProfile,
         PutConfig_Multiplier,
         PutConfig_Multiplier2,
         PutConfig_Multiplier3,
         PutConfig_MinMax,
         PutConfig_OnOffPeak,
         PutConfig_Disconnect,
+        PutConfig_Addressing,
+        PutConfig_VThreshold,
+        PutConfig_DST,
+        PutConfig_Holiday,
+        PutConfig_Options,
+        PutConfig_Outage,
+        PutConfig_TimeAdjustTolerance,
 
         PutConfig_ARMC,
         PutConfig_ARML,  //  these used to be "Control_ARML," etc - I wanted to make them consistent...
