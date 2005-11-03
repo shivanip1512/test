@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/10/27 18:02:04 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/11/03 17:49:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,9 @@ const string CtiTableDynamicPaoInfo::_key_freeze_counter               = "freeze
 const string CtiTableDynamicPaoInfo::_key_expected_freeze              = "expected freeze";
 const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
 
+<<<<<<< tbl_dyn_paoinfo.cpp
+const string CtiTableDynamicPaoInfo::_key_mct_time_adjust_tolerance    = "mct time adjust tolerance";
+=======
 const string CtiTableDynamicPaoInfo::_key_frozen_demand_peak_timestamp = "frozen demand peak timestamp";
 const string CtiTableDynamicPaoInfo::_key_frozen_rate_a_peak_timestamp = "frozen rate a peak timestamp";
 const string CtiTableDynamicPaoInfo::_key_frozen_rate_b_peak_timestamp = "frozen rate b peak timestamp";
@@ -53,6 +56,7 @@ const string CtiTableDynamicPaoInfo::_key_frozen_rate_d_peak_timestamp = "frozen
 const string CtiTableDynamicPaoInfo::_key_demand_freeze_timestamp      = "demand freeze timestamp";
 const string CtiTableDynamicPaoInfo::_key_voltage_freeze_timestamp     = "voltage freeze timestamp";
 
+>>>>>>> 1.13
 const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
 const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
 const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset         = "mct time zone offset";
@@ -67,14 +71,51 @@ const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_1           = "mct da
 const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_2           = "mct day schedule 2";
 const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_3           = "mct day schedule 3";
 const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_4           = "mct day schedule 4";
-const string CtiTableDynamicPaoInfo::_key_mct_default_rate             = "mct default tou rate";
+const string CtiTableDynamicPaoInfo::_key_mct_default_tou_rate         = "mct default tou rate";
 
 const string CtiTableDynamicPaoInfo::_key_mct_bronze_address           = "mct bronze address";
 const string CtiTableDynamicPaoInfo::_key_mct_lead_address             = "mct lead address";
 const string CtiTableDynamicPaoInfo::_key_mct_collection_address       = "mct collection address";
+const string CtiTableDynamicPaoInfo::_key_mct_service_provider_id      = "mct service provider id";
 
 const string CtiTableDynamicPaoInfo::_key_mct_configuration            = "mct configuration";
 const string CtiTableDynamicPaoInfo::_key_mct_options                  = "mct options";
+const string CtiTableDynamicPaoInfo::_key_mct_outage_cycles            = "mct outage cycles";
+const string CtiTableDynamicPaoInfo::_key_mct_demand_limit             = "mct demand limit";
+const string CtiTableDynamicPaoInfo::_key_mct_connect_delay            = "mct connect delay";
+
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_1                = "mct holiday 1";
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_3                = "mct holiday 3";
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_2                = "mct holiday 2";
+
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel1_len         = "mct llp channel 1 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel2_len         = "mct llp channel 2 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel3_len         = "mct llp channel 3 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel4_len         = "mct llp channel 4 length";
+
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_1_config = "mct load profile channel 1 config";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_2_config = "mct load profile channel 2 config";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_3_config = "mct load profile channel 3 config";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_4_config = "mct load profile channel 4 config";
+
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_meter_ratio_1    = "mct load profile meter ratio 1";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_meter_ratio_2    = "mct load profile meter ratio 2";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_meter_ratio_3    = "mct load profile meter ratio 3";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_meter_ratio_4    = "mct load profile meter ratio 4";
+
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_1        = "mct load profile k ratio 1";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_2        = "mct load profile k ratio 2";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_3        = "mct load profile k ratio 3";
+const string CtiTableDynamicPaoInfo::_key_mct_load_profile_k_ratio_4        = "mct load profile k ratio 4";
+
+const string CtiTableDynamicPaoInfo::_key_mct_relay_a_timer                 = "mct relay a timer";
+const string CtiTableDynamicPaoInfo::_key_mct_relay_b_timer                 = "mct relay b timer";
+
+
+const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_read_interval = "mct precanned table read interval";
+const string CtiTableDynamicPaoInfo::_key_mct_precanned_meter_number        = "mct precanned meter number";
+const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_type          = "mct precanned table type";
+
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
@@ -107,13 +148,65 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_ExpectedFreeze,             &_key_expected_freeze));
     retval.insert(make_pair(Key_VerificationSequence,       &_key_verification_sequence));
 
-    retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,   &_key_frozen_rate_a_peak_timestamp));
-    retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,   &_key_frozen_rate_b_peak_timestamp));
-    retval.insert(make_pair(Key_FrozenRateCPeakTimestamp,   &_key_frozen_rate_c_peak_timestamp));
-    retval.insert(make_pair(Key_FrozenRateDPeakTimestamp,   &_key_frozen_rate_d_peak_timestamp));
-    retval.insert(make_pair(Key_FrozenDemandPeakTimestamp,  &_key_frozen_demand_peak_timestamp));
-    retval.insert(make_pair(Key_DemandFreezeTimestamp,      &_key_demand_freeze_timestamp));
-    retval.insert(make_pair(Key_VoltageFreezeTimestamp,     &_key_voltage_freeze_timestamp));
+    retval.insert(make_pair(Key_MCT_TimeAdjustTolerance,        &_key_mct_time_adjust_tolerance));
+    retval.insert(make_pair(Key_MCT_DSTStartTime,               &_key_mct_dst_start_time));
+    retval.insert(make_pair(Key_MCT_DSTEndTime,                 &_key_mct_dst_end_time));
+    retval.insert(make_pair(Key_MCT_TimeZoneOffset,             &_key_mct_time_zone_offset));
+    retval.insert(make_pair(Key_MCT_OverVoltageThreshold,       &_key_mct_over_voltage_threshold));
+    retval.insert(make_pair(Key_MCT_UnderVoltageThreshold,      &_key_mct_under_voltage_threshold));
+    retval.insert(make_pair(Key_MCT_DemandInterval,             &_key_mct_demand_interval));
+    retval.insert(make_pair(Key_MCT_VoltageLPInterval,          &_key_mct_voltage_profile_interval));
+    retval.insert(make_pair(Key_MCT_VoltageDemandInterval,      &_key_mct_voltage_demand_interval));
+    retval.insert(make_pair(Key_MCT_DayTable,                   &_key_mct_day_table));
+    retval.insert(make_pair(Key_MCT_DaySchedule1,               &_key_mct_day_schedule_1));
+    retval.insert(make_pair(Key_MCT_DaySchedule2,               &_key_mct_day_schedule_2));
+    retval.insert(make_pair(Key_MCT_DaySchedule3,               &_key_mct_day_schedule_3));
+    retval.insert(make_pair(Key_MCT_DaySchedule4,               &_key_mct_day_schedule_4));
+    retval.insert(make_pair(Key_MCT_DefaultTOURate,             &_key_mct_default_tou_rate));
+    retval.insert(make_pair(Key_MCT_AddressBronze,              &_key_mct_bronze_address));
+    retval.insert(make_pair(Key_MCT_AddressLead,                &_key_mct_lead_address));
+    retval.insert(make_pair(Key_MCT_AddressCollection,          &_key_mct_collection_address));
+    retval.insert(make_pair(Key_MCT_AddressServiceProviderID,   &_key_mct_service_provider_id));
+    retval.insert(make_pair(Key_MCT_Configuration,              &_key_mct_configuration));
+    retval.insert(make_pair(Key_MCT_Options,                    &_key_mct_options));
+    retval.insert(make_pair(Key_MCT_OutageCycles,               &_key_mct_outage_cycles));
+    retval.insert(make_pair(Key_MCT_DemandThreshold,            &_key_mct_demand_limit));
+    retval.insert(make_pair(Key_MCT_ConnectDelay,               &_key_mct_connect_delay));
+    retval.insert(make_pair(Key_MCT_Holiday1,                   &_key_mct_holiday_1));
+    retval.insert(make_pair(Key_MCT_Holiday2,                   &_key_mct_holiday_3));
+    retval.insert(make_pair(Key_MCT_Holiday3,                   &_key_mct_holiday_2));
+    retval.insert(make_pair(Key_MCT_LLPChannel1Len,             &_key_mct_llp_channel1_len));
+    retval.insert(make_pair(Key_MCT_LLPChannel2Len,             &_key_mct_llp_channel2_len));
+    retval.insert(make_pair(Key_MCT_LLPChannel3Len,             &_key_mct_llp_channel3_len));
+    retval.insert(make_pair(Key_MCT_LLPChannel4Len,             &_key_mct_llp_channel4_len));
+
+    retval.insert(make_pair(Key_MCT_LoadProfileChannelConfig1,  &_key_mct_load_profile_channel_1_config));
+    retval.insert(make_pair(Key_MCT_LoadProfileChannelConfig2,  &_key_mct_load_profile_channel_2_config));
+    retval.insert(make_pair(Key_MCT_LoadProfileChannelConfig3,  &_key_mct_load_profile_channel_3_config));
+    retval.insert(make_pair(Key_MCT_LoadProfileChannelConfig4,  &_key_mct_load_profile_channel_4_config));
+    retval.insert(make_pair(Key_MCT_LoadProfileMeterRatio1,     &_key_mct_load_profile_meter_ratio_1));
+    retval.insert(make_pair(Key_MCT_LoadProfileMeterRatio2,     &_key_mct_load_profile_meter_ratio_2));
+    retval.insert(make_pair(Key_MCT_LoadProfileMeterRatio3,     &_key_mct_load_profile_meter_ratio_3));
+    retval.insert(make_pair(Key_MCT_LoadProfileMeterRatio4,     &_key_mct_load_profile_meter_ratio_4));
+    retval.insert(make_pair(Key_MCT_LoadProfileKRatio1,         &_key_mct_load_profile_k_ratio_1));
+    retval.insert(make_pair(Key_MCT_LoadProfileKRatio2,         &_key_mct_load_profile_k_ratio_2));
+    retval.insert(make_pair(Key_MCT_LoadProfileKRatio3,         &_key_mct_load_profile_k_ratio_3));
+    retval.insert(make_pair(Key_MCT_LoadProfileKRatio4,         &_key_mct_load_profile_k_ratio_4));
+
+    retval.insert(make_pair(Key_MCT_RelayATimer,                &_key_mct_relay_a_timer));
+    retval.insert(make_pair(Key_MCT_RelayBTimer,                &_key_mct_relay_b_timer));
+
+    retval.insert(make_pair(Key_MCT_PrecannedTableReadInterval, &_key_mct_precanned_table_read_interval));
+    retval.insert(make_pair(Key_MCT_PrecannedMeterNumber,       &_key_mct_precanned_meter_number));
+    retval.insert(make_pair(Key_MCT_PrecannedTableType,         &_key_mct_precanned_table_type));
+
+    retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,       &_key_frozen_rate_a_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,       &_key_frozen_rate_b_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateCPeakTimestamp,       &_key_frozen_rate_c_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenRateDPeakTimestamp,       &_key_frozen_rate_d_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenDemandPeakTimestamp,      &_key_frozen_demand_peak_timestamp));
+    retval.insert(make_pair(Key_DemandFreezeTimestamp,          &_key_demand_freeze_timestamp));
+    retval.insert(make_pair(Key_VoltageFreezeTimestamp,         &_key_voltage_freeze_timestamp));
 
     return retval;
 }

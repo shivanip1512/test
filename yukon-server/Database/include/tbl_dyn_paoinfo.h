@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/10/27 18:01:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/11/03 17:49:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,7 @@ public:
         Key_MCT_LoadProfileInterval,
         Key_MCT_LoadProfileInterval2,
         Key_MCT_IEDLoadProfileInterval,
+        Key_MCT_TimeAdjustTolerance,
         Key_MCT_DSTStartTime,
         Key_MCT_DSTEndTime,
         Key_MCT_TimeZoneOffset,
@@ -62,13 +63,40 @@ public:
         Key_MCT_DefaultTOURate,
         Key_MCT_AddressBronze,
         Key_MCT_AddressCollection,
+        Key_MCT_AddressServiceProviderID,
         Key_MCT_AddressLead,
         Key_MCT_Configuration,
         Key_MCT_Options,
+        Key_MCT_OutageCycles,
+        Key_MCT_DemandThreshold,
+        Key_MCT_ConnectDelay,
+        Key_MCT_LLPChannel1Len,
+        Key_MCT_LLPChannel2Len,
+        Key_MCT_LLPChannel3Len,
+        Key_MCT_LLPChannel4Len,
+        Key_MCT_Holiday1,
+        Key_MCT_Holiday2,
+        Key_MCT_Holiday3,
+        Key_MCT_LoadProfileKRatio1,
+        Key_MCT_LoadProfileKRatio2,
+        Key_MCT_LoadProfileKRatio3,
+        Key_MCT_LoadProfileKRatio4,
+        Key_MCT_LoadProfileMeterRatio1,
+        Key_MCT_LoadProfileMeterRatio2,
+        Key_MCT_LoadProfileMeterRatio3,
+        Key_MCT_LoadProfileMeterRatio4,
+        Key_MCT_LoadProfileChannelConfig1,
+        Key_MCT_LoadProfileChannelConfig2,
+        Key_MCT_LoadProfileChannelConfig3,
+        Key_MCT_LoadProfileChannelConfig4,
+        Key_MCT_RelayATimer,
+        Key_MCT_RelayBTimer,
+        Key_MCT_PrecannedTableReadInterval,
+        Key_MCT_PrecannedMeterNumber,
+        Key_MCT_PrecannedTableType,
 
         Key_FreezeCounter,
         Key_ExpectedFreeze,
-
         Key_VerificationSequence,
         Key_FrozenRateAPeakTimestamp,
         Key_FrozenRateBPeakTimestamp,
@@ -106,6 +134,7 @@ protected:
     static const string _key_demand_freeze_timestamp;
     static const string _key_voltage_freeze_timestamp;
 
+    static const string _key_mct_time_adjust_tolerance;
     static const string _key_mct_dst_start_time;
     static const string _key_mct_dst_end_time;
     static const string _key_mct_time_zone_offset;
@@ -120,14 +149,50 @@ protected:
     static const string _key_mct_day_schedule_2;
     static const string _key_mct_day_schedule_3;
     static const string _key_mct_day_schedule_4;
-    static const string _key_mct_default_rate;
+    static const string _key_mct_default_tou_rate;
 
     static const string _key_mct_bronze_address;
     static const string _key_mct_lead_address;
     static const string _key_mct_collection_address;
+    static const string _key_mct_service_provider_id;
 
     static const string _key_mct_configuration;
     static const string _key_mct_options;
+    static const string _key_mct_outage_cycles;
+
+    static const string _key_mct_demand_limit;
+    static const string _key_mct_connect_delay;
+
+    static const string _key_mct_llp_channel1_len;
+    static const string _key_mct_llp_channel2_len;
+    static const string _key_mct_llp_channel3_len;
+    static const string _key_mct_llp_channel4_len;
+
+    static const string _key_mct_holiday_1;
+    static const string _key_mct_holiday_2;
+    static const string _key_mct_holiday_3;
+
+    static const string _key_mct_load_profile_channel_1_config;
+    static const string _key_mct_load_profile_channel_2_config;
+    static const string _key_mct_load_profile_channel_3_config;
+    static const string _key_mct_load_profile_channel_4_config;
+
+    static const string _key_mct_load_profile_meter_ratio_1;
+    static const string _key_mct_load_profile_meter_ratio_2;
+    static const string _key_mct_load_profile_meter_ratio_3;
+    static const string _key_mct_load_profile_meter_ratio_4;
+
+    static const string _key_mct_load_profile_k_ratio_1;
+    static const string _key_mct_load_profile_k_ratio_2;
+    static const string _key_mct_load_profile_k_ratio_3;
+    static const string _key_mct_load_profile_k_ratio_4;
+
+    static const string _key_mct_relay_a_timer;
+    static const string _key_mct_relay_b_timer;
+
+    static const string _key_mct_precanned_table_read_interval;
+    static const string _key_mct_precanned_meter_number;
+    static const string _key_mct_precanned_table_type;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
