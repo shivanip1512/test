@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_resolvers.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/10/20 18:26:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/11/03 17:57:37 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,14 +33,14 @@ enum CtiConfig_type
     ConfigTypeMCTDST,
     ConfigTypeMCTVThreshold,
     ConfigTypeMCTDisconnect,
-    ConfigTypeMCTLLP,
     ConfigTypeMCTHoliday,
     ConfigTypeMCTUsage,
+    ConfigTypeMCTLongLoadProfile,
 
     //created for the 470
-    ConfigTypeMCTTables,
+    ConfigTypeMCTPrecannedTable,
     ConfigTypeMCTRelays,
-    ConfigTypeMCTChannels,
+    ConfigTypeMCTLoadProfileChannels,
     
 
     ConfigTypeMax

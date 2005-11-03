@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/20 18:26:07 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/11/03 17:57:51 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,7 @@
 
 #include "config_base.h"
 class CtiConfigManager;
+//***** See instructions at bottom on how to add a new config part.
 
 namespace Cti    {
 namespace Config {
@@ -25,15 +26,16 @@ namespace Config {
 enum MCTAddressing
 {
     MCTAddressingInvalid,
-    Bronze = 1,
+    Bronze,
     Lead,
+    ServiceProviderID,
     Collection
 };
 
 enum MCT_TOU
 {
     MCT_TOUInvalid,
-    DayTable = 1,
+    DayTable,
     DaySchedule1,
     DaySchedule2,
     DaySchedule3,
@@ -44,7 +46,7 @@ enum MCT_TOU
 enum MCT_DST
 {
     MCT_DSTInvalid,
-    DstBegin = 1,
+    DstBegin,
     DstEnd,
     TimeZoneOffset
 };
@@ -52,14 +54,16 @@ enum MCT_DST
 enum MCTOptions
 {
     MCTOptionsInvalid,
-    Configuration = 1,
-    Options
+    TimeAdjustTolerance,
+    Configuration,
+    Options,
+    OutageCycles
 };
 
 enum MCTDemandLoadProfile
 {
     MCTDemandLoadProfileInvalid,
-    DemandInterval = 1,
+    DemandInterval,
     LoadProfileInterval,
     VoltageLPInterval,
     VoltageDemandInterval,
@@ -73,6 +77,61 @@ enum MCTVThreshold
     OverVoltageThreshold
 };
 
+enum MCTDisconnect
+{
+    MCTDisconnectInvalid,
+    DemandThreshold,
+    ConnectDelay
+};
+
+enum MCTLongLoadProfile
+{
+    MCTLongLoadProfileInvalid,
+    Channel1Length,
+    Channel2Length,
+    Channel3Length,
+    Channel4Length,
+};
+
+enum MCTHoliday
+{
+    MCTHolidayInvalid,
+    HolidayDate1,
+    HolidayDate2,
+    HolidayDate3,
+};
+
+enum MCTLoadProfileChannels
+{
+    MCTLoadProfileChannelsInvalid,
+    ChannelConfig1,
+    ChannelConfig2,
+    ChannelConfig3,
+    ChannelConfig4,
+    MeterRatio1,
+    MeterRatio2,
+    MeterRatio3,
+    MeterRatio4,
+    KRatio1,
+    KRatio2,
+    KRatio3,
+    KRatio4,
+};
+
+enum MCTRelays
+{
+    MCTRelaysInvalid,
+    RelayATimer,
+    RelayBTimer,
+};
+
+enum MCTPrecannedTable
+{
+    MCTPrecannedTableInvalid,
+    TableReadInterval,
+    MeterNumber,
+    TableType,
+};
 
 template <class T>
 class IM_EX_CONFIG ConfigurationPart : public Base
@@ -101,6 +160,12 @@ EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCT_DST>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTVThreshold>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTOptions>;
 EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTDemandLoadProfile>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTDisconnect>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTLongLoadProfile>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTHoliday>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTLoadProfileChannels>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTRelays>;
+EXTERN_CONFIG template class IM_EX_CONFIG ConfigurationPart<MCTPrecannedTable>;
 
 template <class T>
 bool ConfigurationPart<T>::setValueWithKey(const RWCString &value, T enumKey)
@@ -136,7 +201,7 @@ long ConfigurationPart<T>::getLongValueFromKey(T enumKey)
     RWCString tempStr = getValueFromKey(enumKey);
     long tempLong = numeric_limits<long>::min();
 
-    if(tempStr)
+    if(!tempStr.isNull())
     {
         tempLong = strtol(tempStr.data(),NULL,16);
     }
@@ -181,6 +246,12 @@ typedef ConfigurationPart<MCT_DST> *                MCT_DST_SPtr;
 typedef ConfigurationPart<MCTVThreshold> *          MCTVThresholdSPtr;
 typedef ConfigurationPart<MCTOptions> *             MCTOptionsSPtr;
 typedef ConfigurationPart<MCTDemandLoadProfile> *   MCTDemandLoadProfileSPtr;
+typedef ConfigurationPart<MCTDisconnect> *          MCTDisconnectSPtr;
+typedef ConfigurationPart<MCTLongLoadProfile> *     MCTLongLoadProfileSPtr;
+typedef ConfigurationPart<MCTHoliday> *             MCTHolidaySPtr;
+typedef ConfigurationPart<MCTLoadProfileChannels> * MCTLoadProfileChannelsSPtr;
+typedef ConfigurationPart<MCTRelays> *              MCTRelaysSPtr;
+typedef ConfigurationPart<MCTPrecannedTable> *      MCTPrecannedTableSPtr;
 #else
 typedef shared_ptr< ConfigurationPart<MCTAddressing> >          MCTAddressingSPtr;
 typedef shared_ptr< ConfigurationPart<MCT_TOU> >                MCT_TOU_SPtr;
@@ -188,9 +259,31 @@ typedef shared_ptr< ConfigurationPart<MCT_DST> >                MCT_DST_SPtr;
 typedef shared_ptr< ConfigurationPart<MCTVThreshold> >          MCTVThresholdSPtr;
 typedef shared_ptr< ConfigurationPart<MCTOptions> >             MCTOptionsSPtr;
 typedef shared_ptr< ConfigurationPart<MCTDemandLoadProfile> >   MCTDemandLoadProfileSPtr;
+typedef shared_ptr< ConfigurationPart<MCTDisconnect> >          MCTDisconnectSPtr;
+typedef shared_ptr< ConfigurationPart<MCTLongLoadProfile> >     MCTLongLoadProfileSPtr;
+typedef shared_ptr< ConfigurationPart<MCTHoliday> >             MCTHolidaySPtr;
+typedef shared_ptr< ConfigurationPart<MCTLoadProfileChannels> > MCTLoadProfileChannelsSPtr;
+typedef shared_ptr< ConfigurationPart<MCTRelays> >              MCTRelaysSPtr;
+typedef shared_ptr< ConfigurationPart<MCTPrecannedTable> >      MCTPrecannedTableSPtr;
 #endif
 
 }//Config
 }//Cti
 
 #endif //__CONFIG_PARTS_H_
+
+
+//**********************************
+// To add a new config part:
+// 
+//      First add the proper enum to config_parts.h.
+//      Add the proper EXTERN_CONFIG pre declaration above.
+//      Add the proper smart pointer tags above.
+//      Add the GetResolvedKey and GetType functions
+//      To config_parts_mct or a similar file.
+//      If a new file is created, add it to the makefile.
+//      
+//      Add the new object to config_resolvers.h/.cpp
+//      Add the new type to the create object list in mgr_config.cpp
+//      If working with DynamicPAOInfo, add objects there.
+//      Your done!
