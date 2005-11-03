@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/10/20 18:26:32 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2005/11/03 17:58:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -102,6 +102,7 @@ void CtiConfigManager::refreshConfigurations()
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
         }
@@ -156,13 +157,11 @@ void CtiConfigManager::refreshConfigurations()
 
             if(_deviceConfig.find(configID)->second->getConfigFromType(typeMapItr->second->getType())  == typeMapItr->second)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Type was correctly added to device. " << endl;
             }
             else
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Type was NOT correctly added to device. " << endl;
+                dout << RWTime() << " PartID "<< partID<<" was NOT correctly added to ConfigID "<<configID<< endl;
 
             }
         }
@@ -281,6 +280,36 @@ BaseSPtr CtiConfigManager::createConfigByType(const int type)
             case ConfigTypeMCTVThreshold:
             {
                 BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTVThreshold>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTDisconnect:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTDisconnect>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTLongLoadProfile:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTLongLoadProfile>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTHoliday:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTHoliday>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTLoadProfileChannels:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTLoadProfileChannels>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTRelays:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTRelays>());
+                return tempBasePtr;
+            }
+            case ConfigTypeMCTPrecannedTable:
+            {
+                BaseSPtr tempBasePtr (CTIDBG_new ConfigurationPart<MCTPrecannedTable>());
                 return tempBasePtr;
             }
             default:
