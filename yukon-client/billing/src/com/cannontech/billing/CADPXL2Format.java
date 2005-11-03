@@ -137,7 +137,7 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				java.sql.Timestamp ts = rset.getTimestamp(4);
 				Date tsDate = new Date(ts.getTime());
-				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+				if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
 				
 					pointID = rset.getInt(2);
@@ -169,7 +169,7 @@ public boolean retrieveBillingData(String dbAlias)
 						{
 							if ( ptOffset == 1 || isKWH(ptOffset) )
 							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+								if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 		
 								//** Get the last record and add to it the other pointOffsets' values. **//								
@@ -180,7 +180,7 @@ public boolean retrieveBillingData(String dbAlias)
 							}
 							else if ( isKW(ptOffset) )
 							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+								if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 									
 								//** Get the last record and add to it the other pointOffsets' values. **//
@@ -196,7 +196,7 @@ public boolean retrieveBillingData(String dbAlias)
 							}
 							else if ( isKVAR(ptOffset) )
 							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+								if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 									
 								//** Get the last record and add to it the other pointOffsets' values. **//
@@ -216,14 +216,14 @@ public boolean retrieveBillingData(String dbAlias)
 							*/
 							if (ptOffset == 1 || isKWH(ptOffset))
 							{
-								if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+								if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 									
 								kwhValueVector.add(new Double(value));
 							}
 							else if (isKW(ptOffset))
 							{
-								if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+								if (tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 	
 								kwValueVector.add (new Double(value));
@@ -231,7 +231,7 @@ public boolean retrieveBillingData(String dbAlias)
 	
 							else if (isKVAR(ptOffset))
 							{
-								if (tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+								if (tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 									break inValidTimestamp;
 	
 								kvarValueVector.add(new Double(value));

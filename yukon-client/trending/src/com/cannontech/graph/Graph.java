@@ -660,7 +660,7 @@ public void setViewType(int newViewType)
 
 public void setStartDate(java.util.Date newStartDate)
 {
-	if( startDate.compareTo((Object)newStartDate) != 0 )
+	if( startDate.compareTo(newStartDate) != 0 )
 	{
 		CTILogger.info("Changing Date!");
 		startDate = newStartDate;

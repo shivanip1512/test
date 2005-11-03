@@ -81,7 +81,7 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				java.sql.Timestamp ts = rset.getTimestamp(5);
 				Date tsDate = new Date(ts.getTime());
-				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+				if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
 					currentPointID = rset.getInt(3);
 					double multiplier = 1;
@@ -94,7 +94,7 @@ public boolean retrieveBillingData(String dbAlias)
 					inValidTimestamp:
 					if( currentPointID != lastPointID )	//just getting max time for each point
 					{
-						if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 
 						lastPointID = currentPointID;

@@ -97,7 +97,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 				{
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					Date tsDate = new Date(ts.getTime());
-					if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
+					if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
 					{
 						currentPointID = rset.getInt(2);
 						double multiplier = 1;
@@ -119,7 +119,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 							{
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -131,7 +131,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -142,7 +142,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 								}
 								else if (isKVARH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -157,7 +157,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 									
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 									
 									record.setReadingKWH(reading);
@@ -167,7 +167,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 		
 									record.getPeakDemandReadingsVector().add(new Double(reading));
@@ -175,7 +175,7 @@ public class NISC_TOU_kVarHFormat extends TurtleFormatBase
 								}
 								else if ( isKVARH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 									record.setReadingKvarH(reading);
 								}								

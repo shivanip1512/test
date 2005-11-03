@@ -104,7 +104,7 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				java.sql.Timestamp ts = rset.getTimestamp(3);
 				java.util.Date tsDate = new java.util.Date(ts.getTime());
-				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+				if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
 					currentPointID = rset.getInt(4);
 					double multiplier = 1;
@@ -122,7 +122,7 @@ public boolean retrieveBillingData(String dbAlias)
 						double reading = rset.getDouble(2) / multiplier;
 						String ptName = rset.getString(5);
 	
-						if( tsDate.compareTo((Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+						if( tsDate.compareTo(getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 							break inValidTimestamp;
 							
 						com.cannontech.billing.record.OPURecord opuRec=

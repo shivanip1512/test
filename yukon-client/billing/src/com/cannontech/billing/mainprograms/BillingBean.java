@@ -149,7 +149,7 @@ public Date getEndDate()
 }
 public void setEndDate(Date newEndDate)
 {
-	if( endDate == null || endDate.compareTo((Object)newEndDate) != 0)
+	if( endDate == null || endDate.compareTo(newEndDate) != 0)
 	{
 		CTILogger.info("Changing End Date! " + endDate);
 		endDate = newEndDate;

@@ -98,7 +98,7 @@ public class ReportBean
 
 	public void setStartDate(Date newStartDate)
 	{
-		if( getStartDate().compareTo((Object)newStartDate) != 0 )
+		if( getStartDate().compareTo(newStartDate) != 0 )
 		{
 			getModel().setStartDate(newStartDate);
 		}
@@ -127,7 +127,7 @@ public class ReportBean
 	}
 	public void setStopDate(Date newStopDate)
 	{
-		if( getStopDate().compareTo((Object)newStopDate) != 0 )
+		if( getStopDate().compareTo(newStopDate) != 0 )
 		{
 			getModel().setStopDate( newStopDate);
 		}

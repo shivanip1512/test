@@ -116,7 +116,7 @@ public boolean retrieveBillingData(String dbAlias)
 			{
 				java.sql.Timestamp ts = rset.getTimestamp(3);
 				Date tsDate = new Date(ts.getTime());
-				if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+				if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 				{
 					currentPointID = rset.getInt(4);
 					double multiplier = 1;
@@ -133,12 +133,12 @@ public boolean retrieveBillingData(String dbAlias)
 										
 						if( isKWH(ptOffset) || ptOffset == 1) 
 						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 						}
 						else if( isKW(ptOffset) || isKVAR(ptOffset))
 						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 						}
 						

@@ -112,7 +112,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 				{
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					java.util.Date tsDate = new java.util.Date(ts.getTime());
-					if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
+					if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
 					{
 						pointID = rset.getInt(1);
 						double multiplier = 1;
@@ -133,7 +133,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 							{
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -145,7 +145,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -162,7 +162,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 									
 									record.setKwhReading(new Double(value));
@@ -172,7 +172,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 		
 									record.setKwReading(new Double(value));

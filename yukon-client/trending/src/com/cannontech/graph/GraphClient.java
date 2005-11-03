@@ -229,7 +229,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	else if (event.getSource() == getStartDateComboBox())
 	{
 		// Need to make sure the date has changed otherwise we are doing a billion updates on the one stateChange.
-		if( getStartDate().compareTo((Object)getStartDateComboBox().getSelectedDate()) != 0 )
+		if( getStartDate().compareTo(getStartDateComboBox().getSelectedDate()) != 0 )
 		{
 			setStartDate(getStartDateComboBox().getSelectedDate());
 			if( currentWeek != NO_WEEK)

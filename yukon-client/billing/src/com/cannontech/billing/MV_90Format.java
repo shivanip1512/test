@@ -86,7 +86,7 @@ public class MV_90Format extends FileFormatBase
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					Date tsDate = new Date(ts.getTime());
 					
-					if( tsDate.compareTo( (Object)getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+					if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 					{
 						int pointID = rset.getInt(4);
 						java.util.Vector readingVector = null;
@@ -104,7 +104,7 @@ public class MV_90Format extends FileFormatBase
 						inValidTimestamp:
 						if( lastTimeStamp.compareTo((Object)ts) == 0)
 						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -117,7 +117,7 @@ public class MV_90Format extends FileFormatBase
 						}
 						else
 						{
-							if( tsDate.compareTo( (Object)getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							com.cannontech.billing.record.MV_90Record mv90Rec = 
