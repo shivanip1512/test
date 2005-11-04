@@ -30,8 +30,8 @@ This JSP will dump information about the current HTTPSession.
 	out.println(
 		"Session ID from getHeader: " + request.getHeader("Cookie") + "<br>");
 
-	Enumeration enum = session.getAttributeNames();
-	if (enum.hasMoreElements())
+	Enumeration attributeEnum = session.getAttributeNames();
+	if (attributeEnum.hasMoreElements())
 	{
 		int totalSize = 0;
 
@@ -39,9 +39,9 @@ This JSP will dump information about the current HTTPSession.
 		out.println("<TABLE Border=\"2\" WIDTH=\"65%\" BGCOLOR=\"#DDDDFF\">");
 		out.println("<tr><td>Name</td><td>Object.toString()</td>");
 		out.println("<td>Raw Bytes</td><td>Size (bytes)</td></tr>");
-		while (enum.hasMoreElements())
+		while (attributeEnum.hasMoreElements())
 		{
-			String name = (String)enum.nextElement();
+			String name = (String)attributeEnum.nextElement();
 
 			Object sesobj = session.getAttribute(name);
 
