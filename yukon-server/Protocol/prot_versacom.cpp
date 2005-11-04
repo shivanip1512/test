@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/10/19 02:54:11 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/11/04 17:52:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1680,6 +1680,13 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
               dout << RWTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("silver") << "\" for \"putconfig silver\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
         }
+    }
+
+    if((iNum = parse.getiValue("ovuv")) != INT_MIN)
+    {
+        primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
+        if(VersacomVoltageControlCommand((BOOL)iNum))
+            removeLastVStruct();
     }
 
     if( parse.isKeyValid("vcassign") && isConfigFullAddressValid(sn) && (uid || aux || sec || cls || div) )
