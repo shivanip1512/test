@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2005/10/27 17:53:25 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2005/11/04 15:09:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -682,6 +682,7 @@ void CtiPILServer::resultThread()
                         }
                         else
                         {
+                            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1122,6 +1123,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
         else
         {
+            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Notice: Request Message did not indicate return path." << endl;
