@@ -192,6 +192,8 @@ public final static int getDeviceType(String typeString)
 	  return REPEATER;
    else if (isStringDevice(compareString, STRING_RTU_DNP))
      return RTU_DNP;
+   else if (isStringDevice(compareString, STRING_RTU_MODBUS))
+	 return RTU_MODBUS;
    else if (isStringDevice(compareString, STRING_RTU_DART))
      return RTU_DART;
    else if (isStringDevice(compareString, STRING_ION_7700))
@@ -425,6 +427,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_REPEATER[0];
      	case RTU_DNP:
         	return STRING_RTU_DNP[0];
+		case RTU_MODBUS:
+			return STRING_RTU_MODBUS[0];
      	case RTU_DART:
         	return STRING_RTU_DART[0];
      	case ION_7700:

@@ -90,6 +90,7 @@ public class DeviceTypePanel extends com.cannontech.common.gui.util.DataInputPan
                            PAOGroups.STRING_RTU_DART[0],
                            PAOGroups.STRING_RTU_DNP[0],
 									PAOGroups.STRING_RTU_ILEX[0],
+									PAOGroups.STRING_RTU_MODBUS[0],
 									PAOGroups.STRING_RTU_WELCO[0],
 									PAOGroups.STRING_RTM[0]
 								},
