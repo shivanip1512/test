@@ -54,6 +54,7 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new LCUER();
 			break;
       case PAOGroups.RTU_DNP:
+      case PAOGroups.RTU_MODBUS:
       case PAOGroups.RTU_DART:
          returnDevice = new DNPBase();
          returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);

@@ -104,9 +104,10 @@ public interface DeviceTypes extends TypeBase
 	public final static int CBC_7020				= DEVICE_OFFSET + 83;
 	
 	public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
+	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
 	
 	//***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 84;
+	public final static int DEVICE_TYPES_COUNT = 85;
 	
 
 	//all the possible text representation of each device type.
@@ -153,6 +154,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
    	public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
+	public static final String[] STRING_RTU_MODBUS = {"RTU-MODBUS", "RTUMODBUS"};
    	public static final String[] STRING_RTU_DART = {"RTU-DART", "RTUDART"};
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
 	public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};

@@ -71,6 +71,7 @@ public final static boolean hasSlaveAddress(int intType)
       case ION_7330:
       case ION_8300:
       case RTU_DNP:
+      case RTU_MODBUS:
          return true;
       default:
          return false;
@@ -715,6 +716,7 @@ public final static boolean isRTU(int deviceType)
       case ION_7330:
       case ION_8300:
       case RTU_DNP:
+      case RTU_MODBUS:
       case RTU_DART:
 		case RTUILEX:
 		case RTUWELCO:

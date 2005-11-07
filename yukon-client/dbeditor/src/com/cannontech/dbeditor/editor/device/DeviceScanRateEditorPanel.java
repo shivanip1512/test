@@ -1973,6 +1973,11 @@ public void setDeviceType(int type)
 			getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 			getAccumulatorRateComboBox().setSelectedItem("15 minute");	
 	  }
+	  else if( type == PAOGroups.RTU_MODBUS )
+	  {
+			getIntegrityRateCheckBox().setText("Integrity Rate");
+			getIntegrityRateComboBox().setSelectedItem("3 minute");
+	  }
       else if( type == PAOGroups.LCU415 )
       {
          getPeriodicHealthCheckBox().setText("Status & Analog");
@@ -2001,7 +2006,8 @@ public void setDeviceType(int type)
       setHealthObjectsVisible( 
             !(type == PAOGroups.DCT_501
               || DeviceTypesFuncs.isMCT3xx(type) || DeviceTypesFuncs.isMCT4XX(type)
-				|| type == PAOGroups.SERIES_5_LMI) );
+				|| type == PAOGroups.SERIES_5_LMI
+				|| type == PAOGroups.RTU_MODBUS) );
       
 		setAccumulatorObjectsVisible( 
 				!(type == PAOGroups.DCT_501 
@@ -2010,7 +2016,8 @@ public void setDeviceType(int type)
 	            || type == PAOGroups.RTU_DART
 					|| type == PAOGroups.LCU_T3026
 					|| type == PAOGroups.SERIES_5_LMI
-					|| type == PAOGroups.RTM) );
+					|| type == PAOGroups.RTM
+					|| type == PAOGroups.RTU_MODBUS) );
 		
 
 		getAccumulatorRateCheckBox().setSelected(false);
