@@ -56,7 +56,8 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 ----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupEmetcon::setGroupControlState(LONG controlstate)
 {
-    if(getGroupControlState() == CtiLMGroupBase::ActiveState)
+    if(getGroupControlState() == CtiLMGroupBase::InactiveState &&
+       CtiLMGroupBase::ActiveState == controlstate)	
     {
         _refreshsent = FALSE;
     }
