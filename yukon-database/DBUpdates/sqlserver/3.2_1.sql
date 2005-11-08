@@ -68,8 +68,8 @@ insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
 insert into yukongrouprole values (-2397,-304,-400,-40197,'false');
 go
 
-
-
+insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+go
 
 
 
