@@ -3388,12 +3388,6 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 setProgramState(CtiLMProgramBase::FullyActiveState);
                             }
 
-                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << RWTime() << " LMProgram: " << getPAOName() << ",  master cycle controlling " << lm_group->getPAOName() << " next at: " << lm_group->getNextControlTime().asString() << endl;
-                            }
-
                             returnBoolean = TRUE;
                         }
                         else
@@ -3405,6 +3399,13 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         }
                         // set up the next control time regardless whether constraints failed
                         lm_group->setNextControlTime(RWDBDateTime(RWTime(lm_group->getNextControlTime().seconds() + period)));
+
+			if( _LM_DEBUG & LM_DEBUG_STANDARD )
+			{
+			    CtiLockGuard<CtiLogger> dout_guard(dout);
+			    dout << RWTime() << " LMProgram: " << getPAOName() << ",  master cycle controlling " << lm_group->getPAOName() << " next at: " << lm_group->getNextControlTime().asString() << endl;
+			}
+			
                     }
                 }
             }
