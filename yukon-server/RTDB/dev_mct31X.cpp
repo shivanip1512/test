@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/11/08 22:24:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1267,7 +1267,6 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
     RWDate datestamp;
 
     CtiPointBase    *pPoint       = NULL;
-    CtiPointBase    *pDemandPoint = NULL;
     CtiReturnMsg    *ReturnMsg    = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData        = NULL;
 
@@ -1410,9 +1409,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                         CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                    if(pData != NULL)
+                    if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
                         ReturnMsg->PointData().insert(pData);
                         pData = NULL;  // We just put it on the list...
@@ -1470,9 +1467,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                         CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                    if(pData != NULL)
+                    if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
                         ReturnMsg->PointData().insert(pData);
                         pData = NULL;  // We just put it on the list...
@@ -1489,9 +1484,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                             CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                        if(pData != NULL)
+                        if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                         {
                             ReturnMsg->PointData().insert(pData);
                             pData = NULL;  // We just put it on the list...
@@ -1540,9 +1533,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                                 CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1568,9 +1559,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                                 CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1596,9 +1585,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                             CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1624,9 +1611,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                                 CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1659,9 +1644,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                                 CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1682,9 +1665,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                                 CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1705,9 +1686,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                             pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                             CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                            if(pData != NULL)
+                            if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                             {
                                 ReturnMsg->PointData().insert(pData);
                                 pData = NULL;  // We just put it on the list...
@@ -1850,9 +1829,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                         CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                    if(pData != NULL)
+                    if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
                         ReturnMsg->PointData().insert(pData);
                         pData = NULL;  // We just put it on the list...
@@ -1937,9 +1914,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                         CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                    if(pData != NULL)
+                    if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                     {
                         ReturnMsg->PointData().insert(pData);
                         pData = NULL;  // We just put it on the list...
@@ -1968,9 +1943,9 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         datestamp = RWDate((unsigned)DSt->Message[5],
                                            (unsigned)DSt->Message[4],
                                            (unsigned)DSt->Message[3] + 2000 );
-                        timestamp = RWTime( datestamp,
-                                            (unsigned)DSt->Message[6],
-                                            (unsigned)DSt->Message[7] );
+                        timestamp = RWTime(datestamp,
+                                           (unsigned)DSt->Message[6],
+                                           (unsigned)DSt->Message[7] );
 
                         break;
                     }
@@ -2016,7 +1991,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                         hour        =   DSt->Message[11];
                         minute      =   DSt->Message[12];
 
-                        datestamp = RWDate(day, month, year + 2000 );
+                        datestamp = RWDate(day, month, year + 2000);
                         timestamp = RWTime(datestamp, hour, minute);
 
                         break;
@@ -2043,7 +2018,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     pointDescriptor = getName() + " / " + pPoint->getName() + " = " +
                                         CtiNumStr(Value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
 
-                    if( datestamp.isValid() )
+                    if( datestamp.isValid() && timestamp.isValid() )
                     {
                         pointDescriptor += " @ " + CtiNumStr(datestamp.month()).zpad(2)      + "/" +
                                                    CtiNumStr(datestamp.dayOfMonth()).zpad(2) + "/" +
@@ -2051,9 +2026,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                                                    CtiNumStr(timestamp.hour()).zpad(2)       + ":" +
                                                    CtiNumStr(timestamp.minute()).zpad(2);
 
-                        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor);
-
-                        if(pData != NULL)
+                        if(pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, AnalogPointType, pointDescriptor))
                         {
                             pData->setTime( timestamp.seconds() );
 
@@ -2063,6 +2036,23 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, RWTime &TimeNow, RWTPt
                     }
                     else
                     {
+                        if( !datestamp.isValid() || !timestamp.isValid() )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                //  code BL346H is really just the word "bleagh," placed there at the request of CGP and BA
+                                dout << RWTime() << " **** Checkpoint - invalid time on device \"" << getName() << "\", code BL346H **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << RWTime() << " data: ";
+
+                                for( int i = 0; i < 13; i++ )
+                                {
+                                    dout << hex << (int)DSt->Message[i] << " ";
+                                }
+
+                                dout << endl;
+                            }
+                        }
+
                         //  don't send a pointdata msg, it's uninitialized and doesn't matter
                         resultString += pointDescriptor + " @ 00/00/00 00:00 - data not sent, timestamp invalid\n";
                     }
