@@ -201,11 +201,11 @@ private static void reportDifferences(String inName1, java.util.Hashtable h1, St
 
 
 	System.out.println("\nColumns in " + inName1 + " not in " + inName2 + ":");
-	java.util.Enumeration enum = columnsIn1ButNot2.keys();
+	java.util.Enumeration tableEnum = columnsIn1ButNot2.keys();
 	Object table;
-	while( enum.hasMoreElements() )
+	while( tableEnum.hasMoreElements() )
 	{
-		table = enum.nextElement();
+		table = tableEnum.nextElement();
 		System.out.println("\nTable:  " + table);
 		java.util.List l = (java.util.List) columnsIn1ButNot2.get(table);
 		iter = l.iterator();
@@ -214,10 +214,10 @@ private static void reportDifferences(String inName1, java.util.Hashtable h1, St
 	}
 
 	System.out.println("\nColumns in " + inName2 + " not in " + inName1 + ":");
-	enum = columnsIn2ButNot1.keys();
-	while( enum.hasMoreElements() )
+	tableEnum = columnsIn2ButNot1.keys();
+	while( tableEnum.hasMoreElements() )
 	{
-		table = enum.nextElement();
+		table = tableEnum.nextElement();
 		System.out.println("\nTable:  " + table);
 		java.util.List l = (java.util.List) columnsIn2ButNot1.get(table);
 		iter = l.iterator();

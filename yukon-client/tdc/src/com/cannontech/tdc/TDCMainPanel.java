@@ -5,30 +5,11 @@ package com.cannontech.tdc;
  * Creation date: (1/20/00 11:43:56 AM)
  * @author: 
  */
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.table.TableColumn;
 
@@ -42,37 +23,20 @@ import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.functions.PointFuncs;
-import com.cannontech.database.cache.functions.TagFuncs;
-import com.cannontech.database.cache.functions.YukonImageFuncs;
+import com.cannontech.database.cache.functions.*;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.message.dispatch.message.Command;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.dispatch.message.*;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
-import com.cannontech.tdc.data.ColumnData;
-import com.cannontech.tdc.data.Display;
-import com.cannontech.tdc.data.DisplayData;
+import com.cannontech.tdc.data.*;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
-import com.cannontech.tdc.roweditor.AltScanRatePanel;
-import com.cannontech.tdc.roweditor.AnalogPanel;
-import com.cannontech.tdc.roweditor.EditorDialogData;
-import com.cannontech.tdc.roweditor.ManualEntryJPanel;
-import com.cannontech.tdc.roweditor.RowEditorDialog;
-import com.cannontech.tdc.roweditor.SendData;
-import com.cannontech.tdc.roweditor.StatusPanelControlEntry;
-import com.cannontech.tdc.roweditor.StatusPanelManualEntry;
-import com.cannontech.tdc.roweditor.TagWizardPanel;
-import com.cannontech.tdc.roweditor.TagsEditorPanel;
+import com.cannontech.tdc.roweditor.*;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
 import com.cannontech.tdc.utils.DataBaseInteraction;
 import com.cannontech.tdc.utils.TDCDefines;
@@ -2171,12 +2135,13 @@ private void initializeParameters()
 	catch( Exception e ) 
 	{
 		// init file not found
-		if( parentFrame.startingDisplayName != null )
+		if( TDCMainFrame.startingDisplayName != null )
 		{
-			if( parentFrame.startingViewType != null )
-				parentFrame.setSelectedViewType( parentFrame.startingViewType );
+			if( TDCMainFrame.startingViewType != null ) {
+                parentFrame.setSelectedViewType( TDCMainFrame.startingViewType );
+            }
 			
-			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( parentFrame.startingDisplayName ) );
+			getJComboCurrentDisplay().setSelectedIndex( getDisplayIndexByJComboValue( TDCMainFrame.startingDisplayName ) );
 			setUpTable();
 		}
 		else
@@ -2337,25 +2302,25 @@ public void jLabelDisplayTitle_MousePressed(java.awt.event.MouseEvent mouseEvent
 /**
  * Comment
  */
-public void jMenuItemPageBack_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+public void jMenuItemPageBack_ActionPerformed(ActionEvent actionEvent) 
 {
 	if( totalPages > 1 )
 	{
-		javax.swing.JRadioButtonMenuItem previousButton = null;
-		java.util.Enumeration enum = getButtonGroupPage().getElements();
-		java.util.ArrayList buttonList = new java.util.ArrayList(10);
+		JRadioButtonMenuItem previousButton = null;
+		Enumeration elementEnum = getButtonGroupPage().getElements();
+		ArrayList buttonList = new ArrayList(10);
 
-		while( enum.hasMoreElements() )
-			buttonList.add( enum.nextElement() );
+		while( elementEnum.hasMoreElements() )
+			buttonList.add( elementEnum.nextElement() );
 	
 		for( int i = 0; i < buttonList.size(); i++ )
 		{
 			if( ((javax.swing.JRadioButtonMenuItem)buttonList.get(i)).isSelected() )
 			{
 				if( i == 0 )
-					previousButton = (javax.swing.JRadioButtonMenuItem)buttonList.get( buttonList.size()-1 );
+					previousButton = (JRadioButtonMenuItem)buttonList.get( buttonList.size()-1 );
 				else
-					previousButton = (javax.swing.JRadioButtonMenuItem)buttonList.get( i-1 );
+					previousButton = (JRadioButtonMenuItem)buttonList.get( i-1 );
 
 				break;
 			}
@@ -2488,19 +2453,19 @@ public void jMenuItemAltScanRate_ActionPerformed(java.awt.event.ActionEvent acti
 /**
  * Comment
  */
-public void jMenuItemPageForward_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
+public void jMenuItemPageForward_ActionPerformed(ActionEvent actionEvent) 
 {
 	if( totalPages > 1 )
 	{
-		javax.swing.JRadioButtonMenuItem nextButton = null;
-		java.util.Enumeration enum = getButtonGroupPage().getElements();
+		JRadioButtonMenuItem nextButton = null;
+		Enumeration elementEnum = getButtonGroupPage().getElements();
 
-		while( enum.hasMoreElements() )
+		while( elementEnum.hasMoreElements() )
 		{
-			if( ((javax.swing.JRadioButtonMenuItem)enum.nextElement()).isSelected() )
+			if( ((JRadioButtonMenuItem)elementEnum.nextElement()).isSelected() )
 			{
-				if( enum.hasMoreElements() )
-					nextButton = (javax.swing.JRadioButtonMenuItem)enum.nextElement();
+				if( elementEnum.hasMoreElements() )
+					nextButton = (JRadioButtonMenuItem)elementEnum.nextElement();
 				else
 					nextButton = getJRadioButtonPage1();
 

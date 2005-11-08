@@ -42,10 +42,10 @@ com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).
 		  if (j == null)
 			 com.cannontech.clientutils.CTILogger.info("Unable to find JAR file.");
 
-		  java.util.Enumeration enum = j.entries();
-		  while (enum.hasMoreElements())
+		  java.util.Enumeration entryEnum = j.entries();
+		  while (entryEnum.hasMoreElements())
 		  {
-			 java.util.jar.JarEntry e = (java.util.jar.JarEntry) enum.nextElement();
+			 java.util.jar.JarEntry e = (java.util.jar.JarEntry) entryEnum.nextElement();
 			 String name = e.getName();
 
 			 if (name.endsWith(".class"))

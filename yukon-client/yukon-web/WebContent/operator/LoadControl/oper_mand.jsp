@@ -68,9 +68,9 @@
 				checker.set("comments", "(none)");
 			}
 			else {	// submitted, validate and redirect to confirmation page
-				java.util.Enumeration enum = request.getParameterNames();
-				while (enum.hasMoreElements()) {
-					String name = (String)enum.nextElement();
+				java.util.Enumeration parameterEnum = request.getParameterNames();
+				while (parameterEnum.hasMoreElements()) {
+					String name = (String)parameterEnum.nextElement();
 					String[] value = request.getParameterValues(name);
 					if (value.length == 1)
 						checker.set(name, value[0]);
