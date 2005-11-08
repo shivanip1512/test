@@ -3053,7 +3053,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                 //Check to see if any groups are ready to be refreshed to ramped in
                 else
                 */
-                if( lm_group->getNextControlTime().seconds() > gInvalidRWDBDateTime &&
+                if( lm_group->getNextControlTime().seconds() > gInvalidRWDBDateTimeSeconds &&
                          lm_group->getNextControlTime().seconds() <= secondsFrom1901 &&
                          (!getIsRampingOut() || (getIsRampingOut() && lm_group->getIsRampingOut()))) //if the program is ramping out, then only refresh if this group is stillr amping out
                 {
