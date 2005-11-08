@@ -21,10 +21,10 @@ using namespace std;
 #include "utility.h"
 
 
-static const RWCString str_quoted_token("((\"[^\"]+\")|('[^']'))");
+static const RWCString str_quoted_token("((\"[^\"]+\")|('[^']+'))");
 
 static const RWCString str_num     ("([0-9]+)");
-static const RWCString str_floatnum("([0-9]+(\\.[0-9]*)?)");
+static const RWCString str_floatnum("([0-9]+(\\.[0-9]*)?)");  //  this may need to allow for negatives... ?
 static const RWCString str_hexnum  ("(0x[0-9a-f]+)");
 static const RWCString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
 
@@ -350,11 +350,8 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
     RWCRExpr   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
     RWCRExpr   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
     RWCRExpr   re_rate ("rate *[abcdt]");
-    RWCRExpr   re_kwh  ("kwh");
-    RWCRExpr   re_kvah ("kvah");
-    RWCRExpr   re_kvarh("kvarh");
 
-    RWCRExpr   re_demand("dema|kw( |$)|kvar( |$)|kva( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
+    RWCRExpr   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
 
     //  getvalue lp channel 1 12/14/04 12:00
     //  getvalue lp channel 1 8-13-2005 14:45
@@ -506,6 +503,10 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         else if(CmdStr.contains(" codes"))
         {
             _cmd["codes"] = CtiParseValue(TRUE);
+        }
+        else if(CmdStr.contains(" freezecount"))
+        {
+            _cmd["freeze_counter"] = CtiParseValue(TRUE);
         }
         else
         {
@@ -857,6 +858,32 @@ void  CtiCommandParser::doParseControl(const RWCString &CmdStr)
             _cmd["cycle"] = CtiParseValue( (iValue) );
             _snprintf(tbuf, sizeof(tbuf), "CYCLE %d%%", iValue);
         }
+        else if( CmdStr.contains(" latch") )
+        {
+            if(!(token = CmdStr.match(" latch relays? ([ab]+|none)")).isNull())
+            {
+                string latch_relays;
+
+                token.replace(" latch relays? ", "");
+
+                if( token.contains("a") )
+                {
+                    //  note that it's not just a naked "a"
+                    latch_relays.append("(a)");
+                }
+                if( token.contains("b") )
+                {
+                    //  note that it's not just a naked "b"
+                    latch_relays.append("(b)");
+                }
+                if( token.contains("none") )
+                {
+                    latch_relays.assign("none");
+                }
+
+                _cmd["latch_relays"] = CtiParseValue(latch_relays.data());
+            }
+        }
 
         if(CmdStr.contains(" sbo_selectonly"))          // Sourcing from CmdStr, which is the entire command string.
         {
@@ -1168,7 +1195,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
     RWCRExpr    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
     RWCRExpr    re_address("address (group|uniq)");
     RWCRExpr    re_lp_channel(" lp channel " + str_num);
-    RWCRExpr    re_centron("centron (multiplier|parameters)");
+    RWCRExpr    re_centron("centron (ratio|parameters)");
 
     char *p;
 
@@ -1323,9 +1350,9 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
                 temp2 = cmdtok();  //  grab the token we care about
 
                 //  if it's just "interval," get the next token
-                if( !temp2.compareTo("multiplier") )
+                if( !temp2.compareTo("ratio") )
                 {
-                    _cmd["centron_multiplier"] = CtiParseValue(true);
+                    _cmd["centron_ratio"] = CtiParseValue(true);
                 }
                 if( !temp2.compareTo("parameters") )
                 {
@@ -1595,21 +1622,23 @@ RWCString CtiCommandParser::getsValue(const RWCString key) const
 
 void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
 {
-    RWCString   temp2;
-    RWCString   token;
-    RWCRExpr    re_rawcmd("raw (func(tion)? )?start=0x[0-9a-f]+( 0x[0-9a-f]+)*");
-    RWCRExpr    re_rolecmd("role [0-9]+" \
-                               " [0-9]+" \
-                               " [0-9]+" \
-                               " [0-9]+" \
-                               " [0-9]+");
-    RWCRExpr    re_interval("interval(s| lp| li))");  //  match "intervals", "interval lp" and "interval li"
-    RWCRExpr    re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
-    RWCRExpr    re_ied_class("ied class [0-9]+ [0-9]+");
-    RWCRExpr    re_ied_scan ("ied scan [0-9]+ [0-9]+");
-    RWCRExpr    re_group_address("group (enable|disable)");
-    RWCRExpr    re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    RWCRExpr    re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
+    RWCString temp2;
+    RWCString token;
+    RWCRExpr  re_rawcmd("raw (func(tion)? )?start=0x[0-9a-f]+( 0x[0-9a-f]+)*");
+    RWCRExpr  re_rolecmd("role [0-9]+" \
+                             " [0-9]+" \
+                             " [0-9]+" \
+                             " [0-9]+" \
+                             " [0-9]+");
+    RWCRExpr  re_interval("interval(s| lp| li))");  //  match "intervals", "interval lp" and "interval li"
+    RWCRExpr  re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
+    RWCRExpr  re_ied_class("ied class [0-9]+ [0-9]+");
+    RWCRExpr  re_ied_scan ("ied scan [0-9]+ [0-9]+");
+    RWCRExpr  re_group_address("group (enable|disable)");
+    RWCRExpr  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
+    RWCRExpr  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
+    RWCRExpr  re_loadlimit("load limit " + str_num +
+                                     " " + str_num);
 
     char *p;
 
@@ -1645,8 +1674,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 cmdtok();  //  go past "ied"
                 cmdtok();  //  go past "class"
 
-                _cmd["class"] = CtiParseValue( atoi( cmdtok().data() ) );
-                _cmd["classoffset"] = CtiParseValue( atoi( cmdtok().data() ) );
+                _cmd["class"]       = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["classoffset"] = CtiParseValue(atoi(cmdtok().data()));
             }
             if(!(token = CmdStr.match(re_ied_scan)).isNull())
             {
@@ -1654,8 +1683,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                 cmdtok();  //  go past "ied"
                 cmdtok();  //  go past "scan"
 
-                _cmd["scan"] = CtiParseValue( atoi( cmdtok().data() ) );
-                _cmd["scandelay"] = CtiParseValue( atoi( cmdtok().data() ) );
+                _cmd["scan"]      = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["scandelay"] = CtiParseValue(atoi(cmdtok().data()));
             }
         }
         if(CmdStr.contains(" onoffpeak"))
@@ -1670,13 +1699,15 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
         {
             _cmd["disconnect"] = CtiParseValue(TRUE);
 
-            //  this needs a regexp to match the load limit value, etc
-            /*
-            if(!(CmdStr.contains("load_limit"))
+            if(!(token = CmdStr.match(re_loadlimit)).isNull())
             {
-                _cmd["load limit"] = CtiParseValue(TRUE);
+                RWCTokenizer cmdtok(token);
+                cmdtok();  //  go past "load"
+                cmdtok();  //  go past "limit"
+
+                _cmd["disconnect demand threshold"]        = CtiParseValue(atoi(cmdtok().data()));
+                _cmd["disconnect load limit connect delay"] = CtiParseValue(atoi(cmdtok().data()));
             }
-            */
         }
         if(CmdStr.contains(" group"))
         {
@@ -1778,16 +1809,19 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
             {
                 RWCTokenizer cmdtok(token);
 
-                RWCString temp = cmdtok();
+                RWCString temp;
+
+                temp = cmdtok();
+                temp = cmdtok();  //  move past "centron"
 
                 if( !temp.compareTo("ratio") )
                 {
                     _cmd["centron_ratio"] = CtiParseValue(atoi(RWCString(cmdtok())));
                 }
-                else if( !temp.compareTo("reading") )
+                if( !temp.compareTo("reading") )
                 {
                     _cmd["centron_reading_forward"] = CtiParseValue(RWCString(cmdtok()));
-                    _cmd["centron_reading_reverse"] = CtiParseValue(RWCString(cmdtok()));  //  should default to zero
+                    _cmd["centron_reading_reverse"] = CtiParseValue(RWCString(cmdtok()));
                 }
             }
         }
@@ -3517,7 +3551,7 @@ void  CtiCommandParser::doParseControlExpresscom(const RWCString &CmdStr)
     {
         _cmd["xcflip"] = CtiParseValue( TRUE );
     }
-    if(!(token = CmdStr.match(" tcycle [0-9]+")).isNull())
+    else if(!(token = CmdStr.match(" tcycle [0-9]+")).isNull())
     {
         _cmd["xctcycle"] = CtiParseValue( TRUE );
 
