@@ -808,6 +808,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 groups_taken++;
                                 CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
 
+				setLastGroupControlled(currentLMGroup->getPAOId());				
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                                 if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1273,6 +1274,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         {
                             groups_taken++;
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+
+			    setLastGroupControlled(currentLMGroup->getPAOId());			    
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
@@ -2532,6 +2535,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                         if(getConstraintOverride() || con_checker.checkControl(shedTime, true))
                         {
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+
+			    setLastGroupControlled(currentLMGroup->getPAOId());			    
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -2605,6 +2610,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                         {
                             groups_taken++;
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+
+			    setLastGroupControlled(currentLMGroup->getPAOId());
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -3465,6 +3472,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             groups_taken++;
                             CtiRequestMsg* requestMsg = nextLMGroupToTake->createRotationRequestMsg(sendRate, shedTime, defaultLMRefreshPriority);
 
+			    setLastGroupControlled(nextLMGroupToTake->getPAOId());			    
                             if( nextLMGroupToTake->getGroupControlState() == CtiLMGroupBase::InactiveState )
                             {
                                 startGroupControl(nextLMGroupToTake, requestMsg, multiPilMsg);
