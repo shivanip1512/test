@@ -123,10 +123,10 @@ public class DynamicJNLPServlet extends HttpServlet
             return;
 
         StringBuffer propXmlBuffer = new StringBuffer();
-        Enumeration enum = req.getParameterNames();
-        while (enum.hasMoreElements())
+        Enumeration parameterEnum = req.getParameterNames();
+        while (parameterEnum.hasMoreElements())
         {
-            String name = (String) enum.nextElement();
+            String name = (String) parameterEnum.nextElement();
             propXmlBuffer.append(
                     this.getPropertyXML(name, req.getParameter(name)));
         }

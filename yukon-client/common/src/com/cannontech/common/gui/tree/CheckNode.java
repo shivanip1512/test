@@ -66,10 +66,10 @@ public class CheckNode extends DBTreeNode
 
 		if (children != null)
 		{
-			Enumeration enum = children.elements();
-			while (enum.hasMoreElements())
+			Enumeration elementEnum = children.elements();
+			while (elementEnum.hasMoreElements())
 			{
-				DBTreeNode node = (DBTreeNode) enum.nextElement();
+				DBTreeNode node = (DBTreeNode) elementEnum.nextElement();
 				if (node instanceof CheckNode)
 					 ((CheckNode) node).setSelected(isSelected, checkedNodes);
 			}

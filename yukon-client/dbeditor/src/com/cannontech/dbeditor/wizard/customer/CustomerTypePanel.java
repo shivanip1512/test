@@ -197,11 +197,11 @@ private javax.swing.JRadioButton getJRadioButtonType5() {
 	 */
 	public int getSelectedCustomerType() 
 	{
-		Enumeration enum = buttonGroup.getElements();
+		Enumeration elementEnum = buttonGroup.getElements();
 		
-		while( enum.hasMoreElements() )
+		while( elementEnum.hasMoreElements() )
 		{
-			JRadioButton button = (JRadioButton)enum.nextElement();
+			JRadioButton button = (JRadioButton)elementEnum.nextElement();
 			if( button.isSelected() )
 			{
 				return ((Integer)button.getClientProperty("cti.customertype.id")).intValue();	
@@ -291,14 +291,14 @@ private javax.swing.JRadioButton getJRadioButtonType5() {
 	buttonGroup.add( getJRadioButtonType4() );
 	buttonGroup.add( getJRadioButtonType5() );
 	
-	Enumeration enum = buttonGroup.getElements();
+	Enumeration elementEnum = buttonGroup.getElements();
 	boolean selectedStart = false;
 	
 	for( int i = 0; i < CustomerTypes.STRING_ALL_CUSTOMER_TYPES.length; i++ )
 		if( !CustomerTypes.STRING_ALL_CUSTOMER_TYPES[i].equalsIgnoreCase(
 					CustomerTypes.STRING_INVALID) )
 		{			
-			JRadioButton button = (JRadioButton)enum.nextElement(); 
+			JRadioButton button = (JRadioButton)elementEnum.nextElement(); 
 			
 			
 			//DO NOT SHOW RESIDENTIAL CUSTOMERS FOR NOW

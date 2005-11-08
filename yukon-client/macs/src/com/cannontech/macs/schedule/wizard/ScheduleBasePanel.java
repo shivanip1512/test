@@ -3,6 +3,7 @@ package com.cannontech.macs.schedule.wizard;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Calendar;
 import java.util.List;
 
 import com.cannontech.common.util.StringUtils;
@@ -1772,7 +1773,7 @@ public void jCheckBoxEveryYear_ActionPerformed(java.awt.event.ActionEvent action
 	{
 		dateFormatter = new java.text.SimpleDateFormat("MMMMMMMM dd, yyyy");
 
-      selCal.set( selCal.YEAR, currCal.get(currCal.YEAR) );
+      selCal.set( Calendar.YEAR, currCal.get(Calendar.YEAR) );
 	}
 
    getDateComboBox().setDateFormat( dateFormatter );
@@ -1810,10 +1811,10 @@ public void jComboBoxStopPolicy_ActionPerformed(java.awt.event.ActionEvent actio
  */
 public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	boolean val;
+	boolean val = getJComboBoxType().getSelectedItem().equals( Schedule.SIMPLE_TYPE );
 
 	//Simple schedules can not have the UNTIL_COMPLETE stop policy	
-	if( val = getJComboBoxType().getSelectedItem().equals( Schedule.SIMPLE_TYPE ) )
+	if( val )
 	{
 		//release the hate!
 		if( getSelectedStopPolicy().equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
@@ -1896,18 +1897,18 @@ public static void main(java.lang.String[] args) {
 /**
  * Insert the method's description here.
  * Creation date: (3/8/2001 2:20:06 PM)
- * @param enum java.util.Enumeration
+ * @param items java.util.Enumeration
  */
-private void setEditableJComboBox(final java.util.Enumeration enum) 
+private void setEditableJComboBox(final java.util.Enumeration items) 
 {
-	if( enum != null )
+	if( items != null )
 	{		
 		javax.swing.SwingUtilities.invokeLater( new Runnable()
 		{
 			public void run()
 			{
-				while( enum.hasMoreElements() )
-					getJComboBoxCategory().addItem( enum.nextElement().toString() );
+				while( items.hasMoreElements() )
+					getJComboBoxCategory().addItem( items.nextElement().toString() );
 			}
 				
 		});			

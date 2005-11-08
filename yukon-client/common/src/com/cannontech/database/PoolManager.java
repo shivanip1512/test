@@ -287,12 +287,12 @@ public class PoolManager
  */
 public String[] getAllPoolsStrings()
 {
-	Enumeration enum = pools.elements();
+	Enumeration poolEnum = pools.elements();
 	String[] strs = new String[ pools.size() ];
 	int i = 0;
 	
-	while ( enum.hasMoreElements() )
-		strs[i++] = enum.nextElement().toString();
+	while ( poolEnum.hasMoreElements() )
+		strs[i++] = poolEnum.nextElement().toString();
 		
 	return strs;
 }
