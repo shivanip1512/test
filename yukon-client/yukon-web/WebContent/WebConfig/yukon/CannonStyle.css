@@ -56,11 +56,11 @@ a.Link4:hover {color: #666699}
 .ConfirmMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #0000FF }
 .redMsg { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #CC0000 }
 
-.bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120 px;}
-.optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:120 px;}
-.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:120 px;}
-.navmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #CCCCCC; color: #000000;   border: 1px #99FFFF; cursor:default; width:120 px;}
-.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #99FFFF; cursor:default; width:120 px;}
+.bgmenu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; text-decoration: none; background-color: #FFFFFF;  position:absolute; border: 1px #666699 outset; visibility: hidden; cursor:default; width:120px;}
+.optmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #FFFFFF; color: #000000;   border: 1px #666699; cursor:default; width:120px;}
+.optmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #666699; cursor:default; width:120px;}
+.navmenu1 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #CCCCCC; color: #000000;   border: 1px #99FFFF; cursor:default; width:120px;}
+.navmenu2 { font-family: Arial, Helvetica, sans-serif; font-size: 10px; text-decoration: none; background-color: #666699; color: #FFFFFF;   border: 1px #99FFFF; cursor:default; width:120px;}
 .SchedText { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #666699 }
 
 .LeftCell { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #FFFFFF; background-color: #666699}
