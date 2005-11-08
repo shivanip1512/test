@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/11/03 18:04:31 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/11/08 23:50:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,6 +134,7 @@ public:
         GetValue_LoadProfilePeakReport,
         GetValue_Outage,
         GetValue_TOU,
+        GetValue_FreezeCounter,
 
         // PutValue Commands
         PutValue_IEDReset,
@@ -184,6 +185,8 @@ public:
         GetConfig_Options,
         GetConfig_GroupAddress,
         GetConfig_Disconnect,
+        GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
+                                      //    commands like this one, i don't like this being a big mess of non-general commands
 
         // PutConfig commands
         PutConfig_Install,
@@ -229,6 +232,7 @@ public:
         Control_Open,
         Control_Conn,
         Control_Disc,
+        Control_Latch,
 
         Command_Loop,
 
