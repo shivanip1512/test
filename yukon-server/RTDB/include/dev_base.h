@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/10/27 17:46:45 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/11/09 00:32:21 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -312,7 +312,7 @@ public:
     virtual bool getOutMessage(CtiOutMessage *&OutMessage);
     virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
 
-    virtual void setNextFreeze(int freeze);  //  for frozen reads
+    virtual void setExpectedFreeze(int freeze);  //  for frozen reads
 
     INT incQueueSubmittal(int bumpcnt, RWTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
     INT incQueueProcessed(int bumpCnt, RWTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
