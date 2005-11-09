@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/11/09 00:13:14 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -356,11 +356,11 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
 
 
 INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
-                                   CtiCommandParser               &parse,
-                                   OUTMESS                        *&OutMessage,
-                                   RWTPtrSlist< CtiMessage >      &vgList,
-                                   RWTPtrSlist< CtiMessage >      &retList,
-                                   RWTPtrSlist< OUTMESS >         &outList)
+                                           CtiCommandParser               &parse,
+                                           OUTMESS                        *&OutMessage,
+                                           RWTPtrSlist< CtiMessage >      &vgList,
+                                           RWTPtrSlist< CtiMessage >      &retList,
+                                           RWTPtrSlist< OUTMESS >         &outList)
 {
     int   i;
     bool  found = false;
@@ -378,23 +378,32 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        //  correct for 1-based numbering
        int rolenum = parse.getiValue("rolenum") - 1;
 
-       function = Emetcon::PutConfig_Role;
-       found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-       //  add on offset if it's role 2-24, else default to role 1 (no offset)
-       if( rolenum > 0 && rolenum < 24 )
+       //  check that the offset is valid - otherwise we should fail
+       if( rolenum >= 0 && rolenum < 24 )
        {
-           OutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+           function = Emetcon::PutConfig_Role;
+           found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+           //  add on offset if it's role 2-24, else default to role 1 (no offset)
+           if( rolenum > 0 && rolenum < 24 )
+           {
+               OutMessage->Buffer.BSt.Function += rolenum * Rpt_RoleLen;
+           }
+
+           Temp[0]  =  parse.getiValue("rolefixed") & 0x1F;
+           Temp[0] |=  parse.getiValue("roleout") << 5;
+
+           Temp[1]  = (parse.getiValue("rolerpt") << 1) & 0x1F;
+           Temp[1] |=  parse.getiValue("rolein") << 5;
+           Temp[1] |=  0x01;  //  set lowest bit to 1 instead of 0, per spec
+
+           OutMessage->Buffer.BSt.Message[0] = Temp[0];
+           OutMessage->Buffer.BSt.Message[1] = Temp[1];
        }
-
-       Temp[0]  = parse.getiValue("rolefixed") & 0x1F;
-       Temp[0] |= parse.getiValue("roleout") << 5;
-       Temp[1]  = (parse.getiValue("rolerpt") << 1) & 0x1F;
-       Temp[1] |= parse.getiValue("rolein") << 5;
-       Temp[1] |= 0x01;  //  set lowest bit to 1 instead of 0, per spec
-
-       OutMessage->Buffer.BSt.Message[0] = Temp[0];
-       OutMessage->Buffer.BSt.Message[1] = Temp[1];
+       else
+       {
+           nRet = BADPARAM;
+       }
     }
     else if(parse.isKeyValid("multi_rolenum"))
     {
