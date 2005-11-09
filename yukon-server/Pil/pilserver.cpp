@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2005/11/04 15:09:18 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2005/11/09 00:11:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1549,7 +1549,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         device = match_coll.back();
                         match_coll.pop_back();
 
-                        device->setNextFreeze(parse.getdValue("freeze"));
+                        device->setExpectedFreeze(parse.getdValue("freeze"));
                     }
 
                     //  this is where we'd attempt to correct devices that have an incorrect freeze counter
