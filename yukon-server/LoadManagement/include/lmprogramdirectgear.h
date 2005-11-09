@@ -102,7 +102,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const RWCString RotationMethod;
     static const RWCString LatchingMethod;
     static const RWCString TrueCycleMethod;
-    static const RWCString ThermostatSetbackMethod;
+    static const RWCString ThermostatRampingMethod;
     static const RWCString NoControlMethod;
 
     //Possible method stop types

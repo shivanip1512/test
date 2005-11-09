@@ -886,7 +886,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
                 }
-                else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
                 {
                     CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
                     RWCString settings = thermostatGearObject->getSettings();
@@ -1485,7 +1485,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 }
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
-            else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+            else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
             {
                 CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
                 RWCString settings = thermostatGearObject->getSettings();
@@ -2223,7 +2223,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::TrueCycleMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ||
-                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) ||
+                !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) ||
                 !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::LatchingMethod,RWCString::ignoreCase) ||
                 ( !previousGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) &&
                   getManualControlReceivedFlag() ) )
@@ -2713,7 +2713,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 setProgramState(CtiLMProgramBase::FullyActiveState);
             }
         }
-        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
         {
             CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
             RWCString settings = thermostatGearObject->getSettings();
@@ -2808,7 +2808,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
                              !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) ||
                              !tempControlMethod.compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ||
-                             !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                             !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
                     {
                         if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RestoreStopType,RWCString::ignoreCase) )
                         {
@@ -2830,7 +2830,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                                 LONG offTimeInSeconds = previousGearObject->getMethodPeriod() * (previousGearObject->getMethodRate() / 100.0);
                                 timeToTimeIn.addMinutes(offTimeInSeconds/60);
                             }
-                            else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                            else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
                             {
                                 timeToTimeIn = currentLMGroup->getLastControlSent();
                                 CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)previousGearObject;
@@ -3505,7 +3505,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             /*CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << RWTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method isn't supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;*/
         }
-        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) ||
+        else if( !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) ||
                  !currentGearObject->getControlMethod().compareTo(CtiLMProgramDirectGear::NoControlMethod,RWCString::ignoreCase) )
         {
             //we don't refresh set point commands or no control gears
@@ -3607,7 +3607,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::TimeRefreshMethod,RWCString::ignoreCase) ||
                          !tempControlMethod.compareTo(CtiLMProgramDirectGear::MasterCycleMethod,RWCString::ignoreCase) ||
                          !tempControlMethod.compareTo(CtiLMProgramDirectGear::RotationMethod,RWCString::ignoreCase) ||
-                         !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                         !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
                 {
                     if( !tempMethodStopType.compareTo(CtiLMProgramDirectGear::RestoreStopType,RWCString::ignoreCase) ||
                         /* fugly.  Only manually active programs can ramp out.  If this program is actually controlling
@@ -3644,7 +3644,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             LONG offTimeInSeconds = currentGearObject->getMethodPeriod() * (currentGearObject->getMethodRate() / 100.0);
                             timeToTimeIn.addMinutes(offTimeInSeconds/60);
                         }
-                        else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatSetbackMethod,RWCString::ignoreCase) )
+                        else if( !tempControlMethod.compareTo(CtiLMProgramDirectGear::ThermostatRampingMethod,RWCString::ignoreCase) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
                             CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)currentGearObject;
