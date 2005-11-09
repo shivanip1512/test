@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/11/03 17:51:31 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/11/09 00:28:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,8 +164,8 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs._cmd     = Emetcon::PutConfig_TSync;
     cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)CtiDeviceMCT410::FuncWrite_TSyncPos,
-                            (int)CtiDeviceMCT410::FuncWrite_TSyncLen);
+    cs._funcLen = make_pair((int)MCT4XX_FuncWrite_TSyncPos,
+                            (int)MCT4XX_FuncWrite_TSyncLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::GetConfig_Time;
@@ -1745,11 +1745,6 @@ INT CtiDeviceMCT470::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
         }
 
         point_offset = base_offset + MCT4XX_PointOffset_PeakOffset;
-
-        if( parse.getFlags() & CMD_FLAG_FROZEN )
-        {
-            point_offset += MCT4XX_PointOffset_FrozenOffset;
-        }
 
         pi      = getData(DSt->Message + 0, 2, ValueType_KW);
         pi_time = getData(DSt->Message + 2, 4, ValueType_Raw);
