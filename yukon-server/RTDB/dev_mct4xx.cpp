@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   dev_mct4xx
@@ -9,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/11/03 17:51:31 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/11/09 00:15:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +116,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                 OutMessage->Retry     = 2;
                 OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
                 OutMessage->Request.RouteID   = getRouteID();
-            
+
                 for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = tempList.begin();tempItr != tempList.end();tempItr++)
                 {
                     if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
@@ -140,13 +139,13 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                         if( sRet != NORMAL )
                         {
                             RWCString resultString;
-                    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << RWTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
                                 dout << RWTime( ) << "   Command: " << tempReq->CommandString( ) << endl;
                             }
-                    
+
                             resultString = "ERROR: NoMethod or invalid config. Config name:" + replaceString;
                             retList.insert( CTIDBG_new CtiReturnMsg(getID( ),
                                                                     RWCString(OutMessage->Request.CommandStr),
@@ -188,7 +187,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
-    
+
 
     return nRet;
 
@@ -319,7 +318,7 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandPa
                     OutMessage->Buffer.BSt.Message[1] = (overVThreshold);
                     OutMessage->Buffer.BSt.Message[2] = (underVThreshold>>8);
                     OutMessage->Buffer.BSt.Message[3] = (underVThreshold);
-                        
+
                     outList.append( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
@@ -397,7 +396,7 @@ int CtiDeviceMCT4xx::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) != options 
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) != options
                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration )
                 {
                     OutMessage->Buffer.BSt.Function   = function;
@@ -493,7 +492,7 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
             USHORT function, length, io;
 
             MCTAddressingSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTAddressing> >(tempBasePtr);
-            
+
             lead = config->getLongValueFromKey(Lead);
             bronze = config->getLongValueFromKey(Bronze);
             collection = config->getLongValueFromKey(Collection);
@@ -596,7 +595,7 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &p
                     OutMessage->Buffer.BSt.Message[7] = (dstEnd);
                     OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
 
-            
+
                     outList.append( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
