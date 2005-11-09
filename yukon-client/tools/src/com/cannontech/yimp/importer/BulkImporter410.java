@@ -293,15 +293,15 @@ public void runImport(Vector imps)
             }
         }
         
-        if(template410 instanceof MCT410IL)
-        {
-            template410 = (MCT410IL)template410;
-            current410 = (MCT410IL)current410;
-        }
-        else if(template410 instanceof MCT410CL)
+        if(template410 instanceof MCT410CL)
         {
             template410 = (MCT410CL)template410;
             current410 = (MCT410CL)current410;
+        }
+        else
+        {
+            template410 = (MCT410IL)template410;
+            current410 = (MCT410IL)current410;
         }
 		if(name.length() < 1 || name.length() > 60)
 		{
