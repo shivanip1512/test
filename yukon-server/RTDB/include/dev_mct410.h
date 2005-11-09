@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/11/03 17:51:31 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/11/09 00:33:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,8 +45,8 @@ protected:
 
     enum Commands
     {
-        Command_Connect          = 0x4C,
-        Command_Disconnect       = 0x4D
+        Command_Connect          = 0x4c,
+        Command_Disconnect       = 0x4d
     };
 
     enum MemoryLocations
@@ -60,20 +60,32 @@ protected:
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
 
-        Memory_OutageCyclesPos    = 0x22,
-        Memory_OutageCyclesLen    =    1,
+        Memory_CentronParametersPos = 0x0f,
+        Memory_CentronParametersLen =    1,
 
-        Memory_PowerfailCountPos  = 0x23,
-        Memory_PowerfailCountLen  =    2,
+        Memory_CentronMultiplierPos = 0x19,
+        Memory_CentronMultiplierLen =    1,
 
         Memory_AddressingPos      = 0x13,
-        Memory_AddressingLen      = 6,
+        Memory_AddressingLen      =    6,
 
         Memory_AlarmsPos          = 0x15,
         Memory_AlarmsLen          =    2,
 
         Memory_IntervalsPos       = 0x1a,
         Memory_IntervalsLen       =    4,
+
+        Memory_OverVThresholdPos  = 0x1e,
+        Memory_OverVThresholdLen  =    2,
+
+        Memory_UnderVThresholdPos = 0x20,
+        Memory_UnderVThresholdLen =    2,
+
+        Memory_OutageCyclesPos    = 0x22,
+        Memory_OutageCyclesLen    =    1,
+
+        Memory_PowerfailCountPos  = 0x23,
+        Memory_PowerfailCountLen  =    2,
 
         Memory_LastFreezePos      = 0x26,
         Memory_LastFreezeLen      =   10,
@@ -84,9 +96,17 @@ protected:
         Memory_LLPChannelPos      = 0x34,
         Memory_LLPChannelLen      =    1,
 
-
         Memory_TimeAdjustTolPos   = 0x36,
         Memory_TimeAdjustTolLen   =    1,
+
+        Memory_DSTBeginPos        = 0x37,
+        Memory_DSTBeginLen        =    4,
+
+        Memory_DSTEndPos          = 0x3b,
+        Memory_DSTEndLen          =    4,
+
+        Memory_TimeZoneOffsetPos  = 0x3f,
+        Memory_TimeZoneOffsetLen  =    1,
 
         Memory_RTCPos             = 0x40,
         Memory_RTCLen             =    4,
@@ -109,57 +129,24 @@ protected:
         Memory_TOUDailySched4Pos  = 0x67,
         Memory_TOUDailySched4Len  =    7,
 
-        Memory_DefaultTOURatePos  = 0x6E,
+        Memory_DefaultTOURatePos  = 0x6e,
         Memory_DefaultTOURateLen  =    1,
 
-        Memory_Holiday1Pos        = 0xD0,
+        Memory_Holiday1Pos        = 0xd0,
         Memory_Holiday1Len        =    4,
 
-        Memory_Holiday2Pos        = 0xD4,
+        Memory_Holiday2Pos        = 0xd4,
         Memory_Holiday2Len        =    4,
 
-        Memory_Holiday3Pos        = 0xD9,
+        Memory_Holiday3Pos        = 0xd9,
         Memory_Holiday3Len        =    4,
-
-        Memory_DSTBeginPos        = 0x37,
-        Memory_DSTBeginLen        =    4,
-
-        Memory_DSTEndPos          = 0x3B,
-        Memory_DSTEndLen          =    4,
-
-        Memory_TimeZoneOffsetPos  = 0x3F,
-        Memory_TimeZoneOffsetLen  =    1,
-
-        Memory_OverVThresholdPos  = 0x1E,
-        Memory_OverVThresholdLen  =    2,
-
-        Memory_UnderVThresholdPos = 0x20,
-        Memory_UnderVThresholdLen =    2,
 
     };
 
     enum Functions
     {
-        FuncWrite_IntervalsPos    = 0x03,
-        FuncWrite_IntervalsLen    =    4,
-
-        FuncWrite_LLPStoragePos   = 0x04,
-        FuncWrite_LLPStorageLen   =    5,
-
-        FuncWrite_LLPInterestPos  = 0x05,
-        FuncWrite_LLPInterestLen  =    6,
-
-        FuncWrite_LLPReportingPos = 0x06,
-        FuncWrite_LLPReportingLen =    9,
-
         FuncRead_OutagePos        = 0x10,
         FuncRead_OutageLen        =   13,
-
-        FuncWrite_TOUSchedule1Pos = 0x30,
-        FuncWrite_TOUSchedule1Len = 0x15,
-
-        FuncWrite_TOUSchedule2Pos = 0x31,
-        FuncWrite_TOUSchedule2Len = 0x15,
 
         FuncRead_MReadPos         = 0x90,
         FuncRead_MReadLen         =    9,
@@ -185,29 +172,51 @@ protected:
         FuncRead_LPStatusPos      = 0x97,
         FuncRead_LPStatusLen      =   12,
 
-        FuncRead_LLPStatusPos     = 0x9D,
-        FuncRead_LLPStatusLen     =    8,
+        FuncRead_TOUBasePos          = 0xb0,
+        FuncRead_TOULen              =    9,
+        FuncRead_TOUFrozenOffset     =    4,
 
-        FuncRead_LLPPeakDayPos        = 0xa0,
-        FuncRead_LLPPeakHourPos       = 0xa1,
-        FuncRead_LLPPeakIntervalPos   = 0xa2,
-        FuncRead_LLPPeakLen           =   13,
+        FuncRead_LLPStatusPos        = 0x9d,
+        FuncRead_LLPStatusLen        =    8,
 
-        FuncRead_TOUBasePos           = 0xb0,
-        FuncRead_TOULen               =    9,
-        FuncRead_TOUFrozenOffset      =    4,
+        FuncRead_LLPPeakDayPos       = 0xa0,
+        FuncRead_LLPPeakHourPos      = 0xa1,
+        FuncRead_LLPPeakIntervalPos  = 0xa2,
+        FuncRead_LLPPeakLen          =   13,
 
-        FuncWrite_DisconnectConfigPos = 0xfe,
-        FuncWrite_DisconnectConfigLen =    6,
+        FuncRead_DisconnectConfigPos = 0xfe,
+        FuncRead_DisconnectConfigLen =    9,
 
-        FuncWrite_LLPPeakInterestPos  = 0x06,
-        FuncWrite_LLPPeakInterestLen  =    7,
+        FuncRead_DisconnectStatusPos = 0xfe,
+        FuncRead_DisconnectStatusLen =    1,
 
-        FuncRead_DisconnectConfigPos  = 0xFE,
-        FuncRead_DisconnectConfigLen  =    9,
+        FuncWrite_IntervalsPos       = 0x03,
+        FuncWrite_IntervalsLen       =    4,
 
-        FuncRead_DisconnectStatusPos  = 0xFE,
-        FuncRead_DisconnectStatusLen  =    1
+        FuncWrite_LLPStoragePos      = 0x04,
+        FuncWrite_LLPStorageLen      =    5,
+
+        FuncWrite_LLPInterestPos     = 0x05,
+        FuncWrite_LLPInterestLen     =    6,
+
+        FuncWrite_LLPPeakInterestPos = 0x06,
+        FuncWrite_LLPPeakInterestLen =    7,
+
+        FuncWrite_TOUSchedule1Pos    = 0x30,
+        FuncWrite_TOUSchedule1Len    = 0x15,
+
+        FuncWrite_TOUSchedule2Pos    = 0x31,
+        FuncWrite_TOUSchedule2Len    = 0x15,
+
+        FuncWrite_CentronReadingPos    = 0xf2,
+        FuncWrite_CentronReadingLen    =    6,
+
+        FuncWrite_CentronParametersPos = 0xf3,
+        FuncWrite_CentronParametersLen =    3,
+
+        FuncWrite_DisconnectConfigPos  = 0xfe,
+        FuncWrite_DisconnectConfigLen  =    6,
+
     };
 
     enum ValueType
@@ -217,6 +226,7 @@ protected:
         ValueType_LoadProfile_Voltage,
         ValueType_LoadProfile_KW,
         ValueType_Accumulator,
+        ValueType_FrozenAccumulator,
         ValueType_Raw
     };
 
@@ -238,7 +248,6 @@ protected:
         MCT410_PointOffset_Analog_Outage =  100,
 
         MCT4XX_PointOffset_PeakOffset    =   10,
-        MCT4XX_PointOffset_FrozenOffset  =   10,
 
         MCT410_PointOffset_TOUBase       =  100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
         MCT4XX_PointOffset_RateOffset    =   20   //  gets added for rate B, C, D
@@ -264,12 +273,13 @@ protected:
     {
         double value;
         PointQuality_t quality;
+        int freeze_bit;
         //  this could hold a timestamp someday if i get really adventurous
     };
 
     unsigned char crc8(const unsigned char *buf, unsigned int len);
     point_info_t  getData(unsigned char *buf, int len, ValueType vt=ValueType_KW);
-    static  const QualityMap _errorQualities;
+    static const QualityMap _errorQualities;
 
     CtiPointDataMsg *makePointDataMsg(CtiPoint *p, const point_info_t &pi, const RWCString &pointString);
 
@@ -311,8 +321,10 @@ public:
         MCT4XX_Command_PowerfailReset = 0x89,
         MCT4XX_Command_Reset          = 0x8A,
 
-        FuncWrite_TSyncPos       = 0xf0,
-        FuncWrite_TSyncLen       =    6
+        MCT4XX_FuncWrite_Command      = 0x00,
+
+        MCT4XX_FuncWrite_TSyncPos       = 0xf0,
+        MCT4XX_FuncWrite_TSyncLen       =    6
     };
 
     enum Disconnect_Raw
@@ -350,7 +362,9 @@ public:
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-    virtual INT executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    virtual INT executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
+    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist<CtiMessage>&vgList, RWTPtrSlist<CtiMessage>&retList, RWTPtrSlist<OUTMESS>&outList);
 
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
     int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
@@ -362,12 +376,14 @@ public:
     INT decodeGetValuePeakDemand            ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueVoltage               ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueOutage                ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetValueFreezeCounter         ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueLoadProfile           ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueLoadProfilePeakReport ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeScanLoadProfile               ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusInternal             ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigTime                 ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetConfigCentron              ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigIntervals            ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigModel                ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigDisconnect           ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
