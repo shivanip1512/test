@@ -139,7 +139,7 @@ public interface DeviceTypes extends TypeBase
    	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
-	public static final String[] STRING_MCT_410CL = {"MCT-410CL"};
+	public static final String[] STRING_MCT_410CL = {"MCT-410CL", "MCT410CL"};
 	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};

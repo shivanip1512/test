@@ -9,12 +9,15 @@ package com.cannontech.yimp.util;
 import java.util.Vector;
 import java.sql.Connection; 
 import com.cannontech.database.data.route.RouteBase;
+import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.PoolManager;
@@ -68,15 +71,16 @@ public class DBFuncs
 	 * Grab an MCT410 using a PAOName, returns one with an ID of -12 if unsuccessful
 	 * This should be changed to use cache at a later time
 	 */
-	public static MCT410IL get410FromTemplateName(String name)
+	public static MCT400SeriesBase get410FromTemplateName(String name)
 	{
-		MCT410IL template410 = new MCT410IL();
+		MCT400SeriesBase template410 = new MCT400SeriesBase();
 		template410.setDeviceID(new Integer(-12));
 		Integer id = new Integer(1);
+        String type = new String();
 
-		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND TYPE = 'MCT-410IL'", "yukon");
-		
+		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID,TYPE FROM YUKONPAOBJECT WHERE PAONAME = '" 
+			+ name + "' AND (TYPE = 'MCT-410IL' OR TYPE = 'MCT-410CL')", "yukon");
+        
 		try
 		{
 			stmt.execute();
@@ -84,9 +88,23 @@ public class DBFuncs
 			if( stmt.getRowCount() > 0 )
 			{
 				id = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue());	
-			
-				template410.setDeviceID(id);
-				template410 = (MCT410IL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
+				type = new String(stmt.getRow(0)[1].toString());
+                
+                if(type.length() > 0)
+                {
+                    if(type.compareTo(DeviceTypes.STRING_MCT_410CL[0]) == 0)
+                    {
+                        template410 = new MCT410CL();
+                        template410.setDeviceID(id);
+                        template410 = (MCT410CL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
+                    }
+                    else
+                    {
+                        template410 = new MCT410IL();
+                        template410.setDeviceID(id);
+                        template410 = (MCT410IL) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
+                    }
+                }
 			}
 		}
 		catch( Exception e )
@@ -101,7 +119,7 @@ public class DBFuncs
 	public static boolean IsDuplicateName(String name)
 	{
 		SqlStatement stmt = new SqlStatement("SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND TYPE = 'MCT-410IL'", "yukon");
+			+ name + "' AND (TYPE = 'MCT-410IL' OR TYPE = 'MCT-410CL')", "yukon");
 		
 		try
 		{

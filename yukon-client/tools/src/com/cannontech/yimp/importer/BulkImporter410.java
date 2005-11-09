@@ -27,6 +27,8 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportData;
+import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCT410CL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
@@ -242,8 +244,8 @@ public void runImport(Vector imps)
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
-	MCT410IL current410 = null;
-	MCT410IL template410 = null;
+	MCT400SeriesBase current410 = null;
+    MCT400SeriesBase template410 = null;
 	Vector failures = new Vector();
 	Vector successVector = new Vector();
 	boolean badEntry = false;
@@ -271,7 +273,36 @@ public void runImport(Vector imps)
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
 		badEntry = false;
 		updateDeviceID = null;
-		
+		       
+        if(templateName.length() < 1)
+        {
+            CTILogger.info("Import entry with name " + name + " has no specified 410 template.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified 410 template.", "", "");
+            badEntry = true;
+            errorMsg.append("has no 410 template specified; "); 
+        }
+        else
+        {
+            template410 = DBFuncs.get410FromTemplateName(templateName);
+            if(template410.getDevice().getDeviceID().intValue() == -12)
+            {
+                CTILogger.info("Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.");
+                logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.", "", "");
+                badEntry = true;
+                errorMsg.append("has an unknown MCT410 template; ");
+            }
+        }
+        
+        if(template410 instanceof MCT410IL)
+        {
+            template410 = (MCT410IL)template410;
+            current410 = (MCT410IL)current410;
+        }
+        if(template410 instanceof MCT410CL)
+        {
+            template410 = (MCT410CL)template410;
+            current410 = (MCT410CL)current410;
+        }
 		if(name.length() < 1 || name.length() > 60)
 		{
 			CTILogger.info("Import entry with address " + address + " has a name with an improper length.");
@@ -302,15 +333,21 @@ public void runImport(Vector imps)
 				badEntry = true;
 				errorMsg.append("is using an existing MCT-410 name; ");
 			}
-		}
-		
-		if(new Integer(address).intValue() < 1000000 || new Integer(address).intValue() > 2796201)
+		}		
+		if(template410 instanceof MCT410IL && (new Integer(address).intValue() < 1000000 || new Integer(address).intValue() > 2796201))
 		{
 			CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
 			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
 			badEntry = true;
-			errorMsg.append("address out of MCT410 range; ");	
+			errorMsg.append("address out of MCT410IL range; ");	
 		}
+        else if(template410 instanceof MCT410CL && (new Integer(address).intValue() < 0 || new Integer(address).intValue() > 2796201))
+        {
+            CTILogger.info("Import entry with name " + name + " has an incorrect MCT410 address.");
+            logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has an incorrect MCT410 address.", "", "");
+            badEntry = true;
+            errorMsg.append("address out of MCT410CL range; "); 
+        }
 		if(meterNumber.length() < 1)
 		{
 			CTILogger.info("Import entry with name " + name + " has no meter number.");
@@ -348,24 +385,6 @@ public void runImport(Vector imps)
 				logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a route not in the Yukon database.", "", "");
 				badEntry = true;
 				errorMsg.append("has an unknown route; ");
-			}
-		}
-		if(templateName.length() < 1)
-		{
-			CTILogger.info("Import entry with name " + name + " has no specified 410 template.");
-			logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " has no specified 410 template.", "", "");
-			badEntry = true;
-			errorMsg.append("has no 410 template specified; ");	
-		}
-		else
-		{
-			template410 = DBFuncs.get410FromTemplateName(templateName);
-			if(template410.getDevice().getDeviceID().intValue() == -12)
-			{
-				CTILogger.info("Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.");
-				logger = ImportFuncs.writeToImportLog(logger, 'F', "Import entry with name " + name + " specifies a template MCT410 not in the Yukon database.", "", "");
-				badEntry = true;
-				errorMsg.append("has an unknown MCT410 template; ");
 			}
 		}
 		
@@ -574,6 +593,7 @@ public void runImport(Vector imps)
 	
 	//send off a big DBChangeMsg so all Yukon entities know what's goin' on...
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[1], getDispatchConnection());
+    DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410CL[1], getDispatchConnection());
 	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
 	
 	DBFuncs.writeTotalSuccess(successCounter);
