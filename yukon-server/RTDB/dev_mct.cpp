@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2005/10/27 17:49:50 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2005/11/09 00:36:14 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -850,6 +850,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
 
     switch( InMessage->Sequence )
     {
+        case Emetcon::Control_Latch:
         case Emetcon::Control_Open:
         case Emetcon::Control_Close:
         case Emetcon::Control_Shed:
@@ -1454,43 +1455,41 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         {
             function = Emetcon::GetValue_FrozenKWH;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
-
-            //  add point reduction smarts like the below
         }
         else
         {
             function = Emetcon::GetValue_Default;
             found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+        }
 
-            int channels = 0;  //  so we'll bypass the point-cropping code if /channels/ doesn't get set by the following:
+        int channels = 0;  //  so we'll bypass the point-cropping code if /channels/ doesn't get set by the following:
 
-            if( getType() == TYPEMCT310 || getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL || getType() == TYPEMCT310IL ||
-                getType() == TYPEMCT318 || getType() == TYPEMCT318L  || getType() == TYPEMCT360    || getType() == TYPEMCT370 )
+        if( getType() == TYPEMCT310 || getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL || getType() == TYPEMCT310IL ||
+            getType() == TYPEMCT318 || getType() == TYPEMCT318L  || getType() == TYPEMCT360    || getType() == TYPEMCT370 )
+        {
+            channels = CtiDeviceMCT31X::MCT31X_ChannelCount;
+        }
+        else if( getType() == TYPEMCT470 )
+        {
+            channels = CtiDeviceMCT470::MCT470_ChannelCount;
+        }
+        else if( getType() == TYPEMCT410 )
+        {
+            channels = CtiDeviceMCT410::MCT410_ChannelCount;
+        }
+
+        for( int i = channels; i > 1; i-- )
+        {
+            if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
             {
-                channels = CtiDeviceMCT31X::MCT31X_ChannelCount;
+                OutMessage->Buffer.BSt.Length -= 3;
             }
-            else if( getType() == TYPEMCT470 )
+            else
             {
-                channels = CtiDeviceMCT470::MCT470_ChannelCount;
-            }
-            else if( getType() == TYPEMCT410 )
-            {
-                channels = CtiDeviceMCT410::MCT410_ChannelCount;
+                break;
             }
 
-            for( int i = channels; i > 1; i-- )
-            {
-                if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
-                {
-                    OutMessage->Buffer.BSt.Length -= 3;
-                }
-                else
-                {
-                    break;
-                }
-
-                channels--;
-            }
+            channels--;
         }
     }
 
@@ -1529,54 +1528,49 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
     long   rawPulses;
     double dial;
 
-    INT function;
+    INT function = -1;
 
     bool found = false;
 
     if(parse.getFlags() & CMD_FLAG_PV_DIAL)
     {
-        switch(parse.getiValue("offset"))
+        switch(parse.getiValue("kyz_offset"))
         {
-            default:  //  we should always have offset set to 1-3, but just in case...
-            case 1:
-                function = Emetcon::PutValue_KYZ;
-                break;
-            case 2:
-                function = Emetcon::PutValue_KYZ2;
-                break;
-            case 3:
-                function = Emetcon::PutValue_KYZ3;
-                break;
+            case 1:     function = Emetcon::PutValue_KYZ;   break;
+            case 2:     function = Emetcon::PutValue_KYZ2;  break;
+            case 3:     function = Emetcon::PutValue_KYZ3;  break;
         }
 
-        if(parse.getFlags() & CMD_FLAG_PV_RESET)
+        if( found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO) )
         {
-            dial = 0;
-        }
-        else
-        {
-            dial = parse.getdValue("dial");
-        }
+            if(parse.getFlags() & CMD_FLAG_PV_RESET || !parse.isKeyValid("dial"))
+            {
+                dial = 0;
+            }
+            else
+            {
+                dial = parse.getdValue("dial");
+            }
 
-        CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("offset"), PulseAccumulatorPointType);
+            CtiPointBase *tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("offset"), PulseAccumulatorPointType);
 
-        if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
-        {
-            rawPulses = (int)(dial / (((CtiPointAccumulator *)tmpPoint)->getMultiplier()));
-        }
-        else
-        {
-            rawPulses = (int)dial;
-        }
+            if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
+            {
+                rawPulses = (int)(dial / (((CtiPointAccumulator *)tmpPoint)->getMultiplier()));
+            }
+            else
+            {
+                rawPulses = (int)dial;
+            }
 
-        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
-        //  copy the reading into the output buffer, MSB style
-        for(i = 0; i < 3; i++)
-        {
-            OutMessage->Buffer.BSt.Message[i]   = (rawPulses >> ((2-i)*8)) & 0xFF;
-            OutMessage->Buffer.BSt.Message[i+3] = (rawPulses >> ((2-i)*8)) & 0xFF;
-            OutMessage->Buffer.BSt.Message[i+6] = (rawPulses >> ((2-i)*8)) & 0xFF;
+            //  copy the reading into the output buffer, MSB style
+            for(i = 0; i < 3; i++)
+            {
+                OutMessage->Buffer.BSt.Message[i]   = (rawPulses >> ((2-i)*8)) & 0xFF;
+                OutMessage->Buffer.BSt.Message[i+3] = (rawPulses >> ((2-i)*8)) & 0xFF;
+                OutMessage->Buffer.BSt.Message[i+6] = (rawPulses >> ((2-i)*8)) & 0xFF;
+            }
         }
     }
     else if(parse.getFlags() & CMD_FLAG_PV_PWR)
@@ -1845,7 +1839,7 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
     RWDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
     OUTMESS *tmpOutMess;
 
-    INT function;
+    INT function = -1;
 
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
@@ -1872,11 +1866,15 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
             {
                 function = Emetcon::PutStatus_FreezeVoltageOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                //  set expected voltage freeze here
             }
             else if( parse.getiValue("freeze") == 2 )
             {
                 function = Emetcon::PutStatus_FreezeVoltageTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                //  set expected voltage freeze here
             }
         }
         else
@@ -1885,11 +1883,15 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
             {
                 function = Emetcon::PutStatus_FreezeOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                setExpectedFreeze(parse.getiValue("freeze"));
             }
             else if( parse.getiValue("freeze") == 2 )
             {
                 function = Emetcon::PutStatus_FreezeTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+                setExpectedFreeze(parse.getiValue("freeze"));
             }
         }
     }
@@ -2046,6 +2048,7 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
                 case 2:     function = Emetcon::GetConfig_Multiplier2;  break;
                 case 3:     function = Emetcon::GetConfig_Multiplier3;  break;
                 case 4:     function = Emetcon::GetConfig_Multiplier4;  break;
+                default:    function = -1;
             }
         }
         else
@@ -2217,15 +2220,39 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
         if( getType() == TYPEMCT410 )
         {
             long tmpaddr = _disconnectAddress & 0x3fffff;  //  make sure it's only 22 bits
+            int  demand_threshold = 0,  //  default to no load limit
+                 connect_delay    = 5;  //  default to a 5 minute connect delay
+
+            if( parse.isKeyValid("disconnect demand threshold") &&
+                parse.isKeyValid("disconnect load limit connect delay") )
+            {
+                demand_threshold = parse.getiValue("disconnect demand threshold");
+                connect_delay    = parse.getiValue("disconnect load limit connect delay");
+
+                if( demand_threshold < 0 || demand_threshold > 0xffff ||
+                    connect_delay    < 0 || connect_delay    > 0x00ff )
+                {
+                    found = false;
+
+                    if( errRet )
+                    {
+                        errRet->setResultString("Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
+                        errRet->setStatus(NoMethod);
+                        retList.insert(errRet);
+
+                        errRet = NULL;
+                    }
+                }
+            }
 
             OutMessage->Buffer.BSt.Message[0] = (tmpaddr >> 16) & 0xff;
             OutMessage->Buffer.BSt.Message[1] = (tmpaddr >>  8) & 0xff;
             OutMessage->Buffer.BSt.Message[2] =  tmpaddr        & 0xff;
 
-            OutMessage->Buffer.BSt.Message[3] = 0;  //  unused as yet, and also not in the database
-            OutMessage->Buffer.BSt.Message[4] = 0;  //
+            OutMessage->Buffer.BSt.Message[3] = (demand_threshold >> 8) & 0xff;
+            OutMessage->Buffer.BSt.Message[4] =  demand_threshold       & 0xff;
 
-            OutMessage->Buffer.BSt.Message[5] = 5;  //  5 minutes for the load limit connect delay
+            OutMessage->Buffer.BSt.Message[5] = connect_delay & 0xff;
         }
     }
     else if( parse.isKeyValid("groupaddress_enable") )
@@ -2982,6 +3009,18 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
 
             found = false;
         }
+    }
+    else if(parse.isKeyValid("latch_relays"))
+    {
+        string relays = parse.getsValue("latch_relays");
+
+        function = Emetcon::Control_Latch;
+        found    = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
+
+        //  binary logic - 00, 01, 10, 11
+        //    latch_relays may also contain "none", but that's the default case and doesn't need to be explicitly handled
+        if( relays.find("(a)") != string::npos )  OutMessage->Buffer.BSt.Function += 1;
+        if( relays.find("(b)") != string::npos )  OutMessage->Buffer.BSt.Function += 2;
     }
 
     if(!found)
@@ -4686,27 +4725,30 @@ void CtiDeviceMCT::setConfigData( const RWCString &configName, int configType, c
 }
 
 
-void CtiDeviceMCT::setNextFreeze( int next_freeze )
+void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
 {
-    //  this function should probably be called even when a manual freeze is sent
+    //  this function should be called even when a manual freeze is sent
 
     if( next_freeze == 1 || next_freeze == 2 )
     {
         _expected_freeze = next_freeze - 1;
 
-        //  if it's initialized
-        if( (_freeze_counter > 0) )
+        //  if it's uninitialized,
+        if( (_freeze_counter < 0) && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
         {
-            if( (_freeze_counter + 1) % 2 != _expected_freeze )
+            _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
+        }
+
+        if( (_freeze_counter > 0) &&
+            (_freeze_counter % 2) != _expected_freeze )
+        {
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setNextFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setExpectedFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, RWTime::now().seconds());
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, RWTime::now().seconds() - rwEpoch);
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, (long)_expected_freeze);
     }
 }
