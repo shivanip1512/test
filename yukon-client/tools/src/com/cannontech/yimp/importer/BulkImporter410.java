@@ -396,57 +396,57 @@ public void runImport(Vector imps)
 			failures.addElement(currentFailure);
 		}
 		else if( updateDeviceID != null)
-				{
-					YukonPAObject pao = new YukonPAObject();
-					pao.setPaObjectID(updateDeviceID);
-		    
-					try
-					{
-						//update the paobject if the name has changed
-						Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
-						pao = (YukonPAObject)t.execute();
+		{
+			YukonPAObject pao = new YukonPAObject();
+			pao.setPaObjectID(updateDeviceID);
+    
+			try
+			{
+				//update the paobject if the name has changed
+				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
+				pao = (YukonPAObject)t.execute();
 
-						if( !pao.getPaoName().equals(name))
-						{
-							pao.setPaoName(name);
-							t = Transaction.createTransaction(Transaction.UPDATE, pao);
-							pao = (YukonPAObject)t.execute();
-						}
-                
-						//update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
-						DeviceMeterGroup dmg = new DeviceMeterGroup();
-						dmg.setDeviceID(updateDeviceID);
-						t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
-						dmg = (DeviceMeterGroup)t.execute();
-                
-						if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
-								!dmg.getTestCollectionGroup().equals(altGrp))
-						{
-							dmg.setMeterNumber(meterNumber);
-							dmg.setCollectionGroup(collectionGrp);
-							dmg.setTestCollectionGroup(altGrp);
-							t = Transaction.createTransaction( Transaction.UPDATE, dmg);
-							dmg = (DeviceMeterGroup)t.execute();
-						}
-                
-						//update teh deviceRotues table if hte routeID has changed.
-						DeviceRoutes dr = new DeviceRoutes();
-						dr.setDeviceID(updateDeviceID);
-						t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
-						dr = (DeviceRoutes)t.execute();
-						if( dr.getRouteID().intValue() != routeID.intValue())
-						{
-							dr.setRouteID(routeID);
-							t = Transaction.createTransaction(Transaction.UPDATE, dr);
-							dr = (DeviceRoutes)t.execute();
-						}
-                
-					} catch (TransactionException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				if( !pao.getPaoName().equals(name))
+				{
+					pao.setPaoName(name);
+					t = Transaction.createTransaction(Transaction.UPDATE, pao);
+					pao = (YukonPAObject)t.execute();
 				}
+        
+				//update the deviceMeterGroup table if meternumber, collectiongroup or alternate group changed 
+				DeviceMeterGroup dmg = new DeviceMeterGroup();
+				dmg.setDeviceID(updateDeviceID);
+				t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
+				dmg = (DeviceMeterGroup)t.execute();
+        
+				if( !dmg.getMeterNumber().equals(meterNumber) || !dmg.getCollectionGroup().equals(collectionGrp)||
+						!dmg.getTestCollectionGroup().equals(altGrp))
+				{
+					dmg.setMeterNumber(meterNumber);
+					dmg.setCollectionGroup(collectionGrp);
+					dmg.setTestCollectionGroup(altGrp);
+					t = Transaction.createTransaction( Transaction.UPDATE, dmg);
+					dmg = (DeviceMeterGroup)t.execute();
+				}
+        
+				//update teh deviceRotues table if hte routeID has changed.
+				DeviceRoutes dr = new DeviceRoutes();
+				dr.setDeviceID(updateDeviceID);
+				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
+				dr = (DeviceRoutes)t.execute();
+				if( dr.getRouteID().intValue() != routeID.intValue())
+				{
+					dr.setRouteID(routeID);
+					t = Transaction.createTransaction(Transaction.UPDATE, dr);
+					dr = (DeviceRoutes)t.execute();
+				}
+        
+			} catch (TransactionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		//actual 410 creation
 		else
 		{
