@@ -63,6 +63,7 @@ insert into yukongrouprole values (-2397,-304,-400,-40197,'false');
 
 insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
 
+update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
 
 
 
