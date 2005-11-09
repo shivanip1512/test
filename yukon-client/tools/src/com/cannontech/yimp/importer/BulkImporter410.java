@@ -244,7 +244,8 @@ public void runImport(Vector imps)
 	
 	ImportData currentEntry = null;
 	ImportFail currentFailure = null;
-	MCT400SeriesBase current410 = null;
+	MCT410CL currentCL = null;
+	MCT410IL currentIL = null;
     MCT400SeriesBase template410 = null;
 	Vector failures = new Vector();
 	Vector successVector = new Vector();
@@ -295,13 +296,13 @@ public void runImport(Vector imps)
         
         if(template410 instanceof MCT410CL)
         {
-            template410 = (MCT410CL)template410;
-            current410 = (MCT410CL)current410;
+            currentIL = null;
+            currentCL = new MCT410CL();
         }
         else
         {
-            template410 = (MCT410IL)template410;
-            current410 = (MCT410IL)current410;
+            currentCL = null;
+            currentIL = new MCT410IL();
         }
 		if(name.length() < 1 || name.length() > 60)
 		{
@@ -450,10 +451,21 @@ public void runImport(Vector imps)
 		//actual 410 creation
 		else
 		{
-			Integer deviceID = YukonPAObject.getNextYukonPAObjectID();
+			Integer deviceID = DBFuncs.getNextMCTID();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
 			Integer templateID = template410.getPAObjectID();
+			MCT400SeriesBase current410;
+			if(currentIL != null)
+			{
+				currentIL = (MCT410IL)template410;
+				current410 = currentIL;
+			}
+			else if(currentCL != null)
+			{
+				currentCL = (MCT410CL)template410;
+				current410 = currentCL;
+			}
 			current410 = template410;
 			current410.setPAOName(name);
 			current410.setDeviceID(deviceID);
@@ -695,7 +707,7 @@ private synchronized com.cannontech.message.dispatch.ClientConnection getDispatc
 		
 		try
 		{
-			dispatchConn.connect();
+			dispatchConn.connectWithoutWait();
 		}
 		catch( Exception e )
 		{

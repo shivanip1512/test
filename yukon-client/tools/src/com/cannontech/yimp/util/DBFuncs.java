@@ -405,6 +405,32 @@ public class DBFuncs
 				
 	}
 	
+	/*
+	 * Get the max paobjectid
+	 */
+	public static Integer getNextMCTID()
+	{
+		Integer maxID = new Integer(20000);
+	
+		SqlStatement stmt = new SqlStatement("SELECT MAX(PAOBJECTID) FROM YUKONPAOBJECT", "yukon");
+	
+		try
+		{
+			stmt.execute();
+			
+			if( stmt.getRowCount() > 0 )
+			{
+				maxID = new Integer( ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue() + 1);	
+			}
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+	
+		return maxID;
+	}
+	
 	
 	
 	

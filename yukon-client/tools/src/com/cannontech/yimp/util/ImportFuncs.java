@@ -94,7 +94,7 @@ public class ImportFuncs
 					String altGrp = stmt.getRow(i)[5].toString();
 					String templateName = stmt.getRow(i)[6].toString();
 					String errorMsg = stmt.getRow(i)[7].toString();
-					Date dateTime = java.sql.Date.valueOf(stmt.getRow(i)[8].toString());
+					Date dateTime = new Date(((java.sql.Timestamp)stmt.getRow(i)[8]).getTime());
 
 					ImportFail fail = new ImportFail( address, name,
 										routeName, meterNumber, collectionGrp, altGrp,  
