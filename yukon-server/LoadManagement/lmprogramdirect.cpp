@@ -683,7 +683,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             dout << RWTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
                         }
                         else if(CtiLMProgramDirectGear::TrueCycleMethod == currentGearObject->getControlMethod())
-                        {
+                        {  
                             dout << RWTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
                         }
                     }
