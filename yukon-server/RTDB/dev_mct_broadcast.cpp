@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/04/18 19:48:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/11/09 00:06:10 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -208,6 +208,18 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
     OutMessage->Buffer.BSt.Message[1] = 0;
     OutMessage->Buffer.BSt.Message[2] = 0;
 
+    // Load all the other stuff that is needed
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    OutMessage->TimeOut   = 2;
+    OutMessage->Retry     = 2;
+
+    OutMessage->Request.RouteID = getRouteID();
+
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
         function = Emetcon::PutStatus_Reset;
@@ -244,6 +256,36 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
         }
+
+        if( found )
+        {
+            //  create one for the MCT 400 series, too
+            OUTMESS *MCT400OutMessage = CTIDBG_new OUTMESS(*OutMessage);
+
+            //  these are all "command" type messages - a zero-length write, so it's safe to muck about here
+            MCT400OutMessage->Sequence = MCT400OutMessage->Buffer.BSt.Function;
+
+            MCT400OutMessage->Buffer.BSt.Length     = 2;
+            MCT400OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            //  this is a little tricky - watch as we carefully swap it out...
+            MCT400OutMessage->Buffer.BSt.Message[1] = MCT400OutMessage->Buffer.BSt.Function;
+            //  ...  right before we stomp over the original location
+            MCT400OutMessage->Buffer.BSt.Function   = CtiDeviceMCT410::MCT4XX_FuncWrite_Command;
+
+            if( parse.getCommandStr().contains(" all") )
+            {
+                //  the MCT 400 message is in ADDITION to the normal command
+                outList.append(MCT400OutMessage);
+            }
+            else
+            {
+                //  the MCT 400 message REPLACES the normal command (kinda backward, but it works)
+                delete OutMessage;
+                OutMessage = MCT400OutMessage;
+            }
+
+            MCT400OutMessage = 0;
+        }
     }
 
     if(!found)
@@ -252,18 +294,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
     }
     else
     {
-        // Load all the other stuff that is needed
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Sequence  = function;     // Helps us figure it out later!
-        OutMessage->Retry     = 2;
-
-        OutMessage->Request.RouteID   = getRouteID();
-
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+        OutMessage->Sequence = function;     // Helps us figure it out later!
     }
 
     return nRet;
