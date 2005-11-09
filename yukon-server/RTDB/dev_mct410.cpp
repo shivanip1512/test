@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2005/11/03 17:51:31 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2005/11/09 00:34:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,11 @@
 #include <string>
 
 using namespace std;
-using Cti::Protocol::Emetcon;
+
+using namespace Cti;
+using namespace Config;
+
+using Protocol::Emetcon;
 
 
 const CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
@@ -262,8 +266,8 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = Emetcon::PutConfig_TSync;
     cs._io      = Emetcon::IO_Function_Write;
-    cs._funcLen = make_pair((int)FuncWrite_TSyncPos,
-                            (int)FuncWrite_TSyncLen);
+    cs._funcLen = make_pair((int)MCT4XX_FuncWrite_TSyncPos,
+                            (int)MCT4XX_FuncWrite_TSyncLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::GetConfig_TSync;
@@ -785,6 +789,12 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             break;
         }
 
+        case Emetcon::GetValue_FreezeCounter:
+        {
+            status = decodeGetValueFreezeCounter(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
         case Emetcon::GetValue_LoadProfile:
         {
             status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
@@ -836,6 +846,13 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case (Emetcon::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case (Emetcon::GetConfig_Multiplier):
+        case (Emetcon::GetConfig_CentronParameters):
+        {
+            status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -991,6 +1008,8 @@ CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getData( unsigned char *buf, int 
         }
     }
 
+    retval.freeze_bit = value & 0x01;
+
     //  i s'pose this could be a set sometime, eh?
     QualityMap::const_iterator q_itr = _errorQualities.find(error_code);
 
@@ -1047,6 +1066,121 @@ CtiDeviceMCT410::point_info_t CtiDeviceMCT410::getData( unsigned char *buf, int 
 }
 
 
+INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       RWTPtrSlist< CtiMessage >  &vgList,
+                                       RWTPtrSlist< CtiMessage >  &retList,
+                                       RWTPtrSlist< OUTMESS >     &outList )
+{
+    INT nRet = NoMethod;
+
+    bool found = false;
+    int function = -1;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered());
+
+    //  these Centron guys are very specialized writes, so we won't put them in the command store at the
+    //    moment - at least not until we get a better command store than the Cti::Protocol::Emetcon:: thing...
+    //  it's too flat, too much is exposed
+    if( parse.isKeyValid("centron_ratio") )
+    {
+        int centron_ratio = parse.getiValue("centron_ratio");
+
+        if( centron_ratio > 0 && centron_ratio <= 255 )
+        {
+            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Multiplier;
+
+            OutMessage->Buffer.BSt.Address = FuncWrite_CentronParametersPos;
+            OutMessage->Buffer.BSt.Length  = FuncWrite_CentronParametersLen;
+
+            OutMessage->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
+
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+            OutMessage->Buffer.BSt.Message[1] = 0x00;  //  default, see sspec for details
+            OutMessage->Buffer.BSt.Message[2] = (unsigned char)parse.getiValue("centron_ratio");
+
+            //  hackabout because we don't have the command store
+            found = true;
+        }
+        else
+        {
+            found = false;
+
+            if( errRet )
+            {
+                errRet->setResultString("Invalid Centron multiplier (" + CtiNumStr(centron_ratio) + ")");
+                errRet->setStatus(NoMethod);
+                retList.insert(errRet);
+
+                errRet = NULL;
+            }
+        }
+    }
+    else if( parse.isKeyValid("centron_reading_forward") )
+    {
+        int reading_forward = parse.getiValue("centron_reading_forward"),
+            reading_reverse = parse.getiValue("centron_reading_reverse");
+
+        OutMessage->Sequence = Cti::Protocol::Emetcon::PutValue_KYZ;
+
+        OutMessage->Buffer.BSt.Address = FuncWrite_CentronReadingPos;
+        OutMessage->Buffer.BSt.Length  = FuncWrite_CentronReadingLen;
+
+        OutMessage->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
+
+        OutMessage->Buffer.BSt.Message[0] = (reading_forward >> 16) & 0xff;
+        OutMessage->Buffer.BSt.Message[1] = (reading_forward >>  8) & 0xff;
+        OutMessage->Buffer.BSt.Message[2] =  reading_forward        & 0xff;
+
+        OutMessage->Buffer.BSt.Message[3] = (reading_reverse >> 16) & 0xff;
+        OutMessage->Buffer.BSt.Message[4] = (reading_reverse >>  8) & 0xff;
+        OutMessage->Buffer.BSt.Message[5] =  reading_reverse        & 0xff;
+
+        found = true;
+    }
+    else
+    {
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+    }
+
+    return nRet;
+}
+
+
+
 INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                       CtiCommandParser           &parse,
                                       OUTMESS                   *&OutMessage,
@@ -1084,6 +1218,16 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
         if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
         if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
+    }
+    else if( parse.isKeyValid("freeze_counter") )
+    {
+        found = true;
+
+        function = Emetcon::GetValue_FreezeCounter;
+
+        OutMessage->Buffer.BSt.Function = 0x2a;
+        OutMessage->Buffer.BSt.Length   = 1;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
     }
     else if( parse.isKeyValid("lp_command") )  //  load profile
     {
@@ -1433,8 +1577,82 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     return nRet;
 }
 
-using namespace Cti;
-using namespace Config;
+INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       RWTPtrSlist< CtiMessage >  &vgList,
+                                       RWTPtrSlist< CtiMessage >  &retList,
+                                       RWTPtrSlist< OUTMESS >     &outList )
+{
+    INT nRet = NoMethod;
+
+    bool found = false;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   RWCString(OutMessage->Request.CommandStr),
+                                                   RWCString(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   RWOrdered( ));
+
+    //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
+    if( parse.isKeyValid("centron_ratio") )
+    {
+        found = true;
+
+        OutMessage->Buffer.BSt.Function = Memory_CentronMultiplierPos;
+        OutMessage->Buffer.BSt.Length   = Memory_CentronMultiplierLen;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+
+        OutMessage->Sequence = Emetcon::GetConfig_Multiplier;
+    }
+    else if( parse.isKeyValid("centron_parameters") )
+    {
+        found = true;
+
+        OutMessage->Buffer.BSt.Function = Memory_CentronParametersPos;
+        OutMessage->Buffer.BSt.Length   = Memory_CentronParametersLen;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+
+        OutMessage->Sequence = Emetcon::GetConfig_CentronParameters;
+    }
+    else
+    {
+        nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
+    }
+
+    return nRet;
+}
+
+
 int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
     int nRet = NORMAL;
@@ -1473,7 +1691,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[1] = (loadProfile);
                     OutMessage->Buffer.BSt.Message[2] = (voltageDemand);
                     OutMessage->Buffer.BSt.Message[3] = (voltageLoadProfile);
-            
+
                     outList.append( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
@@ -1508,7 +1726,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     OutMessage->TimeOut   = 2;
     OutMessage->Retry     = 2;
     OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-    
+
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
@@ -1528,7 +1746,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             daySchedule3 = config->getLongValueFromKey(DaySchedule3);
             daySchedule4 = config->getLongValueFromKey(DaySchedule4);
 
-            if(dayTable == numeric_limits<long>::min() || daySchedule1 == numeric_limits<long>::min() || daySchedule2 == numeric_limits<long>::min() 
+            if(dayTable == numeric_limits<long>::min() || daySchedule1 == numeric_limits<long>::min() || daySchedule2 == numeric_limits<long>::min()
                || daySchedule3 == numeric_limits<long>::min() || daySchedule4 == numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1671,6 +1889,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
     return nRet;
 }
 
+
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
@@ -1678,11 +1897,12 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
     INT pid;
     RWCString resultString, freeze_info_string;
     RWTime pointTime;
+    bool valid_data = true;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    unsigned long pulses;
+    point_info_t pi, pi_freezecount;
 
     CtiPointBase         *pPoint = NULL;
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -1707,66 +1927,156 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        for( int i = 0; i < CtiDeviceMCT410::MCT410_ChannelCount; i++ )
+        if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
         {
-            point_info_t pi = getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
-
-            if( InMessage->Sequence == Emetcon::GetValue_FrozenKWH )
+            if( _expected_freeze < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
             {
-                pPoint = getDevicePointOffsetTypeEqual( 1 + i + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
+                _expected_freeze = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
+            }
 
-                //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
-                //    and the freeze counter (DSt->Message[3]) is what we expect
-                //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
+            if( _freeze_counter  < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+            {
+                _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
+            }
 
-                //pointTime = time of freeze
-                //freeze_info_string = " @ " + pointTime;
+            pi_freezecount = getData(DSt->Message + 3, 1, ValueType_Raw);
+
+            if( _freeze_counter < 0 || pi_freezecount.value >= _freeze_counter )
+            {
+                if( pi_freezecount.value > (_freeze_counter + 1) )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                            ") has increased by more than expected value (" << _freeze_counter + 1 <<
+                                            ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                _freeze_counter = pi_freezecount.value;
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
             }
             else
             {
+                valid_data = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                        ") less than expected value (" << _freeze_counter <<
+                                        ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
+                status = NOTNORMAL;
+            }
+        }
+
+        for( int i = 0; i < CtiDeviceMCT410::MCT410_ChannelCount; i++ )
+        {
+            int offset = (i * 3);
+
+            if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
+                InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_Default )
+            {
+                //  normal KWH read, nothing too special
+
+                pi = getData(DSt->Message + offset, 3, ValueType_Accumulator);
+
                 pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
                 pointTime -= pointTime.seconds() % 300;
             }
-
-            // handle accumulator data here
-            if( pPoint != NULL)
+            else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
             {
-                // 24 bit pulse value
-                pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
+                //  but this is where the action is - frozen decode
 
-                if( pi.quality != InvalidQuality )
+                if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                pi = getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+
+                if( pi.freeze_bit == _expected_freeze )  //  low-order bit indicates which freeze caused the value to be stored
                 {
-                    resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+                    pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
 
-                    pData = makePointDataMsg(pPoint, pi, resultString);
+                    //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
+                    //    and the freeze counter (DSt->Message[3]) is what we expect
+                    //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
 
-                    if(pData != NULL)
+                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
                     {
-                        pData->setTime( pointTime );
-                        ReturnMsg->PointData().insert(pData);
-                        pData = NULL;  // We just put it on the list...
+                        pointTime  = RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                        pointTime -= pointTime.seconds() % 300;
                     }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pointTime -= pointTime.seconds() % 300;
+                    }
+
+                    freeze_info_string = " @ " + pointTime.asString();
                 }
                 else
                 {
-                    resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                            ") does not match expected freeze bit (" << _expected_freeze <<
+                                            ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    valid_data = false;
+                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString());
+                    status = NOTNORMAL;
+                }
+            }
+
+            if( valid_data )
+            {
+                // handle accumulator data here
+                if( pPoint != NULL)
+                {
+                    // 24 bit pulse value
+                    pi.value = ((CtiPointNumeric *)pPoint)->computeValueForUOM(pi.value);
+
+                    if( pi.quality != InvalidQuality )
+                    {
+                        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(pi.value, ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces()) + freeze_info_string;
+
+                        pData = makePointDataMsg(pPoint, pi, resultString);
+
+                        if(pData != NULL)
+                        {
+                            pData->setTime( pointTime );
+                            ReturnMsg->PointData().insert(pData);
+                            pData = NULL;  // We just put it on the list...
+                        }
+                    }
+                    else
+                    {
+                        resultString = getName() + " / " + pPoint->getName() + " = (invalid data)" + freeze_info_string;
+
+                        ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
+                    }
+                }
+                else if( i == 0 )
+                {
+                    if( pi.quality != InvalidQuality )
+                    {
+                        resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
+                    }
+                    else
+                    {
+                        resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
+                    }
 
                     ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
                 }
-            }
-            else if( i == 0 )
-            {
-                if( pi.quality != InvalidQuality )
-                {
-                    resultString = getName() + " / KYZ 1 = " + CtiNumStr(pi.value) + freeze_info_string + "  --  POINT UNDEFINED IN DB";
-                }
-                else
-                {
-                    resultString = getName() + " / KYZ 1 = (invalid data) --  POINT UNDEFINED IN DB";
-                }
-
-                ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
             }
         }
 
@@ -1956,7 +2266,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
                 kwh rate c: 141
                 kwh rate d: 161
 
-                frozen kwh rate a:  111
+                frozen kwh rate a:  111  //  DELETE THESE
                 frozen kwh rate b:  131
                 frozen kwh rate c:  151
                 frozen kwh rate d:  171
@@ -1968,7 +2278,7 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
                 peak kw rate c: 151
                 peak kw rate d: 171
 
-                peak frozen kw rate a:  121
+                peak frozen kw rate a:  121  //  DELETE THESE
                 peak frozen kw rate b:  141
                 peak frozen kw rate c:  161
                 peak frozen kw rate d:  181
@@ -2007,12 +2317,24 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        pi_kw          = getData(DSt->Message,     2, ValueType_KW);
-        pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
+        if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+        {
+            //  TOU memory layout
+            pi_kwh         = getData(DSt->Message,     3, ValueType_Accumulator);
 
-        pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+            pi_kw          = getData(DSt->Message + 3, 2, ValueType_KW);
+            pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
+        }
+        else
+        {
+            //  normal peak memory layout
+            pi_kw          = getData(DSt->Message,     2, ValueType_KW);
+            pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
 
-        pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
+            pi_kwh         = getData(DSt->Message + 6, 3, ValueType_Accumulator);
+
+            pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
+        }
 
         //  turn raw pulses into a demand reading
         pi_kw.value *= double(3600 / getDemandInterval());
@@ -2021,77 +2343,87 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
-            if( kw_time.seconds() > getDynamicInfo(key_peak_timestamp) )
+            if( _expected_freeze < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
             {
-                if( ((int)pi_kwh.value % 2) == _expected_freeze )
+                _expected_freeze = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
+            }
+
+            if( _freeze_counter  < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+            {
+                _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
+            }
+
+            if( _freeze_counter < 0 || (pi_freezecount.value >= _freeze_counter) )
+            {
+                if( pi_freezecount.value > (_freeze_counter + 1) )
                 {
-                    if( _freeze_counter < 0 || pi_freezecount.value >= (_freeze_counter + 1) )
-                    {
-                        if( pi_freezecount.value > _freeze_counter )
-                        {
-                            //  it's incremented by more than one, yet seems to be valid, parity-wise - we need to yelp, at least
-
-                            valid_data = false;
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                                    ") has increased by more than expected value (" << _freeze_counter + 1 <<
-                                                    ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-                        //  success - allow normal processing
-
-                        kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset + MCT4XX_PointOffset_FrozenOffset, DemandAccumulatorPointType);
-
-                        kwh_point = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_FrozenOffset, PulseAccumulatorPointType );
-
-                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
-                        {
-                            kwh_time  = RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-                        freeze_info_string  = " @ " + kwh_time.asString();
-
-                        _freeze_counter = pi_freezecount.value;
-
-                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
-                    }
-                    else
-                    {
-                        valid_data = false;
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                                ") less than expected value (" << _freeze_counter + 1 <<
-                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") != (" + CtiNumStr(_freeze_counter) + ")");
-                        status = NOTNORMAL;
-                    }
-                }
-                else
-                {
-                    valid_data = false;
+                    //  it's incremented by more than one, yet the reading seems to be valid, parity-wise - we need to yelp, at least
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint - incoming freeze parity bit (" << ((int)pi_kwh.value % 2) <<
+                        dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                            ") has increased by more than expected value (" << _freeze_counter + 1 <<
+                                            ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+            else
+            {
+                valid_data = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
+                                        ") less than expected value (" << _freeze_counter <<
+                                        ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
+                status = NOTNORMAL;
+            }
+
+            if( kw_time.seconds() > (getDynamicInfo(key_peak_timestamp) + rwEpoch) )
+            {
+                if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
+                {
+                    //  success - allow normal processing
+
+                    kw_point  = getDevicePointOffsetTypeEqual(pointoffset + MCT4XX_PointOffset_PeakOffset, DemandAccumulatorPointType);
+
+                    kwh_point = getDevicePointOffsetTypeEqual(pointoffset, PulseAccumulatorPointType );
+
+                    setDynamicInfo(key_peak_timestamp, kw_time.seconds() - rwEpoch);
+
+                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
+                    {
+                        kwh_time  = RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch);
+                        kwh_time -= kwh_time.seconds() % 300;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    freeze_info_string  = " @ " + kwh_time.asString();
+
+                    _freeze_counter = pi_freezecount.value;
+
+                    setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
                                             ") does not match expected freeze bit (" << _expected_freeze <<
                                             ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr((int)pi_kwh.value % 2) + ") != (" + CtiNumStr(_expected_freeze) + ")");
+                    valid_data = false;
+                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) + rwEpoch).asString());
                     status = NOTNORMAL;
                 }
             }
@@ -2101,10 +2433,10 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
 
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << RWTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("Peak time check failed (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
+                ReturnMsg->setResultString("Peak time check failed (" + kw_time.asString() + ") < (" + RWTime(getDynamicInfo(key_peak_timestamp) + rwEpoch).asString() + ")");
                 status = NOTNORMAL;
             }
         }
@@ -2146,8 +2478,9 @@ INT CtiDeviceMCT410::decodeGetValuePeakDemand(INMESS *InMessage, RWTime &TimeNow
             {
                 pi_kwh.value = ((CtiPointNumeric*)kwh_point)->computeValueForUOM(pi_kwh.value);
 
-                result_string = getName() + " / " + kwh_point->getName() + " = " + CtiNumStr(pi_kwh.value,
-                                                                                             ((CtiPointNumeric *)kwh_point)->getPointUnits().getDecimalPlaces());
+                result_string  = getName() + " / " + kwh_point->getName() + " = " + CtiNumStr(pi_kwh.value,
+                                                                                              ((CtiPointNumeric *)kwh_point)->getPointUnits().getDecimalPlaces());
+                result_string += freeze_info_string;
 
                 if( pData = makePointDataMsg(kwh_point, pi_kwh, result_string) )
                 {
@@ -2213,12 +2546,6 @@ INT CtiDeviceMCT410::decodeGetValueVoltage( INMESS *InMessage, RWTime &TimeNow, 
 
         pi = getData(DSt->Message + 8, 4, ValueType_Raw);
         minTime = RWTime((unsigned long)pi.value + rwEpoch);
-
-        if( InMessage->Sequence == Emetcon::GetValue_FrozenVoltage )
-        {
-            minPointOffset += MCT4XX_PointOffset_FrozenOffset;
-            maxPointOffset += MCT4XX_PointOffset_FrozenOffset;
-        }
 
         CtiPointDataMsg *pdm;
         CtiPointNumeric *pt_max_volts = (CtiPointNumeric*)getDevicePointOffsetTypeEqual( maxPointOffset, DemandAccumulatorPointType ),
@@ -2430,7 +2757,6 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
                     minutes = seconds / 60;
                     hours   = minutes / 60;
 
-                    cycles  %= 60;
                     seconds %= 60;
                     minutes %= 60;
                     hours   %= 24;
@@ -2441,7 +2767,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
 
                     if( cycles )
                     {
-                        pointString += ", " + CtiNumStr(cycles) + " cycles\n";
+                        pointString += ", " + CtiNumStr(cycles % 60) + " cycles\n";
                     }
                 }
 
@@ -2473,6 +2799,30 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, RWTime &TimeNow, R
         {
             ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
         }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetValueFreezeCounter( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+{
+    INT status = NORMAL;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        //  no error, time for decode
+        INT ErrReturn =  InMessage->EventCode & 0x3fff;
+        unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
+        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+        ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        ReturnMsg->setResultString(getName() + " / Freeze counter: " + CtiNumStr(msgbuf[0]));
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
@@ -3085,6 +3435,70 @@ INT CtiDeviceMCT410::decodeGetConfigTime(INMESS *InMessage, RWTime &TimeNow, RWT
         else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
         {
             resultString = getName() + " / Time Last Synced at: " + tmpTime.asString();
+        }
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        RWCString resultString;
+
+        if( InMessage->Sequence == Emetcon::GetConfig_Multiplier )
+        {
+            resultString = getName() + " / Centron Multiplier: " + CtiNumStr(DSt->Message[0]);
+        }
+        else if( InMessage->Sequence == Emetcon::GetConfig_CentronParameters )
+        {
+            resultString = getName() + " / Centron Parameters:\n";
+
+            switch( DSt->Message[0] & 0x03 )
+            {
+                case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";
+                case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";
+                case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n";
+                case 0x3:
+                default:    resultString += "Unknown display resolution (" + CtiNumStr(DSt->Message[0] & 0x03) + ")\n";
+            }
+
+            resultString += "LCD segment test ";
+
+            if( DSt->Message[0] & 0x04 )
+            {
+                resultString += (DSt->Message[0] & 0x08)?("required, seven seconds\n"):("required, one second\n");
+            }
+            else
+            {
+                resultString += "not required\n";
+            }
+
+            resultString += "LCD error display ";
+            resultString += (DSt->Message[0] & 0x10)?("enabled\n"):("disabled\n");
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
