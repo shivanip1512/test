@@ -298,7 +298,7 @@ public void runImport(Vector imps)
             template410 = (MCT410IL)template410;
             current410 = (MCT410IL)current410;
         }
-        if(template410 instanceof MCT410CL)
+        else if(template410 instanceof MCT410CL)
         {
             template410 = (MCT410CL)template410;
             current410 = (MCT410CL)current410;
