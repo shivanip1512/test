@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/10/04 20:11:21 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/11/09 00:06:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -818,8 +818,8 @@ LoadMCT400BTimeMessage (OUTMESS *OutMessage)
 
     /* Load the time sync parts of the message into the local B word structure */
     MyOutMessage.Buffer.BSt.Address  = CtiDeviceMCT410::UniversalAddress;
-    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT410::FuncWrite_TSyncPos;
-    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT410::FuncWrite_TSyncLen;
+    MyOutMessage.Buffer.BSt.Function = CtiDeviceMCT410::MCT4XX_FuncWrite_TSyncPos;
+    MyOutMessage.Buffer.BSt.Length   = CtiDeviceMCT410::MCT4XX_FuncWrite_TSyncLen;
     MyOutMessage.Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
 
     MyOutMessage.Buffer.BSt.Message[0] = 0xff;  //  global SPID
