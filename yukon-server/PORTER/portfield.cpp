@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.156 $
-* DATE         :  $Date: 2005/10/27 17:54:10 $
+* REVISION     :  $Revision: 1.157 $
+* DATE         :  $Date: 2005/11/09 00:09:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2580,7 +2580,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                             {
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
+                                                    dout << RWTime() << " *** Supervisory (Inbound) Message 0x" << hex << (int)InMessage->IDLCStat[2] << " from CCU: " << Device->getName() << endl;
                                                 }
 
                                                 if(trx.doTrace(status))
