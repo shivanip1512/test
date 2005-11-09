@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2005/11/09 00:30:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -280,6 +280,11 @@ bool CtiDeviceMCT310::initCommandStore( )
     cs._io       = Emetcon::IO_Read;
     cs._funcLen  = make_pair((int)MCT3XX_LPStatusPos,
                              (int)MCT3XX_LPStatusLen);
+    _commandStore.insert( cs );
+
+    cs._cmd      = Emetcon::Control_Latch;
+    cs._io       = Emetcon::IO_Write | Q_ARML;
+    cs._funcLen  = make_pair((int)MCT_Command_Latch, 0);
     _commandStore.insert( cs );
 
     return failed;
