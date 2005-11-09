@@ -308,7 +308,10 @@
 		<servlet-name>CttpServlet</servlet-name>
 		<servlet-class>com.cannontech.cttp.servlet.CttpServlet</servlet-class>
 	</servlet>
-
+	<servlet>
+		<servlet-name>CallbackServlet</servlet-name>
+		<servlet-class>com.cannontech.servlet.HttpCallback</servlet-class>
+	</servlet>
     <!-- Start JNLP servlets -->
     <servlet>
         <servlet-name>DynamicJNLPServlet</servlet-name>
