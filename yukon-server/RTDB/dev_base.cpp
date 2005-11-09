@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/10/27 17:47:09 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/11/09 00:37:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -962,7 +962,7 @@ bool CtiDeviceBase::getDirtyInfo(vector<CtiTableDynamicPaoInfo *> &dirty_info)
 }
 
 
-void CtiDeviceBase::setNextFreeze(int freeze)
+void CtiDeviceBase::setExpectedFreeze(int freeze)
 {
     return;
 }
