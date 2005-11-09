@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/08/23 20:05:40 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/11/09 00:06:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,7 +264,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " Orphaned CCU queue entry response.  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
+                dout << RWTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage->Sequence 0x" << hex << (int)InMessage->Sequence << dec << endl;
                 dout << "  Not found in any queue slot" << endl;
             }
         }
@@ -533,7 +533,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " **** Checkpoint - time sync loop detected, sending cold start **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << RWTime() << " **** Checkpoint - time sync loop detected on device \"" << Dev->getName() << "\", sending cold start **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  Send a cold start, the time sync algorithm has been set to 0 seconds
@@ -663,7 +663,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << RWTime() << " REQACK with outstanding NCOcts.  Will RCOLQ." << endl;
+                dout << RWTime() << " REQACK with outstanding NCOcts on device \"" << Dev->getName() << "\".  Will RCOLQ." << endl;
             }
 
             if(pInfo->NCsets || pInfo->ReadyN)
@@ -688,7 +688,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             if(PortManager.writeQueue(OutMessage->Port, OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Error Requeing Command" << endl;
+                dout << "Error Requeing Command on device \"" << Dev->getName() << "\"" << endl;
             }
             else
             {
@@ -734,10 +734,9 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset + 1], InMessage->Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
             if((QueTabEnt = MAKEUSHORT (InMessage->Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
             {
-                _snprintf(tempstr, 99,"Wrong Offset into CCU Queue Entry Table\n");
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " " << tempstr << endl;
+                    dout << RWTime() << " Wrong Offset into CCU Queue Entry Table on device \"" << Dev->getName() << "\"" << endl;
                 }
                 Offset += setL - 1;
                 continue;
@@ -951,7 +950,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " Error writing to nexus. CCUResponseDecode().  "
+                        dout << RWTime() << " Error writing to nexus. CCUResponseDecode() on device \"" << Dev->getName() << "\".  "
                              << "Wrote " << BytesWritten << "/" << sizeof(ResultMessage) << " bytes" << endl;
                     }
 
@@ -1002,7 +1001,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
                 pInfo->ClearStatus(INLGRPQ);
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " FreeSlots is 32 and CCU reports 32 command slots available.  INLGRPQ must be cleared." << endl;
+                    dout << RWTime() << " FreeSlots is 32 and CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
                 }
             }
         }
@@ -1246,7 +1245,7 @@ CCUQueueFlush (CtiDeviceSPtr Dev)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Error Writing to nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         InMessage.ReturnNexus->CTINexusClose();
                     }
@@ -1311,7 +1310,7 @@ QueueFlush (CtiDeviceSPtr Dev)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " Error Writing to nexus " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << RWTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         InMessage.ReturnNexus->CTINexusClose();
                     }
