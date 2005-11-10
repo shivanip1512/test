@@ -209,7 +209,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
 
-    list <LONG> getPointIds() {return _pointIds;};
+    list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     list <LONG> getVerificationCapBankList();

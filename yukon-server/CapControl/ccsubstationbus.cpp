@@ -1771,6 +1771,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         currentPosition++;
                     }
                     currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -1853,7 +1854,9 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     {
                         currentPosition--;
                     }
+
                     currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -1917,6 +1920,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         currentPosition++;
                     }
                     currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -2002,6 +2006,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         currentPosition--;
                     }
                     currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -2125,11 +2130,16 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 for(int j=0;j<varSortedFeeders.entries();j++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag())
                     {
                         if (currentFeeder->getCurrentVarLoadPointId() > 0)
-                        {                                                
+                        {    
+                            if (!_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase))
+                            {
+                                setKVARSolution(-1);
+                            }
                             capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
                         }
                         else
@@ -2206,11 +2216,16 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 for(int j=varSortedFeeders.entries()-1;j>=0;j--)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
                         if (currentFeeder->getCurrentVarLoadPointId() > 0)
-                        {                                                
+                        {                                       
+                            if (!_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase))
+                            {
+                                setKVARSolution(1);
+                            }
                             capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
                         }
                         else
@@ -2270,6 +2285,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 for(int j=0;j<varSortedFeeders.entries();j++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -2347,6 +2363,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 for(int j=varSortedFeeders.entries()-1;j>=0;j--)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    currentFeeder->checkMaxDailyOpCountExceeded();
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() )
                     {
@@ -2477,6 +2494,7 @@ BOOL CtiCCSubstationBus::isPeakTime(const RWDBDateTime& currentDateTime)
 BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 {
     BOOL returnBoolean = TRUE;
+    BOOL found = FALSE;
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
@@ -2530,6 +2548,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
             currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
             setRecentlyControlledFlag(FALSE);
             figureEstimatedVarLoadPointValue();
+            found = TRUE;
         }
         else
         {
@@ -2542,8 +2561,15 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
                     currentFeeder->capBankControlStatusUpdate(pointChanges,getMinConfirmPercent(),getFailurePercent(),getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
                     setRecentlyControlledFlag(FALSE);
                     figureEstimatedVarLoadPointValue();
+                    found = TRUE;
                     break;
                 }
+            }
+            if (found == FALSE)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Last Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                returnBoolean = TRUE;
             }
         }
     }
@@ -2607,6 +2633,8 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(RWOrdered& pointChanges)
 BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges)
 {
     BOOL returnBoolean = FALSE;
+    BOOL foundCap = FALSE;
+    BOOL foundFeeder = FALSE;
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
@@ -2812,12 +2840,26 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(RWOrdered& pointChanges
                        setBusUpdatedFlag(TRUE);
                        return returnBoolean;
                    }
-
+                   foundCap = TRUE;
                    break;
                }
             }
+            foundFeeder = TRUE;
             break;
         }
+
+    }
+    if (foundCap == FALSE)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        returnBoolean = TRUE;
+    }
+    if (foundFeeder == FALSE)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        returnBoolean = TRUE;
     }
     return returnBoolean;
 }
@@ -3158,6 +3200,7 @@ void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 BOOL CtiCCSubstationBus::isAlreadyControlled()
 {
     BOOL returnBoolean = FALSE;
+    BOOL found = FALSE;
 
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
@@ -3187,11 +3230,15 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             {
                 DOUBLE oldCalcValue = getVarValueBeforeControl();
                 DOUBLE newCalcValue = getCurrentVarLoadPointValue();
-                for(LONG i=0;i<_ccfeeders.entries();i++)
+                CtiCCFeeder* currentFeeder = NULL;
+                for(LONG i=0;i<=_ccfeeders.entries();i++)
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
-    
-                    if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
+                    if (i == 0)
+                        currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+                    else
+                        currentFeeder = (CtiCCFeeder*)_ccfeeders[i - 1];
+
+                    if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                     {
                         RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
                         for(LONG j=0;j<ccCapBanks.entries();j++)
@@ -3199,23 +3246,11 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                             if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
                             {
-                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                                 {
                                     DOUBLE change = newCalcValue - oldCalcValue;
-                                    DOUBLE ratio = change/currentCapBank->getBankSize();
-                                    if( ratio >= getMinConfirmPercent()*.01 )
-                                    {
-                                        returnBoolean = TRUE;
-                                    }
-                                    else
-                                    {
-                                        returnBoolean = FALSE;
-                                    }
-                                }
-                                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                {
-                                    DOUBLE change = oldCalcValue - newCalcValue;
-                                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                                    DOUBLE ratio = abs(change/currentCapBank->getBankSize());
                                     if( ratio >= getMinConfirmPercent()*.01 )
                                     {
                                         returnBoolean = TRUE;
@@ -3231,65 +3266,11 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                     dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                     returnBoolean = FALSE;
                                 }
+                                found = TRUE;
                                 break;
                             }
                         }
-                    }
-                    else
-                    {
-                        for(LONG i=0;i<_ccfeeders.entries();i++)
-                        {
-                            currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
-    
-                            if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
-                            {
-                                if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
-                                {
-                                    RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                                    for(LONG j=0;j<ccCapBanks.entries();j++)
-                                    {
-                                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                        if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
-                                        {
-                                            if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-                                            {
-                                                DOUBLE change = newCalcValue - oldCalcValue;
-                                                DOUBLE ratio = change/currentCapBank->getBankSize();
-                                                if( ratio >= getMinConfirmPercent()*.01 )
-                                                {
-                                                    returnBoolean = TRUE;
-                                                }
-                                                else
-                                                {
-                                                    returnBoolean = FALSE;
-                                                }
-                                            }
-                                            else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                            {
-                                                DOUBLE change = oldCalcValue - newCalcValue;
-                                                DOUBLE ratio = change/currentCapBank->getBankSize();
-                                                if( ratio >= getMinConfirmPercent()*.01 )
-                                                {
-                                                    returnBoolean = TRUE;
-                                                }
-                                                else
-                                                {
-                                                    returnBoolean = FALSE;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                                returnBoolean = FALSE;
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
             }
@@ -3317,9 +3298,12 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                             DOUBLE newCalcValue = getCurrentVarLoadPointValue();
                             for(LONG i=0;i<_ccfeeders.entries();i++)
                             {
-                                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+                                if (i == 0)
+                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[getLastFeederControlledPosition()];
+                                else
+                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i - 1];
 
-                                if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
+                                if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                                 {
                                     RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
                                     for(LONG j=0;j<ccCapBanks.entries();j++)
@@ -3327,23 +3311,11 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
                                         if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
                                         {
-                                            if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
+                                            if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                                             {
                                                 DOUBLE change = newCalcValue - oldCalcValue;
-                                                DOUBLE ratio = change/currentCapBank->getBankSize();
-                                                if( ratio >= getMinConfirmPercent()*.01 )
-                                                {
-                                                    returnBoolean = TRUE;
-                                                }
-                                                else
-                                                {
-                                                    returnBoolean = FALSE;
-                                                }
-                                            }
-                                            else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                            {
-                                                DOUBLE change = oldCalcValue - newCalcValue;
-                                                DOUBLE ratio = change/currentCapBank->getBankSize();
+                                                DOUBLE ratio = abs(change/currentCapBank->getBankSize());
                                                 if( ratio >= getMinConfirmPercent()*.01 )
                                                 {
                                                     returnBoolean = TRUE;
@@ -3359,69 +3331,22 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                                 dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                                 returnBoolean = FALSE;
                                             }
+                                            found = TRUE;
                                             break;
                                         }
                                     }
+                                    break;
                                 }
-                                else
-                                {
-                                    for(LONG i=0;i<_ccfeeders.entries();i++)
-                                    {
-                                        currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
 
-                                        if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
-                                        {
-                                            if( getLastFeederControlledPAOId() == currentFeeder->getPAOId() )
-                                            {
-                                                RWOrdered& ccCapBanks = currentFeeder->getCCCapBanks();
-                                                for(LONG j=0;j<ccCapBanks.entries();j++)
-                                                {
-                                                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                                    if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
-                                                    {
-                                                        if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-                                                        {
-                                                            DOUBLE change = newCalcValue - oldCalcValue;
-                                                            DOUBLE ratio = change/currentCapBank->getBankSize();
-                                                            if( ratio >= getMinConfirmPercent()*.01 )
-                                                            {
-                                                                returnBoolean = TRUE;
-                                                            }
-                                                            else
-                                                            {
-                                                                returnBoolean = FALSE;
-                                                            }
-                                                        }
-                                                        else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                                        {
-                                                            DOUBLE change = oldCalcValue - newCalcValue;
-                                                            DOUBLE ratio = change/currentCapBank->getBankSize();
-                                                            if( ratio >= getMinConfirmPercent()*.01 )
-                                                            {
-                                                                returnBoolean = TRUE;
-                                                            }
-                                                            else
-                                                            {
-                                                                returnBoolean = FALSE;
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                            dout << RWTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                                            returnBoolean = FALSE;
-                                                        }
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
+                }
+                if (found == FALSE)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    returnBoolean = TRUE;
                 }
             }
         }
@@ -3746,6 +3671,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const RWDBDat
 BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
 {
     BOOL returnBoolean = FALSE;
+    BOOL foundCap = FALSE;
+    BOOL foundFeeder = FALSE;
 
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
@@ -3760,13 +3687,20 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
                     if( currentFeeder->getPAOId() == getCurrentVerificationFeederId() )
                     {
+                        foundFeeder = TRUE;
                         if( currentFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) )
                         {
                             returnBoolean = TRUE;
                             break;
                         }
                     }
-                } 
+                }
+                if (foundFeeder == FALSE)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Last Verification Feeder controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    returnBoolean = TRUE;
+                }
             }
         }
         else if( !_controlmethod.compareTo(CtiCCSubstationBus::SubstationBusControlMethod,RWCString::ignoreCase) )
@@ -3820,11 +3754,18 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                     dout << RWTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                                     returnBoolean = FALSE;
                                 }
+                                foundCap = TRUE;
                                 break;
                             }
                         }
                         break;
                     }
+                }
+                if (foundCap == FALSE)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << RWTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    returnBoolean = TRUE;
                 }
             }
         }

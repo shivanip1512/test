@@ -1072,6 +1072,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         //CtiPAOScheduleManager::getInstance()->setValid(false);
 
                         long objType = CtiCCSubstationBusStore::Unknown;
+                        long changeId = dbChange->getId();
                         if (dbChange->getDatabase() == ChangeCBCStrategyDb)
                         {
                             objType = CtiCCSubstationBusStore::Strategy;
@@ -1094,13 +1095,34 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
+                        else if (dbChange->getDatabase() == ChangePointDb)
+                        {   
+                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId()) != NULL)
+                            {
+                                CtiCCSubstationBusPtr sub = CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId());
+                                objType = CtiCCSubstationBusStore::SubBus;
+                                changeId = sub->getPAOId();
+                            }
+                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId()) != NULL)
+                            {
+                                CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId());
+                                objType = CtiCCSubstationBusStore::Feeder;
+                                changeId = feed->getPAOId();
+                            }
+                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId()) != NULL)
+                            {
+                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId());
+                                objType = CtiCCSubstationBusStore::CapBank;
+                                changeId = cap->getPAOId();
+                            }
+                        }
                         else if (objType == CtiCCSubstationBusStore::Unknown)
                         {
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
 
-                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), objType};
+                        CC_DBRELOAD_INFO reloadInfo = {changeId, dbChange->getTypeOfChange(), objType};
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
@@ -1274,7 +1296,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 }
             }
             //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-            else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+            else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
+                        !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )) 
             {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1372,7 +1395,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                     }
                     //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                    else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
+                                !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) ) )
                     {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1571,7 +1595,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     }
                 }
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                else if( currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                else if( !( !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
+                            !currentSubstationBus->getControlUnits().compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) )) 
                 {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1612,7 +1637,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 found = TRUE;
                // break;
             }
-            else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
+            else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
             {
                 currentFeeder->setCurrentVoltLoadPointValue(value);
                 currentSubstationBus->setBusUpdatedFlag(TRUE);

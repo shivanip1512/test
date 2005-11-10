@@ -98,7 +98,7 @@ public:
     CCBANKVSTATE getVerificationState() const;
     int getAssumedOrigVerificationState() const;
 
-    list <LONG> getPointIds() {return _pointIds;};
+    list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCCapBank& setPAOId(LONG id);
     CtiCCCapBank& setPAOCategory(const RWCString& category);

@@ -1741,7 +1741,9 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         currentCapBank->setCurrentDailyOperations(0);
                     }
                 }
+                currentFeeder->setCurrentDailyOperations(0);
             }
+            currentSubstationBus->setCurrentDailyOperations(0);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             found = TRUE;
         }
@@ -1769,6 +1771,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         }
                     }
 
+                    currentFeeder->setCurrentDailyOperations(0);
                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                     found = TRUE;
                 }
@@ -2138,7 +2141,11 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             RWSortedVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
 
             oldFeederCapBanks.remove(movedCapBankPtr);
+            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
+            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
 
+
+            
             if( !permanentFlag )
             {
                 movedCapBankPtr->setOriginalFeederId(oldFeederPtr->getPAOId());
@@ -2149,6 +2156,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 movedCapBankPtr->setOriginalFeederId(0);
                 movedCapBankPtr->setOriginalSwitchingOrder(0);
             }
+
+            movedCapBankPtr->setParentId(newFeederId);
 
             if( oldFeederCapBanks.entries() > 0 )
             {
@@ -2229,6 +2238,13 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             }
 
             newFeederCapBanks.insert(movedCapBankPtr);
+            store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
+            long subBusId = store->findSubBusIDbyFeederID(newFeederId);
+            if (subBusId != NULL)
+            {
+                store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, &movedCapBankId, &subBusId);
+            }
+
         }
 
         store->UpdateFeederBankListInDB(oldFeederPtr);

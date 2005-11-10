@@ -53,6 +53,21 @@ public:
         Schedule
     } CtiCapControlObjectType;
 
+    typedef enum
+    {
+        PaobjectSubBusMap = 0,
+        PaobjectFeederMap,
+        PaobjectCapBankMap,
+        PointIdSubBusMap,
+        PointIdFeederMap,
+        PointIdCapBankMap,
+        StrategyIdStrategyMap,
+        FeederIdSubBusIdMap,
+        CapBankIdSubBusIdMap,
+        CapBankIdFeederIdMap
+
+    } CtiCapControlMapType;
+
     RWOrdered* getCCSubstationBuses(ULONG secondsFrom1901);
     RWOrdered* getCCCapBankStates(ULONG secondsFrom1901);
     RWOrdered* getCCGeoAreas(ULONG secondsFrom1901);
@@ -92,6 +107,11 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
 
+
+    void insertItemsIntoMap(int mapType, long* first, long* second);
+    void removeItemsFromMap(int mapType, long first);
+
+
     void deleteCapBank(long capBankId);
     void deleteFeeder(long feederId);
     void deleteSubBus(long subBusId);
@@ -119,6 +139,8 @@ public:
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
+
+    map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
     static const RWCString CAP_CONTROL_DBCHANGE_MSG_SOURCE;
 
@@ -153,6 +175,7 @@ private:
 
     void doResetThr();
     void doAMFMThr();
+
 
     RWOrdered* _ccSubstationBuses;
     RWOrdered* _ccCapBankStates;

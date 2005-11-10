@@ -203,7 +203,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isAlreadyControlled(LONG minConfirmPercent);
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const RWDBDateTime& currentDateTime, RWOrdered& pointChanges, RWOrdered& pilMessages, LONG maxConfirmTime);
-
+    BOOL checkMaxDailyOpCountExceeded();
 
     CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
     CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -215,7 +215,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
 
-    list <LONG> getPointIds() {return _pointIds;};
+    list <LONG>* getPointIds() {return &_pointIds;};
 
     BOOL isFeederPerformingVerification();
     BOOL isVerificationAlreadyControlled(LONG minConfirmPercent); 
@@ -325,7 +325,6 @@ private:
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
-    void restoreFeederTableValues(RWDBReader& rdr);
     RWCString doubleToString(DOUBLE doubleVal);
 
     list <long> _pointIds;

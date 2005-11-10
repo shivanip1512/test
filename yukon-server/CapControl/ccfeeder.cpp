@@ -1770,60 +1770,41 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
     DOUBLE leadLevel = (peakTimeFlag?getPeakLead():getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
     setKVARSolution(CtiCCSubstationBus::calculateKVARSolution(controlUnits,setpoint,getCurrentVarLoadPointValue(),getCurrentWattLoadPointValue()));
-
+    RWCString feederControlUnits = controlUnits;
+    //DON'T ADD !... Supposed to be !=none
+    if (_controlunits.compareTo("(none)",RWCString::ignoreCase))
+    {
+        feederControlUnits = _controlunits;
+    }
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
     CtiRequestMsg* request = NULL;
 
-
-    //have we went past the max daily ops
-    if( getMaxDailyOperation() > 0 &&
-        _currentdailyoperations == getMaxDailyOperation() )//only send once
-    {
-        RWCString text = RWCString("Feeder Exceeded Max Daily Operations");
-        RWCString additional = RWCString("Feeder: ");
-        additional += getPAOName();
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
-
-        //we should disable feeder if the flag says so
-        if( getMaxOperationDisableFlag() )
-        {
-            setDisableFlag(TRUE);
-       //     setBusUpdatedFlag(TRUE);
-            RWCString text = RWCString("Feeder Disabled");
-            RWCString additional = RWCString("Feeder: ");
-            additional += getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
-
-            //keepGoing = FALSE;
-            // feeder disable flag is already set, so it will return false.
-        }
-    }
-
-
+    //checks max daily op count, feeder disable if maxOperationDisableFlag set.
+    checkMaxDailyOpCountExceeded();
 
     if( !getDisableFlag() &&
         !getWaiveControlFlag() &&
         ( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() ) )
     {
-        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
-            !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) ) 
+        if( !feederControlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) ||
+            !feederControlUnits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) ) 
         {
-            if( (!_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
+            if( (!feederControlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
                 (getCurrentVarLoadPointValue() > lagLevel || getCurrentVarLoadPointValue() < leadLevel )) ||
-                (!_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&  
-                (getCurrentVoltLoadPointValue() < lagLevel || getCurrentVoltLoadPointValue() < leadLevel) ) ) 
+                (!feederControlUnits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&  
+                (getCurrentVoltLoadPointValue() < lagLevel || getCurrentVoltLoadPointValue() > leadLevel) ) ) 
             {
         
                 try
-                {
-                    if( ( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
+                {   
+                    if( ( !feederControlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) &&
                           lagLevel < getCurrentVarLoadPointValue() ) ||
-                        ( !_controlunits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&
+                        ( !feederControlUnits.compareTo(CtiCCSubstationBus::VoltControlUnits,RWCString::ignoreCase) &&
                           lagLevel > getCurrentVoltLoadPointValue() ) )
                     {                    
                         //if( _CC_DEBUG )
-                        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                        if( !feederControlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Attempting to Decrease Var level in feeder: " << getPAOName().data() << endl;
@@ -1874,7 +1855,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                     else
                     {
                         //if( _CC_DEBUG )
-                        if( !_controlunits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
+                        if( !feederControlUnits.compareTo(CtiCCSubstationBus::KVARControlUnits,RWCString::ignoreCase) )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Attempting to Increase Var level in feeder: " << getPAOName().data() << endl;
@@ -1924,8 +1905,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
                 }
             }
         }
-        else if( !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
-                 !controlUnits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
+        else if( !feederControlUnits.compareTo(CtiCCSubstationBus::PF_BY_KVARControlUnits,RWCString::ignoreCase) ||
+                 !feederControlUnits.compareTo(CtiCCSubstationBus::PF_BY_KQControlUnits,RWCString::ignoreCase) )
         {
             if( getKVARSolution() < 0 )
             {
@@ -2061,6 +2042,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const RWDBDateTime& 
 BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality)
 {
     BOOL returnBoolean = TRUE;
+    BOOL found = FALSE;
     char tempchar[64] = "";
     RWCString text = "";
     RWCString additional = "";
@@ -2203,8 +2185,15 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(RWOrdered& pointChanges, LONG minCo
                 dout << RWTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                 << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
+            found = TRUE;
             break;
         }
+    }
+    if (found == FALSE)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << RWTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        returnBoolean = TRUE;
     }
 
     setRecentlyControlledFlag(FALSE);
@@ -2230,6 +2219,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(RWOrdered& pointChanges, LONG 
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
 {
+    setPeakTimeFlag(peakTimeFlag);
     DOUBLE lagLevel = (peakTimeFlag?getPeakLag():getOffPeakLag());
     DOUBLE leadLevel = (peakTimeFlag?getPeakLead():getOffPeakLead());
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
@@ -2264,6 +2254,7 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
 BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
 {
     BOOL returnBoolean = FALSE;
+    BOOL found = FALSE;
 
     if( !_IGNORE_NOT_NORMAL_FLAG ||
         getCurrentVarPointQuality() == NormalQuality )
@@ -2291,27 +2282,21 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                             returnBoolean = FALSE;
                         }
                     }
-                    /*else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                    {
-                        DOUBLE change = oldVarValue - newVarValue;
-                        DOUBLE ratio = change/currentCapBank->getBankSize();
-                        if( ratio >= minConfirmPercent*.01 )
-                        {
-                            returnBoolean = TRUE;
-                        }
-                        else
-                        {
-                            returnBoolean = FALSE;
-                        }
-                    }   */
                     else
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << RWTime() << " - Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                         returnBoolean = FALSE;
                     }
+                    found = TRUE;
                     break;
                 }
+            }
+            if (found == FALSE)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << RWTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                returnBoolean = TRUE;
             }
         }
     }
@@ -3146,4 +3131,35 @@ void CtiCCFeeder::deleteCCCapBank(long capBankId)
     }
     return;
 }
+
+BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
+{
+    BOOL retVal = FALSE;
+    if( getMaxDailyOperation() > 0 &&
+        _currentdailyoperations == getMaxDailyOperation() )//only send once
+    {
+        RWCString text = RWCString("Feeder Exceeded Max Daily Operations");
+        RWCString additional = RWCString("Feeder: ");
+        additional += getPAOName();
+        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0));
+
+        //we should disable feeder if the flag says so
+        if( getMaxOperationDisableFlag() )
+        {
+            setDisableFlag(TRUE);
+       //     setBusUpdatedFlag(TRUE);
+            RWCString text = RWCString("Feeder Disabled");
+            RWCString additional = RWCString("Feeder: ");
+            additional += getPAOName();
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0));
+
+            //keepGoing = FALSE;
+            // feeder disable flag is already set, so it will return false.
+        }
+        retVal = TRUE;
+    }
+    return retVal;
+}
+
+
 
