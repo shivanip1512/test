@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/11/09 00:37:14 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/11/11 14:29:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1187,5 +1187,13 @@ void CtiDeviceBase::getQueueMetrics(int index, int &submit, int &processed, int 
 }
 
 void CtiDeviceBase::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
-{//Virtual function does nothing..
+{
+    CtiLockGuard<CtiMutex> guard(_configMux);
+    _deviceConfig = config;
+}
+
+Cti::Config::CtiConfigDeviceSPtr CtiDeviceBase::getDeviceConfig()
+{
+    CtiLockGuard<CtiMutex> guard(_configMux);
+    return _deviceConfig;
 }

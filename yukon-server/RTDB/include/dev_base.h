@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/11/09 00:32:21 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/11/11 14:29:18 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -81,6 +81,8 @@ private:
     int _currTrxID;
     int _responsesOnTrxID;
     RWTime _lastReport;
+    mutable CtiMutex _configMux;
+    Cti::Config::CtiConfigDeviceSPtr _deviceConfig;
 
 protected:
 
@@ -270,6 +272,9 @@ public:
 
     MutexType& getMux()  { return mutex(); }
 
+    void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
+    Cti::Config::CtiConfigDeviceSPtr getDeviceConfig();//Configs are now thread safe!
+
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
 
     bool isTAP() const;
@@ -329,7 +334,7 @@ public:
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
 
-    virtual void setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
+    
 };
 
 typedef CtiDeviceBase CtiDevice;
