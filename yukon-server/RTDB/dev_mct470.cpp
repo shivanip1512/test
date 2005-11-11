@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/11/09 00:28:01 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/11/11 14:35:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1176,9 +1176,11 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTLoadProfileChannels);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTLoadProfileChannels);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTLoadProfileChannels)
         {
@@ -1303,9 +1305,11 @@ int CtiDeviceMCT470::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommandParser
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTRelays);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTRelays);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTRelays)
         {
@@ -1357,9 +1361,11 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDemandLP);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDemandLP);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDemandLP)
         {
@@ -1415,9 +1421,11 @@ int CtiDeviceMCT470::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiComma
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTPrecannedTable);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTPrecannedTable);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTPrecannedTable)
         {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/11/09 00:34:50 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/11/11 14:35:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1657,9 +1657,11 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDemandLP);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDemandLP);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDemandLP)
         {
@@ -1731,9 +1733,9 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
 
     long value;
-    if(_deviceConfig)
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTTOU);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTTOU);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTTOU)
         {
@@ -1834,11 +1836,12 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
 int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
     int nRet = NORMAL;
-
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDisconnect);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDisconnect);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDisconnect)
         {
