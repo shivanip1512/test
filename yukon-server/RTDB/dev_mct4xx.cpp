@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/11/09 00:15:54 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/11/11 14:32:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -162,6 +162,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                     }
                 }
 
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.entries());
                 if(tempReq!=NULL)
                 {
                     delete tempReq;
@@ -275,14 +276,66 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     return nRet;
 }
 
+
+INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
+{
+    INT   status = NORMAL,
+          j;
+    ULONG pfCount = 0;
+    RWCString resultString;
+
+    CtiReturnMsg  *ReturnMsg = NULL;    
+
+    bool expectMore = false;
+
+    INT ErrReturn = InMessage->EventCode & 0x3fff;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        switch( InMessage->Sequence )
+        {
+            case Emetcon::PutConfig_Install:
+            {
+            }
+        }
+
+        resultString = "Config data received: ";
+        resultString.append((const char *)InMessage->Buffer.DSt.Message, InMessage->Buffer.DSt.Length);
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( resultString );
+
+        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+        {
+            ReturnMsg->setExpectMore(true);
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+    return status;
+}
+
+
 using namespace Cti;
 using namespace Config;
 int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
     int nRet = NORMAL;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTVThreshold);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTVThreshold);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTVThreshold)
         {
@@ -366,9 +419,11 @@ int CtiDeviceMCT4xx::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTOptions);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTOptions);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTOptions)
         {
@@ -482,9 +537,11 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTAddressing);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTAddressing)
         {
@@ -549,10 +606,11 @@ int CtiDeviceMCT4xx::executePutConfigAddressing(CtiRequestMsg *pReq,CtiCommandPa
 int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
 {
     int nRet = NORMAL;
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
-    if(_deviceConfig)
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTDST);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDST);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDST)
         {
@@ -630,9 +688,11 @@ int CtiDeviceMCT4xx::executePutConfigHoliday(CtiRequestMsg *pReq,CtiCommandParse
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTHoliday);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTHoliday);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTHoliday)
         {
@@ -706,9 +766,11 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 {
     int nRet = NORMAL;
     long value;
-    if(_deviceConfig)
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = _deviceConfig->getConfigFromType(ConfigTypeMCTLongLoadProfile);
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTLongLoadProfile);
 
         if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTLongLoadProfile)
         {
@@ -775,10 +837,3 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
     return nRet;
 }
 
-
-
-
-void CtiDeviceMCT4xx::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)
-{
-    _deviceConfig = config;
-}
