@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/11/09 00:14:40 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/11/11 14:39:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ public:
 private:
 
     static DLCCommandSet _commandStore;
-
+    
 protected:
 
     enum WireConfig
@@ -72,6 +72,10 @@ protected:
         _expected_freeze;
 
     static bool getMCTDebugLevel(int mask);
+
+    //typedef pair<int length, CtiTableDynamicPaoInfo::Keys> LengthKeyPair;
+    virtual fillDynamicPaoInfo(INMESS *InMessage);
+    //virtual LengthKeyPair getLengthKeyPair(int location);
 
     enum MCTDebug
     {

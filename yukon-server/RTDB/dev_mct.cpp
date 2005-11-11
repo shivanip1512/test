@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2005/11/09 00:36:14 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2005/11/11 14:39:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -957,9 +957,14 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         }
     }
 
+    fillDynamicPaoInfo(InMessage);
     return status;
 }
 
+CtiDeviceMCT::fillDynamicPaoInfo(INMESS *InMessage)
+{
+    
+}
 
 INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
 {
@@ -3825,7 +3830,9 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( resultString );
 
-        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE )
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
         {
             ReturnMsg->setExpectMore(true);
         }
