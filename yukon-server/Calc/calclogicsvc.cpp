@@ -147,10 +147,9 @@ void CtiCalcLogicService::Run( )
     time_t   timeNow;
 
     int conncnt= 0;
-    CtiPointDataMsg pointMessage;
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc);
 
     ThreadMonitor.start(); //ecs 1/4/2005
-    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc));
     RWTime LastThreadMonitorTime;
 
     CALCVERSION = identifyProjectVersion(CompileInfo);
@@ -438,20 +437,17 @@ void CtiCalcLogicService::Run( )
                     rwnow = rwnow.now();
                     if(rwnow > LastThreadMonitorTime)
                     {
-                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 60 );;
-                        if(pointMessage.getId()!=0)
+                        LastThreadMonitorTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+                        if(pointID!=0)
                         {
-                            pointMessage.setType(StatusPointType);
-                            pointMessage.setValue(ThreadMonitor.getState());
-                            pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
-
-                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));;
                         }
                     }
-
                     if(rwnow > announceTime)
                     {
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
+
+                        if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
@@ -656,6 +652,8 @@ void CtiCalcLogicService::_outputThread( void )
                 if(rwnow > announceTime)
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
+
+                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " _outputThread active. TID: " << rwThreadId() << endl;
@@ -739,6 +737,8 @@ void CtiCalcLogicService::_inputThread( void )
                     {
                         ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
+
+                        if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
@@ -752,6 +752,8 @@ void CtiCalcLogicService::_inputThread( void )
             {
                 ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                 announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
+
+                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;

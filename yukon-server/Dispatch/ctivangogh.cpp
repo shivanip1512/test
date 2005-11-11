@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2005/10/20 21:41:28 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2005/11/11 15:23:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -483,6 +483,7 @@ void CtiVanGogh::VGMainThread()
             {
                 reportOnThreads();
 
+                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " VG Main Thread Active. TID:  " << rwThreadId() << endl;
@@ -1373,6 +1374,8 @@ void CtiVanGogh::VGArchiverThread()
                 if(!(++sanity % SANITY_RATE))
                 {
                     reportOnThreads();
+
+                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
@@ -1424,6 +1427,7 @@ void CtiVanGogh::VGTimedOperationThread()
         {
             if(!(++sanity % SANITY_RATE))
             {
+                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch Timed Operation Thread Active. TID:  " << rwThreadId() << endl;
@@ -4883,6 +4887,7 @@ void CtiVanGogh::VGRPHWriterThread()
         {
             if(!(++sanity % SANITY_RATE))
             {
+                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch RawPointHistory Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -4940,6 +4945,7 @@ void CtiVanGogh::VGDBWriterThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
+                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -4994,9 +5000,11 @@ void CtiVanGogh::VGDBWriterThread()
 ******************************************************************************/
 void CtiVanGogh::VGAppMonitorThread()
 {
+    RWTime LastThreadMonitorTime;
+    int checkCount = 0;
+    CtiThreadMonitor::State previous;
     CtiPointDataMsg vgStatusPoint;
-    vgStatusPoint.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Dispatch));
-    vgStatusPoint.setType(StatusPointType);
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Dispatch);
 
     //on startup wait for 15 minutes!
     for(int i=0;i<180;i++)
@@ -5004,11 +5012,10 @@ void CtiVanGogh::VGAppMonitorThread()
         //5*180 = 900 seconds = 15 minutes
         rwSleep(5000);//5 second sleep
 
-        if(!(i%18))
+        if(!(i%60) && pointID !=0)
         {
-            vgStatusPoint.setValue(ThreadMonitor.getState());
-            vgStatusPoint.setString(RWCString(ThreadMonitor.getString().c_str()));
-            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(vgStatusPoint));
+            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+            LastThreadMonitorTime = LastThreadMonitorTime.now();
         }
 
         if(bGCtrlC)//someone did a Control-C, we need to exit!
@@ -5037,26 +5044,31 @@ void CtiVanGogh::VGAppMonitorThread()
                 if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                 {
                     //its been more than 15 minutes, set the alarms!!!
-                    CtiPointDataMsg pointMessage;
-                    pointMessage.setId(*pointListWalker);
-                    pointMessage.setType(StatusPointType);
-                    pointMessage.setValue(CtiThreadMonitor::State::Dead);
-                    MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointMessage));
-
+                    MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
                 }
             }
         }
 
-        //no need to process very often, wait say.... randomly ill pick 3 minutes or so
-        for(i=0;i<=36;i++)
+        //no need to process very often, wait say.... randomly ill pick 5 minutes or so
+        for(i=0;i<=30;i++)
         {
-            rwSleep(5000);//5 second sleep
+            rwSleep(10000);//10 second sleep.
 
-            if(!(i%18))
+            //Check thread watcher status
+            if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
             {
-                vgStatusPoint.setValue(ThreadMonitor.getState());
-                vgStatusPoint.setString(RWCString(ThreadMonitor.getString().c_str()));
-                MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(vgStatusPoint));
+                if(pointID!=0)
+                {
+                    CtiThreadMonitor::State next;
+                    LastThreadMonitorTime = LastThreadMonitorTime.now();
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    {
+                        previous = next;
+                        checkCount = 0;
+
+                        MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                    }
+                }
             }
 
             if(bGCtrlC)//someone did a Control-C, we need to exit!
@@ -5065,7 +5077,6 @@ void CtiVanGogh::VGAppMonitorThread()
     }
 
 }
-
 
 /*----------------------------------------------------------------------------*
  * This FUNCTION is used to apply against the MainQueue_ with the expectation
@@ -6385,6 +6396,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
+                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -6449,6 +6461,7 @@ void CtiVanGogh::VGDBSignalEmailThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
+                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Email Thread Active. TID:  " << rwThreadId() << endl;
