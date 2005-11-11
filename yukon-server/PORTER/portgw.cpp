@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/08/23 20:06:34 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/11/11 15:24:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,6 +86,7 @@ void GWTimeSyncThread (void *Dummy)
         //This thing can sleep for quite a while (15-30s), so we probably dont want to wait this long!!
         if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
         {
+            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
@@ -176,6 +177,7 @@ void KeepAliveThread (void *Dummy)
         //Thread Monitor Begins here**************************************************
         if(!(++sanity % SANITY_RATE))
         {
+            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
@@ -446,6 +448,7 @@ VOID PorterGWThread(void *pid)
             //Thread Monitor Begins here**************************************************
             if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
             {
+                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
@@ -611,6 +614,7 @@ void GWResultThread (void *Dummy)
         //This thing can sleep for quite a while (30s), so we probably dont want to wait this long!!
         if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
         {
+            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;

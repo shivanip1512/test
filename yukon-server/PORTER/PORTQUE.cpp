@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/11/09 00:06:56 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/11/11 15:24:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1186,6 +1186,7 @@ VOID KickerThread (VOID *Arg)
         //Thread Monitor Begins here**************************************************
         if(!(++sanity % SANITY_RATE_LONG_SLEEPERS))
         {
+            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " CCU Kicker thread active. TID:  " << rwThreadId() << endl;
