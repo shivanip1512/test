@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/08/22 18:14:22 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/11/11 20:46:58 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,6 +242,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
+                                    _string_results.push_back(CTIDBG_new string("Unknown data received."));
                                     clearPoints();
                                     _status = End;
                                 }
@@ -257,7 +258,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            retVal = UnknownError;//some error code should be set!
+                            retVal = NoMethod;//some error code should be set!
                             _status = End;
                             clearPoints();
                             break;                            
@@ -268,6 +269,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                     }
                     else
                     {
+                        retVal = PORTREAD;
                         clearPoints();
                         _status = End;
                         break;
