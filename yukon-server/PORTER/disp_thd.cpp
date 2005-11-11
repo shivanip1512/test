@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/08/24 13:59:19 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/11/11 15:22:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,9 +85,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     UINT           changeCnt = 0;
     UCHAR          checkCount = 0;
     CtiDBChangeMsg *pChg = NULL;
-    CtiPointDataMsg pointMessage;
-
-    pointMessage.setId(ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter));
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -279,10 +277,10 @@ void DispatchMsgHandlerThread(VOID *Arg)
                 }
             }
 
-            //Check thread watcher status
+             //Check thread watcher status
             if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
             {
-                if(pointMessage.getId()!=0)
+                if(pointID!=0)
                 {
                     CtiThreadMonitor::State next;
                     LastThreadMonitorTime = LastThreadMonitorTime.now();
@@ -290,13 +288,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
                     {
                         previous = next;
                         checkCount = 0;
-                        
-                        pointMessage.setType(StatusPointType);
-                        pointMessage.setValue(next);
-    
-                        pointMessage.setString(RWCString(ThreadMonitor.getString().c_str()));
-    
-                        VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointMessage));
+                          
+                        VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                     }
                 }
             }
