@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2005/10/19 19:11:48 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2005/11/11 14:34:53 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,32 @@ public:
         ScanDataValid
     };
 
+    struct channelWithID//This is used for tracking return messages to commander based on channel and id
+    {
+        int channel;
+        int identifier;
+    
+        bool channelWithID::operator<(const channelWithID &rhs) const
+        {
+            bool retval = false;
+    
+            if( identifier < rhs.identifier )
+            {
+                retval = true;
+            }
+            else if( identifier == rhs.identifier )
+            {
+                if( channel < rhs.channel )
+                {
+                    retval = true;
+                }
+            }
+    
+            return retval;
+        }
+    };
+
+
 protected:
 
     enum ScanPriorities
@@ -100,6 +126,9 @@ private:
     bool hasRateOrClockChanged(int rate, RWTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, RWTime &aNow=RWTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
+
+    typedef map<channelWithID, int > MessageCount_t;
+    MessageCount_t _messageCount;
 
 public:
 
@@ -219,6 +248,10 @@ public:
     RWTime getNextWindowOpen() const;
     static int desolveScanRateType( const RWCString &cmd );
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
+
+    int getGroupMessageCount(long userID, long comID);
+    incrementGroupMessageCount(long userID, long comID, int entries = 1);
+    decrementGroupMessageCount(long userID, long comID, int entries = 1);
 
 };
 

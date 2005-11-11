@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2005/10/25 22:08:43 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2005/11/11 14:34:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -830,6 +830,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
+
+            decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+            if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)
+            {
+                Ret->setExpectMore();
+            }
+
             retList.insert( Ret );
 
             ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1969,3 +1976,61 @@ bool CtiDeviceSingle::removeWindowType( int window_type )
 
     return found;
 }
+
+int CtiDeviceSingle::getGroupMessageCount(long userID, long comID)
+{
+
+    int retVal = 0;
+    channelWithID temp;
+    temp.channel = comID;
+    temp.identifier = userID;
+    MessageCount_t::iterator iterator = _messageCount.find(temp);
+
+    if(iterator != _messageCount.end())
+    {
+        retVal = iterator->second;
+    }
+    return retVal;
+}
+
+CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
+{
+    channelWithID temp;
+    temp.channel = comID;
+    temp.identifier = userID;
+    MessageCount_t::iterator iterator = _messageCount.find(temp);
+
+    if(iterator != _messageCount.end())
+    {
+        iterator->second += entries;
+    }
+    else
+    {
+        //This object was not here before. insert it.
+        _messageCount.insert(MessageCount_t::value_type(temp, entries));
+    }
+}
+
+CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
+{
+    int count;
+    channelWithID temp;
+    temp.channel = comID;
+    temp.identifier = userID;
+    MessageCount_t::iterator iterator = _messageCount.find(temp);
+
+    if(iterator != _messageCount.end())
+    {
+        count = iterator->second;
+        count -= entries;
+        if(count <=0)
+        {
+            _messageCount.erase(temp);
+        }
+        else
+        {
+            iterator->second = count;
+        }
+    }
+}
+
