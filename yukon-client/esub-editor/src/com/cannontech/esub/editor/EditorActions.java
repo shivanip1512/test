@@ -55,13 +55,13 @@ class EditorActions {
 	public static final String ALARM_TEXT_ELEMENT = "ALARM TEXT";
 	
 	//Element or group of elements related actions
-	public static final String ALIGN_ELEMENTS_LEFT = "ALIGN LEFT";
-	public static final String ALIGN_ELEMENTS_RIGHT = "ALIGN RIGHT";
-	public static final String ALIGN_ELEMENTS_TOP = "ALIGN TOP";
-	public static final String ALIGN_ELEMENTS_BOTTOM = "ALIGN BOTTOM";
-	public static final String ALIGN_ELEMENTS_VERTICAL = "ALIGN VERTICAL";
-	public static final String ALIGN_ELEMENTS_HORIZONTAL = "ALIGN HORIZONTAL";
-	
+	public static final String HORIZONTAL_ALIGN_LEFT_ELEMENTS = "HORIZONTAL ALIGN LEFT";
+	public static final String HORIZONTAL_ALIGN_RIGHT_ELEMENTS = "HORIZONTAL ALIGN RIGHT";
+	public static final String VERTICAL_ALIGN_TOP_ELEMENTS = "VERTICAL ALIGN TOP";
+	public static final String VERTICAL_ALIGN_BOTTOM_ELEMENTS = "VERTICAL ALIGN BOTTOM";
+	public static final String HORIZONTAL_ALIGN_CENTER_ELEMENTS = "HORIZONTAL ALIGN CENTER";
+	public static final String VERTICAL_ALIGN_CENTER_ELEMENTS = "VERTICAL ALIGN CENTER";
+	 
 	public static final String ROTATE_ELEMENT_90 = "ROTATE 90";
 	public static final String ROTATE_ELEMENT_180 = "ROTATE 180";
 	public static final String ROTATE_ELEMENT_270 = "ROTATE 270";
@@ -212,9 +212,9 @@ class EditorActions {
 
 	private final LxAbstractAction alignLeft = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_LEFT,
-			"Align Left",
-			"Align Left",
+			HORIZONTAL_ALIGN_LEFT_ELEMENTS,
+			"Horizontal Align Left",
+			"Horizontal Align Left",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -244,9 +244,9 @@ class EditorActions {
 	
 	private final LxAbstractAction alignRight = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_RIGHT,
-			"Align Right",
-			"Align Right",
+			HORIZONTAL_ALIGN_RIGHT_ELEMENTS,
+			"Horizontal Align Right",
+			"Horizontal Align Right",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -275,9 +275,9 @@ class EditorActions {
 	
 	private final LxAbstractAction alignTop = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_TOP,
-			"Align Top",
-			"Align Top",
+			VERTICAL_ALIGN_TOP_ELEMENTS,
+			"Vertical Align Top",
+			"Vertical Align Top",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -306,9 +306,9 @@ class EditorActions {
 	
 	private final LxAbstractAction alignBottom = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_BOTTOM,
-			"Align Bottom",
-			"Align Bottom",
+			VERTICAL_ALIGN_BOTTOM_ELEMENTS,
+			"Vertical Align Bottom",
+			"Vertical Align Bottom",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -337,9 +337,9 @@ class EditorActions {
 		
 	private final LxAbstractAction alignVertical = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_VERTICAL,
-			"Align Vertical",
-			"Align Vertical",
+			HORIZONTAL_ALIGN_CENTER_ELEMENTS,
+			"Horizontal Align Center",
+			"Horizontal Align Center",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -356,7 +356,7 @@ class EditorActions {
 				}
 			}
 			avgX /= selComp;
-			graph.startUndoEdit("align vertical");
+			graph.startUndoEdit("vertical align center");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
@@ -364,14 +364,14 @@ class EditorActions {
 				}
 			}		
 			graph.finishUndoEdit();
-		}
+		}				
 	};
 		
 	private final LxAbstractAction alignHorizontal = 
 		new LxAbstractAction(
-			ALIGN_ELEMENTS_HORIZONTAL,
-			"Align Horizontal",
-			"Align Horizontal",
+			VERTICAL_ALIGN_CENTER_ELEMENTS,
+			"Vertical Align Center",
+			"Vertical Align Center",
 			null,
 			true) {
 		public void processAction(ActionEvent e) {
@@ -388,7 +388,7 @@ class EditorActions {
 				}
 			}
 			avgY /= selComp;
-			graph.startUndoEdit("align horizontal");
+			graph.startUndoEdit("horizontal align center");
 			for(int i = 0; i < allSelected.length; i++) {
 				if(allSelected[i] instanceof LxComponent) {
 					LxComponent comp = (LxComponent) allSelected[i];
@@ -396,7 +396,7 @@ class EditorActions {
 				}
 			}		
 			graph.finishUndoEdit();			
-		}
+		}				
 	};
 	
 	private final LxAbstractAction rotateElement90Action = 
@@ -858,12 +858,12 @@ class EditorActions {
 
 		actionMap.put(DELETE_ELEMENT, deleteElementAction);
 
-		actionMap.put(ALIGN_ELEMENTS_LEFT, alignLeft);
-		actionMap.put(ALIGN_ELEMENTS_RIGHT, alignRight);
-		actionMap.put(ALIGN_ELEMENTS_TOP, alignTop);
-		actionMap.put(ALIGN_ELEMENTS_BOTTOM, alignBottom);
-		actionMap.put(ALIGN_ELEMENTS_VERTICAL, alignVertical);
-		actionMap.put(ALIGN_ELEMENTS_HORIZONTAL, alignHorizontal);
+		actionMap.put(HORIZONTAL_ALIGN_LEFT_ELEMENTS, alignLeft);
+		actionMap.put(HORIZONTAL_ALIGN_RIGHT_ELEMENTS, alignRight);
+		actionMap.put(VERTICAL_ALIGN_TOP_ELEMENTS, alignTop);
+		actionMap.put(VERTICAL_ALIGN_BOTTOM_ELEMENTS, alignBottom);
+		actionMap.put(HORIZONTAL_ALIGN_CENTER_ELEMENTS, alignVertical);
+		actionMap.put(VERTICAL_ALIGN_CENTER_ELEMENTS, alignHorizontal);
 		
 		actionMap.put(ROTATE_ELEMENT_90, rotateElement90Action);
 		actionMap.put(ROTATE_ELEMENT_180, rotateElement180Action);

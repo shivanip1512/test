@@ -664,12 +664,12 @@ public class Editor extends JPanel {
 		editorActions.getAction(EditorActions.CUT_ELEMENT).setEnabled(cutNPaste);
 		editorActions.getAction(EditorActions.COPY_ELEMENT).setEnabled(cutNPaste);
 		editorActions.getAction(EditorActions.PASTE_ELEMENT).setEnabled(cutNPaste);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_LEFT).setEnabled(align);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_RIGHT).setEnabled(align);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_TOP).setEnabled(align);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_BOTTOM).setEnabled(align);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_HORIZONTAL).setEnabled(align);
-		editorActions.getAction(EditorActions.ALIGN_ELEMENTS_VERTICAL).setEnabled(align);
+		editorActions.getAction(EditorActions.HORIZONTAL_ALIGN_LEFT_ELEMENTS).setEnabled(align);
+		editorActions.getAction(EditorActions.HORIZONTAL_ALIGN_RIGHT_ELEMENTS).setEnabled(align);
+		editorActions.getAction(EditorActions.VERTICAL_ALIGN_TOP_ELEMENTS).setEnabled(align);
+		editorActions.getAction(EditorActions.VERTICAL_ALIGN_BOTTOM_ELEMENTS).setEnabled(align);
+		editorActions.getAction(EditorActions.VERTICAL_ALIGN_CENTER_ELEMENTS).setEnabled(align);
+		editorActions.getAction(EditorActions.HORIZONTAL_ALIGN_CENTER_ELEMENTS).setEnabled(align);
 		editorActions.getAction(EditorActions.DELETE_ELEMENT).setEnabled(anySelected);	
 		editorActions.getAction(EditorActions.TO_FRONT_LAYER).setEnabled(anySelected);
 		editorActions.getAction(EditorActions.TO_BACK_LAYER).setEnabled(anySelected);

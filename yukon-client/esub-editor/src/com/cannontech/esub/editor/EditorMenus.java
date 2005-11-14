@@ -140,27 +140,27 @@ private void initialize(EditorActions actions) {
 	JMenu alignSubMenu = new JMenu("Align");
 	JMenu alignPopupSubMenu = new JMenu("Align");
 		
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_LEFT);
+	action = actions.getAction(EditorActions.HORIZONTAL_ALIGN_LEFT_ELEMENTS);
 	JMenuItem alignLeftItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignLeftPopupItem = createMenuItem(action.getLabel(), action);
 	
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_RIGHT);
+	action = actions.getAction(EditorActions.HORIZONTAL_ALIGN_RIGHT_ELEMENTS);
 	JMenuItem alignRightItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignRightPopupItem = createMenuItem(action.getLabel(), action);
 	
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_TOP);
+	action = actions.getAction(EditorActions.VERTICAL_ALIGN_TOP_ELEMENTS);
 	JMenuItem alignTopItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignTopPopupItem = createMenuItem(action.getLabel(), action);
 		
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_BOTTOM);
+	action = actions.getAction(EditorActions.VERTICAL_ALIGN_BOTTOM_ELEMENTS);
 	JMenuItem alignBottomItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignBottomPopupItem = createMenuItem(action.getLabel(), action);
 	
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_VERTICAL);
+	action = actions.getAction(EditorActions.HORIZONTAL_ALIGN_CENTER_ELEMENTS);
 	JMenuItem alignVerticalItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignVerticalPopupItem = createMenuItem(action.getLabel(), action);
 	
-	action = actions.getAction(EditorActions.ALIGN_ELEMENTS_HORIZONTAL);
+	action = actions.getAction(EditorActions.VERTICAL_ALIGN_CENTER_ELEMENTS);
 	JMenuItem alignHorizontalItem = createMenuItem(action.getLabel(), action);
 	JMenuItem alignHorizontalPopupItem = createMenuItem(action.getLabel(), action);
 	
