@@ -1,35 +1,24 @@
 package com.cannontech.stars.util;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.customer.CustomerFactory;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.serialize.ContactNotification;
-import com.cannontech.stars.xml.serialize.ControlSummary;
-import com.cannontech.stars.xml.serialize.StarsAppliance;
-import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
-import com.cannontech.stars.xml.serialize.StarsCustomerContact;
-import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
-import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
-import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.util.ServletUtil;
@@ -422,11 +411,11 @@ public class ServletUtils {
 	}
     
 	public static void removeTransientAttributes(HttpSession session) {
-		Enumeration enum = session.getAttributeNames();
+		Enumeration attributeEnum = session.getAttributeNames();
 		ArrayList attToBeRemoved = new ArrayList();
 		
-		while (enum.hasMoreElements()) {
-			String attName = (String) enum.nextElement();
+		while (attributeEnum.hasMoreElements()) {
+			String attName = (String) attributeEnum.nextElement();
 			if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
 				attToBeRemoved.add( attName );
 		}
@@ -666,5 +655,24 @@ public class ServletUtils {
 		else
 			return null;
 	}
+    
+    public final static void updateCustomerTemperatureUnit(
+            LiteCustomer customer, String temperatureUnit) throws Exception {
+        if (temperatureUnit.matches("^[FC]$")) {
+            try {
+                Customer cust = CustomerFactory.createCustomer(customer);
+                cust.getCustomer().setTemperatureUnit(temperatureUnit);
+                Transaction.createTransaction(com.cannontech.database.Transaction.UPDATE,
+                                              cust).execute();
+                ServerUtils.handleDBChange(customer,
+                                           DBChangeMsg.CHANGE_TYPE_UPDATE);
+            } catch (Exception e) {
+                throw new Exception("Couldn't update Customer's temperature unit",
+                                    e);
+            }
+        } else {
+            throw new Exception("Invalid temperature unit: " + temperatureUnit);
+        }
+    }
 
 }

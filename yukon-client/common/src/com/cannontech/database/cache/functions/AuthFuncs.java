@@ -1,22 +1,14 @@
 package com.cannontech.database.cache.functions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.radius.RadiusLogin;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.user.UserUtils;
 
@@ -152,6 +144,20 @@ public class AuthFuncs {
 			return cache.getARolePropertyValue(user, rolePropertyID);
 		}
 	}
+    
+    /**
+     * Returns the value for a given userID and rolePropertyID.
+     * If no value is found, then the default stored in the database is returned.
+     * @param userID the userID on which the property is stored
+     * @param rolePropertyID the rolePropertyID to retrieve
+     * @return the value of the property
+     * @throws IllegalArgumentException if a valid user cannot be found for userID
+     */
+    public static String getRolePropertyValue(int userID, int rolePropertyID) {
+        LiteYukonUser liteYukonUser = YukonUserFuncs.getLiteYukonUser(userID);
+        Validate.notNull(liteYukonUser, "Could not find a valid LiteYukonUser for userID=" + userID);
+        return getRolePropertyValue(liteYukonUser, rolePropertyID);
+    }
 	
 	/*
 	public static String getRolePropertyValue(LiteYukonUser user, int rolePropertyID, String defaultValue) {

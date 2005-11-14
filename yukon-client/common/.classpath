@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry kind="lib" path="/third-party/saaj.jar"/>	
+	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/log4j-1.2.4.jar">
 		<attributes>
 			<attribute value="http://logging.apache.org/log4j/docs/api/" name="javadoc_location"/>
@@ -26,5 +26,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-remote.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-lang-2.1.jar">
+		<attributes>
+			<attribute value="http://jakarta.apache.org/commons/lang/api/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

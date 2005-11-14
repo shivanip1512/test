@@ -1,3 +1,5 @@
+<%@ page import="com.cannontech.common.util.CtiUtilities" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 <%
 /* Required predefined variables:
  * thermoSettings: StarsThermostatSettings
@@ -49,14 +51,28 @@
 			}
 		}
 	}
+        
+    
+    String tempUnit = user.getCustomer().getTemperatureUnit();
+    if (request.getParameter("tempUnit") != null) {
+        String tempTemperatureUnit = request.getParameter("tempUnit");
+        // update database
+        ServletUtils.updateCustomerTemperatureUnit(user.getCustomer(), tempTemperatureUnit);
+        tempUnit = tempTemperatureUnit;
+    }
+    
+    
 %>
 
 <script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/nav_menu.js">
+</script>
+<script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/temp_conversion.js">
 </script>
 <script langauge = "JavaScript">
 <!-- 
 var lowerLimit = 45;
 var upperLimit = 88;
+var tempUnit = '<%= tempUnit %>';
 
 <% if (curSettings != null) { %>
 <%	if (curSettings.getLowerCoolSetpointLimit() > 0) { %>
@@ -67,139 +83,118 @@ var upperLimit = 88;
 <%	} %>
 <% } %>
 
-var coolSetpoint = <%= coolSetpoint %>;
-var heatSetpoint = <%= heatSetpoint %>;
-var dftSetpoint = <%= setpoint %>;
-
-function setTemp(curTemp) {
-	var mode = document.MForm.mode.value;
-<% if (curSettings != null) { %>
-	if (mode == "") mode = "<%= curSettings.getMode() %>";
-<% } %>
-	if (mode == "<%= StarsThermoModeSettings.COOL.toString() %>")
-		coolSetpoint = curTemp;
-	else if (mode == "<%= StarsThermoModeSettings.HEAT.toString() %>")
-		heatSetpoint = curTemp;
-	else
-		dftSetpoint = curTemp;
-}
 
 var timeoutId = -1;
 
 function setChanged() {
-	setContentChanged(true);
-	if (timeoutId != -1) {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout("location.reload()", 300000);
-	}
+  setContentChanged(true);
+  if (timeoutId != -1) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout("location.reload()", 300000);
+  }
 }
 
 function init() {
-	modeChange('<%= modeStr %>');
-	fanChange('<%= fanStr %>');
+  modeChange('<%= modeStr %>');
+  fanChange('<%= fanStr %>');
+  document.MForm.tempField.value = <%= setpoint %>;
+  document.MForm.tempDisplayField.value = getConvertedTemp(<%= setpoint %>, tempUnit);
 <% if (curSettings != null) { %>
-	timeoutId = setTimeout("location.reload()", 60000);
-	document.getElementById("CurrentSettings").style.display = "";
+  timeoutId = setTimeout("location.reload()", 60000);
+  document.getElementById("CurrentSettings").style.display = "";
 <% } else { %>
-	document.getElementById("LastSettings").style.display = "";
+  document.getElementById("LastSettings").style.display = "";
 <% } %>
 }
 
 function incTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value,10) + 1;
-	if (curTemp <= upperLimit) {
-		document.MForm.tempField.value = curTemp;
-<% if (curSettings != null) { %>
-		setTemp(curTemp);
-<% } %>
-		resetTimer();
-	}
+  var curTemp = parseInt(document.MForm.tempDisplayField.value,10) + 1;
+  var curFTemp = getFahrenheitTemp(curTemp, tempUnit);
+  if (curFTemp <= upperLimit) {
+    document.MForm.tempField.value = curFTemp;
+    document.MForm.tempDisplayField.value = curTemp;
+  }
 }
 
 function decTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value,10) - 1;
-	if (curTemp >= lowerLimit) {
-		document.MForm.tempField.value = curTemp;
-<% if (curSettings != null) { %>
-		setTemp(curTemp);
-<% } %>
-		resetTimer();
-	}
+  var curTemp = parseInt(document.MForm.tempDisplayField.value,10) - 1;
+  var curFTemp = getFahrenheitTemp(curTemp, tempUnit);
+  if (curFTemp >= lowerLimit) {
+    document.MForm.tempField.value = curFTemp;
+    document.MForm.tempDisplayField.value = curTemp;
+  }
+}
+
+function tempChanged() {
+  var curTemp = parseInt(document.MForm.tempDisplayField.value,10) - 1;
+  var curFTemp = getFahrenheitTemp(curTemp, tempUnit);
+  document.MForm.tempField.value = curFTemp;
 }
 
 function validateTemp() {
-	var curTemp = parseInt(document.MForm.tempField.value,10);
-	if (isNaN(curTemp))
-		curTemp = 72;
-	else if (curTemp < lowerLimit)
-		curTemp = lowerLimit;
-	else if (curTemp > upperLimit)
-		curTemp = upperLimit;
-	document.MForm.tempField.value = curTemp;
-<% if (curSettings != null) { %>
-	setTemp(curTemp);
-<% } %>
+  var curFTemp = getFahrenheitTemp(parseInt(document.MForm.tempDisplayField.value,10), tempUnit);
+  if (isNaN(curFTemp))
+    curFTemp = 72;
+  else if (curFTemp < lowerLimit)
+    curFTemp = lowerLimit;
+  else if (curFTemp > upperLimit)
+    curFTemp = upperLimit;
+  document.MForm.tempField.value = curFTemp;
+  document.MForm.tempDisplayField.value = getConvertedTemp(curFTemp, tempUnit);
 }
 
 function modeChange(mode) {
-	if (mode == "") return;
-	var disableFlag = false;
+  if (mode == "") return;
+  var disableFlag = false;
 	
-	if (document.getElementById(mode).style.visibility == "hidden") {
-		if (document.MForm.mode.value != "")
-			document.getElementById(document.MForm.mode.value).style.visibility = "hidden";
-		document.getElementById(mode).style.visibility = 'visible';
-		document.MForm.mode.value = mode;
+  if (document.getElementById(mode).style.visibility == "hidden") {
+    if (document.MForm.mode.value != "")
+      document.getElementById(document.MForm.mode.value).style.visibility = "hidden";
+      document.getElementById(mode).style.visibility = 'visible';
+      document.MForm.mode.value = mode;
 		
-		if (mode == '<%= StarsThermoModeSettings.COOL.toString() %>') {
-			document.MForm.tempField.style.color = "#003399";
-		}
-		else if (mode == '<%= StarsThermoModeSettings.HEAT.toString() %>') {
-			document.MForm.tempField.style.color = "#FF0000";
-		}
-		else {
-			document.MForm.tempField.style.color = "#CCCCCC";
-			disableFlag = true;
-		}
-	}
-	else {
-		document.getElementById(mode).style.visibility = "hidden";
-		document.MForm.mode.value = "";
-		document.MForm.tempField.style.color = "#003366";
-	}
-	
-	document.MForm.tempField.readOnly = disableFlag;
-	document.getElementById("IncTemp").disabled = disableFlag;
-	document.getElementById("DecTemp").disabled = disableFlag;
+      if (mode == '<%= StarsThermoModeSettings.COOL.toString() %>') {
+        document.MForm.tempDisplayField.style.color = "#003399";
+      } else if (mode == '<%= StarsThermoModeSettings.HEAT.toString() %>') {
+        document.MForm.tempDisplayField.style.color = "#FF0000";
+      } else {
+        document.MForm.tempDisplayField.style.color = "#CCCCCC";
+        disableFlag = true;
+      }
+    } else {
+      document.getElementById(mode).style.visibility = "hidden";
+      document.MForm.mode.value = "";
+      document.MForm.tempDisplayField.style.color = "#003366";
+    }
 
-	resetTimer();
+  document.MForm.tempDisplayField.readOnly = disableFlag;
+  document.getElementById("IncTemp").disabled = disableFlag;
+  document.getElementById("DecTemp").disabled = disableFlag;
+
 }
 
 function fanChange(fan) {
-	if (fan == "") return;
-	
-	if (document.getElementById(fan).style.visibility == "hidden") {
-		if (document.MForm.fan.value != "")
-			document.getElementById(document.MForm.fan.value).style.visibility = "hidden";
-		document.getElementById(fan).style.visibility = 'visible';
-		document.MForm.fan.value = fan;
-	}
-	else {
-		document.getElementById(fan).style.visibility = "hidden";
-		document.MForm.fan.value = "";
-	}
-	
-	resetTimer();
+  if (fan == "") return;
+
+  if (document.getElementById(fan).style.visibility == "hidden") {
+    if (document.MForm.fan.value != "")
+      document.getElementById(document.MForm.fan.value).style.visibility = "hidden";
+    document.getElementById(fan).style.visibility = 'visible';
+    document.MForm.fan.value = fan;
+  } else {
+    document.getElementById(fan).style.visibility = "hidden";
+    document.MForm.fan.value = "";
+  }
 }
 
 function submitIt() {
-	prepareSubmit();
-	document.MForm.submit();
+  prepareSubmit();
+  document.MForm.submit();
 }
 
 function prepareSubmit() {
 <% if (curSettings != null) { %>
-	document.getElementById("PromptMsg").style.display = "";
+  document.getElementById("PromptMsg").style.display = "";
 <% } %>
 }
 //-->
@@ -242,6 +237,7 @@ function prepareSubmit() {
 				<input type="hidden" name="mode" value="">
 				<input type="hidden" name="fan" value="">
 				<input type="hidden" name="RunProgram" value="false">
+                <input type="hidden" name="tempField" value="">
             	<div align = "left">
                   <table width="93%" border="0" cellspacing="0" cellpadding="0" height="246">
                     <tr> 
@@ -253,7 +249,7 @@ function prepareSubmit() {
                               <table width="18%" border="0" cellspacing = "0" cellpadding ="0" height="60" >
                                 <tr> 
                                   <td width="52%" height="53"> 
-                                    <input type="text" name="tempField" maxlength="2" class="tempText1" value="<%= setpoint %>" onblur="validateTemp()" onchange="setChanged()">
+                                    <input type="text" name="tempDisplayField" maxlength="2" class="tempText1" value="" onblur="validateTemp()" onchange="setChanged();tempChanged()">
                                   </td>
                                   <td width="48%" height="53"> 
                                     <table width="41%" border="0" cellspacing = "0" cellpadding = "0">
@@ -270,8 +266,8 @@ function prepareSubmit() {
                               <table width="79%" border="0" cellpadding = "0" cellspacing = "0">
                                 <tr> 
                                   <td>
-                                    <input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %> onclick="setChanged()">
-                                    <img src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Hold.gif" width="34" height="9"></td>
+                                    <label><input type="checkbox" name="hold" value="true" <%= (hold)? "checked" : "" %> onclick="setChanged()">
+                                    <img src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Hold.gif" width="34" height="9"></label></td>
                                 </tr>
                               </table>
                             </td>
@@ -282,12 +278,11 @@ function prepareSubmit() {
 <% if (curSettings != null) { %>
                                     <div id="CurrentSettings" style="display:none"> 
 <%
-	String unit = "F";
-	if (curSettings.getDisplayedTempUnit() != null)
-		unit = curSettings.getDisplayedTempUnit().substring(0,1);
 	String displayTemp = "(Unknown)";
-	if (curSettings.hasDisplayedTemperature())
-		displayTemp = curSettings.getDisplayedTemperature() + "&deg;" + unit;
+	if (curSettings.hasDisplayedTemperature()) {
+        long convertedTemp = CtiUtilities.convertTemperature(curSettings.getDisplayedTemperature(), "F", tempUnit);
+		displayTemp = convertedTemp + "&deg;" + tempUnit;
+    }
 %>
                                       <span class="TitleHeader">Room: <%= displayTemp %></span><br>
 <%
@@ -306,8 +301,10 @@ function prepareSubmit() {
                                       Time: <%= histDateFormat.format(lastEvent.getEventDateTime()) %><br>
 <%	if (runProgram) { %>
                                       Run Program 
-<%	} else { %>
-                                      Temp: <%= setpoint %>&deg; 
+<%	} else { 
+      long convertedSetPoint = CtiUtilities.convertTemperature(setpoint, "F", tempUnit);
+%>
+                                      Temp: <%= convertedSetPoint %>&deg;<%=tempUnit%>
                                       <% if (hold) { %>(HOLD)<% } %><br>
                                       Mode: <%= modeStr %><br>
                                       Fan: <%= fanStr %> 
@@ -396,6 +393,17 @@ function prepareSubmit() {
                         <p>&nbsp;</p>
                       </td>
                     </tr>
+                    <tr>
+                      <td class="TableCell" align="center">Mode:
+<% if ( tempUnit.equals("C") ) { %>
+                C&deg; | <a href="<%=ServletUtil.tweakHTMLRequestURI(request, "tempUnit", "F") %>">F&deg;</a>
+<% } else { %>
+                <a href="<%=ServletUtil.tweakHTMLRequestURI(request, "tempUnit", "C") %>">C&deg;</a> | F&deg;
+<% } %>
+                      </td>
+                      <td></td>
+                    </tr>
+                      
                   </table>
                 </div>
               </form>

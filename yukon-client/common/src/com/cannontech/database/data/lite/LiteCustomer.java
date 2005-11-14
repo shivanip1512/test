@@ -21,6 +21,7 @@ public class LiteCustomer extends LiteBase {
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
 	private String altTrackNum = CtiUtilities.STRING_NONE;
+    private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
 	
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
@@ -55,7 +56,8 @@ public class LiteCustomer extends LiteBase {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 			
 			com.cannontech.database.SqlStatement stat = new com.cannontech.database.SqlStatement(
-					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum" +
+					"SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, " +
+                    "    AltTrackNum, TemperatureUnit" +
 					" FROM " + Customer.TABLE_NAME +
 					" WHERE CustomerID = " + getCustomerID(),
 					conn );
@@ -73,6 +75,7 @@ public class LiteCustomer extends LiteBase {
 			setCustomerNumber( objs[3].toString() );
 			setRateScheduleID( ((java.math.BigDecimal) objs[4]).intValue() );
 			setAltTrackingNumber( objs[5].toString() );
+            setTemperatureUnit( objs[6].toString() );
 			
 			stat = new com.cannontech.database.SqlStatement(
 					"SELECT ca.ContactID " + 
@@ -181,7 +184,15 @@ public class LiteCustomer extends LiteBase {
 		this.timeZone = timeZone;
 	}
 	
-	/**
+	public String getTemperatureUnit() {
+        return temperatureUnit;
+    }
+
+    public void setTemperatureUnit(String temperatureUnit) {
+        this.temperatureUnit = temperatureUnit;
+    }
+
+    /**
 	 * Returns the additionalContacts.
 	 * @return java.util.Vector
 	 */

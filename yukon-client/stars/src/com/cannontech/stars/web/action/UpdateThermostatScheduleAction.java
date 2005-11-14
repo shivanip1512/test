@@ -485,7 +485,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 		season.addStarsThermostatSchedule( schedule );
 	    
 		Calendar cal = Calendar.getInstance();
-		boolean noScript = (req.getParameter("temp1") != null);
 	    
 		if (req.getParameter("time1") != null) {
 			Date time1 = ServletUtils.parseTime(req.getParameter("time1"), TimeZone.getDefault());
@@ -495,9 +494,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			cal.setTime( time1 );
 			schedule.setTime1( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature1( (noScript)?
-					Integer.parseInt(req.getParameter("temp1")) :
-					Integer.parseInt(req.getParameter("tempval1")) );
+			schedule.setTemperature1( Integer.parseInt(req.getParameter("temp1")) );
 		}
 		else {
 			schedule.setTime1( new org.exolab.castor.types.Time(0) );
@@ -512,9 +509,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			cal.setTime( time2 );
 			schedule.setTime2( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature2( (noScript)?
-					Integer.parseInt(req.getParameter("temp2")) :
-					Integer.parseInt(req.getParameter("tempval2")) );
+			schedule.setTemperature2( Integer.parseInt(req.getParameter("temp2")) );
 		}
 		else {
 			schedule.setTime2( new org.exolab.castor.types.Time(0) );
@@ -529,9 +524,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			cal.setTime( time3 );
 			schedule.setTime3( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature3( (noScript)?
-					Integer.parseInt(req.getParameter("temp3")) :
-					Integer.parseInt(req.getParameter("tempval3")) );
+			schedule.setTemperature3( Integer.parseInt(req.getParameter("temp3")) );
 		}
 		else {
 			schedule.setTime3( new org.exolab.castor.types.Time(0) );
@@ -546,9 +539,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			cal.setTime( time4 );
 			schedule.setTime4( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature4( (noScript)?
-					Integer.parseInt(req.getParameter("temp4")) :
-					Integer.parseInt(req.getParameter("tempval4")) );
+			schedule.setTemperature4( Integer.parseInt(req.getParameter("temp4")) );
 		}
 		else {
 			schedule.setTime4( new org.exolab.castor.types.Time(0) );

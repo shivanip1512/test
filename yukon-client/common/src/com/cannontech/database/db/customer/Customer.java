@@ -16,12 +16,15 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private Integer rateScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String altTrackNum = CtiUtilities.STRING_NONE;
+    private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
 
 
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"PrimaryContactID", "CustomerTypeID", "TimeZone", "CustomerNumber", "RateScheduleID", "AltTrackNum"
+		"PrimaryContactID", "CustomerTypeID", "TimeZone", 
+        "CustomerNumber", "RateScheduleID", "AltTrackNum",
+        "TemperatureUnit"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "CustomerID" };
@@ -29,30 +32,23 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	public static final String TABLE_NAME = "Customer";
 
 
-	/**
-	 * Customer constructor comment.
-	 */
 	public Customer() {
 		super();
 	}
-	/**
-	 * add method comment.
-	 */
-	public void add() throws java.sql.SQLException 
+
+    public void add() throws java.sql.SQLException 
 	{
 		Object addValues[] = 
 		{ 
 			getCustomerID(), getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
 			getCustomerNumber(), getRateScheduleID(),
-			getAltTrackingNumber()
+			getAltTrackingNumber(), getTemperatureUnit()
 		};
 	
 		add( TABLE_NAME, addValues );
 	}
-	/**
-	 * delete method comment.
-	 */
+
 	public void delete() throws java.sql.SQLException 
 	{
 		Integer values[] = { getCustomerID() };
@@ -60,11 +56,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 	}
 	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/14/99 10:31:33 AM)
-	 * @return java.lang.Integer
-	 */
 	public static synchronized Integer getNextCustomerID( java.sql.Connection conn )
 	{
 		if( conn == null )
@@ -104,9 +95,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
-	/**
-	 * retrieve method comment.
-	 */
 	public void retrieve() throws java.sql.SQLException 
 	{
 		Integer constraintValues[] = { getCustomerID() };	
@@ -120,15 +108,14 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			setCustomerNumber( (String) results[3] );
 			setRateScheduleID( (Integer) results[4] );
 			setAltTrackingNumber( (String) results[5]);
+            setTemperatureUnit( (String) results[6] );
 		}
 		else
+        {
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
+        }
 	}
 	
-	
-	/**
-	 * update method comment.
-	 */
 	public void update() throws java.sql.SQLException 
 	{
 		Object setValues[] =
@@ -136,7 +123,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 			getPrimaryContactID(),
 			getCustomerTypeID(), getTimeZone(),
 			getCustomerNumber(), getRateScheduleID(),
-			getAltTrackingNumber()
+			getAltTrackingNumber(), getTemperatureUnit()
 		};
 	
 		Object constraintValues[] = { getCustomerID() };
@@ -159,6 +146,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	public void setCustomerID(Integer customerID) {
 		this.customerID = customerID;
 	}
+    
 	/**
 	 * Returns the customerTypeID.
 	 * @return Integer
@@ -207,9 +195,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		this.timeZone = timeZone;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getCustomerNumber()
 	{
 		return customerNumber;
@@ -225,9 +210,6 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		return altTrackNum;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setAltTrackingNumber(String altNum)
 	{
 		altTrackNum = altNum;
@@ -238,12 +220,19 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 		return rateScheduleID;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setRateScheduleID(Integer rSched)
 	{
 		rateScheduleID = rSched;
 	}
+    
+    public String getTemperatureUnit()
+    {
+        return temperatureUnit;
+    }
+    
+    public void setTemperatureUnit( String temperatureUnit )
+    {
+        this.temperatureUnit = temperatureUnit;
+    }
 
 }

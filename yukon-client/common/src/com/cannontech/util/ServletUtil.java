@@ -1,8 +1,11 @@
 package com.cannontech.util;
 
 import java.awt.Color;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -11,6 +14,9 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
@@ -1063,5 +1069,60 @@ public static Date roundToMinute(Date toRound) {
 
 		return req.getRequestURI() + q;		
 	}
+    
+    /**
+     * Returns a URL that points to the same page as request, but has newParameter and newValue
+     * either appended to the end or replaced. For example, if you requested the page 
+     *    /dir/script.jsp?color=red&flavor=tart
+     * and then called 
+     *    tweakRequestURI(request, "flavor", "salty")
+     * the String returned would be
+     *    /dir/script.jsp?color=red&flavor=salty
+     * 
+     * @param request the HttpServletRequest object for the current page
+     * @param newParameter the name of the parameter to add or replace
+     * @param newValue the value of the new parameter
+     * @return a full path and query string
+     */
+    public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+        final String urlEncoding = "UTF-8"; 
+        try {
+            StringBuffer result = new StringBuffer();
+            result.append(request.getRequestURI());
+            result.append("?");
+            Map parameterMap = new HashMap(request.getParameterMap());
+            parameterMap.put(newParameter, new String[] {newValue});
+            List parameterPairs = new ArrayList(parameterMap.size());
+            for (Iterator iter = parameterMap.keySet().iterator(); iter.hasNext();) {
+                String thisParameter = (String) iter.next();
+                String thisSafeParameter = URLEncoder.encode(thisParameter, urlEncoding);
+                String[] theseValues = (String[])parameterMap.get(thisParameter);
+                for (int i = 0; i < theseValues.length; i++) {
+                    String thisPair = thisSafeParameter + "=" 
+                        + URLEncoder.encode(theseValues[i], urlEncoding);
+                    parameterPairs.add(thisPair);
+                }
+            }
+            String queryString = StringUtils.join(parameterPairs.iterator(), "&");
+            result.append(queryString);
+            return result.toString();
+        } catch (UnsupportedEncodingException e) {
+            CTILogger.error(e);
+            throw new RuntimeException(e);
+        }
+        
+    }
+
+    /**
+     * Calls tweakRequestURI() with the same parameters, but escapes the result so it 
+     * can be displayed on a web page (most importantly converting '&' to '&amp;').
+     * @param request the HttpServletRequest object for the current page
+     * @param newParameter the name of the parameter to add or replace
+     * @param newValue the value of the new parameter
+     * @return an HTML escaped full path and query string
+     */
+    public static String tweakHTMLRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+        return StringEscapeUtils.escapeHtml(tweakRequestURI(request, newParameter, newValue));
+    }
 
 }

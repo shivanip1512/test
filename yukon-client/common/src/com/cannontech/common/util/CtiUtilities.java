@@ -2,19 +2,21 @@ package com.cannontech.common.util;
 /**
  * This type was created in VisualAge.
  */
-import java.awt.AWTEvent;
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.MenuComponent;
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -28,8 +30,10 @@ public final class CtiUtilities
 	public static final double INVALID_MIN_DOUBLE = -1E30;
 	public static final double INVALID_MAX_DOUBLE = 1E30;
 	
+    public static final String CELSIUS_CHARACTER = "C";
+    public static final String FAHRENHEIT_CHARACTER = "F";
 	
-	public static final String COPYRIGHT = "Copyright (C)1999-2004 Cannon Technologies";
+	public static final String COPYRIGHT = "Copyright (C)1999-2005 Cannon Technologies";
 	
 	public static final String USER_DIR = System.getProperty("user.dir") + System.getProperty("file.separator");
 	
@@ -1468,6 +1472,31 @@ public static String removeHTML( String code )
 		
 	return code;
 }	
+
+/**
+ * Converts a temperature from/to Celsius or Fahrenheit.
+ * @param temperature a temperature of the fromUnit scale
+ * @param fromUnit the scale of the input, either FAHRENHEIT_CHARACTER or CELSIUS_CHARACTER
+ * @param toUnit the scale of the output, either FAHRENHEIT_CHARACTER or CELSIUS_CHARACTER
+ * @return a temperature of the toUnit scale equal to the input temperature
+ */
+public static double convertTemperature(double temperature, String fromUnit, String toUnit) {
+    if (fromUnit.equals(toUnit)) {
+        return temperature;
+    } else if (fromUnit.equals(FAHRENHEIT_CHARACTER) && toUnit.equals(CELSIUS_CHARACTER)) {
+        return (temperature - 32) / 9 * 5;
+    } else if (fromUnit.equals(CELSIUS_CHARACTER) && toUnit.equals(FAHRENHEIT_CHARACTER)) {
+        return (temperature * 9 / 5) + 32;
+    } else {
+        throw new IllegalArgumentException("Unknown fromUnit or toUnit, must specify either \"F\" or \"C\"");
+    }
+}
+
+public static long convertTemperature(long temperature, String fromUnit, String toUnit) {
+    double dblTemperature = temperature;
+    return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
+}
+
 }
 
 

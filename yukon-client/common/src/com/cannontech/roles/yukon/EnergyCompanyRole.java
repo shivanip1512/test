@@ -21,5 +21,6 @@ public interface EnergyCompanyRole {
 	public static final int TRACK_HARDWARE_ADDRESSING = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 7;
 	public static final int SINGLE_ENERGY_COMPANY = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 8;
 	// SA protocol on/off toggle, etc.
-	public static final int OPTIONAL_PRODUCT_DEV = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 9;
+    public static final int OPTIONAL_PRODUCT_DEV = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 9;
+    public static final int DEFAULT_TEMPERATURE_UNIT = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 10;
 }

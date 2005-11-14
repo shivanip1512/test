@@ -11,41 +11,22 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.cache.functions.EnergyCompanyFuncs;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.YukonUserFuncs;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.user.UserUtils;
-import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.*;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.AdditionalContact;
-import com.cannontech.stars.xml.serialize.BillingAddress;
-import com.cannontech.stars.xml.serialize.ContactNotification;
-import com.cannontech.stars.xml.serialize.PrimaryContact;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsFailure;
-import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsOperation;
-import com.cannontech.stars.xml.serialize.StarsSiteInformation;
-import com.cannontech.stars.xml.serialize.StarsSuccess;
-import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
-import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.stars.xml.serialize.Substation;
+import com.cannontech.stars.xml.serialize.*;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.UserUtils;
 
 /**
  * <p>Title: NewCustAccountAction.java</p>
@@ -468,6 +449,8 @@ public class NewCustAccountAction implements ActionBase {
 			customer.getCustomer().setCustomerNumber(starsAccount.getCustomerNumber());
 			customer.getCustomer().setRateScheduleID(new Integer(starsAccount.getRateScheduleID()));
 			customer.getCustomer().setAltTrackingNumber(starsAccount.getAltTrackingNumber());
+            customer.getCustomer().setTemperatureUnit(AuthFuncs.getRolePropertyValue(energyCompany.getUserID(),
+                                                      EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
 			account.setCustomer( customer );
 			account.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         	
