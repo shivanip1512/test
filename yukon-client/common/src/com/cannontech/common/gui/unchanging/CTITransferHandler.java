@@ -11,17 +11,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
-import javax.swing.tree.DefaultMutableTreeNode;
 
-import com.cannontech.common.gui.dnd.TransferableTreeNode;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
@@ -38,7 +34,7 @@ public class CTITransferHandler extends TransferHandler
 	public static final String TRANS_PROP = "transferProp";
 
 
-public class MyButton extends JButton
+class MyButton extends JButton
 {
 	public MyButton(String s )
 	{
@@ -65,7 +61,7 @@ public class MyButton extends JButton
 };
 
 
-public class MyTable extends JTable
+class MyTable extends JTable
 {
 	public MyTable( Object[][] v, Object[] vc )
 	{
@@ -111,7 +107,7 @@ public class MyTable extends JTable
 	}
 
 
-	public static void main(String args[])
+	private void testIt(String args[])
 	{
 		javax.swing.JFrame f = new javax.swing.JFrame();
 		f.addWindowListener( new WindowAdapter()  { 
@@ -128,7 +124,7 @@ public class MyTable extends JTable
 		};
 		
 		CTITransferHandler th0 = new CTITransferHandler(TRANS_PROP);
-		MyTable t = th0.new MyTable( v, new Object[] { "First", "Sec", "Third" } );
+		MyTable t = new MyTable( v, new Object[] { "First", "Sec", "Third" } );
 		t.setTransferHandler( th0 );
 		t.setSize( 100, 100 );
 
@@ -148,7 +144,7 @@ System.out.println("  mouse_press" );
 
 		//JButton b1 = new JButton("Button1")
 		CTITransferHandler th1 = new CTITransferHandler(TRANS_PROP);
-		MyButton b1 = th1.new MyButton("Button1");		
+		MyButton b1 = new MyButton("Button1");		
 		b1.setTransferHandler( th1 );
 		b1.setSize( 60, 25 );
 		b1.addMouseListener(ml);
@@ -156,7 +152,7 @@ System.out.println("  mouse_press" );
 
 		//JButton b2 = new JButton("Button2")
 		CTITransferHandler th2 = new CTITransferHandler(TRANS_PROP);
-		MyButton b2 = th2.new MyButton("Button2");
+		MyButton b2 = new MyButton("Button2");
 		b2.setTransferHandler( th2 );
 		b2.setSize( 60, 25 );
 		b2.addMouseListener(ml);
