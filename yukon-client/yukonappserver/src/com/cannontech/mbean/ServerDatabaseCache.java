@@ -2894,48 +2894,54 @@ private synchronized LiteBase handleYukonGroupChange( int changeType, int id )
 	switch(changeType)
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
-				for(int i=0;i<allYukonGroups.size();i++)
+			for(int i=0;i<allYukonGroups.size();i++)
+			{
+				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
 				{
-					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
-					{
-						alreadyAdded = true;
-						lBase = (LiteBase)allYukonGroups.get(i);
-						break;
-					}
+					alreadyAdded = true;
+					lBase = (LiteBase)allYukonGroups.get(i);
+					break;
 				}
-				if( !alreadyAdded )
-				{
-					LiteYukonGroup lcst = new LiteYukonGroup(id);
-					lcst.retrieve(databaseAlias);
-					allYukonGroups.add(lcst);
-					lBase = lcst;
-				}
-				break;
+			}
+			if( !alreadyAdded )
+			{
+				LiteYukonGroup lcst = new LiteYukonGroup(id);
+				lcst.retrieve(databaseAlias);
+				allYukonGroups.add(lcst);
+				lBase = lcst;
+			}
+			break;
+            
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-				for(int i=0;i<allYukonGroups.size();i++)
+			for(int i=0;i<allYukonGroups.size();i++)
+			{
+				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
 				{
-					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
-					{
-						((LiteYukonGroup)allYukonGroups.get(i)).retrieve(databaseAlias);
-						lBase = (LiteBase)allYukonGroups.get(i);
-						break;
-					}
+					((LiteYukonGroup)allYukonGroups.get(i)).retrieve(databaseAlias);
+					lBase = (LiteBase)allYukonGroups.get(i);
+					break;
 				}
-				break;
+			}
+			break;
+            
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
-				for(int i=0;i<allYukonGroups.size();i++)
+			for(int i=0;i<allYukonGroups.size();i++)
+			{
+				if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
 				{
-					if( ((LiteYukonGroup)allYukonGroups.get(i)).getGroupID() == id )
-					{
-						lBase = (LiteBase)allYukonGroups.remove(i);
-						break;
-					}
+					lBase = (LiteBase)allYukonGroups.remove(i);
+					break;
 				}
-				break;
+			}
+			break;
+            
 		default:
 				releaseAllYukonGroups();
 				break;
 	}
+    
+    releaseUserRoleMap();
+    releaseUserRolePropertyValueMap();
 
 	return lBase;
 }
@@ -2973,6 +2979,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 			lu.retrieve( databaseAlias );
 						
 			lBase = lu;
+            adjustUserToRoleMappings(id);           
 			break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
@@ -2985,11 +2992,14 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 					break;
 				}
 			}
+            adjustUserToRoleMappings(id); 
 			break;
 
 		default:
-				releaseAllYukonUsers();
-				break;
+			releaseAllYukonUsers();
+            releaseUserRoleMap();
+            releaseUserRolePropertyValueMap();
+			break;
 	}
 
 	return lBase;
@@ -3413,6 +3423,11 @@ public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID)
 		 * role exists for this user next time around.
 		 */
 		userRoleMap.put(keyInts, specifiedRole);
+        /*
+         * This is useful for checking the map after a DBChangeMsg is received to see if
+         * this user exists in the map.  If it does, then the map should be reset.
+         */
+        userRoleMap.put(new MapKeyInts(user.getLiteID(), CtiUtilities.NONE_ZERO_ID), null);
 	}	
 		
 	return specifiedRole;
@@ -3438,6 +3453,11 @@ public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePro
 		specifiedPropVal = YukonUserRolePropertyLookup.loadSpecificRoleProperty(user, rolePropertyID);
 		//found it, put it in the cache for later searches
 		userRolePropertyValueMap.put(keyInts, specifiedPropVal);
+        /*
+         * This is useful for checking the map after a DBChangeMsg is received to see if
+         * this user exists in the map.  If it does, then the map should be reset.
+         */
+        userRolePropertyValueMap.put(new MapKeyInts(user.getLiteID(), CtiUtilities.NONE_ZERO_ID), null);
 	}
 		
 	return specifiedPropVal;
@@ -3459,6 +3479,31 @@ public void releaseUserRoleMap()
 public void releaseUserRolePropertyValueMap() 
 {
 	userRolePropertyValueMap = null;
+}
+
+/*
+ * Upon receiving a DBChangeMsg for a user or a group, this method
+ * checks to see if this user is in the map.  There is no point in
+ * resetting these mappings if the user that was changed is not a one
+ * that has been accessed before (and therefore mapped here).
+ */
+public synchronized void adjustUserToRoleMappings(int userID) 
+{
+    MapKeyInts keyInts = new MapKeyInts(userID, CtiUtilities.NONE_ZERO_ID);
+   
+    if(userRoleMap != null)
+    {    
+        if(userRoleMap.containsKey(keyInts))
+            releaseUserRoleMap();
+    }
+    
+    if(userRolePropertyValueMap != null)
+    {
+        if(userRolePropertyValueMap.containsKey(keyInts))
+            releaseUserRolePropertyValueMap();
+    }
+    
+    return;
 }
 
 }
