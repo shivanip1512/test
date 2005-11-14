@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/09/15 16:36:45 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/11/14 15:41:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -364,7 +364,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getDestinationAddress()).zpad(4).hex(),10);
                     strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getInertia()).zpad(2).hex(),10);
                     strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getOriginAddress()).zpad(4).hex(),10);
-                    strncat((char*)xfer.getOutBuffer(),getSerialNumber(),10);
+                    strncat((char*)xfer.getOutBuffer(),getSerialNumber().c_str(),10);
                     strncat((char*)xfer.getOutBuffer(),_STX,10);
                     if((char)*_table.getIdentifierFormat()=='A')
                     {   //CAP PAGE
@@ -388,7 +388,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                             strncat((char*)xfer.getOutBuffer(),_zero_serial,2);                        
                         }
                         strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
-                        strncat((char*)xfer.getOutBuffer(),getGolayCapcode(),6);
+                        strncat((char*)xfer.getOutBuffer(),getGolayCapcode().c_str(),6);
                     }
                     else
                         strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8),10);
@@ -517,7 +517,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     return nRet;
 }
 
-char* CtiDeviceTnppPagingTerminal::getSerialNumber()
+string CtiDeviceTnppPagingTerminal::getSerialNumber()
 {
     return CtiNumStr(_serialNumber).zpad(2).hex();
 }
@@ -614,7 +614,7 @@ const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
     but for 2312D it is inverted (function 4 in TNPP = Function 1 in 2312D)
     
 ******************************************************************************/
-const char* CtiDeviceTnppPagingTerminal::getGolayCapcode()
+string CtiDeviceTnppPagingTerminal::getGolayCapcode()
 {
     int returnValue;
     //BBAABB

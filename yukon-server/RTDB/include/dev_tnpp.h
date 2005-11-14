@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tnpp.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/09/15 16:36:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/11/14 15:41:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,11 +112,11 @@ private:
    void resetStates();
    void setCurrentState(StateMachine newCurrentState);
    void setPreviousState(StateMachine newPreviousState);
-   char* getSerialNumber();
+   string getSerialNumber();
    const char* getPagerProtocol();
    const char* getPagerDataFormat();
    const char* getFunctionCode();
-   const char* getGolayCapcode();
+   string getGolayCapcode();
 
    int getExtendedFunctionCapcode(int a);//returns capcode for TNPP
    const char* getExtendedFunctionCode();//returns actual function code
