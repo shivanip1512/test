@@ -403,7 +403,6 @@ public class Editor extends JPanel {
 			new Font("dialog", Font.BOLD, 14 ), Color.black, Color.blue, 2 );
 	
 		frame.setSize(defaultSize);
-		frame.setTitle("Untitled");		
 		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("esubEditorIcon.gif"));
 		frame.setIconImage(icon.getImage());
 
@@ -424,7 +423,7 @@ public class Editor extends JPanel {
 		Editor editor = new Editor();
 
 		frame.getContentPane().add(editor);
-	
+		editor.setFrameTitle("Untitled");
 		frame.pack();
 		frame.show();
 
@@ -559,13 +558,13 @@ public class Editor extends JPanel {
 	public void setFrameTitle(String title) {
 		Frame pFrame = CtiUtilities.getParentFrame(this);
 		if (pFrame != null) {
-			pFrame.setTitle(title);
+			pFrame.setTitle(title + " - Esubstation Editor");
 			return;
 		}
 
 		JInternalFrame piFrame = CtiUtilities.getParentInternalFrame(this);
 		if (piFrame != null) {
-			piFrame.setTitle(title);
+			piFrame.setTitle(title + " - Esubstation Editor");
 			return;
 		}
 
