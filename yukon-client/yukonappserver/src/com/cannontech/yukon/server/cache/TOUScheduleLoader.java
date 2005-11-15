@@ -40,7 +40,7 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT TOUSCHEDULEID,TOUSCHEDULENAME FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0 ORDER BY TOUSCHEDULENAME";
+	String sqlString = "SELECT TOUSCHEDULEID,TOUSCHEDULENAME, TOUDEFAULTRATE FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0 ORDER BY TOUSCHEDULENAME";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -55,15 +55,17 @@ public void run()
 		{
 			int scheduleID = rset.getInt(1);
 			String scheduleName = rset.getString(2).trim();
+			String defaultRate = rset.getString(3).trim();
 
 			com.cannontech.database.data.lite.LiteTOUSchedule tou =
 				new com.cannontech.database.data.lite.LiteTOUSchedule( scheduleID );
 				
 			tou.setScheduleName(scheduleName);
+			tou.setDefaultRate(defaultRate);
+			
 			if(scheduleID != 0)
 				allTOUSchedules.add(tou);
 		}
-
 	}
 	catch (java.sql.SQLException e)
 	{
