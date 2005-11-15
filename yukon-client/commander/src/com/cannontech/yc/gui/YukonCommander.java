@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -70,6 +71,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	private ClearPrintButtonPanel ivjClearPrintButtons = null;
 	private AdvancedOptionsPanel advOptsPanel = null;
 	private LocateRouteDialog locRouteDialog = null;
+	private DownloadTOUSchedulePanel downloadTOUPanel = null;
 	private YCCommandMenu ivjYCCommandMenu = null;
 	private YCFileMenu ivjYCFileMenu = null;
 	private YCHelpMenu ivjYCHelpMenu = null;
@@ -285,6 +287,19 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 			Object selected = getLocateRouteDialog().getRouteComboBox().getSelectedItem();
 			if( selected instanceof LiteYukonPAObject)
 				setRouteID(((LiteYukonPAObject)selected).getYukonID());
+		}
+		else if( event.getSource() == getYCCommandMenu().downloadSchedule)
+		{
+			getDownloadTOUDialog().getDeviceNameTextField().setText(getTreeViewPanel().getSelectedItem().toString());		
+			Object lShedule = getDownloadTOUDialog().showDownloadOptions(this);
+
+			if(lShedule != null && lShedule instanceof LiteTOUSchedule)
+			{
+			    setCommand(getYC().buildTOUScheduleCommand(((LiteTOUSchedule)lShedule).getScheduleID()));
+				if( isValidSetup() )
+					getYC().executeCommand();
+
+			}
 		}
 		else if ( event.getSource() == getLocateRouteDialog().getLocateButton())
 		{
@@ -945,6 +960,20 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 		return locRouteDialog;
 	}
 	
+	/**
+	 * Returns the downloadTOUDialog
+	 * @return
+	 */
+	private DownloadTOUSchedulePanel getDownloadTOUDialog()
+	{
+		if( downloadTOUPanel == null)
+		{
+			downloadTOUPanel  = new DownloadTOUSchedulePanel();
+			downloadTOUPanel.addItems();
+			downloadTOUPanel.getTOUScheduleComboBox().addActionListener(this);
+		}
+		return downloadTOUPanel;
+	}	
 	/**
 	 * Returns ycClass.getModelType().
 	 * @return int com.cannontech.database.model.ModelFactory.
@@ -1825,6 +1854,7 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().installAddressing.setEnabled(false);	//init to false, will change below if valid state.
+		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
 
 		if (getModelType() == ModelFactory.DEVICE)
 		{
@@ -1834,7 +1864,9 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType()))
 				{
 					getYCCommandMenu().locateRoute.setEnabled(true);
-				}
+					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()))
+					    getYCCommandMenu().downloadSchedule.setEnabled(true);
+				}				
 			}
 		}
 		else if( ModelFactory.isEditableSerial(getModelType()))
@@ -1900,7 +1932,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 	
 		getYCCommandMenu().locateRoute.setEnabled(false);	//init to false, will change below if valid state.
 		getYCCommandMenu().installAddressing.setEnabled(false);
-
+		getYCCommandMenu().downloadSchedule.setEnabled(false);	//init to false, will change below if valid state.
+		
 		if ( selectedItem instanceof LiteBase)
 		{
 			DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
@@ -1915,6 +1948,8 @@ public class YukonCommander extends javax.swing.JFrame implements com.cannontech
 				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType()))
 				{
 					getYCCommandMenu().locateRoute.setEnabled(true);
+					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()) )
+				        getYCCommandMenu().downloadSchedule.setEnabled(true);
 				}
 				setTitle(displayTitle + " - " + lpao.getPaoName() + " (" + PAOGroups.getPAOTypeString(lpao.getType()) + ")");
 			}
