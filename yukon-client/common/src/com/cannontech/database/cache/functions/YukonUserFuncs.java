@@ -55,22 +55,14 @@ public final class YukonUserFuncs
 		}	
 	}
 	
-   public static LiteContact getLiteContact ( int userID_ )
-   {
-      DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	public static LiteContact getLiteContact ( int userID_ )
+	{
+	    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
       
-      synchronized( cache )
-      {
-         java.util.List contacts = cache.getAllContacts();
-         
-         for( int j = 0; j < contacts.size(); j++ )
-         {
-            if( userID_ == ((LiteContact)contacts.get(j)).getLoginID() )
-               return (LiteContact)contacts.get(j);
-         }
-   
-         return null;
-      }	
-   }
+	    synchronized(cache) 
+	    {
+	        return cache.getAContactByUserID(userID_);
+	    }
+	}
 
 }

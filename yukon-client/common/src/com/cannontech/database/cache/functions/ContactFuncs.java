@@ -38,7 +38,7 @@ public final class ContactFuncs
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
-			return (LiteContact)cache.getAllContactsMap().get( new Integer(contactID_) );
+			return (LiteContact)cache.getAContactByContactID(contactID_);
 		}
 	}
 	
@@ -70,21 +70,11 @@ public final class ContactFuncs
 		if( firstName_ == null )
 			return null;
 
-		ArrayList notifs = new ArrayList( 16 );
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
-			List cstCnts = cache.getAllContacts();
-			
-			for( int j = 0; j < cstCnts.size(); j++ )
-			{
-				if( firstName_.equalsIgnoreCase( ((LiteContact)cstCnts.get(j)).getContFirstName() ) )
-					notifs.add( cstCnts.get(j) );
-			}
+			return cache.getContactsByFirstName(firstName_, false);
 		}
-	
-		LiteContact[] cArr = new LiteContact[ notifs.size() ];
-		return (LiteContact[])notifs.toArray( cArr );
 	}
 	
 	/**
@@ -98,23 +88,11 @@ public final class ContactFuncs
 		if( lastName_ == null )
 			return null;
 
-		ArrayList notifs = new ArrayList( 16 );
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized( cache )
-		{
-			List cstCnts = cache.getAllContacts();
-			
-			for( int j = 0; j < cstCnts.size(); j++ )
-			{
-				String contLastName = ((LiteContact)cstCnts.get(j)).getContLastName();
-				if( contLastName.equalsIgnoreCase( lastName_ )
-					|| partialMatch && contLastName.toUpperCase().startsWith( lastName_.toUpperCase() ))
-					notifs.add( cstCnts.get(j) );
-			}
-		}
-	
-		LiteContact[] cArr = new LiteContact[ notifs.size() ];
-		return (LiteContact[])notifs.toArray( cArr );
+        DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        synchronized( cache )
+        {
+            return cache.getContactsByLastName(lastName_, partialMatch);
+        }
 	}
 	
 	public static LiteContact[] getContactsByLName( String lastName_ ) {
@@ -124,34 +102,39 @@ public final class ContactFuncs
 	/**
 	 * @param phoneNo
 	 * @param phoneNotifCatIDs Array of notification category IDs, currently the options are:
-	 * YukonListEntryTypes.YUK_ENTRY_ID_PHONE, YUK_ENTRY_ID_HOME_PHONE, YUK_ENTRY_ID_WORK_PHONE
+	 * YukonListEntryTypes.YUK_ENTRY_ID_PHONE, YUK_ENTRY_ID_HOME_PHONE, YUK_ENTRY_ID_WORK_PHONE,
 	 * @param partialMatch If true, phoneNo is to be matched partially from the last digit
 	 * @return Array of LiteContact for phoneNo
 	 */
 	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs, boolean partialMatch) {
 		if (phoneNo == null) return null;
 		
-		java.util.Arrays.sort( phoneNotifCatIDs );
-		ArrayList contList = new ArrayList();
+		//java.util.Arrays.sort( phoneNotifCatIDs );
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
-		synchronized (cache) {
-			List allConts = cache.getAllContacts();
-			
-			for (int i = 0; i < allConts.size(); i++) {
-				LiteContact lCont = (LiteContact) allConts.get(i);
-				for (int j = 0; j < lCont.getLiteContactNotifications().size(); j++) {
+		synchronized (cache) 
+        {
+			return cache.getContactsByPhoneNumber(phoneNo, partialMatch);
+            
+            /*
+             * For now we won't worry about verifying notification categories, so if somebody put
+             * a phone number in for their email or pager, they will find it here too.  Not worth the 
+             * performance hit at Xcel right now.
+             */
+            /*LiteContact[] theCandidates = cache.getContactsByPhoneNumber(phoneNo, partialMatch);
+			LiteContact[] theWinners = new LiteContact[theCandidates.length];
+            
+            //need to double check that these are actually of phone number type since the cache
+            //function does not verify notification category.
+			for (int i = 0; i < theCandidates.length; i++) 
+            {
+				for (int j = 0; j < theCandidates[i].getLiteContactNotifications().size(); j++) {
 					LiteContactNotification lNotif = (LiteContactNotification)
-							lCont.getLiteContactNotifications().get(j);
+							theCandidates[i].getLiteContactNotifications().get(j);
 					
-					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) >= 0)
+					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) < 0)
 					{
-						if (lNotif.getNotification().equalsIgnoreCase(phoneNo)
-							|| partialMatch && lNotif.getNotification().endsWith(phoneNo))
-						{
-							contList.add( lCont );
-							break;
-						}
+						
 					}
 				}
 			}
@@ -159,7 +142,8 @@ public final class ContactFuncs
 		
 		LiteContact[] contacts = new LiteContact[ contList.size() ];
 		contList.toArray( contacts );
-		return contacts;
+		return contacts;*/
+        }
 	}
 	
 	public static LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
@@ -176,28 +160,11 @@ public final class ContactFuncs
 		if( email_ == null )
 			return null;
 
-
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized( cache )
 		{
-			List cstCnts = cache.getAllContacts();
-			
-			for( int i = 0; i < cstCnts.size(); i++ )
-			{
-				LiteContact ltCntact = (LiteContact)cstCnts.get(i);
-				for( int j = 0; j < ltCntact.getLiteContactNotifications().size(); j++ )
-				{
-					LiteContactNotification ltNotif = 
-						(LiteContactNotification)ltCntact.getLiteContactNotifications().get(j);
-
-					if( ltNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL
-						 && email_.equalsIgnoreCase(ltNotif.getNotification()) )
-						return (LiteContact)cstCnts.get(i);
-				}
-			}
+			return cache.getContactsByEmail(email_);
 		}
-	
-		return null;
 	}
 
 	/**
@@ -307,7 +274,7 @@ public final class ContactFuncs
 	 */
 	public static List getAllContactNotifications() 
 	{
-		return ContactNotifcationFuncs.getAllContactNotifications();
+		return ContactNotificationFuncs.getAllContactNotifications();
 	}
 
 
