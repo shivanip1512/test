@@ -10,6 +10,7 @@ import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
+import com.cannontech.analysis.tablemodel.CapControlStatusModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
@@ -78,11 +79,12 @@ public class ReportTypes
 	/** Cap Bank Reports */
 	public static final int CBC_BANK_DATA = 22;
 	public static final int CAP_CONTROL_NEW_ACTIVITY_DATA = 23;
+	public static final int CAP_CONTROL_STATUS_DATA = 24;
 
-	public static final int POINT_DATA_INTERVAL_DATA = 24;	//Coincidental
-	public static final int POINT_DATA_SUMMARY_DATA = 25;	//Peaks/Usage
+	public static final int POINT_DATA_INTERVAL_DATA = 25;	//Coincidental
+	public static final int POINT_DATA_SUMMARY_DATA = 26;	//Peaks/Usage
 	
-	public static final int LOAD_CONTROL_VERIFICATION_DATA = 26;
+	public static final int LOAD_CONTROL_VERIFICATION_DATA = 27;
 	
 	private static Class[] typeToClassMap =
 	{
@@ -114,6 +116,7 @@ public class ReportTypes
 		
 		CapBankListModel.class,
 		CapControlNewActivityModel.class,
+		CapControlStatusModel.class,
 		
 		PointDataIntervalModel.class,
 		PointDataSummaryModel.class,
@@ -152,6 +155,7 @@ public class ReportTypes
 	
 	public static final String CAPBANK_DATA_STRING = "CapBank Details";
 	public static final String CAP_CONTROL_NEW_ACTIVITY_STRING = "Cap Control New Activity";
+	public static final String CAP_CONTROL_STATUS_STRING = "Cap Control Status";
 	
 	public static final String POINT_DATA_INTERVAL_DATA_STRING = "PointData Interval";
 	public static final String POINT_DATA_SUMMARY_DATA_STRING = "PointData Summary";
@@ -190,6 +194,7 @@ public class ReportTypes
 		//Capcontrol
 		CAPBANK_DATA_STRING,
 		CAP_CONTROL_NEW_ACTIVITY_STRING,
+		CAP_CONTROL_STATUS_STRING,
 		
 		POINT_DATA_INTERVAL_DATA_STRING,
 		POINT_DATA_SUMMARY_DATA_STRING,
@@ -237,7 +242,7 @@ public class ReportTypes
 		{METER_READ_DATA, METER_OUTAGE_DATA, POWER_FAIL_DATA, DISCONNECT_METER_DATA, LP_SETUP_DATA, LP_SUMMARY_DATA},	//amr reports
 		{STATISTIC_DATA},	//stat reports
 		{LM_CONTROL_LOG_DATA, LG_ACCOUNTING_DATA, LM_DAILY_PEAKS_DATA, LOAD_CONTROL_VERIFICATION_DATA},		//lm reports
-		{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA }, //cap control reports
+		{CBC_BANK_DATA, CAP_CONTROL_NEW_ACTIVITY_DATA, CAP_CONTROL_STATUS_DATA}, //cap control reports
 		{CARRIER_DB_DATA, CARRIER_ROUTE_MACRO_DATA, ROUTE_DATA}, //database reports
 		{EC_ACTIVITY_LOG_DATA, EC_ACTIVITY_DETAIL_DATA, PROGRAM_DETAIL_DATA, EC_WORK_ORDER_DATA, 
 		    STARS_LM_SUMMARY_DATA, STARS_LM_DETAIL_DATA,
@@ -245,73 +250,72 @@ public class ReportTypes
 		{NONE}	//other reports
 	};
 
-public static int getReportGroupType(int reportType)
-{
-	for (int i = 0; i < groupToTypeMap.length; i++)
+	public static int getReportGroupType(int reportType)
 	{
-		for (int j = 0; j < groupToTypeMap[i].length; j++)
+		for (int i = 0; i < groupToTypeMap.length; i++)
 		{
-			if( groupToTypeMap[i][j] == reportType)
+			for (int j = 0; j < groupToTypeMap[i].length; j++)
 			{
-				return i;
+				if( groupToTypeMap[i][j] == reportType)
+				{
+					return i;
+				}
 			}
 		}
+		return -1;	//unknown
 	}
-	return -1;	//unknown
-}
-/**
- * @return
- */
-public static int[][] getGroupToTypeMap()
-{
-	return groupToTypeMap;
-}
-public static int[] getGroupTypes(int groupID)
-{
-	return groupToTypeMap[groupID];
-}
-public static String getReportName(int reportType)
-{
-	return reportName[reportType];
-}
-
-public static String getReportGroupName(int reportGroupType)
-{
-	return reportGroupName[reportGroupType];
-}
-
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.model.DBTreeModel
- * @param type int
- */
-public static ReportModelBase create(int type) {
-
-	ReportModelBase returnVal = null;
-	
-	if( type >= 0 && type < typeToClassMap.length )
+	/**
+	 * @return
+	 */
+	public static int[][] getGroupToTypeMap()
 	{
-		try
+		return groupToTypeMap;
+	}
+	public static int[] getGroupTypes(int groupID)
+	{
+		return groupToTypeMap[groupID];
+	}
+	public static String getReportName(int reportType)
+	{
+		return reportName[reportType];
+	}
+	
+	public static String getReportGroupName(int reportGroupType)
+	{
+		return reportGroupName[reportGroupType];
+	}
+	
+	/**
+	 * This method was created in VisualAge.
+	 * @return com.cannontech.database.model.DBTreeModel
+	 * @param type int
+	 */
+	public static ReportModelBase create(int type) {
+	
+		ReportModelBase returnVal = null;
+		
+		if( type >= 0 && type < typeToClassMap.length )
 		{
-			returnVal = (ReportModelBase) typeToClassMap[type].newInstance();
+			try
+			{
+				returnVal = (ReportModelBase) typeToClassMap[type].newInstance();
+			}
+			catch( IllegalAccessException e1 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e1.getMessage(), e1 );
+			}
+			catch( InstantiationException e2 )
+			{
+				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+			}
+		
 		}
-		catch( IllegalAccessException e1 )
+		else
 		{
-			com.cannontech.clientutils.CTILogger.error( e1.getMessage(), e1 );
-		}
-		catch( InstantiationException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
+			return null;
 		}
 	
+		return returnVal;
+	
 	}
-	else
-	{
-		return null;
-	}
-
-	return returnVal;
-
-}
-
 }
