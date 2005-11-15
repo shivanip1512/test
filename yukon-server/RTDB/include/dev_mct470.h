@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/11/03 17:51:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/11/15 14:23:14 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,6 +56,9 @@ protected:
     enum
     {
         //  new/changed stuff
+        MCT470_Memory_EventFlagsMaskPos    = 0x08,
+        MCT470_Memory_EventFlagsMaskLen    =    2,
+
         MCT470_Memory_RTCPos               = 0x29,
         MCT470_Memory_RTCLen               =    4,
         MCT470_Memory_LastTSyncPos         = 0x2d,
@@ -98,6 +101,9 @@ protected:
         //  lengths are different for these
         MCT470_Memory_StatusPos            = CtiDeviceMCT410::Memory_StatusPos,
         MCT470_Memory_StatusLen            =    3,
+
+        MCT470_FuncWrite_ConfigAlarmMaskPos = CtiDeviceMCT410::FuncWrite_ConfigAlarmMaskPos,
+        MCT470_FuncWrite_ConfigAlarmMaskLen =   3,
 
         MCT470_FuncWrite_IntervalsPos      = CtiDeviceMCT410::FuncWrite_IntervalsPos,
         MCT470_FuncWrite_IntervalsLen      =    3,
@@ -219,6 +225,7 @@ public:
     int executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
     int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
+    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
 
     INT decodeGetValueKWH          ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
