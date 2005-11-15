@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/11/03 17:57:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/11/15 14:20:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,6 +54,9 @@ enum MCT_DST
 enum MCTOptions
 {
     MCTOptionsInvalid,
+    AlarmMaskMeter,
+    AlarmMaskEvent1,
+    AlarmMaskEvent2,
     TimeAdjustTolerance,
     Configuration,
     Options,
