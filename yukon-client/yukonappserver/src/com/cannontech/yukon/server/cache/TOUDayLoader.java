@@ -40,7 +40,8 @@ public void run()
 	//temp code
 	timerStart = new java.util.Date();
 	//temp code
-	String sqlString = "SELECT d.TOUDayID, d.TOUDayName, dm.TOUDayOffset, dm.TOUScheduleID FROM TOUDay d, TOUDayMapping dm ORDER BY dm.TOUScheduleID";
+	String sqlString = "SELECT d.TOUDayID, d.TOUDayName, dm.TOUDayOffset, dm.TOUScheduleID FROM TOUDay d, TOUDayMapping dm " +
+			" WHERE DM.toudayid = d.toudayid ORDER BY dm.TOUScheduleID";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
