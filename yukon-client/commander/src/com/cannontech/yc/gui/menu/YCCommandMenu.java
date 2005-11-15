@@ -16,6 +16,7 @@ public class YCCommandMenu extends javax.swing.JMenu {
 	public JMenuItem executeMenuItem;
 	public JMenuItem locateRoute;
 	public JMenuItem installAddressing;
+	public JMenuItem downloadSchedule;
 	public JMenuItem editCustomCommandFile;
 	
 	public JMenuItem advancedOptionsMenuItem;	
@@ -49,6 +50,11 @@ private void initialize() {
 	locateRoute.setFont(f);
 	locateRoute.setText("Locate Route");
 	locateRoute.setMnemonic('l');
+
+	downloadSchedule = new JMenuItem();
+	downloadSchedule.setFont(f);
+	downloadSchedule.setText("Download TOU Schedule");
+	downloadSchedule.setMnemonic('d');
 
 	installAddressing = new JMenuItem();
 	installAddressing.setFont(f);
@@ -85,6 +91,7 @@ private void initialize() {
 	add( executeMenuItem );
 	add( stopMenuItem );
 	add( locateRoute );
+	add( downloadSchedule);
 	add( installAddressing );
 	add( separator1 );
 	add( editCustomCommandFile );
