@@ -235,6 +235,14 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					}
 				}
 			}
+			else if (command.toLowerCase().startsWith("putconfig tou"))
+			{
+				String schedID = req.getParameter("scheduleID");
+				if( schedID != null)
+					command = localBean.buildTOUScheduleCommand(Integer.valueOf(schedID).intValue());
+			    
+				System.out.println(command);
+			}
 			//Set our yc bean command string by using a function lookup if null
 			if( command == null )
 			{
