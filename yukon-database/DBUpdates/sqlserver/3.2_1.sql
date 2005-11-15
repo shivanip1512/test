@@ -75,6 +75,20 @@ update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where Control
 go 
 
 
+insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
+go
+
+alter table Customer add TemperatureUnit char(1);
+go
+update Customer set TemperatureUnit = 'F';
+go
+alter table Customer alter column TemperatureUnit char(1) not null;
+go
+
+
+
+
+
 
 
 

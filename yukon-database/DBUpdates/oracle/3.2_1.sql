@@ -65,6 +65,16 @@ insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.
 
 update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
 
+insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
+
+alter table Customer add TemperatureUnit char(1);
+update Customer set TemperatureUnit = 'F';
+alter table Customer modify TemperatureUnit not null;
+
+
+
+
+
 
 
 
