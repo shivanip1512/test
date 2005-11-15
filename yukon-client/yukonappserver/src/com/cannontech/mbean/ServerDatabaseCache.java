@@ -19,6 +19,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
@@ -38,6 +39,8 @@ import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
+import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
+import com.cannontech.yukon.server.cache.bypass.YukonUserContactNotificationLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 
@@ -137,7 +140,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map allUsersMap = null;
 	private Map allContactNotifsMap = null;
 	
-	private Map userRolePropertyValueMap = null;
+	private Map userContactMap = null;
+    private Map userRolePropertyValueMap = null;
 	private Map userRoleMap = null;
 
 /**
@@ -1630,7 +1634,7 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 	
 	// if the storage is not already loaded, we must not care about it
 	if( allContacts == null )
-		return lBase;;
+		return lBase;
 
 	switch(changeType)
 	{
@@ -1665,7 +1669,11 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 					allContactsMap.put( new Integer(lc.getContactID()), lc );
         
 					lBase = lc;
-				}                
+				}
+                
+                //better wipe the user to contact mappings in case a contact changed that was mapped
+                releaseUserContactMap();
+                
 				break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
@@ -1685,10 +1693,15 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
 						break;
 					}
 				}
+                
+                //better wipe the user to contact mapping, in case one of the contacts from the map was deleted
+                releaseUserContactMap();
+                
 				break;
 
 		default:
 				releaseAllContacts();
+                releaseUserContactMap();
 				break;
 	}
 
@@ -2979,7 +2992,7 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 			lu.retrieve( databaseAlias );
 						
 			lBase = lu;
-            adjustUserToRoleMappings(id);           
+            adjustUserMappings(id);           
 			break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
@@ -2992,13 +3005,14 @@ private synchronized LiteBase handleYukonUserChange( int changeType, int id )
 					break;
 				}
 			}
-            adjustUserToRoleMappings(id); 
+            adjustUserMappings(id); 
 			break;
 
 		default:
 			releaseAllYukonUsers();
             releaseUserRoleMap();
             releaseUserRolePropertyValueMap();
+            releaseUserContactMap();
 			break;
 	}
 
@@ -3463,6 +3477,92 @@ public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePro
 	return specifiedPropVal;
 }
 
+/*This method takes a userid to look for the relevant contact. It checks userContactMap
+ *  to see if this role has been recovered from the db before.  If it has not, it will
+ * be taken directly from the database.
+ */
+public synchronized LiteContact getAContactByUserID(int userID) 
+{
+    LiteContact specifiedContact = null;
+    //check cache for previous grabs
+    if(userContactMap == null)
+        userContactMap = new HashMap();
+    else
+        specifiedContact = (LiteContact) userContactMap.get(new Integer(userID));
+    
+    //not in cache, go to DB.
+    if(specifiedContact == null)
+    {
+        specifiedContact = YukonUserContactLookup.loadSpecificUserContact(userID);
+        //found it, put it in the cache for later searches
+        userContactMap.put(new Integer(userID), specifiedContact);
+    }
+    
+    return specifiedContact;
+}
+
+public synchronized LiteContact getAContactByContactID(int contactID) 
+{
+    LiteContact specifiedContact = null;
+    //check cache for previous grabs
+    if(allContactsMap == null)
+        allContactsMap = new HashMap();
+    else
+        specifiedContact = (LiteContact) allContactsMap.get(new Integer(contactID));
+    
+    //not in cache, go to DB.
+    if(specifiedContact == null)
+    {
+        specifiedContact = YukonUserContactLookup.loadSpecificContact(contactID);
+        //found it, put it in the cache for later searches
+        allContactsMap.put(new Integer(contactID), specifiedContact);
+        allContacts.add(specifiedContact);
+    }
+    
+    return specifiedContact;
+}
+
+public synchronized LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) 
+{
+    return YukonUserContactLookup.loadContactsByLastName(lastName, partialMatch);
+}
+
+public synchronized LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) 
+{
+    return YukonUserContactLookup.loadContactsByLastName(firstName, partialMatch);
+}
+
+public synchronized LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) 
+{
+    return YukonUserContactLookup.loadContactsByPhoneNumber(phone, partialMatch);
+}
+        
+public synchronized LiteContact getContactsByEmail(String email) 
+{
+    return YukonUserContactLookup.loadContactsByEmail(email);
+}
+
+public synchronized LiteContactNotification getAContactNotifByNotifID(int contNotifyID) 
+{
+    LiteContactNotification specifiedNotify = null;
+    //check cache for previous grabs
+    if(allContactsMap == null)
+        allContactsMap = new HashMap();
+    else
+        specifiedNotify = (LiteContactNotification) allContactNotifsMap.get(new Integer(contNotifyID));
+    
+    //not in cache, go to DB.
+    if(specifiedNotify == null)
+    {
+        specifiedNotify = YukonUserContactNotificationLookup.loadSpecificContactNotificationByID(contNotifyID);
+        //found it, put it in the cache for later searches
+        allContactsMap.put(new Integer(contNotifyID), specifiedNotify);
+        allContacts.add(specifiedNotify);
+    }
+    
+    return specifiedNotify;
+}
+
 /* (non-Javadoc)
  * Scrub out the userRoleMap.  Any LiteYukonRoles that were in here will have to be
  *recovered from the database.
@@ -3481,13 +3581,18 @@ public void releaseUserRolePropertyValueMap()
 	userRolePropertyValueMap = null;
 }
 
+public void releaseUserContactMap()
+{
+    userContactMap = null;
+}
+
 /*
  * Upon receiving a DBChangeMsg for a user or a group, this method
  * checks to see if this user is in the map.  There is no point in
  * resetting these mappings if the user that was changed is not a one
  * that has been accessed before (and therefore mapped here).
  */
-public synchronized void adjustUserToRoleMappings(int userID) 
+public synchronized void adjustUserMappings(int userID) 
 {
     MapKeyInts keyInts = new MapKeyInts(userID, CtiUtilities.NONE_ZERO_ID);
    
@@ -3501,6 +3606,12 @@ public synchronized void adjustUserToRoleMappings(int userID)
     {
         if(userRolePropertyValueMap.containsKey(keyInts))
             releaseUserRolePropertyValueMap();
+    }
+    
+    if(userContactMap != null)
+    {
+        if(userContactMap.containsKey(new Integer(userID)))
+            releaseUserContactMap();
     }
     
     return;

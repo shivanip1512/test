@@ -3,9 +3,7 @@ package com.cannontech.database.cache;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.concrete.ResourceFactory;
@@ -825,5 +823,37 @@ public class DefaultDatabaseCache implements IDatabaseCache
 	public void releaseUserRolePropertyValueMap() {
 		getDBCache().releaseUserRolePropertyValueMap();
 	}
+
+    public LiteContact getAContactByUserID(int userID) {
+        return getDBCache().getAContactByUserID(userID);
+    }
+    
+    public LiteContact getAContactByContactID(int contactID) {
+        return getDBCache().getAContactByContactID(contactID);
+    }
+    
+    public LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) {
+        return getDBCache().getContactsByLastName(lastName, partialMatch);
+    }
+    
+    public LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) {
+        return getDBCache().getContactsByFirstName(firstName, partialMatch);
+    }
+
+    public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) {
+        return getDBCache().getContactsByPhoneNumber(phone, partialMatch);
+    }
+    
+    public LiteContact getContactsByEmail(String email) {
+        return getDBCache().getContactsByEmail(email);
+    }
+    
+    public LiteContactNotification getAContactNotifByNotifID(int contNotifyID) {
+        return getDBCache().getAContactNotifByNotifID(contNotifyID);
+    }
+    
+    public void releaseUserContactMap() {
+        getDBCache().releaseUserContactMap();
+    }
 
 }

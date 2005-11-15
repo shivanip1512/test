@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
 
 /**
  * @ejb:bean name="DatabaseCache"
@@ -18,14 +17,14 @@ import com.cannontech.yukon.IDatabaseCache;
 **/
 public class DatabaseCacheBean implements IDatabaseCache
 {  
-	private IDatabaseCache dbCache = null;
+    private IDatabaseCache dbCache = null;
 	
-   static
-   {
+    static
+    {
       //Add the DBChange listener connection for Dispatch to our Cache
       //ServerDatabaseCache.getInstance().addDBChangeListener( 
            // new CacheChangeListener() );
-   }
+    }
    
    private synchronized com.cannontech.yukon.IDatabaseCache getCache()
    {  
@@ -805,5 +804,37 @@ public class DatabaseCacheBean implements IDatabaseCache
 	public void releaseUserRolePropertyValueMap() {
 		getCache().releaseUserRolePropertyValueMap();
 	}
+    
+    public LiteContact getAContactByUserID(int userID) {
+        return getCache().getAContactByUserID(userID);
+    }
+    
+    public LiteContact getAContactByContactID(int contactID) {
+        return getCache().getAContactByContactID(contactID);
+    }
+    
+    public LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) {
+        return getCache().getContactsByLastName(lastName, partialMatch);
+    }
+    
+    public LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) {
+        return getCache().getContactsByFirstName(firstName, partialMatch);
+    }
+    
+    public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) {
+        return getCache().getContactsByPhoneNumber(phone, partialMatch);
+    }
+    
+    public LiteContact getContactsByEmail(String email) {
+        return getCache().getContactsByEmail(email);
+    }
+    
+    public LiteContactNotification getAContactNotifByNotifID(int contNotifyID) {
+        return getCache().getAContactNotifByNotifID(contNotifyID);
+    }
+
+    public void releaseUserContactMap() {
+        getCache().releaseUserContactMap();
+    }
 
 }

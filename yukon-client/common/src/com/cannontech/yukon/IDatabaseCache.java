@@ -3,9 +3,11 @@ package com.cannontech.yukon;
 import java.util.Map;
 
 import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -141,6 +143,14 @@ public interface IDatabaseCache
 	
 	public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
 	public LiteYukonRole getARole(LiteYukonUser user, int roleID);
+    
+    public LiteContact getAContactByUserID(int userID);
+    public LiteContact getAContactByContactID(int contactID);
+    public LiteContact[] getContactsByLastName(String lName, boolean partialMatch);
+    public LiteContact[] getContactsByFirstName(String fName, boolean partialMatch);
+    public LiteContact[] getContactsByPhoneNumber(String phoneNumber, boolean partialMatch);
+    public LiteContact getContactsByEmail(String email);
+    public LiteContactNotification getAContactNotifByNotifID(int contNotifyID); 
 
 	/**
 	 *  Returns the LiteBase object that was added,deleted or updated, 
@@ -178,6 +188,7 @@ public interface IDatabaseCache
 	
 	public void releaseUserRolePropertyValueMap();
 	public void releaseUserRoleMap();
+    public void releaseUserContactMap();
 
 	public void removeDBChangeListener(DBChangeListener listener);
 	public void setDatabaseAlias(String newAlias);
