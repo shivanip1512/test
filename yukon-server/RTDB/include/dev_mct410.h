@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/11/09 00:33:51 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/11/15 14:22:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,6 +59,12 @@ protected:
 
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
+
+        Memory_EventFlagsMaskPos    = 0x0A,
+        Memory_EventFlagsMaskLen    =    2,
+
+        Memory_MeterAlarmMaskPos    = 0x0C,
+        Memory_MeterAlarmMaskLen    =    2,
 
         Memory_CentronParametersPos = 0x0f,
         Memory_CentronParametersLen =    1,
@@ -189,6 +195,9 @@ protected:
 
         FuncRead_DisconnectStatusPos = 0xfe,
         FuncRead_DisconnectStatusLen =    1,
+
+        FuncWrite_ConfigAlarmMaskPos = 0x01,
+        FuncWrite_ConfigAlarmMaskLen = 0x06,
 
         FuncWrite_IntervalsPos       = 0x03,
         FuncWrite_IntervalsLen       =    4,
@@ -368,7 +377,7 @@ public:
 
     int executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist<CtiMessage>&vgList,RWTPtrSlist<CtiMessage>&retList,RWTPtrSlist<OUTMESS>&outList);
     int executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
-
+    int executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList);
     virtual INT ResultDecode( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList );
 
     INT decodeGetValueKWH                   ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );

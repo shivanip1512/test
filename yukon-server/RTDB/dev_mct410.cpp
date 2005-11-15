@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/11/11 14:35:59 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/11/15 14:22:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -363,7 +363,7 @@ CtiDeviceMCT410::DLCCommandSet CtiDeviceMCT410::initCommandStore( )
 
     cs._cmd     = Emetcon::PutConfig_Options;
     cs._io      = Emetcon::IO_Write;
-    cs._funcLen = make_pair((int)Memory_OptionsPos, Memory_OptionsLen+Memory_ConfigurationLen);
+    cs._funcLen = make_pair((int)FuncWrite_ConfigAlarmMaskPos, FuncWrite_ConfigAlarmMaskLen);
     s.insert(cs);
 
     cs._cmd     = Emetcon::PutConfig_Outage;
@@ -1892,6 +1892,146 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
     return nRet;
 }
 
+int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,RWTPtrSlist< CtiMessage >&vgList,RWTPtrSlist< CtiMessage >&retList,RWTPtrSlist< OUTMESS >   &outList)
+{
+    int nRet = NORMAL;
+    long value;
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
+    {
+        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTOptions);
+
+        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTOptions)
+        {
+            long options, configuration, outage, timeAdjustTolerance, event1mask, event2mask, meterAlarmMask;
+            USHORT function, length, io;
+
+            MCTOptionsSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTOptions> >(tempBasePtr);
+            options = config->getLongValueFromKey(Options);
+            event1mask = config->getLongValueFromKey(AlarmMaskEvent1);
+            event2mask = config->getLongValueFromKey(AlarmMaskEvent2);
+            meterAlarmMask = config->getLongValueFromKey(AlarmMaskMeter);
+            configuration = config->getLongValueFromKey(Configuration);
+            outage = config->getLongValueFromKey(OutageCycles);
+            timeAdjustTolerance = config->getLongValueFromKey(TimeAdjustTolerance);
+
+            if(!getOperation(Emetcon::PutConfig_Options, function, length, io))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            if( options == numeric_limits<long>::min() || configuration == numeric_limits<long>::min() || event1mask == numeric_limits<long>::min() 
+                || event2mask == numeric_limits<long>::min() || meterAlarmMask == numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Necessary data not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            {
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) != options
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event1mask 
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event2mask
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask) != meterAlarmMask
+                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration )
+                {
+                    OutMessage->Buffer.BSt.Function   = function;
+                    OutMessage->Buffer.BSt.Length     = length;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (configuration);
+                    OutMessage->Buffer.BSt.Message[1] = (event1mask);
+                    OutMessage->Buffer.BSt.Message[2] = (event1mask);
+                    OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask>>8);
+                    OutMessage->Buffer.BSt.Message[4] = (meterAlarmMask);
+                    OutMessage->Buffer.BSt.Message[5] = (options);
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Buffer.BSt.Function   = Memory_OptionsPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_OptionsLen + Memory_ConfigurationLen;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.Function   = Memory_EventFlagsMaskPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_EventFlagsMaskLen + Memory_MeterAlarmMaskLen;
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+                }
+            }
+
+            if(!getOperation(Emetcon::PutConfig_Outage, function, length, io))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Operation PutConfig_Outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            if( outage == numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Operation outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            {
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
+                {
+                    OutMessage->Buffer.BSt.Function   = function;
+                    OutMessage->Buffer.BSt.Length     = length;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (outage);
+
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+                }
+            }
+
+            if(!getOperation(Emetcon::PutConfig_TimeAdjustTolerance, function, length, io))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            if( timeAdjustTolerance == numeric_limits<long>::min() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint - Operation time adjust tolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NOTNORMAL;
+            }
+            else
+            {
+                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                {
+                    OutMessage->Buffer.BSt.Function   = function;
+                    OutMessage->Buffer.BSt.Length     = length;
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Write;
+                    OutMessage->Buffer.BSt.Message[0] = (timeAdjustTolerance);
+
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.append( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+                }
+            }
+        }
+        else
+            nRet = NoMethod;
+    }
+    else
+        nRet = NoMethod;
+
+    return nRet;
+}
 
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
