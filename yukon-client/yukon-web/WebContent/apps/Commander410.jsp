@@ -625,6 +625,48 @@ function setCommand(cmd)
                 <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
               </tr>
             </table>
+            <table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td> <br>
+                </td>
+              </tr>
+            </table>
+			<%}%>
+            <% DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	           List scheds = cache.getAllTOUSchedules();
+	           if( scheds != null)
+	           {%>
+			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+              <tr> 
+                <td width="6" height="30"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_left.gif" width="6" height="30"></td>
+                <td height="95%"  bgcolor="888888" class="tableHeader">TOU Schedule</td>
+                <td height="95%" bgcolor="888888" class="crumbs" align="right" style="font-weight:bold">
+				  <select name="scheduleID" id="scheduleID">
+				     <%for (int i = 0; i < scheds.size(); i++)
+				     {
+					     com.cannontech.database.data.lite.LiteTOUSchedule lSched = (com.cannontech.database.data.lite.LiteTOUSchedule)scheds.get(i);
+				     %>
+	          			<option value="<%=lSched.getScheduleID()%>"><%=lSched.getScheduleName()%></option>
+	          		<%}%>
+        		  </select>
+				<a class="Link3" href="javascript:setCommand('putconfig tou ');disableAllButtons()" id="touDownloadID" name="touDownload"
+				  onMouseOver="window.status='Download TOU Schedule to the meter';return true;"
+    	          onMouseOut="window.status='';return true;">Download TOU Schedule</a>
+				&nbsp;&nbsp;
+                <td width="6" height="30"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Header_right.gif" width="6" height="30"></td>
+              </tr>
+              <tr> 
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_left.gif">&nbsp;</td>
+                <td colspan="2"> 
+                </td>
+                <td width="6" background="<%= request.getContextPath() %>/WebConfig/yukon/Side_right.gif">&nbsp;</td>
+              </tr>
+              <tr> 
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_left.gif" width="6" height="9"></td>
+                <td colspan="2" background="<%= request.getContextPath() %>/WebConfig/yukon/Bottom.gif" valign="bottom" height="9"></td>
+                <td width="6" height="9"><img src="<%= request.getContextPath() %>/WebConfig/yukon/Bottom_right.gif" width="6" height="9"></td>
+              </tr>
+            </table>            
 			<%}%>			
             <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
               <tr><td height="10"></td></tr>
