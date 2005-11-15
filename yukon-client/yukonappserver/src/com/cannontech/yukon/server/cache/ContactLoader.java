@@ -15,6 +15,10 @@ import com.cannontech.database.db.contact.ContactNotification;
  */
 public class ContactLoader implements Runnable 
 {
+    //if total contact number is over this, better not load this way
+    private final int MAX_CONTACT_LOAD = 60000;
+    private boolean willNeedDynamicLoad = false;
+    
     //Map<Integer(contactID), LiteContact>
     private final Map allContactsMap;
 
@@ -59,6 +63,10 @@ public class ContactLoader implements Runnable
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
+        
+        int maxContactID = 0;
+        int loadIterator = MAX_CONTACT_LOAD;
+        
 		try
 		{
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
@@ -66,7 +74,7 @@ public class ContactLoader implements Runnable
 			rset = stmt.executeQuery(sqlString);
 	
 			//get out LiteContacts first
-			while( rset.next() )
+			while( rset.next() && loadIterator > 0)
 			{
 				LiteContact lc = new LiteContact(
 								rset.getInt(1), 
@@ -77,14 +85,18 @@ public class ContactLoader implements Runnable
 	
 				allContacts.add(lc);
                 allContactsMap.put( new Integer(lc.getContactID()), lc );
+                if(maxContactID < lc.getContactID())
+                    maxContactID = lc.getContactID();
+                loadIterator--;
 			}
-
+			
 			//load up our ContactNotification objects			
 			sqlString = 
 				"SELECT cn.ContactNotifID, cn.ContactID, cn.NotificationCategoryID, " + 
 				"cn.DisableFlag, cn.Notification " + 
 				"FROM " + ContactNotification.TABLE_NAME + " cn " +
 				"where cn.ContactNotifID > " + CtiUtilities.NONE_ZERO_ID + " " +
+                "and cn.ContactID <= " + maxContactID + " " +
 				"order by cn.ContactID, cn.Ordering";
 			
             // we'll store the last contact to take advantage of the
@@ -112,7 +124,7 @@ public class ContactLoader implements Runnable
                 // add this contact notif to its contact
                 lastContact.getLiteContactNotifications().add(ln);
 			}			
-		}
+		} 
 		catch( java.sql.SQLException e )
 		{
 			com.cannontech.clientutils.CTILogger.error( "Unable to load contacts.", e );
@@ -130,12 +142,23 @@ public class ContactLoader implements Runnable
 			{
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			}
-	//temp code
-	timerStop = new java.util.Date();
-	com.cannontech.clientutils.CTILogger.info( 
-	    (timerStop.getTime() - timerStart.getTime())*.001 + 
-	      " Secs for ContactLoader (" + allContacts.size() + " loaded)" );
-	//temp code
-		}
+        	//temp code
+        	timerStop = new java.util.Date();
+        	com.cannontech.clientutils.CTILogger.info( 
+        	    (timerStop.getTime() - timerStart.getTime())*.001 + 
+        	      " Secs for ContactLoader (" + allContacts.size() + " loaded)" );
+            if(loadIterator <= 0)
+            {
+                com.cannontech.clientutils.CTILogger.warn("Contact loader limit exceeded!  System will need to use " +
+                                                             "dynamic loading for some contacts and notifications.");
+                willNeedDynamicLoad = true;
+            }
+        	//temp code
+        }
 	}
+    
+    public boolean limitExceeded()
+    {
+        return willNeedDynamicLoad;
+    }
 }
