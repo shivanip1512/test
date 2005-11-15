@@ -11,6 +11,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonRole;
+import com.cannontech.database.db.user.YukonUserRole;
+import com.cannontech.database.db.user.YukonGroupRole;
+import com.cannontech.database.db.user.YukonRoleProperty;
 
 /**
  * @author jdayton
@@ -37,9 +40,9 @@ public class YukonUserRolePropertyLookup
 		 */
 		 
 		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement("SELECT value FROM YukonUserRole WHERE userid = " + user.getLiteID() +
+			new com.cannontech.database.SqlStatement("SELECT value FROM " + YukonUserRole.TABLE_NAME + " WHERE userid = " + user.getLiteID() +
 													" AND RolePropertyID = " + rolePropertyID,
-													"yukon" );
+													CtiUtilities.YUKONDBALIAS );
 		String propertyValue = null;
 		
 		try
@@ -59,7 +62,7 @@ public class YukonUserRolePropertyLookup
 		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
 		{
 			stmt = new com.cannontech.database.SqlStatement("SELECT GroupID FROM YukonUserGroup WHERE userid = " + user.getLiteID() 
-														+ " ORDER BY GROUPID", "yukon" );
+														+ " ORDER BY GROUPID", CtiUtilities.YUKONDBALIAS );
 			Integer[] groupIDs = new Integer[0];
 		
 			try
@@ -85,8 +88,8 @@ public class YukonUserRolePropertyLookup
             StringBuffer groupIdStr;
             groupIdStr = convertToSqlLikeList(groupIDs);
 			
-			stmt = new com.cannontech.database.SqlStatement("SELECT value FROM YukonGroupRole WHERE rolepropertyid = " + rolePropertyID + " AND GroupID IN("
-															+ groupIdStr + ")", "yukon" );
+			stmt = new com.cannontech.database.SqlStatement("SELECT value FROM " + YukonGroupRole.TABLE_NAME + " WHERE rolepropertyid = " + rolePropertyID + " AND GroupID IN("
+															+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
 			try
 			{
 				stmt.execute();
@@ -107,8 +110,8 @@ public class YukonUserRolePropertyLookup
 		
 		if(propertyValue == null || propertyValue.compareTo(CtiUtilities.STRING_NONE) == 0)
 		{
-			stmt = new com.cannontech.database.SqlStatement("SELECT DefaultValue FROM YukonRoleProperty WHERE rolePropertyID = " + rolePropertyID,
-															"yukon" );
+			stmt = new com.cannontech.database.SqlStatement("SELECT DefaultValue FROM " + YukonRoleProperty.TABLE_NAME + " WHERE rolePropertyID = " + rolePropertyID,
+															CtiUtilities.YUKONDBALIAS );
 			try
 			{
 				stmt.execute();
@@ -151,9 +154,9 @@ public class YukonUserRolePropertyLookup
 		 */
 		 
 		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement("SELECT UserRoleID,UserID,RoleID,RolePropertyID,Value FROM YukonUserRole WHERE UserID = " + user.getLiteID()
+			new com.cannontech.database.SqlStatement("SELECT UserRoleID,UserID,RoleID,RolePropertyID,Value FROM " + YukonUserRole.TABLE_NAME + " WHERE UserID = " + user.getLiteID()
 													+ " AND RoleID = " + roleID,
-													"yukon" );
+													CtiUtilities.YUKONDBALIAS );
 		LiteYukonRole theProudRole = null;
 		
 		try
@@ -184,7 +187,7 @@ public class YukonUserRolePropertyLookup
 		
 		//no user role, so get the group one...first need to find all the groups for this user, though
 		stmt = new com.cannontech.database.SqlStatement("SELECT GroupID FROM YukonUserGroup WHERE userid = " + user.getLiteID() 
-														+ " ORDER BY GROUPID", "yukon" );
+														+ " ORDER BY GROUPID", CtiUtilities.YUKONDBALIAS );
 		Integer[] groupIDs = new Integer[0];
 		
 		try
@@ -209,8 +212,8 @@ public class YukonUserRolePropertyLookup
 		StringBuffer groupIdStr;
 		groupIdStr = convertToSqlLikeList(groupIDs);
 			
-		stmt = new com.cannontech.database.SqlStatement("SELECT GroupRoleID, GroupID, RoleID, RolePropertyID, Value FROM YukonGroupRole WHERE roleid = " + roleID + " AND GroupID in ("
-														+ groupIdStr + ")", "yukon" );
+		stmt = new com.cannontech.database.SqlStatement("SELECT GroupRoleID, GroupID, RoleID, RolePropertyID, Value FROM " + YukonGroupRole.TABLE_NAME + " WHERE roleid = " + roleID + " AND GroupID in ("
+														+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
 		try
 		{
 			stmt.execute();
