@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/11/03 17:49:17 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/11/15 14:21:37 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,9 @@ public:
         Key_MCT_AddressServiceProviderID,
         Key_MCT_AddressLead,
         Key_MCT_Configuration,
+        Key_MCT_EventFlagsMask1,
+        Key_MCT_EventFlagsMask2,
+        Key_MCT_MeterAlarmMask,
         Key_MCT_Options,
         Key_MCT_OutageCycles,
         Key_MCT_DemandThreshold,
@@ -159,6 +162,9 @@ protected:
     static const string _key_mct_configuration;
     static const string _key_mct_options;
     static const string _key_mct_outage_cycles;
+    static const string _key_mct_event_flags_mask_1;
+    static const string _key_mct_event_flags_mask_2;
+    static const string _key_mct_meter_alarm_mask;
 
     static const string _key_mct_demand_limit;
     static const string _key_mct_connect_delay;

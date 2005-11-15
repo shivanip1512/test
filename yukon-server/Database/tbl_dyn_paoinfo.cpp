@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/11/03 18:04:53 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/11/15 14:21:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,6 +78,9 @@ const string CtiTableDynamicPaoInfo::_key_mct_service_provider_id      = "mct se
 const string CtiTableDynamicPaoInfo::_key_mct_configuration            = "mct configuration";
 const string CtiTableDynamicPaoInfo::_key_mct_options                  = "mct options";
 const string CtiTableDynamicPaoInfo::_key_mct_outage_cycles            = "mct outage cycles";
+const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_1       = "mct event flags mask 1";
+const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_2       = "mct event flags mask 2";
+const string CtiTableDynamicPaoInfo::_key_mct_meter_alarm_mask         = "mct meter alarm mask";
 const string CtiTableDynamicPaoInfo::_key_mct_demand_limit             = "mct demand limit";
 const string CtiTableDynamicPaoInfo::_key_mct_connect_delay            = "mct connect delay";
 
@@ -166,6 +169,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_AddressServiceProviderID,   &_key_mct_service_provider_id));
     retval.insert(make_pair(Key_MCT_Configuration,              &_key_mct_configuration));
     retval.insert(make_pair(Key_MCT_Options,                    &_key_mct_options));
+    retval.insert(make_pair(Key_MCT_EventFlagsMask1,            &_key_mct_event_flags_mask_1));
+    retval.insert(make_pair(Key_MCT_EventFlagsMask2,            &_key_mct_event_flags_mask_2));
+    retval.insert(make_pair(Key_MCT_MeterAlarmMask,             &_key_mct_meter_alarm_mask));
     retval.insert(make_pair(Key_MCT_OutageCycles,               &_key_mct_outage_cycles));
     retval.insert(make_pair(Key_MCT_DemandThreshold,            &_key_mct_demand_limit));
     retval.insert(make_pair(Key_MCT_ConnectDelay,               &_key_mct_connect_delay));
