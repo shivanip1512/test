@@ -28,7 +28,7 @@ public class Contactable {
 
     public Contactable(NotifDestinationMap notifMap) {
         _notifMap = notifMap;
-        LiteContactNotification liteNotif = ContactNotifcationFuncs
+        LiteContactNotification liteNotif = ContactNotificationFuncs
                 .getContactNotification(notifMap.getRecipientID());
         _contactableBase = new ContactableNotification(liteNotif);
     }
