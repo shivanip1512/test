@@ -32,9 +32,7 @@ public class YukonUserContactNotificationLookup
      */
     public static LiteContactNotification loadSpecificContactNotificationByID(int contactNotifID)
     {
-        /*
-         * Grab a contact straight from the DB using the LoginID 
-         */
+
         LiteContactNotification contactNotify = null;
         
         try
