@@ -833,6 +833,14 @@ public class DatabaseCacheBean implements IDatabaseCache
         return getCache().getAContactNotifByNotifID(contNotifyID);
     }
 
+    public LiteCustomer getACustomerByContactID(int contactID) {
+        return getCache().getACustomerByContactID(contactID);
+    }
+    
+    public LiteCustomer getACustomerByCustomerID(int customerID) {
+        return getCache().getACustomerByCustomerID(customerID);
+    }
+    
     public void releaseUserContactMap() {
         getCache().releaseUserContactMap();
     }

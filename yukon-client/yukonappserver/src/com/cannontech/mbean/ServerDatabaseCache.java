@@ -41,6 +41,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.*;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserContactNotificationLookup;
+import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 
@@ -3478,7 +3479,7 @@ public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePro
 }
 
 /*This method takes a userid to look for the relevant contact. It checks userContactMap
- *  to see if this role has been recovered from the db before.  If it has not, it will
+ *  to see if this contact has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.
  */
 public synchronized LiteContact getAContactByUserID(int userID) 
@@ -3563,11 +3564,43 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
     return specifiedNotify;
 }
 
+/*This method takes a contactid to look for the relevant customer. It will
+ * be taken directly from the database.
+ */
+public synchronized LiteCustomer getACustomerByContactID(int contactID) 
+{
+    return YukonCustomerLookup.loadSpecificCustomerByContactID(contactID);
+}
+
+/*This method takes a customerid to look for the relevant customer. It checks allCustomersMap
+ *  to see if this customer has been recovered from the db before.  If it has not, it will
+ * be taken directly from the database.
+ */
+public synchronized LiteCustomer getACustomerByCustomerID(int customerID) 
+{
+    LiteCustomer specifiedCustomer = null;
+    //check cache for previous grabs
+    if(allCustomersMap == null)
+        allCustomersMap = new HashMap();
+    else
+        specifiedCustomer = (LiteCustomer) allCustomersMap.get(new Integer(customerID));
+    
+    //not in cache, go to DB.
+    if(specifiedCustomer == null)
+    {
+        specifiedCustomer = YukonCustomerLookup.loadSpecificCustomer(customerID);
+        //found it, put it in the cache for later searches
+        allCustomersMap.put(new Integer(customerID), specifiedCustomer);
+    }
+    
+    return specifiedCustomer;
+}
+
 /* (non-Javadoc)
  * Scrub out the userRoleMap.  Any LiteYukonRoles that were in here will have to be
  *recovered from the database.
  */
-public void releaseUserRoleMap() 
+public synchronized void releaseUserRoleMap() 
 {
 	userRoleMap = null;
 }
@@ -3576,12 +3609,12 @@ public void releaseUserRoleMap()
  * Scrub out the userRolePropertyValueMap.  Any String values that were in here will have to be
  *recovered from the database.
  */
-public void releaseUserRolePropertyValueMap() 
+public synchronized void releaseUserRolePropertyValueMap() 
 {
 	userRolePropertyValueMap = null;
 }
 
-public void releaseUserContactMap()
+public synchronized void releaseUserContactMap()
 {
     userContactMap = null;
 }

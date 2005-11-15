@@ -852,6 +852,14 @@ public class DefaultDatabaseCache implements IDatabaseCache
         return getDBCache().getAContactNotifByNotifID(contNotifyID);
     }
     
+    public LiteCustomer getACustomerByContactID(int contactID) {
+        return getDBCache().getACustomerByContactID(contactID);
+    }
+    
+    public LiteCustomer getACustomerByCustomerID(int customerID) {
+        return getDBCache().getACustomerByCustomerID(customerID);
+    }
+    
     public void releaseUserContactMap() {
         getDBCache().releaseUserContactMap();
     }

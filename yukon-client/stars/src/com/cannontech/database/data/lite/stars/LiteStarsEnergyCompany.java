@@ -2103,7 +2103,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
-			liteAcctInfo.setCustomer( (LiteCustomer)cache.getAllCustomersMap().get(account.getCustomerAccount().getCustomerID()) );
+			liteAcctInfo.setCustomer( (LiteCustomer)cache.getACustomerByCustomerID(account.getCustomerAccount().getCustomerID().intValue()) );
 		}
         
 		ArrayList appliances = new ArrayList();

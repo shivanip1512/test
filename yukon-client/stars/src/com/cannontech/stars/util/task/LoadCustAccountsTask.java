@@ -194,7 +194,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
-			liteAcctInfo.setCustomer( (LiteCustomer)cache.getAllCustomersMap().get(new Integer(liteAccount.getCustomerID())) );
+			liteAcctInfo.setCustomer( (LiteCustomer)cache.getACustomerByCustomerID(liteAccount.getCustomerID()) );
 		}
         
         ArrayList appIDs = (ArrayList) acctAppIDMap.get( new Integer(accountID) );

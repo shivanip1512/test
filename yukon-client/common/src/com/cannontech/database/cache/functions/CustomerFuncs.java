@@ -30,7 +30,7 @@ public static List getAllContacts(int customerID_)
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		LiteCustomer customer = (LiteCustomer)cache.getAllCustomersMap().get(new Integer(customerID_));
+		LiteCustomer customer = (LiteCustomer)cache.getACustomerByCustomerID(customerID_);
 		java.util.Vector allContacts = new java.util.Vector(5);	//guess capacity
 		if(customer != null)
 		{
@@ -54,7 +54,7 @@ public static LiteContact getPrimaryContact(int customerID_)
 	com.cannontech.database.cache.DefaultDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache) 
 	{
-		LiteCustomer customer = (LiteCustomer)cache.getAllCustomersMap().get(new Integer (customerID_));
+		LiteCustomer customer = (LiteCustomer)cache.getACustomerByCustomerID(customerID_);
 		if( customer != null)
 		{
 			int primCntctID = customer.getPrimaryContactID();
@@ -74,7 +74,7 @@ public static LiteCustomer getLiteCustomer( int custID)
 	DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-		return (LiteCustomer)cache.getAllCustomersMap().get(new Integer (custID));
+		return (LiteCustomer)cache.getACustomerByCustomerID(custID);
 	}
 }
 /**

@@ -151,6 +151,8 @@ public interface IDatabaseCache
     public LiteContact[] getContactsByPhoneNumber(String phoneNumber, boolean partialMatch);
     public LiteContact getContactsByEmail(String email);
     public LiteContactNotification getAContactNotifByNotifID(int contNotifyID); 
+    public LiteCustomer getACustomerByContactID(int contactID);
+    public LiteCustomer getACustomerByCustomerID(int customerID);
 
 	/**
 	 *  Returns the LiteBase object that was added,deleted or updated, 

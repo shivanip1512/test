@@ -18,7 +18,11 @@ import com.cannontech.database.db.customer.Customer;
  */
 public class CustomerLoader implements Runnable 
 {
-	//	Map<Integer(custID), LiteCustomer>
+    //if total contact number is over this, better not load this way
+    private final int MAX_CUSTOMER_LOAD = 50000;
+    private boolean willNeedDynamicLoad = false;
+    
+    //	Map<Integer(custID), LiteCustomer>
 	private Map allCustsMap = null;
 	private java.util.ArrayList allCustomers = null;
 	private String databaseAlias = null;
@@ -50,44 +54,41 @@ public class CustomerLoader implements Runnable
 	//TODO EFFICIENCY!!!
 		//get all the customer contacts that are assigned to a customer
 		String sqlString = 
-         "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
-         "AltTrackNum, TemperatureUnit " +
+         "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID " +
          "from " + Customer.TABLE_NAME;
 	
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
 		java.sql.ResultSet rset = null;
+        
+        int maxCustomerID = 0;
+        int loadIterator = MAX_CUSTOMER_LOAD;
+        
 		try
 		{
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(sqlString);
 	
-			while (rset.next())
+			while (rset.next() && loadIterator > 0)
 			{
 				int cstID = rset.getInt(1);
 				int contactID = rset.getInt(2);
 				String timeZone = rset.getString(3).trim();
-				int custTypeID = rset.getInt(4);
-                String custNumber = rset.getString(5).trim();
-                int custRateScheduleID = rset.getInt(6);
-                String custAltTrackNum = rset.getString(7).trim();
-				String temperatureUnit = rset.getString(8).trim();
+				int custTypeID = rset.getInt(4);				
 				
 				LiteCustomer lc;
-				if( custTypeID == CustomerTypes.CUSTOMER_CI) {
-                    lc = new LiteCICustomer(cstID);
-                } else {
-                    lc = new LiteCustomer( cstID );
-                }
+				if( custTypeID == CustomerTypes.CUSTOMER_CI)
+					lc = new LiteCICustomer(cstID);
+				else
+					lc = new LiteCustomer( cstID );
 				lc.setPrimaryContactID(contactID);
 				lc.setTimeZone(timeZone);
 				lc.setCustomerTypeID(custTypeID);
-                lc.setCustomerNumber(custNumber);
-                lc.setRateScheduleID(custRateScheduleID);
-                lc.setAltTrackingNumber(custAltTrackNum);
-                lc.setTemperatureUnit(temperatureUnit);
 				allCustomers.add(lc);
+                if(maxCustomerID < lc.getCustomerID())
+                    maxCustomerID = lc.getCustomerID();
+                loadIterator--;
 			}
 			
 			
@@ -96,7 +97,8 @@ public class CustomerLoader implements Runnable
 				"FROM CustomerAdditionalContact ca, " + 
 				Customer.TABLE_NAME + " c " + 
 				"WHERE ca.CustomerID=c.CustomerID " +
-				"ORDER BY ca.Ordering";
+                "and ca.CustomerID <= " + maxCustomerID + " " +
+                "ORDER BY ca.Ordering";
 			
 			Vector vectVals = new Vector(32);
 			rset = stmt.executeQuery(sqlString);
@@ -134,6 +136,7 @@ public class CustomerLoader implements Runnable
 				sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
 						"FROM CustomerAccount acct, ECToAccountMapping map " +
 						"WHERE acct.AccountID = map.AccountID " +
+                        "and acct.CustomerID <= " + maxCustomerID + " " +
 						"order by acct.customerID";
 				
 				rset = stmt.executeQuery(sqlString);
@@ -151,7 +154,8 @@ public class CustomerLoader implements Runnable
 			sqlString = 
 				"select CustomerID, MainAddressID, CompanyName, " +
 				"CustomerDemandLevel, CurtailAmount " +
-				"from " + CICustomerBase.TABLE_NAME;
+				"from " + CICustomerBase.TABLE_NAME + " " +
+                "where CustomerID <= " + maxCustomerID;
 				
 			rset = stmt.executeQuery(sqlString);
 
@@ -190,7 +194,18 @@ public class CustomerLoader implements Runnable
 	com.cannontech.clientutils.CTILogger.info( 
 	    (timerStop.getTime() - timerStart.getTime())*.001 + 
 	      " Secs for CICustomerLoader with Contacts (" + allCustomers.size() + " loaded)" );
-	//temp code
+    if(loadIterator <= 0)
+    {
+        com.cannontech.clientutils.CTILogger.warn("Customer loader limit exceeded!  System will need to use " +
+                                                     "dynamic loading for some customers.");
+        willNeedDynamicLoad = true;
+    }
+    //temp code
 		}
 	}
+    
+    public boolean limitExceeded()
+    {
+        return willNeedDynamicLoad;
+    }
 }

@@ -356,16 +356,10 @@ public final class ContactFuncs
 		if (liteCICust != null) return liteCICust;
 		
 		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized (cache) {
-			List customers = cache.getAllCustomers();
-			for (int i = 0; i < customers.size(); i++) {
-				LiteCustomer liteCustomer = (LiteCustomer) customers.get(i);
-				if (liteCustomer.getPrimaryContactID() == contactID)
-					return liteCustomer;
-			}
+		synchronized (cache) 
+        {
+			return cache.getACustomerByContactID(contactID);
 		}
-		
-		return null;
 	}
 	
 	public static LiteYukonUser getYukonUser(int contactID_) 
