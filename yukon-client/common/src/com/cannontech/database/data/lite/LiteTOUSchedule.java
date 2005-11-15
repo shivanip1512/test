@@ -15,6 +15,7 @@ package com.cannontech.database.data.lite;
 public class LiteTOUSchedule extends LiteBase
 {
 	private String scheduleName;
+	private String defaultRate; 
 
 /**
  * LiteHolidaySchedule constructor comment.
@@ -39,10 +40,11 @@ public LiteTOUSchedule(int schedID)
 /**
  * LiteHolidaySchedule constructor comment.
  */
-public LiteTOUSchedule(int schedID, String schedName_ )
+public LiteTOUSchedule(int schedID, String schedName_, String defaultRate_ )
 {
 	this( schedID );
 	setScheduleName( schedName_ );
+	setDefaultRate(defaultRate_);
 }
 
 public int getScheduleID() 
@@ -66,7 +68,7 @@ public void retrieve(String databaseAlias)
  
    com.cannontech.database.SqlStatement s = 
 	  new com.cannontech.database.SqlStatement(
-		 "SELECT TOUScheduleID, TOUScheduleName "  + 
+		 "SELECT TOUScheduleID, TOUScheduleName, TOUDefaultRate "  + 
 			"FROM " + com.cannontech.database.db.tou.TOUSchedule.TABLE_NAME +
 			" where TOUScheduleID = " + getScheduleID(),
 		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -81,6 +83,7 @@ public void retrieve(String databaseAlias)
 
 	  setScheduleID( new Integer(s.getRow(0)[0].toString()).intValue() );
 	  setScheduleName( s.getRow(0)[1].toString() );
+	  setDefaultRate( s.getRow(0)[2].toString() );
    }
    catch( Exception e )
    {
@@ -118,4 +121,12 @@ public String toString()
 }
 
 
+    public String getDefaultRate()
+    {
+        return defaultRate;
+    }
+    public void setDefaultRate(String defaultRate)
+    {
+        this.defaultRate = defaultRate;
+    }
 }

@@ -46,6 +46,18 @@ public TOUSchedule(Integer id, String name)
 	setScheduleName(name);
 }
 /**
+ * TOUSchedule constructor comment.
+ */
+public TOUSchedule(Integer id, String name, String rate)
+{
+	super();
+
+	setScheduleID(id);
+	setScheduleName(name);
+	setDefaultRate(rate);
+}
+
+/**
  * Insert the method's description here.
  * Creation date: (9/22/2004 10:35:21 AM)
  */
@@ -145,6 +157,15 @@ public String getScheduleName()
 }
 /**
  * Insert the method's description here.
+ * Creation date: (9/22/2004 12:21:32 PM)
+ * @return String
+ */
+public String getDefaultRate()
+{
+	return getTOUSchedule().getDefaultRate();
+}
+/**
+ * Insert the method's description here.
  */
 public void retrieve() throws java.sql.SQLException 
 {
@@ -191,6 +212,16 @@ public void setScheduleID( Integer newID )
 public void setScheduleName( String newName )
 {
 	getTOUSchedule().setScheduleName( newName );	
+}
+
+/**
+ * Insert the method's description here.
+ * Creation date: (9/22/2004 10:35:21 AM)
+ * @return com.cannontech.database.data.tou.TOUSchedule
+ */
+public void setDefaultRate( String defaultRate_)
+{
+	getTOUSchedule().setDefaultRate( defaultRate_ );	
 }
 
 public void setTOUDayMappingVector(java.util.Vector newDayMapping)

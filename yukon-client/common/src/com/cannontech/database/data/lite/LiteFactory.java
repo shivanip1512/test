@@ -289,7 +289,8 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	{
 		returnLite = new LiteTOUSchedule(
 			((com.cannontech.database.data.tou.TOUSchedule)val).getScheduleID().intValue(),
-			((com.cannontech.database.data.tou.TOUSchedule)val).getScheduleName() );
+			((com.cannontech.database.data.tou.TOUSchedule)val).getScheduleName(),
+			((com.cannontech.database.data.tou.TOUSchedule)val).getDefaultRate() );
 	}
 	else if( val instanceof com.cannontech.database.data.baseline.Baseline )
 	{
