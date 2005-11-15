@@ -334,22 +334,23 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 		String html = "";
 		
 		html += "<SCRIPT>" + LINE_SEPARATOR;
-		html += "function disableGroup(form){" + LINE_SEPARATOR;
-		html += "  if (form.paoIDs) {" + LINE_SEPARATOR;	//DEPRECTATED PAOIDS
-		html += "    uncheckAll(form, form.paoIDs)" + LINE_SEPARATOR;
-		html += "  }" + LINE_SEPARATOR;
-		html += "  if (form.filterValues) {" + LINE_SEPARATOR;
-		html += "    uncheckAll(form, form.filterValues)" + LINE_SEPARATOR;
-		html += "  }" + LINE_SEPARATOR;
-		html += "}" + LINE_SEPARATOR;
-
-		html += "function uncheckAll(form, group){" + LINE_SEPARATOR;
-		html += "  for (var i = 0; i < group.length; i++) {" + LINE_SEPARATOR;
-		html += "    group[i].disabled = form.selectAll.checked;" + LINE_SEPARATOR;		
-		html += "    group[i].selectedIndex = -1;" + LINE_SEPARATOR;
-		html += "  }" + LINE_SEPARATOR;
+		html += "function selectNoneFilter(group){" + LINE_SEPARATOR;
+		html += "  group.selectedIndex = -1;" + LINE_SEPARATOR;
+		html += "  group.disabled = false;" + LINE_SEPARATOR;
+		html += "  document.reportForm.selectAll.checked = false;" + LINE_SEPARATOR;
 		html += "}" + LINE_SEPARATOR;
 		
+		html += "function selectAllFilter(selectVal, group){" + LINE_SEPARATOR;
+		html += "  if (selectVal) {" + LINE_SEPARATOR;
+		html += "    group.disabled = true;" + LINE_SEPARATOR;
+		html += "    for (var i = 0; i < group.length; i++) {" + LINE_SEPARATOR;
+		html += "      group[i].selected = true;" + LINE_SEPARATOR;		
+		html += "    }" + LINE_SEPARATOR;
+		html += "  } else {" + LINE_SEPARATOR;
+		html += "    group.disabled = false;" + LINE_SEPARATOR;
+		html += "  }" + LINE_SEPARATOR;
+		html += "}" + LINE_SEPARATOR;
+				
 		if (getFilterModelTypes() != null)
 		{
 			html += "function changeFilter(filterBy) {" + LINE_SEPARATOR;
@@ -424,10 +425,10 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 			html += "<span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>" + LINE_SEPARATOR;
 			html += "<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>" + LINE_SEPARATOR;
 			html += "      <div id='DivSelectAll' style='display:true'>" + LINE_SEPARATOR;
-			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='disableGroup(document.reportForm);'>Select All" + LINE_SEPARATOR;
+			html += "        <input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All" + LINE_SEPARATOR;
 			html += "      </div>" + LINE_SEPARATOR;
 			html += "      <div id='DivSelectNone' style='display:true'>" + LINE_SEPARATOR;			
-			html += "        <input type='button' value='Unselect All' onclick='disableGroup(document.reportForm);'/>";
+			html += "        <input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>";
 			html += "      </div>" + LINE_SEPARATOR;
 			    
 		}
@@ -639,6 +640,8 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 				}
 				return receivers; 
 			}
+			case ModelFactory.CAPCONTROLSTRATEGY:
+			    return cache.getAllCapControlSubBuses();
         }
 		return null;
 	}
