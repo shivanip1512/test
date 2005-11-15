@@ -8,6 +8,7 @@ package com.cannontech.yc.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -20,6 +21,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.CommandFuncs;
@@ -32,6 +34,7 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
@@ -1409,4 +1412,114 @@ public class YC extends Observable implements MessageListener
     {
         return getPilConn().isValid();
     }
+    
+    /**
+     * @param schedID
+     * @return
+     */
+    public String buildTOUScheduleCommand(int schedID)
+    {
+		String command = "putconfig tou ";
+	    DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
+	    List schedules = cache.getAllTOUSchedules();
+	    LiteTOUSchedule lSchedule = null;
+	    for (int i = 0; i < schedules.size(); i++)
+	    {
+	        if(((LiteTOUSchedule)schedules.get(i)).getScheduleID() == schedID)
+	            lSchedule = (LiteTOUSchedule)schedules.get(i); 
+	    }
+	    if( lSchedule != null)
+	    {
+	    	String sqlString = "SELECT d.TOUDayID, d.TOUDayName, dm.TOUDayOffset, switchrate, switchoffset" +
+	    			" FROM TOUDay d, TOUDayMapping dm, toudayrateswitches trs" +
+	    			" where dm.touscheduleid = " + lSchedule.getScheduleID() + 
+	    			" and dm.toudayid = d.toudayid" +
+	    			" and trs.toudayid = dm.toudayid" +
+	    			" order by toudayoffset, switchoffset";
+
+	    	java.sql.Connection conn = null;
+	    	java.sql.Statement stmt = null;
+	    	java.sql.ResultSet rset = null;
+	    	int [] days = new int[]{-1,-1,-1,-1};	//at most 4 day mappings are allowed
+	    	int currentIndex = 0;
+	    	int numDaysFound = 0;
+	    	int currentDayOffset = -1;
+	    	int [] dayOffsets = new int[8];
+		    boolean exists = false;
+		    
+	    	String scheduleStr = "";
+	    	try
+	    	{
+	    		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+	    		stmt = conn.createStatement();
+	    		rset = stmt.executeQuery(sqlString);
+
+	    		while (rset.next())
+	    		{
+	    			int dayID = rset.getInt(1);
+	    			String dayName = rset.getString(2).trim();
+	    			int dayOffset = rset.getInt(3);
+	    			String switchRate = rset.getString(4);
+	    			int switchOffset = rset.getInt(5);
+	   		
+	    			if( currentDayOffset != dayOffset)
+	    			{
+	    			    exists = false;
+		    			for (int i = 0; i < numDaysFound && i < days.length; i++)
+		    			{
+		    			    if( days[i] == dayID)
+		    			    {
+		    			        currentIndex = i;
+		    			        exists = true;
+		    			        break;
+		    			    }
+		    			}
+		    			if (!exists){
+		    			    currentIndex = numDaysFound;
+		    			    days[numDaysFound++] = dayID;
+			    			scheduleStr += " schedule " + (currentIndex+1);
+		    			}
+	    			    dayOffsets[dayOffset-1] = currentIndex+1;
+	    			}
+	    			if (!exists)
+		    			scheduleStr += " " + switchRate + "/" + convertSecondsToTimeString(switchOffset);
+
+	    			currentDayOffset = dayOffset;
+	    		}
+	    		for (int i = 0; i < dayOffsets.length; i++ )
+	    		{
+	    		    command += dayOffsets[i];
+	    		}
+	    		command += " " + scheduleStr + " default " + lSchedule.getDefaultRate();
+	    	}
+	    	catch (java.sql.SQLException e)
+	    	{
+	    		CTILogger.error( e.getMessage(), e );
+	    	}
+	    	finally
+	    	{
+	    		try
+	    		{
+	    			if (stmt != null)
+	    				stmt.close();
+	    			if (conn != null)
+	    				conn.close();
+	    		}
+	    		catch (java.sql.SQLException e)
+	    		{
+	    			CTILogger.error( e.getMessage(), e );
+	    		}
+	    	}
+	    }
+        return command;
+    }
+
+    private static String convertSecondsToTimeString(int seconds)
+	{
+		DecimalFormat format = new DecimalFormat("00");
+		int hour = seconds / 3600;
+		int temp = seconds % 3600;
+		int min = temp / 60;
+		return hour + ":" + format.format(min);
+	}    
 }
