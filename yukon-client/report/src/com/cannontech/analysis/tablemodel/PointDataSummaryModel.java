@@ -356,9 +356,8 @@ public class PointDataSummaryModel extends ReportModelBase
 			sql.append(") ");
 		}
 		
-		sql.append(" ORDER BY PAO.PAONAME, RPH.POINTID, TIMESTAMP" );
+		//Ordering will be done by the comparator
 		return sql;
-			
 	}
 		
 	/* (non-Javadoc)
