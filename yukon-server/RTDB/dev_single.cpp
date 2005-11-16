@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2005/11/11 14:34:53 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2005/11/16 20:17:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1587,6 +1587,8 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     _twoWay.DecodeDatabaseReader(rdr);
+
+    _scanData.setDeviceID( getID() );     // Get this set up.
 }
 
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
@@ -1724,6 +1726,7 @@ INT CtiDeviceSingle::validateScanData()
     if( !isScanFlagSet(ScanDataValid) )
     {
         setScanFlag(ScanDataValid, true);
+        _scanData.setDeviceID( getID() );     // Get this set up.
         if( !(_scanData.Restore().errorCode() == RWDBStatus::ok ))
         {
             if( !(_scanData.Insert().errorCode() == RWDBStatus::ok ))
