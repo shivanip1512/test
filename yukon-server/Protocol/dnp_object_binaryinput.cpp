@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/09/27 18:19:17 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/11/16 15:46:07 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -274,6 +274,7 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
             pos += restoreVariation(buf + pos, len - pos, BinaryInput::WithStatus);
             pos += _timeRelative.restore(buf + pos, len - pos);
 
+            if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
