@@ -1373,8 +1373,10 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 {
-    RWCString   temp2;
-    RWCString   token;
+    RWCRExpr  re_tou("tou [0-9]+ (schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+
+    RWCString temp2;
+    RWCString token;
 
     RWCTokenizer   tok(CmdStr);
 
@@ -1412,6 +1414,60 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
             }
             _cmd["templateinservice"] = CtiParseValue( sistr );
         }
+
+        if(CmdStr.contains(" tou"))
+        {
+            RWCString tou_schedule;
+
+            //  indicate that we at least tried to parse the TOU stuff
+            _cmd["tou"] = CtiParseValue(true);
+
+            if(!(tou_schedule = CmdStr.match(re_tou)).isNull())
+            {
+                //  tou [0-9]+ (schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]
+                RWCTokenizer tok(tou_schedule);
+
+                token = tok();  //  tou
+
+                _cmd["tou_days"] = CtiParseValue(tok());
+
+                token = tok();
+
+                int schedulenum = 0;
+                while( token.compareTo("schedule") )
+                {
+                    string schedule_name;
+                    schedule_name.assign("tou_schedule_");
+                    schedule_name.append(CtiNumStr(schedulenum).zpad(2));
+
+                    //  even if there are no rates supplied, we did successfully parse it
+                    _cmd[schedule_name.data()] = CtiParseValue(atoi(tok().data()));
+
+                    int changenum = 0;
+                    while(!token.match("[a-z]/[0-9]+:[0-9]+").isNull())
+                    {
+                        string change_name;
+                        change_name.assign(tou_schedule);
+                        change_name.append("_");
+                        change_name.append(CtiNumStr(schedulenum).zpad(2));
+
+                        _cmd[change_name.data()] = CtiParseValue(token);
+
+                        token = tok();
+
+                        changenum++;
+                    }
+
+                    schedulenum++;
+                }
+
+                if( token.compareTo("default") )
+                {
+                    _cmd["tou_default"] = CtiParseValue(tok());
+                }
+            }
+        }
+
 
         switch( type )
         {
@@ -1630,15 +1686,15 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const RWCString &CmdStr)
                              " [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+");
-    RWCRExpr  re_interval("interval(s| lp| li))");  //  match "intervals", "interval lp" and "interval li"
+    RWCRExpr  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
     RWCRExpr  re_multiplier("mult(iplier)? kyz *[123] [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     RWCRExpr  re_ied_class("ied class [0-9]+ [0-9]+");
     RWCRExpr  re_ied_scan ("ied scan [0-9]+ [0-9]+");
     RWCRExpr  re_group_address("group (enable|disable)");
     RWCRExpr  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     RWCRExpr  re_centron("centron ((ratio [0-9]+)|(reading [0-9]+( [0-9]+)?))");
-    RWCRExpr  re_loadlimit("load limit " + str_num +
-                                     " " + str_num);
+    RWCRExpr  re_loadlimit("load limit " + str_num + " "
+                                         + str_num);
 
     char *p;
 
