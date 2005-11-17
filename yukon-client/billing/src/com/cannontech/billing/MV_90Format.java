@@ -102,7 +102,7 @@ public class MV_90Format extends FileFormatBase
 						double reading = rset.getDouble(6)	/ multiplier;
 						
 						inValidTimestamp:
-						if( lastTimeStamp.compareTo((Object)ts) == 0)
+						if( lastTimeStamp.compareTo(ts) == 0)
 						{
 							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
@@ -133,10 +133,10 @@ public class MV_90Format extends FileFormatBase
 
 							//Increment the interval that rows MUST occur at.
 							lpDemandRateTimeStamp = new java.sql.Timestamp(lpDemandRateTimeStamp.getTime() + lpDemandRate);
-							while (lpDemandRateTimeStamp.compareTo((Object) ts) < 0)
+							while (lpDemandRateTimeStamp.compareTo(ts) < 0)
 							{
 								//If intervalTimeStamp is less than ts, we must enter 'dummy' data into recordVector.
-								if( lpDemandRateTimeStamp.compareTo((Object)new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
+								if( lpDemandRateTimeStamp.compareTo(new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
 									break inValidTimestamp;
 
 								readingVector = new java.util.Vector(4);	//best guess capacity is 4
