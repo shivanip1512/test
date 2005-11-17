@@ -287,13 +287,6 @@ public void messageReceived(MessageEvent e) {
  */
 public void update(java.util.Observable obs, Object val) 
 {
-	if( obs instanceof com.cannontech.message.dispatch.ClientConnection )
-	{
-		if( conn.isValid() )
-			CTILogger.debug("Connection established to " + conn.getHost() + ":" + conn.getPort());
-		else
-			CTILogger.debug("Connection to " + conn.getHost() + ":" + conn.getPort() + " is down");
-	}
 }
 /**
  * Don't use this unless you know why it could be bad.
