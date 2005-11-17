@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2005/11/11 15:23:23 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2005/11/17 22:27:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -482,7 +482,6 @@ void CtiVanGogh::VGMainThread()
             if(!(++sanity % SANITY_RATE))
             {
                 reportOnThreads();
-
                 if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1374,7 +1373,6 @@ void CtiVanGogh::VGArchiverThread()
                 if(!(++sanity % SANITY_RATE))
                 {
                     reportOnThreads();
-
                     if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1413,6 +1411,7 @@ void CtiVanGogh::VGArchiverThread()
 void CtiVanGogh::VGTimedOperationThread()
 {
     UINT sanity = 0;
+    CtiMultiMsg *pMulti = 0;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1442,6 +1441,11 @@ void CtiVanGogh::VGTimedOperationThread()
 
             purifyClientConnectionList();
             updateRuntimeDispatchTable();
+            if( NULL != (pMulti = resetControlHours()) )
+            {
+                MainQueue_.putQueue(pMulti);
+                pMulti = 0;
+            }
 
             loadRTDB(false);                 // Refresh (if time says so) the memory objects
         }
@@ -5007,7 +5011,7 @@ void CtiVanGogh::VGAppMonitorThread()
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Dispatch);
 
     //on startup wait for 15 minutes!
-    for(int i=0;i<180;i++)
+    for(int i=0;i<180 && !bGCtrlC;i++)
     {
         //5*180 = 900 seconds = 15 minutes
         rwSleep(5000);//5 second sleep
@@ -5017,66 +5021,62 @@ void CtiVanGogh::VGAppMonitorThread()
             MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
             LastThreadMonitorTime = LastThreadMonitorTime.now();
         }
-
-        if(bGCtrlC)//someone did a Control-C, we need to exit!
-            i=180;
     }
 
-    //First find all of my point ID's so I dont ever have to look them up again.
-
-    CtiThreadMonitor::PointIDList pointIDList = ThreadMonitor.getPointIDList();
-    CtiThreadMonitor::PointIDList::iterator pointListWalker;
-    CtiPoint *pPt;
-    CtiDynamicPointDispatch *pDynPt;
-    RWTime compareTime;
-
-    while(!bGCtrlC)
+    if(!bGCtrlC)
     {
-        compareTime = RWTime::now();
-        compareTime -= 900;//take away 15 minutes
+        //First find all of my point ID's so I dont ever have to look them up again.
+        CtiThreadMonitor::PointIDList pointIDList = ThreadMonitor.getPointIDList();
+        CtiThreadMonitor::PointIDList::iterator pointListWalker;
+        CtiPoint *pPt;
+        CtiDynamicPointDispatch *pDynPt;
+        RWTime compareTime;
 
-        for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
+        while(!bGCtrlC)
         {
-            if(*pointListWalker !=0)
-            {
-                pPt = PointMgr.getEqual(*pointListWalker);
-                pDynPt = (CtiDynamicPointDispatch*)pPt->getDynamic();
-                if((pDynPt->getTimeStamp()).seconds()<(compareTime))
-                {
-                    //its been more than 15 minutes, set the alarms!!!
-                    MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
-                }
-            }
-        }
+            compareTime = RWTime::now();
+            compareTime -= 900;//take away 15 minutes
 
-        //no need to process very often, wait say.... randomly ill pick 5 minutes or so
-        for(i=0;i<=30;i++)
-        {
-            rwSleep(10000);//10 second sleep.
-
-            //Check thread watcher status
-            if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
+            for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
             {
-                if(pointID!=0)
+                if(*pointListWalker !=0)
                 {
-                    CtiThreadMonitor::State next;
-                    LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    pPt = PointMgr.getEqual(*pointListWalker);
+                    pDynPt = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                    if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                     {
-                        previous = next;
-                        checkCount = 0;
-
-                        MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                        //its been more than 15 minutes, set the alarms!!!
+                        MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
                     }
                 }
             }
 
-            if(bGCtrlC)//someone did a Control-C, we need to exit!
-                i=180;
+            //no need to process very often, wait say.... randomly ill pick 3 minutes or so
+            for(i=0;i<=36 && !bGCtrlC;i++)
+            {
+                rwSleep(5000);//5 second sleep
+
+                //Check thread watcher status
+                if((LastThreadMonitorTime.now().minute() - LastThreadMonitorTime.minute()) >= 1)
+                {
+                    if(pointID!=0)
+                    {
+                        CtiThreadMonitor::State next;
+                        LastThreadMonitorTime = LastThreadMonitorTime.now();
+                        if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                        {
+                            previous = next;
+                            checkCount = 0;
+
+                            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                        }
+                    }
+                }
+            }
         }
     }
-
 }
+
 
 /*----------------------------------------------------------------------------*
  * This FUNCTION is used to apply against the MainQueue_ with the expectation
@@ -7082,4 +7082,76 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
 
         return NULL;
     }
+}
+
+
+/*
+ *  This method returns point data messages iff the control hour points need to be set to zero.
+ *  The return will be null if there are no point data elements to update.  This should be ok regardless of the
+ *
+ */
+CtiMultiMsg* CtiVanGogh::resetControlHours()
+{
+    CtiMultiMsg *pMulti = 0;
+
+    RWDate today;
+    static RWDate prevdate(rwEpoch);
+
+    if(today.julian() != prevdate.julian())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Control history points reset in progress" << endl;
+        }
+        try
+        {
+            CtiServerExclusion pmguard(_server_exclusion);
+            CtiPointClientManager::CtiRTDBIterator  itr(PointMgr.getMap());
+
+            for(;itr();)
+            {
+                CtiPoint *point = itr.value();
+                if(point && point->isInService() && point->getType() == AnalogPointType && isDeviceGroupType(point->getDeviceID()) )
+                {
+                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)point->getDynamic();
+                    RWDate ptdate = RWDate(pDyn->getTimeStamp());
+
+                    if( ANNUALCONTROLHISTOFFSET == point->getPointOffset() && today.year() != ptdate.year() )
+                    {
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Yearly History Reset", pDyn->getDispatch().getTags());
+                        pDat->setTime(RWTime(today));
+                        if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
+                        pMulti->insert(pDat);
+                    }
+
+                    if( MONTHLYCONTROLHISTOFFSET == point->getPointOffset() && today.month() != ptdate.month() )
+                    {
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Monthly History Reset", pDyn->getDispatch().getTags());
+                        pDat->setTime(RWTime(today));
+                        if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
+                        pMulti->insert(pDat);
+                    }
+
+                    if( DAILYCONTROLHISTOFFSET == point->getPointOffset() && today.day() != ptdate.day() )
+                    {
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Daily History Reset", pDyn->getDispatch().getTags());
+                        pDat->setTime(RWTime(today));
+                        if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
+                        pMulti->insert(pDat);
+                    }
+                }
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
+        prevdate = today;
+    }
+
+    return pMulti;
 }

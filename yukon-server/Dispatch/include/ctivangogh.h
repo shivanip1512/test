@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/09/27 00:53:10 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/11/17 22:27:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,6 +154,7 @@ private:
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 
     CtiConnection* getNotificationConnection();
+    CtiMultiMsg* resetControlHours();
 
 public:
 
