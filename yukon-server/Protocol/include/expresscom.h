@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/10/25 14:36:38 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/11/17 19:15:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,19 @@ public:
         atUser          = 0x04,
         atProgram       = 0x02,
         atSplinter      = 0x01,
-        atIndividual    = 0x00
+        atIndividual    = 0x00,
+
+        atSpidLen       =    2,            //Length added to address to have this field.
+        atGeoLen        =    2,
+        atSubstationLen =    2,
+        atFeederLen     =    2,
+        atZipLen        =    3,
+        atUserLen       =    2,
+        atProgramLen    =    1,
+        atSplinterLen   =    1,
+        atIndividualLen =    4,
+
+
 
     } CtiExpresscomAddress_t;
 
@@ -74,6 +86,7 @@ protected:
 
     // Addressing Levels
     BYTE    _addressLevel;                  // Bit field indicating addressing TO BE USED.
+    INT     _addressLength;                  // Number of bytes addressing uses (includes address Level byte)
 
     USHORT  _spidAddress;                   // 1-65534
     USHORT  _geoAddress;                    // 1-65534
@@ -84,7 +97,7 @@ protected:
     BYTE    _programAddress;                // 1-254 program load (like relay)
     BYTE    _splinterAddress;               // 1-254 subset of program.
     UINT    _uniqueAddress;                 // 1-4294967295 UID.
-
+    
     // Parameters which affect the construction of the messages.
 
     bool    _celsiusMode;                   // Default to false/no. (Implies Fahrenheit).
@@ -96,6 +109,8 @@ private:
 
     vector< BYTE > _message;                // This is the baby...
     int _messageCount;
+    void incrementMessageCount();
+    vector<int> _lengths;                   //Every time a message is added, this records the length of the message vector
 
     void addressMessage();
     void terminateMessage();
@@ -250,6 +265,8 @@ public:
 
     INT parseRequest(CtiCommandParser &parse, CtiOutMessage &OutMessage);
 
+    BYTE getByte(int pos, int messageNum);
+    int messageSize(int messageNum);
     inline int messageSize() const { return _message.size(); }
     inline BYTE getByte(int pos) const
     {

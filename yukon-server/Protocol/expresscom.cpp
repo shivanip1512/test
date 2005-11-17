@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/10/25 14:36:38 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/11/17 19:15:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,6 +115,8 @@ void CtiProtocolExpresscom::addressMessage()
 
     // Let us assume that we MUST always be called first!
     _message.clear();
+    _lengths.clear();
+    _messageCount = 0;
 
     _message.push_back( _addressLevel );
 
@@ -174,8 +176,8 @@ void CtiProtocolExpresscom::addressMessage()
 INT CtiProtocolExpresscom::sync()
 {
     INT status = NoError;
-    _messageCount++;
     _message.push_back(mtSync);
+    incrementMessageCount();
     return status;
 }
 
@@ -204,7 +206,7 @@ INT CtiProtocolExpresscom::timeSync(RWTime &local, bool fullsync)
         _message.push_back( LOBYTE(LOWORD(date.year())) );
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -234,7 +236,7 @@ INT CtiProtocolExpresscom::signalTest(BYTE test)
         }
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -289,7 +291,7 @@ INT CtiProtocolExpresscom::timedLoadControl(UINT loadMask, UINT shedtime_seconds
             // Set the flags to their final answer.
             _message[ flagpos ] = flag;
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -329,7 +331,7 @@ INT CtiProtocolExpresscom::restoreLoadControl(UINT loadMask, BYTE rand, USHORT d
             // Set the flags to their final answer.
             _message[ flagpos ] = flag;
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -375,7 +377,7 @@ INT CtiProtocolExpresscom::cycleLoadControl(UINT loadMask, BYTE cyclepercent, BY
             // Set the flags to their final answer.
             _message[ flagpos ] = flag;
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -434,7 +436,7 @@ INT CtiProtocolExpresscom::thermostatLoadControl(UINT loadMask, BYTE cyclepercen
                 _message.push_back( deltafallbackpercent );
             }
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -573,7 +575,7 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
     _message[flagposhi] = flaghi;
     _message[flagposlo] = flaglo;
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -590,7 +592,7 @@ INT CtiProtocolExpresscom::configuration(BYTE configNumber, BYTE length, PBYTE d
         _message.push_back( data[i] );
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -652,7 +654,7 @@ INT CtiProtocolExpresscom::maintenance(BYTE function, BYTE opt1, BYTE opt2, BYTE
     _message.push_back( opt3 );
     _message.push_back( opt4 );
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -665,7 +667,7 @@ INT CtiProtocolExpresscom::service(BYTE action)
     _message.push_back( mtService );
     _message.push_back( action );
 
-    _messageCount++;
+    incrementMessageCount();
 
     return status;
 }
@@ -682,7 +684,7 @@ INT CtiProtocolExpresscom::service(UINT loadMask, bool activate)
             _message.push_back( mtService );
             _message.push_back( (activate ? 0x80 : 0x00 ) | (load & 0x0f) );
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -706,7 +708,7 @@ INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool d
         _message.push_back( LOBYTE(hoursout) );
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -741,7 +743,7 @@ INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, 
         _message.push_back( data[i] );
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -803,7 +805,7 @@ INT CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE data1, B
         }
     }
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
 }
 
@@ -888,17 +890,19 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse, CtiOutMessage &
 void CtiProtocolExpresscom::resolveAddressLevel()
 {
     _addressLevel = atIndividual;
+    _addressLength = atIndividualLen+1;
 
     if(_uniqueAddress == 0)
     {
-        if(_spidAddress != 0)           _addressLevel |= atSpid;
-        if(_geoAddress != 0)            _addressLevel |= atGeo;
-        if(_substationAddress != 0)     _addressLevel |= atSubstation;
-        if(_feederAddress != 0)         _addressLevel |= atFeeder;
-        if(_zipAddress != 0)            _addressLevel |= atZip;
-        if(_udaAddress != 0)            _addressLevel |= atUser;
-        if(_programAddress != 0)        _addressLevel |= atProgram;
-        if(_splinterAddress != 0)       _addressLevel |= atSplinter;
+        _addressLength = 1;
+        if(_spidAddress != 0)           {_addressLevel |= atSpid;       _addressLength += atSpidLen;      }
+        if(_geoAddress != 0)            {_addressLevel |= atGeo;        _addressLength += atGeoLen;       }
+        if(_substationAddress != 0)     {_addressLevel |= atSubstation; _addressLength += atSubstationLen;}
+        if(_feederAddress != 0)         {_addressLevel |= atFeeder;     _addressLength += atFeederLen;    }
+        if(_zipAddress != 0)            {_addressLevel |= atZip;        _addressLength += atZipLen;       }
+        if(_udaAddress != 0)            {_addressLevel |= atUser;       _addressLength += atUserLen;      }
+        if(_programAddress != 0)        {_addressLevel |= atProgram;    _addressLength += atProgramLen;   }
+        if(_splinterAddress != 0)       {_addressLevel |= atSplinter;   _addressLength += atSplinterLen;  }
     }
 
     return;
@@ -1422,7 +1426,7 @@ INT CtiProtocolExpresscom::thermostatSetState(UINT loadMask, bool temporary, boo
             _message[flagposhi] = flaghi;
             _message[flagposlo] = flaglo;
 
-            _messageCount++;
+            incrementMessageCount();
         }
 
         if(!loadMask && load == 0) break;
@@ -1440,7 +1444,64 @@ INT CtiProtocolExpresscom::priority(BYTE priority)
     _message.push_back( mtPriority );
     _message.push_back( priority );
 
-    _messageCount++;
+    incrementMessageCount();
     return status;
+
 }
 
+void CtiProtocolExpresscom::incrementMessageCount()
+{
+    _lengths.push_back(_message.size());
+    _messageCount++;
+}
+
+BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)//1 based number
+{
+    try
+    {
+        if(pos<_addressLength || (messageNum == 1 && pos<_lengths.at(0)))
+        {
+            return _message[pos];
+        }
+        else if(_lengths.size()>=messageNum && messageNum>1 && messageNum<=_messageCount && pos>0 && pos<(_addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2)))
+        {
+            return _message[_lengths.at(messageNum-2) + pos - _addressLength];
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    catch(...)//_lengths.at() can throw
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return 0;
+    }
+}
+
+int CtiProtocolExpresscom::messageSize(int messageNum)
+{
+    try
+    {
+    
+        if(messageNum == 1)
+        {
+            return _lengths.at(0);
+        }
+        else if(messageNum>1 && messageNum<=_messageCount && _lengths.size()>=messageNum)
+        {
+            return _addressLength + _lengths.at(messageNum-1) - _lengths.at(messageNum-2);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    catch(...)//_lengths.at() can throw
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return 0;
+    }
+}
