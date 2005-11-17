@@ -53,7 +53,7 @@ public interface GraphDefines
 	//old GraphDataFormats interface removed and fields moved into here.
 	public static SimpleDateFormat timestampQueryFormat = new SimpleDateFormat("dd-MMM-yyyy");
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-	public static SimpleDateFormat extendedDateFormat = new SimpleDateFormat( "MMM d, yyyy");//old datePopupFormat
+	public static SimpleDateFormat extendedDateFormat = new SimpleDateFormat( "MMM d yyyy");//old datePopupFormat
 
 	public static SimpleDateFormat multipleDaystimedateFormat = new SimpleDateFormat("MM/dd HH:mm");
 	public static SimpleDateFormat timeFormat_HH_mm = new SimpleDateFormat("HH:mm");
@@ -65,7 +65,7 @@ public interface GraphDefines
 	public static SimpleDateFormat dateTimeformat = new SimpleDateFormat("M/dd/yyyy  HH:mm:ss");
 	public static SimpleDateFormat extendedDateTimeformat = new SimpleDateFormat("EEE MMM d HH:mm:ss a z yyyy");		
 
-	public static SimpleDateFormat dwellValuesDateTimeformat = new SimpleDateFormat("MMM d, HH:mm:ss");
+	public static SimpleDateFormat dwellValuesDateTimeformat = new SimpleDateFormat("MMM d HH:mm:ss");
 
 	public static DecimalFormat valueFormat = new DecimalFormat();
 	public static DecimalFormat percentFormat = new DecimalFormat(" ##0.0% ");

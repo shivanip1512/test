@@ -74,8 +74,8 @@ import com.cannontech.jfreechart.chart.YukonStandardLegend;
 public class TrendModel implements com.cannontech.graph.GraphDefines 
 {
 	private TreeMap treeMap = null;
-	private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMMMM dd, yyyy");
-	private java.text.SimpleDateFormat LEGEND_DATE_FORMAT = new java.text.SimpleDateFormat("[EEE MMM dd, yyyy]");
+	private java.text.SimpleDateFormat TITLE_DATE_FORMAT = new java.text.SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
+	private java.text.SimpleDateFormat LEGEND_DATE_FORMAT = new java.text.SimpleDateFormat("[EEE MMM dd yyyy]");
 	private java.text.SimpleDateFormat TRANSLATE_DATE= new java.text.SimpleDateFormat("HHmmss");
 	private static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
 	private static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
@@ -414,7 +414,7 @@ private java.util.ArrayList getSubtitles()
 {
 	//Chart Titles
 	java.util.ArrayList subtitleList = new java.util.ArrayList();
-	TextTitle chartTitle = new TextTitle(TITLE_DATE_FORMAT.format(getStartDate()) + " - " + TITLE_DATE_FORMAT.format(getStopDate()));	
+	TextTitle chartTitle = new TextTitle(" ( > ) " + TITLE_DATE_FORMAT.format(getStartDate()) + " - " + TITLE_DATE_FORMAT.format(getStopDate())+ " ( <= )" );	
 	subtitleList.add(chartTitle);
 	return subtitleList;
 }
