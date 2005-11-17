@@ -396,10 +396,10 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='TitleHeader'>" +LINE_SEPARATOR;
 
-		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.RTU) +"' style='display:true'>" + LINE_SEPARATOR;
+		html += "            <div id='Div"+ ModelFactory.getModelString(ModelFactory.RECEIVERS) +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "            <select name='" + ATT_RECEIVER_ID+ "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
 
-		objects = getObjectsByModelType(ModelFactory.RTU);
+		objects = getObjectsByModelType(ModelFactory.RECEIVERS);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)
