@@ -78,6 +78,8 @@ public final class ModelFactory
 	
 	public static final int BILLING_GROUP = 57;
 	
+	public static final int RECEIVERS = 58;
+	
 	//The above is an enumeration of indices into
 	//the following array
 	private static Class[] typeToClassMap =
@@ -139,7 +141,8 @@ public final class ModelFactory
 		LMGroupMacroModel.class,
 		TOUScheduleModel.class,
 		CBCOrderByTreeModel.class,
-		BillingGroupModel.class
+		BillingGroupModel.class,
+		ReceiverTreeModel.class
 	};
 	
 //	The above is an enumeration of indices into
@@ -203,7 +206,8 @@ public final class ModelFactory
 		"Macro Group",
 		"TOU Schedule",
 		"CapBank Ordering",
-		"Billing Group"
+		"Billing Group",
+		"Receivers"
 	};	
 
 /**
