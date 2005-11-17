@@ -137,7 +137,9 @@ function enableDates(value)
                                     <option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
                                   </cti:checkRole>                                
                                   <option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
-                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" selected="selected">Reporting</option>
+                                  <cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+	                                  <option value="<%=request.getContextPath()%>/analysis/Reports.jsp" selected="selected">Reporting</option>
+                                  </cti:checkRole>
                                 </select>
                                 &nbsp;&nbsp;&nbsp; <a href="#" class="menuLink">Help</a> 
                                 &nbsp;&nbsp; <a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log 
@@ -263,9 +265,9 @@ function enableDates(value)
 			  <tr bgcolor="EEEEEE">
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
+                <td class="main"><span class='NavText'>* Greater than 00:00, not inclusive</span></td>
                 <td class="main">&nbsp;</td>
-                <td class="main">&nbsp;</td>
-                <td class="main">&nbsp;</td>
+                <td class="main"><span class='NavText'>* Less than or equal to 00:00, inclusive</span></td>
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
               </tr>
@@ -286,16 +288,68 @@ function enableDates(value)
 				</td>
                 <td bgcolor="EEEEEE" class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
-				  <input id="startCal" type="text" name="startDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
-				  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? 
-				  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
+				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
+				    <tr>
+				      <td>
+				   		<input id="startCal" type="text" name="startDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
+				  		  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? 
+						  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
+					  </td>
+			   		  <% if(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel) {%>
+					  <td width="45" class="columnHeader" align="center">Hour<BR>
+					    <select name="startHour" id="startHourID">
+					    <% for (int i = 0; i < 24; i++) {
+						    String iStr = String.valueOf(i);
+						    if( i < 10)	{ iStr = "0" + iStr;}%>
+						    <option value="<%=i%>"><%=iStr%></option>
+						  <%}%>
+						</select>
+					  </td>
+					  <td width="45" class="columnHeader" align="center">Min<BR>
+					    <select name="startMinute" id="startMinuteID">
+					    <% for (int i = 0; i < 60; i=i+5) {
+						    String iStr = String.valueOf(i);
+							if( i < 10)	{ iStr = "0" + iStr;}%>
+							<option value="<%=i%>"><%=iStr%></option>
+						  <%}%>			  
+						</select>
+				 	  </td>
+					  <%}%>
+			    	</tr>
+			      </table>
 			    </td>
                 <td bgcolor="EEEEEE" class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
-                  <input id="stopCal" type="text" name="stopDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
-				  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? 
-                  "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
-                </td>
+				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
+				    <tr>
+					  <td>				
+                        <input id="stopCal" type="text" name="stopDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
+						  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? 
+        		          "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
+                	  </td>
+					  <% if(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel) {%>
+					  <td width="45" class="columnHeader" align="center">Hour<BR>
+					    <select name="stopHour" id="stopHourID">
+					    <% for (int i = 0; i < 24; i++) {
+						    String iStr = String.valueOf(i);
+						    if( i < 10)	{ iStr = "0" + iStr;}%>
+						    <option value="<%=i%>"><%=iStr%></option>
+						  <%}%>
+						</select>
+					  </td>
+					  <td width="45" class="columnHeader" align="center">Min<BR>
+					    <select name="stopMinute" id="stopMinuteID">
+					    <% for (int i = 0; i < 60; i=i+5) {
+						    String iStr = String.valueOf(i);
+							if( i < 10)	{ iStr = "0" + iStr;}%>
+							<option value="<%=i%>"><%=iStr%></option>
+						  <%}%>			  
+						</select>
+				 	  </td>
+					  <%}%>
+			    	</tr>
+			      </table>
+			    </td>
 				<td bgcolor="EEEEEE" class="main">&nbsp;</td>
 				<td valign="top" class="main" style="padding-left:5; padding-top:5">
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
