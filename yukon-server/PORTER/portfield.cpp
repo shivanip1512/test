@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.157 $
-* DATE         :  $Date: 2005/11/09 00:09:38 $
+* REVISION     :  $Revision: 1.158 $
+* DATE         :  $Date: 2005/11/17 22:09:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -231,6 +231,7 @@ VOID PortThread(void *pid)
             continue;
         }
 
+        #if 0
         if( Port->shouldProcessQueuedDevices() )
         {
             if( LastExclusionDevice &&
@@ -256,12 +257,16 @@ VOID PortThread(void *pid)
             if(Device)
             {
                 Device->getOutMessage(OutMessage);
-                Device->incQueueProcessed(1, RWTime());
 
                 /*  This block is trying to make us go back to normal processing through readQueue. */
                 if(!OutMessage)
                 {
+                    LastExclusionDevice.reset();
                     Port->resetDeviceQueued(Device->getID());
+                }
+                else
+                {
+                    Device->incQueueProcessed(1, RWTime());
                 }
 
                 // There may be retries on this device.
@@ -271,6 +276,14 @@ VOID PortThread(void *pid)
                 }
             }
         }
+        #else
+        Device = DeviceManager.chooseExclusionDevice( Port->getPortID() );
+
+        if(Device)
+        {
+            Device->getOutMessage(OutMessage);
+        }
+        #endif
 
 
         if( profiling)
