@@ -147,10 +147,12 @@ void CtiCalcLogicService::Run( )
     time_t   timeNow;
 
     int conncnt= 0;
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc);
+    long pointID;
 
     ThreadMonitor.start(); //ecs 1/4/2005
     RWTime LastThreadMonitorTime;
+
+    pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc);
 
     CALCVERSION = identifyProjectVersion(CompileInfo);
 
