@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -130,7 +131,9 @@ public class PointDataIntervalModel extends ReportModelBase
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
 		setFilterModelTypes(new int[]{
-				ModelFactory.DEVICE, 
+				ModelFactory.MCT,
+				ModelFactory.METER,
+				ModelFactory.RTU,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
@@ -547,7 +550,28 @@ public class PointDataIntervalModel extends ReportModelBase
 				setSortOrder(Integer.valueOf(param).intValue());
 			else
 				setSortOrder(ASCENDING);
-			
+				
+			//These are custom parameter values declared in the Reports.jsp file
+			param = req.getParameter("startHour");
+			String param2 = req.getParameter("startMinute");
+			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
+			{
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(getStartDate());
+				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
+				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
+				setStartDate(cal.getTime());
+			}
+			param = req.getParameter("stopHour");
+			param2 = req.getParameter("stopMinute");
+			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
+			{
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(getStopDate());
+				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
+				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
+				setStopDate(cal.getTime());
+			}
 		}
 	}
 }
