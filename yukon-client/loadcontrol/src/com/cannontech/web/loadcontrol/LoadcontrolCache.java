@@ -629,7 +629,7 @@ private void handleEnergyExchangeProgram(LMProgramEnergyExchange prog)
 public synchronized void refresh()
 {
 
-	CTILogger.info("Refreshing customer-energycompany mappings");
+	CTILogger.debug("Refreshing customer-energycompany mappings");
 	
 	// Update energy company - customer mapping from db
 	energyCompanyCustomer.clear();
@@ -651,7 +651,7 @@ public synchronized void refresh()
 
 	
 	{
-		CTILogger.info("Refreshing customer baselines");
+		CTILogger.debug("Refreshing customer baselines");
 		
 		java.sql.Connection conn = null;
 		java.sql.Statement stmt = null;
@@ -672,7 +672,7 @@ public synchronized void refresh()
 		}
 		catch(java.sql.SQLException e)
 		{
-			CTILogger.info("An error occured refreshing customerbaselines");			
+			CTILogger.debug("An error occured refreshing customerbaselines");			
 		}
 		finally
 		{
@@ -683,10 +683,10 @@ public synchronized void refresh()
 			} catch(java.sql.SQLException e2) {  }
 		}
 
-		CTILogger.info("Loaded " + customerBaseLine.size() + " customer baselines.");
+		CTILogger.debug("Loaded " + customerBaseLine.size() + " customer baselines.");
 	}
 	
-	CTILogger.info("Refreshing control areas");
+	CTILogger.debug("Refreshing control areas");
 	
 	if( conn != null )
 	{		
