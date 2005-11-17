@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/10/19 02:53:00 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/11/17 19:15:56 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,10 +35,14 @@ using namespace std;
 
 #include "prot_versacom.h"
 #include "prot_emetcon.h"
+#include "expresscom.h"
 
 #include "cparms.h"
 
+#define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
+
 static INT NoQueingVersacom = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE", FALSE);
+static INT NoQueingExpresscom = gConfigParms.getValueAsInt("EXPRESSCOM_CCU_NOQUEUE", FALSE);
 static INT NoQueingDLC;
 
 INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
@@ -68,6 +72,10 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
             else if(OutMessage->EventCode & AWORD || OutMessage->EventCode & BWORD)
             {
                 status = assembleDLCRequest(pReq, parse, OutMessage, vgList, retList, outList);
+            }
+            else if(parse.getiValue("type") == ProtocolExpresscomType)
+            {
+                status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
             }
             else
             {
@@ -428,6 +436,348 @@ INT CtiRouteCCU::assembleDLCRequest(CtiRequestMsg                  *pReq,
 
     return status;
 }
+
+INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
+                                         CtiCommandParser               &parse,
+                                         OUTMESS                        *OutMessage,
+                                         RWTPtrSlist< CtiMessage >      &vgList,
+                                         RWTPtrSlist< CtiMessage >      &retList,
+                                         RWTPtrSlist< OUTMESS >         &outList)
+{
+    INT            i, j;
+    INT            status = NORMAL;
+    RWCString      resultString;
+    RWCString      byteString;
+    BSTRUCT        BSt;
+    VSTRUCT        VSt;
+
+    INT cwordCount = 0;
+
+    /*
+     * Addressing variables SHALL have been assigned at an earlier level!
+     */
+    OutMessage->DeviceID       = _transmitterDevice->getID();
+    OutMessage->Port           = _transmitterDevice->getPortID();
+    OutMessage->Remote         = _transmitterDevice->getAddress();
+    if(!OutMessage->Retry)     OutMessage->Retry = 2;
+
+    if( parse.getiValue("type") == ProtocolExpresscomType && parse.isKeyValid("noqueue") )
+    {
+        OutMessage->EventCode |= DTRAN;
+    }
+
+    /*
+     * From this point on the OutMessage will be an EMETCON type.
+     */
+    CtiProtocolExpresscom  xcom;
+    xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
+    xcom.parseRequest(parse, *OutMessage);          // OutMessage->Buffer.TAPSt has been filled with xcom.entries() messages.
+
+    /* the transmitter is an EMETCON device so load up the Preamble, B, and C words */
+
+    memset(&BSt, 0, sizeof(BSTRUCT));
+
+    /* Load up the hunks of the B structure that we need */
+    BSt.Port                = _transmitterDevice->getPortID();
+    BSt.Remote              = _transmitterDevice->getAddress();
+    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
+    BSt.DlcRoute.Feeder     = Carrier.getBus();
+    BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
+    BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
+    BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
+
+    if(xcom.entries() > 0)
+    {
+        OUTMESS *NewOutMessage = CTIDBG_new OUTMESS( *OutMessage );  // Create and copy
+        int size = xcom.messageSize();
+        int maxsize = 0;
+
+        for(int x = 1;x <= xcom.entries();x++)//find out the largest size of any divided up message possible.
+        {
+            if(xcom.messageSize(x)>maxsize)
+               maxsize = xcom.messageSize(x);
+        }
+
+        if(NewOutMessage != NULL && size > 0 && size <= MAX_EXPRESSCOM_IN_EMETCON_LENGTH)
+        {
+            for(int j=0;j<size;j++)
+                byteString += CtiNumStr(xcom.getByte(j)).hex().zpad(2);
+
+            if(size>=2)
+            {
+                BSt.Address = 0x3D0000 | (xcom.getByte(0)<<8) | xcom.getByte(1);
+            }
+            else if(size == 1)
+            {
+                BSt.Address = 0x3D0000 | (xcom.getByte(0)<<8);//I dont think this is technically possible
+            }
+
+            if(size >=3)
+            {
+                BSt.Function = xcom.getByte(2);
+            }
+            else
+            {
+                BSt.Function = 0x00; //According to doc if its not used it must be 0
+            }
+            BSt.IO = 0x00;//defined in expresscom doc
+            
+            /* Calcultate the number of words that will be involved */
+            // We can fit 3 bytes in B word, and 5 in each C word, up to 3 C words
+            if(size <= 3)//whole thing fit into B word
+                cwordCount = 0;
+            else if(size <= 8)
+                cwordCount = 1;
+            else if(size <= 13)
+                cwordCount = 2;
+            else if(size <= 18)
+                cwordCount = 3;
+
+
+            /* If anything left place it in structure for C words */
+            if( cwordCount )
+            {
+                /* see how much is left */
+                BSt.Length = size-3;//simple, total minus number in B word
+
+                /* clear the memory buffer */
+                memset (BSt.Message, 0, sizeof (BSt.Message));
+                /* copy it into a cleared out message buffer */
+                for(int j=0;j<(size-3);j++)
+                    BSt.Message[j] = xcom.getByte(j+3);
+            }
+            else
+            {
+                BSt.Length = 0;
+            }
+
+            /* Things are now ready to go */
+            switch( _transmitterDevice->getType() )//This should probably be made into a function, but for now ill add to bloat
+            {
+                case TYPE_CCU700:
+                case TYPE_CCU710:
+                    {
+                        NewOutMessage->EventCode &= ~QUEUED;
+                        NewOutMessage->EventCode |= (DTRAN | BWORD);
+
+                        /***** FALL THROUGH ** FALL THROUGH *****/
+                    }
+                case TYPE_CCU711:
+                    {
+                        /* check if queing is allowed */
+                        if(NoQueingExpresscom)
+                        {
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN | BWORD);
+                        }
+                        else
+                        {
+                            NewOutMessage->EventCode |= BWORD;
+                        }
+
+                        if(NewOutMessage->EventCode & DTRAN)
+                        {
+                            /* Load the B word */
+                            B_Word (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN, BSt, cwordCount);
+
+                            /* Load the C words if neccessary */
+                            if(cwordCount)
+                                C_Words (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN, BSt.Message, BSt.Length, &cwordCount);
+
+                            /* Now do the preamble */
+                            BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
+
+                            /* Calculate the length of the message */
+                            NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
+                            NewOutMessage->EventCode |= DTRAN & BWORD;
+                            NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
+
+                            /* load the IDLC specific stuff for DTRAN */
+                            NewOutMessage->Source                = 0;
+                            NewOutMessage->Destination           = DEST_DLC;
+                            NewOutMessage->Command               = CMND_DTRAN;
+                            NewOutMessage->InLength              = 2;
+                            NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
+                            NewOutMessage->EventCode             &= ~RCONT;
+                        }
+                        else
+                        {
+                            /* Load up the B word stuff */
+                            NewOutMessage->Buffer.BSt = BSt;
+                        }
+
+                        break;
+                    }
+            }
+            outList.insert(CTIDBG_new OUTMESS(*NewOutMessage));
+        }
+        else if(xcom.entries()>1 && maxsize<=MAX_EXPRESSCOM_IN_EMETCON_LENGTH)//we can divide this up and still send every message!
+        {
+            for(int i = 1;i <= xcom.entries(); i++)
+            {
+                size = xcom.messageSize(i);
+
+                for(int j=0;j<size;j++)
+                    byteString += CtiNumStr(xcom.getByte(j,i)).hex().zpad(2);
+
+                byteString += "\n";
+    
+                if(size>=2)
+                {
+                    BSt.Address = 0x3D0000 | (xcom.getByte(0,i)<<8) | xcom.getByte(1,i);
+                }
+                else if(size == 1)
+                {
+                    BSt.Address = 0x3D0000 | (xcom.getByte(0,i)<<8);//I dont think this is technically possible
+                }
+    
+                if(size >=3)
+                {
+                    BSt.Function = xcom.getByte(2,i);
+                }
+                else
+                {
+                    BSt.Function = 0x00; //According to doc if its not used it must be 0
+                }
+                BSt.IO = 0x00;//defined in expresscom doc
+                
+                /* Calcultate the number of words that will be involved */
+                // We can fit 3 bytes in B word, and 5 in each C word, up to 3 C words
+                if(size <= 3)//whole thing fit into B word
+                    cwordCount = 0;
+                else if(size <= 8)
+                    cwordCount = 1;
+                else if(size <= 13)
+                    cwordCount = 2;
+                else if(size <= 18)
+                    cwordCount = 3;
+    
+    
+                /* If anything left place it in structure for C words */
+                if( cwordCount )
+                {
+                    /* see how much is left */
+                    BSt.Length = size-3;//simple, total minus number in B word
+    
+                    /* clear the memory buffer */
+                    memset (BSt.Message, 0, sizeof (BSt.Message));
+                    /* copy it into a cleared out message buffer */
+                    for(int j=0;j<(size-3);j++)
+                        BSt.Message[j] = xcom.getByte(j+3,i);
+                }
+                else
+                {
+                    BSt.Length = 0;
+                }
+
+                /* Things are now ready to go */
+                switch( _transmitterDevice->getType() )//This should be put in a function
+                {
+                    case TYPE_CCU700:
+                    case TYPE_CCU710:
+                        {
+                            NewOutMessage->EventCode &= ~QUEUED;
+                            NewOutMessage->EventCode |= (DTRAN | BWORD);
+    
+                            /***** FALL THROUGH ** FALL THROUGH *****/
+                        }
+                    case TYPE_CCU711:
+                        {
+                            /* check if queing is allowed */
+                            if(NoQueingExpresscom)
+                            {
+                                NewOutMessage->EventCode &= ~QUEUED;
+                                NewOutMessage->EventCode |= (DTRAN | BWORD);
+                            }
+                            else
+                            {
+                                NewOutMessage->EventCode |= BWORD;
+                            }
+    
+                            if(NewOutMessage->EventCode & DTRAN)
+                            {
+                                /* Load the B word */
+                                B_Word (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN, BSt, cwordCount);
+    
+                                /* Load the C words if neccessary */
+                                if(cwordCount)
+                                    C_Words (NewOutMessage->Buffer.OutMessage+PREIDLEN+PREAMLEN+BWORDLEN, BSt.Message, BSt.Length, &cwordCount);
+    
+                                /* Now do the preamble */
+                                BPreamble (NewOutMessage->Buffer.OutMessage+PREIDLEN, BSt, cwordCount);
+    
+                                /* Calculate the length of the message */
+                                NewOutMessage->OutLength  = PREAMLEN + (cwordCount + 1) * BWORDLEN + 3;
+                                NewOutMessage->EventCode |= DTRAN & BWORD;
+                                NewOutMessage->TimeOut    = TIMEOUT + BSt.DlcRoute.Stages * (cwordCount + 1);
+    
+                                /* load the IDLC specific stuff for DTRAN */
+                                NewOutMessage->Source                = 0;
+                                NewOutMessage->Destination           = DEST_DLC;
+                                NewOutMessage->Command               = CMND_DTRAN;
+                                NewOutMessage->InLength              = 2;
+                                NewOutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
+                                NewOutMessage->EventCode             &= ~RCONT;
+                            }
+                            else
+                            {
+                                /* Load up the B word stuff */
+                                NewOutMessage->Buffer.BSt = BSt;
+                            }
+    
+                            break;
+                        }
+                }
+                outList.insert(CTIDBG_new OUTMESS(*NewOutMessage));
+            }
+        }
+        else
+        {
+            //really not sure what to do here
+            status = BADRANGE;
+            resultString = "Message length was too large for expresscom in emetcon message. Length: " + CtiNumStr(size) + " Maximum: " + CtiNumStr(MAX_EXPRESSCOM_IN_EMETCON_LENGTH);
+            CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+            if(retReturn)
+            {
+                retList.insert(retReturn);
+            }
+        }
+
+        if(NewOutMessage)
+        {
+            delete NewOutMessage;
+            NewOutMessage = NULL;
+        }
+    }
+
+    bool xmore = true;          // Expect more tag.
+
+    if(xcom.entries() > 0 && !status)
+    {
+        resultString = CtiNumStr(xcom.entries()) + " Expresscom commands sent on route " + getName() + "\n" + byteString;
+    }
+    else
+    {
+        xmore = false;
+        resultString = "Route " + getName() + " did not transmit Expresscom commands";
+    }
+
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, RWCString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, RWOrdered());
+
+    if(retReturn)
+    {
+        if(parse.isTwoWay()) retReturn->setExpectMore(xmore);
+        retList.insert(retReturn);
+    }
+    else
+    {
+        delete retReturn;
+    }
+
+    return status;
+}
+
 
 CtiRouteCCU::CtiRouteCCU()
 {

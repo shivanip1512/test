@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2003/03/13 19:36:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/11/17 19:15:56 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,13 @@ public:
                               RWTPtrSlist< OUTMESS >         &outList);
 
    INT         assembleVersacomRequest(CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                    *OutMessage,
+                                       RWTPtrSlist< CtiMessage >  &vgList,
+                                       RWTPtrSlist< CtiMessage >  &retList,
+                                       RWTPtrSlist< OUTMESS >      &outList);
+
+   INT         assembleExpresscomRequest(CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                    *OutMessage,
                                        RWTPtrSlist< CtiMessage >  &vgList,
