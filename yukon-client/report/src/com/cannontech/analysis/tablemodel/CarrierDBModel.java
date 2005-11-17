@@ -59,6 +59,7 @@ public class CarrierDBModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new int[]{ 
+							ModelFactory.MCT,
 		        			ModelFactory.COLLECTIONGROUP, 
 		        			ModelFactory.TESTCOLLECTIONGROUP, 
 		        			ModelFactory.BILLING_GROUP}

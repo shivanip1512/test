@@ -171,11 +171,13 @@ public class MeterReadModel extends ReportModelBase
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, null);
 		setFilterModelTypes(new int[]{
-				ModelFactory.METER, 
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
-    			ModelFactory.BILLING_GROUP}
-				);
+    			ModelFactory.BILLING_GROUP,
+				ModelFactory.MCT,
+				ModelFactory.METER
+				} 
+		);
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
