@@ -264,8 +264,10 @@ public class PointDataSummaryModel extends ReportModelBase
 	public PointDataSummaryModel(Date start_, Date stop_, int summaryPointType)
 	{
 		super(start_, stop_);
-		setFilterModelTypes(new int[]{ 
-		        ModelFactory.DEVICE,
+		setFilterModelTypes(new int[]{
+			 	ModelFactory.MCT,
+		        ModelFactory.METER,
+		        ModelFactory.RTU,
     			ModelFactory.COLLECTIONGROUP, 
     			ModelFactory.TESTCOLLECTIONGROUP, 
     			ModelFactory.BILLING_GROUP}
