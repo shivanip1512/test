@@ -311,7 +311,7 @@ public class StarsAMRDetailModel extends ReportModelBase
 				{
 					pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
 					pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
-					CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
+					CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
 				}
 				rset = pstmt.executeQuery();
 				
