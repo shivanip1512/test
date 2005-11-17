@@ -181,48 +181,8 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * Observable callback, the connection will let us know its status when it changes
 	 */	
 	public void update(Observable o, Object arg) {
-		if(o instanceof ClientConnection) {
-			if( getPilConn().isValid() )
-				CTILogger.debug("Connection established to " + getPilConn().getHost() + ":" + getPilConn().getPort());
-			else
-				CTILogger.debug("Connection to " + getPilConn().getHost() + ":" + getPilConn().getPort() + " is down");
-		}
 	}
 
-    /**
-	 * Connect to PIL
-	 *
-	 */
-/*
-	private void connect() 
-	{
-		String host = RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-		int port = 1510;
-
-		try 
-		{
-			port = Integer.parseInt(
-				RoleFuncs.getGlobalPropertyValue( SystemRole.PORTER_PORT ) );
-		}
-		catch(NumberFormatException nfe) 
-		{
-			CTILogger.warn("Bad value for PORTER_PORT property");		
-		}			
-
-		CTILogger.debug("attempting to connect to porter @" + host + ":" + port);
-		pilConn = new ClientConnection();
-		pilConn.addObserver(this);
-		pilConn.setHost(host);
-		pilConn.setPort(port);
-		
-		try {
-			pilConn.connectWithoutWait();
-		} catch(IOException ioe) {
-			com.cannontech.clientutils.CTILogger.error( ioe.getMessage(), ioe );
-			CTILogger.warn("An error occured connecting with porter");
-		}			
-	}
-*/
 	/**
 	 * accessor func to look up a message entry
 	 * @param messageID
