@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.model.DeviceTreeModel;
 import com.cannontech.database.model.ModelFactory;
@@ -623,7 +624,7 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 	        	}
 	        	return trans; 
 	        }
-			case ModelFactory.RTU:	//SUPER HACK!!! for LoadControlVerification report, just a factory that we can use for RECEIVERS.
+			case ModelFactory.RECEIVERS:	//for LoadControlVerification report
 			{
 				List allPaos = cache.getAllYukonPAObjects();
 				List receivers = null;
@@ -633,17 +634,52 @@ public abstract class ReportModelBase extends javax.swing.table.AbstractTableMod
 					for (int i = 0; i < allPaos.size(); i++)
 					{
 						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
-						if( (DeviceTypesFuncs.isRTU(lPao.getType()) && !DeviceTypesFuncs.isIon(lPao.getType()) )  || 
-							lPao.getType() == DeviceTypes.SERIES_5_LMI)
+						if(DeviceTypesFuncs.isReceiver(lPao.getType()) )
 							receivers.add(lPao);
 					}
 				}
 				return receivers; 
 			}
+			case ModelFactory.RTU:
+			{
+				List allPaos = cache.getAllYukonPAObjects();
+				List rtus = null;
+				if( allPaos != null)
+				{
+					rtus= new ArrayList();
+					for (int i = 0; i < allPaos.size(); i++)
+					{
+						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+						if((DeviceTypesFuncs.isRTU(lPao.getType())  || lPao.getType() == PAOGroups.DAVISWEATHER)
+							&& !DeviceTypesFuncs.isIon(lPao.getType()) )						
+						rtus.add(lPao);
+					}
+				}
+				return rtus; 
+			}
+			case ModelFactory.METER:
+			{
+				List allPaos = cache.getAllYukonPAObjects();
+				List meters = null;
+				if( allPaos != null)
+				{
+					meters = new ArrayList();
+					for (int i = 0; i < allPaos.size(); i++)
+					{
+						LiteYukonPAObject lPao = (LiteYukonPAObject)allPaos.get(i);
+						if( DeviceTypesFuncs.isMCT(lPao.getType())
+							|| DeviceTypesFuncs.isMeter(lPao.getType()))
+						meters.add(lPao);
+					}
+				}
+				return meters; 
+			}
+			
 			case ModelFactory.CAPCONTROLSTRATEGY:
 			    return cache.getAllCapControlSubBuses();
+			default:
+				return new ArrayList(0);	//and empty list of nothing objects. 
         }
-		return null;
 	}
 	public static String getBillingGroupDatabaseString(int modelType)
 	{
