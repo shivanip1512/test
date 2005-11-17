@@ -857,4 +857,12 @@ public final static boolean isIED(int deviceType)
 			return false;
 	}
 }
+
+public final static boolean isReceiver(int deviceType)
+{
+	if( (DeviceTypesFuncs.isRTU(deviceType) && !DeviceTypesFuncs.isIon(deviceType) )  || 
+			deviceType == SERIES_5_LMI)
+			return true;
+	return false;
+}
 }
