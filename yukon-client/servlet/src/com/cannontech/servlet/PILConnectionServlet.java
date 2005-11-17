@@ -62,14 +62,6 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 
 public void messageReceived( MessageEvent msg )
 {
-    if( msg.getMessage() instanceof ConnStateChange )
-    {
-        if( ((ConnStateChange)msg.getMessage()).isConnected() )
-            CTILogger.info("Connection established to " + getConnection().getHost() + ":" + getConnection().getPort());
-        else
-            CTILogger.info("Connection to " + getConnection().getHost() + ":" + getConnection().getPort() + " is down");        
-    }
-
 }
 
 }
