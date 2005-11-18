@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/10/04 20:10:10 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/11/18 02:14:51 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ private:
     int           _transmitter_power;
     unsigned long _transmitter_power_time;
 
-    int _tick_time, _transmit_duration, _time_offset;
+    int _tick_time, _transmit_window, _time_offset;
     int _transmitter_power_low_limit, _transmitter_power_high_limit;
     string _start_code, _stop_code;
 
@@ -94,22 +94,24 @@ private:
 
     enum
     {
-        LMIPacketOverheadLen = 8,
-        LMIPacketHeaderLen   = 6,
+        PacketOverheadLen = 8,
+        PacketHeaderLen   = 6,
 
-        LMIMaxCodesPerTransaction =  42,
-        LMIMaxCodesDownloaded     = 255,  //  or is it 255 + 42?
+        MaxCodesPerTransaction =  42,
+        MaxCodesDownloaded     = 255,  //  or is it 255 + 42?
 
-        LMIPointOffset_TransmitterPower = 1000,
+        PointOffset_TransmitterPower = 1000,  //  analog
 
-        LMIPointOffset_CodeVerification = 1001,
-        LMIPointOffset_LMIComm          = 1002,
-        LMIPointOffset_Transmitting     = 1003,
-        LMIPointOffset_PowerReset       = 1004,
+        PointOffset_CodeVerification = 1001,  //  statuses
+        PointOffset_LMIComm          = 1002,
+        PointOffset_Transmitting     = 1003,
+        PointOffset_PowerReset       = 1004,
 
-        MaxStatusReads = 5,
+        MaxConsecutiveStatusScans = 5,
 
-        LMILastCodeGroup = 0x40,
+        SendCodes_LastCodeGroup   = 0x40,
+        SendCodes_SendImmediately = 0x80,
+        SendCodes_CountBitmask    = 0x3f,
     };
 
 #pragma pack(push, 1)
