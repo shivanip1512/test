@@ -86,9 +86,10 @@ pageEncoding="ISO-8859-1"
 		<form id="subForm" action="feeders.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
 <%
+String css = "tableCell";
 for( int i = 0; i < areaSubs.length; i++ )
 {
-	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	SubBus subBus = areaSubs[i];
 %>
 	        <tr class="<%=css%>">
@@ -100,7 +101,9 @@ for( int i = 0; i < areaSubs.length; i++ )
 				
 				<td>
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
-				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
+				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
+					style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
+					href="javascript:void(0);"
 				    onmouseover="overlib(
 						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
 						STICKY, WIDTH,135, HEIGHT,90,
@@ -108,12 +111,9 @@ for( int i = 0; i < areaSubs.length; i++ )
 				    onmouseout="nd();">
 
 			<% } else { %>
-				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
+				<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
 			<% } %>
-
-			<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
 			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
-			</font>
 			</a>
 				</td>
 

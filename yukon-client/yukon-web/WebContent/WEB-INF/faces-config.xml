@@ -33,20 +33,26 @@
 	<!-- Database specific (DBPersistent) managed beans -->
     <managed-bean>
         <managed-bean-name>ptEditorForm</managed-bean-name>
-        <managed-bean-class>com.cannontech.web.editor.PointForm</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-class>com.cannontech.web.editor.point.PointForm</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>
         <managed-bean-name>capControlForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.editor.CapControlForm</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>
         <managed-bean-name>paoDeleteForm</managed-bean-name>
-        <managed-bean-class>com.cannontech.web.delete.DeleteForm</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-class>com.cannontech.web.delete.DeleteFormPAO</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pointDeleteForm</managed-bean-name>
+        <managed-bean-class>com.cannontech.web.delete.DeleteFormPoint</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 
     <managed-bean>

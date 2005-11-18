@@ -1,6 +1,7 @@
 
 // -------------------------------------------
 //Makes a XML request
+//  http://developer.apple.com/internet/webcontent/xmlhttpreq.html
 //
 // -------------------------------------------
 //pool of XMLHttp request objects, increaes this size if many request are happening
@@ -41,6 +42,11 @@ function loadXMLDoc(url, stateFunc)
 
     pooledReq.req = new XMLHttpRequest();
 	pooledReq.req.onreadystatechange = eval(stateFunc);
+
+	//the Open method will not execute if the client & server domains are not the same OR
+	//if the hostname is localhost, you may see an security warning in IE saying:
+	//  "This Page is accessing information that is not under its control. This poses a security risk. Do you want to continue?"
+	//Do NOT USE localhost!
     pooledReq.req.open("GET", url, true);
     pooledReq.req.send(null);
 

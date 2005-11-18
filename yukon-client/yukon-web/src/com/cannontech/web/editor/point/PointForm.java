@@ -1,7 +1,5 @@
-package com.cannontech.web.editor;
+package com.cannontech.web.editor.point;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +12,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.functions.AlarmCatFuncs;
@@ -23,6 +20,7 @@ import com.cannontech.database.cache.functions.StateFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -30,11 +28,12 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.ScalarPoint;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.web.editor.point.AlarmTableEntry;
+import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.CBCSelectionLists;
 
 /**
@@ -52,9 +51,23 @@ public class PointForm extends DBEditorForm
 	private boolean isArchiveInterEnabled = false;
 	private boolean isCalcRateEnabled = false;
 	private List alarmTableEntries = null;
-
+	
 	private static SelectItem[] logicalGroups = null;
 	private static SelectItem[] uofms = null;
+
+
+	//sub editors used to divide up functionality into different classes
+
+	//limit point data for analog, calc & demand types
+	private PointLimitEntry pointLimitEntry = null;
+	
+	//fdr point data
+	private PointFDREntry pointFDREntry = null;
+	
+	//status point specific editor
+	private PointStatusEntry pointStatusEntry = null;
+
+
 
 
 	//init our static data with real values
@@ -89,7 +102,14 @@ public class PointForm extends DBEditorForm
 	}
 
 	public SelectItem[] getTimeInterval() {		
-			return CBCSelectionLists.TIME_INTERVAL;
+		return CBCSelectionLists.TIME_INTERVAL;
+	}
+
+	/**
+	 * Have the lowest value for archiving set to 60 seconds
+	 */
+	public SelectItem[] getArchiveInterval() {
+		return CBCSelectionLists.getTimeSubList(60);
 	}
 
 	public List getAlarmTableEntries() {		
@@ -262,22 +282,28 @@ public class PointForm extends DBEditorForm
 	 */
 	public void initItem( int id ) {
 
-		//PointBase pointDB = PointFactory.createPoint( PointFuncs.getLitePoint(id).getPointType() );
-		try {
-			PointBase pointDB = PointFactory.retrievePoint(
-					new Integer(PointFuncs.getLitePoint(id).getPointID()) );
-
-			setDbPersistent( pointDB );
-		}
-		catch( SQLException sql ) {
-			CTILogger.error("Unable to retrieve YukonPAObject", sql );
-		}
+		PointBase pointDB =
+			(PointBase)LiteFactory.createDBPersistent( PointFuncs.getLitePoint(id) );
+		setDbPersistent( pointDB );
+		
+//		try {
+//			PointBase pointDB = PointFactory.retrievePoint(
+//					new Integer(PointFuncs.getLitePoint(id).getPointID()) );
+//
+//			setDbPersistent( pointDB );
+//		}
+//		catch( SQLException sql ) {
+//			CTILogger.error("Unable to retrieve YukonPAObject", sql );
+//		}
 
 		initItem();
 	}
 
 	protected void initItem() {
 
+		if( retrieveDBPersistent() == null )
+			return;
+		
 		initPanels();
 	}
 
@@ -297,6 +323,9 @@ public class PointForm extends DBEditorForm
 		isCalcRateEnabled = false;
 		alarmTableEntries = null;
 
+		pointLimitEntry = null;
+		pointFDREntry = null;
+		pointStatusEntry = null;
 
 		initItem();
 	}
@@ -311,6 +340,7 @@ public class PointForm extends DBEditorForm
 		//all panels that are always displayed
 		getVisibleTabs().put( "General", new Boolean(true) );
 		getVisibleTabs().put( "Alarming", new Boolean(true) );
+		getVisibleTabs().put( "FDR", new Boolean(true) );
 		
 		//all type specifc panels
 		getVisibleTabs().put( "PointAnalog", new Boolean(false) );
@@ -486,8 +516,6 @@ public class PointForm extends DBEditorForm
 			}		
 		}
 					
-		//alarmTableEntries = new AlarmTableEntry[notifEntries.size()];
-		//alarmTableEntries = (AlarmTableEntry[])notifEntries.toArray( alarmTableEntries );
 		alarmTableEntries = notifEntries;
 	}
 	
@@ -498,7 +526,7 @@ public class PointForm extends DBEditorForm
 		else
 			entry.setGenerate( ((LiteAlarmCategory)allAlarmStates.get(0)).getCategoryName() );
 		
-		entry.setExcludeNotify( String.valueOf(gen) );
+		entry.setExcludeNotify( PointAlarming.getExcludeNotifyString(gen) );
 	}
 
 	/**
@@ -536,7 +564,7 @@ public class PointForm extends DBEditorForm
 				(AlarmTableEntry)getAlarmTableEntries().get(i);
 			
 			alarmStates += (char)AlarmCatFuncs.getAlarmCategoryId( entry.getGenerate() );			
-			exclNotify += entry.getExcludeNotify();
+			exclNotify += PointAlarming.getExcludeNotifyChar( entry.getExcludeNotify() );
 		}
 
 		// fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
@@ -561,10 +589,53 @@ public class PointForm extends DBEditorForm
 			//do nothing since the appropriate actions was taken in the super
 		}
 		finally {
-
 			FacesContext.getCurrentInstance().addMessage("cti_db_update", facesMsg);		
 		}
 
 	}
+
+	/**
+	 * @return
+	 */
+	public PointLimitEntry getPointLimitEntry() {
+		
+		if( pointLimitEntry == null ) {
+		
+			if( !(getPointBase() instanceof ScalarPoint) )
+				CTILogger.warn("Attempting to create a PointLimit editor for a non Scalar point");
+			else
+				pointLimitEntry = new PointLimitEntry( (ScalarPoint)getPointBase() );
+		}
+
+		return pointLimitEntry;
+	}
+
+	/**
+	 * @return
+	 */
+	public PointStatusEntry getPointStatusEntry() {
+		
+		if( pointStatusEntry == null ) {
+		
+			if( !(getPointBase() instanceof StatusPoint) )
+				CTILogger.warn("Attempting to create an StatuPoint editor for a non status point");
+			else
+				pointStatusEntry = new PointStatusEntry( (StatusPoint)getPointBase() );
+		}
+
+		return pointStatusEntry;
+	}
+
+	/**
+	 * @return
+	 */
+	public PointFDREntry getPointFDREntry() {
+		
+		if( pointFDREntry == null )
+			pointFDREntry = new PointFDREntry( getPointBase() );
+
+		return pointFDREntry;
+	}
+
 
 }

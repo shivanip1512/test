@@ -622,7 +622,6 @@ public Object getValue(Object val)
 	catch( NumberFormatException n )
 	{
 		com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
-		point.getPointAnalog().setMultiplier(new Double(1.0));
 	}
 
 	try
@@ -633,7 +632,6 @@ public Object getValue(Object val)
 	catch( NumberFormatException n )
 	{
 		com.cannontech.clientutils.CTILogger.error( n.getMessage(), n );
-		point.getPointAnalog().setMultiplier(new Double(0.0));
 	}
 
 	if ( (getUsedPointOffsetLabel().getText()) == "" )
@@ -643,19 +641,9 @@ public Object getValue(Object val)
 
 	if( getDeadbandCheckBox().isSelected() )
 		point.getPointAnalog().setDeadband( deadband );
-	else
-		point.getPointAnalog().setDeadband( new Double(-1.0) );
 	
 	if( point.getPoint().getPseudoFlag().equals(com.cannontech.database.db.point.Point.PSEUDOFLAG_PSEUDO) )
-	{
-		//point.getPoint().setPseudoFlag( new Character('P') );
 		point.getPointAnalog().setTransducerType("Pseudo");
-	}
-	else
-	{
-		//point.getPoint().setPseudoFlag( new Character('R') );
-		point.getPointAnalog().setTransducerType("None");
-	}
 
 
 	return point;

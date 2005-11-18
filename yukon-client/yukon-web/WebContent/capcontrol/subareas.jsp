@@ -75,9 +75,10 @@ pageEncoding="ISO-8859-1"
 		<form id="areaForm" action="subs.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
 <%
+		String css = "tableCell";
 		for( int i = 0; i < capControlCache.getAreaNames().size(); i++ )
 		{
-			String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+			css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 			String areaStr = (String)capControlCache.getAreaNames().get(i);
 			SubBus[] areaBuses = capControlCache.getSubsByArea(areaStr);
 			//Feeder[] areaFeeders = capControlCache.getFeedersByArea(areaStr);

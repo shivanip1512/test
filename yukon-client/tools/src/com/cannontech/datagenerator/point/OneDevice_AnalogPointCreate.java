@@ -80,9 +80,6 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			// set POINTANALOG defuaults
 			analogPoint.getPointAnalog().setPointID(new Integer(pointID));
 			analogPoint.getPointAnalog().setDeadband(new Double(10.0));
-			analogPoint.getPointAnalog().setTransducerType(new String("None"));
-			analogPoint.getPointAnalog().setMultiplier(new Double(1.0));
-			analogPoint.getPointAnalog().setDataOffset(new Double(0.0));
 	
 			multi.addDBPersistent( analogPoint );
 			

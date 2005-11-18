@@ -31,7 +31,7 @@
             footerClass="pageFooter" >
 
         <f:facet name="body">
-			<h:form id="schedListForm" onsubmit="return submitCheck();">>
+			<h:form id="schedListForm" onsubmit="return submitCheck();">
 
 			<h:outputText styleClass="editorHeader" value="Schedules"/>
             <f:verbatim><br/><hr/><br/></f:verbatim>
@@ -105,21 +105,18 @@
 	               </h:column>
 
 	               <h:column>
-						<f:facet name="header">
-							<h:outputText value="Modify" title="Edit the schedules attributes"/>
-	                   	</f:facet>
-	                   	<h:commandLink id="editAction" value="Edit" styleClass="submenuLink"
-	                   		actionListener="#{paoScheduleForm.edit}"
-	                   		action="#{paoScheduleForm.goto_edit}" >
-	                   			<f:param name="schedID" value="#{paoSched.scheduleID}" />
+	                   	<h:commandLink id="editAction" styleClass="submenuLink"
+	                   			title="Edit the schedules attributes"
+		                   		actionListener="#{paoScheduleForm.edit}"
+		                   		action="#{paoScheduleForm.goto_edit}" >
+                  			<x:graphicImage value="/editor/images/edit_item.gif" height="15" width="15" border="0" />
+	                   		<f:param name="schedID" value="#{paoSched.scheduleID}" />
 	                   	</h:commandLink>	                   	
 	               </h:column>
 
 	               <h:column>
-						<f:facet name="header">
-							<h:outputText value="Remove" title="Remove the schedule from the system"/>
-	                   	</f:facet>
 	                   	<h:commandButton id="delAction" value="Delete" styleClass="submenuLink"
+	                   		title="Remove the schedule from the system"
 	                   		onclick="confirmDelete( '#{paoSched.scheduleName}' );" 
 	                   		actionListener="#{paoScheduleForm.delete}"
 	                   		title=" #{paoSched.scheduleID}" >

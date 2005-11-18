@@ -46,12 +46,6 @@ public class CtiNavActionListener implements ActionListener {
 			else
 				CTILogger.warn("CtiNavObject not found in session, ignoring redirect request" );
 
-
-			//remove any & all session variables that are no longer needed
-			JSFParamUtil.removeJSFVar("capControlForm");
-			JSFParamUtil.removeJSFVar("ptEditorForm");
-			JSFParamUtil.removeJSFVar("paoDeleteForm");
-
 			
 			context.responseComplete();
 

@@ -1,5 +1,6 @@
 package com.cannontech.web.util;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
@@ -35,6 +36,17 @@ public class JSFParamUtil
 				FacesContext.getCurrentInstance().getApplication().getVariableResolver().resolveVariable(
 					FacesContext.getCurrentInstance(), varName );
 	}
+	
+	/**
+	 * Returns the request parameter from the JSF framework
+	 */
+	public static String getJSFReqParam( String paramName ) {
+		
+		if( paramName == null )
+			return null;
+		else		
+			return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get( paramName );		
+	}
 
 	/**
 	 * Allows a JSF variable to be removed from the session scope
@@ -61,6 +73,24 @@ public class JSFParamUtil
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the value of a child element with the given name
+	 */
+	public static Object getChildElemValue( UIComponent comp, String childName )
+	{
+		if( comp != null && childName != null ) {
+			for( int i = 0; i < comp.getChildCount(); i++ ) {
+				
+				UIComponent child = (UIComponent)comp.getChildren().get(i);
+				
+				if( childName.equals(child.getAttributes().get("name")) )
+					return child.getAttributes().get("value");
+			}
+		}
+
+		return "";		
 	}
 
 	/**

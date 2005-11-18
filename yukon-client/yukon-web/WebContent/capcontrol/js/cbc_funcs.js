@@ -114,149 +114,6 @@ function elementContains(elmOuter, elmInner)
 }
 
 // -------------------------------------------
-//hides a given DIV tag on a page
-// -------------------------------------------
-function menuDisappear(e, divid)
-{
-	var currentMenu = document.getElementById(divid);
-	
-
-	var relatedTarget = null;
-	if( e )
-	{
-		relatedTarget = e.relatedTarget;
-	    // work around Gecko Linux only bug where related target is null
-	    // when clicking on menu links or when right clicking and moving
-	    // into a context menu.
-	    
-	    if (navigator.product == 'Gecko' && navigator.platform.indexOf('Linux') != -1 && !relatedTarget)
-	    {
-	      relatedTarget = e.originalTarget;
-	    }
-
-		if (window.event && !relatedTarget)
-		{
-		    relatedTarget = window.event.toElement;
-		}
-	}
-
-	if (elementContains(currentMenu, relatedTarget))
-	{
-		return false;
-	}
-
-	currentMenu.style.visibility = 'hidden';
-	return false;
-}
-
-
-
-
-
-/*
-var myGoogleTxt2 =
-  '<div align="center">'
- +'<form name="f" method="GET" autocomplete="off" target="_blank" '
- +'action="http://www.google.com/custom">'
- +'<input type="hidden" name="hl" value="en">'
- +'<input type="hidden" name="ie" value='+(OLns4?'"ISO-8859-1"':'"UTF-8"')+'>'
- +'<input type="hidden" name="oe" value='+(OLns4?'"ISO-8859-1"':'"UTF-8"')+'>'
- +'<input type=hidden name=domains value="www.macridesweb.com">'
- +'<input type=hidden name=cof value="S:http://www.macridesweb.com;GL:1;AH:center;T:black;'
- +'BGC:#ddeeff;LC:#ee0000;ALC:maroon;VLC:maroon;AWFID:0574228e2618b5a9;">'
- +'<input type=radio name=sitesearch value="www.macridesweb.com" checked> www.macridesweb.com '
- +'&nbsp;&nbsp;&nbsp;<input type=radio name=sitesearch value=""> WWW<br><br>'
- +'<input type="text" name="q" id="qInput" size="55" maxLength="255" '
- +'onmouseover="return overlib2(\'Submit for &lt;b&gt;results in another window&lt;/b&gt;.\', '
- +'FGCOLOR,\'#bbddff\',REF,\'qInput\',REFC,\'LL\',REFP,\'UL\',REFX,0,REFY,3,VAUTO,'
- +'TIMEOUT,5000);"  onmouseout="nd2();">'
- +'&nbsp;&nbsp;<input type="submit" name=sa id="saInput" value="Go" '
- +'onmouseover="return overlib2(\'Submit for &lt;b&gt;results in another window&lt;/b&gt;.\', '
- +'FGCOLOR,\'#bbddff\',REF,\'saInput\',REFC,\'LR\',REFP,\'UR\',REFX,0,REFY,3,VAUTO,'
- +'TIMEOUT,5000);" onmouseout="nd2();"><br>'+(OLie4&&!OLopr?'':'<br>')+'<\/form><\/div>';
-*/
-
-// -------------------------------------------
-//shows a given DIV tag on a page
-// -------------------------------------------
-function menuAppear(event, divId, stayVisibleOnClick)
-{
-	var currentMenu = document.getElementById(divId);
-	
-	currentMenu.onmouseout = function (e)
-	{
-	  var relatedTarget = null;
-	  if( e )
-	  {
-	    relatedTarget = e.relatedTarget;
-	    // work around Gecko Linux only bug where related target is null
-	    // when clicking on menu links or when right clicking and moving
-	    // into a context menu.
-	    
-	    if (navigator.product == 'Gecko' && navigator.platform.indexOf('Linux') != -1 && !relatedTarget)
-	    {
-	      relatedTarget = e.originalTarget;
-	    }
-	  }
-	  else if (window.event)
-	  {
-	    relatedTarget = window.event.toElement;
-	  }
-
-	  if (elementContains(this, relatedTarget))
-	  {
-	    return false;
-	  }
-
-	  this.style.visibility = 'hidden';
-	  return false;
-	};
-
-	//if the popup needs to stay visible after a click, then do not
-	// add the below function
-	if( stayVisibleOnClick != null )
-	{
-		currentMenu.onclick = function (e)
-		{
-			if (window.event)
-			{
-				window.event.cancelBubble = true;
-		    	window.event.returnValue = false;
-			}
-		
-			this.style.visibility = 'hidden';
-			return false;
-		};
-	}
-
-	var source;
-	if (window.event)
-	{
-		source = window.event.srcElement;
-	}
-	else
-	{
-		source = event.target;
-	}
-
-	var element = document.getElementById(divId);
-	coordx = parseInt(source.offsetLeft, 10) - 5 + parseInt(source.offsetWidth, 10);
-	coordy = parseInt(source.offsetTop, 10);// + parseInt(source.offsetHeight, 10) + 0;
-
-	while (source.offsetParent)
-	{
-		source = source.offsetParent;
-		coordx = coordx + parseInt(source.offsetLeft, 10);
-		coordy = coordy + parseInt(source.offsetTop, 10);
-	}
-	
-	
-	element.style.left = coordx + 'px';
-	element.style.top = coordy + 'px';
-	element.style.visibility = 'visible';
-}
-
-// -------------------------------------------
 //Given a menu with multiple DIVs, this function will set only 1 DIV
 // to be visible at a time
 // -------------------------------------------
@@ -330,7 +187,7 @@ function callBack( response )
 	{	
 		// Input mode
 		var elems = document.getElementsByName('cti_dyn');
-		var url = createURLreq( elems, 'cbcproxy.jsp?method=callBack', 'id' );
+		var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
 		loadXMLDoc(url);
 	}
 }
@@ -381,13 +238,9 @@ function updateHTML( result )
 					{
 						//special case since 2 elements are involved with 1 TAG
 						case 'state':
-							var xmlColor = getElementTextNS(result[i], 0, 'param0');
-							elems[j].innerHTML = 
-								'<font color="' + xmlColor + '" >' +
-								getElementTextNS(result[i], 0, elemType) +
-								'</font>';
-							
-							break;
+							var xmlColor = getElementTextNS(result[i], 0, 'param0');							
+							elems[j].style.color = xmlColor;
+
 						
 						//most of this time this will suffice
 						default:
@@ -508,50 +361,83 @@ function showPopUp( urlStr )
 }
 
 // -------------------------------------------
-//Posts to the correct URL with the checked item
-// for editing
+//Returns the URL based on the name of the
+// selected elements
 // -------------------------------------------
-function editorPost( href )
-{
-	var elemSubs = document.getElementsByName('cti_chkbxSubs');
-	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+function getUrlType( selElems, type ) {
 
-	var validElems = new Array();
-	getValidChecks( elemSubs, validElems );
-	getValidChecks( elemFdrs, validElems );
-	getValidChecks( elemBanks, validElems );
+	if( type == null )
+		type = 'editor';
 
-	//only allow the editing of the zeroth element for now
-	if ( validElems.length <= 0 )
-		alert('You must check the item you want to edit first');
-	else
-		window.location =
-			href + '&itemid=' + validElems[0].getAttribute('value');
+	if ( selElems.length > 0 ) {
+
+		elemName = selElems[0].getAttribute('name');
+
+		if( elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
+				|| elemName == 'cti_chkbxBanks' ) {
+			return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=capcontrol';
+		}
+		else if( elemName == 'cti_chkbxPoints' ) {
+		
+			return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=point';
+		}
+	}
+
+	return '';
 }
 
 // -------------------------------------------
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
-function deletePost( href )
+function editorPost()
 {
+
 	var elemSubs = document.getElementsByName('cti_chkbxSubs');
 	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
 	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+	var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
 	var validElems = new Array();
 	getValidChecks( elemSubs, validElems );
 	getValidChecks( elemFdrs, validElems );
 	getValidChecks( elemBanks, validElems );
+	getValidChecks( elemPoints, validElems );
 
 	//only allow the editing of the zeroth element for now
 	if ( validElems.length <= 0 )
+		alert('You must check the item you want to edit first');
+	else
+		window.location =
+			getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
+}
+
+// -------------------------------------------
+//Posts to the correct URL with the checked item
+// for editing
+// -------------------------------------------
+function deletePost()
+{
+	var elemSubs = document.getElementsByName('cti_chkbxSubs');
+	var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+	var elemBanks = document.getElementsByName('cti_chkbxBanks');
+	var elemPoints = document.getElementsByName('cti_chkbxPoints');
+
+	var validElems = new Array();
+	getValidChecks( elemSubs, validElems );
+	getValidChecks( elemFdrs, validElems );
+	getValidChecks( elemBanks, validElems );
+	
+	//only add the points if we do not have any PAOs selected
+	if( validElems.length <= 0 )
+		getValidChecks( elemPoints, validElems );
+
+	//force the selection of something
+	if ( validElems.length <= 0 )
 		alert('You must check one or more items that you want to delete');
 	else {
-
 		window.location =	
-			createURLreq( validElems, href, 'value' );
+			createURLreq( validElems, getUrlType(validElems, 'delete'), 'value' );
 	}
 }
 

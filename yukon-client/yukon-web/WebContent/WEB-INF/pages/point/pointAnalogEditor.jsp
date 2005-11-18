@@ -1,0 +1,172 @@
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
+
+
+<f:subview id="ptAnalogEditor" rendered="#{ptEditorForm.visibleTabs['PointAnalog']}" >
+
+<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+
+	<h:column>
+	<f:verbatim><fieldset><legend>Physical Setup</legend></f:verbatim>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Point_Offset" value="Point Offset: " title="The physical offset value within the current device or parent this point belongs to" />
+		<x:inputText id="Point_Offset" value="#{ptEditorForm.pointBase.point.pointOffset}"
+			required="true" maxlength="8" styleClass="char8Label" >
+				<f:validateLongRange minimum="0" maximum="99999999" />
+		</x:inputText>
+        <x:outputText id="Point_Offset_Zero" value="(0 = No offset set)" />
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Deadband" value="Deadband: " title="The amount the value of this point must deviate before the point is read and updated" />
+		<x:inputText id="Deadband" value="#{ptEditorForm.pointBase.pointAnalog.deadband}"
+			required="true" maxlength="8" styleClass="char8Label" >
+				<f:validateDoubleRange minimum="-1" maximum="99999999" />
+		</x:inputText>
+        <x:outputText id="Deadband_Zero" value="(0 = No deadband set)" />
+
+		<f:verbatim><br/><br/></f:verbatim>
+		<x:outputLabel for="Multiplier" value="Multiplier: " title="A value that is always applied to the raw reading of this point" />
+		<x:inputText id="Multiplier" value="#{ptEditorForm.pointBase.pointAnalog.multiplier}"
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Data_Offset" value="Data Offset: " title="A value that is added to the raw reading when making calculations" />
+		<x:inputText id="Data_Offset" value="#{ptEditorForm.pointBase.pointAnalog.dataOffset}"
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+	<f:verbatim></fieldset></f:verbatim>
+	</h:column>
+
+
+
+	<h:column>
+	<f:verbatim><fieldset><legend>Limits</legend></f:verbatim>
+	<h:panelGrid id="limitGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+
+		<h:column>
+		<f:verbatim><br/></f:verbatim>
+		<h:selectBooleanCheckbox id="Limit_One" onclick="submit();"
+			valueChangeListener="#{ptEditorForm.pointLimitEntry.showLimit}"
+			value="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
+			immediate="true" />
+		<x:outputLabel for="Limit_One" value="Limit 1" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_One_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+		<x:inputText id="Limit_One_High"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			value="#{ptEditorForm.pointBase.limitOne.highLimit}" 
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_One_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+		<x:inputText id="Limit_One_Low"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			value="#{ptEditorForm.pointBase.limitOne.lowLimit}" 
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_One_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+		<x:inputText id="Limit_One_Duration"
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			value="#{ptEditorForm.pointBase.limitOne.limitDuration}" 
+			required="true" maxlength="8" styleClass="char8Label" >
+				<f:validateLongRange minimum="0" maximum="99999999" />
+		</x:inputText>
+		<x:outputText id="Limit_One_Secs" value="secs."
+			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+
+		</h:column>
+
+
+		<h:column>
+		<f:verbatim><br/></f:verbatim>
+		<h:selectBooleanCheckbox id="Limit_Two" onclick="submit();"
+			valueChangeListener="#{ptEditorForm.pointLimitEntry.showLimit}"
+			value="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
+			immediate="true" />
+		<x:outputLabel for="Limit_Two" value="Limit 2" title="The second limit that can be set for this point, used to determine if an alarm condition is active" />
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_Two_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+		<x:inputText id="Limit_Two_High"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			value="#{ptEditorForm.pointBase.limitTwo.highLimit}" 
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_Two_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+		<x:inputText id="Limit_Two_Low"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			value="#{ptEditorForm.pointBase.limitTwo.lowLimit}" 
+			required="true" maxlength="16" styleClass="char16Label" >
+				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+		</x:inputText>
+
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Limit_Two_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+		<x:inputText id="Limit_Two_Duration"
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			value="#{ptEditorForm.pointBase.limitTwo.limitDuration}" 
+			required="true" maxlength="8" styleClass="char8Label" >
+				<f:validateLongRange minimum="0" maximum="99999999" />
+		</x:inputText>
+		<x:outputText id="Limit_Two_Secs" value="secs."
+			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+
+		</h:column>
+
+	</h:panelGrid>
+	
+
+	<f:verbatim><br/><br/></f:verbatim>
+	<h:selectBooleanCheckbox id="Reasonability_High" onclick="submit();"
+		valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
+		value="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
+	<x:outputLabel for="Reasonability_High" value="High Reasonability: " title="All readings exceeding this value are ignored" />
+	<x:inputText id="Reasonability_High_Limit"
+		value="#{ptEditorForm.pointBase.pointUnit.highReasonabilityLimit}"
+		rendered="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}"
+		maxlength="16" styleClass="char16Label" />
+	<x:inputText id="Reasonability_High_None" readonly="true" disabled="true"
+		value="(no limit set)" maxlength="16" styleClass="char16Label"
+		rendered="#{!ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
+
+	<f:verbatim><br/></f:verbatim>
+	<h:selectBooleanCheckbox id="Reasonability_Low" onclick="submit();"
+		valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
+		value="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
+	<x:outputLabel for="Reasonability_Low" value="Low Reasonability: " title="All readings less than this value are ignored" />
+	<x:inputText id="Reasonability_Low_Limit"
+		value="#{ptEditorForm.pointBase.pointUnit.lowReasonabilityLimit}"
+		rendered="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}"
+		maxlength="16" styleClass="char16Label" />
+	<x:inputText id="Reasonability_Low_None" readonly="true" disabled="true"
+		value="(no limit set)" maxlength="16" styleClass="char16Label"
+		rendered="#{!ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
+
+	
+	<f:verbatim></fieldset></f:verbatim>
+	</h:column>
+
+</h:panelGrid>
+
+</f:subview>

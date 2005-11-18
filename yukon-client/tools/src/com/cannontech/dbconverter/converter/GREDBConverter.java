@@ -425,10 +425,9 @@ public boolean processAnalogPoints()
 		if( myPointLimit.getLowLimit().doubleValue() != 0.0
 			 && myPointLimit.getHighLimit().doubleValue() != 0.0 )
 		{
-			//if( myPointLimit.getHighLimit().doubleValue() >= CtiUtilities.INVALID_MIN_DOUBLE
-			Vector v = new Vector(1);
-			v.add( myPointLimit );
-			anaPoint.setPointLimitsVector(v);
+			HashMap limitMap = new HashMap();
+			limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
+			anaPoint.setPointLimitsMap( limitMap );
 		}
 
 
@@ -1487,9 +1486,9 @@ public boolean processTransmitterFile()
 			if( myPointLimit.getLowLimit().doubleValue() != 0.0
 				 && myPointLimit.getHighLimit().doubleValue() != 0.0 )
 			{
-				Vector v = new Vector(1);
-				v.add( myPointLimit );
-				pvPoint.setPointLimitsVector(v);
+				HashMap limitMap = new HashMap();
+				limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
+				pvPoint.setPointLimitsMap( limitMap );
 			}
 
 			// set default settings for the point

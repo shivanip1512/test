@@ -11,12 +11,14 @@
 
 <f:view>
 
+	<x:saveState id="paoDeleteForm" value="#{paoDeleteForm}" />
+
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
             footerClass="pageFooter" >
 
         <f:facet name="body">
-			<h:form id="paoDeleteForm">
+			<h:form id="deleteForm">
 
 			<x:outputText styleClass="editorHeader" value="Item Deletion"/>
             <f:verbatim><br/><hr/><br/></f:verbatim>

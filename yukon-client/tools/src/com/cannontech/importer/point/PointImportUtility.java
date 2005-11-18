@@ -12,6 +12,8 @@ package com.cannontech.importer.point;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
+import java.util.HashMap;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointAlarming;
@@ -302,17 +304,13 @@ public class PointImportUtility
 				
 				tokenHolder = tokenizer.nextElement().toString();
 				tokenCounter++;
-				if(emptyField(tokenHolder))
-				{
-					((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDeadband(new Double(-1));
-				}
-				((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDeadband(new Double(tokenHolder));
+				if( !emptyField(tokenHolder) )
+					((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDeadband(new Double(tokenHolder));
 				
-				((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setTransducerType( new String("none") );
 			}
 			
 			// make a vector for the repeaters
-			java.util.Vector pointLimitVector = new java.util.Vector();
+			HashMap limitMap = new HashMap();
 				
 			int limitCount = 0;
 			com.cannontech.database.db.point.PointLimit myPointLimit = null;
@@ -358,7 +356,7 @@ public class PointImportUtility
 					myPointLimit.setLimitDuration(myDuration) ;
 					myPointLimit.setLimitNumber( new Integer(limitCount) );
 	
-					pointLimitVector.addElement( myPointLimit );
+					limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
 
 					myPointLimit = null;
 				}
@@ -366,7 +364,7 @@ public class PointImportUtility
 			if (limitCount > 0)
 			{
 				// stuff the repeaters into the CCU Route
-				analogPoint.setPointLimitsVector(pointLimitVector);
+				analogPoint.setPointLimitsMap( limitMap );
 			}
 		
 			//archiving settings

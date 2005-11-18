@@ -50,7 +50,7 @@ pageEncoding="ISO-8859-1"
 	<input type="hidden" name="opt"> <!--New Feeder ID-->
 	<input type="hidden" name="opt"> <!--Control Order-->
 
-  <table id="chartTable" width="65%" border="0" cellspacing="0" cellpadding="0" class="pageBlank" >
+  <table id="chartTable" width="70%" class="cAlign pageBlank" border="0" cellspacing="0" cellpadding="0" class="pageBlank" >
     <tr> 
       <td class="cellImgFill"><img src="images/Header_left.gif" class="cellImgFill"></td>
       <td class="trimBGColor cellImgShort">CapBank Temp Move (Pick feeder by clicking on name)</td>      
@@ -61,7 +61,7 @@ pageEncoding="ISO-8859-1"
       <td>
       
       <div class="scrollLarge">
-        <table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td>Name</td>
 				<td>State</td>
@@ -73,6 +73,7 @@ pageEncoding="ISO-8859-1"
 			</tr>
 
 <%
+String css = "tableCell";
 for( int i = 0; i < allSubs.length; i++ )
 {
 	SubBus subBus = allSubs[i];	
@@ -80,7 +81,7 @@ for( int i = 0; i < allSubs.length; i++ )
 
 	if( feeders.length <= 0 ) continue;
 	
-	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
 
 			<tr class="<%=css%>">

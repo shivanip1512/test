@@ -18,6 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.util.ParamUtil;
@@ -62,7 +63,7 @@ public void destroy()
  * Creates a cache if one is not alread created
  *
  */
-private CapControlCache _getCapControlCache()
+private CapControlCache getCapControlCache()
 {
 	CapControlCache cbcCache =
 		(CapControlCache)getServletContext().getAttribute(CBC_CACHE_STR);
@@ -89,7 +90,7 @@ public void init(javax.servlet.ServletConfig config) throws javax.servlet.Servle
 	super.init(config);
 
 	// Call the getters to init our objects in the context
-	_getCapControlCache();
+	getCapControlCache();
 }
 
 
@@ -118,40 +119,18 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 	String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
 	//be sure we have a valid user and that user has the rights to control
-	if( user != null && CBCWebUtils.hasControlRights(session) )
-	{
-		try
-		{
-			int cmdID = ParamUtil.getInteger( req, "cmdID" );
-			int paoID = ParamUtil.getInteger( req, "paoID" );
-			String controlType = ParamUtil.getString( req, "controlType" );
-			int[] optParams =
-				StringUtils.toIntArray( ParamUtil.getStrings(req, "opt") );
-
-
-			CTILogger.debug(req.getServletPath() +
-				"	  cmdID = " + cmdID +
-				", controlType = " + controlType +
-				", paoID = " + paoID +
-				", opt = " + optParams  );
-			
+	if( user != null && CBCWebUtils.hasControlRights(session) ) {
+		
+		try {
 			//send the command with the id, type, paoid
-			_executeCommand(
-				cmdID,
-				controlType,
-				paoID,
-				optParams,
-				user.getUsername() );
-			
-			//cbcAnnex.setRefreshRate( CapControlWebAnnex.REF_SECONDS_PEND );
+			executeCommand( req, user.getUsername() );
 		}
-		catch( Exception e )
-		{
-			CTILogger.warn( "Command was attempted but failed for the following reason:", e );
+		catch( Exception e ) {
+			CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
 		}
 	}
 	else
-		CTILogger.warn( "CBC Command servlet was hit, but NO command was sent" );
+		CTILogger.warn( "CBC Command servlet was hit, but NO action was taken" );
 	
 
 	//always forward the client to the specified URL if present
@@ -167,6 +146,47 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 {
 	HttpSession session = req.getSession( false );
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+
+	//handle any commands that a client may want to send to the CBC server
+	String redirectURL = ParamUtil.getString( req, "redirectURL", null );
+
+	if( user != null )
+	{
+		String type = ParamUtil.getString( req, "type", "xml" );
+
+		try {
+			if( "nav".equalsIgnoreCase(type) ) {
+				//handle navigation here
+				redirectURL = createNavigation( req );
+
+				CTILogger.debug("servlet nav to: " + redirectURL );
+			}
+			else {
+				//by default, treat this as a XML request
+				Writer writer = resp.getWriter();
+				writer.write( createXMLResponse(req, resp) );
+				writer.flush();
+			}
+
+		}
+		catch( Exception e ) {
+			CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
+		}		
+	}
+	else
+		CTILogger.warn( "CBCServlet received a GET, but NO action was taken due to a missing YUKON_USER" );	
+
+
+	//always forward the client to the specified URL if present
+	if( redirectURL != null )
+		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+}
+
+/**
+ * Forms the response for an XML request of data
+ */
+private String createXMLResponse(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException {
+
 	resp.setHeader("Content-Type", "text/xml");
 	
 	//force this request not to be cached
@@ -178,53 +198,46 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 	String method = ParamUtil.getString( req, "method" );
 	String[] ids = ParamUtil.getStrings( req, "id" );
 
-	if( user != null )
+	try
 	{
-		try
-		{
-			ResultXML[] xmlMsgs = new ResultXML[ ids.length ];
-			boolean fnd = false;
-			
-			for( int i = 0; i < ids.length; i++, fnd = false )
-			{
-				//go get the XML data for the specific type of element
-				if(!fnd) fnd |= _handleSubGET(ids[i], xmlMsgs, i);
-				if(!fnd) fnd |= _handleFeederGET(ids[i], xmlMsgs, i);
-				if(!fnd) fnd |= _handleCapBankGET(ids[i], xmlMsgs, i);
-			}
-
-			Writer writer = resp.getWriter();
-			writer.write(
-				DynamicUpdate.createXML(method, xmlMsgs) );
-
-			writer.flush();
-			
-
-			CTILogger.debug(req.getServletPath() +
-				"	  type = " + type +
-				", method = " + method );
-			CTILogger.debug("URL = " + 
-				req.getRequestURL().toString() + "?" + req.getQueryString() );
-
+		ResultXML[] xmlMsgs = new ResultXML[ ids.length ];
+		boolean fnd = false;
+		
+		for( int i = 0; i < ids.length; i++, fnd = false ) {
+			//go get the XML data for the specific type of element
+			if(!fnd) fnd |= handleSubGET(ids[i], xmlMsgs, i);
+			if(!fnd) fnd |= handleFeederGET(ids[i], xmlMsgs, i);
+			if(!fnd) fnd |= handleCapBankGET(ids[i], xmlMsgs, i);
 		}
-		catch( Exception e )
-		{
-			CTILogger.warn( "Unable to execute GET for the following reason:", e );
-		}
+
+
+		CTILogger.debug(req.getServletPath() +
+			"	  type = " + type +
+			", method = " + method );
+		CTILogger.debug("URL = " + 
+			req.getRequestURL().toString() + "?" + req.getQueryString() );
+
+		return DynamicUpdate.createXML(method, xmlMsgs);
 	}
-	else
-		CTILogger.warn( "CBCServlet received a GET, but NO action was taken due to a missing YUKON_USER" );	
+	catch( Exception e ) {
+		CTILogger.warn( "Unable to execute GET for the following reason:", e );
+	}
+
+
+	//we could not understand the request
+	return "Unable to form response";
 }
+
 
 /**
  * Sets the XML data for the given SubBus id. Return true if the given
  * id is a SubBus id, else returns false.
  *  
  */
-private boolean _handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
+private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 {
 	SubBus sub =
-		_getCapControlCache().getSubBus( new Integer(ids) );
+		getCapControlCache().getSubBus( new Integer(ids) );
 
 	if( sub == null )
 		return false;
@@ -254,10 +267,10 @@ private boolean _handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
  * id is a Feeder id, else returns false.
  *  
  */
-private boolean _handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
+private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
 {
 	Feeder fdr =
-		_getCapControlCache().getFeeder( new Integer(ids) );
+		getCapControlCache().getFeeder( new Integer(ids) );
 
 	if( fdr == null )
 		return false;
@@ -287,10 +300,10 @@ private boolean _handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
  * id is a CapBank id, else returns false.
  *  
  */
-private boolean _handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
+private boolean handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
 {
 	CapBankDevice capBank =
-		_getCapControlCache().getCapBankDevice( new Integer(ids) );
+		getCapControlCache().getCapBankDevice( new Integer(ids) );
 
 	if( capBank == null )
 		return false;
@@ -310,28 +323,71 @@ private boolean _handleCapBankGET( String ids, ResultXML[] xmlMsgs, int indx )
 	return true;
 }
 
+/**
+ * Determine where the request with the given parameters should be
+ * redirected to. The parmeters for the new page are passed on directly
+ * to the next page.
+ * 
+ * /servlet/CBCServlet?type=nav&pageType=editor&modType=capcontrol
+ */
+private String createNavigation( HttpServletRequest req ) {
+
+	String pageType = ParamUtil.getString( req, "pageType" );
+	String modType = ParamUtil.getString( req, "modType", "" );
+	
+	//keep the param list that follows modType=
+	String[] realStrs = req.getQueryString().split("modType=.*?&" );
+	String realParams =	realStrs.length > 0 ? realStrs[1] : "";
+
+	String retURL = ""; 
+
+	if( DBEditorNav.PAGE_TYPE_EDITOR.equals(pageType) ) {
+		retURL = DBEditorNav.getEditorURL(modType);
+	}
+	else if( DBEditorNav.PAGE_TYPE_DELETE.equals(pageType) ) {
+		retURL = DBEditorNav.getDeleteURL(modType);
+	}
+
+	//add any additional parameters need for the page we are redirecting to
+	if( realParams.length() > 0 )
+		retURL += (retURL.indexOf("?") > 0 ? "&" : "?") + realParams;		
+
+	return retURL;
+}
 
 
 /**
  * Allows the execution of commands to the cbc server for all
  * CBC object types.
- * 
  */
-private synchronized void _executeCommand( int _cmdID, String _cmdType, int _paoID,
-			int[] _optParams, String _userName )
-{
+private synchronized void executeCommand( HttpServletRequest req, String userName ) {
+
+	int cmdID = ParamUtil.getInteger( req, "cmdID" );
+	int paoID = ParamUtil.getInteger( req, "paoID" );
+	String controlType = ParamUtil.getString( req, "controlType" );
+	int[] optParams =
+		StringUtils.toIntArray( ParamUtil.getStrings(req, "opt") );
+
+
+	CTILogger.debug(req.getServletPath() +
+		"	  cmdID = " + cmdID +
+		", controlType = " + controlType +
+		", paoID = " + paoID +
+		", opt = " + optParams  );
+			
 	//Creates a new command executor and gives it a reference to
 	// the cache.
-	cbcExecutor = new CBCCommandExec( _getCapControlCache(), _userName );
+	cbcExecutor = new CBCCommandExec( getCapControlCache(), userName );
 		
-	if( CBCServlet.TYPE_SUB.equals(_cmdType) )
-		cbcExecutor.execute_SubCmd( _cmdID, _paoID );
+	//send the command with the id, type, paoid
+	if( CBCServlet.TYPE_SUB.equals(controlType) )
+		cbcExecutor.execute_SubCmd( cmdID, paoID );
 	
-	if( CBCServlet.TYPE_FEEDER.equals(_cmdType) )
-		cbcExecutor.execute_FeederCmd( _cmdID, _paoID );
+	if( CBCServlet.TYPE_FEEDER.equals(controlType) )
+		cbcExecutor.execute_FeederCmd( cmdID, paoID );
 
-	if( CBCServlet.TYPE_CAPBANK.equals(_cmdType) )
-		cbcExecutor.execute_CapBankCmd( _cmdID, _paoID, _optParams );
+	if( CBCServlet.TYPE_CAPBANK.equals(controlType) )
+		cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
 }
 
 }

@@ -88,6 +88,7 @@
 			<f:verbatim></fieldset></f:verbatim>
 
 		    <f:verbatim><br/><fieldset><legend>CapBank Operations</legend></f:verbatim>
+			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="maxDailyOps" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
 			<x:inputText id="maxDailyOps" styleClass="char16Label" required="true"
 					value="#{capControlForm.PAOBase.capBank.maxDailyOps}" >
@@ -113,32 +114,32 @@
 
 
 			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlType" value="Controller Type: " title="Type of the controller based on the point selected from the point list"
+			<x:outputLabel for="cntrlType" value="Type: " title="Type of the controller based on the point selected from the point list"
 					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
 			<x:outputText id="cntrlType" styleClass="staticLabel"
 					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
 					value="#{capControlForm.CBControllerEditor.paoCBC.PAOType}" />
 
 			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlPt" value="Controller Point: " title="Name of the controller point selected from the point list"
+			<x:outputLabel for="cntrlPt" value="Point Name: " title="Name of the controller point selected from the point list"
 					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
 			<x:outputText id="cntrlPt" styleClass="staticLabel"
 					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
 					value="#{dbCache.allPointsMap[capControlForm.PAOBase.capBank.controlPointID].pointName}" />
 
 
-	<x:panelGroup id="editCBCCheck" rendered="#{capControlForm.controllerCBC}" >
-			<f:verbatim><br/><br/></f:verbatim>
-			<h:selectBooleanCheckbox id="editCntrl" value="#{capControlForm.editingController}"
-					onclick="submit();" />
-			<x:outputLabel for="editCntrl" value="Edit Controller" title="Allows editing of the controller this CapBank currently uses" />
-	</x:panelGroup>
+			<x:panelGroup id="editCBCCheck" rendered="#{capControlForm.controllerCBC}" >
+				<f:verbatim><br/><br/></f:verbatim>
+				<h:selectBooleanCheckbox id="editCntrl" value="#{capControlForm.editingController}"
+						onclick="submit();" />
+				<x:outputLabel for="editCntrl" value="Edit Controller" title="Allows editing of the controller this CapBank currently uses" />
+			</x:panelGroup>
 
 			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="cntrlDev" value="Controller Device: " title="Controller device selected from the point list"
+			<x:outputLabel for="cntrlDev" value="Device Name: " title="Controller device selected from the point list"
 					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}" />
 			<x:inputText id="cntrlDevEd" styleClass="staticLabel" disabled="#{!capControlForm.editingController}"
-					rendered="#{capControlForm.controllerCBC}"
+					rendered="#{capControlForm.PAOBase.capBank.controlPointID != 0}"
 					value="#{capControlForm.CBControllerEditor.paoCBC.PAOName}" />
 
 
@@ -284,6 +285,10 @@
 
 
 		    <f:verbatim><br/><fieldset><legend>Information</legend></f:verbatim>
+			<f:verbatim><br/></f:verbatim>
+			<x:outputLabel for="CapBank_Address" value="Address: " title="Geographical location of this CapBank" />
+			<x:inputText id="CapBank_Address" value="#{capControlForm.PAOBase.location}" required="true" maxlength="64" />
+
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="capMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
 			<x:inputText id="capMapLocID" value="#{capControlForm.PAOBase.capBank.mapLocationID}" required="true" maxlength="64" />

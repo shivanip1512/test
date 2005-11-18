@@ -113,10 +113,6 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			
 			// set POINTANALOG defaults
 			analogPoint.getPointAnalog().setPointID(new Integer(pointID));
-			analogPoint.getPointAnalog().setDeadband(new Double(-1.0));
-			analogPoint.getPointAnalog().setTransducerType(new String("None"));
-			analogPoint.getPointAnalog().setMultiplier(new Double(1.0));
-			analogPoint.getPointAnalog().setDataOffset(new Double(0.0));
 				
 			multi.addDBPersistent( analogPoint );
 			

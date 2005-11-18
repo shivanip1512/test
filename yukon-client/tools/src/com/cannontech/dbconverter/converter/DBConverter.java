@@ -1,5 +1,7 @@
 package com.cannontech.dbconverter.converter;
 
+import java.util.HashMap;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -626,7 +628,7 @@ public boolean processAccumulatorPoints()
 		accumPoint.getPointAccumulator().setDataOffset(new Double(tokenizer.nextElement().toString()));
 			
 		// make a vector for the point limits
-		java.util.Vector pointLimitVector = new java.util.Vector();
+		HashMap pointLimitHash = new HashMap(8);
 	
 		int limitCount = 0;
 		com.cannontech.database.db.point.PointLimit myPointLimit = null;
@@ -651,7 +653,7 @@ public boolean processAccumulatorPoints()
 				myPointLimit.setLimitDuration( new Integer(0) );
 				myPointLimit.setLimitNumber( new Integer(limitCount) );
 	
- 	  			pointLimitVector.addElement( myPointLimit );
+				pointLimitHash.put( myPointLimit.getLimitNumber(), myPointLimit );
 
 	   			myPointLimit = null;
 			}
@@ -660,7 +662,7 @@ public boolean processAccumulatorPoints()
 		if (limitCount > 0)
 		{
 			// stuff the limits into the point
-			accumPoint.setPointLimitsVector(pointLimitVector);
+			accumPoint.setPointLimitsMap(pointLimitHash);
 		}
 	
 		//archiving settings
@@ -817,11 +819,10 @@ public boolean processAnalogPoints()
 			((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setMultiplier(new Double(tokenizer.nextElement().toString()));
 			((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDataOffset(new Double(tokenizer.nextElement().toString()));
 			((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setDeadband(new Double(tokenizer.nextElement().toString()));
-			((com.cannontech.database.data.point.AnalogPoint)analogPoint).getPointAnalog().setTransducerType( new String("none") );
 		}
 			
 		// make a vector for the repeaters
-		java.util.Vector pointLimitVector = new java.util.Vector();
+		HashMap limitMap = new HashMap();
 	
 		
 		int limitCount = 0;
@@ -851,7 +852,7 @@ public boolean processAnalogPoints()
 				myPointLimit.setLimitDuration( new Integer(0) );
 				myPointLimit.setLimitNumber( new Integer(limitCount) );
 	
- 	  			pointLimitVector.addElement( myPointLimit );
+				limitMap.put( myPointLimit.getLimitNumber(), myPointLimit );
 
 	   			myPointLimit = null;
 			}
@@ -860,7 +861,7 @@ public boolean processAnalogPoints()
 		if (limitCount > 0)
 		{
 			// stuff the repeaters into the CCU Route
-			analogPoint.setPointLimitsVector(pointLimitVector);
+			analogPoint.setPointLimitsMap(limitMap);
 		}
 		
 		//archiving settings

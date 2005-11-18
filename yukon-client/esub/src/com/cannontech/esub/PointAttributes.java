@@ -1,5 +1,6 @@
 package com.cannontech.esub;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -106,10 +107,10 @@ public class PointAttributes {
 	private static PointLimit getPointLimit(DBPersistent dbObj) {
 		if(dbObj instanceof ScalarPoint) {
 			ScalarPoint sp = (ScalarPoint) dbObj;
-			Vector limits = sp.getPointLimitsVector();
-			if(limits != null && limits.size() > 0) {
-				return (PointLimit) limits.get(0);				
-			}
+			
+			//return the first PointLimit object
+			//Vector limits = sp.getPointLimitsVector();
+			return (PointLimit)sp.getPointLimitsMap().get( new Integer(1) );
 		}
 		
 		return null;

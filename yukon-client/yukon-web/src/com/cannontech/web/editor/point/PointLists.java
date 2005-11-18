@@ -1,4 +1,4 @@
-package com.cannontech.web.editor;
+package com.cannontech.web.editor.point;
 
 import java.util.Arrays;
 import java.util.TreeSet;

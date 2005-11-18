@@ -15,28 +15,20 @@
 	String label = srchCriteria;
 
 	LiteWrapper[] items = new LiteWrapper[0];
-	String chkBoxName = "cti_chkbxSubs";
 
-	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) )
-	{
+	if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedFeeders();
 		label = "Orphaned Feeders";
-		chkBoxName = "cti_chkbxFdrs";
 	}
-	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) )
-	{
+	else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedCapBanks();
 		label = "Orphaned CapBanks";
-		chkBoxName = "cti_chkbxBanks";
 	}
-	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) )
-	{
+	else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedCBCs();
 		label = "Orphaned CBCs";
-		chkBoxName = "cti_chkbxBanks";
 	}
-	else
-	{		
+	else {		
 		LiteBaseResults lbr = new LiteBaseResults();
 		lbr.searchLiteObjects( srchCriteria );
 		items = lbr.getFoundItems();
@@ -123,9 +115,11 @@ for( int i = 0; i < items.length; i++ )
 %>
 	        <tr class="<%=css%>">
 				<td>
-	<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
-				<input type="checkbox" name="<%=chkBoxName%>" value="<%=item.getItemID()%>"/>
-	<% } %>
+		<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
+				<input type="checkbox" name="cti_chkbxSubs" value="<%=item.getItemID()%>"/>
+		<% } else { %>
+				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
+		<% } %>
 				<%=item.toString()%></td>
 				<td><%=item.getItemType()%></td>
 				<td><%=item.getDescription()%></td>

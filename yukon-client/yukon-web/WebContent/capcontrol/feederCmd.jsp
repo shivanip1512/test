@@ -28,7 +28,7 @@
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr> 
       <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">Feeder Control</td>
+      <td class="trimBGColor popupHeader"><%=feeder.getCcName()%></td>
       <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
     </tr>
     <tr>

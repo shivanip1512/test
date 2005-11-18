@@ -1,7 +1,5 @@
 package com.cannontech.web.editor;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,16 +16,13 @@ import javax.faces.model.SelectItem;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.PAOFuncs;
 import com.cannontech.database.cache.functions.PointFuncs;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
@@ -41,7 +36,6 @@ import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
@@ -53,7 +47,9 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.servlet.nav.*;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.point.*;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.wizard.*;
 
@@ -486,24 +482,8 @@ public class CapControlForm extends DBEditorForm
 	 */
 	protected void initItem() {
 
-		Connection conn = null;
-		if( getDbPersistent() == null ) return;
-
-		try {
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			getDbPersistent().setDbConnection( conn );
-			getDbPersistent().retrieve();
-		}
-		catch( SQLException sql ) {
-			CTILogger.error("Unable to retrieve YukonPAObject", sql );
-		}
-		finally {
-			getDbPersistent().setDbConnection( null );
-			
-			try {
-			if( conn != null ) conn.close();
-			} catch( java.sql.SQLException e2 ) { }			
-		}
+		if( retrieveDBPersistent() == null )
+			return;
 
 
 		//decide what editor type should be used

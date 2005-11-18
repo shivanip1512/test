@@ -1,3 +1,5 @@
+<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+<%@page import="com.cannontech.roles.application.CommanderRole" %>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr><td> 
@@ -16,16 +18,17 @@
 	
 	      <tr><td class="primeBGColor">
 	        <div style="text-align: right;"><span class="menu">Module:</span> 
-	          <select id="select">
-	            <option>Account</option>
-	            <option>Administration</option>
-	            <option>Cap Control</option>
-	            <option>Hardware</option>
-	            <option>Load Response</option>
-	            <option>Metering</option>
-	            <option>Work Orders</option>
-	          </select>
-	          <a href="x" class="menuLink">Help</a> 
+                <select name="select" onChange="javascript:window.location=(this[this.selectedIndex].value);">                
+					<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.ACCESS %>">
+						<option value="<%=request.getContextPath()%>/capcontrol/subareas.jsp" selected="selected">Cap Control</option>
+					</cti:isPropertyTrue>
+					<cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
+						<option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
+					</cti:checkRole>
+					<option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
+					<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+                </select>
+	          <!-- <a href="x" class="menuLink">Help</a> -->
 	          <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
 			</div>
 	      </td></tr>

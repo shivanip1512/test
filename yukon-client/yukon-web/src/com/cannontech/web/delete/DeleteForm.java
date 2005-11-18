@@ -1,5 +1,7 @@
 package com.cannontech.web.delete;
 
+import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 
 import com.cannontech.clientutils.CTILogger;
@@ -7,8 +9,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.functions.DBDeleteResult;
 import com.cannontech.database.cache.functions.DBDeletionFuncs;
-import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.JSFParamUtil;
 
@@ -16,10 +17,10 @@ import com.cannontech.web.util.JSFParamUtil;
  * @author ryan
  *
  */
-public class DeleteForm extends DBEditorForm
+public abstract class DeleteForm extends DBEditorForm
 {
-	private int[] paoIDs = new int[0];
-	private Deleteable[] dels = null; //new Deleteable[0];
+	private int[] itemIDs = new int[0];
+	private Deleteable[] deletables = null; //new Deleteable[0];
 	
 	public DeleteForm() {
 		super();
@@ -27,20 +28,27 @@ public class DeleteForm extends DBEditorForm
 	}
 
 	/**
+	 * Returns the DB object for the given ID; this could be a Point, PAO, Customer, etc.
+	 */
+	abstract DBPersistent getDBObj( int itemID );
+
+
+
+	/**
 	 * Calls the delete() method for each item that we are able to
 	 * delete
 	 */
 	public void update() {
 	
-		for( int i = 0; i < dels.length; i++ ) {
+		for( int i = 0; i < deletables.length; i++ ) {
 			
 			//this message will be filled in by the super class
 			FacesMessage facesMsg = new FacesMessage();
 			try {				
 				//be sure we can attempt to delete this item
-				if( dels[i].isDeleteAllowed() ) {
-					deleteDBObject( dels[i].getDbPersistent(), facesMsg );
-					dels[i].setWasDeleted( true );
+				if( deletables[i].isDeleteAllowed() ) {
+					deleteDBObject( deletables[i].getDbPersistent(), facesMsg );
+					deletables[i].setWasDeleted( true );
 					facesMsg.setDetail( "...deleted" );
 				}
 				else
@@ -50,8 +58,8 @@ public class DeleteForm extends DBEditorForm
 				//do nothing since the appropriate actions was taken in the super
 			}
 			finally {
-				dels[i].setWarningMsg( facesMsg.getDetail() );
-				dels[i].setDeleteError( facesMsg.getSeverity() == FacesMessage.SEVERITY_ERROR );
+				deletables[i].setWarningMsg( facesMsg.getDetail() );
+				deletables[i].setDeleteError( facesMsg.getSeverity() == FacesMessage.SEVERITY_ERROR );
 			}
 		}
 
@@ -63,10 +71,10 @@ public class DeleteForm extends DBEditorForm
 		String[] ids = JSFParamUtil.getReqParamsVar("value");
 		if( ids == null ) return;
 		
-		paoIDs = new int[ids.length];
+		itemIDs = new int[ids.length];
 		for( int i = 0; i < ids.length; i++ ) {
-			paoIDs[i] = Integer.parseInt(ids[i]);
-			CTILogger.debug( "  DeleteFrom inited for PAO id = " + paoIDs[i]);
+			itemIDs[i] = Integer.parseInt(ids[i]);
+			CTILogger.debug( "  DeleteFrom inited for item id = " + itemIDs[i]);
 		}
 
 	}
@@ -74,48 +82,14 @@ public class DeleteForm extends DBEditorForm
 	/**
 	 * Retrieves the items that are to be deleted
 	 */
-	public Deleteable[] getDeleteItems() {
-
-		if( dels == null ) {
-
-			dels = new Deleteable[ paoIDs.length ];
-			for( int i = 0; i < paoIDs.length; i++ ) {
-			
-				dels[i] = new Deleteable();				
-				YukonPAObject dbPao = PAOFactory.createPAObject(paoIDs[i]);
-				if( dbPao == null ) {
-					CTILogger.warn("Unable to find PAOid = " + paoIDs[i] + " in cache, ignoring entry");
-					continue;
-				}
-				
-				dels[i].setDbPersistent(
-						PAOFactory.createPAObject(paoIDs[i]) );
-				
-				try {
-					Transaction.createTransaction(
-							Transaction.RETRIEVE,
-							dels[i].getDbPersistent()).execute();
-	
-					//if we retrieve the item, find out if we can delete it
-					setDeleteMsgs( dels[i] );
-	
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-				
-	
-			}
-		}
-
-		return dels;
-	}
+	//abstract Deleteable[] getDeleteItems();
 
 
 	/**
 	 * Determine if we can delete this item and set any message as to why
 	 * we may or may not be able to delete it.
 	 */
-	private void setDeleteMsgs( Deleteable delItem ) {
+	protected void setDeleteMsgs( Deleteable delItem ) {
 		
 		DBDeleteResult delRes = null;
 
@@ -140,4 +114,71 @@ public class DeleteForm extends DBEditorForm
 		}
 		
 	}
+
+	/**
+	 * Retrieves the items that are to be deleted
+	 */
+	public Deleteable[] getDeleteItems() {
+
+		if( getDeletables() == null ) {
+
+			setDeletables( new Deleteable[ getItemIDs().length ] );
+			for( int i = 0; i < getItemIDs().length; i++ ) {
+			
+				getDeletables()[i] = new Deleteable();				
+				DBPersistent dbObj = getDBObj( getItemIDs()[i] );
+				if( dbObj == null ) {
+					CTILogger.warn("Unable to find item ID = " + getItemIDs()[i] + " in cache, ignoring entry");
+					continue;
+				}
+				
+				getDeletables()[i].setDbPersistent( dbObj );
+				
+				try {
+					Transaction.createTransaction(
+							Transaction.RETRIEVE,
+							getDeletables()[i].getDbPersistent()).execute();
+	
+					//if we retrieve the item, find out if we can delete it
+					setDeleteMsgs( getDeletables()[i] );
+	
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+	
+			}
+		}
+
+		return getDeletables();
+	}
+
+	/**
+	 * @return
+	 */
+	protected Deleteable[] getDeletables() {
+		return deletables;
+	}
+
+	/**
+	 * @return
+	 */
+	protected int[] getItemIDs() {
+		return itemIDs;
+	}
+
+	/**
+	 * @param deleteables
+	 */
+	protected void setDeletables(Deleteable[] deleteables) {
+		deletables = deleteables;
+	}
+
+	/**
+	 * @param is
+	 */
+	protected void setItemIDs(int[] is) {
+		itemIDs = is;
+	}
+
 }

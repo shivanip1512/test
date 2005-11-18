@@ -51,8 +51,7 @@ function toggleImg( imgID )
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">Field Cmds
-      </td>
+      <td class="trimBGColor popupHeader"><%=capBank.getCcName()%></td>
       <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
     </tr>
     <tr>
@@ -112,8 +111,7 @@ function toggleImg( imgID )
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">System Cmds
-      </td>
+      <td class="trimBGColor popupHeader"><%=capBank.getCcName()%></td>
       <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
     </tr>
     <tr>
@@ -145,21 +143,13 @@ function toggleImg( imgID )
 		  </td></tr>
 <% } %>
 
-          <tr><td>
-          	<a class="optDeselect" href="javascript:void(0);"
-	          	onmouseover="changeOptionStyle(this)"
-	          	onclick="showSubMenu('invisBankStates'); toggleImg('img1');">
-			<img id="img1" border="0" src="images/arrowright.gif" width="12" height="10">
-	        Manual Entry</a>
-		  </td></tr>
-
 
 <%	
 	LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
 	for( int i = 0; i < cbcStates.length; i++ )
 	{ %>
-          <tr id="invisBankStates" style="display: none;"><td>
-          	<a href="#" class="optDeselect" style="margin-left: 5px;"
+          <tr><td>
+          	<a class="optDeselect" href="javascript:void(0);"
 				onmouseover="changeOptionStyle(this)"
 				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'opt', <%=cbcStates[i].getStateRawState()%>, 'cmdID', <%=CBCCommand.CMD_MANUAL_ENTRY%>)"
 				><%=cbcStates[i]%></a>

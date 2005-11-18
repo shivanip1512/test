@@ -81,6 +81,10 @@ a.submenuLink:hover, legend, .editorHeader {
 	width: 260px;
 }
 
+.char64Label {
+	width: 420px;
+}
+
 .editorHeader {
 	font-size: 24px;
 }
@@ -216,6 +220,13 @@ legend {
 	vertical-align: bottom;
 }
 
+.popupWin {
+	font-size: 13px;
+	background-color: #E7EFF7;
+	font-weight: bold;
+	border: solid;
+	border-color: #006699;
+}
 
 .primeBGColor {
 	background-color: #006699;
@@ -234,4 +245,15 @@ legend {
 	background-color: #eeeeee;
 	height: 20px;
 	width: 100%;
+}
+
+.cellEditing {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #006699;
+	background-color: #E7EFF7;
+	font-weight: bold;
+	padding-left: 3px;
+	padding-right: 3px;
+	
 }

@@ -31,7 +31,7 @@ public class CBControllerEditor {
 		
 		//complain if the DB object is not null and it is not a Controller
 		if( getPaoCBC() != null && !(getPaoCBC() instanceof ICapBankController) )
-			throw new IllegalArgumentException(
+			CTILogger.warn(
 				"The CapController editor only allows PAO ids that map to a Controller, paoID=" + paoId +
 				" is not an instance of a ICapBankController");
 	}
@@ -85,7 +85,7 @@ public class CBControllerEditor {
 	/**
 	 * @param deviceCBC
 	 */
-	public void setPaoCBC(YukonPAObject deviceCBC) {
+	private void setPaoCBC(YukonPAObject deviceCBC) {
 		this.deviceCBC = deviceCBC;
 	}
 

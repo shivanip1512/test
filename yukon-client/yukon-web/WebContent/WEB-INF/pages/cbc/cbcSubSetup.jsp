@@ -13,11 +13,14 @@
 		<x:outputLabel for="subAreaName" value="#{capControlForm.PAODescLabel}: " title="Physical location of the Substation Bus"
 						rendered="#{!empty capControlForm.PAODescLabel}" />
 		<x:inputText id="subAreaName" value="#{capControlForm.PAOBase.geoAreaName}" required="true" maxlength="60"
+						styleClass="char32Label"
 						rendered="#{!empty capControlForm.PAODescLabel}" />
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="subMapLocID" value="Map Location ID: " title="Mapping code/string used for third-party systems" />
-		<x:inputText id="subMapLocID" value="#{capControlForm.PAOBase.capControlSubstationBus.mapLocationID}" required="true" maxlength="64" />
+		<x:inputText id="subMapLocID" value="#{capControlForm.PAOBase.capControlSubstationBus.mapLocationID}" required="true" maxlength="64"
+			styleClass="char32Label" />
+
 		<f:verbatim></fieldset></f:verbatim>
 
 

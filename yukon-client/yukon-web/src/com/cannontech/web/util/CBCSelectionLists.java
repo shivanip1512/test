@@ -14,10 +14,11 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 /**
- * A set of selection list used for the GUI
+ * A set of selection list used for many GUI's
  * 
  * @author ryan
  */
@@ -132,6 +133,39 @@ public class CBCSelectionLists {
 		new SelectItem(new Integer(43200), "12 hours"),
 		new SelectItem(new Integer(86400), "1 day")
 	};
+
+	private static final SelectItem[] ptArchiveType =  {
+		new SelectItem(PointTypes.ARCHIVE_NONE, PointTypes.ARCHIVE_NONE),
+		new SelectItem(PointTypes.ARCHIVE_ON_CHANGE, PointTypes.ARCHIVE_ON_CHANGE),
+		new SelectItem(PointTypes.ARCHIVE_ON_TIME, PointTypes.ARCHIVE_ON_TIME),
+		new SelectItem(PointTypes.ARCHIVE_ON_UPDATE, PointTypes.ARCHIVE_ON_UPDATE)
+	};
+
+	private static final SelectItem[] ptUpdateType =  {
+		new SelectItem(PointTypes.UPDATE_ALL_CHANGE, PointTypes.UPDATE_ALL_CHANGE),
+		new SelectItem(PointTypes.UPDATE_FIRST_CHANGE, PointTypes.UPDATE_FIRST_CHANGE),
+		new SelectItem(PointTypes.UPDATE_HISTORICAL, PointTypes.UPDATE_HISTORICAL),
+		new SelectItem(PointTypes.UPDATE_TIMER, PointTypes.UPDATE_TIMER),
+		new SelectItem(PointTypes.UPDATE_TIMER_CHANGE, PointTypes.UPDATE_TIMER_CHANGE)
+	};
+
+	private static final SelectItem[] ptAlarmNotification =  {
+		new SelectItem(PointAlarming.NONE_VALUE_STRING, PointAlarming.NONE_VALUE_STRING),
+		new SelectItem(PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING, PointAlarming.EXCLUDE_NOTIFY_VALUE_STRING),
+		new SelectItem(PointAlarming.AUTO_ACK_VALUE_STRING, PointAlarming.AUTO_ACK_VALUE_STRING),
+		new SelectItem(PointAlarming.BOTH_OPTIONS_VALUE_STRING, PointAlarming.BOTH_OPTIONS_VALUE_STRING)
+	};
+
+	private static final SelectItem[] ptControlTypes =  {
+		//value, label
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_NONE), PointTypes.getType(PointTypes.CONTROLTYPE_NONE) ),
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_LATCH), PointTypes.getType(PointTypes.CONTROLTYPE_LATCH) ),
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL), PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL) ),
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_PSEUDO), PointTypes.getType(PointTypes.CONTROLTYPE_PSEUDO) ),
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH) ),
+		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE) )
+	};
+
 
 
 	/**
@@ -297,6 +331,34 @@ public class CBCSelectionLists {
 	 */
 	public static SelectItem[] getTimeSubList( int startSecs ) {
 		return getTimeSubList( startSecs, Integer.MAX_VALUE );
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getPtArchiveType() {
+		return ptArchiveType;
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getPtUpdateType() {
+		return ptUpdateType;
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getPtAlarmNotification() {
+		return ptAlarmNotification;
+	}
+
+	/**
+	 * @return
+	 */
+	public SelectItem[] getPtControlTypes() {
+		return ptControlTypes;
 	}
 
 }

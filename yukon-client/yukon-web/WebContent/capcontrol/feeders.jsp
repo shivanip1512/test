@@ -93,19 +93,18 @@ if( subBus != null ) {
 					
 					<td>
 					<% if( hasControl ) { %>
-						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" href="javascript:void(0);"
+						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
+							style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
+							href="javascript:void(0);"
 						    onmouseover="overlib(
 								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
 								STICKY, WIDTH,135, HEIGHT,90,
 								MOUSEOFF, FULLHTML);"
 						    onmouseout="nd();">
 					<% } else { %>
-						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>">
+						<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
 					<% } %>
-			
-					<font color="<%=CBCDisplay.getHTMLFgColor(subBus)%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
-					</font>
 					</a>
 					</td>
 					
@@ -171,9 +170,10 @@ if( subBus != null ) {
 					<td>Daily Ops</td>
 				</tr>
 <%
+String css = "tableCell";
 for( int i = 0; i < feeders.length; i++ )
 {
-	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	Feeder feeder = feeders[i];
 %>
 				<tr class="<%=css%>">
@@ -182,18 +182,17 @@ for( int i = 0; i < feeders.length; i++ )
 					<td>
 <% if( hasControl ) { %>
 	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
+		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
 	    onmouseover="overlib(
-			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 80, 'if1', 0),
-			STICKY, WIDTH,135, HEIGHT,80,
+			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'if1', 0),
+			STICKY, WIDTH,135, HEIGHT,75,
 			MOUSEOFF, FULLHTML);"
 	    onmouseout="nd();">		
 <% } else { %>
-	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>">
+	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;" >
 <% } %>
-<font color="<%=CBCDisplay.getHTMLFgColor(feeder)%>">
 	<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_CURRENT_STATE_COLUMN)%>
-</font>
 </a>
 					</td>
 
@@ -247,36 +246,38 @@ for( int i = 0; i < feeders.length; i++ )
 			<td>
 
 		<div class="scrollSmall">
-			<table id="capBankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<table id="capBankTable" width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<form id="capBankForm" action="feeders.jsp" method="post">
-				<tr class="columnheader lAlign">
-					<td><input type="checkbox" name="chkAllBanksBx"
+				<tr class="columnHeader lAlign">
+					<th><input type="checkbox" name="chkAllBanksBx"
 						onclick="checkAll(this, 'cti_chkbxBanks');" /> CB Name (Order)
 						<img class="rAlign popupImg" src="images\question.gif"
 			      			onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" />
-					</td>
-					<td>State <img class="rAlign popupImg" src="images\question.gif"
+					</th>
+					<th>State <img class="rAlign popupImg" src="images\question.gif"
 				      		onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/>
-					</td>
-					<td>Bank Address</td>
-					<td>Date/Time</td>
-					<td>Bank Size</td>
-					<td>Parent Feeder</td>
-					<td>Op Count</td>
+					</th>
+					<th>Bank Address</th>
+					<th>Date/Time</th>
+					<th>Bank Size</th>
+					<th>Parent Feeder</th>
+					<th>Op Count</th>
 				</tr>
+
 <%
+css = "tableCell";
 for( int i = 0; i < capBanks.length; i++ )
 {
 	CapBankDevice capBank = capBanks[i];
-	String css = (i % 2 == 0 ? "tableCell" : "altTableCell");
+	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
 				<tr class="<%=css%>">
 					<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/>
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 						<a href="javascript:void(0);"
 						    onmouseover="overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 135, 120, 'if1', 0),
-								STICKY, WIDTH,135, HEIGHT,120,
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 135, 110, 'if1', 0),
+								STICKY, WIDTH,135, HEIGHT,110,
 								MOUSEOFF, FULLHTML);"
 						    onmouseout="nd();">
 							
@@ -291,18 +292,19 @@ for( int i = 0; i < capBanks.length; i++ )
 
 					<td>
 					<% if( hasControl ) { %>
-						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);"
+						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
+							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
+							href="javascript:void(0);"
 						    onmouseover="overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 160, 200, 'if1', 0),
-								STICKY, WIDTH,160, HEIGHT,200,
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 135, 200, 'if1', 0),
+								STICKY, WIDTH,135, HEIGHT,200,
 								MOUSEOFF, FULLHTML);"
 						    onmouseout="nd();">
 							
 					<% } else { %>
-						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);">
+						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;" >
 					<% } %>
-					<font color="<%=CBCDisplay.getHTMLFgColor(capBank)%>"> <%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN) %>
-					</font>
+					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN) %>
 					</a>
 					</td>
 
@@ -330,12 +332,10 @@ for( int i = 0; i < capBanks.length; i++ )
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_OP_COUNT_COLUMN)%></a>
 					</td>
 				</tr>
-
 				<% } %>
 				</form>
 			</table>
 		</div>
-
 
 			</td>
 			<td class="cellImgFill rAlign" background="images\Side_right.gif"></td>
@@ -354,211 +354,6 @@ for( int i = 0; i < capBanks.length; i++ )
 </table>
 </body>
 
-
-<!-------------- Form for submitting feeder commands ---------------->
-<form id="frmFdrCmd" action="/servlet/CBCServlet" method="post">
-<input type="hidden" name="redirectURL" value="<%=request.getRequestURL()%>">
-<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_FEEDER%>">
-<input type="hidden" name="paoID">
-<input type="hidden" name="cmdID">
-
-<div id="fdrPopupMenu" class = "popupMenu"> 
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr> 
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">Feeder Control</td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
-        <table id="fdrTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', intFeederID, 'cmdID', <%=CBCCommand.ENABLE_FEEDER%>)">Enable Feeder</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', intFeederID, 'cmdID', <%=CBCCommand.DISABLE_FEEDER%>)">Disable Feeder</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', intFeederID, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>)">Reset Op Counts</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', intFeederID, 'cmdID', <%=CBCCommand.WAIVE_FEEDER%>)">Waive Feeder</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', intFeederID, 'cmdID', <%=CBCCommand.UNWAIVE_FEEDER%>)">Unwaive Feeder</a>
-		  </td></tr>
-        </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
-</div>
-</form>
-
-
-
-<!-------------- Form for submitting Field CapBank commands ---------------->
-<form id="frmCapBankCmd" action="/servlet/CBCServlet" method="post">
-<input type="hidden" name="redirectURL" value="<%=request.getRequestURL()%>">
-<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_CAPBANK%>">
-<input type="hidden" name="paoID">
-<input type="hidden" name="cmdID">
-<input type="hidden" name="opt">
-
-<div id="bankFldPopupMenu" class="popupMenu"> 
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">Field Cmds
-      <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Field Commands are any operations that send out a command message to a field device');"/>
-      </td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
-        <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.CONFIRM_OPEN%>)"
-				>Confirm</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.OPEN_CAPBANK%>)"
-				>Open Capacitor</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.CLOSE_CAPBANK%>)"
-				>Close Capacitor</a>
-		  </td></tr>
-		  
-		<cti:checkProperty propertyid="<%= CBCSettingsRole.CBC_ALLOW_OVUV %>"> 		  
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.BANK_ENABLE_OVUV%>)"
-				>Enable OV/UV</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.BANK_DISABLE_OVUV%>)"
-				>Disable OV/UV</a>
-		  </td></tr>
-		</cti:checkProperty>
-
-
-        </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
-</div>
-
-
-<div id="bankSysPopupMenu" class="popupMenu"> 
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-      <td class="popupCell"><img src="images\Header_left.gif" class="popupHeader"></td>
-      <td class="trimBGColor popupHeader">System Cmds
-      <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands are any operations that do NOT send out a command message to a field device');"/>
-      </td>
-      <td class="popupCell"><img src="images\Header_right.gif" class="popupHeader"></td>
-    </tr>
-    <tr>
-      <td class="popupCell lAlign" background="images\Side_left.gif"></td>
-      <td>
-        <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.ENABLE_CAPBANK%>)"
-				>Enable CapBank</a>
-		  </td></tr>
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.DISABLE_CAPBANK%>)"
-				>Disable CapBank</a>
-		  </td></tr>
-
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>)"
-				>Temp Move Back</a>
-		  </td></tr>
-
-          <tr><td>
-          	<a href="#" class="optDeselect"
-				onmouseover="changeOptionStyle(this)"
-				onclick="showPopUp('tempmove.jsp?bankid='+intCapBankID);"
-				>Temp Move...</a>
-		  </td></tr>
-
-          <tr><td>
-          	<a class="optDeselect" href="javascript:void(0);"
-	          	onmouseover="changeOptionStyle(this)"
-	          	onclick="showSubMenu('invisBankStates'); toggleImg('img1');">
-			<img id="img1" border="0" src="images/arrowright.gif" width="12" height="10">
-	        Manual Entry</a>
-		  </td></tr>
-
-
-<%	
-	LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
-	for( int i = 0; i < cbcStates.length; i++ )
-	{ %>
-          <tr id="invisBankStates" style="display: none;"><td>
-          	<a href="#" class="optDeselect" style="margin-left: 5px;"
-				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', intCapBankID, 'opt', <%=cbcStates[i].getStateRawState()%>, 'cmdID', <%=CBCCommand.CMD_MANUAL_ENTRY%>)"
-				><%=cbcStates[i]%></a>
-		  </td></tr>
-<% } %>
-
-
-
-        </table>
-      </td>
-      <td class="popupCell rAlign" background="images\Side_right.gif"></td>
-    </tr>
-    <tr>
-      <td class="popupCell"><img src="images\Bottom_left.gif"></td>
-      <td class="popupCell" background="images\Bottom.gif"></td>
-      <td class="popupCell"><img src="images\Bottom_right.gif"></td>
-    </tr>
-  </table>
-</div>
-
-
-</form>
 
 <%@include file="cbc_footer.jspf"%>
 

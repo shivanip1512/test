@@ -205,9 +205,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 }
 
 .popupImg {
-	height: 9;
-	width: 9;
+	width: 16;
+	height: 12;
 	border: 0;
+	cursor: help;
 }
 
 .alert {

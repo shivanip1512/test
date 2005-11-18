@@ -26,6 +26,9 @@
 
 <f:view>
 
+	<x:saveState id="capControlForm" value="#{capControlForm}" />
+
+
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
             footerClass="pageFooter" >

@@ -9,6 +9,7 @@ import javax.faces.model.SelectItem;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.pao.PAOSchedule;
+import com.cannontech.servlet.nav.*;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
@@ -61,7 +62,7 @@ public class PAOScheduleForm extends DBEditorForm {
 			.resolveVariable(FacesContext.getCurrentInstance(), "CtiNavObject");
 		
 		nav.setModuleRedirectPage(
-			DBEditorNav.getEditorURL(DBEditorNav.LIST_SCHEDULE) ); //"paoSchedList");
+			DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE) ); //"paoSchedList");
 
 		return "cbcEditor";
 	}

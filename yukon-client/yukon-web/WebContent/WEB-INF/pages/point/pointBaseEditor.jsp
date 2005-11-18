@@ -5,59 +5,64 @@
 
 <f:subview id="general" rendered="#{ptEditorForm.visibleTabs['General']}" >
 
+<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+
+	<h:column>
 	<f:verbatim><fieldset><legend>General</legend></f:verbatim>
-	    <x:div id="topDiv">
-	        <x:outputText value="Point Type: "/>
-	        <x:outputText value="#{ptEditorForm.pointBase.point.pointType} (id: #{ptEditorForm.pointBase.point.pointID})" styleClass="staticLabel"/>
 		<f:verbatim><br/></f:verbatim>
-	        <x:outputText value="Parent: " />
-	        <x:outputText value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
-	    </x:div>
+		<x:outputLabel for="Point_Type" value="Point Type: "/>
+        <x:outputText id="Point_Type" value="#{ptEditorForm.pointBase.point.pointType} (id: #{ptEditorForm.pointBase.point.pointID})" styleClass="staticLabel"/>
+
 		<f:verbatim><br/></f:verbatim>
-		
-		<x:outputLabel for="pointName" value="Point Name: "/>
-		<x:inputText id="pointName" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60" />
+		<x:outputLabel for="Parent" value="Parent: "/>
+        <x:outputText id="Parent" value="#{dbCache.allPAOsMap[ptEditorForm.pointBase.point.paoID]} (id: #{ptEditorForm.pointBase.point.paoID})" styleClass="staticLabel"/>
+	    
+		<f:verbatim><br/><br/></f:verbatim>
+		<x:outputLabel for="Point_Name" value="Point Name: "/>
+		<x:inputText id="Point_Name" value="#{ptEditorForm.pointBase.point.pointName}" required="true" maxlength="60"
+				styleClass="char32Label" />
 	
 		<f:verbatim><br/></f:verbatim>	
-		<x:outputLabel for="logicalGrp" value="Timing Group: "/>
-		<x:selectOneMenu id="logicalGrp" value="#{ptEditorForm.pointBase.point.logicalGroup}" >
+		<x:outputLabel for="Logical_Group" value="Timing Group: "/>
+		<x:selectOneMenu id="Logical_Group" value="#{ptEditorForm.pointBase.point.logicalGroup}" >
 			<f:selectItems value="#{ptEditorForm.logicalGroups}"/>
 		</x:selectOneMenu>
 	
 		<f:verbatim><br/></f:verbatim>
-		<h:selectBooleanCheckbox id="outOfServiceCheckBox" value="#{ptEditorForm.pointBase.point.outOfService}"/>
-		<x:outputLabel for="outOfServiceCheckBox" value="Disable Point"/>
+		<h:selectBooleanCheckbox id="Out_Of_Service" value="#{ptEditorForm.pointBase.point.outOfService}"/>
+		<x:outputLabel for="Out_Of_Service" value="Disable Point"/>
 	<f:verbatim></fieldset></f:verbatim>
-
-	<f:verbatim><br/><br/><fieldset><legend>Archive</legend></f:verbatim>
-		<x:outputLabel for="archiveType" value="Archive Data: "/>
-		<x:selectOneMenu id="archiveType" value="#{ptEditorForm.pointBase.point.archiveType}"
+	</h:column>
+	
+	<h:column>
+	<f:verbatim><fieldset><legend>Archive</legend></f:verbatim>
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Archive_Type" value="Archive Data: "/>
+		<x:selectOneMenu id="Archive_Type" value="#{ptEditorForm.pointBase.point.archiveType}"
 				onchange="submit();" valueChangeListener="#{ptEditorForm.archiveTypeChanged}">
-			<f:selectItem itemValue="None" value="None"/>
-			<f:selectItem itemValue="On Change" value="On Change"/>
-			<f:selectItem itemValue="On Timer" value="On Timer"/>
-			<f:selectItem itemValue="On Update" value="On Update"/>
+			<f:selectItems value="#{selLists.ptArchiveType}"/>
 		</x:selectOneMenu>
 	
 	    <f:verbatim><br/></f:verbatim>
-		<x:outputLabel for="archiveInterval" value="Interval: "/>
-		<x:selectOneMenu id="archiveInterval" value="#{ptEditorForm.pointBase.point.archiveInterval}" disabled="#{!ptEditorForm.archiveInterEnabled}">
-			<f:selectItems value="#{ptEditorForm.timeInterval}"/>
+		<x:outputLabel for="Archive_Interval" value="Interval: "/>
+		<x:selectOneMenu id="Archive_Interval" value="#{ptEditorForm.pointBase.point.archiveInterval}" disabled="#{!ptEditorForm.archiveInterEnabled}">
+			<f:selectItems value="#{ptEditorForm.archiveInterval}"/>
 		</x:selectOneMenu>
 	<f:verbatim></fieldset></f:verbatim>
 
 
     <f:subview id="pointAnalog" rendered="#{ptEditorForm.visibleTabs['PointAnalog'] || ptEditorForm.visibleTabs['PointAccum'] || ptEditorForm.visibleTabs['PointCalc']}" >
-	    <f:verbatim><br/><br/><fieldset><legend>Analog Summary</legend></f:verbatim>
+	    <f:verbatim><br/><fieldset><legend>Analog Summary</legend></f:verbatim>
     
-		<x:outputLabel for="uofm" value="Unit of Measure: "/>
-		<x:selectOneMenu id="uofm" value="#{ptEditorForm.pointBase.pointUnit.uomID}" >
+		<f:verbatim><br/></f:verbatim>
+		<x:outputLabel for="Unit_Of_Measure" value="Unit of Measure: "/>
+		<x:selectOneMenu id="Unit_Of_Measure" value="#{ptEditorForm.pointBase.pointUnit.uomID}" >
 			<f:selectItems value="#{ptEditorForm.uofMs}"/>
 		</x:selectOneMenu>        
 
 	    <f:verbatim><br/></f:verbatim>
-		<x:outputLabel for="decDigits" value="Decimal Digits: "/>
-		<x:selectOneMenu id="decDigits" value="#{ptEditorForm.pointBase.pointUnit.decimalPlaces}" >
+		<x:outputLabel for="Decimal_Digits" value="Decimal Digits: "/>
+		<x:selectOneMenu id="Decimal_Digits" value="#{ptEditorForm.pointBase.pointUnit.decimalPlaces}" >
 			<f:selectItem itemValue="0" value="0"/>
 			<f:selectItem itemValue="1" value="1"/>
 			<f:selectItem itemValue="2" value="2"/>
@@ -93,11 +98,7 @@
 		<x:outputLabel for="updateType" value="Update Type: "/>
 		<x:selectOneMenu id="updateType" value="#{ptEditorForm.pointBase.calcBase.updateType}"
 				onchange="submit();" valueChangeListener="#{ptEditorForm.updateTypeChanged}" >
-			<f:selectItem itemValue="On First Change" value="On First Change"/>
-			<f:selectItem itemValue="On All Change" value="On All Change"/>
-			<f:selectItem itemValue="On Timer" value="On Timer"/>
-			<f:selectItem itemValue="On Timer+Change" value="On Timer+Change"/>
-			<f:selectItem itemValue="Historical" value="Historical"/>
+			<f:selectItems value="#{selLists.ptUpdateType}"/>
 		</x:selectOneMenu>
 
 	    <f:verbatim><br/></f:verbatim>
@@ -107,5 +108,8 @@
 		</x:selectOneMenu>
 		<f:verbatim></fieldset></f:verbatim>
     </f:subview>
+	</h:column>
+
+</h:panelGrid>
 
 </f:subview>

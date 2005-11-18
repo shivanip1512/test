@@ -1,5 +1,7 @@
 package com.cannontech.web.editor;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +10,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -183,6 +187,34 @@ public abstract class DBEditorForm
 				" its class was : " + object.getClass().getName() );
 		}
 		
+	}
+
+	/**
+	 * Retrieves the current DB object from the database. Returns the DB object
+	 * that was retrieved from the DB
+	 */
+	protected DBPersistent retrieveDBPersistent() {
+
+		Connection conn = null;
+		if( getDbPersistent() == null ) return null;
+
+		try {
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			getDbPersistent().setDbConnection( conn );
+			getDbPersistent().retrieve();
+		}
+		catch( SQLException sql ) {
+			CTILogger.error("Unable to retrieve DB Object", sql );
+		}
+		finally {
+			getDbPersistent().setDbConnection( null );
+			
+			try {
+			if( conn != null ) conn.close();
+			} catch( java.sql.SQLException e2 ) { }			
+		}
+		
+		return getDbPersistent();	
 	}
 
 	/**

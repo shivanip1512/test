@@ -1,9 +1,8 @@
 <!-- START Static Page Header Include -->
 <%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
-<%@ page import="com.cannontech.web.editor.DBEditorNav" %>
+<%@ page import="com.cannontech.servlet.nav.DBEditorNav" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
-<%@ page import="com.cannontech.web.editor.DBEditorTypes" %>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -58,7 +57,7 @@
 								<option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
 								<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
 	                        </select>
-	                      <a href="x" class="menuLink">Help</a> 
+<!--	                      <a href="x" class="menuLink">Help</a> -->
                           <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
 						</div>
                       </td>
@@ -79,12 +78,12 @@
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">CapBank</a> 
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">CBC</a> 
-					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(DBEditorTypes.PAO_SCHEDULE)%>');">Schedule</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(DBEditorNav.PAO_SCHEDULE)%>');">Schedule</a> 
 <!--					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">Point</a>  -->
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="editorPost('<%=DBEditorNav.getEditorURL(DBEditorNav.EDITOR_CAPCONTROL)%>');">Edit</a>
-					<a href="#" class="submenuLink" onclick="deletePost('<%=DBEditorNav.getDeleteURL(DBEditorNav.DELETE_PAO)%>');">Delete</a> 
+					<a href="#" class="submenuLink" onclick="editorPost();">Edit</a>
+					<a href="#" class="submenuLink" onclick="deletePost();">Delete</a>
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> -->
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> -->
 				  </div>
@@ -100,7 +99,7 @@
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_CBCS%>')">Orphaned CBCs</a> 
-					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getEditorURL(DBEditorNav.LIST_SCHEDULE)%>');">Schedules</a> 
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE)%>');">Schedules</a> 
 
 					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 

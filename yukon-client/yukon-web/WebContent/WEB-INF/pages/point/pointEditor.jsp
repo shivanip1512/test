@@ -1,7 +1,7 @@
 <%@ page import="com.cannontech.database.data.point.*" %>
 <%@ page import="com.cannontech.util.*" %>
 <%@ page import="com.cannontech.web.util.*" %>
-<%@ page import="com.cannontech.web.editor.*" %>
+<%@ page import="com.cannontech.web.editor.point.PointForm" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 
@@ -27,6 +27,8 @@
 
 <f:view>
 
+	<x:saveState id="ptEditorForm" value="#{ptEditorForm}" />
+
     <x:panelLayout id="page"
             styleClass="pageLayout" headerClass="pageHeader"
             navigationClass="pageNavigation" bodyClass="pageBody"
@@ -40,7 +42,7 @@
 		    <x:messages id="messageList" showSummary="true" showDetail="true"
 		    		styleClass="smallResults" errorClass="errorResults" layout="table"/>
 
-            <h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+            <h:panelGrid id="body" columns="1" styleClass="pageBody">
 
 				<f:facet name="header">
 					<x:panelGroup>
@@ -48,15 +50,26 @@
 				</f:facet>
 
 
-                <x:panelTabbedPane id="tabPane" styleClass="tabPane">
+                <x:panelTabbedPane id="tabPane" style="width: 100%; vertical-align: top;" >
                     <x:panelTab id="generalTab" label="General" rendered="#{ptEditorForm.visibleTabs['General']}">
 		               	<jsp:include page="pointBaseEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="setupTab" label="Setup" rendered="#{ptEditorForm.visibleTabs['Alarming']}">
+                    <x:panelTab id="physicalAnaTab" label="Physical Setup" rendered="#{ptEditorForm.visibleTabs['PointAnalog']}">
+		                <jsp:include page="pointAnalogEditor.jsp"/>
+                    </x:panelTab>
+
+                    <x:panelTab id="physicalStatTab" label="Physical Setup" rendered="#{ptEditorForm.visibleTabs['PointStatus']}">
+		                <jsp:include page="pointStatusEditor.jsp"/>
+                    </x:panelTab>
+
+                    <x:panelTab id="arlarmingTab" label="Alarming" rendered="#{ptEditorForm.visibleTabs['Alarming']}">
 		                <jsp:include page="pointAlarmEditor.jsp"/>
                     </x:panelTab>
 
+                    <x:panelTab id="fdrTab" label="Foreign Data" rendered="#{ptEditorForm.visibleTabs['FDR']}">
+		                <jsp:include page="pointFDREditor.jsp"/>
+                    </x:panelTab>
 
 
 	            </x:panelTabbedPane>
