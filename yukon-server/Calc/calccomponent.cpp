@@ -745,6 +745,26 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
             retVal = (fabs(a-b) + fabs(b-c) + fabs(c-a)) / 2.0;
 
         }
+        else if( !functionName.compareTo("lohi accumulator",RWCString::ignoreCase) )
+        {
+            CtiPointStore* pointStore = CtiPointStore::getInstance();
+            CtiHashKey componentHashKey(_componentPointId);
+            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+            double val = _calcpoint->pop();
+            double inc = 0.0;
+
+            if(componentPointPtr != NULL)
+            {
+                int tags = componentPointPtr->getPointTags();
+                if(tags & TAG_POINT_DATA_TIMESTAMP_VALID)
+                {
+                    inc = 1.0;
+                }
+            }
+
+            retVal = val + inc;
+        }
         else if( !functionName.compareTo("State Timer",RWCString::ignoreCase) )
         {
             /*
@@ -771,6 +791,14 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
                         retVal = now.seconds() - component_time.seconds();
                 }
             }
+        }
+        else if( !functionName.compareTo("True,False,Condition",RWCString::ignoreCase) )
+        {
+            double c = _calcpoint->pop();
+            double b = _calcpoint->pop();
+            double a = _calcpoint->pop();
+
+            retVal = ( c != 0.0 ? a : b );
         }
         else
         {
