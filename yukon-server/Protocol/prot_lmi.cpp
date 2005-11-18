@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2005/10/18 16:34:06 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2005/11/18 02:14:59 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ void CtiProtocolLMI::setSystemData(int ticktime, int timeoffset, int transmittim
     _tick_time   = ticktime;
     _time_offset = timeoffset;
 
-    _transmit_duration = transmittime;
+    _transmit_window = transmittime;
 
     _transmitter_power_low_limit  = transmitterlow;
     _transmitter_power_high_limit = transmitterhigh;
@@ -228,7 +228,7 @@ void CtiProtocolLMI::getInboundData( RWTPtrSlist< CtiPointDataMsg > &pointList, 
     if( _transmitter_power_time != 0 )
     {
         //  note that this will be analog offset LMIPointOffsetTransmitterPower + 1 when it gets back to the system
-        pdm = CTIDBG_new CtiPointDataMsg(LMIPointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
+        pdm = CTIDBG_new CtiPointDataMsg(PointOffset_TransmitterPower, _transmitter_power, NormalQuality, AnalogPointType);
         pdm->setTime(_transmitter_power_time);
         pdm->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
 
@@ -422,37 +422,37 @@ int CtiProtocolLMI::getPreloadDataLength( void ) const
     //    add it here when the value is available from the DB
 
     //  we can only download this many per cycle anyway
-    if( codes_to_download > LMIMaxCodesDownloaded )
+    if( codes_to_download > MaxCodesDownloaded )
     {
-        codes_to_download = LMIMaxCodesDownloaded;
+        codes_to_download = MaxCodesDownloaded;
     }
 
     if( codes_to_download )
     {
         //  a couple of magic numbers here, but basically this assumes we get one full header packet back
         //    for every batch of codes we send out - this is approximately true
-        total_comms += (codes_to_download * 6) + (((codes_to_download / LMIMaxCodesPerTransaction) + 1) * (LMIPacketOverheadLen * 2));
+        total_comms += (codes_to_download * 6) + (((codes_to_download / MaxCodesPerTransaction) + 1) * (PacketOverheadLen * 2));
     }
     else
     {
         //  if no codes to download, we must clear the codes
-        total_comms += LMIPacketOverheadLen * 2;
+        total_comms += PacketOverheadLen * 2;
 
     }
     if( _num_codes_loaded )
     {
         //  This is an exact copy of the code-loading behavior, except the outbound and inbound sizes are swapped
-        total_comms += (_num_codes_loaded * 6) + (((_num_codes_loaded / LMIMaxCodesPerTransaction) + 1) * (LMIPacketOverheadLen * 2));
+        total_comms += (_num_codes_loaded * 6) + (((_num_codes_loaded / MaxCodesPerTransaction) + 1) * (PacketOverheadLen * 2));
     }
 
     //  add on the config length
     if( _config_sent < (RWTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
     {
-        total_comms += LMIPacketOverheadLen * 2 + 18;
+        total_comms += PacketOverheadLen * 2 + 18;
     }
 
     //  add on the time sync
-    total_comms += LMIPacketOverheadLen * 2;
+    total_comms += PacketOverheadLen * 2;
 
     return total_comms;
 }
@@ -533,7 +533,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
         xfer.setInCountActual(&_in_count);
 
         //  we also expect the CRC
-        xfer.setInCountExpected(packet.length + LMIPacketOverheadLen - _in_total);
+        xfer.setInCountExpected(packet.length + PacketOverheadLen - _in_total);
 
         xfer.setOutBuffer((unsigned char *)&_outbound);
         xfer.setOutCount(0);
@@ -549,7 +549,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
         //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
         //    also make sure that we don't infinitely read the statuses
-        if( (!_status_read || _status.c) && (++_status_read_count < MaxStatusReads) )
+        if( (!_status_read || _status.c) && (++_status_read_count < MaxConsecutiveStatusScans) )
         {
             _status_read = true;  //  set here instead of the decode to prevent looping
 
@@ -604,13 +604,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 {
                     case Command_QueueCodes:
                     {
-                        int percode = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
-                        int transmit_time, slots_available, max_codes, expired_codes;
-
-                        bool final_block = false;
-
                         queue< CtiOutMessage * > viable_codes;
                         CtiOutMessage *om;
+
+                        int millis_per_code, slots_available, expired_code_count;
 
                         if( _first_code_block )
                         {
@@ -622,13 +619,15 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             _num_codes_loaded = 0;
                         }
 
-                        //  number of millis we have available to transmit
-                        transmit_time   = (_transmit_duration * 1000) - (_num_codes_loaded * percode);
-                        slots_available = transmit_time / percode;
+                        millis_per_code  = gConfigParms.getValueAsULong("PORTER_LMI_TIME_TRANSMIT", 250);
 
-                        expired_codes = 0;
-                        while( !_codes.empty() && viable_codes.size() < slots_available &&
-                                                  viable_codes.size() < LMIMaxCodesPerTransaction )
+                        slots_available  = _transmit_window * 1000;
+                        slots_available /= millis_per_code;
+                        slots_available -= _num_codes_loaded;
+
+                        expired_code_count = 0;
+
+                        while( !_codes.empty() && viable_codes.size() < MaxCodesPerTransaction && viable_codes.size() < slots_available )
                         {
                             om = _codes.front();
                             _codes.pop();
@@ -643,8 +642,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                                 {
                                     delete om;
 
-                                    expired_codes++;
+                                    expired_code_count++;
                                 }
+
+                                om = 0;  //  for safekeeping
                             }
                             else
                             {
@@ -653,10 +654,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                         }
 
-                        if( expired_codes )
+                        if( expired_code_count )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << RWTime() << " LMI device \"" << _name << "\" pruned " << expired_codes << " codes this pass" << endl;
+                            slog << RWTime() << " LMI device \"" << _name << "\" pruned " << expired_code_count << " codes this pass" << endl;
                         }
 
                         {
@@ -664,21 +665,17 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
                         }
 
-                        if( !slots_available || _codes.empty() || (viable_codes.size() == slots_available) )
-                        {
-                            _final_code_block = true;
-                        }
-
-                        _num_codes_loaded += viable_codes.size();
-                        _outbound.data[0]  = viable_codes.size();
-
                         _outbound.length  = (viable_codes.size() * 6) + 2;
                         _outbound.body_header.message_type = Opcode_SendCodes;
                         _outbound.body_header.flush_codes  = _first_code_block;
+                        _outbound.data[0] = viable_codes.size();
 
-                        if( _final_code_block )
+                        //  if we have no more codes OR we have no more space
+                        if( _codes.empty() || !slots_available || viable_codes.size() >= slots_available )
                         {
-                            _outbound.data[0] |= LMILastCodeGroup;
+                            _final_code_block = true;
+
+                            _outbound.data[0] |= SendCodes_LastCodeGroup;
                         }
 
                         unsigned offset = 1;
@@ -836,7 +833,7 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
 
             if( reply_expected )
             {
-                xfer.setInCountExpected(LMIPacketHeaderLen);
+                xfer.setInCountExpected(PacketHeaderLen);
             }
             else
             {
@@ -844,12 +841,12 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             }
 
             xfer.setOutBuffer((unsigned char *)&_outbound);
-            xfer.setOutCount(_outbound.length + LMIPacketOverheadLen);
+            xfer.setOutCount(_outbound.length + PacketOverheadLen);
 
             //  tack on the CRC
             if( xfer.getOutCount() > 0 )
             {
-                unsigned short crc = CCITT16CRC(-1, (unsigned char *)&_outbound, _outbound.length + LMIPacketHeaderLen, false);
+                unsigned short crc = CCITT16CRC(-1, (unsigned char *)&_outbound, _outbound.length + PacketHeaderLen, false);
 
                 _outbound.data[(_outbound.length - 1) + 0] = (crc & 0xff00) >> 8;
                 _outbound.data[(_outbound.length - 1) + 1] =  crc & 0x00ff;
@@ -886,7 +883,7 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
     {
         _in_total += xfer.getInCountActual();
 
-        if( _in_total >= LMIPacketHeaderLen && _in_total >= (_inbound.length + LMIPacketOverheadLen) )
+        if( _in_total >= PacketHeaderLen && _in_total >= (_inbound.length + PacketOverheadLen) )
         {
             tmp_crc = CCITT16CRC(-1, (unsigned char *)&_inbound, _in_total - 2, false);
 
@@ -938,6 +935,10 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                 _verification_pending = true;
 
+                                //  the top two bits have special meaning
+                                _num_codes_loaded += _outbound.data[0] & SendCodes_CountBitmask;
+
+                                //  is this safe?
                                 _transaction_complete = _final_code_block;
 
                                 _last_code_download = RWTime::now().seconds();
@@ -1053,11 +1054,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             {
                                 if( !_seriesv.isTransactionComplete() )
                                 {
-                                    memcpy(_seriesv_inbuffer, buf + LMIPacketHeaderLen + 1, _in_total - LMIPacketHeaderLen - 1);
+                                    memcpy(_seriesv_inbuffer, buf + PacketHeaderLen + 1, _in_total - PacketHeaderLen - 1);
 
                                     seriesv_xfer.setInBuffer(_seriesv_inbuffer);
                                     seriesv_xfer.setInCountActual(&seriesv_incount_actual);
-                                    seriesv_xfer.setInCountActual(_in_total - LMIPacketHeaderLen - 1);
+                                    seriesv_xfer.setInCountActual(_in_total - PacketHeaderLen - 1);
 
                                     //  tack on the Series V passthrough CRC
                                     _seriesv_inbuffer[seriesv_xfer.getInCountActual() - 2] = (CtiProtocolSeriesV::PassthroughCRC & 0x00ff);
@@ -1208,22 +1209,22 @@ void CtiProtocolLMI::decodeStatuses(lmi_status statuses)
     pd_template->setType(StatusPointType);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(LMIPointOffset_CodeVerification);
+    pd->setId(PointOffset_CodeVerification);
     pd->setValue(statuses.loadshed_verify_state && !statuses.loadshed_verify_complete);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(LMIPointOffset_LMIComm);
+    pd->setId(PointOffset_LMIComm);
     pd->setValue(statuses.comm_failure);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(LMIPointOffset_Transmitting);
+    pd->setId(PointOffset_Transmitting);
     pd->setValue(statuses.loadshed_codes_locked);
     _lmi_statuses.push_back(pd);
 
     pd = (CtiPointDataMsg *)pd_template->replicateMessage();
-    pd->setId(LMIPointOffset_PowerReset);
+    pd->setId(PointOffset_PowerReset);
     pd->setValue(statuses.reset);
     _lmi_statuses.push_back(pd);
 
