@@ -1,36 +1,24 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.database.data.point.PointTypes;
+
 /**
  * This type was created in VisualAge.
  */
 public class PointAnalog extends com.cannontech.database.db.DBPersistent {
 	private Integer pointID = null;
-	private Double deadband = null;
-	private String transducerType = null;
-	private Double multiplier = null;
-	private Double dataOffset = null;
-	
+	private Double deadband = new Double(0.0);
+	private String transducerType = PointTypes.getType(PointTypes.TRANSDUCER_NONE);
+	private Double multiplier = new Double(1.0);
+	private Double dataOffset = new Double(0.0);
+
+
 	private static final String tableName = "PointAnalog";
 /**
  * PointAnalogSetting constructor comment.
  */
 public PointAnalog() {
 	super();
-	initialize(null, new Double(-1), null ,null, null );
-}
-/**
- * PointAnalogSetting constructor comment.
- */
-public PointAnalog(Integer pointID) {
-	super();
-	initialize(pointID, new Double(-1), null ,null, null );
-}
-/**
- * PointAnalogSetting constructor comment.
- */
-public PointAnalog(Integer pointID, Double deadband, String transducerType) {
-	super();
-	initialize(pointID, deadband, transducerType, null, null );
 }
 /**
  * PointAnalogSetting constructor comment.

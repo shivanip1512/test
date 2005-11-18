@@ -115,7 +115,22 @@ public final class PointTypes implements IPointOffsets, TypeBase
 		"LP Archived Data",
 		"SBO Latch",
 		"SBO Pulse"		
-	};	
+	};
+
+	//point archive types
+	public static final String ARCHIVE_NONE = "None";
+	public static final String ARCHIVE_ON_CHANGE = "On Change";
+	public static final String ARCHIVE_ON_TIME = "On Time";
+	public static final String ARCHIVE_ON_UPDATE = "On Update";
+
+	//point update types
+	public static final String UPDATE_FIRST_CHANGE = "On First Change";
+	public static final String UPDATE_ALL_CHANGE = "On All Change";
+	public static final String UPDATE_TIMER = "On Timer";
+	public static final String UPDATE_TIMER_CHANGE = "On Timer+Change";
+	public static final String UPDATE_HISTORICAL = "Historical";
+
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.String
@@ -123,7 +138,7 @@ public final class PointTypes implements IPointOffsets, TypeBase
  */
 public final static String getType(int typeEnum) {
 
-	if( typeEnum < 0 || typeEnum > pointStrings.length - 1 )		
+	if( typeEnum < 0 || typeEnum > pointStrings.length - 1 )
 			throw new Error("PointTypes::getType(int) - received unknow type: " + typeEnum );			
 	else
 		return pointStrings[typeEnum];

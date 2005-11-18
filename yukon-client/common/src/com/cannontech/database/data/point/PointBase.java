@@ -3,9 +3,9 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.point.DynamicAccumulator;
 import com.cannontech.database.db.point.DynamicPointDispatch;
@@ -19,7 +19,7 @@ import com.cannontech.database.db.point.fdr.FDRTranslation;
 public class PointBase extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private Point point = null;
-	private Vector pointFDRVector = null;
+	private Vector pointFDR = null;
 	private PointAlarming pointAlarming = null;
 	private boolean isPartialDelete;
 	
@@ -168,10 +168,10 @@ public com.cannontech.database.db.point.PointAlarming getPointAlarming()
  */
 public Vector getPointFDRVector() {
 
-	if( pointFDRVector == null )
-		pointFDRVector = new Vector();
+	if( pointFDR == null )
+		pointFDR = new Vector();
 	
-	return pointFDRVector;
+	return pointFDR;
 }
 /**
  * This method was created in VisualAge.
@@ -393,7 +393,7 @@ public void setPointAlarming(com.cannontech.database.db.point.PointAlarming newP
  * This method was created in VisualAge.
  */
 public void setPointFDRVector(Vector newValue) {
-	this.pointFDRVector = newValue;
+	this.pointFDR = newValue;
 }
 /**
  * This method was created in VisualAge.
@@ -429,4 +429,14 @@ public void update() throws java.sql.SQLException
 	for( int i = 0 ; i < getPointFDRVector().size(); i++ )
 		((com.cannontech.database.db.point.fdr.FDRTranslation) getPointFDRVector().elementAt(i)).add();
 }
+
+
+	/**
+	 * Allow others to treat this Vector more generically
+	 */
+	public List getPointFDRList() {
+		return (List)getPointFDRVector();
+	}
+
+
 }

@@ -3,14 +3,19 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.PointUnit;
 
 public class ScalarPoint extends PointBase {
-	private java.util.Vector pointLimitsVector = null;
+
+	//contains <Integer:limitNumber, PointLimit>
+	private HashMap pointLimitsMap = null;
+
 	private PointUnit pointUnit = null;
+
 /**
  * ScalarPoint constructor comment.
  */
@@ -25,9 +30,11 @@ public void add() throws java.sql.SQLException {
 
 	getPointUnit().add();
 
-	for( int i = 0; i < getPointLimitsVector().size(); i++ )
-		((PointLimit) getPointLimitsVector().elementAt(i)).add();
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() )
+		((PointLimit)it.next()).add();
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (6/22/2001 10:48:35 AM)
@@ -35,8 +42,10 @@ public void add() throws java.sql.SQLException {
  */
 public void addPartial() throws java.sql.SQLException {
 	
-	for (int i = 0; i < getPointLimitsVector().size(); i++)
-		 ((PointLimit) getPointLimitsVector().elementAt(i)).add();
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() )
+		((PointLimit)it.next()).add();
+
 	getPointUnit().add();
 	super.addPartial();
 
@@ -50,8 +59,6 @@ public void delete() throws java.sql.SQLException {
 
 	//delete all the associated PointLimits
 	delete( PointLimit.TABLE_NAME, "POINTID", getPointUnit().getPointID() );
-	//for( int i = 0; i < getPointLimitsVector().size(); i++ )
-		//((PointLimit) getPointLimitsVector().elementAt(i)).delete();
 
 	super.delete();
 }
@@ -65,16 +72,32 @@ public void deletePartial() throws java.sql.SQLException {
 	super.deletePartial();
 }
 /**
- * This method was created in VisualAge.
- * @return java.util.Vector
+ * A map of PointLimits
  */
-public java.util.Vector getPointLimitsVector() {
+public HashMap getPointLimitsMap() {
 
-	if( pointLimitsVector == null )
-		pointLimitsVector = new Vector();
+	if( pointLimitsMap == null )
+		pointLimitsMap = new HashMap();
 	
-	return pointLimitsVector;
+	return pointLimitsMap;
 }
+
+/**
+ * Convienence method to get the first limit. Returns null
+ * if no limit is set.
+ */
+public PointLimit getLimitOne() {
+	return (PointLimit)getPointLimitsMap().get( new Integer(1) );
+}
+
+/**
+ * Convienence method to get the second limit. Returns null
+ * if no limit is set.
+ */
+public PointLimit getLimitTwo() {
+	return (PointLimit)getPointLimitsMap().get( new Integer(2) );
+}
+
 /**
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.PointUnit
@@ -99,16 +122,16 @@ public void retrieve() throws java.sql.SQLException {
 		com.cannontech.database.db.point.PointLimit plArray[] = com.cannontech.database.db.point.PointLimit.getPointLimits( getPoint().getPointID(), getDbConnection().toString() );
 
 		for( int i = 0; i < plArray.length; i++ )
-			pointLimitsVector.addElement( plArray[i] );
+			getPointLimitsMap().put( plArray[i].getLimitNumber(), plArray[i] );
 		
 	}
 	catch(java.sql.SQLException e )
 	{		//not necessarily an error 	
 	}
 
-	for( int i = 0; i < getPointLimitsVector().size(); i++ )
-	{	
-		com.cannontech.database.db.DBPersistent o = ((com.cannontech.database.db.DBPersistent) getPointLimitsVector().elementAt(i));
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() ) {
+		PointLimit o = (PointLimit)it.next();
 		o.setDbConnection( getDbConnection() );
 		o.retrieve();
 		o.setDbConnection(null);
@@ -126,14 +149,12 @@ public void setDbConnection(java.sql.Connection conn)
 
 	getPointUnit().setDbConnection(conn);
 
-	Vector v = getPointLimitsVector();
 
-	if( v != null )
-	{
-		for( int i = 0; i < v.size(); i++ )
-			((com.cannontech.database.db.DBPersistent) v.elementAt(i)).setDbConnection(conn);
-	}
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() )
+		((PointLimit)it.next()).setDbConnection(conn);		
 }
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -142,16 +163,18 @@ public void setPointID(Integer pointID) {
 	super.setPointID(pointID);
 	
 	getPointUnit().setPointID(pointID);
-	
-	for( int i =0; i < getPointLimitsVector().size(); i++ )
-		((PointLimit) getPointLimitsVector().elementAt(i)).setPointID(pointID);
+
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() )
+		((PointLimit)it.next()).setPointID(pointID);
 }
+
 /**
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
  */
-public void setPointLimitsVector(java.util.Vector newValue) {
-	this.pointLimitsVector = newValue;
+public void setPointLimitsMap(HashMap newValue) {
+	this.pointLimitsMap = newValue;
 }
 /**
  * This method was created in VisualAge.
@@ -160,6 +183,7 @@ public void setPointLimitsVector(java.util.Vector newValue) {
 public void setPointUnit(PointUnit newValue) {
 	this.pointUnit = newValue;
 }
+
 /**
  * This method was created in VisualAge.
  */
@@ -170,7 +194,10 @@ public void update() throws java.sql.SQLException {
 	getPointUnit().update();
 
 	PointLimit.deletePointLimits( getPoint().getPointID(), getDbConnection() );
-	for( int i = 0 ; i < getPointLimitsVector().size(); i++ )
-		((PointLimit) getPointLimitsVector().elementAt(i)).add();
+	
+	Iterator it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() )
+		((PointLimit)it.next()).add();
 }
+
 }

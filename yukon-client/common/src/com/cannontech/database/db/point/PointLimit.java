@@ -6,10 +6,10 @@ package com.cannontech.database.db.point;
 public class PointLimit extends com.cannontech.database.db.DBPersistent 
 {	
 	private Integer pointID = null;
-	private Integer limitNumber = null;
-	private Double highLimit = null;
-	private Double lowLimit = null;
-	private Integer limitDuration = null;
+	private Integer limitNumber = new Integer(1);
+	private Double highLimit = new Double(0.0);
+	private Double lowLimit = new Double(0.0);
+	private Integer limitDuration = new Integer(0);
 
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID", "LimitNumber" };
 	

@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point.fdr;
 
+import com.cannontech.database.data.fdr.FDRInterface;
+
 /**
  * This type was created in VisualAge.
  */
@@ -27,6 +29,27 @@ public FDRTranslation(Integer pointID)
 	super();
 	setPointID( pointID );
 }
+
+/**
+ * Create a dummy FDR translation object from some reasonable default values.
+ * Attempts to create a DSM2IMPORT interface.
+ */
+public static final FDRTranslation createTranslation( Integer pointID ) {
+	
+	FDRInterface[] interfaces =
+		com.cannontech.database.db.point.fdr.FDRInterface.getALLFDRInterfaces();	
+	if( interfaces.length > 0 ) {
+		return new FDRTranslation(
+			pointID,
+			"Receive",
+			"DSM2IMPORT",
+			"DSM2IMPORT",
+			"Point:1;POINTTYPE:Analog;");
+	}
+	else
+		return new FDRTranslation(pointID);
+}
+
 /**
  * Point constructor comment.
  */
@@ -67,6 +90,49 @@ public String getDestination() {
 public String getDirectionType() {
 	return directionType;
 }
+
+/**
+ * Finds the value of an entry with the translation in the following form (examples):
+ *   Category:PSEUDO;Remote:14;Point:66;POINTTYPE:Analog;
+ *   Point:234;Interval (sec):1;POINTTYPE:Analog;
+ * 
+ * First, the label is searched for, then the value on the right hand side of the : is
+ * returned. The label search is case sensitive. Returns null if the value is not
+ * found.
+ */
+public static String getTranslationValue( String translation, String label ) {
+	
+	if( translation == null || label == null ) return null;
+	
+	String[] entries = translation.split( ";" );
+	
+	for( int i = 0; i < entries.length; i++ ) {
+
+		//found the label, return the value
+		if( entries[i].startsWith(label) )
+			return entries[i].split(":")[1];
+	}
+	
+	return null;
+}
+
+/**
+ * Returns the new translation string with the passed in label value set.
+ */
+public static String setTranslationValue( String translation, String newVal, String label ) {
+	
+	if( translation == null || label == null || newVal == null ) return translation;
+	
+	StringBuffer buffer = new StringBuffer(translation);
+	int startIndx = translation.indexOf( label + ":" );	
+	int endIndx = startIndx + translation.substring(startIndx, translation.length()).indexOf(";");
+	
+	buffer.replace( startIndx, endIndx,
+		label + ":" + newVal );
+	
+	return buffer.toString();
+}
+
 /**
  * This method was created in VisualAge.
  */

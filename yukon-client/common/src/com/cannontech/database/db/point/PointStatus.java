@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.common.util.CtiUtilities;
+
 /**
  * This type was created in VisualAge.
  */
@@ -258,4 +260,15 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );	
 }
+
+
+public boolean isControlDisabled() {
+	return CtiUtilities.isTrue( getControlInhibit() );
+}
+
+public void setControlDisabled( boolean val ) {
+	setControlInhibit( 
+		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+}
+
 }

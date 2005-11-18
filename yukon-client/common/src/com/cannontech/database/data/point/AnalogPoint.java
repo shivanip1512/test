@@ -32,7 +32,7 @@ public void add() throws java.sql.SQLException {
  */
 public void addPartial() throws java.sql.SQLException {
 	
-	getPointAnalogDefaults().add();
+	getPointAnalog().add();
 	super.addPartial();
 }
 /**
@@ -64,21 +64,6 @@ public PointAnalog getPointAnalog() {
 		pointAnalog = new PointAnalog();
 		
 	return pointAnalog;
-}
-/**
- * Insert the method's description here.
- * Creation date: (6/22/2001 12:20:32 PM)
- * @return com.cannontech.database.db.point.PointAnalog
- */
-public PointAnalog getPointAnalogDefaults() {
-	
-
-	getPointAnalog().setDeadband(new Double(-1));
-	getPointAnalog().setTransducerType(PointTypes.getType(PointTypes.TRANSDUCER_NONE)); 
-	getPointAnalog().setMultiplier(new Double(1.0));
-	getPointAnalog().setDataOffset(new Double(0.0));
-
-	return getPointAnalog();
 }
 /**
  * This method was created in VisualAge.

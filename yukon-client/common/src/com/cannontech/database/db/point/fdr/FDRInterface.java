@@ -171,6 +171,19 @@ public java.lang.String getInterfaceName() {
 public java.lang.String getPossibleDirections() {
 	return possibleDirections;
 }
+
+/**
+ * Returns all the Directions by parsing the PossibleDirectsion String.
+ * Assumes the delimiter is a comma.
+ */
+public String[] getAllDirections() {
+
+	if( getPossibleDirections() == null )
+		return new String[0];
+
+	return getPossibleDirections().split( "," );
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (7/16/2001 11:02:01 AM)

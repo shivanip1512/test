@@ -152,6 +152,34 @@ public boolean isNotifyOnAck() {
 		|| getNotifyOnAcknowledge().charAt(0) == 'B';
 }
 
+/**
+ * Returns the single char representation for the ExcludeNotify state.
+ */
+public static char getExcludeNotifyChar( String notify ) {
+	if( EXCLUDE_NOTIFY_VALUE_STRING.equals(notify) )
+		return 'E';
+	else if( AUTO_ACK_VALUE_STRING.equals(notify) )
+		return  'A';
+	else if( BOTH_OPTIONS_VALUE_STRING.equals(notify) )
+		return 'B';
+	else
+		return 'N';
+}
+
+/**
+ * Returns the string representation for the ExcludeNotify char state.
+ */
+public static String getExcludeNotifyString( char val ) {
+	if( val == 'E' || val == 'Y' )
+		return EXCLUDE_NOTIFY_VALUE_STRING;
+	else if( val == 'A' )
+		return AUTO_ACK_VALUE_STRING;
+	else if( val == 'B' )
+		return BOTH_OPTIONS_VALUE_STRING;
+	else
+		return NONE_VALUE_STRING;
+}
+
 
 /**
  * This method was created in VisualAge.

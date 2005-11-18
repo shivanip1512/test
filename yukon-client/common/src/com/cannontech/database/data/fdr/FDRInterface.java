@@ -1,5 +1,8 @@
 package com.cannontech.database.data.fdr;
 
+import com.cannontech.database.db.point.fdr.FDRInterfaceOption;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/22/2001 4:24:30 PM)
@@ -87,4 +90,59 @@ public String toString()
  * @exception java.sql.SQLException The exception description.
  */
 public void update() throws java.sql.SQLException {}
+
+
+
+/**
+ * Returns a valid translation string with the given inputs, else returns null
+ */
+public static String createFDRTranslation( String[] labels, String[] values, String pointType )  {
+
+	if( labels == null || values == null 
+			|| (labels.length != values.length) ) {
+		return null;
+	}
+		
+	StringBuffer translation = new StringBuffer();
+	for( int i = 0; i < labels.length; i++ ) {
+
+		//append the labels text
+		translation.append( labels[i] + ":" );
+
+		//append the values text
+		translation.append( values[i] + ";" );
+	}
+
+	//For all interfaces, add the PointType to the end of the translation string
+	translation.append( "POINTTYPE:" + pointType + ";" );
+
+	return translation.toString();
+}
+
+/**
+ * Creates a default translation string for the given interface
+ */
+public static FDRTranslation createDefaultTranslation( FDRInterface inter, Integer pointID, String pointType ) {
+	
+	if( inter == null || inter.getInterfaceOptionVector().size() <= 0
+			|| inter.getFdrInterface().getAllDirections().length <= 0 )
+		return new FDRTranslation(pointID);  //some dummy with no interface attributes
+
+	String[] labels = new String[inter.getInterfaceOptionVector().size()];
+	String[] values = new String[inter.getInterfaceOptionVector().size()];
+	for( int i = 0; i < inter.getInterfaceOptionVector().size(); i++ ) {
+	
+		FDRInterfaceOption fdrOption = (FDRInterfaceOption)inter.getInterfaceOptionVector().get(i);
+		
+		labels[i] = fdrOption.getOptionLabel();
+		values[i] = fdrOption.getAllOptionValues()[0]; //default to the first value in the list		
+	}
+	
+	return new FDRTranslation(
+		pointID,
+		inter.getFdrInterface().getAllDirections()[0],
+		inter.getFdrInterface().getInterfaceName(),
+		inter.getFdrInterface().getInterfaceName(), //dest
+		createFDRTranslation(labels, values, pointType) );
+}
 }

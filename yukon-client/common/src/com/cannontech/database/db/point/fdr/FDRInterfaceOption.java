@@ -160,4 +160,17 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+/**
+ * Returns all the possible option values by parsing the OptionValues String.
+ * Assumes the delimiter is a comma.
+ */
+public String[] getAllOptionValues() {
+
+	if( getOptionValues() == null )
+		return new String[0];
+
+	return getOptionValues().split( "," );
+}
+
 }

@@ -4,6 +4,9 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import com.cannontech.common.util.CtiUtilities;
 
 public class PointLimitEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -936,7 +939,8 @@ public Object getValue(Object val) {
 	
 	
 	//Vector for possibly store point limits
-	java.util.Vector limits = new java.util.Vector(2);
+	//java.util.Vector limits = new java.util.Vector(2);
+	HashMap limitHash = new HashMap(8);
 	
 	if( getLimit1CheckBox().isSelected() )
 	{
@@ -961,8 +965,9 @@ public Object getValue(Object val) {
 			limit1Low = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
 		}
 
-		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
-				new Integer(1), limit1High, limit1Low, (Integer)alarmDuration1 ) );
+		limitHash.put( new Integer(1),
+			new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
+				new Integer(1), limit1High, limit1Low, (Integer)alarmDuration1) );
 	}
 
 	
@@ -989,11 +994,12 @@ public Object getValue(Object val) {
 			limit2Low = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
 		}
 		
-		limits.addElement( new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
+		limitHash.put( new Integer(2),
+			new com.cannontech.database.db.point.PointLimit( point.getPoint().getPointID(), 
 				new Integer(2), limit2High, limit2Low, (Integer)alarmDuration2 ) );			
 	}
 
-	point.setPointLimitsVector( limits );
+	point.setPointLimitsMap( limitHash );
 
 
 	try
@@ -1265,52 +1271,51 @@ public void setValue(Object val)
 	//Consider defaultObject to be an instance of com.cannontech.database.data.point.ScalarPoint
 	com.cannontech.database.data.point.ScalarPoint point = (com.cannontech.database.data.point.ScalarPoint) val;
 
-	java.util.Vector limits = point.getPointLimitsVector();
+	//java.util.Vector limits = point.getPointLimitsVector();
+	Iterator limitIt = point.getPointLimitsMap().values().iterator();
+
 	Double noSpecifiedLow = new Double(CtiUtilities.INVALID_MIN_DOUBLE);
-		
-	//If point limits exist fill in the fields
-	if( limits != null )
-	{		
+
+	while( limitIt.hasNext() )
+	{			
+		com.cannontech.database.db.point.PointLimit pLimit =
+			(com.cannontech.database.db.point.PointLimit)limitIt.next();
+
 		//Handle Limit 1
-		for( int i = 0; i < limits.size(); i++ )
-		{			
-			com.cannontech.database.db.point.PointLimit pLimit = (com.cannontech.database.db.point.PointLimit) limits.elementAt(i);
+		if( pLimit.getLimitNumber().intValue() == 1 )
+		{	//Handle Limit 1
+			Double highLimit = pLimit.getHighLimit();
+			Double lowLimit = pLimit.getLowLimit();
+			
 
-			if( pLimit.getLimitNumber().intValue() == 1 )
-			{	//Handle Limit 1
-				Double highLimit = pLimit.getHighLimit();
-				Double lowLimit = pLimit.getLowLimit();
-				
+			if( highLimit != null )
+				getLimit1HighTextField().setText( highLimit.toString());
 
-				if( highLimit != null )
-					getLimit1HighTextField().setText( highLimit.toString());
+			if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
+				getLimit1LowTextField().setText( lowLimit.toString() );
 
-				if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
-					getLimit1LowTextField().setText( lowLimit.toString() );
+			getLimit1CheckBox().setSelected(true);
 
-				getLimit1CheckBox().setSelected(true);
+			getSpinField().setValue( new Integer( pLimit.getLimitDuration().intValue()) );
+		}		
+		else if( pLimit.getLimitNumber().intValue() == 2 )
+		{	//Handle Limit 2
+			Double highLimit = pLimit.getHighLimit();
+			Double lowLimit = pLimit.getLowLimit();
+			
+			if( highLimit != null )
+				getLimit2HighTextField().setText( highLimit.toString());
 
-				getSpinField().setValue( new Integer( pLimit.getLimitDuration().intValue()) );
-			}		
-			else if( pLimit.getLimitNumber().intValue() == 2 )
-			{	//Handle Limit 2
-				Double highLimit = pLimit.getHighLimit();
-				Double lowLimit = pLimit.getLowLimit();
-				
-				if( highLimit != null )
-					getLimit2HighTextField().setText( highLimit.toString());
+			if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
+				getLimit2LowTextField().setText( lowLimit.toString() );
 
-				if( lowLimit != null && !lowLimit.equals(noSpecifiedLow))
-					getLimit2LowTextField().setText( lowLimit.toString() );
+			getLimit2CheckBox().setSelected(true);
 
-				getLimit2CheckBox().setSelected(true);
-
-				getSpinField2().setValue( new Integer( pLimit.getLimitDuration().intValue()) );
-			}
-			else
-				com.cannontech.clientutils.CTILogger.info("****** UNKNOWN LimitNumber( " + pLimit.getLimitNumber().intValue() + ") found in database table PointLimits for pointid = " + pLimit.getPointID().intValue() + " ******");
+			getSpinField2().setValue( new Integer( pLimit.getLimitDuration().intValue()) );
 		}
-	} //Finished handling limits vector
+		else
+			com.cannontech.clientutils.CTILogger.info("****** UNKNOWN LimitNumber( " + pLimit.getLimitNumber().intValue() + ") found in database table PointLimits for pointid = " + pLimit.getPointID().intValue() + " ******");
+	}
 
 
 	if( point.getPointUnit().getHighReasonabilityLimit().doubleValue() < CtiUtilities.INVALID_MAX_DOUBLE )

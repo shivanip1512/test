@@ -406,6 +406,9 @@ private synchronized void handleAreaList(CBCSubAreaNames areaNames_)
 	while( it.hasNext() ) {
 		areaNames.add( it.next() );
 	}
+	
+	//before returning, sort our Areas based on the name
+	Collections.sort( areaNames );
 }
 
 /**
