@@ -22,6 +22,7 @@ interface RoleDefs {
 	static final int ANALYSIS_ROLEID_BASE = -600;
 	static final int CBC_ROLEID_BASE = -700;
 	static final int IVR_ROLEID_BASE = -800;
+	static final int LM_ROLEID_BASE = -900;
 	
 	
 	/*
@@ -36,4 +37,6 @@ interface RoleDefs {
 	static final int ANALYSIS_PROPERTYID_BASE = -60000;
 	static final int CBC_PROPERTYID_BASE = -70000;
 	static final int IVR_PROPERTYID_BASE = -80000;
+	static final int LM_PROPERTYID_BASE = -90000;
+
 }
