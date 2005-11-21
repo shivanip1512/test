@@ -552,9 +552,9 @@ alter table ConfigurationValue
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
 insert into billingfileformats values( -18, 'ATS');
 
+insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
 insert into YukonGroupRole values(-175,-100,-103,-10305,'(none)');
 insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
-insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
 insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
 
 create table CommandGroup(

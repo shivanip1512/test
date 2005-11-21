@@ -74,6 +74,15 @@ alter table Customer modify TemperatureUnit not null;
 insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0);
 insert into YukonListEntry values (135, 100, 0, 'Regression', 0);
 
+/* @error ignore */
+insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
+/* @error ignore */
+insert into YukonGroupRole values(-175,-100,-103,-10305,'(none)');
+/* @error ignore */
+insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
+/* @error ignore */
+insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
+
 
 
 
