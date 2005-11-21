@@ -800,6 +800,31 @@ double CtiCalcComponent::_doFunction( RWCString &functionName, bool &validCalc )
 
             retVal = ( c != 0.0 ? a : b );
         }
+        else if( !functionName.compareTo("Regression",RWCString::ignoreCase) )      // Stack has Depth,Minutes,Value
+        {
+            /*
+             *  This function pops a number representing the trigger state of a status and returns the
+             *  number of seconds since the point entered that state
+             */
+            double value  = _calcpoint->pop();  // This should be the point's most recent value.  It is not used by the regression computation.
+            ULONG  min    = _calcpoint->pop();  // This is the number of minutes forward we want to compute.
+            int    depth  = _calcpoint->pop();  // This is the storage depth of our regression.
+
+            retVal = 0;
+            if(_componentPointId > 0)
+            {
+                CtiPointStore* pointStore = CtiPointStore::getInstance();
+                CtiHashKey componentHashKey(_componentPointId);
+                CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
+
+                if(componentPointPtr != NULL)
+                {
+                    RWTime now;
+                    componentPointPtr->resize_regession( depth );
+                    retVal = componentPointPtr->regression( now.seconds() + (min * 60) );
+                }
+            }
+        }
         else
         {
             // We do not have a function.

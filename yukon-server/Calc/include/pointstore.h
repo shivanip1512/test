@@ -13,6 +13,7 @@
 #include "hashkey.h"
 #include "rtdb.h"
 #include "pointdefs.h"
+#include "regression.h"
 
 #define CALC_DEBUG_INBOUND_POINTS                   0x00000001
 #define CALC_DEBUG_OUTBOUND_POINTS                  0x00000002
@@ -68,6 +69,7 @@ private:
 
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
     RWTime _lastValueChangedTime;
+    CtiRegression _regress;
 
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
@@ -85,7 +87,15 @@ public:
     RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
 
     RWTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
-
+    void resize_regession(int data_elements)
+    {
+        _regress.resize(data_elements);
+        return;
+    }
+    double regression( double x)
+    {
+        return _regress.regression(x);
+    }
 
 protected:
     void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
@@ -104,6 +114,8 @@ protected:
         _pointQuality = newQuality;
         _pointTags = newTags;
         _numUpdates++;
+
+        _regress.append(make_pair(_pointTime.seconds(), _pointValue));
     };
 
     void firstPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
@@ -114,6 +126,8 @@ protected:
         _pointTags = newTags;
 
         _lastValueChangedTime = _pointTime;
+
+        _regress.append(make_pair(_pointTime.seconds(), _pointValue));
     };
 
     void appendDependent( long dependentID, PointUpdateType updateType )
