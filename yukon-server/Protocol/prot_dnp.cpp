@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/04/13 14:47:48 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/11/21 19:21:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -283,9 +283,20 @@ int DNPInterface::generate( CtiXfer &xfer )
                         _app_layer.setCommand(Application::RequestOperate);
                     }
 
-                    ObjectBlock         *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ByteQty);
-                    BinaryOutputControl *bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::ControlRelayOutputBlock);
+                    ObjectBlock         *dob;
+                    BinaryOutputControl *bout;
                     output_point &op = _command_parameters[0];
+
+                    if(op.control_offset > 255 )
+                    {
+                        dob = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
+                    }
+                    else
+                    {
+                        dob = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ByteQty);
+                    }
+
+                    bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::ControlRelayOutputBlock);
 
                     bout->setControlBlock(op.dout.on_time,
                                           op.dout.off_time,
