@@ -70,9 +70,9 @@
               </tr>
               <tr>
 			
+                <td id="subMenu" class="secondBGColor" height="20">
 			<form id="subMenuFrm" action="results.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
-                <td id="subMenu" class="secondBGColor" height="20">
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">Substation</a>
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
@@ -88,8 +88,8 @@
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> -->
 				  </div>
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>&period=<%=ServletUtil.TODAY%>')">Today kVAR/Watt</a>
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>&period=<%=ServletUtil.TODAY%>')">Today PF</a>
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>&amp;period=<%=ServletUtil.TODAY%>')">Today kVAR/Watt</a>
+					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>&amp;period=<%=ServletUtil.TODAY%>')">Today PF</a>
 
 					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a>
 					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a>
@@ -105,8 +105,8 @@
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
 					</cti:isPropertyFalse>
 				  </div>
-				</td>
 			</form>
+				</td>
 
 			</tr>
 			</table>
