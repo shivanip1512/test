@@ -61,7 +61,7 @@ insert into yukongrouprole values (-2191,-303,-201,-20891,'(none)');
 insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
 insert into yukongrouprole values (-2397,-304,-400,-40197,'false');
 
-insert into command values(-8, 'putconfig emetcon multiplier kyz1 ?Multiplier(x.xxx)', 'Write MPKH ()', 'All MCTs');
+update command set command = 'putconfig emetcon multiplier kyz 1 ?Multiplier(x.xxx)' where commandid = -8;
 
 update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
 
@@ -71,6 +71,8 @@ alter table Customer add TemperatureUnit char(1);
 update Customer set TemperatureUnit = 'F';
 alter table Customer modify TemperatureUnit not null;
 
+insert into YukonListEntry values (134, 100, 0, 'True,False,Condition', 0);
+insert into YukonListEntry values (135, 100, 0, 'Regression', 0);
 
 
 
