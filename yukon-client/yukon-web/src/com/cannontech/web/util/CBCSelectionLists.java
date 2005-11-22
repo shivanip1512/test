@@ -60,8 +60,9 @@ public class CBCSelectionLists {
 	private static final SelectItem[] scheduleCmds =  {
 		//value, label
 		new SelectItem("Verify ALL CapBanks", "Verify ALL CapBanks" ),
-		new SelectItem("Verify Failed and Questionable CapBanks", "Verify Failed and Questionable CapBanks" ),
 		new SelectItem("Verify Failed CapBanks", "Verify Failed CapBanks" ),
+		new SelectItem("Verify Failed and Questionable CapBanks", "Verify Failed and Questionable CapBanks" ),
+		new SelectItem("Verify Standalone CapBanks", "Verify Standalone CapBanks" ),
 		new SelectItem("Verify Questionable CapBanks", "Verify Questionable CapBanks" )
 	};
 
