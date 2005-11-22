@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/11/17 22:27:35 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/11/22 21:52:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -274,7 +274,7 @@ public:
 
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RWCString user, CtiMultiMsg &sigList);
-    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false);
+    void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, RWCString user = RWCString("System"));
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointBase &point, CtiDynamicPointDispatch *&pDyn, bool activate);

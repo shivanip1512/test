@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2005/11/17 22:27:35 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2005/11/22 21:52:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1035,7 +1035,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
                                 if(dliteit != _deviceLiteSet.end() && ablementDevice(dliteit, setmask, tagmask))
                                 {
-                                    adjustDeviceDisableTags(id);    // We always have an id here.
+                                    adjustDeviceDisableTags(id, false, Cmd->getUser());    // We always have an id here.
                                 }
                             }
                             else if(idtype == OP_POINTID)
@@ -1742,7 +1742,7 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 if(aChg.getDatabase() == ChangePAODb)
                 {
                     _deviceLiteSet.erase(aChg.getId());
-                    adjustDeviceDisableTags(aChg.getId(), true);
+                    adjustDeviceDisableTags(aChg.getId(), true, pMsg->getUser());
                 }
 
                 break;
@@ -4188,7 +4188,8 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
 
                     Now = Now.now();
-                    adjustDeviceDisableTags(id, pChg != 0);
+                    RWCString username = pChg ? pChg->getUser() : RWCString("Dispatch Application");
+                    adjustDeviceDisableTags(id, pChg != 0, username);
 
                     deltaT = Now.now().seconds() - Now.seconds();
                     if( deltaT > 5 )
@@ -5523,7 +5524,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
  *  A key item to remember is that this information _really_ only exists on the _points_ which dispatch tracks.
  *
  */
-void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange)
+void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, RWCString user)
 {
     if(!_deviceLiteSet.empty())
     {
@@ -5536,6 +5537,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange)
 
             if(pMulti)
             {
+                pMulti->setUser(user);
                 pMulti->setSource(DISPATCH_APPLICATION_NAME);
 
                 /*
@@ -5566,7 +5568,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange)
                             setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
                             setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
-                            ablementPoint(pPoint, devicedifferent, setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti);
+                            ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
 
                             if(devicedifferent && !dbchange)
                             {
@@ -5596,7 +5598,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange)
                                 setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
                                 setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
-                                if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, DISPATCH_APPLICATION_NAME, *pMulti))
+                                if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, user, *pMulti))
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

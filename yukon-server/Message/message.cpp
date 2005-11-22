@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/11/22 21:52:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "numstr.h"
 
 
+#define DEFAULT_SYSTEM_USER "(yukon system)"
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
 
 
@@ -115,7 +116,7 @@ CtiMessage::CtiMessage(int Pri) :
    ConnectionHandle(NULL),
    MessagePriority(Pri & 0x0000000f),
    _soe(0),
-   _usr(""),
+   _usr(DEFAULT_SYSTEM_USER),
    _pwd(""),
    _token(-1),
    _src("")
@@ -125,7 +126,7 @@ CtiMessage::CtiMessage(const CtiMessage& aRef) :
    ConnectionHandle(NULL),
    MessagePriority(aRef.getMessagePriority()),
    _soe(0),
-   _usr(""),
+   _usr(DEFAULT_SYSTEM_USER),
    _pwd(""),
    _token(-1),
    _src("")
