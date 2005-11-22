@@ -3506,8 +3506,9 @@ public synchronized LiteContact getAContactByContactID(int contactID)
 {
     LiteContact specifiedContact = null;
     //check cache for previous grabs
-    if(allContactsMap == null)
-        allContactsMap = new HashMap();
+    if(allContactsMap == null) {
+        getAllContacts();
+    }
     else
         specifiedContact = (LiteContact) allContactsMap.get(new Integer(contactID));
     
@@ -3515,8 +3516,9 @@ public synchronized LiteContact getAContactByContactID(int contactID)
     if(specifiedContact == null)
     {
         specifiedContact = YukonUserContactLookup.loadSpecificContact(contactID);
+
         //found it, put it in the cache for later searches
-        allContactsMap.put(new Integer(contactID), specifiedContact);
+        allContactsMap.put(new Integer(contactID), specifiedContact);        
         allContacts.add(specifiedContact);
     }
     
