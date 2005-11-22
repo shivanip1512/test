@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2005/11/22 22:58:20 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2005/11/22 23:05:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -387,6 +387,7 @@ void statisticsRecord()
     {
         try
         {
+            if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Start statisticsRecord() " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -399,6 +400,7 @@ void statisticsRecord()
             {
                 pair< CtiStatisticsMap_t::iterator, bool > resultpair;
                 CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);    // Lock the global list for a minimal amount of time
+                if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " statisticsRecord() acquired exclusion object " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -418,6 +420,7 @@ void statisticsRecord()
                 gDeviceStatDirty = false;
             }
 
+            if(getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " statisticsRecord() generated table candidates. " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -441,12 +444,7 @@ void statisticsRecord()
                 }
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << endl;
-            }
-
-            if(cnt)
+            if(cnt && getDebugLevel() & DEBUGLEVEL_STATISTICS)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Recorded " << cnt << " device's performance statistics." << endl;
