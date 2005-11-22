@@ -9,7 +9,7 @@ import javax.faces.model.SelectItem;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.pao.PAOSchedule;
-import com.cannontech.servlet.nav.*;
+import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
