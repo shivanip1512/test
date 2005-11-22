@@ -181,23 +181,28 @@ public class PointForm extends DBEditorForm
 				
 				List contacts = cache.getAllContacts();
 
-				emailNotifcations = new SelectItem[ contacts.size() + 1 ];
-				emailNotifcations[0] = 
+				ArrayList emailList = new ArrayList();
+				emailList.add( 
 					new SelectItem(
 						new Integer(LiteContact.NONE_LITE_CONTACT.getContactID()),
-						LiteContact.NONE_LITE_CONTACT.toString());
+						LiteContact.NONE_LITE_CONTACT.toString()) );
 				
 				for( int i = 0; i < contacts.size(); i++ ) {
 
 					LiteContact contact = (LiteContact)contacts.get(i);
-				
-					if( findEmailContact(contact) != CtiUtilities.NONE_ZERO_ID )
-						emailNotifcations[i+1] = 
+					int cntNotifID = findEmailContact(contact);
+
+					if( cntNotifID != CtiUtilities.NONE_ZERO_ID )
+						emailList.add( 
 							new SelectItem(
-								new Integer(findEmailContact(contact)),
-								contact.toString());
+								new Integer(cntNotifID),
+								contact.toString()) );
 				}
-			}
+
+				emailNotifcations = new SelectItem[ emailList.size() ];
+				emailNotifcations =
+					(SelectItem[])emailList.toArray( emailNotifcations );
+			}			
 		}
 
 		return emailNotifcations;
