@@ -1,5 +1,6 @@
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.roles.application.CommanderRole" %>
+<%@page import="com.cannontech.roles.application.ReportingRole" %>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr><td> 
@@ -25,8 +26,11 @@
 					<cti:checkRole roleid="<%= CommanderRole.ROLEID %>">
 						<option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
 					</cti:checkRole>
-					<option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
-					<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+					<option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>					
+                    <cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+						<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+                    </cti:checkRole>
+
                 </select>
 	          <!-- <a href="x" class="menuLink">Help</a> -->
 	          <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
