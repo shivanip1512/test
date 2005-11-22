@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/11/22 19:44:47 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/11/22 22:58:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -252,7 +252,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -293,7 +293,7 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -341,7 +341,7 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
+    if( !gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
