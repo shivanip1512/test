@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/11/11 15:24:18 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/11/22 19:44:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,7 +118,7 @@ VOID PerfUpdateThread (PVOID Arg)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
                 }
-          
+
                 CtiThreadRegData *data = new CtiThreadRegData( GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, 400 );
                 ThreadMonitor.tickle( data );
             }
@@ -252,7 +252,7 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
 
 void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -293,7 +293,7 @@ void statisticsNewRequest(long paoportid, long devicepaoid, long targetpaoid)
 
 void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
@@ -341,7 +341,7 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
 
 void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid, int result)
 {
-    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("true", RWCString::ignoreCase) )
+    if( gConfigParms.getValueAsString("PORTER_DOSTATISTICS").contains("false", RWCString::ignoreCase) )
     {
     #ifndef DONOSTATS
         CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
