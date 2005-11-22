@@ -71,7 +71,7 @@ public class DumpRoles {
 		com.cannontech.roles.operator.CommercialMeteringRole.class,
 		ConsumerInfoRole.class,
 		com.cannontech.roles.operator.DirectCurtailmentRole.class,
-		com.cannontech.roles.operator.DirectLoadcontrolRole.class,
+		com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.class,
 		com.cannontech.roles.operator.EnergyBuybackRole.class,
 		com.cannontech.roles.operator.EsubDrawingsRole.class,
 		OddsForControlRole.class,
