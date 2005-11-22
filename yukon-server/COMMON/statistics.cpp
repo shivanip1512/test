@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/11/22 22:49:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -165,6 +165,14 @@ void CtiStatistics::incrementSuccess(const RWTime &stattime)
     incrementCounter( Completions, HourNo, 1);
     incrementCounter( Completions, Daily, 1);
     incrementCounter( Completions, Monthly, 1);
+
+    if(getDebugLevel() & DEBUGLEVEL_STATISTICS && getCounter( Requests, Daily ) < getCounter( Completions, Daily ))
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") id " << getID() << " has a statistics anomoly" << endl;
+        }
+    }
 }
 
 CtiStatistics::CtiStatisticsCounters_t CtiStatistics::resolveFailType( int CompletionStatus ) const
