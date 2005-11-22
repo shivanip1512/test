@@ -40,10 +40,11 @@
 							</cti:isPropertyTrue>	                        
 							<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.CBC_DATABASE_EDIT %>">
 		                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 1); return false;">Modify</a>
-							</cti:isPropertyTrue>	                        
-                            <cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+							</cti:isPropertyTrue>
+							<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
 		                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">Reporting</a>
-		                    </cti:checkRole>
+							</cti:isPropertyTrue>
+
 	                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 3); return false;">View</a>
 	                      </div>
 	                  </td>
@@ -58,7 +59,11 @@
 									<option value="<%=request.getContextPath()%>/apps/SelectDevice.jsp">Commander</option>
 								</cti:checkRole>
 								<option value="<%=request.getContextPath()%>/operator/Operations.jsp">Home</option>
-								<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+								
+			                    <cti:checkRole roleid="<%= ReportingRole.ROLEID %>">
+									<option value="<%=request.getContextPath()%>/analysis/Reports.jsp" >Reporting</option>
+			                    </cti:checkRole>
+								
 	                        </select>
 <!--	                      <a href="x" class="menuLink">Help</a> -->
                           <a href="/servlet/LoginController?ACTION=LOGOUT" class="menuLink">Log Out</a>
