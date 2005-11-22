@@ -101,8 +101,8 @@ public class JSFParamUtil
 		FacesContext fc = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession)fc.getExternalContext().getSession(false);
 
-		if( session != null ) {
-			CTILogger.warn("The current YukonUser inside the HttpSession is NULL");
+		if( session == null ) {
+			CTILogger.warn("The current HttpSession is NULL");
 			return null;
 		}
 		else 
