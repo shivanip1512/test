@@ -75,4 +75,23 @@ public final class StringUtils {
 
         return intArr;
     }
+    
+    /**
+     * Converts an array of integer into a comma-separated list that is compatible 
+     * with an SQL statement of the form "id in (<your list>)". The only special 
+     * thing this function does is return the word "null" if the list is empty.
+     * @param ids a Integer[]
+     * @return a comma separated list or the word "null"
+     */
+    public static String convertToSqlLikeList(Integer[] ids) {
+        String groupIdStr;
+        if (ids.length > 0) {
+            groupIdStr = org.apache.commons.lang.StringUtils.join(ids, ",");
+        } else {
+            groupIdStr = "null";
+        }
+        return groupIdStr;
+    }
+    
+
 }

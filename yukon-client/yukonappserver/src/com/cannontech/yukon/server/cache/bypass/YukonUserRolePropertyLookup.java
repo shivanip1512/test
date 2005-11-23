@@ -7,6 +7,7 @@
 package com.cannontech.yukon.server.cache.bypass;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -85,8 +86,8 @@ public class YukonUserRolePropertyLookup
 		   		return "";
 			}
 
-            StringBuffer groupIdStr;
-            groupIdStr = convertToSqlLikeList(groupIDs);
+            String groupIdStr;
+            groupIdStr = StringUtils.convertToSqlLikeList(groupIDs);
 			
 			stmt = new com.cannontech.database.SqlStatement("SELECT value FROM " + YukonGroupRole.TABLE_NAME + " WHERE rolepropertyid = " + rolePropertyID + " AND GroupID IN("
 															+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
@@ -129,22 +130,6 @@ public class YukonUserRolePropertyLookup
 		return propertyValue;
 	}
 
-    private static StringBuffer convertToSqlLikeList(Integer[] groupIDs) {
-        StringBuffer groupIdStr;
-        if (groupIDs.length > 0) {
-            groupIdStr = new StringBuffer();
-            for (int j = 0; j < groupIDs.length; j++) {
-                if (j != 0) {
-                    groupIdStr.append(",");
-                }
-                groupIdStr.append(groupIDs[j]);
-            }
-        } else {
-            groupIdStr = new StringBuffer("null");
-        }
-        return groupIdStr;
-    }
-	
 	public static LiteYukonRole loadSpecificRole(LiteYukonUser user, int roleID)
 	{
 		/*
@@ -209,8 +194,8 @@ public class YukonUserRolePropertyLookup
 			com.cannontech.clientutils.CTILogger.error( "Error retrieving groups for user " + user.getUsername() + ": " + e.getMessage(), e );
 		}
 			
-		StringBuffer groupIdStr;
-		groupIdStr = convertToSqlLikeList(groupIDs);
+		String groupIdStr;
+		groupIdStr = StringUtils.convertToSqlLikeList(groupIDs);
 			
 		stmt = new com.cannontech.database.SqlStatement("SELECT GroupRoleID, GroupID, RoleID, RolePropertyID, Value FROM " + YukonGroupRole.TABLE_NAME + " WHERE roleid = " + roleID + " AND GroupID in ("
 														+ groupIdStr + ")", CtiUtilities.YUKONDBALIAS );
