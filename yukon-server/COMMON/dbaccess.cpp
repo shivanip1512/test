@@ -320,13 +320,14 @@ dbErrorHandler2 (const RWDBStatus& aStatus)
  *  rowsAffected can be used to detect an Update of a non-existent row... It will be zero if no update occurred.
  */
 DLLEXPORT
-RWDBStatus ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file, int line, long *rowsAffected)
+RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file, int line, long *rowsAffected)
 {
     RWDBResult myResult = updater.execute( conn );
     RWDBStatus stat = myResult.status();
+    RWDBStatus::ErrorCode ec = stat.errorCode();
 
-    if(rowsAffected)
-    {
+    if(rowsAffected)                                        // Ha.  The calls to table and rowCount ALTER stat!!!!
+    {                                                       // This may make the usage of the return VERY suspect!
         RWDBTable myTable = myResult.table();
         *rowsAffected = myResult.rowCount();
     }
@@ -339,15 +340,31 @@ RWDBStatus ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char
         dout << endl << updater.asString() << endl;
     }
 
-    if( stat.errorCode() != RWDBStatus::ok )
+    if( ec != RWDBStatus::ok )
     {
+        RWTime Now;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
+        dout << Now << " Error Code = " << stat.errorCode() << ". ";
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << endl << updater.asString() << endl << endl;
+
+
+        if(stat.vendorError1() != 0)
+        {
+            dout << Now << " Thread id:        " << rwThreadId() << endl
+            << Now << " Error code:       " << (int) stat.errorCode() << endl
+            << Now << " Error message     " << stat.message() << endl
+            << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
+            << Now << " Vendor error 1:   " << stat.vendorError1() << endl
+            << Now << " Vendor error 2:   " << stat.vendorError2() << endl
+            << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
+            << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+            if(rowsAffected) dout << Now << " Rows Updated      " << *rowsAffected << endl;
+        }
     }
 
-    return stat;
+
+    return ec;
 }
 
 DLLEXPORT
@@ -365,10 +382,23 @@ RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const c
 
     if( stat.errorCode() != RWDBStatus::ok )
     {
+        RWTime Now;
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << RWTime() << " Error Code = " << stat.errorCode() << ". ";
+        dout << Now << " Error Code = " << stat.errorCode() << ". ";
         if(file != 0) dout << file << " (" << line << ")";
         dout << endl << endl << inserter.asString() << endl << endl;
+
+        if(stat.vendorError1() != 0)
+        {
+            dout << Now << " Thread id:        " << rwThreadId() << endl
+            << Now << " Error code:       " << (int) stat.errorCode() << endl
+            << Now << " Error message     " << stat.message() << endl
+            << Now << " Is terminal:      " << (stat.isTerminal() ? "Yes" : "No") << endl
+            << Now << " Vendor error 1:   " << stat.vendorError1() << endl
+            << Now << " Vendor error 2:   " << stat.vendorError2() << endl
+            << Now << " Vendor message 1: " << stat.vendorMessage1() << endl
+            << Now << " Vendor message 2: " << stat.vendorMessage2() << endl << endl;
+        }
     }
 
     return stat;

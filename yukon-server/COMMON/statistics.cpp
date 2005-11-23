@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/11/22 22:49:19 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -581,16 +581,15 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert()
 
 RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
 {
-    RWDBStatus stat;
+    RWDBStatus::ErrorCode ec = RWDBStatus::ok;
     // CtiLockGuard<CtiMutex> guard(_statMux);
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
     RWDBTable table = getDatabase().table( getTableName() );
     RWDBUpdater updater = table.updater();
 
-    stat = updater.status();
 
-    for(int i = 0; i < FinalCounterBin && stat.errorCode() == RWDBStatus::ok; i++)
+    for(int i = 0; i < FinalCounterBin && ec == RWDBStatus::ok; i++)
     {
         if(_dirtyCounter[i])
         {
@@ -608,23 +607,16 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
 
             updater.where( table["paobjectid"] == getID() && table["statistictype"] == getCounterName( i ));
 
-            stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-            if( stat.errorCode() != RWDBStatus::ok )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "Statistics Updater Error Code = " << stat.errorCode() << endl;
-                dout << updater.asString() << endl;
-            }
+            ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
         }
     }
 
-    if( stat.errorCode() == RWDBStatus::ok )
+    if( ec == RWDBStatus::ok )
     {
         _dirty = false;
     }
 
-    return stat.errorCode();
+    return ec;
 }
 
 RWDBStatus::ErrorCode  CtiStatistics::Update()

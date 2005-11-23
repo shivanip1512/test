@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_pagingreceiver.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,7 +238,7 @@ RWDBStatus CtiTableDevicePagingReceiver::Update()
    // updater <<
    // table["pagernumber"].assign(getPagerNumber() );
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
         setDirty(false);
     }

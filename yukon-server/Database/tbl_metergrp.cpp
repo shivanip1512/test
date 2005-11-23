@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_metergrp.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ RWDBStatus CtiTableDeviceMeterGroup::Update()
     table["meternumber"].assign(getMeterNumber() ) <<
     table["billinggroup"].assign(getBillingGroup() );
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
         setDirty(false);
     }

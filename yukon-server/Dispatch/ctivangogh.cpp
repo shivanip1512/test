@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2005/11/22 21:52:00 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5446,7 +5446,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
             updater.where( yukonPAObjectTable["paobjectid"] == did );
             updater << yukonPAObjectTable["disableflag"].assign( RWCString((TAG_DISABLE_DEVICE_BY_DEVICE & setmask?'Y':'N')) );
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__).isValid() ? NORMAL: UnknownError);
+            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
 
 
@@ -5460,7 +5460,7 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, R
             updater.where( deviceTable["deviceid"] == did );
             updater << deviceTable["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_DEVICE & setmask?'Y':'N')) );
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__).isValid() ? NORMAL: UnknownError);
+            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
     }
 
@@ -5492,7 +5492,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
             updater.where( tbl["pointid"] == pid );
             updater << tbl["serviceflag"].assign( RWCString((TAG_DISABLE_POINT_BY_POINT & setmask?'Y':'N')) );
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__).isValid() ? NORMAL: UnknownError);
+            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
 
         if(TAG_DISABLE_CONTROL_BY_POINT & tagmask)
@@ -5506,7 +5506,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, RW
             updater.where( tbl["pointid"] == pid );
             updater << tbl["controlinhibit"].assign( RWCString((TAG_DISABLE_CONTROL_BY_POINT & setmask?'Y':'N')) );
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__).isValid() ? NORMAL: UnknownError);
+            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
         }
     }
 

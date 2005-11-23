@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_direct.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/10/20 21:41:27 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -149,7 +149,7 @@ RWDBStatus CtiTableDeviceDirectComm::Update()
     updater <<
     table["portid"].assign(getPortID());
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
         setDirty(false);
     }

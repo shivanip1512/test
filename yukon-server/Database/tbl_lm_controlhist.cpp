@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/10/25 14:36:01 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -412,7 +412,7 @@ RWDBStatus CtiTableLMControlHistory::updateCompletedOutstandingControls()
         dout << updater.asString() << endl;
     }
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() != RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) != RWDBStatus::ok )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -633,7 +633,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["activerestore"].assign( getActiveRestore() ) <<
     table["reductionvalue"].assign( getReductionValue() );
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
         setDirty(false);
     }

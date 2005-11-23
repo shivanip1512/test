@@ -53,7 +53,7 @@ IM_EX_CTIBASE RWDBConnection getConnection();
 IM_EX_CTIBASE RWDBConnection getConnection(unsigned dbID);
 
 IM_EX_CTIBASE RWDBReader ExecuteQuery(RWDBConnection& conn, const RWCString& query);
-IM_EX_CTIBASE RWDBStatus ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file = 0, int line = 0, long *rowsAffected = 0);
+IM_EX_CTIBASE RWDBStatus::ErrorCode ExecuteUpdater(RWDBConnection& conn, RWDBUpdater &updater, const char *file = 0, int line = 0, long *rowsAffected = 0);
 IM_EX_CTIBASE RWDBStatus ExecuteInserter(RWDBConnection& conn, RWDBInserter &inserter, const char *file = 0, int line = 0);
 
 

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2005/10/20 21:41:27 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2005/11/23 15:27:43 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: tbl_dv_wnd.cpp,v $
+      Revision 1.13  2005/11/23 15:27:43  cplender
+      Altered ExecuteUpdater to not cause a false error case.
+
       Revision 1.12  2005/10/20 21:41:27  cplender
       Added ExecuteUpdater ad ExecuteInserter to wrap the updater.execute and insert.execute and print on error.
 
@@ -374,7 +377,7 @@ RWDBStatus CtiTableDeviceWindow::Update()
     table["winclose"].assign(calculateClose (getOpen(),getDuration())) <<
     table["alternateopen"].assign(getAlternateOpen() ) <<
     table["alternateclose"].assign(calculateClose (getAlternateOpen(),getAlternateDuration()));
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
         setDirty(false);
     }
