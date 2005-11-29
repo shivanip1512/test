@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/web.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-validator.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester-1.5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsp-2.0.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec-1.2.jar"/>
@@ -41,6 +40,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/standard.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/myfaces-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/myfaces-impl.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/tomahawk.jar"/>
