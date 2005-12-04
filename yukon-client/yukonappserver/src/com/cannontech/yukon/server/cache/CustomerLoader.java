@@ -54,7 +54,8 @@ public class CustomerLoader implements Runnable
 	//TODO EFFICIENCY!!!
 		//get all the customer contacts that are assigned to a customer
 		String sqlString = 
-         "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID " +
+         "select CustomerID, PrimaryContactID, TimeZone, CustomerTypeID, CustomerNumber, RateScheduleID, " +
+         "AltTrackNum, TemperatureUnit " +
          "from " + Customer.TABLE_NAME;
 	
 		java.sql.Connection conn = null;
@@ -75,16 +76,25 @@ public class CustomerLoader implements Runnable
 				int cstID = rset.getInt(1);
 				int contactID = rset.getInt(2);
 				String timeZone = rset.getString(3).trim();
-				int custTypeID = rset.getInt(4);				
+                int custTypeID = rset.getInt(4);
+                String custNumber = rset.getString(5).trim();
+                int custRateScheduleID = rset.getInt(6);
+                String custAltTrackNum = rset.getString(7).trim();
+                String temperatureUnit = rset.getString(8).trim();
 				
 				LiteCustomer lc;
-				if( custTypeID == CustomerTypes.CUSTOMER_CI)
-					lc = new LiteCICustomer(cstID);
-				else
-					lc = new LiteCustomer( cstID );
+				if( custTypeID == CustomerTypes.CUSTOMER_CI) {
+                    lc = new LiteCICustomer(cstID);
+                } else {
+                    lc = new LiteCustomer( cstID );
+                }
 				lc.setPrimaryContactID(contactID);
 				lc.setTimeZone(timeZone);
 				lc.setCustomerTypeID(custTypeID);
+                lc.setCustomerNumber(custNumber);
+                lc.setRateScheduleID(custRateScheduleID);
+                lc.setAltTrackingNumber(custAltTrackNum);
+                lc.setTemperatureUnit(temperatureUnit);
 				allCustomers.add(lc);
                 if(maxCustomerID < lc.getCustomerID())
                     maxCustomerID = lc.getCustomerID();
