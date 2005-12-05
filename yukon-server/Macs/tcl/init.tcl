@@ -578,8 +578,10 @@ proc exportBillingFile { args } {
                 set groupType [lindex $args 1]
             }
 
-            append groupType ":"
+            # surround group name with quotes, in case there are spaces in it
+            append groupType ":\""
             append groupType [lindex $args 0]
+            append groupType "\""
 
             if { $argCount > 2 } {
                 # format was specified
