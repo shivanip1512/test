@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2005/11/11 15:24:18 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2005/12/06 23:18:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -696,7 +696,6 @@ VOID TimeSyncThread (PVOID Arg)
         //Thread Monitor Begins here**************************************************
         if(!(++sanity % SANITY_RATE))
         {
-            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
             {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;

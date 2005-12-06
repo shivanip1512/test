@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/11/11 15:24:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/06 23:18:04 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,8 +166,7 @@ void DNPUDPInboundThread( void *Dummy )
         //Thread Monitor Begins here**************************************************
         if(!(++sanity % SANITY_RATE))
         {
-            if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
-            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+            {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " DNP Inbound thread active. TID:  " << rwThreadId() << endl;
             }
@@ -401,8 +400,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
             //Thread Monitor Begins here**************************************************
             if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
             {
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
-                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " DNP Outbound thread active. TID:  " << rwThreadId() << endl;
                 }
@@ -684,8 +682,7 @@ VOID DNPUDPExecuteThread(void *Dummy)
             //Thread Monitor Begins here**************************************************
             if(!(++sanity % SANITY_RATE_MED_SLEEPERS))
             {
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
-                {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+                {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " DNP Execute thread active. TID:  " << rwThreadId() << endl;
                 }

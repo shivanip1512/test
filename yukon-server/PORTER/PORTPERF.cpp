@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2005/11/22 23:05:26 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2005/12/06 23:18:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,6 @@ VOID PerfUpdateThread (PVOID Arg)
             //Thread Monitor Begins here**************************************************
             if(!(++sanity % SANITY_RATE))
             {
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;

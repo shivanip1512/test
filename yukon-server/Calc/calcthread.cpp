@@ -110,7 +110,6 @@ void CtiCalculateThread::periodicThread( void )
             {
                 announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
 
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
@@ -263,7 +262,6 @@ void CtiCalculateThread::onUpdateThread( void )
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
 
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;

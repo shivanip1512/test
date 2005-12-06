@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2005/12/06 23:18:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -482,7 +482,6 @@ void CtiVanGogh::VGMainThread()
             if(!(++sanity % SANITY_RATE))
             {
                 reportOnThreads();
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " VG Main Thread Active. TID:  " << rwThreadId() << endl;
@@ -1373,7 +1372,6 @@ void CtiVanGogh::VGArchiverThread()
                 if(!(++sanity % SANITY_RATE))
                 {
                     reportOnThreads();
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
@@ -1426,7 +1424,6 @@ void CtiVanGogh::VGTimedOperationThread()
         {
             if(!(++sanity % SANITY_RATE))
             {
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch Timed Operation Thread Active. TID:  " << rwThreadId() << endl;
@@ -4892,7 +4889,6 @@ void CtiVanGogh::VGRPHWriterThread()
         {
             if(!(++sanity % SANITY_RATE))
             {
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Dispatch RawPointHistory Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -4950,7 +4946,6 @@ void CtiVanGogh::VGDBWriterThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -6398,7 +6393,6 @@ void CtiVanGogh::VGDBSignalWriterThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Writer Thread Active. TID:  " << rwThreadId() << endl;
@@ -6463,7 +6457,6 @@ void CtiVanGogh::VGDBSignalEmailThread()
             {
                 if(!(++sanity % SANITY_RATE))
                 {
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " Dispatch DB Signal Email Thread Active. TID:  " << rwThreadId() << endl;

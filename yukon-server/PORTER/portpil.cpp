@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/11/11 15:24:18 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/06 23:18:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,6 @@ VOID PorterInterfaceThread (VOID *Arg)
          //Thread Monitor Begins here**************************************************
          if(!(++sanity % SANITY_RATE))
          {
-             if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
              {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                  dout << RWTime() << " Porter Interface Thread active. TID:  " << rwThreadId() << endl;

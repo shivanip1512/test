@@ -449,7 +449,6 @@ void CtiCalcLogicService::Run( )
                     {
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
 
-                        if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
@@ -655,7 +654,6 @@ void CtiCalcLogicService::_outputThread( void )
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
 
-                    if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " _outputThread active. TID: " << rwThreadId() << endl;
@@ -740,7 +738,6 @@ void CtiCalcLogicService::_inputThread( void )
                         ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
 
-                        if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
@@ -755,7 +752,6 @@ void CtiCalcLogicService::_inputThread( void )
                 ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
                 announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
 
-                if(getDebugLevel() & DEBUGLEVEL_THREAD_SPEW)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
