@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/10/19 02:50:22 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/06 20:26:07 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
         case Command_Loop:
         {
             unsigned char expectedAck;
-            unsigned char byte2_3;
+            unsigned char expectedBytes[2];
             RWCString cmd(InMessage->Return.CommandStr);
             CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                                     cmd,
@@ -102,12 +102,23 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
 
             //  expect two ACK characters
             expectedAck = Parity_C( 0x40 | (getAddress() & 0x03) );
-            byte2_3     = Parity_C( 0x55 ); // 20050906 CGP.  This is the default byte in LPreamble!
+
+            //  Calculate the necessary address components
+            if( getAddress() > 3 )
+            {
+                expectedBytes[0] = Parity_C( ((getAddress() & 0x1c) << 1) | 0x45 );
+                expectedBytes[1] = Parity_C( 0x55 );
+            }
+            else
+            {
+                expectedBytes[0] = Parity_C( 0x55 );
+                expectedBytes[1] = Parity_C( 0x55 );
+            }
 
             if( InMessage->Buffer.InMessage[0] == expectedAck &&
                 InMessage->Buffer.InMessage[1] == expectedAck &&
-                InMessage->Buffer.InMessage[2] == byte2_3 &&
-                InMessage->Buffer.InMessage[3] == byte2_3 )
+                InMessage->Buffer.InMessage[2] == expectedBytes[0] &&
+                InMessage->Buffer.InMessage[3] == expectedBytes[1] )
             {
                 if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
                 {
