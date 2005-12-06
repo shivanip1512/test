@@ -8,7 +8,7 @@
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.BillingRole" %>
 <%@ page import="com.cannontech.roles.operator.DirectCurtailmentRole" %>
-<%@ page import="com.cannontech.roles.operator.DirectLoadcontrolRole" %>
+<%@ page import="com.cannontech.roles.loadcontrol.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.EnergyBuybackRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
 
