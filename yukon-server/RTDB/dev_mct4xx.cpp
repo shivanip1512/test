@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/11/15 14:23:54 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/07 22:08:36 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #undef mask_                // Stupid RogueWave re.h
 
 #include "dev_mct4xx.h"
-
+#include "numstr.h"
 
 using Cti::Protocol::Emetcon;
 
@@ -162,7 +162,6 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
                     }
                 }
 
-                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.entries());
                 if(tempReq!=NULL)
                 {
                     delete tempReq;
@@ -171,25 +170,26 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg                  *pReq,
 
             }
 
-            if(OutMessage!=NULL)
-            {
-                delete OutMessage;
-                OutMessage = NULL;
-            }
-
         }
         else
         {
             strncpy(OutMessage->Request.CommandStr, pReq->CommandString(), COMMAND_STR_SIZE);
             nRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
         }
+        recordMultiMessageRead(outList);
+        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.entries());
+
+        if(OutMessage!=NULL)
+        {
+            delete OutMessage;
+            OutMessage = NULL;
+        }
     }
     else
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
-
-
+    
     return nRet;
 
 }
@@ -304,24 +304,38 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, RWTime &TimeNow, RWTPtrS
         {
             case Emetcon::PutConfig_Install:
             {
+                if(InMessage->Buffer.DSt.Length>0)
+                {
+                    resultString = "Config data received: ";
+                    for(int i = 0; i<InMessage->Buffer.DSt.Length;i++)
+                    {
+                        resultString.append(CtiNumStr(InMessage->Buffer.DSt.Message[i]).hex().zpad(2),2);
+                    }
+                }
+                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                ReturnMsg->setResultString( resultString );
+
+                if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+                {
+                    ReturnMsg->setExpectMore(true);
+                }
+
+                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+                //note that at the moment only putconfig install will ever have a group message count.
+                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+                break;
+            }
+
+            default:
+            {
+                status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
+                break;
             }
         }
 
-        resultString = "Config data received: ";
-        resultString.append((const char *)InMessage->Buffer.DSt.Message, InMessage->Buffer.DSt.Length);
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( resultString );
-
-        if( InMessage->MessageFlags & MSGFLG_EXPECT_MORE || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
-        {
-            ReturnMsg->setExpectMore(true);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
-
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-
     return status;
 }
 
@@ -680,7 +694,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
             }
             else
             if(channel1 == numeric_limits<long>::min() || channel3 == numeric_limits<long>::min() || channel2 == numeric_limits<long>::min()
-               || channel4 == numeric_limits<long>::min() )
+               || channel4 == numeric_limits<long>::min() || ssid == numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
