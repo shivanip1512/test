@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/08/23 19:56:32 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/07 21:51:30 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ void CtiThreadMonitor::processQueue( void )
 void CtiThreadMonitor::processExpired( void )
 {
     State nextState = Normal;
-    string nextOutput = "";
+    string nextOutput = "Thread running correctly.";
    try
    {
       for( ThreadData::iterator i = _threadData.begin(); i != _threadData.end();i++ )
@@ -270,13 +270,13 @@ void CtiThreadMonitor::processExpired( void )
                 //messageOut( "tsisvs", "Thread W/ID", i->first, " ", i->second.getName(), "Is Critical!" ); //Used for testing
                 nextState = CriticalFailure;
 
-                nextOutput.append("Failure in thread named ");
+                nextOutput = "Failure in thread named ";
                 nextOutput.append(i->second.getName());
                 nextOutput.append(" (Critical)\n");
             }
             else
             {
-                nextOutput.append("Failure in thread named ");
+                nextOutput = "Failure in thread named ";
                 nextOutput.append(i->second.getName());
                 nextOutput.append(" (Non-Critical)\n");
 
