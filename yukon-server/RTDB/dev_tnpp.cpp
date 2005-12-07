@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/14 15:41:06 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/07 22:06:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,9 +44,9 @@ const char *CtiDeviceTnppPagingTerminal::_ETX                 = "\x003";
 const char *CtiDeviceTnppPagingTerminal::_EOT                 = "\x004";
 const char *CtiDeviceTnppPagingTerminal::_ENQ                 = "\x005";
 const char *CtiDeviceTnppPagingTerminal::_ACK                 = "\x006";
-const char *CtiDeviceTnppPagingTerminal::_NAK                 = "\x021";
-const char *CtiDeviceTnppPagingTerminal::_RS                  = "\x030";
-const char *CtiDeviceTnppPagingTerminal::_CAN                 = "\x024";
+const char *CtiDeviceTnppPagingTerminal::_NAK                 = "\x015";
+const char *CtiDeviceTnppPagingTerminal::_RS                  = "\x01E";
+const char *CtiDeviceTnppPagingTerminal::_CAN                 = "\x018";
 const char *CtiDeviceTnppPagingTerminal::_zero_origin         = "0000";
 const char *CtiDeviceTnppPagingTerminal::_zero_serial         = "00";
 const char *CtiDeviceTnppPagingTerminal::_type_golay          = "G";
@@ -177,6 +177,8 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     {
                         status = ErrorPageNoResponse;
                         _command = Complete;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         break;
                     }
                 }
@@ -282,6 +284,8 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             status = UnknownError;
                             _command = Complete; //Transaction Complete
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                     }
@@ -395,10 +399,13 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,30);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 
-                    unsigned int crc = crc16((const unsigned char *)xfer.getOutBuffer(),strlen((char *)xfer.getOutBuffer()));
-                    strncat((char*)xfer.getOutBuffer(),reinterpret_cast<char *>(&crc),10);
+                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()) + 2);//The crc can have the null char, that causes errors.
 
-                    xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
+                    int len = strlen((char *)xfer.getOutBuffer());
+                    unsigned int crc = crc16((const unsigned char *)xfer.getOutBuffer(),len);
+                    xfer.getOutBuffer()[len] = crc;
+                    xfer.getOutBuffer()[len+1] = crc>>8;
+
                     xfer.setInCountExpected( 1 );
                     xfer.setInTimeout( 1 );
 
@@ -626,7 +633,7 @@ string CtiDeviceTnppPagingTerminal::getGolayCapcode()
     //A should never be odd.
 
     //Account for the extended codes that all use AAAAAA instead of BBAABB //FIX_ME JESS
-    if(_outMessage.Buffer.SASt._function>4 && a<=_a_capcode_max && a>=_a_capcode_min && a%2!=1/*even*/)
+    if(_outMessage.Buffer.SASt._function>4 && a<=_a_capcode_max && a>=_a_capcode_min && a%2!=1)
     {
         
         returnValue = getExtendedFunctionCapcode(a);//takes the "a" portion and returns the capcode
