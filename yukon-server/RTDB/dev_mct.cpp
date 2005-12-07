@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2005/11/11 14:39:02 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2005/12/07 22:12:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,7 @@ CtiDeviceMCT::CtiDeviceMCT() :
     _freeze_counter(-1),
     _expected_freeze(-1)
 {
+    _lastReadDataPurgeTime = _lastReadDataPurgeTime.now();
     for( int i = 0; i < MCTConfig_ChannelCount; i++ )
     {
         _mpkh[i] = -1.0;
@@ -252,6 +253,19 @@ RWCString CtiDeviceMCT::getDescription(const CtiCommandParser &parse) const
     return getName();
 }
 
+void CtiDeviceMCT::getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
+{
+    foundAddress = 0;
+    foundLength = 0;
+    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+}
+
+void CtiDeviceMCT::getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
+{
+    foundAddress = 0;
+    foundLength = 0;
+    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+}
 
 LONG CtiDeviceMCT::getDemandInterval() const
 {
@@ -957,13 +971,118 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< 
         }
     }
 
-    fillDynamicPaoInfo(InMessage);
     return status;
 }
 
-CtiDeviceMCT::fillDynamicPaoInfo(INMESS *InMessage)
+//Note that the outmessage may/will be modified on exit!
+bool CtiDeviceMCT::recordMessageRead(OUTMESS *OutMessage)
 {
-    
+    if((_lastReadDataPurgeTime.now().seconds()-_lastReadDataPurgeTime.seconds())>=2*60*60)//2 hour span
+    {
+        //Clears out every data member that is over 1 hour old, operates at most every 2 hours.
+        _lastReadDataPurgeTime = _lastReadDataPurgeTime.now();
+
+        for(MessageReadDataSet_t::iterator i = _expectedReadData.begin();i != _expectedReadData.end();)
+        {
+            if((_lastReadDataPurgeTime.seconds() - i->insertTime.seconds()) >= 1*60*60)
+                i = _expectedReadData.erase(i);
+            else
+                i++;
+        }
+    }
+
+    if(OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Write || OutMessage->Buffer.BSt.IO == Emetcon::IO_Write)
+    {
+        return false;
+    }
+
+    MessageReadData newData;
+    newData.oldSequence = OutMessage->Sequence;
+
+    if(_expectedReadData.empty())
+    {
+        newData.newSequence = SequenceCountBegin;
+    }
+    else
+    {
+        newData.newSequence = _lastSequenceNumber+1;
+    }
+
+    _lastSequenceNumber = newData.newSequence;
+
+    if(_lastSequenceNumber >= SequenceCountEnd)
+    {
+        _lastSequenceNumber = SequenceCountBegin;//sloppy, but it has a range of 10k, no one cares
+    }
+
+    newData.ioType = OutMessage->Buffer.BSt.IO;
+    newData.insertTime = RWTime::now();
+    newData.location = OutMessage->Buffer.BSt.Function;
+    newData.length = OutMessage->Buffer.BSt.Length;
+
+    MessageReadDataSet_t::_Pairib testPair =  _expectedReadData.insert(newData);
+    if(testPair.second)
+    {
+        OutMessage->Sequence = newData.newSequence;
+    }
+    else
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CtiDeviceMCT::recordMultiMessageRead(RWTPtrSlist< OUTMESS > &outList)
+{
+    bool retVal = false;
+    OUTMESS *outMessage;
+    int count = outList.entries();
+
+    for(int i=0;i<count;i++)
+    {
+        outMessage = outList.at(i);
+        if(outMessage->Buffer.BSt.IO == Emetcon::IO_Function_Read || outMessage->Buffer.BSt.IO == Emetcon::IO_Read)
+        {
+            recordMessageRead(outMessage);
+            retVal = true;
+        }
+    }
+    return retVal;
+}
+
+bool CtiDeviceMCT::restoreMessageRead(INMESS *InMessage, int &ioType, int &location)
+{
+    bool retVal = false;
+    if(InMessage->Sequence < SequenceCountBegin || InMessage->Sequence > SequenceCountEnd)
+    {
+        //retVal = false;
+    }
+    else
+    {
+        //This thing should be in my list!
+        MessageReadData temp;
+        temp.newSequence = InMessage->Sequence;
+        MessageReadDataSet_t::const_iterator iter = _expectedReadData.find(temp);
+        if(iter == _expectedReadData.end())
+        {
+            //retVal = false
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " **** Checkpoint **** Sequence is in proper range but is not in the set" << __FILE__ << " (" << __LINE__ << ")" << endl;
+            //If your getting this, either the range needs to be adjusted, or out messages are lasting longer then 2 hours before
+            //being sent and returned.
+        }
+        else
+        {
+            //yay, it works
+            ioType = iter->ioType;
+            location = iter->location;
+            InMessage->Sequence = iter->oldSequence;
+            InMessage->Buffer.DSt.Length = iter->length;
+            _expectedReadData.erase(temp);
+            retVal = true;
+        }
+    }
+    return retVal;
 }
 
 INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList)
@@ -986,6 +1105,9 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, RWTime& Now, RWTPtrSlist< CtiMe
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
+
+    int ioType, location;
+    restoreMessageRead(InMessage, ioType, location);//used to remove this message from the list.
 
     if( retMsg != NULL )
     {
