@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2005/11/16 20:17:39 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2005/12/07 22:04:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1176,7 +1176,7 @@ CtiDeviceSingle::CtiDeviceSingle() :
 _useScanFlags(0)
 {
     int i;
-
+    _lastExpirationCheckTime = _lastExpirationCheckTime.now();
     LockGuard guard(monitor());
 
     for(i = 0; i < ScanRateInvalid; i++)
@@ -2001,6 +2001,22 @@ CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int entries
     channelWithID temp;
     temp.channel = comID;
     temp.identifier = userID;
+    temp.creationTime = temp.creationTime.now();
+
+    if((_lastExpirationCheckTime.now().seconds()-_lastExpirationCheckTime.seconds())>=2*60*60)//2 hour span
+    {
+        //Clears out every data member that is over 1 hour old, operates at most every 2 hours.
+        _lastExpirationCheckTime = _lastExpirationCheckTime.now();
+
+        for(MessageCount_t::iterator i = _messageCount.begin();i != _messageCount.end();)
+        {
+            if((_lastExpirationCheckTime.seconds() - i->first.creationTime.seconds()) >= 1*60*60)
+                i = _messageCount.erase(i);
+            else
+                i++;
+        }
+    }
+
     MessageCount_t::iterator iterator = _messageCount.find(temp);
 
     if(iterator != _messageCount.end())
