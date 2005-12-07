@@ -544,6 +544,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << RWTime() << " - Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber << endl;
                 }
+                
                 expectedLoadReduced = updateProgramControlForGearChange(secondsFrom1901, previousGearNumber, multiPilMsg, multiDispatchMsg);
             }
             else
@@ -798,7 +799,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << RWTime() << " - Program: " << getPAOName() << " couldn't find any groups to take in: " << __FILE__ << " at:" << __LINE__ << endl;
-			    break;
+                            break;
                         }
                         else
                         {
@@ -808,7 +809,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 groups_taken++;
                                 CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
 
-				setLastGroupControlled(currentLMGroup->getPAOId());				
+                                setLastGroupControlled(currentLMGroup->getPAOId());                             
                                 startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                                 if( currentGearObject->getPercentReduction() > 0.0 )
@@ -1275,7 +1276,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                             groups_taken++;
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
 
-			    setLastGroupControlled(currentLMGroup->getPAOId());			    
+                            setLastGroupControlled(currentLMGroup->getPAOId());                     
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
@@ -1916,7 +1917,8 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, RWOrdered controlA
         else if( !currentGearObject->getChangeCondition().compareTo(CtiLMProgramDirectGear::DurationChangeCondition,RWCString::ignoreCase) )
         {
             LONG secondsControlling = secondsFrom1901 - getStartedControlling().seconds();
-            if( secondsControlling >= currentGearObject->getChangeDuration() &&
+            if( getProgramState() != CtiLMProgramBase::InactiveState &&
+                secondsControlling >= currentGearObject->getChangeDuration() &&
                 _currentgearnumber+1 < _lmprogramdirectgears.entries() )
             {
                 _currentgearnumber++;
@@ -2536,7 +2538,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                         {
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
 
-			    setLastGroupControlled(currentLMGroup->getPAOId());			    
+                            setLastGroupControlled(currentLMGroup->getPAOId());                     
                             refreshGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -2611,7 +2613,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                             groups_taken++;
                             CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
 
-			    setLastGroupControlled(currentLMGroup->getPAOId());
+                            setLastGroupControlled(currentLMGroup->getPAOId());
                             startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
 
                             if( currentGearObject->getPercentReduction() > 0.0 )
@@ -3407,12 +3409,12 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                         // set up the next control time regardless whether constraints failed
                         lm_group->setNextControlTime(RWDBDateTime(RWTime(lm_group->getNextControlTime().seconds() + period)));
 
-			if( _LM_DEBUG & LM_DEBUG_STANDARD )
-			{
-			    CtiLockGuard<CtiLogger> dout_guard(dout);
-			    dout << RWTime() << " LMProgram: " << getPAOName() << ",  master cycle controlling " << lm_group->getPAOName() << " next at: " << lm_group->getNextControlTime().asString() << endl;
-			}
-			
+                        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                        {
+                            CtiLockGuard<CtiLogger> dout_guard(dout);
+                            dout << RWTime() << " LMProgram: " << getPAOName() << ",  master cycle controlling " << lm_group->getPAOName() << " next at: " << lm_group->getNextControlTime().asString() << endl;
+                        }
+                        
                     }
                 }
             }
@@ -3472,7 +3474,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             groups_taken++;
                             CtiRequestMsg* requestMsg = nextLMGroupToTake->createRotationRequestMsg(sendRate, shedTime, defaultLMRefreshPriority);
 
-			    setLastGroupControlled(nextLMGroupToTake->getPAOId());			    
+                            setLastGroupControlled(nextLMGroupToTake->getPAOId());                          
                             if( nextLMGroupToTake->getGroupControlState() == CtiLMGroupBase::InactiveState )
                             {
                                 startGroupControl(nextLMGroupToTake, requestMsg, multiPilMsg);
