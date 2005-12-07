@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/11/15 14:23:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/07 22:16:00 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,13 +56,41 @@ protected:
     enum
     {
         //  new/changed stuff
+        MCT470_Memory_SSpecPos             = 0x00,
+        MCT470_Memory_SSpecLen             =    1,
+
+        MCT470_Memory_RevisionPos          = 0x01,
+        MCT470_Memory_RevisionLen          =    2,
+
+        MCT470_Memory_OptionsPos           = 0x02,
+        MCT470_Memory_OptionsLen           =    1,
+
+        MCT470_Memory_ConfigurationPos     = 0x03,
+        MCT470_Memory_ConfigurationLen     =    1,
+
         MCT470_Memory_EventFlagsMaskPos    = 0x08,
         MCT470_Memory_EventFlagsMaskLen    =    2,
 
-        MCT470_Memory_RTCPos               = 0x29,
-        MCT470_Memory_RTCLen               =    4,
-        MCT470_Memory_LastTSyncPos         = 0x2d,
-        MCT470_Memory_LastTSyncLen         =    4,
+        MCT470_Memory_EventFlagsMask1Pos   = 0x08,
+        MCT470_Memory_EventFlagsMask1Len   =    1,
+
+        MCT470_Memory_EventFlagsMask2Pos   = 0x09,
+        MCT470_Memory_EventFlagsMask2Len   =    1,
+
+        MCT470_Memory_AddressBronzePos     = 0x0D,
+        MCT470_Memory_AddressBronzeLen     =    1,
+
+        MCT470_Memory_AddressLeadPos       = 0x0E,
+        MCT470_Memory_AddressLeadLen       =    2,
+        
+        MCT470_Memory_AddressCollectionPos = 0x10,
+        MCT470_Memory_AddressCollectionLen =    2,
+
+        MCT470_Memory_AddressSPIDPos       = 0x12,
+        MCT470_Memory_AddressSPIDLen       =    1,
+
+        MCT470_Memory_TimeAdjustTolerancePos = 0x1F,
+        MCT470_Memory_TimeAdjustToleranceLen =    1,
 
         MCT470_Memory_DSTBeginPos          = 0x20,
         MCT470_Memory_DSTBeginLen          =    4,
@@ -73,8 +101,31 @@ protected:
         MCT470_Memory_TimeZoneOffsetPos    = 0x28,
         MCT470_Memory_TimeZoneOffsetLen    =    1,
 
+        MCT470_Memory_RTCPos               = 0x29,
+        MCT470_Memory_RTCLen               =    4,
+        MCT470_Memory_LastTSyncPos         = 0x2d,
+        MCT470_Memory_LastTSyncLen         =    4,
+
         MCT470_Memory_IntervalsPos         = 0x32,
         MCT470_Memory_IntervalsLen         =    3,
+
+        MCT470_Memory_DemandIntervalPos    = 0x32,
+        MCT470_Memory_DemandIntervalLen    =    1,
+
+        MCT470_Memory_LoadProfileInterval1Pos    = 0x33,
+        MCT470_Memory_LoadProfileInterval1Len    =    1,
+
+        MCT470_Memory_LoadProfileInterval2Pos    = 0x34,
+        MCT470_Memory_LoadProfileInterval2Len    =    1,
+
+        MCT470_Memory_TableReadIntervalPos = 0x35,
+        MCT470_Memory_TableReadIntervalLen =    1,
+
+        MCT470_Memory_PrecannedMeterNumPos = 0x36,
+        MCT470_Memory_PrecannedMeterNumLen =    1,
+
+        MCT470_Memory_PrecannedTableTypePos = 0x37,
+        MCT470_Memory_PrecannedTableTypeLen =    1,
 
         MCT470_Memory_RelayATimerPos       = 0x48,
         MCT470_Memory_RelayATimerLen       =    1,
@@ -82,8 +133,62 @@ protected:
         MCT470_Memory_RelayBTimerPos       = 0x49,
         MCT470_Memory_RelayBTimerLen       =    1,
 
+        MCT470_Memory_TOUDayTablePos       = 0x50,
+        MCT470_Memory_TOUDayTableLen       =    2,
+
+        MCT470_Memory_TOUDaySchedule1Pos   = 0x52,
+        MCT470_Memory_TOUDaySchedule1Len   =    7,
+
+        MCT470_Memory_TOUDaySchedule2Pos   = 0x59,
+        MCT470_Memory_TOUDaySchedule2Len   =    7,
+
+        MCT470_Memory_TOUDaySchedule3Pos   = 0x60,
+        MCT470_Memory_TOUDaySchedule3Len   =    7,
+
+        MCT470_Memory_TOUDaySchedule4Pos   = 0x67,
+        MCT470_Memory_TOUDaySchedule4Len   =    7,
+
+        MCT470_Memory_TOUDefaultRatePos    = 0x6E,
+        MCT470_Memory_TOUDefaultRateLen    =    1,
+
         MCT470_Memory_ChannelMultiplierPos = 0x88,
         MCT470_Memory_ChannelMultiplierLen =    4,
+
+        MCT470_Memory_MeteringRatio1Pos    = 0x88,
+        MCT470_Memory_MeteringRatio1Len    =    2,
+
+        MCT470_Memory_KRatio1Pos           = 0x8A,
+        MCT470_Memory_KRatio1Len           =    2,
+
+        MCT470_Memory_ChannelConfig1Pos    = 0x8E,
+        MCT470_Memory_ChannelConfig1Len    =    1,
+
+        MCT470_Memory_MeteringRatio2Pos    = 0xA2,
+        MCT470_Memory_MeteringRatio2Len    =    2,
+
+        MCT470_Memory_KRatio2Pos           = 0xA4,
+        MCT470_Memory_KRatio2Len           =    2,
+
+        MCT470_Memory_ChannelConfig2Pos    = 0xA8,
+        MCT470_Memory_ChannelConfig2Len    =    1,
+
+        MCT470_Memory_MeteringRatio3Pos    = 0xBC,
+        MCT470_Memory_MeteringRatio3Len    =    2,
+
+        MCT470_Memory_KRatio3Pos           = 0xBE,
+        MCT470_Memory_KRatio3Len           =    2,
+
+        MCT470_Memory_ChannelConfig3Pos    = 0xC2,
+        MCT470_Memory_ChannelConfig3Len    =    1,
+
+        MCT470_Memory_MeteringRatio4Pos    = 0xD6,
+        MCT470_Memory_MeteringRatio4Len    =    2,
+
+        MCT470_Memory_KRatio4Pos           = 0xD8,
+        MCT470_Memory_KRatio4Len           =    2,
+
+        MCT470_Memory_ChannelConfig4Pos    = 0xDC,
+        MCT470_Memory_ChannelConfig4Len    =    1,
 
         MCT470_Memory_Holiday1Pos          = 0xE0,
         MCT470_Memory_Holiday1Len          =    4,
@@ -119,6 +224,9 @@ protected:
 
         MCT470_Memory_AddressingPos        = 0x0D,
         MCT470_Memory_AddressingLen        =    6,
+
+        MCT470_FuncRead_ChannelSetupDataPos = 0x20,
+        MCT470_FuncRead_ChannelSetupDataLen =    7,
 
         MCT470_FuncRead_LoadProfileChannel12Pos = 0x21,
         MCT470_FuncRead_LoadProfileChannel12Len =   10,
@@ -165,6 +273,9 @@ private:
     static DLCCommandSet initCommandStore();
     static const DLCCommandSet _commandStore;
 
+    static const DynamicPaoAddressing_t _dynPaoAddressing;
+    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
+
     static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
     static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
 
@@ -205,6 +316,11 @@ public:
     CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
 
     void setDisconnectAddress( unsigned long address );
+
+    static DynamicPaoAddressing_t initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 

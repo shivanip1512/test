@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/11/15 14:23:14 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2005/12/07 22:15:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,8 @@ using Cti::Protocol::Emetcon;
 
 const CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::_commandStore   = CtiDeviceMCT470::initCommandStore();
 const CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT470::_config_parts = CtiDeviceMCT470::initConfigParts();
+const CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::_dynPaoAddressing = CtiDeviceMCT470::initDynPaoAddressing();
+const CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::_dynPaoFuncAddressing = CtiDeviceMCT470::initDynPaoFuncAddressing();
 
 CtiDeviceMCT470::CtiDeviceMCT470( ) :
     _lastConfigRequest(0)
@@ -286,6 +288,164 @@ CtiDeviceMCT470::DLCCommandSet CtiDeviceMCT470::initCommandStore( )
     return s;
 }
 
+CtiDeviceMCT::DynamicPaoFunctionAddressing_t CtiDeviceMCT470::initDynPaoFuncAddressing()
+{
+    DynamicPaoAddressing_t addressSet;
+    DynamicPaoAddressing   addressData;
+    DynamicPaoFunctionAddressing_t functionSet;
+
+    // MCT470_FuncRead_ChannelSetupDataPos
+    addressData.address = 0;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1;
+    addressSet.insert(addressData);
+
+    addressData.address = 1;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2;
+    addressSet.insert(addressData);
+
+    addressData.address = 2;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3;
+    addressSet.insert(addressData);
+
+    addressData.address = 3;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4;
+    addressSet.insert(addressData);
+
+    addressData.address = 4;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval;
+    addressSet.insert(addressData);
+
+    addressData.address = 5;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2;
+    addressSet.insert(addressData);
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_ChannelSetupDataPos,addressSet));
+
+    addressSet.clear();
+
+    // MCT470_FuncRead_LoadProfileChannel12Pos
+    addressData.address = 0;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1;
+    addressSet.insert(addressData);
+
+    addressData.address = 1;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1;
+    addressSet.insert(addressData);
+
+    addressData.address = 3;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1;
+    addressSet.insert(addressData);
+
+    addressData.address = 5;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2;
+    addressSet.insert(addressData);
+
+    addressData.address = 6;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2;
+    addressSet.insert(addressData);
+
+    addressData.address = 8;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2;
+    addressSet.insert(addressData);
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel12Pos,addressSet));
+
+    addressSet.clear();
+
+    // MCT470_FuncRead_LoadProfileChannel34Pos
+    addressData.address = 0;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3;
+    addressSet.insert(addressData);
+
+    addressData.address = 1;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3;
+    addressSet.insert(addressData);
+
+    addressData.address = 3;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3;
+    addressSet.insert(addressData);
+
+    addressData.address = 5;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4;
+    addressSet.insert(addressData);
+
+    addressData.address = 6;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4;
+    addressSet.insert(addressData);
+
+    addressData.address = 8;
+    addressData.length = 2;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4;
+    addressSet.insert(addressData);
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel34Pos,addressSet));
+
+    addressSet.clear();
+
+    // MCT470_FuncRead_PrecannedTablePos
+    addressData.address = 0;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval;
+    addressSet.insert(addressData);
+
+    addressData.address = 1;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber;
+    addressSet.insert(addressData);
+
+    addressData.address = 2;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType;
+    addressSet.insert(addressData);
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(MCT470_FuncRead_LoadProfileChannel34Pos,addressSet));
+
+    addressSet.clear();
+
+    // FuncRead_LLPStatusPos
+    addressData.address = 4;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len;
+    addressSet.insert(addressData);
+
+    addressData.address = 5;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len;
+    addressSet.insert(addressData);
+
+    addressData.address = 6;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len;
+    addressSet.insert(addressData);
+
+    addressData.address = 7;
+    addressData.length = 1;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len;
+    addressSet.insert(addressData);
+
+    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
+
+    addressSet.clear();
+
+    return functionSet;
+}
 
 bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
@@ -312,6 +472,286 @@ bool CtiDeviceMCT470::getOperation( const UINT &cmd, USHORT &function, USHORT &l
     return found;
 }
 
+CtiDeviceMCT::DynamicPaoAddressing_t CtiDeviceMCT470::initDynPaoAddressing()
+{
+    DynamicPaoAddressing_t addressSet;
+    DynamicPaoAddressing   addressData;
+
+    addressData.address = MCT470_Memory_SSpecPos;
+    addressData.length = MCT470_Memory_SSpecLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_SSpec;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_RevisionPos;
+    addressData.length = MCT470_Memory_RevisionPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_OptionsPos;
+    addressData.length = MCT470_Memory_OptionsPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Options;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_ConfigurationPos;
+    addressData.length = MCT470_Memory_ConfigurationLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Configuration;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_EventFlagsMask1Pos;
+    addressData.length = MCT470_Memory_EventFlagsMask1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_EventFlagsMask2Pos;
+    addressData.length = MCT470_Memory_EventFlagsMask2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2;
+    addressSet.insert(addressData);
+    
+    addressData.address = MCT470_Memory_AddressBronzePos;
+    addressData.length = MCT470_Memory_AddressBronzePos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressBronze;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_AddressLeadPos;
+    addressData.length = MCT470_Memory_AddressLeadPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressLead;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_AddressCollectionPos;
+    addressData.length = MCT470_Memory_AddressCollectionPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressCollection;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_AddressSPIDPos;
+    addressData.length = MCT470_Memory_AddressSPIDPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_DemandIntervalLen;
+    addressData.length = MCT470_Memory_DemandIntervalPos;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DemandInterval;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_LoadProfileInterval1Pos;
+    addressData.length = MCT470_Memory_LoadProfileInterval1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_LoadProfileInterval2Pos;
+    addressData.length = MCT470_Memory_LoadProfileInterval2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_TimeAdjustTolerancePos;
+    addressData.length = MCT470_Memory_TimeAdjustToleranceLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_DSTBeginPos;
+    addressData.length = MCT470_Memory_DSTBeginLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime,
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_DSTEndPos;
+    addressData.length = MCT470_Memory_DSTEndLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_TimeZoneOffsetPos;
+    addressData.length = MCT470_Memory_TimeZoneOffsetLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_TOUDayTablePos;
+    addressData.length = MCT470_Memory_TOUDayTableLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DayTable;
+    addressSet.insert(addressData);
+
+    addressData.address = Memory_TOUDailySched1Pos;
+    addressData.length = Memory_TOUDailySched1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1;
+    addressSet.insert(addressData);
+
+    addressData.address = Memory_TOUDailySched2Pos;
+    addressData.length = Memory_TOUDailySched2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2;
+    addressSet.insert(addressData);
+
+    addressData.address = Memory_TOUDailySched3Pos;
+    addressData.length = Memory_TOUDailySched3Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3;
+    addressSet.insert(addressData);
+
+    addressData.address = Memory_TOUDailySched4Pos;
+    addressData.length = Memory_TOUDailySched4Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_TOUDefaultRatePos;
+    addressData.length = MCT470_Memory_TOUDefaultRateLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_Holiday1Pos;
+    addressData.length = MCT470_Memory_Holiday1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday1;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_Holiday2Pos;
+    addressData.length = MCT470_Memory_Holiday2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday2;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_Holiday3Pos;
+    addressData.length = MCT470_Memory_Holiday3Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_Holiday3;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_KRatio1Pos;
+    addressData.length = MCT470_Memory_KRatio1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_MeteringRatio1Pos;
+    addressData.length = MCT470_Memory_MeteringRatio1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_ChannelConfig1Pos;
+    addressData.length = MCT470_Memory_ChannelConfig1Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_KRatio2Pos;
+    addressData.length = MCT470_Memory_KRatio2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_MeteringRatio2Pos;
+    addressData.length = MCT470_Memory_MeteringRatio2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_ChannelConfig2Pos;
+    addressData.length = MCT470_Memory_ChannelConfig2Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_KRatio3Pos;
+    addressData.length = MCT470_Memory_KRatio3Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_MeteringRatio3Pos;
+    addressData.length = MCT470_Memory_MeteringRatio3Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_ChannelConfig3Pos;
+    addressData.length = MCT470_Memory_ChannelConfig3Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_KRatio4Pos;
+    addressData.length = MCT470_Memory_KRatio4Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_MeteringRatio4Pos;
+    addressData.length = MCT470_Memory_MeteringRatio4Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_ChannelConfig4Pos;
+    addressData.length = MCT470_Memory_ChannelConfig4Len;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_RelayATimerPos;
+    addressData.length = MCT470_Memory_RelayATimerLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_RelayATimer;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_RelayBTimerPos;
+    addressData.length = MCT470_Memory_RelayBTimerLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_RelayATimerPos;
+    addressData.length = MCT470_Memory_RelayATimerLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_RelayATimer;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_TableReadIntervalPos;
+    addressData.length = MCT470_Memory_TableReadIntervalLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_PrecannedMeterNumPos;
+    addressData.length = MCT470_Memory_PrecannedMeterNumLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber;
+    addressSet.insert(addressData);
+
+    addressData.address = MCT470_Memory_PrecannedTableTypePos;
+    addressData.length = MCT470_Memory_PrecannedTableTypeLen;
+    addressData.key = CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType;
+    addressSet.insert(addressData);
+
+    return addressSet;
+}
+
+//Function returns first address after the given address and the data associated with that address
+void CtiDeviceMCT470::getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
+{
+    foundAddress = 0;
+    foundLength = 0;
+    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;//If nothing happens, this is what we want.
+
+    DynamicPaoAddressing tempDynAddr;
+    tempDynAddr.address = address;
+
+    DynamicPaoAddressing_t::const_iterator iter;
+    if((iter = _dynPaoAddressing.find(tempDynAddr)) != _dynPaoAddressing.end())
+    {
+        foundAddress = iter->address;
+        foundLength = iter->length;
+        foundKey = iter->key;
+    }
+    else if((iter = _dynPaoAddressing.upper_bound(tempDynAddr)) != _dynPaoAddressing.end())
+    {
+        foundAddress = iter->address;
+        foundLength = iter->length;
+        foundKey = iter->key;        
+    }   
+}
+
+void CtiDeviceMCT470::getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
+{
+    foundAddress = 0;
+    foundLength = 0;
+    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;//If nothing happens, this is what we want.
+
+    DynamicPaoAddressing tempDynAddr;
+    tempDynAddr.address = address;
+
+    DynamicPaoFunctionAddressing_t::const_iterator funcIter;
+    if((funcIter = _dynPaoFuncAddressing.find(function)) != _dynPaoFuncAddressing.end())
+    {
+        DynamicPaoAddressing_t::const_iterator addressIter;
+        if((addressIter = funcIter->second.find(tempDynAddr)) != funcIter->second.end())
+        {
+            foundAddress = addressIter->address;
+            foundLength = addressIter->length;
+            foundKey = addressIter->key;
+        }
+        else if((addressIter = funcIter->second.upper_bound(tempDynAddr)) != funcIter->second.end())
+        {
+            foundAddress = addressIter->address;
+            foundLength = addressIter->length;
+            foundKey = addressIter->key;        
+        }   
+    }
+}
 
 //  this function checks to see if we have all of the parameters we need to correctly request and interpret
 //    load profile date from the MCT
@@ -855,6 +1295,67 @@ bool CtiDeviceMCT470::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 INT CtiDeviceMCT470::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList)
 {
     INT status = NORMAL;
+    int ioType, location;
+    if(restoreMessageRead(InMessage, ioType, location))
+    {
+       
+        int foundAddress, foundLength = 0;
+        CtiTableDynamicPaoInfo::Keys foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+
+         //ioType and location were set by the function.
+        if(ioType == Emetcon::IO_Read)
+        {
+            int searchLocation = location;
+
+            do
+            {
+                getDynamicPaoAddressing(searchLocation, foundAddress, foundLength, foundKey);
+
+                if(foundAddress >=0 && foundLength >0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
+                   && (foundAddress - location + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
+                {
+                    unsigned long value = 0;
+                    for(int i=0;i<foundLength;i++)
+                    {
+                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress-location+foundLength-1)-i]) << (i*8));
+                    }
+                    CtiDeviceBase::setDynamicInfo(foundKey, value);
+                    searchLocation = foundAddress+1;
+                }
+                else
+                {
+                    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+                }
+
+            }while(foundKey != CtiTableDynamicPaoInfo::Key_Invalid);
+        }
+        else if(ioType == Emetcon::IO_Function_Read)
+        {
+            int searchLocation = 0;
+
+            do
+            {
+                getDynamicPaoFunctionAddressing(location, searchLocation, foundAddress, foundLength, foundKey);
+
+                if(foundAddress >=0 && foundLength >0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
+                   && (searchLocation + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
+                {
+                    unsigned long value = 0;
+                    for(int i=0;i<foundLength;i++)
+                    {
+                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress+foundLength-1)-i]) << (i*8));
+                    }
+                    CtiDeviceBase::setDynamicInfo(foundKey, value);
+                    searchLocation = foundAddress+1;
+                }
+                else
+                {
+                    foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
+                }
+
+            }while(foundKey != CtiTableDynamicPaoInfo::Key_Invalid);
+        }
+    }
 
     switch(InMessage->Sequence)
     {
@@ -1394,7 +1895,7 @@ int CtiDeviceMCT470::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
                     OutMessage->Buffer.BSt.Message[0] = (demand);
                     OutMessage->Buffer.BSt.Message[1] = (loadProfile1);
                     OutMessage->Buffer.BSt.Message[2] = (loadProfile2);
-            
+
                     outList.append( CTIDBG_new OUTMESS(*OutMessage) );
 
                     OutMessage->Buffer.BSt.Function   = MCT470_Memory_IntervalsPos;

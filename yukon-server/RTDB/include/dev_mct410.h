@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/11/15 14:22:43 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/12/07 22:15:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,8 @@ protected:
 private:
 
     static const DLCCommandSet _commandStore;
+    static const DynamicPaoAddressing_t _dynPaoAddressing;
+    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
 
     static QualityMap initErrorQualities( void );
     static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
@@ -51,6 +53,12 @@ protected:
 
     enum MemoryLocations
     {
+        Memory_SSpecPos           = 0x00,
+        Memory_SSpecLen           =    1,
+
+        Memory_RevisionPos        = 0x01,
+        Memory_RevisionLen        =    1,
+
         Memory_OptionsPos         = 0x02,
         Memory_OptionsLen         =    1,
 
@@ -60,8 +68,11 @@ protected:
         Memory_StatusPos          = 0x05,
         Memory_StatusLen          =    5,
 
-        Memory_EventFlagsMaskPos    = 0x0A,
-        Memory_EventFlagsMaskLen    =    2,
+        Memory_EventFlagsMask1Pos = 0x0A,
+        Memory_EventFlagsMask1Len =    1,
+
+        Memory_EventFlagsMask2Pos = 0x0B,
+        Memory_EventFlagsMask2Len =    1,
 
         Memory_MeterAlarmMaskPos    = 0x0C,
         Memory_MeterAlarmMaskLen    =    2,
@@ -75,11 +86,35 @@ protected:
         Memory_AddressingPos      = 0x13,
         Memory_AddressingLen      =    6,
 
+        Memory_BronzeAddressPos   = 0x13,
+        Memory_BronzeAddressLen   =    1,
+
+        Memory_LeadAddressPos     = 0x14,
+        Memory_LeadAddressLen     =    2,
+
+        Memory_CollectionAddressPos = 0x16,
+        Memory_CollectionAddressLen =    2,
+
+        Memory_SPIDAddressPos     = 0x18,
+        Memory_SPIDAddressLen     =    1,
+
         Memory_AlarmsPos          = 0x15,
         Memory_AlarmsLen          =    2,
 
         Memory_IntervalsPos       = 0x1a,
         Memory_IntervalsLen       =    4,
+
+        Memory_DemandIntervalPos  = 0x1a,
+        Memory_DemandIntervalLen  =    1,
+
+        Memory_LoadProfileIntervalPos  = 0x1b,
+        Memory_LoadProfileIntervalLen  =    1,
+
+        Memory_VoltageDemandIntervalPos  = 0x1C,
+        Memory_VoltageDemandIntervalLen  =    1,
+
+        Memory_VoltageLPIntervalPos  = 0x1D,
+        Memory_VoltageLPIntervalLen  =    1,
 
         Memory_OverVThresholdPos  = 0x1e,
         Memory_OverVThresholdLen  =    2,
@@ -189,6 +224,9 @@ protected:
         FuncRead_LLPPeakHourPos      = 0xa1,
         FuncRead_LLPPeakIntervalPos  = 0xa2,
         FuncRead_LLPPeakLen          =   13,
+
+        FuncRead_TOUDaySchedulePos   = 0xAD,
+        FuncRead_TOUDayScheduleLen   =   11,
 
         FuncRead_DisconnectConfigPos = 0xfe,
         FuncRead_DisconnectConfigLen =    9,
@@ -362,6 +400,11 @@ public:
 
     static DLCCommandSet initCommandStore( );
     virtual bool getOperation( const UINT &cmd,  USHORT &function, USHORT &length, USHORT &io );
+
+    static DynamicPaoAddressing_t initDynPaoAddressing();
+    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
+    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
 
     void sendIntervals( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
 
