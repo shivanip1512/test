@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2005/11/11 14:39:02 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2005/12/07 22:10:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,7 @@
 #include "dev_carrier.h"
 #include "pt_numeric.h"
 #include "config_parts.h"
+#include "prot_emetcon.h"
 
 
 class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
@@ -34,6 +35,7 @@ public:
 private:
 
     static DLCCommandSet _commandStore;
+    RWTime _lastReadDataPurgeTime;
     
 protected:
 
@@ -73,9 +75,55 @@ protected:
 
     static bool getMCTDebugLevel(int mask);
 
-    //typedef pair<int length, CtiTableDynamicPaoInfo::Keys> LengthKeyPair;
-    virtual fillDynamicPaoInfo(INMESS *InMessage);
-    //virtual LengthKeyPair getLengthKeyPair(int location);
+    struct MessageReadData//Stores message data so we know what is coming back at us for our generic decode
+    {
+        USHORT newSequence;
+        USHORT oldSequence;
+        USHORT ioType;
+        int location, length;
+        RWTime insertTime;
+
+        bool MessageReadData::operator<(const MessageReadData &rhs) const
+        {
+            bool retval = false;
+    
+            if( newSequence < rhs.newSequence )
+            {
+                retval = true;
+            }
+            return retval;
+        }
+    };
+    typedef set<MessageReadData> MessageReadDataSet_t;
+
+    struct DynamicPaoAddressing
+    {
+        int address, length;
+        CtiTableDynamicPaoInfo::Keys key;
+
+        bool DynamicPaoAddressing::operator<(const DynamicPaoAddressing &rhs) const
+        {
+            bool retval = false;
+    
+            if( address < rhs.address )
+            {
+                retval = true;
+            }
+            return retval;
+        }
+    };
+    
+    int _lastSequenceNumber;
+    MessageReadDataSet_t _expectedReadData;
+    bool recordMessageRead(OUTMESS *OutMessage);
+    bool restoreMessageRead(INMESS *InMessage, int &ioType, int &location);
+    bool recordMultiMessageRead(RWTPtrSlist< OUTMESS > &outList);
+
+    enum SequenceDataNumbers
+    {
+        SequenceCountBegin = 20000,
+        SequenceCountEnd   = 30000
+    };
 
     enum MCTDebug
     {
@@ -174,6 +222,9 @@ public:
     static bool initCommandStore( );
     virtual bool getOperation( const UINT &cmdType, USHORT &function, USHORT &length, USHORT &io );
 
+    virtual void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    virtual void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+
     void resetMCTScansPending( void );
 
     virtual INT GeneralScan    ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4 );
@@ -201,7 +252,7 @@ public:
     INT decodeGetValue ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodePutValue ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodePutStatus( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
-    INT decodePutConfig( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    virtual INT decodePutConfig( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfig( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
 
     INT decodeGetStatusDisconnect( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
@@ -220,6 +271,8 @@ public:
     static  INT extractStatusData( INMESS *InMessage, INT type, USHORT *StatusData );
     static  INT verifyAlphaBuffer( DSTRUCT *DSt );
 
+    typedef set< DynamicPaoAddressing > DynamicPaoAddressing_t;
+    typedef map< int, DynamicPaoAddressing_t > DynamicPaoFunctionAddressing_t;
 };
 
 #endif // #ifndef __DEV_MCT_H__
