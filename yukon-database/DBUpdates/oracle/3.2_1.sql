@@ -45,7 +45,7 @@ create table SettlementConfig (
    CTISettlement        varchar2(32)          not null
 );
 alter table SettlementConfig
-   add constraint PK_STLMTCONFIG primary key (COnfigID);
+   add constraint PK_SETTLEMENTCONFIG primary key (ConfigID);
 
 insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada.');
 insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US.');
