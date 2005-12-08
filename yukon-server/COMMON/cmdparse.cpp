@@ -373,15 +373,15 @@ void  CtiCommandParser::doParseGetValue(const RWCString &CmdStr)
         if(!(token = CmdStr.match(re_kxx)).isNull())      // Sourcing from CmdStr, which is the entire command string.
         {
             // I have a match on the kxxh regular expression....
-            if(token.contains(" kwh"))
+            if(token.contains("kwh"))
             {
                 flag |= CMD_FLAG_GV_KWH;
             }
-            if(token.contains(" kvah"))
+            if(token.contains("kvah"))
             {
                 flag |= CMD_FLAG_GV_KVAH;
             }
-            if(token.contains(" kvarh"))
+            if(token.contains("kvarh"))
             {
                 flag |= CMD_FLAG_GV_KVARH;
             }
