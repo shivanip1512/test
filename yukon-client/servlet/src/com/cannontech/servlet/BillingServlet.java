@@ -99,7 +99,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyyMMdd");
 		String fileName = "billing";		
 		fileName += fileNameFormat.format(localBean.getEndDate());
-		fileName += ".csv";
+		fileName += ".txt";
 		resp.addHeader("Content-Disposition", "filename=" + fileName);
 		
 		if( req.getParameter("generate") != null)
