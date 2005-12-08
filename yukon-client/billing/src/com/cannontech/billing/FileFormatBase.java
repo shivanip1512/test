@@ -52,10 +52,16 @@ public abstract class FileFormatBase
 		1, 2, 3
 	};
 	
-	public static final int validDemandAccOffsets[] =
+	public static final int validFrozenDemandAccOffsets[] =
 	{
-		21, 22, 23, 24, 101, 102, 103, 104
+		21, 22, 23, 24
 	};
+	
+	public static final int validProfileDemandAccOffsets[] =
+	{
+		101, 102, 103, 104
+	};
+	
 	// Added offset 21 for 470 frozen peak kw support
 	
 	
@@ -233,18 +239,33 @@ public abstract class FileFormatBase
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Returns the flag that determines if offset is valid for the static validDemandAccOffsets values.
+	 * Returns the flag that determines if offset is valid for the static validProfileDemandAccOffsets values.
 	 * Creation date: (3/11/2002 3:11:08 PM)
 	 * @return boolean
 	 * @param offset int
 	 */
-	public boolean isKW_demand(int offset) 
+	public boolean isKW_profileDemand(int offset) 
 	{
-		for (int i = 0; i < validDemandAccOffsets.length; i++)
+		for (int i = 0; i < validProfileDemandAccOffsets.length; i++)
 		{
-			if( offset == validDemandAccOffsets[i])
+			if( offset == validProfileDemandAccOffsets[i])
+				return true;
+		}
+		return false;
+	}
+	/**
+	 * Returns the flag that determines if offset is valid for the static validFrozenDemandAccOffsets values.
+	 * Creation date: (3/11/2002 3:11:08 PM)
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKW_frozenDemand(int offset) 
+	{
+		for (int i = 0; i < validFrozenDemandAccOffsets.length; i++)
+		{
+			if( offset == validFrozenDemandAccOffsets[i])
 				return true;
 		}
 		return false;

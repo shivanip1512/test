@@ -49,7 +49,7 @@ public class MV_90Format extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, null, validDemandAccOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, null, validProfileDemandAccOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.DMG_METERNUMBER + ", " 
 				+ SQLStringBuilder.PT_POINTOFFSET + ", " 

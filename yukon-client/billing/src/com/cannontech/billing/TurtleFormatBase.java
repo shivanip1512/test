@@ -54,7 +54,7 @@ public class TurtleFormatBase extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets, validDemandAccOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), validAnalogPtOffsets, validAccPtOffsets, validFrozenDemandAccOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.DMG_METERNUMBER + ", " 
 				+ SQLStringBuilder.DMG_DEVICEID + ", " 
@@ -158,7 +158,7 @@ public class TurtleFormatBase extends FileFormatBase
 									lastRecord.setTime(ts);
 									lastRecord.setDate(ts);
 								}
-								else if (isKW(ptOffset) || isKW_demand(ptOffset))
+								else if (isKW(ptOffset) || isKW_frozenDemand(ptOffset))
 								{
 									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
@@ -185,7 +185,7 @@ public class TurtleFormatBase extends FileFormatBase
 									record.setDate(ts);
 		
 								}
-								else if (isKW(ptOffset) || isKW_demand(ptOffset))
+								else if (isKW(ptOffset) || isKW_frozenDemand(ptOffset))
 								{
 									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
