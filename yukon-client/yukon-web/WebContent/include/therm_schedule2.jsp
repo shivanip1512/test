@@ -560,28 +560,28 @@ function init() {
                               <input type="checkbox" id="WakeEnabled" onclick="toggleThermostat(1, this.checked);setChanged()" disabled>
                             </div>
                           </td>
-                          <td class = "TitleHeader" align = "left" width="15%"> 
+                          <td class = "SubtitleHeader" align = "left" width="15%"> 
                             Wake (W) </td>
                           <td width="10%" class="MainText">
                             <div align="right">
                               <input type="checkbox" id="LeaveEnabled" onclick="toggleThermostat(2, this.checked);setChanged();">
                             </div>
                           </td>
-                          <td class = "TitleHeader" align = "left" width="15%"> 
+                          <td class = "SubtitleHeader" align = "left" width="15%"> 
                             Leave (L) </td>
                           <td width="10%" class="MainText">
                             <div align="right">
                               <input type="checkbox" id="ReturnEnabled" onclick="toggleThermostat(3, this.checked);setChanged();">
                             </div>
                           </td>
-                          <td class = "TitleHeader" align = "left" width="15%"> 
+                          <td class = "SubtitleHeader" align = "left" width="15%"> 
                             Return (R) </td>
                           <td width="10%" class="MainText">
                             <div align="right">
                               <input type="checkbox" id="SleepEnabled" onclick="toggleThermostat(4, this.checked);setChanged();">
                             </div>
                           </td>
-                          <td class = "TitleHeader" align = "left" width="15%"> 
+                          <td class = "SubtitleHeader" align = "left" width="15%"> 
                             Sleep (S) </td>
                         </tr>
                         <tr> 

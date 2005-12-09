@@ -247,7 +247,7 @@
 	String homePhoneNo = (homePhone != null)? homePhone.getNotification() : "";
 %>
                   </td>
-                  <td width="171" valign="top"><span class="TitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
+                  <td width="171" valign="top"><span class="SubtitleHeader">Acct #<%= account.getAccountNumber() %></span><br> 
                     <span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
                     <!--<%= account.getCompany() %><br> -->
 					<%= ServletUtils.formatAddress(propAddr) %><br>

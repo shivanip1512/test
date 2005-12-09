@@ -3,7 +3,7 @@
 	<td width="202"> 
 	  <table width="200" border="0" cellspacing="0" cellpadding="3">
 		<tr> 
-		  <td><span class="TitleHeader"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
+		  <td><span class="SubtitleHeader"><b>Acct #<%= account.getAccountNumber() %></b></span><br>
 			<span class="NavText"><%= primContact.getFirstName() %> <%= primContact.getLastName() %><br>
 			<!--<%= account.getCompany() %><br> -->
 			<%= ServletUtils.formatAddress(propAddr) %><br>

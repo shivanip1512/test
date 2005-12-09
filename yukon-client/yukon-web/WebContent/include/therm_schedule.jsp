@@ -442,13 +442,13 @@ function init() {
                       <table width="100%" border="0" height="27">
                         <tr>
 					  	  <td width="10%">&nbsp;</td> 
-                          <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Wake (W)</span></td>
+                          <td class = "TableCell" align = "left" width="15%"><span class = SubtitleHeader>Wake (W)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Leave (L)</span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Leave (L)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Return (R)</span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Return (R)</span></td>
                           <td width="10%">&nbsp;</td>
-						  <td class = "TableCell" align = "left" width="15%"><span class = "TitleHeader">Sleep (S)</span></td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Sleep (S)</span></td>
                         </tr>
                         <tr> 
                           <td class = "TableCell" width="10%">
