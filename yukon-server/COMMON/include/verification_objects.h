@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/09 16:41:05 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@ protected:
 
     static const string String_CodeStatus_Sent;
     static const string String_CodeStatus_Success;
+    static const string String_CodeStatus_Timeout;
     static const string String_CodeStatus_Retry;
     static const string String_CodeStatus_Fail;
     static const string String_CodeStatus_Unexpected;
@@ -84,6 +85,7 @@ public:
         CodeStatus_Uninitialized,
         CodeStatus_Sent,
         CodeStatus_Success,
+        CodeStatus_Timeout,
         CodeStatus_Retry,
         CodeStatus_Fail,
         CodeStatus_Unexpected

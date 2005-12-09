@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/07/29 16:26:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/09 16:41:05 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 
 const string CtiVerificationBase::String_CodeStatus_Sent       = "sent";
 const string CtiVerificationBase::String_CodeStatus_Success    = "success";
+const string CtiVerificationBase::String_CodeStatus_Timeout    = "timeout";
 const string CtiVerificationBase::String_CodeStatus_Retry      = "retry";
 const string CtiVerificationBase::String_CodeStatus_Fail       = "fail";
 const string CtiVerificationBase::String_CodeStatus_Unexpected = "unexpected";
@@ -60,6 +61,7 @@ const string &CtiVerificationBase::getCodeStatusName(CodeStatus cs)
         case CodeStatus_Fail:       s = &String_CodeStatus_Fail;        break;
         case CodeStatus_Retry:      s = &String_CodeStatus_Retry;       break;
         case CodeStatus_Success:    s = &String_CodeStatus_Success;     break;
+        case CodeStatus_Timeout:    s = &String_CodeStatus_Timeout;     break;
         case CodeStatus_Unexpected: s = &String_CodeStatus_Unexpected;  break;
         default:                    s = &String_CodeStatus_Invalid;     break;
     }
@@ -138,8 +140,14 @@ bool CtiVerificationWork::checkReceipt(const CtiVerificationReport &report)
 
 CtiVerificationWork::CodeStatus CtiVerificationWork::processResult()
 {
-    //  assume success, look for failure
-    _codeDisposition = CodeStatus_Success;
+    if( _receipts.empty() )
+    {
+        _codeDisposition = CodeStatus_Timeout;
+    }
+    else
+    {
+        _codeDisposition = CodeStatus_Success;
+    }
 
     //  walk through the list of verification devices we never heard from...
     for( expectation_map::iterator itr = _expectations.begin(); (itr != _expectations.end()) && (_codeDisposition == CodeStatus_Success); itr++ )
