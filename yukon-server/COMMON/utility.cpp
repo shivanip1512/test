@@ -233,6 +233,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
                 if( force_value >= vs_id )
                 {
                     tempid = vs_id = force_value;
+                    init_id = true;
                 }
                 else
                 {
