@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/09 16:48:00 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,10 +99,27 @@ void DNPUDPOutboundThread( void *Dummy );
 void DNPUDPExecuteThread ( void *Dummy );
 
 static CtiDeviceSingleSPtr DNPDeviceByID( long device_id );
-static u_long DNPIPByPao( long device_id );
-static u_short DNPPortByIP( u_long ip );
+static u_long              DNPIPByPao( long device_id );
+static u_short             DNPPortByIP( u_long ip );
 
 
+static void applyGetDNPUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid)
+{
+    LONG portid = (LONG)prtid;
+
+    if( portid == RemoteDevice->getPortID() )
+    {
+        if( RemoteDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP) &&
+            RemoteDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port) )
+        {
+            u_long ip   = RemoteDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP);
+            u_long port = RemoteDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port);
+
+            ip_mapping.insert(make_pair(ip, boost::static_pointer_cast<CtiDeviceSingle>(RemoteDevice)));
+            port_mapping.insert(make_pair(ip, port));
+        }
+    }
+}
 
 
 void DNPUDPInboundThread( void *Dummy )
@@ -118,10 +135,14 @@ void DNPUDPInboundThread( void *Dummy )
 
     const int DNPHeaderLength = 10;
 
-    int   recv_len;
-    char *recv_buf;
+    unsigned char *recv_buf;
+    int recv_len;
 
     CtiDeviceSingleSPtr dev_single;
+
+
+    //  grab all of the stored UDP info from the DB
+    DeviceManager.apply(applyGetDNPUDPInfo, (void *)gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0));
 
 
     udp_out_socket = socket(AF_INET, SOCK_DGRAM, 0);    // UDP socket for outbound.
@@ -159,7 +180,7 @@ void DNPUDPInboundThread( void *Dummy )
     _beginthread(DNPUDPExecuteThread, 0, NULL);
     _beginthread(DNPUDPOutboundThread, 0, NULL);
 
-    recv_buf = CTIDBG_new char[16000];  //  should be big enough for any incoming packet
+    recv_buf = CTIDBG_new unsigned char[16000];  //  should be big enough for any incoming packet
 
     while( !PorterQuit )
     {
@@ -177,7 +198,7 @@ void DNPUDPInboundThread( void *Dummy )
         //End Thread Monitor Section
 
         int fromlen = sizeof(from);
-        recv_len = recvfrom(udp_socket, recv_buf, 16000, 0, (sockaddr *)&from, &fromlen);
+        recv_len = recvfrom(udp_socket, (char *)recv_buf, 16000, 0, (sockaddr *)&from, &fromlen);
 
         if(recv_len == SOCKET_ERROR)
         {
@@ -205,7 +226,7 @@ void DNPUDPInboundThread( void *Dummy )
             dout << RWTime() << " DNP packet received via UDP connection." << endl;
             for(int xx = 0; xx < recv_len; xx++)
             {
-                dout << " " << RWCString(CtiNumStr((BYTE)recv_buf[xx]).hex().zpad(2));
+                dout << " " << RWCString(CtiNumStr(recv_buf[xx]).hex().zpad(2));
             }
 
             dout << endl;
@@ -226,123 +247,144 @@ void DNPUDPInboundThread( void *Dummy )
                     //  check the framing bytes
                     if( recv_buf[0] == 0x05 && recv_buf[1] == 0x64 )
                     {
-                        dnp_slave_address = (recv_buf[7] << 8) | recv_buf[6];
+                        unsigned short crc        = Cti::Protocol::DNP::Datalink::crc(recv_buf, DNPHeaderLength - 2);
+                        unsigned short header_crc = recv_buf[8] | (recv_buf[9] << 8);
 
-                        ip_itr = ip_mapping.find(ntohl(from.sin_addr.S_un.S_addr));
-                        dev_single.reset();
-
-                        if(gConfigParms.getValueAsULong("DNPUDP_DEBUGLEVEL",0) & 0x00000001)
+                        if( crc == header_crc )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PORT: " << ntohs(from.sin_port) << endl;
-                        }
+                            dnp_slave_address = recv_buf[6] | (recv_buf[7] << 8);
 
-                        //  if we were able to find this device
-                        if( ip_itr != ip_mapping.end() )
-                        {
-                            // Update the port information no matter what!
-                            ipport_map::iterator pt_itr = port_mapping.find( ip_itr->first );
+                            ip_itr = ip_mapping.find(ntohl(from.sin_addr.S_un.S_addr));
+                            dev_single.reset();
 
-                            if(pt_itr != port_mapping.end())
+                            if( gConfigParms.getValueAsULong("DNPUDP_DEBUGLEVEL", 0) & 0x00000001 )
                             {
-                                (*pt_itr).second = ntohs(from.sin_port);
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PORT: " << ntohs(from.sin_port) << endl;
                             }
 
-
-                            if( ip_itr->second )
+                            //  if we were able to find this device
+                            if( ip_itr != ip_mapping.end() )
                             {
-                                dev_single = ip_itr->second;
-                                active_itr = active_devices.find(dev_single->getID());
+                                // Update the port information no matter what!
+                                ipport_map::iterator pt_itr = port_mapping.find( ip_itr->first );
 
-                                //  make sure the device is working on an outmessage (the assumption being that it's waiting for input)
-                                if( active_itr != active_devices.end() && (*active_itr).second.active_om )
+                                if(pt_itr != port_mapping.end())
                                 {
-                                    //  ACH:  add a CRC check prior to this - the UDP stuff doesn't have one, so this check may not always be reliable
-                                    if( dev_single->getAddress() == dnp_slave_address )
+                                    (*pt_itr).second = ntohs(from.sin_port);
+                                }
+
+
+                                if( ip_itr->second )
+                                {
+                                    dev_single = ip_itr->second;
+                                    active_itr = active_devices.find(dev_single->getID());
+
+                                    //  make sure the device is working on an outmessage (the assumption being that it's waiting for input)
+                                    if( active_itr != active_devices.end() && (*active_itr).second.active_om )
                                     {
-                                        packet in_packet;
-
-                                        in_packet.data   = CTIDBG_new char[recv_len];
-                                        in_packet.len    = recv_len;
-                                        in_packet.used   = 0;
-                                        in_packet.status = 0;
-
-                                        memcpy(in_packet.data, recv_buf, recv_len);
-
-                                        packets.push(make_pair(dev_single->getID(), in_packet));
-
-                                        //  let the outbound thread know there's new work to be done
-                                        if( !work_flag.release() )
+                                        if( dev_single->getAddress() == dnp_slave_address )
                                         {
-                                            //  this happens if the semaphore can't increase its release count - this may cause
-                                            //    a delay in the processing loop later on
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            packet in_packet;
+
+                                            in_packet.data   = CTIDBG_new char[recv_len];
+                                            in_packet.len    = recv_len;
+                                            in_packet.used   = 0;
+                                            in_packet.status = 0;
+
+                                            memcpy(in_packet.data, recv_buf, recv_len);
+
+                                            packets.push(make_pair(dev_single->getID(), in_packet));
+
+                                            //  let the outbound thread know there's new work to be done
+                                            if( !work_flag.release() )
+                                            {
+                                                //  this happens if the semaphore can't increase its release count - this may cause
+                                                //    a delay in the processing loop later on
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+                                        }
+                                        else if(DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU))
+                                        {
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << RWTime() << " **** Checkpoint - incoming address (" << dnp_slave_address << ") trumps old address (" << dev_single->getAddress() << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+
+                                            while( !(*active_itr).second.work_queue.empty() )
+                                            {
+                                                INMESS im;
+
+                                                //  return a "No Config Data" error
+                                                ReturnResultMessage(NoConfigData, &im, (*active_itr).second.work_queue.front());  // This method WILL delete the om passed into it.
+                                                (*active_itr).second.work_queue.pop();
+                                            }
+
+                                            //  ACH:  should we allow multiple addresses on a single IP?
+
+                                            //  clear the dynamic info
+                                            dev_single->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   "");
+                                            dev_single->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, "");
+
+                                            //  wipe him from our memory;  we've heard someone else coming from that same IP
+                                            port_mapping.erase(ip_itr->first);
+                                            ip_mapping.erase(ip_itr);
+
+                                            //  finally, reset the pointer - we didn't find the right device
+                                            dev_single.reset();
                                         }
                                     }
-                                    else if(DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU))
+                                    else
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << RWTime() << " **** Checkpoint - incoming address (" << dnp_slave_address << ") trumps old address (" << dev_single->getAddress() << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
-
-                                        while( !(*active_itr).second.work_queue.empty() )
-                                        {
-                                            INMESS im;
-
-                                            //  return a "No Config Data" error
-                                            ReturnResultMessage(NoConfigData, &im, (*active_itr).second.work_queue.front());  // This method WILL delete the om passed into it.
-                                            (*active_itr).second.work_queue.pop();
-                                        }
-
-                                        //  ACH:  should we allow multiple addresses on a single IP?
-                                        dev_single.reset();
-                                        port_mapping.erase(ip_itr->first);
-                                        ip_mapping.erase(ip_itr);
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint - unexpected inbound message from device \"" << dev_single->getName() << "\", discarding **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
                                 }
                                 else
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - unexpected inbound message from device \"" << dev_single->getName() << "\", discarding **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " **** Checkpoint - null entry in DNPUDPInboundThread::ip_mapping, discarding **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+
+                                    ip_mapping.erase(ip_itr);
                                 }
                             }
-                            else
+
+                            if( !dev_single )
                             {
+                                boost::shared_ptr<CtiDeviceBase> dev_base;
+
+                                //  we didn't have this device in the mapping table, so look it up
+                                if( dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU) )
+                                {
+                                    dev_single = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
+
+                                    if( DNPUDP_DEBUG_OUTPUT )
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << RWTime() << " Inserting device \"" << dev_base->getName() << "\" in list " << endl;
+                                    }
+
+                                    //  we found it, insert the IP/device pair
+                                    ip_mapping.insert(make_pair(ntohl(from.sin_addr.S_un.S_addr), dev_single));
+                                    port_mapping.insert(make_pair(ntohl(from.sin_addr.S_un.S_addr), ntohs(from.sin_port)));
+
+                                    dev_single->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ntohl(from.sin_addr.S_un.S_addr));
+                                    dev_single->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, ntohs(from.sin_port));
+                                }
+                                else
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " **** Checkpoint - null entry in DNPUDPInboundThread::ip_mapping, discarding **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << RWTime() << " **** Checkpoint - can't find DNP slave (" << dnp_slave_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
-
-                                ip_mapping.erase(ip_itr);
                             }
                         }
-
-                        if( !dev_single )
+                        else
                         {
-                            boost::shared_ptr<CtiDeviceBase> dev_base;
-
-                            //  we didn't have this device in the mapping table, so look it up
-                            if( dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0), dnp_slave_address, TYPE_DNPRTU) )
-                            {
-                                dev_single = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
-
-                                if( DNPUDP_DEBUG_OUTPUT )
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << RWTime() << " Inserting device \"" << dev_base->getName() << "\" in list " << endl;
-                                }
-
-                                //  we found it, insert the IP/device pair
-                                ip_mapping.insert(make_pair(ntohl(from.sin_addr.S_un.S_addr), dev_single));
-                                port_mapping.insert(make_pair(ntohl(from.sin_addr.S_un.S_addr), ntohs(from.sin_port)));
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " **** Checkpoint - can't find DNP slave (" << dnp_slave_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint - bad CRC on inbound DNP message, cannot assign **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                     else
@@ -443,19 +485,20 @@ VOID DNPUDPOutboundThread(void *Dummy)
                             CtiXfer    &xfer    = tracker.xfer;
                             status              = work_packet.status;
 
-                            if(work_packet.data != 0 && work_packet.len > 0)        // this block calls 'decode" if we have already begun the transaction!// decode only if there is data to decode
+                            if( work_packet.data != 0 && work_packet.len > 0 )  //  this block calls "decode" if we have already begun the transaction!// decode only if there is data to decode
                             {
-
                                 if( byte_count > xfer.getInCountExpected() )
                                 {
                                     byte_count = xfer.getInCountExpected();
                                 }
 
-                                // Mode the UDP data into the xfer structure shich the protocol knows and loves.
+                                //  Move the UDP data into the xfer structure which the protocol knows and loves.
                                 memcpy(xfer.getInBuffer(), work_packet.data + work_packet.used, byte_count);
                                 xfer.setInCountActual(byte_count);
                                 work_packet.used += byte_count;
-                                // Ask the protocol object to decode it.
+
+
+                                //  Ask the protocol object to decode it.
                                 status = dev_single->decode(xfer, work_packet.status);
                             }
 
@@ -499,7 +542,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
                             }
                             else
                             {
-                                if(gConfigParms.getValueAsULong("DNPUDP_DEBUGLEVEL",0) & 0x00000001)
+                                if( gConfigParms.getValueAsULong("DNPUDP_DEBUGLEVEL",0) & 0x00000001 )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Transaction is INCOMPLETE " << dev_single->getName() << endl;
@@ -510,7 +553,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
                                 u_long ip = DNPIPByPao(dev_single->getID());
                                 u_short port = DNPPortByIP(ip);
 
-                                if(!port) port = gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500);
+                                if( !port ) port = gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500);
 
                                 if( ip )
                                 {
@@ -520,6 +563,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
 
                                     dev_single->generate(xfer);
 
+                                    if( xfer.getOutCount() > 0 )
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                                         dout << RWTime() << " DNP packet being sent via UDP connection." << endl;
@@ -531,7 +575,7 @@ VOID DNPUDPOutboundThread(void *Dummy)
                                         dout << endl;
                                     }
 
-                                    if(SOCKET_ERROR == sendto(udp_socket, (char *)xfer.getOutBuffer(), xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to)))
+                                    if( SOCKET_ERROR == sendto(udp_socket, (char *)xfer.getOutBuffer(), xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to)) )
                                     {
                                         {
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
