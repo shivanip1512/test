@@ -72,7 +72,7 @@ update command set command = 'putconfig emetcon multiplier kyz 1 ?Multiplier(x.x
 go
 
 update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
-go 
+go
 
 
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
