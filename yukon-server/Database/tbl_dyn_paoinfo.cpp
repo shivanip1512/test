@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/11/15 14:21:36 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/09 16:41:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_read_interval = "m
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_meter_number        = "mct precanned meter number";
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_type          = "mct precanned table type";
 
+const string CtiTableDynamicPaoInfo::_key_udp_ip   = "udp ip";
+const string CtiTableDynamicPaoInfo::_key_udp_port = "udp port";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
@@ -210,6 +212,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_FrozenDemandPeakTimestamp,      &_key_frozen_demand_peak_timestamp));
     retval.insert(make_pair(Key_DemandFreezeTimestamp,          &_key_demand_freeze_timestamp));
     retval.insert(make_pair(Key_VoltageFreezeTimestamp,         &_key_voltage_freeze_timestamp));
+
+    retval.insert(make_pair(Key_UDP_IP,   &_key_udp_ip));
+    retval.insert(make_pair(Key_UDP_Port, &_key_udp_port));
 
     return retval;
 }

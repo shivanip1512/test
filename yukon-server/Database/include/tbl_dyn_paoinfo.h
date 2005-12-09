@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/11/15 14:21:37 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/09 16:41:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,9 @@ public:
         Key_FrozenDemandPeakTimestamp,
         Key_DemandFreezeTimestamp,
         Key_VoltageFreezeTimestamp,
+
+        Key_UDP_IP,
+        Key_UDP_Port,
         //  make sure to add any new enum values to the string map
     };
 
@@ -199,6 +202,9 @@ protected:
     static const string _key_mct_precanned_table_read_interval;
     static const string _key_mct_precanned_meter_number;
     static const string _key_mct_precanned_table_type;
+
+    static const string _key_udp_ip;
+    static const string _key_udp_port;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<Keys,             const string *> key_map_t;
