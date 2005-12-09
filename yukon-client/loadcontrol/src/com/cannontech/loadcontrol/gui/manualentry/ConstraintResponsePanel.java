@@ -16,13 +16,15 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.CheckBoxTableHeader;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 
 /**
- * Insert the type's description here.
- * Creation date: (6/1/2004 12:44:50 PM)
- * @author: 
+ * Shows the response from the server for LMProgram constraints
+ * 
  */
 public class ConstraintResponsePanel extends DataInputPanel implements ActionListener, ItemListener
 {
@@ -175,10 +177,14 @@ private javax.swing.JTable getJTableConstraints() {
 private void initJTableCellComponents() 
 {
 	// Do any column specific initialization here
-    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setMinWidth(50);
-    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE).setMaxWidth(50);
-    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_PROGRAM_NAME).setPreferredWidth(150);
-    getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_VIOLATION).setPreferredWidth(600);
+    getJTableConstraints().getColumnModel().getColumn(
+    		ConstraintTableModel.COL_OVERRIDE).setMinWidth(70);
+    getJTableConstraints().getColumnModel().getColumn(
+    		ConstraintTableModel.COL_OVERRIDE).setMaxWidth(70);
+    getJTableConstraints().getColumnModel().getColumn(
+    		ConstraintTableModel.COL_PROGRAM_NAME).setPreferredWidth(150);
+    getJTableConstraints().getColumnModel().getColumn(
+    		ConstraintTableModel.COL_VIOLATION).setPreferredWidth(530);
 
     
     TableColumn overColumn = getJTableConstraints().getColumnModel().getColumn(ConstraintTableModel.COL_OVERRIDE);
@@ -200,8 +206,6 @@ private void initJTableCellComponents()
 	
 	overColumn.setCellEditor( new javax.swing.DefaultCellEditor(chkBox) );
 
-
-
 	//assign our table header for the Override column
 	CheckBoxTableHeader hdrBxRender = new CheckBoxTableHeader( this );
 
@@ -214,6 +218,27 @@ private void initJTableCellComponents()
 	hdrBxRender.addActionListener( this );
 
 	overColumn.setHeaderRenderer( hdrBxRender );
+
+
+	//allow the override check box if the user has the roleproperty defined
+	boolean canOverride = 
+		AuthFuncs.checkRoleProperty(
+			ClientSession.getInstance().getUser(),
+			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
+
+	chkBox.setEnabled( canOverride );
+	bxRender.setEnabled( canOverride );
+	hdrBxRender.setEnabled( canOverride );
+	
+	if( !canOverride ) {
+		bxRender.setToolTipText(
+			"RoleProperty settings prohibit any constraint overrides");
+		chkBox.setToolTipText(
+			"RoleProperty settings prohibit any constraint overrides");
+		hdrBxRender.setToolTipText(
+			"RoleProperty settings prohibit any constraint overrides");
+	}
+
 }
 
 
@@ -289,9 +314,17 @@ public void setValue(Object obj)
 	for( int i = 0; i < respProgs.length; i++ )
 	{
 		//we only care about the violators!!!!
-		if( respProgs[i].getStatus() != ServerResponseMsg.STATUS_OK )
+		if( respProgs[i].getStatus() != ServerResponseMsg.STATUS_UNINIT )
 			getTableModelCons().addRow( respProgs[i] );
 	}
 
+	
+	//allow the override check box if the user has the roleproperty defined
+//	boolean canOverride = 
+//		AuthFuncs.checkRoleProperty(
+//			ClientSession.getInstance().getUser(),
+//			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
+
 }
+
 }

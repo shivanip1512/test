@@ -48,7 +48,9 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 		//Conn error
 		Color.RED,
 		//disabled like color for checked columns
-		Color.LIGHT_GRAY
+		Color.LIGHT_GRAY,
+		//No constraints violated
+		Color.GREEN		
 	};
 
 	/**
@@ -97,6 +99,9 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 		}
 		else if( prog.getOverride().booleanValue() ) {
 			return CELL_COLORS[2];
+		}
+		else if( ResponseProg.NO_VILOATION_ACTION.equals(prog.getAction()) ) {
+			return CELL_COLORS[3];
 		}
 		else
 			return CELL_COLORS[0];

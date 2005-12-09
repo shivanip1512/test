@@ -21,6 +21,7 @@ import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
 
 
@@ -212,116 +213,14 @@ private javax.swing.JMenuItem getJMenuItemStop()
  */
 private void showDirectManualEntry( final int panelMode ) 
 {
-	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this.getInvoker()) );
-	DirectControlJPanel panel = new DirectControlJPanel()
-	{
-		public void exit()
-		{
-			d.dispose();
-		}
-
-		public void setParentWidth( int x )
-		{
-			d.setSize( d.getWidth() + x, d.getHeight() );
-		}
-	};
-
-
-	d.setTitle(
-		panelMode == DirectControlJPanel.MODE_START_STOP 
-		? "Start Program(s)"
-		: "Stop Program(s)" );
-		
-	d.setModal(true);
-	d.setContentPane(panel);
-	d.setSize( 350, 320);
-	d.pack();
-	d.setLocationRelativeTo(this);
-
+	PopUpPanel p = new PopUpPanel( this );
+	
 	//get an array of LMProgramBase to use later 
 	// (only copies the references into the new array, not a full instance copy!!)
 	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
 	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
 
-	
-	if( panel.setMultiSelectObject( prgArray ) )
-	{
-        panel.setMode( panelMode );
-        d.show();
-	
-		//destroy the JDialog
-		d.dispose();
-
-		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
-		{
-			MultiSelectProg[] selected = panel.getMultiSelectObject();
-	
-			if( selected != null )
-			{
-				ResponseProg[] programResp =
-					new ResponseProg[ selected.length ];
-
-				for( int i = 0; i < selected.length; i++ )
-				{
-					programResp[i] = new ResponseProg(
-							panel.createMessage(
-								selected[i].getBaseProgram(),
-								selected[i].getGearNum()),
-							selected[i].getBaseProgram() );
-				}
-
-				
-				boolean success = LCUtils.executeSyncMessage( programResp );
-
-				
-				if( !success )
-				{
-					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
-					OkCancelDialog diag = new OkCancelDialog(
-						CtiUtilities.getParentFrame(this.getInvoker()),
-						"Program Constraint Violation",
-						true,
-						constrPanel );
-
-					//set our responses
-					constrPanel.setValue( programResp );
-					
-					diag.setOkButtonText( "Resubmit" );
-					diag.setResizable( true );
-					diag.setSize( 800, 350 );
-					diag.setLocationRelativeTo( this );
-
-					diag.show();
-
-					ResponseProg[] respArr = 
-						(ResponseProg[])constrPanel.getValue( null );
-						
-					if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
-						&& respArr.length > 0 )
-					{
-						LCUtils.executeSyncMessage( respArr );
-					}
-
-					diag.dispose();
-
-				}
-				
-				
-			}
-	
-	
-		}
-	
-	}
-	else
-	{
-		JOptionPane.showMessageDialog(
-			this,
-			"There are no programs attached to the control area '" + getLoadControlArea().getYukonName() + "'",
-			"Unable to Control Programs",
-			JOptionPane.WARNING_MESSAGE );
-		
-	}
+	p.showDirectManualEntry( panelMode, prgArray );
 	
 }
 

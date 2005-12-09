@@ -15,7 +15,9 @@ import com.cannontech.common.gui.panel.IMultiSelectModel;
 import com.cannontech.common.gui.table.MultiJComboCellEditor;
 import com.cannontech.common.gui.table.MultiJComboCellRenderer;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.cache.functions.AuthFuncs;
 import com.cannontech.database.cache.functions.LMFuncs;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -24,6 +26,7 @@ import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 
 /**
  * Insert the type's description here.
@@ -54,7 +57,6 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	private javax.swing.JCheckBox ivjJCheckBoxStartStopNow = null;
 	private javax.swing.JComboBox ivjJComboBoxGear = null;
 	private javax.swing.JLabel ivjJLabelGear = null;
-	private java.awt.FlowLayout ivjJPanelOkCancelFlowLayout = null;
 	private com.cannontech.common.gui.panel.MultiSelectJPanel ivjJPanelMultiSelect = null;
 	private javax.swing.JPanel ivjJPanelControls = null;
 	private com.cannontech.common.gui.util.DateComboBox ivjDateComboStart = null;
@@ -437,26 +439,6 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		return dateFormatter;
 	}
 
-
-	/**
-	 * Return the DirectControlJPanelFlowLayout property value.
-	 * @return java.awt.FlowLayout
-	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
-	private java.awt.FlowLayout getDirectControlJPanelFlowLayout() {
-		java.awt.FlowLayout ivjDirectControlJPanelFlowLayout = null;
-		try {
-			/* Create part */
-			ivjDirectControlJPanelFlowLayout = new java.awt.FlowLayout();
-			ivjDirectControlJPanelFlowLayout.setAlignment(java.awt.FlowLayout.LEFT);
-			ivjDirectControlJPanelFlowLayout.setHgap(1);
-		} catch (java.lang.Throwable ivjExc) {
-			handleException(ivjExc);
-		};
-		return ivjDirectControlJPanelFlowLayout;
-	}
-
-
 	/**
 	 * Return the JButtonCancel property value.
 	 * @return javax.swing.JButton
@@ -574,7 +556,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxConstraints() {
+public javax.swing.JComboBox getJComboBoxConstraints() {
 	if (ivjJComboBoxConstraints == null) {
 		try {
 			ivjJComboBoxConstraints = new javax.swing.JComboBox();
@@ -583,10 +565,32 @@ private javax.swing.JComboBox getJComboBoxConstraints() {
 			ivjJComboBoxConstraints.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 			// user code begin {1}
 
-			ivjJComboBoxConstraints.addItem(
-				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
-			ivjJComboBoxConstraints.addItem(
-				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
+			if( AuthFuncs.checkRoleProperty( ClientSession.getInstance().getUser(),
+						DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
+				ivjJComboBoxConstraints.addItem( 
+					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
+
+			if( AuthFuncs.checkRoleProperty( ClientSession.getInstance().getUser(),
+					DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
+				ivjJComboBoxConstraints.addItem(
+					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
+
+			if( ivjJComboBoxConstraints.getItemCount() > 0 ) {
+				//set our initial selection to be the value specified in our
+				// role property
+				String defSel = 
+					AuthFuncs.getRolePropertyValue(
+						ClientSession.getInstance().getUser(),
+						DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION);
+	
+				ivjJComboBoxConstraints.setSelectedItem( defSel );
+			} else {
+				//force our constraints to do something, just
+				// observe them for now
+				ivjJComboBoxConstraints.setEnabled( false );
+				ivjJComboBoxConstraints.addItem( 
+					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );				
+			}
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1243,9 +1247,9 @@ private javax.swing.JLabel getJLabelScenario() {
 			c.setTime( getDateComboStart().getSelectedDate() );
 			
 			GregorianCalendar tCal = new GregorianCalendar();
-			c.set(GregorianCalendar.HOUR_OF_DAY, tCal.get(tCal.HOUR_OF_DAY) );
-			c.set(GregorianCalendar.MINUTE, tCal.get(tCal.MINUTE) );
-			c.set(GregorianCalendar.SECOND, tCal.get(tCal.SECOND) );
+			c.set(GregorianCalendar.HOUR_OF_DAY, tCal.get(GregorianCalendar.HOUR_OF_DAY) );
+			c.set(GregorianCalendar.MINUTE, tCal.get(GregorianCalendar.MINUTE) );
+			c.set(GregorianCalendar.SECOND, tCal.get(GregorianCalendar.SECOND) );
 
 			return c.getTime();
 		}
@@ -1292,7 +1296,7 @@ private javax.swing.JLabel getJLabelScenario() {
 		{
 			//default the stop to 1 day from now
 			GregorianCalendar c = new GregorianCalendar();
-			c.add( c.DATE, 1 );
+			c.add( GregorianCalendar.DATE, 1 );
 			return c.getTime();
 		}
 		else
@@ -1408,16 +1412,6 @@ private void initialize() {
 	// user code end
 }
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (3/12/2001 10:18:44 AM)
-	 * @return boolean
-	 */
-	private boolean isInputValid() 
-	{
-		return true;
-	}
-
 
 	/**
 	 * Insert the method's description here.
@@ -1460,6 +1454,17 @@ private void initialize() {
 								"Incorrect Entry", 
 								javax.swing.JOptionPane.CLOSED_OPTION,							
 								javax.swing.JOptionPane.WARNING_MESSAGE );
+					return;
+				}
+
+				if( !getJCheckBoxStartStopNow().isSelected()
+					&& getStartTime().getTime() <= System.currentTimeMillis() )
+				{
+					javax.swing.JOptionPane.showConfirmDialog( this, 
+						"Start time must be a valid time in the future, try again.", 
+						"Incorrect Entry",
+						javax.swing.JOptionPane.CLOSED_OPTION,							
+						javax.swing.JOptionPane.WARNING_MESSAGE );
 					return;
 				}
 			}
@@ -1549,34 +1554,6 @@ private void initialize() {
 		
 
 	}
-
-
-	/**
-	 * main entrypoint - starts the part when it is run as an application
-	 * @param args java.lang.String[]
-	 */
-	public static void main(java.lang.String[] args) {
-		try {
-			javax.swing.JFrame frame = new javax.swing.JFrame();
-			DirectControlJPanel aDirectControlJPanel;
-			aDirectControlJPanel = new DirectControlJPanel();
-			frame.setContentPane(aDirectControlJPanel);
-			frame.setSize(aDirectControlJPanel.getSize());
-			frame.addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosing(java.awt.event.WindowEvent e) {
-					System.exit(0);
-				};
-			});
-			frame.show();
-			java.awt.Insets insets = frame.getInsets();
-			frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-			frame.setVisible(true);
-		} catch (Throwable exception) {
-			System.err.println("Exception occurred in main() of javax.swing.JPanel");
-			CTILogger.error( exception.getMessage(), exception );;
-		}
-	}
-
 
 	/**
 	 * Insert the method's description here.
