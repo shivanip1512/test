@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2005/03/17 05:16:54 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2005/12/09 17:03:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,6 +158,9 @@ public:
         Command_SetDigitalOut_SBO_Select,
         Command_SetDigitalOut_SBO_Operate,
         Command_SetDigitalOut_SBO_SelectOnly,
+
+        Command_Unsolicited,
+
         Command_Complete
     };
 
