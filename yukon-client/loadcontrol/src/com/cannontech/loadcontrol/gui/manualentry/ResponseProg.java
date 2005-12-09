@@ -3,8 +3,10 @@ package com.cannontech.loadcontrol.gui.manualentry;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.server.ServerResponseMsg;
 
 /**
  * @author rneuharth
@@ -15,8 +17,8 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 public class ResponseProg
 {
 	private ArrayList violations = new ArrayList(8);
-	private String action = null;
-	private int status = 0;
+	private String action = NONE_ACTION;
+	private int status = ServerResponseMsg.STATUS_UNINIT;
 	private Boolean override = Boolean.FALSE;
 
 	private LMProgramBase lmProgramBase = null;
@@ -24,6 +26,9 @@ public class ResponseProg
 	//the request messages that created this response
 	private LMManualControlRequest lmRequest = null;
 
+
+	public static final String NONE_ACTION = "";
+	public static final String NO_VILOATION_ACTION = "No Violation";
 
 	/**
 	 * 
