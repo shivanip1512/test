@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/03/17 05:25:11 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2005/12/09 16:57:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -356,7 +356,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len )
 {
     int pos, block_len, num_blocks;
-    unsigned short crc;
+    unsigned short block_crc;
     unsigned char  *current_block, *crc_pos;
 
     packet.header.fmt.framing[0] = 0x05;
@@ -385,7 +385,7 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
     }
 
     //  tack on the CRC
-    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+    packet.header.fmt.crc = crc(packet.header.raw, 8);
 
     pos = 0;
 
@@ -402,10 +402,12 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
         //  copy in this block of data
         memcpy(current_block, &buf[pos], block_len);
 
-        //  tack on the CRC
-        crc = computeCRC(current_block, block_len);
+        //  compute the CRC
+        block_crc = crc(current_block, block_len);
 
-        memcpy(current_block + block_len, &crc, sizeof(unsigned short));
+        //  jam it on the end, little-endian
+        current_block[block_len + 0] = block_crc      & 0xff;
+        current_block[block_len + 1] = block_crc >> 8 & 0xff;
 
         pos += block_len;
     }
@@ -414,8 +416,6 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
 
 void Datalink::constructPrimaryControlPacket( datalink_packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
 {
-    unsigned short crc;
-
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
@@ -432,14 +432,12 @@ void Datalink::constructPrimaryControlPacket( datalink_packet &packet, PrimaryCo
     packet.header.fmt.control.p.fcb          = fcb;
 
     //  tack on the CRC
-    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+    packet.header.fmt.crc = crc(packet.header.raw, 8);
 }
 
 
 void Datalink::constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc )
 {
-    unsigned short crc;
-
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
@@ -456,7 +454,7 @@ void Datalink::constructSecondaryControlPacket( datalink_packet &packet, Seconda
     packet.header.fmt.control.s.functionCode = function;
 
     //  tack on the CRC
-    packet.header.fmt.crc = computeCRC(packet.header.raw, 8);
+    packet.header.fmt.crc = crc(packet.header.raw, 8);
 }
 
 
@@ -1052,18 +1050,19 @@ bool Datalink::areCRCsValid( const datalink_packet &packet )
     bool valid;
 
     int pos, len, block_len;
-    unsigned short crc, block_crc;
+    unsigned short header_crc, block_crc;
 
-    const unsigned char *current_block;
+    const unsigned char  *current_block;
+    const unsigned short *current_crc;
 
 
     //  default to true, set to false if any don't match
     valid = true;
 
     //  compute the header's CRC
-    crc = computeCRC((unsigned char *)&packet.header, 8);
+    header_crc = crc((unsigned char *)&packet.header, 8);
 
-    if( crc != packet.header.fmt.crc )
+    if( header_crc != packet.header.fmt.crc )
     {
         valid = false;
     }
@@ -1072,8 +1071,11 @@ bool Datalink::areCRCsValid( const datalink_packet &packet )
         pos = 0;
         len = packet.header.fmt.len - Packet_HeaderLenCounted;
 
-        while( pos < len && valid )
+        while( valid && pos < len )
         {
+            //  note that each "block" is 18 bytes long, to allow for easy indexing of the
+            //    data - 16 bytes of data + 2 bytes of CRC...
+            //  we index by the data bytes we're looking at, not by the data+crc bytes
             current_block = packet.data.blocks[pos/16];
             block_len     = len - pos;
 
@@ -1082,16 +1084,14 @@ bool Datalink::areCRCsValid( const datalink_packet &packet )
                 block_len = 16;
             }
 
-            //  copy in this block of data
-            crc = computeCRC(current_block, block_len);
-
             pos += block_len;
 
-            //  snag the CRC from the end of the block
-            memcpy((unsigned char *)&block_crc, current_block + block_len, sizeof(unsigned short));
+            block_crc   = crc(current_block, block_len);
+
+            current_crc = (const unsigned short *)(current_block + block_len);
 
             //  compare the CRCs
-            if( crc != block_crc )
+            if( block_crc != *current_crc )
             {
                 valid = false;
             }
@@ -1145,7 +1145,8 @@ void Datalink::putPacketPayload( const datalink_packet &packet, unsigned char *b
 }
 
 
-unsigned short Datalink::computeCRC( const unsigned char *buf, int len )
+//  export it for the DNP UDP port and other general uses
+IM_EX_PROT unsigned short Datalink::crc( const unsigned char *buf, const int len )
 {
     //  this table and code taken from the DNP docs.
     //    original author Jim McFadyen
@@ -1186,17 +1187,17 @@ unsigned short Datalink::computeCRC( const unsigned char *buf, int len )
         0x91af,  0xa7f1,  0xfd13,  0xcb4d,  0x48d7,  0x7e89,  0x246b,  0x1235
     };
 
-    unsigned short crc = 0;
+    unsigned short new_crc = 0;
     unsigned char index;
 
     for( int i = 0; i < len; i++ )
     {
-        index = (crc ^ buf[i]) & 0x00ff;
-        crc >>= 8;
-        crc  ^= crctable[index];
+        index = (new_crc ^ buf[i]) & 0x00ff;
+        new_crc >>= 8;
+        new_crc  ^= crctable[index];
     }
 
-    return ~crc;
+    return ~new_crc;
 }
 
 }

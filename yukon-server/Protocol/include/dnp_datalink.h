@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/03/17 05:20:08 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2005/12/09 16:57:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,8 +91,6 @@ protected:
 
     enum PrimaryControlFunction;
     enum SecondaryControlFunction;
-
-    unsigned short computeCRC(const unsigned char *buf, int len);
 
     void constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len );
 
@@ -175,6 +173,8 @@ public:
 
     void getInPayload( unsigned char *buf );
     int  getInPayloadLength( void );
+
+    IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 
     enum DatalinkError
     {
