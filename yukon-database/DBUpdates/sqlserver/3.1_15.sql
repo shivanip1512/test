@@ -7,7 +7,8 @@ go
 drop table TOUDeviceMapping;
 go
 
-
+update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
+go
 
 
 

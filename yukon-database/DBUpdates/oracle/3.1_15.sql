@@ -5,6 +5,8 @@
 drop table TouRateOffset;
 drop table TOUDeviceMapping;
 
+update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
+
 
 
 
