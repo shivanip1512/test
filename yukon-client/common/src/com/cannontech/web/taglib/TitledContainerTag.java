@@ -14,14 +14,14 @@ public class TitledContainerTag extends TagSupport {
     
     public int doStartTag() throws JspException {
         try {
-            pageContext.getOut().append("  <table class=\"roundedTable\">\n" + 
+            pageContext.getOut().print("  <table class=\"roundedTable\">\n" + 
                     "    <tr> \n" + 
                     "      <td class=\"upperLeft\"></td>\n" + 
                     "      <td class=\"top\">");
             
-            pageContext.getOut().append(getTitle());
+            pageContext.getOut().print(getTitle());
             
-            pageContext.getOut().append("</td>\n" + 
+            pageContext.getOut().print("</td>\n" + 
                     "      <td class=\"upperRight\"></td>\n" + 
                     "    </tr>\n" + 
                     "    <tr>\n" + 
@@ -35,7 +35,7 @@ public class TitledContainerTag extends TagSupport {
 
     public int doEndTag() throws JspException {
         try {
-            pageContext.getOut().append("\n\n      </td>\n" + 
+            pageContext.getOut().print("\n\n      </td>\n" + 
                     "      <td class=\"rightSide\"></td>\n" + 
                     "    </tr>\n" + 
                     "    <tr>\n" + 
