@@ -5,13 +5,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -1069,6 +1074,19 @@ public static Date roundToMinute(Date toRound) {
 
 		return req.getRequestURI() + q;		
 	}
+    
+    public static String createSafeUrl(ServletRequest request, String url) {
+        if (request instanceof HttpServletRequest) {
+            HttpServletRequest httpRequest = (HttpServletRequest)request;
+            if (url.startsWith("/")) {
+                return httpRequest.getContextPath() + url;
+            } else {
+                return url;
+            }
+        } else {
+            return url;
+        }
+    }
     
     /**
      * Returns a URL that points to the same page as request, but has newParameter and newValue

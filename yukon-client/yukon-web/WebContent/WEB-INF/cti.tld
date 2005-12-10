@@ -10,6 +10,7 @@
   <tlibversion>1.0</tlibversion>
   <jspversion>1.1</jspversion>
   <shortname>CTI Tags</shortname>
+  <uri>http://cannontech.com/tags/cti</uri>
 
   <!-- ===================== Control Flow Tags ====================== -->
   <tag>
@@ -25,8 +26,9 @@
 
   <!-- Start of user/role/roleproperty tags -->
   <tag>
-  	<name>breadCrumb</name>
-  	<tagclass>com.cannontech.web.taglib.nav.BreadCrumb</tagclass>
+  	<name>breadCrumbs</name>
+  	<tagclass>com.cannontech.web.taglib.nav.BreadCrumbsTag</tagclass>
+    <bodycontent>JSP</bodycontent>
   	<attribute>
   		<name>seperator</name>
   		<required>false</required>
@@ -34,8 +36,9 @@
   	</attribute>	
   </tag>
   <tag>
-  	<name>crLink</name>
-  	<tagclass>com.cannontech.web.taglib.nav.CrumbLink</tagclass>
+  	<name>crumbLink</name>
+  	<tagclass>com.cannontech.web.taglib.nav.CrumbLinkTag</tagclass>
+    <bodycontent>empty</bodycontent>
   	<attribute>
   		<name>url</name>
   		<required>true</required>
@@ -46,11 +49,6 @@
   		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
-  	<attribute>
-  		<name>cssClass</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>  	
   </tag>
 
 
@@ -157,5 +155,85 @@
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
   </tag>
-
+ 
+   <tag>
+    <name>standardPage</name>
+    <tagclass>com.cannontech.web.taglib.StandardPageTag</tagclass>
+    <teiclass>com.cannontech.web.taglib.StandardPageTEI</teiclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+        <name>title</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>htmlLevel</name>
+      <required>false</required>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>standardMenu</name>
+    <tagclass>com.cannontech.web.taglib.StandardMenuTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>module</name>
+      <required>true</required>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>outputDoctype</name>
+    <tagclass>com.cannontech.web.taglib.OutputDoctypeTag</tagclass>
+    <teiclass>com.cannontech.web.taglib.OutputDoctypeTEI</teiclass>
+    <bodycontent>empty</bodycontent>
+    <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
+    <attribute>
+      <name>htmlLevel</name>
+      <required>false</required>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>includeCss</name>
+    <tagclass>com.cannontech.web.taglib.IncludeCssTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>link</name>
+      <required>true</required>
+    </attribute>
+  </tag>
+  
+  <tag>
+    <name>outputContent</name>
+    <tagclass>com.cannontech.web.taglib.OutputContent</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
+  </tag>
+  
+  <tag>
+    <name>outputMenu</name>
+    <tagclass>com.cannontech.web.taglib.OutputMenuTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
+  </tag>
+  
+  <tag>
+    <name>outputOtherCss</name>
+    <tagclass>com.cannontech.web.taglib.OutputOtherCss</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>This tag is only useful inside one of the pages included by the standardPage tag.</info>
+  </tag>
+  
+  <tag>
+    <name>titledContainer</name>
+    <tagclass>com.cannontech.web.taglib.TitledContainerTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>title</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
 </taglib>

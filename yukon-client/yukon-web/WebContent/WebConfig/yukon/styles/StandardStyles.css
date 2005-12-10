@@ -1,0 +1,180 @@
+body {
+  margin: 7px;
+  background-color: white;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+  }
+
+#Header img {
+  margin: 0 0 1em 0;
+  padding: 0;
+  border: 0;
+}
+
+#Header .left {
+    float: left;
+}
+#Header .right {
+    float: right;
+}
+#Header .clear {
+    clear: both;
+}
+
+#CopyRight {
+    text-align: right;
+    margin-top: 1em;
+    font-size: .9em;
+    color: black;
+}
+  
+#Content {
+  margin: 2em 0 0 0;
+  }
+  
+
+#Menu #topMenu {
+    background-color: #006699;
+    padding: .4em .8em;
+    font-weight: bold;
+    color: white;
+    font-size: .85em;
+}
+
+#Menu #topMenu .leftSide{
+    padding: .15em 0 0 0;
+}
+
+#Menu #subMenu {
+    background-color: rgb(238, 238, 238);
+    padding: .2em .8em;
+    height: 1.2em;
+    
+}
+
+#Menu #bottomBar {
+    background-color: white;
+    padding: .2em .8em;
+    height: 1.2em;
+    
+}
+
+#Menu #subMenu a {
+    color: rgb(0, 102, 153);
+    padding-right: .5em;
+    font-size: .75em;
+}
+
+#Menu #subMenu a:link {
+    color: rgb(0, 102, 153);
+}
+#Menu #subMenu a:visited {
+    color: rgb(0, 102, 153);
+}
+
+#Menu #topMenu a {
+    text-decoration: none;
+    color: white;
+    padding-right: .5em;
+}
+
+#Menu #topMenu a:link {
+    color: white;
+}
+
+#Menu #topMenu a:visited {
+    color: white;
+}
+
+#Menu #topMenu a:hover, #Menu #topMenu a.selected {
+    color: rgb(204,204,204);
+}
+
+#Menu .rightSide {
+    float: right;
+}
+
+#Menu .leftSide {
+    float: left;
+}
+
+#Menu .breadCrumbs {
+    font-size: .75em;
+    color: #f90;
+}
+
+#Menu .breadCrumbs a {
+    color: #f90;
+}
+
+table.roundedTable {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+table.roundedTable td.upperLeft {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Header_left.gif);
+    background-repeat: no-repeat;
+    width: 6px;
+}
+
+table.roundedTable td.upperRight {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Header_right.gif);
+    background-repeat: no-repeat;
+    width: 6px;
+}
+
+table.roundedTable td.lowerLeft {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Bottom_left.gif);
+    background-repeat: no-repeat;
+    width: 6px;
+    height: 9px;
+}
+
+table.roundedTable td.lowerRight {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Bottom_right.gif);
+    background-repeat: no-repeat;
+    width: 6px;
+    height: 9px;
+}
+
+table.roundedTable td.leftSide {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Side_left.gif);
+    background-repeat: repeat-y;
+    width: 6px;
+}
+
+table.roundedTable td.rightSide {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Side_right.gif);
+    background-repeat: repeat-y;
+    width: 6px;
+}
+
+table.roundedTable td.bottom {
+    border-style: hidden;
+    padding: 0;
+    background-image: url(Bottom.gif);
+    background-repeat: repeat-x;
+    height: 9px;
+}
+
+table.roundedTable td.top {
+    background-color: #888888;
+    font-weight: bold;
+    color: white;
+}
+
+  
