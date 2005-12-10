@@ -132,7 +132,8 @@ public abstract class OptionPropertyChecker {
             return result;
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to find integer value of " 
-                                               + intName + " in class " + className, e);
+                                               + intName + " in class " + className
+                                               + ": " + e.getMessage());
         }
     }
 
