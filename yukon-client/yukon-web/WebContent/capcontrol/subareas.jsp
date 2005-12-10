@@ -34,9 +34,9 @@ pageEncoding="ISO-8859-1"
 		<tr>
           <td valign="top">
 	          <div class="lAlign">
-				<cti:breadCrumb>
-					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-				</cti:breadCrumb>
+				<cti:breadCrumbs>
+					<cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+				</cti:breadCrumbs>
 	          </div>
           </td>
 		

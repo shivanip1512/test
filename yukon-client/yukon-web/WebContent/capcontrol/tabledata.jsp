@@ -78,12 +78,12 @@ pageEncoding="ISO-8859-1"
 		<tr>
           <td valign="top">
 	          <div class="lAlign">
-				<cti:breadCrumb>
-					<cti:crLink url="subareas.jsp" title="SubBus Areas" cssClass="crumbs" />
-					<cti:crLink url="subs.jsp" title="Substations" cssClass="crumbs" />
-					<cti:crLink url="feeders.jsp" title="Feeders" cssClass="crumbs" />
-					<cti:crLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" cssClass="crumbs" />
-				</cti:breadCrumb>
+				<cti:breadCrumbs>
+					<cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+					<cti:crumbLink url="subs.jsp" title="Substations" />
+					<cti:crumbLink url="feeders.jsp" title="Feeders" />
+					<cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
+				</cti:breadCrumbs>
 	          </div>
           </td>
 		
