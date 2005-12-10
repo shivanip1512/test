@@ -1,0 +1,111 @@
+$Id$
+
+
+                            Jakarta ECS
+                           Version 1.4.2
+                           Release Notes
+
+INTRODUCTION:
+============
+
+This document contains the release notes for this version of the Jakarta
+ECS package, and highlights changes since the previous version. This is a 
+maintenance release aimed at existing users who required a released version
+containing all the fixes made since the last release.
+
+NEW FEATURES:
+============
+General
+-------
+* Changed scope of createStartTag and createEndTag so they can be called 
+  externally from other packages.
+* New examples of ecs-in-use to src/java/org/apache/ecs/examples.
+* Also documentation enhancements.
+
+ConcreteElement
+---------------
+* Added overloaded method to ConcreteElement.output
+* added isEmpty() method and lineSeparator stuff
+
+Doctype
+-------
+* Added Doctype support for DTD HTML 4.01
+
+ECSDefaults
+-----------
+* The property file can now be overridden by setting the
+  ecs.properties property.
+
+XhtmlFrameSetDocument
+---------------------
+* Adding missing get/setDoctype()
+
+Input
+-----
+* Added more constuctors
+
+Option
+------
+* Added methods to make things a little easier with options and selects.
+* Make option default to having a closing tag
+
+Select
+------
+* Added methods to make things a little easier with options and selects.
+* Added appendOption methods
+
+org.apache.ecs.wml.P
+--------------------
+* Added align type constructor
+
+DEPRECATED
+==========
+
+CHANGES:
+========
+
+ElementAttributes
+-----------------
+* Change the way keyword/value pair is delimited with quotes.
+
+BUG REPORTS ADDRESSED:
+=====================
+
+ConcreteElement
+---------------
+* Changed output so that the current element encoding type is used when the element 
+  is outputted to an OutputStream.
+* Fixed potential problem with PrintWriter not flushing. 
+* Fixed end of line handling while pretty printing, so that
+it is correctly uses the line.separator system property to determine end of
+line, instead of using a hard coded '\n'.
+
+Document
+--------
+* There are some errors in the code of this class. They are the same kind of errors that I found in
+org.apache.ecs.Document. The problem is mainly in the setXXX methods (setBody for example), which forgets to
+update the local reference AND the reference in the Hashtable.
+* Fixed NPE on null doctype
+
+ElementAttributes
+-----------------
+* Fixed bug when addAttribute is used with an int, Integer or Object as an attribute value.
+
+FrameSetDocument
+----------------
+* Fixed some errors in the code of this class. The problem was mainly in the setXXX methods
+  (setBody for example), which forgets to update the local reference AND the reference 
+  in the Hashtable. 
+
+GenericElement
+--------------
+* International character set bug fix
+
+DOMFactory
+----------
+* Change DOMFactory so that it doesn't use Piped*Streams to prevent potential deadlocks.
+
+Script
+------
+* Changed script so that the body is not outputted when the src attribute is set.
+
