@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mainmenu>
+<!-- 
+     If you need to add functionality to the menu, please see the following classes:
+       com.cannontech.web.menu.CommonMenuBuilder
+       com.cannontech.web.menu.MenuRenderer
+       
+     If you need to add a new "permissions" type (like requireProperty) see:
+       com.cannontech.web.menu.OptionPropertyChecker
+
+     Be sure to use <link> for normal URLs (context path will be added)
+     and <action> to call a JavaScript function via the javascript: protocol.
+-->
+  <quicklinks>
+    <option name="CapControl">
+      <link>/capcontrol/subareas.jsp</link>
+      <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.ACCESS"/>
+    </option>
+    <option name="Commander">
+      <link>/apps/SelectDevice.jsp</link>
+      <requireRole value="com.cannontech.roles.application.CommanderRole.ROLEID"/>
+    </option>
+    <option name="Home">
+      <link>/operator/Operations.jsp</link>
+    </option>
+    <option name="Reporting">
+      <link>/analysis/Reports.jsp</link>
+      <requireRole value="com.cannontech.roles.application.ReportingRole.ROLEID"/>
+    </option>
+    
+  </quicklinks>
+  
+  <module name="capcontrol">
+    <toplinks>
+      <option name="Create">
+        <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <sublinks>
+          <option name="Substation">
+            <link>/editor/cbcWizBase.jsf?type=4000</link>
+          </option>
+          <option name="Feeder">
+            <link>/editor/cbcWizBase.jsf?type=4001</link>
+          </option>
+          <option name="CapBank">
+            <link>/editor/cbcWizBase.jsf?type=1050</link>
+          </option>
+          <option name="CBC">
+            <link>/editor/cbcWizBase.jsf?type=1051</link>
+          </option>
+          <option name="Schedule">
+            <link>/editor/cbcWizBase.jsf?type=100000</link>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Modify">
+        <requireProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
+        <sublinks>
+          <option name="Substation">
+            <script>editorPost()</script>
+          </option>
+          <option name="Feeder">
+            <script>deletePost()</script>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Reporting">
+        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
+        <sublinks>
+          <option name="Today kVAR/Watt">
+            <script>showPopUpChkBoxes('charts.jsp?type=VW&amp;period=Today')</script>
+          </option>
+          <option name="Today PF">
+            <script>showPopUpChkBoxes('charts.jsp?type=PF&amp;period=Today')</script>
+          </option>
+          <option name="30 Day kVAR/Watt">
+            <script>showPopUpChkBoxes('charts.jsp?type=VW')</script>
+          </option>
+          <option name="30 Day PF">
+            <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
+          </option>
+          <option name="Recent Controls">
+            <script>showRecentCmds('tabledata.jsp?type=RC')</script>
+          </option>
+        </sublinks>
+      </option>
+      <option name="View">
+        <sublinks>
+          <option name="Orphaned Feeders">
+            <link>results.jsp?cbc_lastSearch=__cti_oFeeders__</link>
+          </option>
+          <option name="Orphaned CapBanks">
+            <link>results.jsp?cbc_lastSearch=__cti_oBanks__</link>
+          </option>
+          <option name="Orphaned CBCs">
+            <link>results.jsp?cbc_lastSearch=__cti_oCBCs__</link>
+          </option>
+          <option name="Schedules">
+            <script>post('/editor/paoSchedListBase.jsf')</script>
+          </option>
+          <option name="One-Line">
+	        <requireFalseProperty value="com.cannontech.roles.capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
+            <script>showConfirmWin(this)</script>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+    <search action="results.jsp" method="post"/>
+  </module> 
+  
+  <module name="commercialcurtailment">
+    <toplinks>
+      <option name="View">
+        <sublinks>
+          <option name="Programs">
+            <link>/cc/programList.jsf</link>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+  </module>
+  
+  <module name="bulk">
+    <toplinks>
+      <option name="Create">
+        <sublinks>
+          <option name="Sub">
+            <link>something3.jsp</link>
+          </option>
+          <option name="Area">
+            <link>something4.jsp</link>
+          </option>
+        </sublinks>
+      </option>
+      <option name="Edit">
+        <script>someJsEvent()</script>
+      </option>
+      <option name="Modify">
+        <link>whatever.jsp</link>
+      </option>
+      <option name="Dinner">
+        <sublinks>
+          <option name="McDonalds">
+            <link>javascript:myFunc();</link>
+          </option>
+          <option name="Burger King">
+            <link>something4.jsp</link>
+          </option>
+          <option name="Wendy's">
+            <link>something4.jsp</link>
+          </option>
+        </sublinks>
+      </option>
+    </toplinks>
+    <search action="results.jsp" method="post"/>
+  </module> 
+  
+  
+   <module name="blank">
+  </module>
+</mainmenu>
