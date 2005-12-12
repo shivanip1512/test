@@ -2,8 +2,11 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+/* @error ignore */
 drop table TouRateOffset;
 go
+
+/* @error ignore */
 drop table TOUDeviceMapping;
 go
 

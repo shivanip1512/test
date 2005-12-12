@@ -2,7 +2,10 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
+/* @error ignore */
 drop table TouRateOffset;
+
+/* @error ignore */
 drop table TOUDeviceMapping;
 
 update LMProgramDirectGear set ControlMethod = 'ThermostatRamping' where ControlMethod = 'ThermostatSetback';
