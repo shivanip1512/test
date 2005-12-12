@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/12 20:34:28 $
 *    History: 
       $Log: ansi_application.cpp,v $
+      Revision 1.14  2005/12/12 20:34:28  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.13.2.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.13  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -81,6 +87,8 @@ void CtiANSIApplication::init( void )
     _readComplete = false;
     _readFailed = false;
     _lpMode = false;
+    _partialProcessLPDataFlag = false;
+    _lpByteCount = 0;
 
     _wrDataSize = 0;
     _negotiateRetry = 0;
@@ -483,7 +491,13 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                     else
                     {
                         // retries exhausted, figure out how to get from here (terminate session?)
-                        _readFailed = true;
+                        if (_currentTableID == 64 && _totalBytesInTable >= _LPBlockSize)
+                        {
+                            _partialProcessLPDataFlag = true;
+                            setTableComplete (true);
+                        }
+                        else
+                            _readFailed = true;
                     }
                 }
             }
@@ -491,13 +505,13 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
             {
                 // reset the state and ask again
                 _currentState = _requestedState;
-               /* {
+                {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout << endl;
                   dout << RWTime::now() << " ** CRC Not Valid **" << endl;
                   dout << RWTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
                   dout << endl;
-               }   */
+               }   
 
             }
         }
@@ -516,7 +530,13 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
         else
         {
             // retries exhausted, figure out how to get from here (terminate session?)
-            _readFailed = true;
+            if (_currentTableID == 64 && _totalBytesInTable >= _LPBlockSize)
+            {
+                _partialProcessLPDataFlag = true;
+                setTableComplete (true);
+            }
+            else
+                _readFailed = true;
         }
     }
     return retFlag;
@@ -576,6 +596,7 @@ bool CtiANSIApplication::analyzePacket()
                                 getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
                      
                              _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
+
                          }
                      }
                      else
@@ -646,6 +667,7 @@ bool CtiANSIApplication::analyzePacket()
                  {
                      // we need more data for this individual table
                      _currentTableOffset = _totalBytesInTable + _initialOffset;
+                     _lpByteCount = _totalBytesInTable;
                      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                      {
                           CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -657,7 +679,7 @@ bool CtiANSIApplication::analyzePacket()
                      //_currentState = request;
                      if (getDatalinkLayer().getPacketPart() && getDatalinkLayer().getSequence() == 0)
                      {
-                         _currentState = request;
+                         _currentState = _requestedState;
                      }
                  }
                  else
@@ -1445,6 +1467,27 @@ void CtiANSIApplication::setAnsiDeviceName(const RWCString& devName)
 {
     _devName = devName;
     return;
+} 
+
+void CtiANSIApplication::setLPBlockSize(long blockSize)
+{
+    _LPBlockSize = blockSize;
+}
+
+bool CtiANSIApplication::getPartialProcessLPDataFlag()
+{
+    return _partialProcessLPDataFlag;
+}
+void CtiANSIApplication::setPartialProcessLPDataFlag(bool flag)
+{
+    _partialProcessLPDataFlag = flag;
+    return;
+
+}
+
+int CtiANSIApplication::getLPByteCount()
+{
+    return _lpByteCount;
 }
 
 const RWCString CtiANSIApplication::KVmeter = "kv";

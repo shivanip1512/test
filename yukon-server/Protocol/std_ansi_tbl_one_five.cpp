@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_one_five.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 *    History: 
       $Log: std_ansi_tbl_one_five.cpp,v $
+      Revision 1.7  2005/12/12 20:34:29  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.6.2.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.6  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -418,7 +424,7 @@ void CtiAnsiTableOneFive::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneFive::printResult(  )
+void CtiAnsiTableOneFive::printResult( RWCString deviceName )
 {
     int integer;
     /**************************************************************
@@ -430,7 +436,7 @@ void CtiAnsiTableOneFive::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 15 ========================" << endl;
+        dout << endl << "==================== "<<deviceName<<"  Std Table 15 ========================" << endl;
     }
 
     switch( _RawConstantsSelector )

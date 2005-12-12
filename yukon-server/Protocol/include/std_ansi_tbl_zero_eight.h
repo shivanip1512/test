@@ -109,7 +109,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( );
+    void printResult( RWCString deviceName );
 
     CtiAnsiTableZeroEight( );
     CtiAnsiTableZeroEight( BYTE *dataBlob );

@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/12 20:34:30 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.cpp,v $
+      Revision 1.7  2005/12/12 20:34:30  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.6.4.1  2005/12/12 19:50:40  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.6  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -135,7 +141,7 @@ CtiAnsiTableZeroZero& CtiAnsiTableZeroZero::operator=(const CtiAnsiTableZeroZero
 //=========================================================================================================================================
 void CtiAnsiTableZeroZero::generateResultPiece( BYTE **dataBlob )
 {
-    printResult();
+    //printResult();
     memcpy (*dataBlob, ( void *)&_control_1, sizeof (FORMAT_CONTROL_1));
     *dataBlob += sizeof (FORMAT_CONTROL_1);
     memcpy (*dataBlob, ( void *)&_control_2, sizeof (FORMAT_CONTROL_2));
@@ -205,7 +211,7 @@ void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroZero::printResult(  )
+void CtiAnsiTableZeroZero::printResult(RWCString deviceName)
 {
     int integer;
     RWCString string;
@@ -222,7 +228,7 @@ void CtiAnsiTableZeroZero::printResult(  )
     string = getResolvedDataOrder();
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 0 =========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 0 =========================" << endl;
         dout << "   Data Order: " << string << " (" << integer <<")" << endl;
     }
 

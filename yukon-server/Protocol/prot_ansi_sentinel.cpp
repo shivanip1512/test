@@ -110,7 +110,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
           RWTime tempTime2 = RWTime(_timeOfLastInterrogation + RWTime(RWDate(1,1,2000)).seconds());
 
 
-          if( getDebugLevel() & DEBUGLEVEL_DATA_INFO )
+          if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
           {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                    dout << endl<<"=======================  Clock Related Data =========================" << endl;

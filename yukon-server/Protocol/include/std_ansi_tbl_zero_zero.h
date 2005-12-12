@@ -13,10 +13,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_zero_zero.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2004/12/10 21:58:43 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/12 20:34:48 $
 *    History: 
       $Log: std_ansi_tbl_zero_zero.h,v $
+      Revision 1.6  2005/12/12 20:34:48  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.5.6.1  2005/12/12 19:51:02  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.5  2004/12/10 21:58:43  jrichter
       Good point to check in for ANSI.  Sentinel/KV2 working at columbia, duke, whe.
 
@@ -136,7 +142,7 @@ public:
 
     void generateResultPiece( BYTE **dataBlob );
     void decodeResultPiece( BYTE **dataBlob );
-    void printResult( );
+    void printResult( RWCString deviceName );
 
     CtiAnsiTableZeroZero( );
    CtiAnsiTableZeroZero( BYTE *dataBlob );

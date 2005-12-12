@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_two.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
@@ -94,7 +94,7 @@ UINT8 CtiAnsiTableThreeTwo::getDisplaySources(int sourceIndex, int widthIndex)
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableThreeTwo::printResult(  )
+void CtiAnsiTableThreeTwo::printResult( RWCString deviceName )
 {
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
@@ -105,7 +105,7 @@ void CtiAnsiTableThreeTwo::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 32 ========================" << endl;
+        dout << endl << "==================== "<<deviceName<<"  Std Table 32 ========================" << endl;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );

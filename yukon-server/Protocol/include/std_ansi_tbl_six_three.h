@@ -14,10 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_three.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2004/10/01 17:54:27 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/12 20:34:47 $
 *    History: 
       $Log: std_ansi_tbl_six_three.h,v $
+      Revision 1.2  2005/12/12 20:34:47  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.1.8.1  2005/12/12 19:51:02  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.1  2004/10/01 17:54:27  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.  New files!
 
@@ -91,7 +97,7 @@ public:
 
    CtiAnsiTableSixThree& operator=(const CtiAnsiTableSixThree& aRef);
    void generateResultPiece( BYTE **dataBlob );
-   void printResult();
+   void printResult(RWCString deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
    UINT16 getNbrValidBlocks(int setNbr);

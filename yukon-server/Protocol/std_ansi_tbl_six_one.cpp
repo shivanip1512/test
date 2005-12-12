@@ -162,7 +162,7 @@ void CtiAnsiTableSixOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixOne::printResult(  )
+void CtiAnsiTableSixOne::printResult( RWCString deviceName )
 {
  
     /**************************************************************
@@ -174,7 +174,7 @@ void CtiAnsiTableSixOne::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 61  ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 61  ========================" << endl;
         dout << " ** Actual Load Profile Table ** "<<endl;
         dout << "           LP Memory Length        "<<_lp_tbl.lp_memory_len<<endl;
         dout << "           LP Flags:      "<<endl;

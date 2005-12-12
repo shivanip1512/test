@@ -12,10 +12,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/09/29 21:19:24 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/12 20:34:30 $
 *    History: 
       $Log: ansi_application.h,v $
+      Revision 1.13  2005/12/12 20:34:30  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.12.2.1  2005/12/12 19:51:02  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.12  2005/09/29 21:19:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -192,12 +198,15 @@ class IM_EX_PROT CtiANSIApplication
     void setFWVersionNumber(BYTE fwVersionNumber);
     BYTE getFWVersionNumber();
     RWCString getMeterTypeString();
-    
+        
     int encryptDataMethod();
 
     const RWCString& getAnsiDeviceName() const;
     void setAnsiDeviceName(const RWCString& devName);
-
+    void setLPBlockSize(long blockSize);
+    bool getPartialProcessLPDataFlag();
+    void setPartialProcessLPDataFlag(bool flag);
+    int getLPByteCount();
 
     static const CHAR * ANSI_DEBUGLEVEL;
     bool getANSIDebugLevel(int mask);
@@ -248,7 +257,9 @@ class IM_EX_PROT CtiANSIApplication
        bool        _readComplete;
        bool        _readFailed;
        int         _retries;
-
+       long        _LPBlockSize;
+       bool        _partialProcessLPDataFlag;
+       int         _lpByteCount;
 
        BYTE _securityPassword[20];   
        int _negotiateRetry;

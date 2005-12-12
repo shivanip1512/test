@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_two.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/03/14 21:44:16 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 *    History: 
       $Log: std_ansi_tbl_one_two.cpp,v $
+      Revision 1.8  2005/12/12 20:34:29  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.7.4.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.7  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -318,7 +324,7 @@ DOUBLE CtiAnsiTableOneTwo::getResolvedMultiplier( int aOffset )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneTwo::printResult(  )
+void CtiAnsiTableOneTwo::printResult( RWCString deviceName )
 {
     int integer;
     RWCString string1,string2;
@@ -333,7 +339,7 @@ void CtiAnsiTableOneTwo::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 12 ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 12 ========================" << endl;
         dout << "UOM Offset  Id Code     Time Base           Multiplier  Q's netFlow Seg Harm  nfs" << endl;
     }
 

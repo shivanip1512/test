@@ -535,7 +535,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixTwo::printResult(  )
+void CtiAnsiTableSixTwo::printResult( RWCString deviceName )
 {
     int index;
     /**************************************************************
@@ -547,7 +547,7 @@ void CtiAnsiTableSixTwo::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 62  ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<" Std Table 62  ========================" << endl;
         dout << endl << "   --- Load Profile Control Table ---" << endl;
     }
 

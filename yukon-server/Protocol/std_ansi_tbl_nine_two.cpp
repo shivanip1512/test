@@ -105,7 +105,7 @@ void CtiAnsiTableNineTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineTwo::printResult(  )
+void CtiAnsiTableNineTwo::printResult( RWCString deviceName )
 {
     int index, i, j;
 
@@ -118,7 +118,7 @@ void CtiAnsiTableNineTwo::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 92  ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 92  ========================" << endl;
         dout << "  ** Global Parameters Table **" << endl;
         dout << "     PSEM Identity : " <<_global_parms_tbl.psem_identity<< endl;
     }

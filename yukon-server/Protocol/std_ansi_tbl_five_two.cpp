@@ -11,11 +11,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_two.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/06/16 19:17:59 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_two.cpp,v $
+      Revision 1.8  2005/12/12 20:34:29  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.7.2.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.7  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -107,7 +113,7 @@ void CtiAnsiTableFiveTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveTwo::printResult(  )
+void CtiAnsiTableFiveTwo::printResult( RWCString deviceName )
 {
  
     /**************************************************************
@@ -119,7 +125,7 @@ void CtiAnsiTableFiveTwo::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 52 ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 52 ========================" << endl;
         dout << " ** Clock Table ** "<<endl;
         dout << "          Clock Calendar - year "<<(int)getClkCldrYear()<<endl;
         dout << "                        - month "<<(int)getClkCldrMon()<<endl;

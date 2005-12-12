@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 *    History: 
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.11  2005/12/12 20:34:29  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.10.2.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.10  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -620,7 +626,7 @@ void CtiAnsiTableTwoThree::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_R
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printResult(  )
+void CtiAnsiTableTwoThree::printResult( RWCString deviceName )
 {
     int index, cnt;
     RWCString string1,string2;
@@ -636,7 +642,7 @@ void CtiAnsiTableTwoThree::printResult(  )
     if (_tablePrintNumber == 23)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 23 ========================" << endl;
+        dout << endl << "==================== "<<deviceName<<"  Std Table 23 ========================" << endl;
     }
 
     {
@@ -742,7 +748,7 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
        }
        {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout <<endl<< "          Demand: " ;
+              dout <<endl<< "          Peak Demand: " ;
        }
        for( cnt = 0; cnt < _ocNums; cnt++ )
        {

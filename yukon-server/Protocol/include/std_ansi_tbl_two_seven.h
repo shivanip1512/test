@@ -15,8 +15,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_seven.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2005/12/12 20:34:48 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ public:
    CtiAnsiTableTwoSeven( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues );
    virtual ~CtiAnsiTableTwoSeven();
    CtiAnsiTableTwoSeven& operator=(const CtiAnsiTableTwoSeven& aRef);
-   void printResult(  );
+   void printResult( RWCString deviceName );
 
    UINT8* getDemandSelect( );
    UINT8* getValueSelect( );

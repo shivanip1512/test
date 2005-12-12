@@ -68,7 +68,7 @@ void CtiAnsiTableFiveOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveOne::printResult(  )
+void CtiAnsiTableFiveOne::printResult( RWCString deviceName )
 {
  
     /**************************************************************
@@ -80,7 +80,7 @@ void CtiAnsiTableFiveOne::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 51  ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 51  ========================" << endl;
         dout << " ** Actual Time and TOU Table ** "<<endl;
 
         dout << "           tou_self_read_flag         "<<(bool)_time_tou.time_func_flag1.tou_self_read_flag<<endl;

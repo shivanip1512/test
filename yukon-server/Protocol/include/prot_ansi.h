@@ -14,10 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/09/29 21:19:24 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2005/12/12 20:34:30 $
 *    History: 
       $Log: prot_ansi.h,v $
+      Revision 1.13  2005/12/12 20:34:30  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.12.2.1  2005/12/12 19:51:02  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.12  2005/09/29 21:19:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -387,9 +393,10 @@ class IM_EX_PROT CtiProtocolANSI
 
     int getScanOperation(void);
     UINT getParseFlags(void);
-    //bool getANSIDebugLevel(int mask);
 
-
+    bool forceProcessDispatchMsg();
+    bool isTimeUninitialized(double time);
+    
     static const CHAR * METER_TIME_TOLERANCE;
 
    protected:
@@ -400,14 +407,12 @@ class IM_EX_PROT CtiProtocolANSI
 
       CtiANSIApplication               _appLayer;
 
-      //BYTE                             *_outBuff;
 
       ULONG                            _bytesInGot;
 
       ANSI_TABLE_WANTS                 *_tables;
       WANTS_HEADER                     *_header;
 
-//      CtiAnsiBillingHeader              *_billingHeader;
       CtiAnsiBillingTable              *_billingTable;
 
       CtiAnsiTableZeroZero             *_tableZeroZero;
@@ -437,10 +442,7 @@ class IM_EX_PROT CtiProtocolANSI
     //  CtiAnsiTableFiveFive             *_tableFiveFive;
 
       CtiAnsiTableTwoFive             *_frozenRegTable;
-      //ULONG  _frozenEndDateTime;
-      //UINT8  _frozenSeason;
-
-
+      
       bool _validFlag;
       bool _previewTable64;
       bool _entireTableFlag;
@@ -477,6 +479,7 @@ class IM_EX_PROT CtiProtocolANSI
      bool _currentTableNotAvailableFlag;
      bool _requestingBatteryLifeFlag;
      bool _invalidLastLoadProfileTime;
+     bool _forceProcessDispatchMsg;
 
      ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset, 
      UINT _parseFlags;

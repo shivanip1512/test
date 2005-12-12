@@ -65,7 +65,7 @@ void CtiAnsiTableNineOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineOne::printResult(  )
+void CtiAnsiTableNineOne::printResult( RWCString deviceName )
 {
     int index, i, j;
     int nbrBlkInts;
@@ -79,7 +79,7 @@ void CtiAnsiTableNineOne::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 91  ========================" << endl;
+        dout << endl << "=================== "<<deviceName<<"  Std Table 91  ========================" << endl;
     }
 
     {

@@ -284,7 +284,7 @@ void CtiAnsiTableSixFour::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixFour::printResult(  )
+void CtiAnsiTableSixFour::printResult( RWCString deviceName )
 {
     int index, i, j;
     int nbrBlkInts;
@@ -298,7 +298,7 @@ void CtiAnsiTableSixFour::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 64  ========================" << endl;
+        dout << endl << "================== "<<deviceName<<"  Std Table 64  ========================" << endl;
     }
 
     for (index = 0; index < _nbrBlksSet1; index++) 

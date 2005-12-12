@@ -11,11 +11,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_five.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/02/10 23:23:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2005/12/12 20:34:28 $
 *
 *    History: 
       $Log: std_ansi_tbl_five_five.cpp,v $
+      Revision 1.6  2005/12/12 20:34:28  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.5.4.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.5  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -78,7 +84,7 @@ void CtiAnsiTableFiveFive::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveFive::printResult(  )
+void CtiAnsiTableFiveFive::printResult( RWCString deviceName )
 {
  
     /**************************************************************
@@ -90,7 +96,7 @@ void CtiAnsiTableFiveFive::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 55  ========================" << endl;
+        dout << endl << "================== "<<deviceName<<"  Std Table 55  ========================" << endl;
         dout << " ** Clock State Table ** "<<endl;
         dout << "          Clock Calendar ---yy.mm.dd hh:mm:ss  "<<(int)_clockStateTbl.clock_calendar.cases.c2.year<<".";
         dout <<(int)_clockStateTbl.clock_calendar.cases.c2.month<<"."<<(int)_clockStateTbl.clock_calendar.cases.c2.day<<" ";

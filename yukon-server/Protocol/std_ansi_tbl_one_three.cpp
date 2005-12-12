@@ -11,10 +11,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_three.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/09/29 21:18:24 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2005/12/12 20:34:29 $
 *    History: 
       $Log: std_ansi_tbl_one_three.cpp,v $
+      Revision 1.7  2005/12/12 20:34:29  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
+      Revision 1.6.2.1  2005/12/12 19:50:39  jrichter
+      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
+
       Revision 1.6  2005/09/29 21:18:24  jrichter
       Merged latest 3.1 changes to head.
 
@@ -226,25 +232,6 @@ void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
       memcpy( *dataBlob, (void *)&_demand_control_record.excludes.cold_load_pickup, sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
-      /*INT_CONTROL_RCD *tempIntCtrlRcd;
-   tempIntCtrlRcd = _demand_control_record->_int_control_rec;
-   for( int index = 0; index < _numberDemandCtrlEntries; index++ )
-   {
-      if( _slidingDemandFlag != false )
-      {
-         memcpy( *dataBlob, (void *)&tempIntCtrlRcd->cntl_rec.sub_int, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-
-         memcpy( *dataBlob, (void *)&tempIntCtrlRcd->cntl_rec.int_mulitplier, sizeof( unsigned char ));
-         *dataBlob += sizeof( unsigned char );
-      }
-      else
-      {
-         memcpy( *dataBlob, (void *)&tempIntCtrlRcd->int_length, sizeof( unsigned char) *2 );
-         *dataBlob += ( sizeof( unsigned char) *2 );
-      }
-      tempIntCtrlRcd+=sizeof(INT_CONTROL_RCD);
-   } */
    for( int index = 0; index < _numberDemandCtrlEntries; index++ )
    {
       if( _slidingDemandFlag != false )
@@ -284,7 +271,7 @@ bool CtiAnsiTableOneThree::getResetExcludeFlag()
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneThree::printResult(  )
+void CtiAnsiTableOneThree::printResult( RWCString deviceName )
 {
     int integer;
     RWCString string1,string2;
@@ -299,7 +286,7 @@ void CtiAnsiTableOneThree::printResult(  )
     */
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Std Table 13 ========================" << endl;
+        dout << endl << "==================== "<<deviceName<<" Std Table 13 ========================" << endl;
     }
 
     if (_resetExcludeFlag) 
