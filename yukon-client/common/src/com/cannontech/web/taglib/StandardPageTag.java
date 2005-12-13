@@ -1,5 +1,7 @@
 package com.cannontech.web.taglib;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.cannontech.web.menu.CommonMenuException;
+import com.cannontech.web.menu.CommonModuleBuilder;
+import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.ModuleBuilder;
 import com.cannontech.web.template.BasicTemplateResolver;
 import com.cannontech.web.template.TemplateReslover;
 
@@ -20,25 +26,29 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_MAIN_CONTENT = "ctiMainContent";
     public static final String CTI_CSS_FILES = "ctiCssFiles";
     public static final String CTI_DOCTYPE_LEVEL = "ctiDoctypeLevel";
-    public static final String CTI_MENU_MODULE = "ctiMenuModule";
+    public static final String CTI_MODULE_BASE = "ctiMenuModule";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
     
     public static final String HTML_TRANSITIONAL = "transitional";
     public static final String HTML_STRICT = "strict";
     public static final String[] ALLOWED_HTML_LEVELS = {HTML_TRANSITIONAL, HTML_STRICT};
     
+    public static final String SKIN_STANDARD = "standard";
+    public static final String SKIN_PURPLE = "purple";
+    public static final String[] ALLOWED_SKIN_VALUES     = {SKIN_STANDARD, SKIN_PURPLE};
+    
     private String title = "";
-    private String skin = "standard";
     private String htmlLevel = HTML_TRANSITIONAL;
     private List cssFiles = new ArrayList();
-    private String menuModule = null;
+    private String module = "";
     private String breadCrumbData;
+    private boolean debugMode = true;
+    private boolean showMenu = false;
     
     public void cleanup() {
         title = "";
-        skin = "standard";
         htmlLevel = HTML_TRANSITIONAL;
-        menuModule = null;
+        module = "";
         super.release();
     }
     
@@ -53,19 +63,23 @@ public class StandardPageTag extends BodyTagSupport {
     
     public int doEndTag() throws JspException {
         try {
+            // get ModuleBase for this page
+            ModuleBuilder menuBuilder = getModuleBuilder();
+            
+            ModuleBase moduleBase = menuBuilder.getModuleBase(getModule());
+            
             pageContext.setAttribute(CTI_CSS_FILES, cssFiles, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_MAIN_CONTENT, getBodyContent(), PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_DOCTYPE_LEVEL, getHtmlLevel(), PageContext.REQUEST_SCOPE);
-            pageContext.setAttribute(CTI_MENU_MODULE, getMenuModule(), PageContext.REQUEST_SCOPE);
+            pageContext.setAttribute(CTI_MODULE_BASE, moduleBase, PageContext.REQUEST_SCOPE);
             pageContext.setAttribute(CTI_BREADCRUMBS, getBreadCrumb(), PageContext.REQUEST_SCOPE);
-            // use a RoleProperty to find the page to use here
+
             TemplateReslover resolver = new BasicTemplateResolver();
-            String wrapperPage = resolver.getTemplatePage(getSkin(), pageContext);
+            String wrapperPage = resolver.getTemplatePage(moduleBase, pageContext);
             // Now use the RequestDispatcher to process the wrapper page (the wrapper page
             // has a tag to include the content in the middle of itself). We don't use
             // pageContext.include() here because that flushes the output which makes error
             // handling very difficult.
-            //pageContext.include("/WebConfig/custom/standard.jsp");
             RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher(wrapperPage);
             requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());
         } catch (Exception e) {
@@ -96,12 +110,12 @@ public class StandardPageTag extends BodyTagSupport {
         this.htmlLevel = htmlLevel;
     }
 
-    private Object getMenuModule() {
-        return menuModule;
+    private String getModule() {
+        return module;
     }
     
     public void setModule(String module) {
-        this.menuModule = module;
+        this.module = module;
     }
 
     public void setBreadCrumbs(String breadCrumbData) {
@@ -112,12 +126,27 @@ public class StandardPageTag extends BodyTagSupport {
         return breadCrumbData;
     }
 
-    public String getSkin() {
-        return skin;
+    private ModuleBuilder getModuleBuilder() throws MalformedURLException, CommonMenuException {
+        CommonModuleBuilder menuBuilder = 
+            (CommonModuleBuilder) pageContext.getAttribute("ctiMenuBuilder",
+                                                         PageContext.APPLICATION_SCOPE);
+        if (menuBuilder == null || debugMode ) {
+            URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/module_config.xml");
+            menuBuilder = new CommonModuleBuilder(menuConfigFile);
+            pageContext.setAttribute("ctiMenuBuilder",
+                                     menuBuilder,
+                                     PageContext.APPLICATION_SCOPE);
+        }
+        return menuBuilder;
     }
 
-    public void setSkin(String skin) {
-        this.skin = skin;
+    public boolean isShowMenu() {
+        return showMenu;
     }
+
+    public void setShowMenu(boolean showMenu) {
+        this.showMenu = showMenu;
+    }
+
     
 }

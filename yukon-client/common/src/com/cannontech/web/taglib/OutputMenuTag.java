@@ -1,18 +1,14 @@
 package com.cannontech.web.taglib;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.cannontech.web.menu.CommonMenuBuilder;
-import com.cannontech.web.menu.CommonMenuException;
-import com.cannontech.web.menu.MenuBuilder;
 import com.cannontech.web.menu.MenuRenderer;
-import com.cannontech.web.menu.ModuleMenuBase;
+import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.StandardMenuRenderer;
 
 /**
@@ -20,44 +16,25 @@ import com.cannontech.web.menu.StandardMenuRenderer;
  * that was configured with the StandardMenuTag within the StandardPageTag.
  */
 public class OutputMenuTag extends TagSupport {
-    private boolean debugMode = true;
 
     public int doEndTag() throws JspException {
-        try {
-            MenuBuilder menuBuilder = getMenuBuilder();
             
-            String moduleName = (String) pageContext.getAttribute(StandardPageTag.CTI_MENU_MODULE, 
+        ModuleBase moduleBase = (ModuleBase) pageContext.getAttribute(StandardPageTag.CTI_MODULE_BASE, 
                                                          PageContext.REQUEST_SCOPE);
             
-            if (moduleName != null) {
-                ModuleMenuBase menuBase = menuBuilder.getMenuBase(moduleName);
-                MenuRenderer menuRenderer = 
-                    new StandardMenuRenderer((HttpServletRequest) pageContext.getRequest(),
-                                             menuBase);
-                String breadCrumbs = 
-                    (String) pageContext.getAttribute(StandardPageTag.CTI_BREADCRUMBS, 
-                                                      PageContext.REQUEST_SCOPE);
-                menuRenderer.setBreadCrumb(breadCrumbs);
-                menuRenderer.renderMenu(pageContext.getOut());
-            }
-        } catch (Exception e) {
-            throw new JspException("Couldn't output Standard Menu", e);
+        MenuRenderer menuRenderer = 
+            new StandardMenuRenderer((HttpServletRequest) pageContext.getRequest(),
+                                     moduleBase);
+        String breadCrumbs = 
+            (String) pageContext.getAttribute(StandardPageTag.CTI_BREADCRUMBS, 
+                                              PageContext.REQUEST_SCOPE);
+        menuRenderer.setBreadCrumb(breadCrumbs);
+        try {
+            menuRenderer.renderMenu(pageContext.getOut());
+        } catch (IOException e) {
+            throw new JspException("Unable to render standard menu", e);
         }
         return EVAL_PAGE;
-    }
-
-    private MenuBuilder getMenuBuilder() throws MalformedURLException, CommonMenuException {
-        CommonMenuBuilder menuBuilder = 
-            (CommonMenuBuilder) pageContext.getAttribute("ctiMenuBuilder",
-                                                         PageContext.APPLICATION_SCOPE);
-        if (menuBuilder == null || debugMode) {
-            URL menuConfigFile = pageContext.getServletContext().getResource("/WEB-INF/menu_structure.xml");
-            menuBuilder = new CommonMenuBuilder(menuConfigFile);
-            pageContext.setAttribute("ctiMenuBuilder",
-                                     menuBuilder,
-                                     PageContext.APPLICATION_SCOPE);
-        }
-        return menuBuilder;
     }
 
 }

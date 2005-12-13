@@ -1,6 +1,5 @@
 package com.cannontech.web.menu;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,29 +14,17 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * menu, the getValid*() methods should be used to ensure that the user only sees links
  * to content they have permission to see.
  */
-public class ModuleMenuBase {
-    private List topLevelOptions = new ArrayList();
+public class ModuleBase {
     private String moduleName;
     private String searchPath;
     private List quickLinks;
+    private String skin;
+    private MenuBase menuBase;
     
-    public ModuleMenuBase(String moduleName) {
+    public ModuleBase(String moduleName) {
         this.moduleName = moduleName;
     }
     
-    public void addTopLevelOption(BaseMenuOption topLevelOption) {
-        topLevelOptions.add(topLevelOption);
-    }
-    
-    public List getTopLevelOptions() {
-        // check role/property here
-        return topLevelOptions;
-    }
-
-    public Iterator getValidTopLevelOptions(LiteYukonUser user) {
-        return new FilterIterator(topLevelOptions.iterator(), new CheckUserPredicate(user));
-    }
-
     public String getModuleName() {
         return moduleName;
     }
@@ -64,5 +51,21 @@ public class ModuleMenuBase {
     
     public Iterator getValidQuickLinks(LiteYukonUser user) {
         return new FilterIterator(quickLinks.iterator(), new CheckUserPredicate(user));
+    }
+
+    public MenuBase getMenuBase() {
+        return menuBase;
+    }
+
+    public void setMenuBase(MenuBase menuBase) {
+        this.menuBase = menuBase;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

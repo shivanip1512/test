@@ -13,32 +13,32 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
 /**
- * The purpose of this class is to parse the menu_structure.xml file (although
+ * The purpose of this class is to parse the module_config.xml file (although
  * the exact file is passed to it in the constructor) and store the settings
  * for each module that is encountered. This is likely the only file that will
  * ever need to understand the menu_structure.xml file.
  */
-public class CommonMenuBuilder implements MenuBuilder {
+public class CommonModuleBuilder implements ModuleBuilder {
     private Map moduleMap = new TreeMap();
     private List quickLinkList = new ArrayList(5);
     
-    public CommonMenuBuilder(URL menuConfigFile) throws CommonMenuException {
-        processConfigFile(menuConfigFile);
+    public CommonModuleBuilder(URL moduleConfigFile) throws CommonMenuException {
+        processConfigFile(moduleConfigFile);
     }
     
     private void processConfigFile(URL configFile) throws CommonMenuException {
         try {
             SAXBuilder builder = new SAXBuilder();
             Document configDoc = builder.build(configFile);
-            buildMenu(configDoc);
-            buildQuickLinks(configDoc);
+            processQuickLinks(configDoc);
+            processModules(configDoc);
             
         } catch (Exception e) {
             throw new CommonMenuException("Can't build menu from configuration", e);
         }
     }
 
-    private void buildQuickLinks(Document configDoc) {
+    private void processQuickLinks(Document configDoc) {
         Element rootElem = configDoc.getRootElement();
         Element quickLinks = rootElem.getChild("quicklinks");
         List linkList = quickLinks.getChildren("option");
@@ -50,7 +50,7 @@ public class CommonMenuBuilder implements MenuBuilder {
         }
     }
 
-    private void buildMenu(Document configDoc) throws Exception {
+    private void processModules(Document configDoc) throws Exception {
         Element rootElem = configDoc.getRootElement();
         List moduleList = rootElem.getChildren("module");
         for (Iterator iter = moduleList.iterator(); iter.hasNext();) {
@@ -61,7 +61,11 @@ public class CommonMenuBuilder implements MenuBuilder {
 
     private void buildModule(Element moduleElement) throws CommonMenuException {
         String moduleName = moduleElement.getAttributeValue("name");
-        ModuleMenuBase menuBase = new ModuleMenuBase(moduleName);
+        ModuleBase moduleBase = new ModuleBase(moduleName);
+        // quickLinkList should have been built by now
+        moduleBase.setQuickLinks(quickLinkList);
+        MenuBase menuBase = new MenuBase();
+        moduleBase.setMenuBase(menuBase);
         Element topLinks = moduleElement.getChild("toplinks");
         if (topLinks != null) {
             List topOptions = topLinks.getChildren("option");
@@ -70,13 +74,17 @@ public class CommonMenuBuilder implements MenuBuilder {
                 BaseMenuOption topLevelOption = processTopOption(topOptionElement);
                 addCheckersToElement(topOptionElement, topLevelOption);
                 menuBase.addTopLevelOption(topLevelOption);
-        }
+            }
         }
         Element searchElement = moduleElement.getChild("search");
         if (searchElement != null) {
-            menuBase.setSearchPath(searchElement.getAttributeValue("action"));
+            moduleBase.setSearchPath(searchElement.getAttributeValue("action"));
         }
-        moduleMap.put(menuBase.getModuleName(), menuBase);
+        Element skinElement = moduleElement.getChild("skin");
+        if (skinElement != null) {
+            moduleBase.setSkin(skinElement.getAttributeValue("name"));
+        }
+        moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
 
     private BaseMenuOption processTopOption(Element topOptionElement) throws CommonMenuException {
@@ -153,11 +161,10 @@ public class CommonMenuBuilder implements MenuBuilder {
         }
     }
     
-    public ModuleMenuBase getMenuBase(String moduleName) {
-        ModuleMenuBase menuBase = (ModuleMenuBase) moduleMap.get(moduleName);
-        Validate.notNull(menuBase, "Unknown module name for standard menu (check menu_structure.xml).");
-        menuBase.setQuickLinks(quickLinkList);
-        return menuBase;
+    public ModuleBase getModuleBase(String moduleName) {
+        ModuleBase moduleBase = (ModuleBase) moduleMap.get(moduleName);
+        Validate.notNull(moduleBase, "Unknown module name (check menu_structure.xml).");
+        return moduleBase;
     }
     
 }

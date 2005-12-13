@@ -36,7 +36,7 @@ import com.cannontech.util.ServletUtil;
  * doesn't seem to be a fix.
  */
 public class StandardMenuRenderer implements MenuRenderer {
-    private final ModuleMenuBase menuBase;
+    private final ModuleBase moduleBase;
     private List subMenuParents = new ArrayList(4);
     private String SEPERATOR = "  ";
     private String breadCrumbs;
@@ -48,11 +48,11 @@ public class StandardMenuRenderer implements MenuRenderer {
      * The ServletRequest is required so that absolulte URLs can be adjusted
      * for the context path.
      * @param request the current request object
-     * @param menuBase the menu base of the current module
+     * @param moduleBase the menu base of the current module
      */
-    public StandardMenuRenderer(HttpServletRequest request, ModuleMenuBase menuBase) {
+    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase) {
         httpServletRequest = request;
-        this.menuBase = menuBase;
+        this.moduleBase = moduleBase;
         yukonUser = (LiteYukonUser) request.getSession().getAttribute("YUKON_USER");
     }
     
@@ -101,6 +101,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div leftDiv = new Div();
         leftDiv.setPrettyPrint(true);
         leftDiv.setClass("leftSide");
+        MenuBase menuBase = moduleBase.getMenuBase();
         Iterator topLevelOptionIterator = menuBase.getValidTopLevelOptions(yukonUser);
         boolean first = true;
         while (topLevelOptionIterator.hasNext()) {
@@ -159,7 +160,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         right.setPrettyPrint(true);
         right.setClass("rightSide");
         right.addElement(new Span("Module:").setClass("menu"));
-        Iterator quickLinkIterator = menuBase.getValidQuickLinks(yukonUser);
+        Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
         Select select = new Select();
         select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
         select.addElement(new Option("").addElement(e("Select a location...")).setSelected(true));
@@ -187,10 +188,10 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (menuBase.getSearchPath() != null) {
+        if (moduleBase.getSearchPath() != null) {
             Div right = new Div();
             right.setClass("rightSide");
-            Form searchForm = new Form(menuBase.getSearchPath(), "post");
+            Form searchForm = new Form(moduleBase.getSearchPath(), "post");
             searchForm.setAcceptCharset("ISO-8859-1");
             Div searchDiv = new Div();
             searchDiv.setID("findForm");

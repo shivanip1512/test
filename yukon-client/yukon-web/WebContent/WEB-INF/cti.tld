@@ -170,16 +170,16 @@
       <name>htmlLevel</name>
       <required>false</required>
     </attribute>
+    <attribute>
+      <name>module</name>
+      <required>true</required>
+    </attribute>
   </tag>
   
   <tag>
     <name>standardMenu</name>
     <tagclass>com.cannontech.web.taglib.StandardMenuTag</tagclass>
     <bodycontent>empty</bodycontent>
-    <attribute>
-      <name>module</name>
-      <required>true</required>
-    </attribute>
   </tag>
   
   <tag>
