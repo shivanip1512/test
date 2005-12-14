@@ -2,29 +2,44 @@
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
 <%@page import="java.io.PrintWriter"%>
 <%@page import="java.io.StringWriter"%>
+<%@page import="org.apache.commons.lang.exception.ExceptionUtils"%>
+<%@page import="org.apache.commons.lang.ObjectUtils"%>
+<%@page isErrorPage="true" %>
 
 <%
 String logo = "/" +
 	RoleFuncs.getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
 
+Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
+// if the above returned null, this page was probably called via the JSP exception handler
+// because this page is declared as an error page, the exception object will be populated
+throwable = (Throwable)ObjectUtils.defaultIfNull(throwable, exception);
 
 Object status_code = request.getAttribute("javax.servlet.error.status_code");
+status_code = ObjectUtils.defaultIfNull(status_code, "no status code");
 Object message = request.getAttribute("javax.servlet.error.message");
+message = ObjectUtils.defaultIfNull(message, "no message");
 Object error_type = request.getAttribute("javax.servlet.error.exception_type");
-Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
+error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
 Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
+request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
 
 StringWriter sw = new StringWriter();
 PrintWriter p = new PrintWriter(sw);
 p.write(
 	"<b>Status code:</b> " + status_code.toString() +
-	"<br><B>Message</b>: " + message.toString() +
-	"<br><B>Error type</b>: " + error_type.toString() +
-	"<br><B>Request URI</b>: " + request_uri.toString() +
+	"<br><b>Message</b>: " + message.toString() +
+	"<br><b>Error type</b>: " + error_type.toString() +
+	"<br><b>Request URI</b>: " + request_uri.toString() +
 	"<hr><pre>");		
 
-if( throwable != null ) {
+
+while ( throwable != null ) {
 	throwable.printStackTrace( p );
+    throwable = ExceptionUtils.getCause(throwable);
+    if (throwable != null) {
+      p.println("Caused by:");
+    }
 }
 p.write("</pre>");
 %>
@@ -35,13 +50,15 @@ p.write("</pre>");
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="/WebConfig/yukon/CannonStyle.css" type="text/css">
 
+<script type="text/javascript" src="/JavaScript/prototype.js"></script>
 <script type="text/javascript">
 <!--
-function showElem( elemId, chkBox ) {
-	var elem = document.getElementById(elemId);
+function showElem( chkBox ) {
+	var elem = $('stackTrace');
 	elem.style.display = (chkBox.checked ? 'block' : 'none')
 
 }
+Event.observe(window, 'load', function(){showElem($('stTraceChk'));});
 //-->
 </script>
 
@@ -70,7 +87,7 @@ function showElem( elemId, chkBox ) {
   </tr>
 
 	<tr><td>
-		<label><input type="checkbox" id="stTraceChk" onclick="showElem( 'stackTrace', this );"/>
+		<label><input type="checkbox" id="stTraceChk" onclick="showElem( this );"/>
 		<b>Detailed information</b></label>
 	</td></tr>
 
