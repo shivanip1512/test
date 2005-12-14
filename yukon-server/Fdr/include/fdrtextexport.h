@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.2 $
-*    DATE         :  $Date: 2003/04/22 20:44:46 $
+*    REVISION     :  $Revision: 1.3 $
+*    DATE         :  $Date: 2005/12/14 16:04:18 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.h,v $
+      Revision 1.3  2005/12/14 16:04:18  dsutton
+      Added a file format that allows us to integrate to a Survalent SCADA system.
+      Format specification is triggered via a CPARM which defaults to our standard output
+
       Revision 1.2  2003/04/22 20:44:46  dsutton
       Interfaces FDRTextExport and FDRTextImport and all the pieces needed
       to make them compile and work
@@ -44,6 +48,10 @@ public:
     // constructors and destructors
     CtiFDR_TextExport(); 
 
+    enum {formatOne=1,
+        survalent=100
+    };
+
     virtual ~CtiFDR_TextExport();
     virtual BOOL    init( void );   
     virtual BOOL    run( void );
@@ -61,6 +69,7 @@ public:
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
+    void processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, RWTime aTime);
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
@@ -68,10 +77,11 @@ public:
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_APPEND_FILE;
-
+    static const CHAR * KEY_FORMAT;
 private:
     RWThreadFunction    _threadWriteToFile;
     bool                _appendFlag;
+    int                 _format;
 };
 #endif
 

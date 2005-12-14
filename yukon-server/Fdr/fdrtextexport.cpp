@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2005/02/10 23:23:51 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2005/12/14 16:04:18 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.cpp,v $
+      Revision 1.8  2005/12/14 16:04:18  dsutton
+      Added a file format that allows us to integrate to a Survalent SCADA system.
+      Format specification is triggered via a CPARM which defaults to our standard output
+
       Revision 1.7  2005/02/10 23:23:51  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -82,7 +86,7 @@ const CHAR * CtiFDR_TextExport::KEY_DRIVE_AND_PATH = "FDR_TEXTEXPORT_DRIVE_AND_P
 const CHAR * CtiFDR_TextExport::KEY_DB_RELOAD_RATE = "FDR_TEXTEXPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_TextExport::KEY_QUEUE_FLUSH_RATE = "FDR_TEXTEXPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_TextExport::KEY_APPEND_FILE = "FDR_TEXTEXPORT_APPEND_FILE";
-
+const CHAR * CtiFDR_TextExport::KEY_FORMAT = "FDR_TEXTEXPORT_FORMAT";
 
 // Constructors, Destructor, and Operators
 CtiFDR_TextExport::CtiFDR_TextExport()
@@ -285,6 +289,16 @@ int CtiFDR_TextExport::readConfig( void )
             setAppendToFile(true);
         }
     }
+    tempStr = getCparmValueAsString(KEY_FORMAT);
+    _format = formatOne;
+    if (tempStr.length() > 0)
+    {
+        if (!tempStr.compareTo ("survalent",RWCString::ignoreCase))
+        {
+            _format = survalent;
+        }
+    }
+    
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -294,6 +308,15 @@ int CtiFDR_TextExport::readConfig( void )
         dout << RWTime() << " Text Export interval " << getInterval() << endl;
         dout << RWTime() << " Text Export dispatch queue flush rate " << getQueueFlushRate() << endl;
         dout << RWTime() << " Text Export db reload rate " << getReloadRate() << endl;
+        if (_format == survalent)
+        {
+            dout << RWTime() << " Text Export format set to Survalent" << endl;
+        }
+        else
+        {
+            dout << RWTime() << " Text Export format set to default" << endl;
+        }
+        
 
         if (shouldAppendToFile())
             dout << RWTime() << " Export will append to existing" << endl;
@@ -477,6 +500,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
     CtiFDRPoint *       translationPoint = NULL;
+    RWTime lastWrite(rwEpoch);
 
     try
     {
@@ -526,63 +550,124 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
                     CtiFDRManager::CTIFdrPointIterator  myIterator(getSendToList().getPointList()->getMap());
 
+                    bool firstSurvalentPass=true;
+                   
+
                     for ( ; myIterator(); )
                     {
                         translationPoint = myIterator.value();
 
-                        // if data is older than 2001, it can't be valid
-                        if (translationPoint->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                        /*****************************************
+                        * This is a hack for a proof of concept with the survalent scada system DLS
+                        ******************************************
+                        */
+                        if (_format == survalent)
                         {
-                            //if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                            if (firstSurvalentPass)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << RWTime() << " PointId " << translationPoint->getPointID();
-                                dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
-                            }
-                        }
-                        else
-                        {
-                            for (int x=0; x < translationPoint->getDestinationList().size(); x++)
-                            {
-                                if (translationPoint->getPointType() == StatusPointType)
-                                {
-                                    _snprintf (workBuffer,500,"1,%s,%d,%c,%s,%c\n",
-                                               translationPoint->getDestinationList()[x].getTranslation(),
-                                               (int)translationPoint->getValue(),
-                                               YukonToForeignQuality(translationPoint->getQuality()),
-                                               YukonToForeignTime(translationPoint->getLastTimeStamp()),
-                                               YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
-                                               );
+                                struct tm tmbuf;
+                                refreshTime.extract(&tmbuf);
+                                char timeBuffer[200];
+                                char timeWorker[50];
 
-                                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                        dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
-                                    }
+                                /*****************************************
+                                * couldn't get this to give me a timezone abbreviation so it was
+                                * built manually (according to microsoft there is a registery setting that
+                                * governs this, go figure DLS
+                                ******************************************
+                                */
+                                strftime (timeBuffer,200,"%a %b %d %H:%M:%S",&tmbuf);
+
+                                strftime (timeWorker,50,"%Z",&tmbuf);
+                                if (timeWorker[0]=='E')
+                                {
+                                    strcat (timeBuffer," EST");
+                                }
+                                else if (timeWorker[0]=='C')
+                                {
+                                    strcat (timeBuffer," CST");
+                                }                         
+                                else if (timeWorker[0]=='M')
+                                {
+                                    strcat (timeBuffer," MST");
                                 }
                                 else
                                 {
-                                    _snprintf (workBuffer,500,"1,%s,%f,%c,%s,%c\n",
-                                               translationPoint->getDestinationList()[x].getTranslation(),
-                                               translationPoint->getValue(),
-                                               YukonToForeignQuality(translationPoint->getQuality()),
-                                               YukonToForeignTime(translationPoint->getLastTimeStamp()),
-                                               YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
-                                               );
-                                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                        dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
-                                    }
+                                    strcat (timeBuffer," PST");
+                                }
+                                // set daylight flag as expected
+                                if (tmbuf.tm_isdst)
+                                {
+                                    timeBuffer[strlen(timeBuffer)-1] = 'D';
                                 }
 
-                                fprintf (fptr,workBuffer);
+                                // grab the year
+                                strftime (timeWorker,50,"%Y",&tmbuf);
+                                
+                                fprintf (fptr,"%s %s\n",timeBuffer,timeWorker);
+                                fprintf (fptr,"TAG_NAME                              OUTPUT       VALID\n");
+                                fprintf (fptr,"=========================================================\n");
+                                firstSurvalentPass = false;
+                            }
+
+                            processPointToSurvalent (fptr,translationPoint,lastWrite);
+                        }
+                        else
+                        {
+                            // if data is older than 2001, it can't be valid
+                            if (translationPoint->getLastTimeStamp() < RWTime(RWDate(1,1,2001)))
+                            {
+                                //if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << RWTime() << " PointId " << translationPoint->getPointID();
+                                    dout << " was not exported to  " << RWCString (fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
+                                }
+                            }
+                            else
+                            {
+                                for (int x=0; x < translationPoint->getDestinationList().size(); x++)
+                                {
+                                    if (translationPoint->getPointType() == StatusPointType)
+                                    {
+                                        _snprintf (workBuffer,500,"1,%s,%d,%c,%s,%c\n",
+                                                   translationPoint->getDestinationList()[x].getTranslation(),
+                                                   (int)translationPoint->getValue(),
+                                                   YukonToForeignQuality(translationPoint->getQuality()),
+                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                                   YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
+                                                   );
+                                    
+                                        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                            dout << " value " << (int)translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _snprintf (workBuffer,500,"1,%s,%f,%c,%s,%c\n",
+                                                   translationPoint->getDestinationList()[x].getTranslation(),
+                                                   translationPoint->getValue(),
+                                                   YukonToForeignQuality(translationPoint->getQuality()),
+                                                   YukonToForeignTime(translationPoint->getLastTimeStamp()),
+                                                   YukonToForeignDST (translationPoint->getLastTimeStamp().isDST())
+                                                   );
+                                        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
+                                            dout << " value " << translationPoint->getValue() << " to file " << RWCString(fileName) << endl;
+                                        }
+                                    }
+                                    fprintf (fptr,workBuffer);
+                                }
                             }
                         }
                     }
                     fclose(fptr);
+                    lastWrite = RWTime::now();
                 }
                 refreshTime = RWTime() - (RWTime::now().seconds() % getInterval()) + getInterval();
             }
@@ -602,6 +687,90 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
         dout << RWTime() << " Fatal Error:  CtiFDRTextExportBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
     }
 }
+
+/**************************************************************************
+* Function Name: CtiFDRT_TextExport::processPointToSurvalent
+*
+* Description: This was added as a proof of concept for Trinity Valley.  Their survalent
+*               SCADA system takes this file as input. It was assumed we'd build a proper
+*               interface for this SCADA vendor if necessary
+* 
+*   NOTE:  File must have the three heading lines as shown and then one line per point
+
+Tue Oct  4 14:55:04 EDT 2005
+TAG_NAME                         OUTPUT VALID
+=============================================
+LAU04B_KWH                        398.4 0          
+LAU04A_KWH                          360 0         
+...
+***************************************************************************
+*/
+void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, RWTime aLastWrite)
+{
+//    static RWTime lastWrite;
+    int quality;
+    char workBuffer[1024];
+
+    try
+    {  
+        /*****************************************************
+        * Survalent has two qualities
+        *      0=Normal
+        *      1=Not normal
+        *
+        * one special case to note is if we haven't received an update since the last time we
+        * wrote the file, we need to mark the data as invalid
+        ******************************************************
+        */
+        // if we haven't received an update since last write, point is invalid
+        if ((aPoint->getQuality() == NormalQuality) && 
+            (aLastWrite < aPoint->getLastTimeStamp()))
+        {
+            quality = 0;
+        }
+        else
+        {
+            quality = 1;
+        }
+
+        if (aPoint->getPointType() == StatusPointType)
+        {
+            _snprintf (workBuffer,1024,"%s     %d    %d\n",
+                       aPoint->getDestinationList()[0].getTranslation(),
+                       (int)aPoint->getValue(),
+                       quality);
+        
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Exporting status pointid " << aPoint->getDestinationList()[0].getTranslation() ;
+                dout << " value " << (int)aPoint->getValue() << " to Survalent file" << endl;
+            }
+        }
+        else
+        {
+            _snprintf (workBuffer,1024,"%s     %.1f    %d\n",
+                       aPoint->getDestinationList()[0].getTranslation(),
+                       aPoint->getValue(),
+                       quality);
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " Exporting analog pointid " << aPoint->getDestinationList()[0].getTranslation() ;
+                dout << " value " << aPoint->getValue() << " to Survalent file " << endl;
+            }
+        }
+        fprintf (aFilePtr,workBuffer);
+    }
+    catch ( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " CtiFDRTextExport::processPointToSurvalent() function has an un-caught exception " << endl;
+    }
+
+}
+
+
 
 /****************************************************************************************
 *
