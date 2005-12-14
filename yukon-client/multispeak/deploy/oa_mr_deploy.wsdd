@@ -1055,16 +1055,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:genericAnnotationFeature"
-        type="java:com.cannontech.multispeak.GenericAnnotationFeature"
+        qname="ns:>PingURLResponse"
+        type="java:com.cannontech.multispeak.PingURLResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>PingURLResponse"
-        type="java:com.cannontech.multispeak.PingURLResponse"
+        qname="ns:genericAnnotationFeature"
+        type="java:com.cannontech.multispeak.GenericAnnotationFeature"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""

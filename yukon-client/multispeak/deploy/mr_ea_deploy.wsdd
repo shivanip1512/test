@@ -415,6 +415,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByDate"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByDate"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:powerSystemDevice"
         type="java:com.cannontech.multispeak.PowerSystemDevice"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -561,6 +569,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:readingObject"
         type="java:com.cannontech.multispeak.ReadingObject"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogByMeterNo"
+        type="java:com.cannontech.multispeak.GetHistoryLogByMeterNo"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -855,6 +871,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByMeterNoAndEventCode"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByMeterNoAndEventCode"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfAllocatedLoad"
         type="java:com.cannontech.multispeak.ArrayOfAllocatedLoad"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -865,6 +889,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:timePeriod"
         type="java:com.cannontech.multispeak.TimePeriod"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogByMeterNoResponse"
+        type="java:com.cannontech.multispeak.GetHistoryLogByMeterNoResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1391,6 +1423,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByDateResponse"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByDateResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:loadActionCode"
         type="java:com.cannontech.multispeak.LoadActionCode"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
@@ -1401,6 +1441,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfEquipment"
         type="java:com.cannontech.multispeak.ArrayOfEquipment"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByDateAndEventCodeResponse"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByDateAndEventCodeResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1879,6 +1927,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByMeterNoAndEventCodeResponse"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByMeterNoAndEventCodeResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:outageDetectionEvent"
         type="java:com.cannontech.multispeak.OutageDetectionEvent"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -1905,6 +1961,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:mspElectricLine"
         type="java:com.cannontech.multispeak.MspElectricLine"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetHistoryLogsByDateAndEventCode"
+        type="java:com.cannontech.multispeak.GetHistoryLogsByDateAndEventCode"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1969,6 +2033,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:>GetMethodsResponse"
         type="java:com.cannontech.multispeak.GetMethodsResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:ArrayOfHistoryLog"
+        type="java:com.cannontech.multispeak.ArrayOfHistoryLog"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""

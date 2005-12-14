@@ -16,7 +16,7 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[11];
+        _operations = new org.apache.axis.description.OperationDesc[15];
         _initOperationDesc1();
         _initOperationDesc2();
     }
@@ -160,6 +160,70 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[10] = oper;
 
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetHistoryLogByMeterNo");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfHistoryLog.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogByMeterNoResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[11] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetHistoryLogsByDate");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfHistoryLog.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[12] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetHistoryLogsByMeterNoAndEventCode");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), com.cannontech.multispeak.EventCode.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfHistoryLog.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByMeterNoAndEventCodeResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[13] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetHistoryLogsByDateAndEventCode");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), com.cannontech.multispeak.EventCode.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfHistoryLog.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateAndEventCodeResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[14] = oper;
+
     }
 
     public MR_EASoap_BindingStub() throws org.apache.axis.AxisFault {
@@ -194,6 +258,7 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
         addBindings0();
         addBindings1();
         addBindings2();
+        addBindings3();
     }
 
     private void addBindings0() {
@@ -248,6 +313,62 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetDomainNamesResponse");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetDomainNamesResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogByMeterNo");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogByMeterNo.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogByMeterNoResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogByMeterNoResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByDate");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByDate.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByDateAndEventCode");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByDateAndEventCode.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByDateAndEventCodeResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByDateAndEventCodeResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByDateResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByDateResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByMeterNoAndEventCode");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByMeterNoAndEventCode.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetHistoryLogsByMeterNoAndEventCodeResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetHistoryLogsByMeterNoAndEventCodeResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -553,6 +674,13 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfHistoryLog.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfJobWorked");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ArrayOfJobWorked.class;
@@ -847,6 +975,21 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings1() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "conductor");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.Conductor.class;
@@ -910,21 +1053,6 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings1() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CPR");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.CPR.class;
@@ -1562,6 +1690,21 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings2() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchDeviceList");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.MspSwitchDeviceList.class;
@@ -1625,21 +1768,6 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings2() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ohPrimaryLine");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.OhPrimaryLine.class;
@@ -2277,6 +2405,21 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings3() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "usageInstance");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.UsageInstance.class;
@@ -2766,6 +2909,142 @@ public class MR_EASoap_BindingStub extends org.apache.axis.client.Stub implement
                 return (com.cannontech.multispeak.ArrayOfMeterRead) _resp;
             } catch (java.lang.Exception _exception) {
                 return (com.cannontech.multispeak.ArrayOfMeterRead) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfMeterRead.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[11]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetHistoryLogByMeterNo");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogByMeterNo"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo, startDate, endDate});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfHistoryLog.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[12]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetHistoryLogsByDate");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDate"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {startDate, endDate, lastReceived});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfHistoryLog.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(java.lang.String meterNo, com.cannontech.multispeak.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[13]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetHistoryLogsByMeterNoAndEventCode");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByMeterNoAndEventCode"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo, eventCode, startDate, endDate});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfHistoryLog.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[14]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetHistoryLogsByDateAndEventCode");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateAndEventCode"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {eventCode, startDate, endDate, lastReceived});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfHistoryLog) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfHistoryLog.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

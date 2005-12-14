@@ -167,6 +167,64 @@ public class MR_EASoap_BindingSkeleton implements com.cannontech.multispeak.MR_E
             _myOperations.put("getReadingsByUOMAndDate", new java.util.ArrayList());
         }
         ((java.util.List)_myOperations.get("getReadingsByUOMAndDate")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getHistoryLogByMeterNo", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogByMeterNoResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogByMeterNo"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetHistoryLogByMeterNo");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getHistoryLogByMeterNo") == null) {
+            _myOperations.put("getHistoryLogByMeterNo", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getHistoryLogByMeterNo")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getHistoryLogsByDate", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDate"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetHistoryLogsByDate");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getHistoryLogsByDate") == null) {
+            _myOperations.put("getHistoryLogsByDate", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getHistoryLogsByDate")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), com.cannontech.multispeak.EventCode.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getHistoryLogsByMeterNoAndEventCode", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByMeterNoAndEventCodeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByMeterNoAndEventCode"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetHistoryLogsByMeterNoAndEventCode");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getHistoryLogsByMeterNoAndEventCode") == null) {
+            _myOperations.put("getHistoryLogsByMeterNoAndEventCode", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getHistoryLogsByMeterNoAndEventCode")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventCode"), com.cannontech.multispeak.EventCode.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("getHistoryLogsByDateAndEventCode", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateAndEventCodeResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfHistoryLog"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetHistoryLogsByDateAndEventCode"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/GetHistoryLogsByDateAndEventCode");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("getHistoryLogsByDateAndEventCode") == null) {
+            _myOperations.put("getHistoryLogsByDateAndEventCode", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("getHistoryLogsByDateAndEventCode")).add(_oper);
     }
 
     public MR_EASoap_BindingSkeleton() {
@@ -239,6 +297,30 @@ public class MR_EASoap_BindingSkeleton implements com.cannontech.multispeak.MR_E
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByUOMAndDate(java.lang.String uomData, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.ArrayOfMeterRead ret = impl.getReadingsByUOMAndDate(uomData, startDate, endDate, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfHistoryLog ret = impl.getHistoryLogByMeterNo(meterNo, startDate, endDate);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfHistoryLog ret = impl.getHistoryLogsByDate(startDate, endDate, lastReceived);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(java.lang.String meterNo, com.cannontech.multispeak.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfHistoryLog ret = impl.getHistoryLogsByMeterNoAndEventCode(meterNo, eventCode, startDate, endDate);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(com.cannontech.multispeak.EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfHistoryLog ret = impl.getHistoryLogsByDateAndEventCode(eventCode, startDate, endDate, lastReceived);
         return ret;
     }
 

@@ -150,6 +150,59 @@ public class OD_OASoap_BindingSkeleton implements com.cannontech.multispeak.OD_O
         }
         ((java.util.List)_myOperations.get("initiateOutageDetectionEventRequest")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"), com.cannontech.multispeak.ObjectRef.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PhaseCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phaseCd"), com.cannontech.multispeak.PhaseCd.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("initiateODEventRequestByObject", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODEventRequestByObjectResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODEventRequestByObject"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/InitiateODEventRequestByObject");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("initiateODEventRequestByObject") == null) {
+            _myOperations.put("initiateODEventRequestByObject", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("initiateODEventRequestByObject")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"), com.cannontech.multispeak.ObjectRef.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PhaseCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phaseCd"), com.cannontech.multispeak.PhaseCd.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "periodicity"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("initiateODMonitoringRequestByObject", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODMonitoringRequestByObjectResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODMonitoringRequestByObject"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/InitiateODMonitoringRequestByObject");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("initiateODMonitoringRequestByObject") == null) {
+            _myOperations.put("initiateODMonitoringRequestByObject", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("initiateODMonitoringRequestByObject")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+        };
+        _oper = new org.apache.axis.description.OperationDesc("displayODMonitoringRequests", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DisplayODMonitoringRequestsResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfObjectRef"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DisplayODMonitoringRequests"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/DisplayODMonitoringRequests");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("displayODMonitoringRequests") == null) {
+            _myOperations.put("displayODMonitoringRequests", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("displayODMonitoringRequests")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfObjectRef"), com.cannontech.multispeak.ArrayOfObjectRef.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false), 
+        };
+        _oper = new org.apache.axis.description.OperationDesc("cancelODMonitoringRequestByObject", _params, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CancelODMonitoringRequestByObjectResult"));
+        _oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        _oper.setElementQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CancelODMonitoringRequestByObject"));
+        _oper.setSoapAction("http://www.multispeak.org/Version_3.0/CancelODMonitoringRequestByObject");
+        _myOperationsList.add(_oper);
+        if (_myOperations.get("cancelODMonitoringRequestByObject") == null) {
+            _myOperations.put("cancelODMonitoringRequestByObject", new java.util.ArrayList());
+        }
+        ((java.util.List)_myOperations.get("cancelODMonitoringRequestByObject")).add(_oper);
+        _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "oDDevice"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageDetectionDevice"), com.cannontech.multispeak.OutageDetectionDevice.class, false, false), 
         };
         _oper = new org.apache.axis.description.OperationDesc("modifyODDataForOutageDetectionDevice", _params, null);
@@ -226,6 +279,30 @@ public class OD_OASoap_BindingSkeleton implements com.cannontech.multispeak.OD_O
     public com.cannontech.multispeak.ArrayOfErrorObject initiateOutageDetectionEventRequest(com.cannontech.multispeak.ArrayOfString meterNos, java.util.Calendar requestDate) throws java.rmi.RemoteException
     {
         com.cannontech.multispeak.ArrayOfErrorObject ret = impl.initiateOutageDetectionEventRequest(meterNos, requestDate);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODEventRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, java.util.Calendar requestDate) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfErrorObject ret = impl.initiateODEventRequestByObject(objectRef, phaseCode, requestDate);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODMonitoringRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfErrorObject ret = impl.initiateODMonitoringRequestByObject(objectRef, phaseCode, periodicity, requestDate);
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfObjectRef displayODMonitoringRequests() throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfObjectRef ret = impl.displayODMonitoringRequests();
+        return ret;
+    }
+
+    public com.cannontech.multispeak.ArrayOfErrorObject cancelODMonitoringRequestByObject(com.cannontech.multispeak.ArrayOfObjectRef objectRef, java.util.Calendar requestDate) throws java.rmi.RemoteException
+    {
+        com.cannontech.multispeak.ArrayOfErrorObject ret = impl.cancelODMonitoringRequestByObject(objectRef, requestDate);
         return ret;
     }
 

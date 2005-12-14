@@ -10,21 +10,21 @@
     xmlns="http://xml.apache.org/axis/wsdd/"
     xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
 
-  <!-- Services from CD_CB WSDL service -->
+  <!-- Services from CB_CD WSDL service -->
 
-  <service name="CD_CBSoap" provider="java:RPC" style="wrapped" use="literal">
+  <service name="CB_CDSoap" provider="java:RPC" style="wrapped" use="literal">
       <parameter name="wsdlTargetNamespace" value="http://www.multispeak.org/Version_3.0"/>
-      <parameter name="wsdlServiceElement" value="CD_CB"/>
-      <parameter name="wsdlServicePort" value="CD_CBSoap"/>
-      <parameter name="className" value="com.cannontech.multispeak.CD_CBSoap_BindingSkeleton"/>
-      <parameter name="wsdlPortType" value="CD_CBSoap"/>
+      <parameter name="wsdlServiceElement" value="CB_CD"/>
+      <parameter name="wsdlServicePort" value="CB_CDSoap"/>
+      <parameter name="className" value="com.cannontech.multispeak.CB_CDSoap_BindingSkeleton"/>
+      <parameter name="wsdlPortType" value="CB_CDSoap"/>
       <parameter name="typeMappingVersion" value="1.2"/>
       <parameter name="allowedMethods" value="*"/>
 
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>InitiateConnectDisconnect"
-        type="java:com.cannontech.multispeak.InitiateConnectDisconnect"
+        qname="ns:>GetServiceLocationByGridLocation"
+        type="java:com.cannontech.multispeak.GetServiceLocationByGridLocation"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -55,18 +55,18 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:callBackType"
-        type="java:com.cannontech.multispeak.CallBackType"
-        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        qname="ns:>GetAllServiceLocations"
+        type="java:com.cannontech.multispeak.GetAllServiceLocations"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>ServiceLocationChangedNotificationResponse"
-        type="java:com.cannontech.multispeak.ServiceLocationChangedNotificationResponse"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        qname="ns:callBackType"
+        type="java:com.cannontech.multispeak.CallBackType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -143,6 +143,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByDBAName"
+        type="java:com.cannontech.multispeak.GetCustomerByDBAName"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:measurementDeviceStatus"
         type="java:com.cannontech.multispeak.MeasurementDeviceStatus"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
@@ -151,8 +159,8 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>CustomerChangedNotificationResponse"
-        type="java:com.cannontech.multispeak.CustomerChangedNotificationResponse"
+        qname="ns:>ModifyCBDataForServiceLocationResponse"
+        type="java:com.cannontech.multispeak.ModifyCBDataForServiceLocationResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -161,14 +169,6 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:mspObject"
         type="java:com.cannontech.multispeak.MspObject"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetCDSupportedMetersResponse"
-        type="java:com.cannontech.multispeak.GetCDSupportedMetersResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -255,6 +255,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByServLocResponse"
+        type="java:com.cannontech.multispeak.GetMeterByServLocResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:customerCall"
         type="java:com.cannontech.multispeak.CustomerCall"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -265,6 +273,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:equipment"
         type="java:com.cannontech.multispeak.Equipment"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByServiceStatusResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByServiceStatusResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -353,6 +369,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfJointUse"
         type="java:com.cannontech.multispeak.ArrayOfJointUse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByCustIDResponse"
+        type="java:com.cannontech.multispeak.GetMeterByCustIDResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -487,10 +511,26 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByMeterIdResponse"
+        type="java:com.cannontech.multispeak.GetMeterByMeterIdResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ldCon"
         type="java:com.cannontech.multispeak.LdCon"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByMeterNoResponse"
+        type="java:com.cannontech.multispeak.GetMeterByMeterNoResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -505,14 +545,6 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:status"
         type="java:com.cannontech.multispeak.Status"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>ServiceLocationChangedNotification"
-        type="java:com.cannontech.multispeak.ServiceLocationChangedNotification"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -553,6 +585,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:outageCustomer"
         type="java:com.cannontech.multispeak.OutageCustomer"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByNameResponse"
+        type="java:com.cannontech.multispeak.GetCustomerByNameResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -601,6 +641,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfGenericPointFeature"
         type="java:com.cannontech.multispeak.ArrayOfGenericPointFeature"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetModifiedMeters"
+        type="java:com.cannontech.multispeak.GetModifiedMeters"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -671,8 +719,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:linkedTransformer"
-        type="java:com.cannontech.multispeak.LinkedTransformer"
+        qname="ns:>GetMeterByAccountNumberResponse"
+        type="java:com.cannontech.multispeak.GetMeterByAccountNumberResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByMeterNoResponse"
+        type="java:com.cannontech.multispeak.GetCustomerByMeterNoResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -683,6 +739,22 @@
         type="java:com.cannontech.multispeak.ElementsVoltage"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:linkedTransformer"
+        type="java:com.cannontech.multispeak.LinkedTransformer"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetModifiedServiceLocations"
+        type="java:com.cannontech.multispeak.GetModifiedServiceLocations"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -743,14 +815,6 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>CustomerChangedNotification"
-        type="java:com.cannontech.multispeak.CustomerChangedNotification"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:action"
         type="java:com.cannontech.multispeak.Action"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
@@ -759,8 +823,40 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetAllMetersResponse"
+        type="java:com.cannontech.multispeak.GetAllMetersResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByAccountNumberResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByAccountNumberResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfEvent"
         type="java:com.cannontech.multispeak.ArrayOfEvent"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>CDStateChangedNotificationResponse"
+        type="java:com.cannontech.multispeak.CDStateChangedNotificationResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByServiceStatus"
+        type="java:com.cannontech.multispeak.GetServiceLocationByServiceStatus"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -855,6 +951,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByDBANameResponse"
+        type="java:com.cannontech.multispeak.GetCustomerByDBANameResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:genericPointFeature"
         type="java:com.cannontech.multispeak.GenericPointFeature"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -865,6 +969,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:crewActionEvent"
         type="java:com.cannontech.multispeak.CrewActionEvent"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>ModifyCBDataForCustomer"
+        type="java:com.cannontech.multispeak.ModifyCBDataForCustomer"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -935,8 +1047,24 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetAllServiceLocationsResponse"
+        type="java:com.cannontech.multispeak.GetAllServiceLocationsResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfWarehouseLocation"
         type="java:com.cannontech.multispeak.ArrayOfWarehouseLocation"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>CDStateChangedNotification"
+        type="java:com.cannontech.multispeak.CDStateChangedNotification"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -983,6 +1111,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetModifiedServiceLocationsResponse"
+        type="java:com.cannontech.multispeak.GetModifiedServiceLocationsResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:timesheet"
         type="java:com.cannontech.multispeak.Timesheet"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -991,16 +1127,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:feederObject"
-        type="java:com.cannontech.multispeak.FeederObject"
+        qname="ns:>GetAllCustomers"
+        type="java:com.cannontech.multispeak.GetAllCustomers"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>MeterChangedNotification"
-        type="java:com.cannontech.multispeak.MeterChangedNotification"
+        qname="ns:feederObject"
+        type="java:com.cannontech.multispeak.FeederObject"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1017,6 +1153,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfEmployee"
         type="java:com.cannontech.multispeak.ArrayOfEmployee"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByCustId"
+        type="java:com.cannontech.multispeak.GetServiceLocationByCustId"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1089,6 +1233,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:allocatedLoad"
         type="java:com.cannontech.multispeak.AllocatedLoad"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByCustID"
+        type="java:com.cannontech.multispeak.GetMeterByCustID"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1171,6 +1323,14 @@
         type="java:com.cannontech.multispeak.Interval"
         serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>ModifyCBDataForMeterResponse"
+        type="java:com.cannontech.multispeak.ModifyCBDataForMeterResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -1263,6 +1423,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetAllMeters"
+        type="java:com.cannontech.multispeak.GetAllMeters"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:flowDemandType"
         type="java:com.cannontech.multispeak.FlowDemandType"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
@@ -1281,6 +1449,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:shortCircuitAnalysisResult"
         type="java:com.cannontech.multispeak.ShortCircuitAnalysisResult"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByServLocResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByServLocResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1323,6 +1499,22 @@
         type="java:com.cannontech.multispeak.PowerStatus"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByServLoc"
+        type="java:com.cannontech.multispeak.GetServiceLocationByServLoc"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByCustId"
+        type="java:com.cannontech.multispeak.GetCustomerByCustId"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -1379,6 +1571,14 @@
         type="java:com.cannontech.multispeak.MaterialUnits"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>ModifyCBDataForMeter"
+        type="java:com.cannontech.multispeak.ModifyCBDataForMeter"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -1495,14 +1695,6 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetCDSupportedMeters"
-        type="java:com.cannontech.multispeak.GetCDSupportedMeters"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:poleUseCode"
         type="java:com.cannontech.multispeak.PoleUseCode"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
@@ -1513,6 +1705,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:MultiSpeakMsgHeader"
         type="java:com.cannontech.multispeak.MultiSpeakMsgHeader"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByMeterNo"
+        type="java:com.cannontech.multispeak.GetServiceLocationByMeterNo"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1583,6 +1783,22 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>ModifyCBDataForCustomerResponse"
+        type="java:com.cannontech.multispeak.ModifyCBDataForCustomerResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByAccountNumber"
+        type="java:com.cannontech.multispeak.GetMeterByAccountNumber"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:capacitor"
         type="java:com.cannontech.multispeak.Capacitor"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -1601,6 +1817,22 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:outageDetectionDevice"
         type="java:com.cannontech.multispeak.OutageDetectionDevice"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByCustIdResponse"
+        type="java:com.cannontech.multispeak.GetCustomerByCustIdResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByMeterNo"
+        type="java:com.cannontech.multispeak.GetMeterByMeterNo"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1663,6 +1895,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetCustomerByName"
+        type="java:com.cannontech.multispeak.GetCustomerByName"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:coincidentalValue"
         type="java:com.cannontech.multispeak.CoincidentalValue"
         serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory"
@@ -1705,6 +1945,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfGraphicSymbol"
         type="java:com.cannontech.multispeak.ArrayOfGraphicSymbol"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByMeterNoResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByMeterNoResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1763,6 +2011,14 @@
         type="java:com.cannontech.multispeak.PoleType"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByAccountNumber"
+        type="java:com.cannontech.multispeak.GetServiceLocationByAccountNumber"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -1831,6 +2087,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByGridLocationResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByGridLocationResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:employeeTimeRecord"
         type="java:com.cannontech.multispeak.EmployeeTimeRecord"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -1841,14 +2105,6 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:message"
         type="java:com.cannontech.multispeak.Message"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetModifiedCDMeters"
-        type="java:com.cannontech.multispeak.GetModifiedCDMeters"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1881,14 +2137,6 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:outageDetectionEvent"
         type="java:com.cannontech.multispeak.OutageDetectionEvent"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>InitiateConnectDisconnectResponse"
-        type="java:com.cannontech.multispeak.InitiateConnectDisconnectResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -1951,10 +2199,26 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetAllCustomersResponse"
+        type="java:com.cannontech.multispeak.GetAllCustomersResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:eventCode"
         type="java:com.cannontech.multispeak.EventCode"
         serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>ModifyCBDataForServiceLocation"
+        type="java:com.cannontech.multispeak.ModifyCBDataForServiceLocation"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
@@ -2009,14 +2273,6 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:ArrayOfServiceLocation"
         type="java:com.cannontech.multispeak.ArrayOfServiceLocation"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>MeterChangedNotificationResponse"
-        type="java:com.cannontech.multispeak.MeterChangedNotificationResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2103,16 +2359,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:ArrayOfTruck"
-        type="java:com.cannontech.multispeak.ArrayOfTruck"
+        qname="ns:>GetCustomerByMeterNo"
+        type="java:com.cannontech.multispeak.GetCustomerByMeterNo"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:ArrayOfConnectDisconnectEvent"
-        type="java:com.cannontech.multispeak.ArrayOfConnectDisconnectEvent"
+        qname="ns:ArrayOfTruck"
+        type="java:com.cannontech.multispeak.ArrayOfTruck"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2135,6 +2391,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetMeterByServLoc"
+        type="java:com.cannontech.multispeak.GetMeterByServLoc"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:loadManagementEvent"
         type="java:com.cannontech.multispeak.LoadManagementEvent"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -2143,16 +2407,8 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetCDMeterStateResponse"
-        type="java:com.cannontech.multispeak.GetCDMeterStateResponse"
-        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-        encodingStyle=""
-      />
-      <typeMapping
-        xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetModifiedCDMetersResponse"
-        type="java:com.cannontech.multispeak.GetModifiedCDMetersResponse"
+        qname="ns:>GetMeterByMeterId"
+        type="java:com.cannontech.multispeak.GetMeterByMeterId"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2239,16 +2495,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:workTicket"
-        type="java:com.cannontech.multispeak.WorkTicket"
+        qname="ns:>GetModifiedCustomersResponse"
+        type="java:com.cannontech.multispeak.GetModifiedCustomersResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:>GetCDMeterState"
-        type="java:com.cannontech.multispeak.GetCDMeterState"
+        qname="ns:workTicket"
+        type="java:com.cannontech.multispeak.WorkTicket"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2265,6 +2521,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:nodeIdentifier"
         type="java:com.cannontech.multispeak.NodeIdentifier"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetModifiedMetersResponse"
+        type="java:com.cannontech.multispeak.GetModifiedMetersResponse"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2297,6 +2561,14 @@
         xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:utilityInfo"
         type="java:com.cannontech.multispeak.UtilityInfo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetModifiedCustomers"
+        type="java:com.cannontech.multispeak.GetModifiedCustomers"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
@@ -2375,6 +2647,14 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
+        qname="ns:>GetServiceLocationByCustIdResponse"
+        type="java:com.cannontech.multispeak.GetServiceLocationByCustIdResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://www.multispeak.org/Version_3.0"
         qname="ns:customer"
         type="java:com.cannontech.multispeak.Customer"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -2415,16 +2695,16 @@
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:powerMonitor"
-        type="java:com.cannontech.multispeak.PowerMonitor"
+        qname="ns:ArrayOfMeter"
+        type="java:com.cannontech.multispeak.ArrayOfMeter"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""
       />
       <typeMapping
         xmlns:ns="http://www.multispeak.org/Version_3.0"
-        qname="ns:ArrayOfMeter"
-        type="java:com.cannontech.multispeak.ArrayOfMeter"
+        qname="ns:powerMonitor"
+        type="java:com.cannontech.multispeak.PowerMonitor"
         serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
         deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
         encodingStyle=""

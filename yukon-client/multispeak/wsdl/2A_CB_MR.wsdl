@@ -1184,13 +1184,28 @@
       <s:complexType name="registers">
         <s:sequence>
           <s:choice minOccurs="0" maxOccurs="unbounded">
-            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
-            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
-            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
             <s:element minOccurs="0" maxOccurs="1" name="summation" type="tns:summation" />
+            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
+            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
+            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
           </s:choice>
         </s:sequence>
         <s:attribute name="tier" type="s:unsignedInt" />
+      </s:complexType>
+      <s:complexType name="summation">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="coincidentalValue">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
       </s:complexType>
       <s:complexType name="cumDemand">
         <s:simpleContent>
@@ -1208,14 +1223,6 @@
           <s:enumeration value="continousMin" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="coincidentalValue">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="flowDemand">
         <s:simpleContent>
           <s:extension base="s:double">
@@ -1232,13 +1239,6 @@
           <s:enumeration value="max" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="summation">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="laborCategory">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -1318,6 +1318,8 @@
           <s:enumeration value="Instantaneous" />
           <s:enumeration value="Outage" />
           <s:enumeration value="Restoration" />
+          <s:enumeration value="NoResponse" />
+          <s:enumeration value="Inferred" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="outageDetectDeviceType">
@@ -1511,6 +1513,18 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="genericAnnotationFeature">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="genericPointFeature">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspPointObject">
@@ -1604,18 +1618,6 @@
                 <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
                 <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
               </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="genericAnnotationFeature">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspPointObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -2116,6 +2118,11 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="recloser">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="sectionalizer">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
@@ -2131,11 +2138,6 @@
         </s:complexContent>
       </s:complexType>
       <s:complexType name="breaker">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="recloser">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
         </s:complexContent>
@@ -2485,6 +2487,19 @@
           <s:element minOccurs="0" maxOccurs="1" name="noOfCustomers" type="s:float" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="ugPrimaryLine">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspElectricLine">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
+              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="ohSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2506,19 +2521,6 @@
           <s:enumeration value="Unknown" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="ugPrimaryLine">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspElectricLine">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
-              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="ugSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2689,27 +2691,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="generator">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspMotorGenerator">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="complexNum">
-        <s:attribute name="r" type="s:float" />
-        <s:attribute name="x" type="s:float" />
-      </s:complexType>
       <s:complexType name="motor">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspMotorGenerator">
@@ -2734,6 +2715,27 @@
             </s:sequence>
           </s:extension>
         </s:complexContent>
+      </s:complexType>
+      <s:complexType name="generator">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMotorGenerator">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="complexNum">
+        <s:attribute name="r" type="s:float" />
+        <s:attribute name="x" type="s:float" />
       </s:complexType>
       <s:complexType name="fakeNodeSection">
         <s:complexContent mixed="false">
@@ -3258,17 +3260,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="truck">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="crew">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3289,6 +3280,17 @@
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="truck" type="tns:truck" />
         </s:sequence>
+      </s:complexType>
+      <s:complexType name="truck">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
       <s:complexType name="ArrayOfEmployee">
         <s:sequence>
@@ -4103,177 +4105,177 @@
   </wsdl:message>
   <wsdl:portType name="CB_MRSoap">
     <wsdl:operation name="PingURL">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Pings URL of CB to see if it is alive. Returns errorObject(s) as necessary to communicate application status.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Pings URL of CB to see if it is alive. Returns errorObject(s) as necessary to communicate application status.(Required)</documentation>
       <wsdl:input message="tns:PingURLSoapIn" />
       <wsdl:output message="tns:PingURLSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMethods">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Requests list of methods supported by CB. (Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Requests list of methods supported by CB. (Required)</documentation>
       <wsdl:input message="tns:GetMethodsSoapIn" />
       <wsdl:output message="tns:GetMethodsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainNames">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainNamesSoapIn" />
       <wsdl:output message="tns:GetDomainNamesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainMembers">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainMembersSoapIn" />
       <wsdl:output message="tns:GetDomainMembersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetAllCustomers">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required customer data for all customers.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required customer data for all customers.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Recommended)</documentation>
       <wsdl:input message="tns:GetAllCustomersSoapIn" />
       <wsdl:output message="tns:GetAllCustomersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetModifiedCustomers">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required customer data for all customers that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required customer data for all customers that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetModifiedCustomersSoapIn" />
       <wsdl:output message="tns:GetModifiedCustomersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetModifiedServiceLocations">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Service Location data for all Service Locations that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt.)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Service Location data for all Service Locations that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetModifiedServiceLocationsSoapIn" />
       <wsdl:output message="tns:GetModifiedServiceLocationsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetCustomerByCustId">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer if it exists.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer if it exists.(Recommended)</documentation>
       <wsdl:input message="tns:GetCustomerByCustIdSoapIn" />
       <wsdl:output message="tns:GetCustomerByCustIdSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetCustomerByMeterNo">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer data given a Meter Number.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer data given a Meter Number.(Optional)</documentation>
       <wsdl:input message="tns:GetCustomerByMeterNoSoapIn" />
       <wsdl:output message="tns:GetCustomerByMeterNoSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetCustomerByName">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer(s) data given First and Last name. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer(s) data given First and Last name. (Optional)</documentation>
       <wsdl:input message="tns:GetCustomerByNameSoapIn" />
       <wsdl:output message="tns:GetCustomerByNameSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetCustomerByDBAName">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer given the Doing Business As (DBA) name. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Customer given the Doing Business As (DBA) name. (Optional)</documentation>
       <wsdl:input message="tns:GetCustomerByDBANameSoapIn" />
       <wsdl:output message="tns:GetCustomerByDBANameSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetAllServiceLocations">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Service Location data for all Service Locations. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Req.)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Service Location data for all Service Locations. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Recommended)</documentation>
       <wsdl:input message="tns:GetAllServiceLocationsSoapIn" />
       <wsdl:output message="tns:GetAllServiceLocationsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByServiceStatus">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service Status. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service Status. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByServiceStatusSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByServiceStatusSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByServLoc">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Service Location ID.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Service Location ID.(Recommended)</documentation>
       <wsdl:input message="tns:GetServiceLocationByServLocSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByServLocSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByCustId">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Customer ID.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Customer ID.(Recommended)</documentation>
       <wsdl:input message="tns:GetServiceLocationByCustIdSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByCustIdSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByMeterNo">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given the meter number of a meter served at that location.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given the meter number of a meter served at that location.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByMeterNoSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByMeterNoSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByAccountNumber">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Account Number.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location data given Account Number.(Recommended)</documentation>
       <wsdl:input message="tns:GetServiceLocationByAccountNumberSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByAccountNumberSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByGridLocation">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Grid Location.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Grid Location.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByGridLocationSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByGridLocationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByPhaseCode">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Phase. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Phase. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByPhaseCodeSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByPhaseCodeSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByLoadGroup">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Load Group.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Load Group.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByLoadGroupSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByLoadGroupSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByServiceType">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service Type.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service Type.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByServiceTypeSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByServiceTypeSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetServiceLocationByShutOffDate">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service ShutOff Date.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Service Location(s) data given the Service ShutOff Date.(Optional)</documentation>
       <wsdl:input message="tns:GetServiceLocationByShutOffDateSoapIn" />
       <wsdl:output message="tns:GetServiceLocationByShutOffDateSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetAllMeters">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Meter data for all Meters.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Meter data for all Meters.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Recommended)</documentation>
       <wsdl:input message="tns:GetAllMetersSoapIn" />
       <wsdl:output message="tns:GetAllMetersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetModifiedMeters">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Meter data for all Meters that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all required Meter data for all Meters that have been modified since the specified sessionID.  The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetModifiedMetersSoapIn" />
       <wsdl:output message="tns:GetModifiedMetersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByMeterId">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter data given meterID.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter data given meterID.(Recommended)</documentation>
       <wsdl:input message="tns:GetMeterByMeterIdSoapIn" />
       <wsdl:output message="tns:GetMeterByMeterIdSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByMeterNo">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter data given Meter Number.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter data given Meter Number.(Recommended)</documentation>
       <wsdl:input message="tns:GetMeterByMeterNoSoapIn" />
       <wsdl:output message="tns:GetMeterByMeterNoSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByServLoc">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Service Location.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Service Location.(Recommended)</documentation>
       <wsdl:input message="tns:GetMeterByServLocSoapIn" />
       <wsdl:output message="tns:GetMeterByServLocSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByAccountNumber">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Account Number.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Account Number.(Recommended)</documentation>
       <wsdl:input message="tns:GetMeterByAccountNumberSoapIn" />
       <wsdl:output message="tns:GetMeterByAccountNumberSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByCustID">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Customer ID.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given Customer ID.(Recommended)</documentation>
       <wsdl:input message="tns:GetMeterByCustIDSoapIn" />
       <wsdl:output message="tns:GetMeterByCustIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMeterByAMRType">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given AMR Type.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the requested Meter(s) data given AMR Type.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
       <wsdl:input message="tns:GetMeterByAMRTypeSoapIn" />
       <wsdl:output message="tns:GetMeterByAMRTypeSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ModifyCBDataForCustomer">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for a specific customer object.  If this transaction fails, CB returns information in a SOAPFault. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for a specific customer object.  If this transaction fails, CB returns information in a SOAPFault. (Optional)</documentation>
       <wsdl:input message="tns:ModifyCBDataForCustomerSoapIn" />
       <wsdl:output message="tns:ModifyCBDataForCustomerSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ModifyCBDataForServiceLocation">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for the Service Location object.  If this transaction fails, CB returns information in a SOAPFault.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for the Service Location object.  If this transaction fails, CB returns information in a SOAPFault.(Optional)</documentation>
       <wsdl:input message="tns:ModifyCBDataForServiceLocationSoapIn" />
       <wsdl:output message="tns:ModifyCBDataForServiceLocationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ModifyCBDataForMeter">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for the Meter object.  If this transaction fails, CB returns information in a SOAPFault.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Allow MR to Modify CB data for the Meter object.  If this transaction fails, CB returns information in a SOAPFault.(Optional)</documentation>
       <wsdl:input message="tns:ModifyCBDataForMeterSoapIn" />
       <wsdl:output message="tns:ModifyCBDataForMeterSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ReadingChangedNotification">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Notifies CB of a change in Meter Reads by sending the changed meterRead objects.  CB returns information about failed transactions in an array of errorObjects.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Notifies CB of a change in Meter Reads by sending the changed meterRead objects.  CB returns information about failed transactions in an array of errorObjects.(Optional)</documentation>
       <wsdl:input message="tns:ReadingChangedNotificationSoapIn" />
       <wsdl:output message="tns:ReadingChangedNotificationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="HistoryLogChangedNotification">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Notifies CB of a change in the History Log by sending the changed historyLog object.  CB returns information about failed transactions in an array of errorObjects.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">MR Notifies CB of a change in the History Log by sending the changed historyLog object.  CB returns information about failed transactions in an array of errorObjects.(Optional)</documentation>
       <wsdl:input message="tns:HistoryLogChangedNotificationSoapIn" />
       <wsdl:output message="tns:HistoryLogChangedNotificationSoapOut" />
     </wsdl:operation>
@@ -4667,7 +4669,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="CB_MR">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="CB_MRSoap" binding="tns:CB_MRSoap">
       <soap:address location="http://www.turtletech.com/multispeakws/2A_CB_MR.asmx" />
     </wsdl:port>

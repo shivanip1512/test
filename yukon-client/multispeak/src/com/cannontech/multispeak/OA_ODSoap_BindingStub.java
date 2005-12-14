@@ -16,8 +16,9 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[9];
+        _operations = new org.apache.axis.description.OperationDesc[19];
         _initOperationDesc1();
+        _initOperationDesc2();
     }
 
     private static void _initOperationDesc1(){
@@ -114,6 +115,123 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[8] = oper;
 
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetSubstationNames");
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfString"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfString.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSubstationNamesResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[9] = oper;
+
+    }
+
+    private static void _initOperationDesc2(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetDownlineCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetDownlineCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[10] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetUplineCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetUplineCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[11] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetChildCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetChildCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[12] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetParentCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eaLoc"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetParentCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[13] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetAllCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetAllCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[14] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetModifiedCircuitElements");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "previousSessionID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReceived"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfCircuitElement.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetModifiedCircuitElementsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[15] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetDownlineMeterConnectivity");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterConnectivity"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetDownlineMeterConnectivityResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[16] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetUplineMeterConnectivity");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterConnectivity"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetUplineMeterConnectivityResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[17] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("GetSiblingMeterConnectivity");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterConnectivity"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSiblingMeterConnectivityResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[18] = oper;
+
     }
 
     public OA_ODSoap_BindingStub() throws org.apache.axis.AxisFault {
@@ -148,6 +266,7 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
         addBindings0();
         addBindings1();
         addBindings2();
+        addBindings3();
     }
 
     private void addBindings0() {
@@ -174,6 +293,34 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetActiveOutagesResponse");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetActiveOutagesResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetAllCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetAllCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetAllCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetAllCircuitElementsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetChildCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetChildCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetChildCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetChildCircuitElementsResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -206,6 +353,34 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetDownlineCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetDownlineCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetDownlineCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetDownlineCircuitElementsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetDownlineMeterConnectivity");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetDownlineMeterConnectivity.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetDownlineMeterConnectivityResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetDownlineMeterConnectivityResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetMethods");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetMethods.class;
@@ -216,6 +391,20 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetMethodsResponse");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetMethodsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetModifiedCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetModifiedCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetModifiedCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetModifiedCircuitElementsResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -244,6 +433,76 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetOutageEventStatusResponse");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetOutageEventStatusResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetParentCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetParentCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetParentCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetParentCircuitElementsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetSiblingMeterConnectivity");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetSiblingMeterConnectivity.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetSiblingMeterConnectivityResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetSiblingMeterConnectivityResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetSubstationNames");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetSubstationNames.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetSubstationNamesResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetSubstationNamesResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetUplineCircuitElements");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetUplineCircuitElements.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetUplineCircuitElementsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetUplineCircuitElementsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetUplineMeterConnectivity");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetUplineMeterConnectivity.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetUplineMeterConnectivityResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.GetUplineMeterConnectivityResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -388,6 +647,13 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfCircuitElement");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfCircuitElement.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfConductor");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ArrayOfConductor.class;
@@ -510,6 +776,13 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeasurementType");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ArrayOfMeasurementType.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfMeterConnectivity");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfMeterConnectivity.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -710,6 +983,21 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+    }
+    private void addBindings1() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "capacitor");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.Capacitor.class;
@@ -864,21 +1152,6 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings1() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cumDemand");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.CumDemand.class;
@@ -1425,6 +1698,21 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings2() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspLineObject");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.MspLineObject.class;
@@ -1579,21 +1867,6 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings2() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomerTimeToCall");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.OutageCustomerTimeToCall.class;
@@ -2140,6 +2413,21 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
+    }
+    private void addBindings3() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "truck");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.Truck.class;
@@ -2624,6 +2912,346 @@ public class OA_ODSoap_BindingStub extends org.apache.axis.client.Stub implement
                 return (com.cannontech.multispeak.ArrayOfErrorObject) _resp;
             } catch (java.lang.Exception _exception) {
                 return (com.cannontech.multispeak.ArrayOfErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfErrorObject.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfString getSubstationNames() throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[9]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetSubstationNames");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSubstationNames"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfString) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfString) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfString.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getDownlineCircuitElements(java.lang.String eaLoc, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[10]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetDownlineCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetDownlineCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {eaLoc, lastReceived});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getUplineCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[11]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetUplineCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetUplineCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {eaLoc});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getChildCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[12]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetChildCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetChildCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {eaLoc});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getParentCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[13]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetParentCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetParentCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {eaLoc});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getAllCircuitElements(java.lang.String lastReceived) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[14]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetAllCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetAllCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {lastReceived});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfCircuitElement getModifiedCircuitElements(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[15]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetModifiedCircuitElements");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetModifiedCircuitElements"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {previousSessionID, lastReceived});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfCircuitElement) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfCircuitElement.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfMeterConnectivity getDownlineMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[16]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetDownlineMeterConnectivity");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetDownlineMeterConnectivity"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfMeterConnectivity getUplineMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[17]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetUplineMeterConnectivity");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetUplineMeterConnectivity"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfMeterConnectivity getSiblingMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[18]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/GetSiblingMeterConnectivity");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GetSiblingMeterConnectivity"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfMeterConnectivity) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfMeterConnectivity.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

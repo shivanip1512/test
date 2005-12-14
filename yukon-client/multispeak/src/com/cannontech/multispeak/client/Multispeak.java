@@ -257,14 +257,13 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		{	//Meter did not respond - outage assumed
 	        CTILogger.info("OutageDetectionEvent: Ping Failed (" + keyValue + ") " + returnMsg.getResultString());
 			ode.setOutageEventType(OutageEventType.Outage);
-			ode.setErrorString("Ping failed");
+			ode.setErrorString("Ping failed: " + returnMsg.getResultString());
 		}
 	    else if( returnMsg.getStatus() == 31 || returnMsg.getStatus() == 32 || returnMsg.getStatus() == 33 || returnMsg.getStatus() == 65)
 		{	//Unknown, but may not be an outage
 	        CTILogger.info("OutageDetectionEvent: Communication Failure (" + keyValue + ") " + returnMsg.getResultString());
-	        //TODO OutageEventType.UNKNOWN
-			ode.setOutageEventType(OutageEventType.Restoration);
-			ode.setErrorString("Communication failure, status of meter could not be determined");
+			ode.setOutageEventType(OutageEventType.NoResponse);
+			ode.setErrorString("Communication failure: " + returnMsg.getResultString());
 		}
 	    else if( returnMsg.getStatus() == 1 || returnMsg.getStatus() == 17 || returnMsg.getStatus() == 74 || returnMsg.getStatus() == 0)
 	    {	//Meter responsed in some way or another, 0 status was perfect
@@ -275,9 +274,8 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		{	//No idea what code this is
 			CTILogger.info("Meter (" + keyValue + ") - Unknown return status from ping: " +returnMsg.getStatus());
 			CTILogger.info("OutageDetectionEvent: Ping Status Unknown(" + keyValue + ")");
-			//TODO OutageEventType.UNKNOWN
-			ode.setOutageEventType(OutageEventType.Restoration);
-			ode.setErrorString("Unknown return status, status of meter could not be determined");
+			ode.setOutageEventType(OutageEventType.NoResponse);
+			ode.setErrorString("Unknown return status: " + returnMsg.getResultString());
 		}
 	    
 	    event.setOutageDetectionEvent(ode);
@@ -376,7 +374,7 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		return new ErrorObject[0];
 	}
 	
-	public MeterRead MeterReadEvent(String companyName, String meterNumber)
+	public MeterRead MeterReadEvent(String companyName, String meterNumber, String command)
 	{
 		long id = generateMessageID();
 
@@ -397,8 +395,9 @@ public class Multispeak implements MessageListener, DBChangeListener {
 		
 		if (lPao != null)
 		{
-			pilRequest = new Request(lPao.getYukonID(), "getvalue kwh", id);
+			pilRequest = new Request(lPao.getYukonID(), command, id);
 			pilRequest.setPriority(15);
+			//TODO Do we need to check if pilConn valid?
 			getPilConn().write(pilRequest);
 
 		    synchronized (event)

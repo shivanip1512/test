@@ -11,12 +11,12 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
 
     /**
      * OA Pings URL of OD to see if it is alive. Returns errorObject(s)
-     * as necessary to communicate application status.(Req)
+     * as necessary to communicate application status.(Required)
      */
     public com.cannontech.multispeak.ArrayOfErrorObject pingURL() throws java.rmi.RemoteException;
 
     /**
-     * OA requests list of methods supported by OD. (Req)
+     * OA requests list of methods supported by OD. (Required)
      */
     public com.cannontech.multispeak.ArrayOfString getMethods() throws java.rmi.RemoteException;
 
@@ -26,7 +26,7 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * method to enable systems to exchange information about application-specific
      * or installation-specific lists of information, such as the lists of
      * counties for this installation or the list of serviceStatusCodes used
-     * by the server. (Opt)
+     * by the server. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfString getDomainNames() throws java.rmi.RemoteException;
 
@@ -37,7 +37,7 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * GetDomainNames method to enable systems to exchange information about
      * application-specific or installation-specific lists of information,
      * such as the lists of counties for this installation or the list of
-     * serviceStatusCodes used by the server. (Opt)
+     * serviceStatusCodes used by the server. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfDomainMember getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException;
 
@@ -48,13 +48,13 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * first time in a session that this method is invoked.  When multiple
      * calls to this method are required to obtain all of the data, the lastReceived
      * should carry the objectID of the last data instance received in subsequent
-     * calls.(Req)
+     * calls.(Recommended)
      */
     public com.cannontech.multispeak.ArrayOfOutageDetectionDevice getAllOutageDetectionDevices(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
     /**
      * Returns an Outage Detection Devices Associated with the Given
-     * Meter Number.(Req)
+     * Meter Number.(Recommended)
      */
     public com.cannontech.multispeak.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException;
 
@@ -65,7 +65,7 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
      * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Opt)
+     * last data instance received in subsequent calls.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByStatus(com.cannontech.multispeak.OutageDetectDeviceStatus oDDStatus, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -76,13 +76,13 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * carry an empty string the first time in a session that this method
      * is invoked.  When multiple calls to this method are required to obtain
      * all of the data, the lastReceived should carry the objectID of the
-     * last data instance received in subsequent calls.(Opt)
+     * last data instance received in subsequent calls.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfOutageDetectionDevice getOutageDetectionDevicesByType(com.cannontech.multispeak.OutageDetectDeviceType oDDType, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
     /**
      * Returns the outageDetectionDevices that are currently experiencing
-     * outage conditions.(Opt)
+     * outage conditions.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfOutageDetectionDevice getOutagedODDevices() throws java.rmi.RemoteException;
 
@@ -90,14 +90,52 @@ public interface OD_OASoap_PortType extends java.rmi.Remote {
      * OA requests OD to update the status of an outageDetectionDevice.
      * OD responds by publishing a revised outageDetectionEvent (using the
      * ODEventNotification method on OA-OD).  OD returns information about
-     * failed transactions using an array of errorObjects.(Opt)
+     * failed transactions using an array of errorObjects.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfErrorObject initiateOutageDetectionEventRequest(com.cannontech.multispeak.ArrayOfString meterNos, java.util.Calendar requestDate) throws java.rmi.RemoteException;
 
     /**
+     * OA requests OD to return only outage detection events that
+     * are known to be of type Outage or Inferred on service locations downline
+     * from a circuit element supplied using the calling parameter objectRef
+     * and containing the phasing supplied in the calling parameter phaseCode.
+     * OD responds by publishing a revised outageDetectionEvent (using the
+     * ODEventNotification method on OA-OD).  OD returns information about
+     * failed transactions using an array of errorObjects.(Optional)
+     */
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODEventRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+
+    /**
+     * OA requests OD to return only outage detection events that
+     * are known to be of type Outage or Inferred on service locations downline
+     * from a circuit element supplied using the calling parameter objectRef.
+     * OD creates a monitoring event for the circuit element suppiled in
+     * objectRef.  Monitoring shall be performed at the time interval given
+     * in the periodicity parameter (expressed in minutes).  OD responds
+     * by publishing a revised outageDetectionEvent (using the ODEventNotification
+     * method on OA-OD).  OD returns information about failed transactions
+     * using an array of errorObjects.(Optional)
+     */
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODMonitoringRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+
+    /**
+     * OA requests OD to return a list of circuit elements (in the
+     * form of objectRefs) that are currently being monitored.  OD returns
+     * an array of objectRefs.(Optional)
+     */
+    public com.cannontech.multispeak.ArrayOfObjectRef displayODMonitoringRequests() throws java.rmi.RemoteException;
+
+    /**
+     * OA requests OD to cancel outage detection monitoring on the
+     * list of supplied circuit elements (called out by objectRef).  OD returns
+     * information about failed transactions using an array of errorObjects.(Optional)
+     */
+    public com.cannontech.multispeak.ArrayOfErrorObject cancelODMonitoringRequestByObject(com.cannontech.multispeak.ArrayOfObjectRef objectRef, java.util.Calendar requestDate) throws java.rmi.RemoteException;
+
+    /**
      * Allow OA to Modify OD data for aspecific Outage Detection Device
      * object.  If this transaction failes,OD returns information about the
-     * failure using a SAOPFault.(Opt)
+     * failure using a SAOPFault.(Optional)
      */
     public void modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.OutageDetectionDevice oDDevice) throws java.rmi.RemoteException;
 }

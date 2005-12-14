@@ -1192,13 +1192,28 @@
       <s:complexType name="registers">
         <s:sequence>
           <s:choice minOccurs="0" maxOccurs="unbounded">
-            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
-            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
-            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
             <s:element minOccurs="0" maxOccurs="1" name="summation" type="tns:summation" />
+            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
+            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
+            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
           </s:choice>
         </s:sequence>
         <s:attribute name="tier" type="s:unsignedInt" />
+      </s:complexType>
+      <s:complexType name="summation">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="coincidentalValue">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
       </s:complexType>
       <s:complexType name="cumDemand">
         <s:simpleContent>
@@ -1216,14 +1231,6 @@
           <s:enumeration value="continousMin" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="coincidentalValue">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="flowDemand">
         <s:simpleContent>
           <s:extension base="s:double">
@@ -1240,13 +1247,6 @@
           <s:enumeration value="max" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="summation">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="laborCategory">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -1326,6 +1326,8 @@
           <s:enumeration value="Instantaneous" />
           <s:enumeration value="Outage" />
           <s:enumeration value="Restoration" />
+          <s:enumeration value="NoResponse" />
+          <s:enumeration value="Inferred" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="outageDetectDeviceType">
@@ -1519,6 +1521,18 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="genericAnnotationFeature">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="genericPointFeature">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspPointObject">
@@ -1612,18 +1626,6 @@
                 <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
                 <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
               </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="genericAnnotationFeature">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspPointObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -2124,6 +2126,11 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="recloser">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="sectionalizer">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
@@ -2139,11 +2146,6 @@
         </s:complexContent>
       </s:complexType>
       <s:complexType name="breaker">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="recloser">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
         </s:complexContent>
@@ -2493,6 +2495,19 @@
           <s:element minOccurs="0" maxOccurs="1" name="noOfCustomers" type="s:float" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="ugPrimaryLine">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspElectricLine">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
+              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="ohSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2514,19 +2529,6 @@
           <s:enumeration value="Unknown" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="ugPrimaryLine">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspElectricLine">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
-              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="ugSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2697,27 +2699,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="generator">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspMotorGenerator">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="complexNum">
-        <s:attribute name="r" type="s:float" />
-        <s:attribute name="x" type="s:float" />
-      </s:complexType>
       <s:complexType name="motor">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspMotorGenerator">
@@ -2742,6 +2723,27 @@
             </s:sequence>
           </s:extension>
         </s:complexContent>
+      </s:complexType>
+      <s:complexType name="generator">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMotorGenerator">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="complexNum">
+        <s:attribute name="r" type="s:float" />
+        <s:attribute name="x" type="s:float" />
       </s:complexType>
       <s:complexType name="fakeNodeSection">
         <s:complexContent mixed="false">
@@ -3266,17 +3268,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="truck">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="crew">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3297,6 +3288,17 @@
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="truck" type="tns:truck" />
         </s:sequence>
+      </s:complexType>
+      <s:complexType name="truck">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
       <s:complexType name="ArrayOfEmployee">
         <s:sequence>
@@ -3404,6 +3406,154 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetSubstationNames">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetSubstationNamesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSubstationNamesResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDownlineCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="lastReceived" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDownlineCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDownlineCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCircuitElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="circuitElement" nillable="true" type="tns:circuitElement" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetUplineCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUplineCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUplineCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetChildCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetChildCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetChildCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetParentCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetParentCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetParentCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="lastReceived" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetModifiedCircuitElements">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="previousSessionID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="lastReceived" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetModifiedCircuitElementsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetModifiedCircuitElementsResult" type="tns:ArrayOfCircuitElement" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDownlineMeterConnectivity">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDownlineMeterConnectivityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDownlineMeterConnectivityResult" type="tns:ArrayOfMeterConnectivity" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfMeterConnectivity">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="meterConnectivity" nillable="true" type="tns:meterConnectivity" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetUplineMeterConnectivity">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUplineMeterConnectivityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUplineMeterConnectivityResult" type="tns:ArrayOfMeterConnectivity" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSiblingMeterConnectivity">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSiblingMeterConnectivityResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSiblingMeterConnectivityResult" type="tns:ArrayOfMeterConnectivity" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
     </s:schema>
   </wsdl:types>
   <wsdl:message name="PingURLSoapIn">
@@ -3487,51 +3637,191 @@
   <wsdl:message name="ODDeviceChangedNotificationMultiSpeakMsgHeader">
     <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
   </wsdl:message>
+  <wsdl:message name="GetSubstationNamesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSubstationNames" />
+  </wsdl:message>
+  <wsdl:message name="GetSubstationNamesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSubstationNamesResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSubstationNamesMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDownlineCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDownlineCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUplineCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUplineCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetChildCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetChildCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetChildCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetChildCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetChildCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetParentCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetParentCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetParentCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetParentCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetParentCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetAllCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetAllCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAllCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetModifiedCircuitElementsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetModifiedCircuitElements" />
+  </wsdl:message>
+  <wsdl:message name="GetModifiedCircuitElementsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetModifiedCircuitElementsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetModifiedCircuitElementsMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineMeterConnectivitySoapIn">
+    <wsdl:part name="parameters" element="tns:GetDownlineMeterConnectivity" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineMeterConnectivitySoapOut">
+    <wsdl:part name="parameters" element="tns:GetDownlineMeterConnectivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDownlineMeterConnectivityMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineMeterConnectivitySoapIn">
+    <wsdl:part name="parameters" element="tns:GetUplineMeterConnectivity" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineMeterConnectivitySoapOut">
+    <wsdl:part name="parameters" element="tns:GetUplineMeterConnectivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUplineMeterConnectivityMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
+  <wsdl:message name="GetSiblingMeterConnectivitySoapIn">
+    <wsdl:part name="parameters" element="tns:GetSiblingMeterConnectivity" />
+  </wsdl:message>
+  <wsdl:message name="GetSiblingMeterConnectivitySoapOut">
+    <wsdl:part name="parameters" element="tns:GetSiblingMeterConnectivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSiblingMeterConnectivityMultiSpeakMsgHeader">
+    <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
+  </wsdl:message>
   <wsdl:portType name="OA_ODSoap">
     <wsdl:operation name="PingURL">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD pings URL of OA to see if it is alive.  Returns errorObject(s) as necessary to communicate application status. (Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD pings URL of OA to see if it is alive.  Returns errorObject(s) as necessary to communicate application status. (Required)</documentation>
       <wsdl:input message="tns:PingURLSoapIn" />
       <wsdl:output message="tns:PingURLSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMethods">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD requests list of methods supported by OA. (Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD requests list of methods supported by OA. (Required)</documentation>
       <wsdl:input message="tns:GetMethodsSoapIn" />
       <wsdl:output message="tns:GetMethodsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainNames">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainNamesSoapIn" />
       <wsdl:output message="tns:GetDomainNamesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainMembers">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainMembersSoapIn" />
       <wsdl:output message="tns:GetDomainMembersSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetOutageEventStatus">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the current status of an outage event, given the outage event ID.  The outageEventID is the objectID of an outageEvent obtained earlier by calling GetActiveOutages.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the current status of an outage event, given the outage event ID.  The outageEventID is the objectID of an outageEvent obtained earlier by calling GetActiveOutages.(Optional)</documentation>
       <wsdl:input message="tns:GetOutageEventStatusSoapIn" />
       <wsdl:output message="tns:GetOutageEventStatusSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetActiveOutages">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the outageEventIDs for all active outage events.  The outageEventID is the objectID of an outageEvent.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the outageEventIDs for all active outage events.  The outageEventID is the objectID of an outageEvent.(Optional)</documentation>
       <wsdl:input message="tns:GetActiveOutagesSoapIn" />
       <wsdl:output message="tns:GetActiveOutagesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetOutageEventStatusByOutageLocation">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the current status of an outage event, given the outage location.  The outageLocation object includes the telephone number, service locationID, account number and/or meter number at the location of the outage.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the current status of an outage event, given the outage location.  The outageLocation object includes the telephone number, service locationID, account number and/or meter number at the location of the outage.(Optional)</documentation>
       <wsdl:input message="tns:GetOutageEventStatusByOutageLocationSoapIn" />
       <wsdl:output message="tns:GetOutageEventStatusByOutageLocationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ODEventNotification">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionEvents by sending an array of changed OutageDetectionEvent objects.  OA returns information about failed transactions using an array of errorObjects.(Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionEvents by sending an array of changed OutageDetectionEvent objects.  OA returns information about failed transactions using an array of errorObjects.(Recommended)</documentation>
       <wsdl:input message="tns:ODEventNotificationSoapIn" />
       <wsdl:output message="tns:ODEventNotificationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ODDeviceChangedNotification">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionDevice by sending an array of changed OutageDetectionDevice objects.  OA returns information about failed transactions using an array of errorObjects.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionDevice by sending an array of changed OutageDetectionDevice objects.  OA returns information about failed transactions using an array of errorObjects.(Optional)</documentation>
       <wsdl:input message="tns:ODDeviceChangedNotificationSoapIn" />
       <wsdl:output message="tns:ODDeviceChangedNotificationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSubstationNames">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all substation names.(Optional)</documentation>
+      <wsdl:input message="tns:GetSubstationNamesSoapIn" />
+      <wsdl:output message="tns:GetSubstationNamesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDownlineCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all circuit elements fed by a given line section or node (eaLoc).   The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls.(Optional)</documentation>
+      <wsdl:input message="tns:GetDownlineCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetDownlineCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUplineCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns circuit elements in the shortest route to source from the given line section or node (eaLoc). (Optional)</documentation>
+      <wsdl:input message="tns:GetUplineCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetUplineCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetChildCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns circuit elements immediately fed by the given line section or node (eaLoc). (Optional)</documentation>
+      <wsdl:input message="tns:GetChildCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetChildCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetParentCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns circuit elements immediately upstream of the given line section or node (eaLoc). (Optional)</documentation>
+      <wsdl:input message="tns:GetParentCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetParentCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all circuit elements. The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, the lastReceived should carry the objectID of the last data instance received in subsequent calls. (Optional)</documentation>
+      <wsdl:input message="tns:GetAllCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetAllCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetModifiedCircuitElements">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns all circuit elements that have been modified since the previous session identified. The calling parameter previousSessionID should carry the session identifier for the last session of data that the client has successfully received.  The calling parameter lastReceived is included so that large sets of data can be returned in manageable blocks.  lastReceived should carry an empty string the first time in a session that this method is invoked.  When multiple calls to this method are required to obtain all of the data, lastReceived should carry the objectID of the last data instance received in subsequent calls. (Optional)</documentation>
+      <wsdl:input message="tns:GetModifiedCircuitElementsSoapIn" />
+      <wsdl:output message="tns:GetModifiedCircuitElementsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDownlineMeterConnectivity">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the meter connectivity for all meters downline from a given meterNo. (Optional)</documentation>
+      <wsdl:input message="tns:GetDownlineMeterConnectivitySoapIn" />
+      <wsdl:output message="tns:GetDownlineMeterConnectivitySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUplineMeterConnectivity">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Finds the first upline distribution transformer from a given meter number and returns the meter connectivity for all meters cnnected to it. (Optional)</documentation>
+      <wsdl:input message="tns:GetUplineMeterConnectivitySoapIn" />
+      <wsdl:output message="tns:GetUplineMeterConnectivitySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSiblingMeterConnectivity">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns the meter connectivity for all meters on the same transformer as the given meter number. (Optional)</documentation>
+      <wsdl:input message="tns:GetSiblingMeterConnectivitySoapIn" />
+      <wsdl:output message="tns:GetSiblingMeterConnectivitySoapOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="OA_ODSoap" type="tns:OA_ODSoap">
@@ -3635,9 +3925,118 @@
         <soap:header message="tns:ODDeviceChangedNotificationMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetSubstationNames">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetSubstationNames" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetSubstationNamesMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetSubstationNamesMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDownlineCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetDownlineCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetDownlineCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetDownlineCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUplineCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetUplineCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetUplineCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetUplineCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetChildCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetChildCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetChildCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetChildCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetParentCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetParentCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetParentCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetParentCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetAllCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetAllCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetAllCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetModifiedCircuitElements">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetModifiedCircuitElements" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetModifiedCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetModifiedCircuitElementsMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDownlineMeterConnectivity">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetDownlineMeterConnectivity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetDownlineMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetDownlineMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUplineMeterConnectivity">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetUplineMeterConnectivity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetUplineMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetUplineMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSiblingMeterConnectivity">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/GetSiblingMeterConnectivity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetSiblingMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetSiblingMeterConnectivityMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="OA_OD">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="OA_ODSoap" binding="tns:OA_ODSoap">
       <soap:address location="http://www.turtletech.com/multispeakws/5_OA_OD.asmx" />
     </wsdl:port>

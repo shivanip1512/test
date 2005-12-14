@@ -173,7 +173,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
 		    return errorMR;
 		}		
 		String companyName = MultispeakFuncs.getCompanyNameFromSOAPHeader();
-		return Multispeak.getInstance().MeterReadEvent(companyName, meterNo);
+		return Multispeak.getInstance().MeterReadEvent(companyName, meterNo, "getvalue kwh update");
     }
 
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
@@ -231,6 +231,7 @@ public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.MR_CBSoa
         return null;
     }
 
+	//Perform an actual read of the meter and return a CB_MR readingChangedNotification message
     public com.cannontech.multispeak.ArrayOfErrorObject initiateMeterReadByMeterNumber(com.cannontech.multispeak.ArrayOfString meterNos) throws java.rmi.RemoteException {
 		init();
         return null;

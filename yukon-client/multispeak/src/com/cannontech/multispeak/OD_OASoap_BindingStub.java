@@ -16,7 +16,7 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[11];
+        _operations = new org.apache.axis.description.OperationDesc[15];
         _initOperationDesc1();
         _initOperationDesc2();
     }
@@ -138,13 +138,67 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("InitiateODEventRequestByObject");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"), com.cannontech.multispeak.ObjectRef.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PhaseCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phaseCd"), com.cannontech.multispeak.PhaseCd.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfErrorObject.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODEventRequestByObjectResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[10] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("InitiateODMonitoringRequestByObject");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"), com.cannontech.multispeak.ObjectRef.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PhaseCode"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phaseCd"), com.cannontech.multispeak.PhaseCd.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "periodicity"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfErrorObject.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODMonitoringRequestByObjectResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[11] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("DisplayODMonitoringRequests");
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfObjectRef"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfObjectRef.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DisplayODMonitoringRequestsResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[12] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("CancelODMonitoringRequestByObject");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ObjectRef"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfObjectRef"), com.cannontech.multispeak.ArrayOfObjectRef.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "requestDate"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"), java.util.Calendar.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.ArrayOfErrorObject.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CancelODMonitoringRequestByObjectResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[13] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("ModifyODDataForOutageDetectionDevice");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "oDDevice"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageDetectionDevice"), com.cannontech.multispeak.OutageDetectionDevice.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[10] = oper;
+        _operations[14] = oper;
 
     }
 
@@ -180,6 +234,7 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
         addBindings0();
         addBindings1();
         addBindings2();
+        addBindings3();
     }
 
     private void addBindings0() {
@@ -196,6 +251,34 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">CancelODMonitoringRequestByObject");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.CancelODMonitoringRequestByObject.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">CancelODMonitoringRequestByObjectResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.CancelODMonitoringRequestByObjectResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">DisplayODMonitoringRequests");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.DisplayODMonitoringRequests.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">DisplayODMonitoringRequestsResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.DisplayODMonitoringRequestsResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetAllOutageDetectionDevices");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetAllOutageDetectionDevices.class;
@@ -304,6 +387,34 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">GetOutagedODDevicesResponse");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.GetOutagedODDevicesResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateODEventRequestByObject");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.InitiateODEventRequestByObject.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateODEventRequestByObjectResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.InitiateODEventRequestByObjectResponse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateODMonitoringRequestByObject");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.InitiateODMonitoringRequestByObject.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateODMonitoringRequestByObjectResponse");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.InitiateODMonitoringRequestByObjectResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -581,6 +692,13 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfObjectRef");
+            cachedSerQNames.add(qName);
+            cls = com.cannontech.multispeak.ArrayOfObjectRef.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfOutageCustomer");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.ArrayOfOutageCustomer.class;
@@ -833,6 +951,21 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings1() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "config");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.Config.class;
@@ -896,21 +1029,6 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings1() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "crew");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.Crew.class;
@@ -1548,6 +1666,21 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings2() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingBank");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.MspSwitchingBank.class;
@@ -1611,21 +1744,6 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-    }
-    private void addBindings2() {
-            java.lang.Class cls;
-            javax.xml.namespace.QName qName;
-            javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ohSecondaryLine");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.OhSecondaryLine.class;
@@ -2263,6 +2381,21 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+    }
+    private void addBindings3() {
+            java.lang.Class cls;
+            javax.xml.namespace.QName qName;
+            javax.xml.namespace.QName qName2;
+            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "utilityInfo");
             cachedSerQNames.add(qName);
             cls = com.cannontech.multispeak.UtilityInfo.class;
@@ -2718,12 +2851,148 @@ public class OD_OASoap_BindingStub extends org.apache.axis.client.Stub implement
 }
     }
 
-    public void modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.OutageDetectionDevice oDDevice) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODEventRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, java.util.Calendar requestDate) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[10]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/InitiateODEventRequestByObject");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODEventRequestByObject"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {objectRef, phaseCode, requestDate});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfErrorObject.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfErrorObject initiateODMonitoringRequestByObject(com.cannontech.multispeak.ObjectRef objectRef, com.cannontech.multispeak.PhaseCd phaseCode, int periodicity, java.util.Calendar requestDate) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[11]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/InitiateODMonitoringRequestByObject");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateODMonitoringRequestByObject"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {objectRef, phaseCode, new java.lang.Integer(periodicity), requestDate});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfErrorObject.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfObjectRef displayODMonitoringRequests() throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[12]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/DisplayODMonitoringRequests");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DisplayODMonitoringRequests"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfObjectRef) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfObjectRef) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfObjectRef.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public com.cannontech.multispeak.ArrayOfErrorObject cancelODMonitoringRequestByObject(com.cannontech.multispeak.ArrayOfObjectRef objectRef, java.util.Calendar requestDate) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[13]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/CancelODMonitoringRequestByObject");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CancelODMonitoringRequestByObject"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {objectRef, requestDate});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.ArrayOfErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.ArrayOfErrorObject.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public void modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.OutageDetectionDevice oDDevice) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[14]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/ModifyODDataForOutageDetectionDevice");
         _call.setEncodingStyle(null);

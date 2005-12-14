@@ -11,12 +11,12 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
 
     /**
      * MR Pings URL of EA to see if it is alive. Returns errorObject(s)
-     * as necessary to communicate application status. (Req)
+     * as necessary to communicate application status. (Required)
      */
     public com.cannontech.multispeak.ArrayOfErrorObject pingURL() throws java.rmi.RemoteException;
 
     /**
-     * MR requests list of methods supported by EA. (Req)
+     * MR requests list of methods supported by EA. (Required)
      */
     public com.cannontech.multispeak.ArrayOfString getMethods() throws java.rmi.RemoteException;
 
@@ -26,7 +26,7 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * method to enable systems to exchange information about application-specific
      * or installation-specific lists of information, such as the lists of
      * counties for this installation or the list of serviceStatusCodes used
-     * by the server. (Opt)
+     * by the server. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfString getDomainNames() throws java.rmi.RemoteException;
 
@@ -37,12 +37,12 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * GetDomainNames method to enable systems to exchange information about
      * application-specific or installation-specific lists of information,
      * such as the lists of counties for this installation or the list of
-     * serviceStatusCodes used by the server. (Opt)
+     * serviceStatusCodes used by the server. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfDomainMember getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException;
 
     /**
-     * Returns all substation names.(Opt)
+     * Returns all substation names.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfString getSubstationNames() throws java.rmi.RemoteException;
 
@@ -53,25 +53,25 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * should carry an empty string the first time in a session that this
      * method is invoked.  When multiple calls to this method are required
      * to obtain all of the data, the lastReceived should carry the objectID
-     * of the last data instance received in subsequent calls.(Opt)
+     * of the last data instance received in subsequent calls.(Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getDownlineCircuitElements(java.lang.String eaLoc, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
     /**
      * Returns circuit elements in the shortest route to source from
-     * the given line section or node (eaLoc). (Opt)
+     * the given line section or node (eaLoc). (Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getUplineCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException;
 
     /**
      * Returns circuit elements immediately fed by the given line
-     * section or node (eaLoc). (Opt)
+     * section or node (eaLoc). (Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getChildCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException;
 
     /**
      * Returns circuit elements immediately upstream of the given
-     * line section or node (eaLoc). (Opt)
+     * line section or node (eaLoc). (Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getParentCircuitElements(java.lang.String eaLoc) throws java.rmi.RemoteException;
 
@@ -82,7 +82,7 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, the lastReceived
      * should carry the objectID of the last data instance received in subsequent
-     * calls. (Opt)
+     * calls. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getAllCircuitElements(java.lang.String lastReceived) throws java.rmi.RemoteException;
 
@@ -96,26 +96,26 @@ public interface EA_MRSoap_PortType extends java.rmi.Remote {
      * in a session that this method is invoked.  When multiple calls to
      * this method are required to obtain all of the data, lastReceived should
      * carry the objectID of the last data instance received in subsequent
-     * calls. (Opt)
+     * calls. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfCircuitElement getModifiedCircuitElements(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
     /**
      * Returns the meter connectivity for all meters downline from
-     * a given meterNo. (Opt)
+     * a given meterNo. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfMeterConnectivity getDownlineMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException;
 
     /**
      * Finds the first upline distribution transformer from a given
      * meter number and returns the meter connectivity for all meters cnnected
-     * to it. (Opt)
+     * to it. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfMeterConnectivity getUplineMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException;
 
     /**
      * Returns the meter connectivity for all meters on the same transformer
-     * as the given meter number. (Opt)
+     * as the given meter number. (Optional)
      */
     public com.cannontech.multispeak.ArrayOfMeterConnectivity getSiblingMeterConnectivity(java.lang.String meterNo) throws java.rmi.RemoteException;
 }

@@ -7,6 +7,8 @@
 
 package com.cannontech.multispeak;
 
+import java.rmi.RemoteException;
+
 import com.cannontech.multispeak.client.MultispeakFuncs;
 
 public class OA_ODSoap_BindingImpl implements com.cannontech.multispeak.OA_ODSoap_PortType{
@@ -60,6 +62,66 @@ public class OA_ODSoap_BindingImpl implements com.cannontech.multispeak.OA_ODSoa
         return new ArrayOfErrorObject(new ErrorObject[0]);
     }
 
+	public ArrayOfString getSubstationNames() throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getDownlineCircuitElements(String eaLoc, String lastReceived) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getUplineCircuitElements(String eaLoc) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getChildCircuitElements(String eaLoc) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getParentCircuitElements(String eaLoc) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getAllCircuitElements(String lastReceived) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfCircuitElement getModifiedCircuitElements(String previousSessionID, String lastReceived) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfMeterConnectivity getDownlineMeterConnectivity(String meterNo) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfMeterConnectivity getUplineMeterConnectivity(String meterNo) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfMeterConnectivity getSiblingMeterConnectivity(String meterNo) throws RemoteException
+	{
+		init();
+		return null;
+	}
+	
 	private void init()
 	{
 		MultispeakFuncs.init();

@@ -7,6 +7,9 @@
 
 package com.cannontech.multispeak;
 
+import java.rmi.RemoteException;
+import java.util.Calendar;
+
 import com.cannontech.multispeak.client.MultispeakFuncs;
 
 public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoap_PortType{
@@ -65,16 +68,43 @@ public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.MR_EASoa
     }
 
     public com.cannontech.multispeak.MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
-		init();
-        return null;
+//		init();	//init() is performed in the MR_CB method, no need to call it again.
+		MR_CBSoap_BindingImpl mr_cb = new MR_CBSoap_BindingImpl();
+		return mr_cb.getLatestReadingByMeterNo(meterNo);
     }
 
     public com.cannontech.multispeak.ArrayOfMeterRead getReadingsByUOMAndDate(java.lang.String uomData, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
 		init();
         return null;
     }
+
+	public ArrayOfHistoryLog getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfHistoryLog getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfHistoryLog getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate, Calendar endDate) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfHistoryLog getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate, String lastReceived) throws RemoteException
+	{
+		init();
+		return null;
+	}
+	
 	private void init()
 	{
 		MultispeakFuncs.init();
 	}
 }
+

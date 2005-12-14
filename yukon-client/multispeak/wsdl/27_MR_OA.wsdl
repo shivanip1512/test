@@ -96,7 +96,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
         </s:sequence>
       </s:complexType>
-      <s:element name="CustomersAffectedByOutage">
+      <s:element name="CustomersAffectedByOutageNotification">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="newOutages" type="tns:ArrayOfCustomersAffectedByOutage" />
@@ -1177,13 +1177,28 @@
       <s:complexType name="registers">
         <s:sequence>
           <s:choice minOccurs="0" maxOccurs="unbounded">
-            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
-            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
-            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
             <s:element minOccurs="0" maxOccurs="1" name="summation" type="tns:summation" />
+            <s:element minOccurs="0" maxOccurs="1" name="coincidentalValue" type="tns:coincidentalValue" />
+            <s:element minOccurs="0" maxOccurs="1" name="cumDemand" type="tns:cumDemand" />
+            <s:element minOccurs="0" maxOccurs="1" name="demand" type="tns:flowDemand" />
           </s:choice>
         </s:sequence>
         <s:attribute name="tier" type="s:unsignedInt" />
+      </s:complexType>
+      <s:complexType name="summation">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="coincidentalValue">
+        <s:simpleContent>
+          <s:extension base="s:double">
+            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
+            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
+          </s:extension>
+        </s:simpleContent>
       </s:complexType>
       <s:complexType name="cumDemand">
         <s:simpleContent>
@@ -1201,14 +1216,6 @@
           <s:enumeration value="continousMin" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="coincidentalValue">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-            <s:attribute name="triggerSourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="flowDemand">
         <s:simpleContent>
           <s:extension base="s:double">
@@ -1225,13 +1232,6 @@
           <s:enumeration value="max" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="summation">
-        <s:simpleContent>
-          <s:extension base="s:double">
-            <s:attribute default="0" name="sourceID" type="s:unsignedInt" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="laborCategory">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -1311,6 +1311,8 @@
           <s:enumeration value="Instantaneous" />
           <s:enumeration value="Outage" />
           <s:enumeration value="Restoration" />
+          <s:enumeration value="NoResponse" />
+          <s:enumeration value="Inferred" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="outageDetectDeviceType">
@@ -1504,6 +1506,18 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="genericAnnotationFeature">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="genericPointFeature">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspPointObject">
@@ -1597,18 +1611,6 @@
                 <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
                 <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
               </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="genericAnnotationFeature">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspPointObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="featureType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="featureSubtype" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="scale" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="annotation" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -2109,6 +2111,11 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="recloser">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="sectionalizer">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
@@ -2124,11 +2131,6 @@
         </s:complexContent>
       </s:complexType>
       <s:complexType name="breaker">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="recloser">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspOverCurrentDevice" />
         </s:complexContent>
@@ -2478,6 +2480,19 @@
           <s:element minOccurs="0" maxOccurs="1" name="noOfCustomers" type="s:float" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="ugPrimaryLine">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspElectricLine">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
+              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="ohSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2499,19 +2514,6 @@
           <s:enumeration value="Unknown" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="ugPrimaryLine">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspElectricLine">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
-              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="ugSecondaryLine">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricLine">
@@ -2682,27 +2684,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="generator">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspMotorGenerator">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
-              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="complexNum">
-        <s:attribute name="r" type="s:float" />
-        <s:attribute name="x" type="s:float" />
-      </s:complexType>
       <s:complexType name="motor">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspMotorGenerator">
@@ -2727,6 +2708,27 @@
             </s:sequence>
           </s:extension>
         </s:complexContent>
+      </s:complexType>
+      <s:complexType name="generator">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMotorGenerator">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="model" type="s:integer" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdVoltsZ" type="tns:complexNum" />
+              <s:element minOccurs="0" maxOccurs="1" name="holdID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwOut" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kwMax" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLead" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="kvarLag" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="srcVolts" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="connected" type="tns:ldCon" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="complexNum">
+        <s:attribute name="r" type="s:float" />
+        <s:attribute name="x" type="s:float" />
       </s:complexType>
       <s:complexType name="fakeNodeSection">
         <s:complexContent mixed="false">
@@ -3251,17 +3253,6 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="truck">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
       <s:complexType name="crew">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3282,6 +3273,17 @@
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="truck" type="tns:truck" />
         </s:sequence>
+      </s:complexType>
+      <s:complexType name="truck">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
       <s:complexType name="ArrayOfEmployee">
         <s:sequence>
@@ -3340,10 +3342,10 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:element name="CustomersAffectedByOutageResponse">
+      <s:element name="CustomersAffectedByOutageNotificationResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="CustomersAffectedByOutageResult" type="tns:ArrayOfErrorObject" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomersAffectedByOutageNotificationResult" type="tns:ArrayOfErrorObject" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -3404,13 +3406,13 @@
   <wsdl:message name="GetDomainMembersMultiSpeakMsgHeader">
     <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
   </wsdl:message>
-  <wsdl:message name="CustomersAffectedByOutageSoapIn">
-    <wsdl:part name="parameters" element="tns:CustomersAffectedByOutage" />
+  <wsdl:message name="CustomersAffectedByOutageNotificationSoapIn">
+    <wsdl:part name="parameters" element="tns:CustomersAffectedByOutageNotification" />
   </wsdl:message>
-  <wsdl:message name="CustomersAffectedByOutageSoapOut">
-    <wsdl:part name="parameters" element="tns:CustomersAffectedByOutageResponse" />
+  <wsdl:message name="CustomersAffectedByOutageNotificationSoapOut">
+    <wsdl:part name="parameters" element="tns:CustomersAffectedByOutageNotificationResponse" />
   </wsdl:message>
-  <wsdl:message name="CustomersAffectedByOutageMultiSpeakMsgHeader">
+  <wsdl:message name="CustomersAffectedByOutageNotificationMultiSpeakMsgHeader">
     <wsdl:part name="MultiSpeakMsgHeader" element="tns:MultiSpeakMsgHeader" />
   </wsdl:message>
   <wsdl:message name="MeterConnectivityNotificationSoapIn">
@@ -3424,32 +3426,32 @@
   </wsdl:message>
   <wsdl:portType name="MR_OASoap">
     <wsdl:operation name="PingURL">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Pings URL of MR to see if it is alive.  Returns errorObject(s) as necessary to communicate application status. (Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Pings URL of MR to see if it is alive.  Returns errorObject(s) as necessary to communicate application status. (Required)</documentation>
       <wsdl:input message="tns:PingURLSoapIn" />
       <wsdl:output message="tns:PingURLSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetMethods">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA requests list of methods supported by MR. (Req)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA requests list of methods supported by MR. (Required)</documentation>
       <wsdl:input message="tns:GetMethodsSoapIn" />
       <wsdl:output message="tns:GetMethodsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainNames">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server a list of names of domains supported by the server.  This method is used, along with the GetDomainMembers method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainNamesSoapIn" />
       <wsdl:output message="tns:GetDomainNamesSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainMembers">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The client requests from the server the members of a specific domain of information, identified by the domainName parameter, which are supported by the server.  This method is used, along with the GetDomainNames method to enable systems to exchange information about application-specific or installation-specific lists of information, such as the lists of counties for this installation or the list of serviceStatusCodes used by the server. (Optional)</documentation>
       <wsdl:input message="tns:GetDomainMembersSoapIn" />
       <wsdl:output message="tns:GetDomainMembersSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="CustomersAffectedByOutage">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Notifies MR of new outages by sending the new lists of CustomersAffectedByOutage.  MR returns status of failed tranactions in an array of errorObjects.(Opt)</documentation>
-      <wsdl:input message="tns:CustomersAffectedByOutageSoapIn" />
-      <wsdl:output message="tns:CustomersAffectedByOutageSoapOut" />
+    <wsdl:operation name="CustomersAffectedByOutageNotification">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Notifies MR of new outages by sending the new lists of CustomersAffectedByOutage.  MR returns status of failed tranactions in an array of errorObjects.(Optional)</documentation>
+      <wsdl:input message="tns:CustomersAffectedByOutageNotificationSoapIn" />
+      <wsdl:output message="tns:CustomersAffectedByOutageNotificationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="MeterConnectivityNotification">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Notifies MR of the modified connectivity of meters after a switching event used to restore load during outage situations.  MR returns status of failed tranactions in an array of errorObjects.(Opt)</documentation>
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">OA Notifies MR of the modified connectivity of meters after a switching event used to restore load during outage situations.  MR returns status of failed tranactions in an array of errorObjects.(Optional)</documentation>
       <wsdl:input message="tns:MeterConnectivityNotificationSoapIn" />
       <wsdl:output message="tns:MeterConnectivityNotificationSoapOut" />
     </wsdl:operation>
@@ -3500,15 +3502,15 @@
         <soap:header message="tns:GetDomainMembersMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="CustomersAffectedByOutage">
-      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/CustomersAffectedByOutage" style="document" />
+    <wsdl:operation name="CustomersAffectedByOutageNotification">
+      <soap:operation soapAction="http://www.multispeak.org/Version_3.0/CustomersAffectedByOutageNotification" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
-        <soap:header message="tns:CustomersAffectedByOutageMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+        <soap:header message="tns:CustomersAffectedByOutageNotificationMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
       </wsdl:input>
       <wsdl:output>
         <soap:body use="literal" />
-        <soap:header message="tns:CustomersAffectedByOutageMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
+        <soap:header message="tns:CustomersAffectedByOutageNotificationMultiSpeakMsgHeader" part="MultiSpeakMsgHeader" use="literal" />
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="MeterConnectivityNotification">
@@ -3524,7 +3526,6 @@
     </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="MR_OA">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/" />
     <wsdl:port name="MR_OASoap" binding="tns:MR_OASoap">
       <soap:address location="http://www.turtletech.com/multispeakws/27_MR_OA.asmx" />
     </wsdl:port>

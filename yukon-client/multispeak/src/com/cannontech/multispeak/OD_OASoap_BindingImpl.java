@@ -7,6 +7,8 @@
 
 package com.cannontech.multispeak;
 
+import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -99,7 +101,31 @@ public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.OD_OASoa
     public void modifyODDataForOutageDetectionDevice(com.cannontech.multispeak.OutageDetectionDevice oDDevice) throws java.rmi.RemoteException {
         init();
     }
-    
+
+	public ArrayOfErrorObject initiateODEventRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, Calendar requestDate) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfErrorObject initiateODMonitoringRequestByObject(ObjectRef objectRef, PhaseCd phaseCode, int periodicity, Calendar requestDate) throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfObjectRef displayODMonitoringRequests() throws RemoteException
+	{
+		init();
+		return null;
+	}
+
+	public ArrayOfErrorObject cancelODMonitoringRequestByObject(ArrayOfObjectRef objectRef, Calendar requestDate) throws RemoteException
+	{
+		init();
+		return null;
+	}
+	
 	private void init()
 	{
 		MultispeakFuncs.init();

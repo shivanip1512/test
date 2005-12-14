@@ -22,7 +22,7 @@ public class MR_CBLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for MR_CBSoap
-    private java.lang.String MR_CBSoap_address = "http://www.turtletech.com/multispeakws/2A_MR_CB.asmx";
+    private java.lang.String MR_CBSoap_address = "http://www.turtletech.com/multispeakws/2A_MR_cb.asmx";
 
     public java.lang.String getMR_CBSoapAddress() {
         return MR_CBSoap_address;
