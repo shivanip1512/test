@@ -63,8 +63,7 @@ else
 	for( int i = 0; i < strProgIDs.length; i++ )
 	  intVect.add( Integer.parseInt( strProgIDs[i] ) );
 }
-
-%>         
+%>
 
 <html>
 <head>
@@ -86,8 +85,8 @@ else
 		  <td width="1" bgcolor="#000000"><img src="images/VerticalRule.gif" width="1"></td>
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
-              <tr> 
-                <td colspan="4" height="74" background="images/Header.gif">&nbsp;</td>
+              <tr>
+                <td id="header" colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="images/Header.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp; 
@@ -173,8 +172,10 @@ else
                       <td width="50"><div align="center"><%= ControlAreaTableModel.COLUMN_NAMES[ControlAreaTableModel.ATKU]%></div></td>
                       <td width="40"><div align="center"><%= ControlAreaTableModel.COLUMN_NAMES[ControlAreaTableModel.PRIORITY]%></div></td>
                       <td width="75"><div align="center"><%= ControlAreaTableModel.COLUMN_NAMES[ControlAreaTableModel.TIME_WINDOW]%></div></td>
+<!--
                       <td width="97"><div align="center">Graphs</div></td>
                       <td width="83"><div align="center">Reports</div></td>
+-->
                     </tr>
 										
                     <tr valign="top">
@@ -206,7 +207,7 @@ else
 								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW) %>
 							  </td>
 					  
-					  
+<!--					  
                       <td width="97" class="TableCell"> 
                         <select name="selectGraph" onchange="location = this.options[this.selectedIndex].value;">
                           <option value="AllControlAreas.jsp">Today's Load</option>
@@ -219,6 +220,7 @@ else
                           <option></option>
                         </select>
                       </td>
+-->
                     </tr>
                   </table>
               </tr>
@@ -406,6 +408,8 @@ else
 			onclick = "showConfirmWin(this)">Daily Time Change</div>
 		<div id = "DisableProgID" name = "a_disable" onmouseover = "changeOptionStyle(this)" class = "optmenu1"
 			onclick = "showConfirmWin(this)">Enable/Disable</div>
+		<div id = "ResetPkVal" name = "a_reset_peak" onmouseover = "changeOptionStyle(this)" class = "optmenu1"
+			onclick = "showConfirmWin(this)">Reset Peak</div>
 	</div>
 	
 	<div id="progMenu" class = "bgmenu">

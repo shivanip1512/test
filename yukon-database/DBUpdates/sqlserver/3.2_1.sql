@@ -62,6 +62,65 @@ insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
 insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
 
 
+/* Steps for adding a new role with some new RoleRoperties and assigning it existing RoleProperties from an old role */
+/* 1: insert the new role */
+insert into YukonRole values(-900,'Direct Loadcontrol','Load Control','Access and usage of direct loadcontrol system');
+go
+
+/* 2: Update all refrences of the old roleID to the new role ID, then delete the old role */
+update YukonRoleProperty set roleid = -900 where roleid = -203;
+update yukongrouprole set roleid = -900 where roleid = -203;
+update yukonuserrole set roleid = -900 where roleid = -203;
+delete from YukonRole where roleid = -203;
+go
+
+/* 3: Add all RolePoperties to the new role, including the RoleProperties we are moving */
+insert into YukonRoleProperty values(-90000,-900,'Direct Loadcontrol Label','Direct Control','The operator specific name for direct loadcontrol');
+insert into YukonRoleProperty values(-90001,-900,'Individual Switch','true','Controls access to operator individual switch control');
+insert into YukonRoleProperty values(-90002,-900,'3 Tier Direct Control','false','Allows access to the 3-tier load management web interface');
+insert into YukonRoleProperty values(-90003,-900,'Direct Loadcontrol','true','Allows access to the Direct load management web interface');
+insert into YukonRoleProperty values(-90004,-900,'Constraint Check','true','Allow load management program constraints to be CHECKED before starting');
+insert into YukonRoleProperty values(-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');
+insert into YukonRoleProperty values(-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
+insert into YukonRoleProperty values(-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
+go
+
+/* 4: Update the old RoleProperties ID to the duplicate RoleProperties we have just made */
+update yukongrouprole set rolepropertyid = -90000 where rolepropertyid = -20300;
+update yukongrouprole set rolepropertyid = -90001 where rolepropertyid = -20301;
+update yukongrouprole set rolepropertyid = -90002 where rolepropertyid = -20302;
+update yukongrouprole set rolepropertyid = -90003 where rolepropertyid = -20303;
+go
+
+update yukonuserrole set rolepropertyid = -90000 where rolepropertyid = -20300;
+update yukonuserrole set rolepropertyid = -90001 where rolepropertyid = -20301;
+update yukonuserrole set rolepropertyid = -90002 where rolepropertyid = -20302;
+update yukonuserrole set rolepropertyid = -90003 where rolepropertyid = -20303;
+go
+
+/* 5: Delete the old RolePropertie */
+delete from YukonRoleProperty where rolepropertyid = -20300;
+delete from YukonRoleProperty where rolepropertyid = -20301;
+delete from YukonRoleProperty where rolepropertyid = -20302;
+delete from YukonRoleProperty where rolepropertyid = -20303;
+go
+
+/* 6: Add only the new RoleProperties to the UserRole and GroupRole mapping */
+insert into yukongrouprole values (-779,-301,-900,-90004,'(none)');
+insert into yukongrouprole values (-781,-301,-900,-90005,'(none)');
+insert into yukongrouprole values (-782,-301,-900,-90006,'(none)');
+insert into yukongrouprole values (-783,-301,-900,-90007,'(none)');
+insert into YukonGroupRole values (-1279,-2,-900,-90004,'(none)');
+insert into YukonGroupRole values (-1281,-2,-900,-90005,'(none)');
+insert into YukonGroupRole values (-1282,-2,-900,-90006,'(none)');
+insert into YukonGroupRole values (-1283,-2,-900,-90007,'(none)');
+go
+
+insert into YukonUserRole values (-779,-1,-900,-90004,'(none)');
+insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
+insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');
+insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
+go
 
 
 

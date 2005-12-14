@@ -14,6 +14,7 @@ public interface ILCCmds
 	public static final String AREA_TRIG_CHG = "a_trigger_chg";
 	public static final String AREA_DAILY_CHG = "a_daily_chg";
 	public static final String AREA_DISABLE = "a_disable";
+    public static final String AREA_RESET_PEAK = "a_reset_peak";
 	
 	//Program Commands
 	public static final String PROG_START = "p_start_prog";

@@ -34,6 +34,7 @@ public final class LMCmdMsgFactory
 	private static Date startdate = null, stopdate = null;
 	private static Double dblarray1[] = null, dblarray2[] = null;
 
+	private static String constraint = null;
 
 	/**
 	 *
@@ -42,11 +43,11 @@ public final class LMCmdMsgFactory
 	 *
 	 *Possible cmd values:
 	 * Area Commands:
-	 *    a_start_progs, a_stop_progs, 
+	 *  a_start_progs, a_stop_progs, 
 	 * 	a_trigger_chg, a_daily_chg, a_disable
 	 * 
 	 * Program Commands:
-	 *		p_start_prog, p_disable
+	 *	p_start_prog, p_disable
 	 *
 	 * Group Commands:
 	 * 	g_shed, g_restore, g_truecyc,
@@ -63,6 +64,7 @@ public final class LMCmdMsgFactory
 	 * 	stoptime -> Integer
 	 * 	dblarray1 -> Double[]
 	 * 	dblarray2 -> Double[]
+	 *  constraint -> String
 	 */
 	public static synchronized WebCmdMsg createCmdMsg( 
 			String cmdStr, Integer itemid,
@@ -70,7 +72,6 @@ public final class LMCmdMsgFactory
 			final LoadcontrolCache lcCache )
 	{
 		WebCmdMsg cmdMsg = new WebCmdMsg(cmdStr);
-		ILMData lmData = null;
 		
 		if( cmdMsg.isControlAreaMsg() )
 			return createCmdMsg( cmdMsg, lcCache.getControlArea(itemid), optionalProps );
@@ -142,7 +143,7 @@ public final class LMCmdMsgFactory
 			stoptime = (Integer)optionalProps.get("stoptime");
 			dblarray1 = (Double[])optionalProps.get("dblarray1");
 			dblarray2 = (Double[])optionalProps.get("dblarray2");
-
+			constraint = (String)optionalProps.get("constraint");
 		}			
 
 		//set the data we are operating with
@@ -213,6 +214,26 @@ public final class LMCmdMsgFactory
 			}
 
 		}
+        else if( ILCCmds.AREA_RESET_PEAK.equals(cmdMsg.getCmd()) )
+        {
+            cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
+                "Are you sure you want to reset the <font class=boldMsg>" +
+                "PEAK VALUE(S)</font> to zero for all triggers on the " + 
+                "selected CONTROL AREA?<BR>");
+
+            Multi multi = new Multi();
+            for( int i = 0; i < lmCntrArea.getTriggerVector().size(); i++ ) {            
+
+                //create the message for each trigger on the ControlArea
+                multi.getVector().add( new LMCommand( 
+                            LMCommand.RESET_PEAK_POINT_VALUE,
+                            lmCntrArea.getYukonID().intValue(),
+                            i+1, 0.0 ) );
+            }
+
+            if( multi.getVector().size() > 0 )
+                cmdMsg.setGenLCMsg( multi );
+        }
 		else if( ILCCmds.AREA_START_PROGS.equals(cmdMsg.getCmd()) )
 		{
 			cmdMsg.setHTMLTextMsg( cmdMsg.getHTMLTextMsg() +
@@ -223,7 +244,10 @@ public final class LMCmdMsgFactory
 			{
 				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
-			
+				int constID =
+					LMManualControlRequest.getConstraintID( constraint );
+
+				
 				for( int i = 0; i < lmCntrArea.getLmProgramVector().size(); i++ )
 				{
 					LMProgramBase prg = 
@@ -237,13 +261,13 @@ public final class LMCmdMsgFactory
 						multi.getVector().add( prg.createStartStopNowMsg(
 									stopdate,
 									dblarray2[i].intValue(), 
-									null, true, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+									null, true, constID) );
 					else
 						multi.getVector().add( prg.createScheduledStartMsg(
 									startdate,
 									stopdate,
 									dblarray2[i].intValue(),
-									null, null, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );					
+									null, null, constID) );					
 				}
 
 				if( multi.getVector().size() > 0 )
@@ -422,18 +446,21 @@ public final class LMCmdMsgFactory
 				
 			if( optionalProps != null )
 			{
+				int constID =
+					LMManualControlRequest.getConstraintID( constraint );
+				
 				//does the start now
 				if( startdate.equals(CtiUtilities.get1990GregCalendar().getTime()) )
 					cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
 								stopdate,
 								gearnum.intValue(), 
-								null, true, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+								null, true, constID) );
 				else
 					cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
 								startdate,
 								stopdate,
 								gearnum.intValue(),
-								null, null, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+								null, null, constID) );
 			}
 		}
 		else if( ILCCmds.PROG_STOP.equals(cmdMsg.getCmd()) )
@@ -625,6 +652,9 @@ public final class LMCmdMsgFactory
 			{
 				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
+				int constID =
+					LMManualControlRequest.getConstraintID( constraint );
+
 				LoadcontrolCache tempCache =
 					(LoadcontrolCache)optionalProps.get("local_LCCache");
 
@@ -652,7 +682,7 @@ public final class LMCmdMsgFactory
 							dblarray2[i].intValue(),
 							startdate, 
 							stopdate,
-							LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
+							constID) );
 				}
 
 				if( multi.getVector().size() > 0 )

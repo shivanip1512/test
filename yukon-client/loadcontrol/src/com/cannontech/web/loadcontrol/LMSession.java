@@ -1,6 +1,13 @@
 package com.cannontech.web.loadcontrol;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.cannontech.database.cache.functions.AuthFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 
 /**
  * @author rneuharth
@@ -24,9 +31,43 @@ public class LMSession
 	/**
 	 * 
 	 */
-	public LMSession()
-	{
+	public LMSession() {
 		super();		
+	}
+
+	public List getConstraintOptions( LiteYukonUser user ) {
+
+		ArrayList constList = new ArrayList(8);
+
+		if( AuthFuncs.checkRoleProperty( user,
+				DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
+			constList.add(
+				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
+
+		if( AuthFuncs.checkRoleProperty( user,
+				DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
+			constList.add(
+				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );	
+
+		return constList;
+	}
+
+    public boolean isOverrideAllowed( LiteYukonUser user ) {
+
+        return AuthFuncs.checkRoleProperty( user,
+                DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
+    }
+
+	public String getConstraintDefault( LiteYukonUser user ) {
+
+		//set first element to be the selection specified
+		// in our default role property
+		String defSel = 
+			AuthFuncs.getRolePropertyValue(
+				user,
+				DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION);
+
+		return defSel;
 	}
 
 	/**

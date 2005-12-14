@@ -209,7 +209,10 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	//handle any commands that we may need to send to the server from any page here
 	String cmd = req.getParameter("cmd");
 	String itemid = req.getParameter("itemid");
-	String override = req.getParameter("override");
+	String resendSyncMsgs = req.getParameter("resendSyncMsgs");
+
+    
+
 	
 	//add any optional properties here
 	optionalProps = getOptionalParams( req );
@@ -254,7 +257,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			CTILogger.warn( "LC Command was attempted but failed for the following reason:", e );
 		}
 	}
-	else if( override != null )
+	else if( resendSyncMsgs != null )
 	{
 		resendSyncMsgs( req, (Double[])optionalProps.get("dblarray1") );
 	}
@@ -283,31 +286,37 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 	if( session.getAttribute("lmSession") != null )
 	{
 		LMSession lmSess = (LMSession)session.getAttribute("lmSession");
-		
+        String buttonPressed = req.getParameter("submitChoice");
+
+        
 		try
 		{
-			if( progIds == null )
+			if( !"ok".equalsIgnoreCase(buttonPressed) )
 				return;
 
 
-			ResponseProg[] resProgArr = new ResponseProg[ progIds.length ];
+			//ResponseProg[] resProgArr = new ResponseProg[ progIds.length ];
 			
 			/* Oh well, i j loop should contain a low number of data in each */
-			for( int i = 0; i < progIds.length; i++ )
-			{
-				int progID = progIds[i].intValue();
-				for( int j = 0; j < lmSess.getResponseProgs().length; j++ )
-				{
-					if( progID == lmSess.getResponseProgs()[j].getLmProgramBase().getYukonID().intValue() )
-					{
-						resProgArr[i] = lmSess.getResponseProgs()[j];
-						break;
-					}
-				}
+			for( int i = 0; i < lmSess.getResponseProgs().length; i++ ) {
+
+                ResponseProg resProgArr = lmSess.getResponseProgs()[i];
+
+                for( int j = 0; progIds != null && j < progIds.length; j++ ) {
+                    int progID = progIds[j].intValue();
+                    
+                    if( progID == resProgArr.getLmProgramBase().getYukonID().intValue() )
+                        resProgArr.setOverride( Boolean.TRUE );
+                }
+                
+                resProgArr.getLmRequest().setConstraintFlag(
+                        resProgArr.getOverride().booleanValue()
+                        ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+                        : LMManualControlRequest.CONSTRAINTS_FLAG_USE );                
 			}
 	
-			if( resProgArr.length > 0 )	
-				LCUtils.executeSyncMessage( resProgArr );
+			if( lmSess.getResponseProgs().length > 0 )	
+				LCUtils.executeSyncMessage( lmSess.getResponseProgs() );
 		}
 		finally
 		{
@@ -343,7 +352,11 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 	ResponseProg[] programResps =
 		new ResponseProg[ multMsg.getVector().size() ];
 
-	for( int i = 0; i < multMsg.getVector().size(); i++ )
+    //if we have at least 1 check constraint set, then lets
+    // always show a result box
+    boolean isCheckConstraints = false;
+
+    for( int i = 0; i < multMsg.getVector().size(); i++ )
 	{
 		lmReqs[i] = (LMManualControlRequest)multMsg.getVector().get(i);
 
@@ -356,16 +369,38 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 		if( progBase == null )
 			CTILogger.warn( " ** A LMManualControlRequest message was sent without a defined LMProgramBase object");
 
+        isCheckConstraints |=
+            lmReqs[i].getConstraintFlag() ==
+                LMManualControlRequest.CONSTRAINTS_FLAG_CHECK;
+        
 		programResps[i] = new ResponseProg( lmReqs[i], progBase );
 	}
 
 				
 	boolean success = LCUtils.executeSyncMessage( programResps );
 	
-	if( success )
-		return null;
-	else
-		return programResps;
+	if( !success || isCheckConstraints  ) {
+        
+        //add a "Successful check" output if there are not
+        // any constraints violated
+        if( isCheckConstraints ) {
+            for( int i = 0; i < programResps.length; i++ ) {
+
+                if( programResps[i].getViolations().size() <= 0 ) {
+                    programResps[i].setAction(
+                        ResponseProg.NO_VILOATION_ACTION );
+
+                    programResps[i].getViolations().add(
+                        " No Constraints Violated");
+                }
+                
+            }                       
+        }
+        
+	    return programResps;
+    }
+    else
+        return null;
 }
 
 /**
@@ -400,6 +435,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		optionalProps.put( "duration",
 			CtiUtilities.getIntervalSecondsValue(req.getParameter("duration")) );
 
+	if( req.getParameter("constraint") != null )
+		optionalProps.put( "constraint", req.getParameter("constraint") );
 	
 	if( req.getParameter("gearnum") != null )
 		optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );

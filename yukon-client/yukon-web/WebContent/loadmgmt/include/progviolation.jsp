@@ -9,6 +9,9 @@ if( lmSession.getResponseProgs() == null )
 	return;
 }
 
+boolean isOverrideAllowed = lmSession.isOverrideAllowed(
+	(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+
 %>         
 
 <html>
@@ -68,7 +71,8 @@ if( lmSession.getResponseProgs() == null )
 			  <td>
 				<div align="center" class="boldMsg"><br>
 				  Constraint Violation Override<br>
-				  Select the constraints you would like to override
+				  Select the constraints you would like to override, or
+				  allow the constraints to be enforced
 				</div>
 			  </td>
 			  			  
@@ -76,16 +80,20 @@ if( lmSession.getResponseProgs() == null )
             </table>
 
 	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" >
-	<input type="hidden" name="override" value="true" >
+	<input type="hidden" name="resendSyncMsgs" value="true" >
 	<input type="hidden" name="redirectURL" value="<%= request.getRequestURI() + (request.getQueryString()==null?"":"?"+request.getQueryString()) %>" >
             <table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
               <tr>
                 <td width="740" valign="top" class="MainText"> 
                   <table width="744" border="1" align="center" cellpadding="2" cellspacing="0">
                     <tr valign="top" class="HeaderCell"> 
-					  <td width="168"><div align="left">
-						<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
-						Override All</div>
+					  <td width="168">
+					  	<div align="left">
+						<input type="checkbox" name="allChks" value="true"
+							<%=isOverrideAllowed ? "" : "DISABLED"%>
+							onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
+						Override All
+						</div>
   					  </td>
                       <td width="316"><div align="center"><%= ConstraintTableModel.COL_NAMES[ConstraintTableModel.COL_VIOLATION]%></div></td>					  
                     </tr>
@@ -97,7 +105,9 @@ if( lmSession.getResponseProgs() == null )
 %>
                     <tr valign="top">
                       <td width="168" class="TableCell" align="left">
-						<input type="checkbox" name="dblarray1" value=<%= prg.getLmProgramBase().getYukonID() %> >
+						<input type="checkbox" name="dblarray1"
+							<%=isOverrideAllowed ? "" : "DISABLED"%>						
+							value="<%=prg.getLmProgramBase().getYukonID()%>" >
 						<%= prg.getLmProgramBase().getYukonName() %>
 					  </td>					  
 					  <td width="316" class="TableCell" align="left">
@@ -115,7 +125,8 @@ if( lmSession.getResponseProgs() == null )
               <tr>
                 <td width="740" valign="middle" class="MainText"> 
 				<div align="center">
-					<input type="submit" name="Submit" value="Ok" class="defButton" >
+					<input type="submit" name="submitChoice" value="Resubmit" class="defButton" >
+					<input type="submit" name="submitChoice" value="Cancel" class="defButton" >
 				</div>
 				
 				</td>

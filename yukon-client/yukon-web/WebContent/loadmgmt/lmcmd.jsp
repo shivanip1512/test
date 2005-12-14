@@ -180,7 +180,7 @@ function setStopAble( radioChk )
                     <input type="text" name="startTime1"
                     	value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>"
                     	size="5" disabled />
-                    	<font class="TableCell">(HH:mm)</font>
+                   	<font class="TableCell">(HH:mm)</font>
                   </div>
               </td>
             </tr>
@@ -189,7 +189,7 @@ function setStopAble( radioChk )
         </td>
       </tr>
     </table>
-	<BR>
+	<br/>
 <%	
 	}
 	
@@ -198,6 +198,7 @@ function setStopAble( radioChk )
 		|| ILCCmds.SC_START.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) )
 	{
 %>
+
 	<div class="TableCell"> 
 	  <div align="center">Select either of the following stop options:</div>
 	</div>	
@@ -261,7 +262,33 @@ function setStopAble( radioChk )
         </td>
       </tr>
     </table>
-	<BR>
+	<br/>
+	
+	<div class="TableCell">
+		Constraint Handling:
+       <select name="constraint">
+        <%
+        	java.util.List constraints = lmSession.getConstraintOptions(
+        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+
+        	String defConstraint = lmSession.getConstraintDefault(
+        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+
+			for( int j = 0; j < constraints.size(); j++ )
+			{
+				String curr = (String)constraints.get(j);
+		%>
+          <option value="<%= curr %>"
+          		<%= (curr.equals(defConstraint) ? "selected" : "") %> >
+              <%= curr %>
+		  </option>
+        <%
+			}
+		%>
+        </select>
+	</div>
+	<br/>
+	
 <%
 	}
 
@@ -496,13 +523,16 @@ function setStopAble( radioChk )
 	  <div align="center">Select the programs you want to operate:</div>
 	</div>	
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" class="TableCell" bgcolor="#FFFFFF">
+
       <tr> 
         <td height="145"> 
           <table width="350" border="1" cellspacing="0" cellpadding="3" align="center">
 
 		  <tr valign="top" class="HeaderCell"> 
 			<td width="40"><div align="center">
-				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, document.getElementsByName('dblarray1') )">
+				<input type="checkbox" name="allChks"
+					CHECKED
+					value="true" onClick="checkAll(cmdForm.allChks, document.getElementsByName('dblarray1') )">
 				All</div>
 			</td>
 			<td width="147"><div align="center">Program</div></td>
@@ -526,7 +556,8 @@ function setStopAble( radioChk )
 %>
             <tr valign="top">
               <td width="40">
-				<input type="checkbox" name="dblarray1" value=<%= prg.getYukonID() %> >
+				<input type="checkbox" name="dblarray1" CHECKED
+					value=<%= prg.getYukonID() %> >
               </td>
               <td width="147">
                 <div class="TableCell">
@@ -579,10 +610,10 @@ function setStopAble( radioChk )
 	  <div align="center">Select the programs you want to operate:</div>
 	</div>	
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" class="TableCell" bgcolor="#FFFFFF">
+
       <tr> 
         <td height="145"> 
           <table width="350" border="1" cellspacing="0" cellpadding="3" align="center">
-
 		  <tr valign="top" class="HeaderCell"> 
 			<td width="40"><div align="center">
 				<input type="checkbox" name="allChks" value="true" onClick="checkAll(cmdForm.allChks, document.getElementsByName('dblarray1'))" checked>

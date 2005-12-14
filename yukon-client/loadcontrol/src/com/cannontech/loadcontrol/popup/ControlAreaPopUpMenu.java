@@ -35,6 +35,7 @@ public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJ
 	private javax.swing.JMenuItem jMenuItemStop = null;
 	private javax.swing.JMenuItem jMenuItemEnableProgs = null;
 	private javax.swing.JMenuItem jMenuItemDisableProgs = null;
+    private javax.swing.JMenuItem jMenuItemResetPeak = null;
 
 /**
  * ProgramPopUpMenu constructor comment.
@@ -70,6 +71,9 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 	if( e.getSource() == getJMenuItemDisableProgs() )
 		jMenuItemDisableProgs_ActionPerformed(e);
+
+    if( e.getSource() == getJMenuItemResetPeak() )
+        jMenuItemResetPeak_ActionPerformed(e);
 
 }
 
@@ -342,6 +346,33 @@ private javax.swing.JMenuItem getJMenuItemDisable()
 	
 	return jMenuItemDisable;
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (1/15/2001 9:20:50 AM)
+ * @return javax.swing.JMenuItem
+ */
+private javax.swing.JMenuItem getJMenuItemResetPeak() 
+{
+    if (jMenuItemResetPeak == null) 
+    {
+        try 
+        {
+            jMenuItemResetPeak = new javax.swing.JMenuItem();
+            jMenuItemResetPeak.setName("JMenuItemResetPeak");
+            jMenuItemResetPeak.setMnemonic('p');
+            jMenuItemResetPeak.setText("Reset Peak...");
+            jMenuItemResetPeak.setActionCommand("jMenuItemResetPeak");
+        } 
+        catch (java.lang.Throwable ivjExc) 
+        {
+            handleException(ivjExc);
+        }
+    }
+    
+    return jMenuItemResetPeak;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
@@ -401,6 +432,8 @@ private void initConnections()
 	
 	getJMenuItemEnableProgs().addActionListener(this);
 	getJMenuItemDisableProgs().addActionListener(this);
+
+    getJMenuItemResetPeak().addActionListener(this);
 }
 
 /**
@@ -422,7 +455,8 @@ private void initialize()
 		add(getJMenuItemTriggers(), getJMenuItemTriggers().getName());
 		add(getJMenuItemDialyTime(), getJMenuItemDialyTime().getName());
 		add(getJMenuItemDisable(), getJMenuItemDisable().getName());
-		
+        add(getJMenuItemResetPeak(), getJMenuItemResetPeak().getName());
+
 
 		initConnections();
 	} 
@@ -531,6 +565,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 	
 	return;
 }
+
 /**
  * Comment
  */
@@ -578,6 +613,37 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 	}
 
 	return;
+}
+
+/**
+ * Sends the Reset Peak command for this LMControlArea to the server
+ */
+private void jMenuItemResetPeak_ActionPerformed(java.awt.event.ActionEvent actionEvent)
+{
+    //send a message to the server
+    int res = JOptionPane.showConfirmDialog( this,
+            "Are you sure you want to reset the " +
+            "Peak Value(s) for all triggers to zero on the selected CONTROL AREA?",
+            "Reset Peak", 
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE );
+
+    if( res == JOptionPane.OK_OPTION )
+    {
+        
+        Multi multi = new Multi();
+        for( int i = 0; i < getLoadControlArea().getTriggerVector().size(); i++ ) {
+            multi.getVector().add(
+                new LMCommand( LMCommand.RESET_PEAK_POINT_VALUE,
+                        getLoadControlArea().getYukonID().intValue(),
+                        i+1, 0.0) );
+        }
+        
+        LoadControlClientConnection.getInstance().write( multi );
+                                    
+        fireObservedRowChanged(
+            "Control area '" + getLoadControlArea().getYukonName() +
+            "' has had its Peak reset." );
+    }
 }
 
 /**
