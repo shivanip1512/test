@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/11/18 02:14:59 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/12/15 22:27:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -321,6 +321,7 @@ int CtiProtocolLMI::recvCommRequest( OUTMESS *OutMessage )
     _first_code_block = true;
     _final_code_block = false;
     _status_read = false;
+    _codes_ready = false;
     _status_read_count = 0;
     _echoed_error_count = 0;
     _status.c = 0;
@@ -665,10 +666,12 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                             slog << RWTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
                         }
 
-                        _outbound.length  = (viable_codes.size() * 6) + 2;
+                        _outbound_code_count = viable_codes.size();
+
+                        _outbound.length  = (_outbound_code_count * 6) + 2;
                         _outbound.body_header.message_type = Opcode_SendCodes;
                         _outbound.body_header.flush_codes  = _first_code_block;
-                        _outbound.data[0] = viable_codes.size();
+                        _outbound.data[0] = _outbound_code_count;
 
                         //  if we have no more codes OR we have no more space
                         if( _codes.empty() || !slots_available || viable_codes.size() >= slots_available )
@@ -909,6 +912,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                         }
 
+                        if( _status.s.loadshed_verify_state && _status.s.loadshed_verify_complete )
+                        {
+                            _codes_ready = true;
+                        }
+
                         if( _outbound.body_header.message_type == Opcode_GetEchoedCodes &&
                             (_status.s.loadshed_codes_locked || !_status.s.loadshed_verify_state) )
                         {
@@ -919,6 +927,11 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                                 _verification_pending = false;
                                 _transaction_complete = true;
                             }
+                        }
+
+                        if( _status.s.reset )
+                        {
+                            _config_sent = 0;  //  force it to be sent again - the RTU's brain has been wiped somehow
                         }
                     }
                     else if( _inbound.body_header.message_type == Opcode_DownloadSystemData )
@@ -935,17 +948,19 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
 
                                 _verification_pending = true;
 
-                                //  the top two bits have special meaning
-                                _num_codes_loaded += _outbound.data[0] & SendCodes_CountBitmask;
-
                                 //  is this safe?
                                 _transaction_complete = _final_code_block;
 
+                                //  _outbound_code_count exists only to keep the code count in a
+                                //    known location from generate() to decode() instead of trying
+                                //    to pull it out of _outbound.data[0]...  that would be gross, dude
+                                _num_codes_loaded += _outbound_code_count;
+
                                 _last_code_download = RWTime::now().seconds();
 
-                                _transmission_end   = RWTime::now().seconds();
-                                _transmission_end  -= _transmission_end % (_tick_time * 60);
-                                _transmission_end  += _time_offset;
+                                _transmission_end  = RWTime::now().seconds();
+                                _transmission_end -= _transmission_end % (_tick_time * 60);
+                                _transmission_end += _time_offset;
 
                                 while( _transmission_end < RWTime::now().seconds() )
                                 {
@@ -1095,7 +1110,19 @@ int CtiProtocolLMI::decode( CtiXfer &xfer, int status )
                             {
                                 if( _preload_sequence )
                                 {
-                                    _command = Command_ReadEchoedCodes;
+                                    if( _codes_ready )
+                                    {
+                                        _command = Command_ReadEchoedCodes;
+                                    }
+                                    else
+                                    {
+                                        _command = Command_ClearEchoedCodes;
+
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << RWTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+                                    }
                                 }
                                 else
                                 {

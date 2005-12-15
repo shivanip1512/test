@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/11/18 02:14:51 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2005/12/15 22:27:11 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ private:
 
     pointlist_t _lmi_statuses;
 
-    unsigned int  _num_codes_retrieved, _num_codes_loaded;
+    unsigned int  _num_codes_retrieved, _num_codes_loaded, _outbound_code_count;
     unsigned long _config_sent;
     unsigned long _last_code_download;
     unsigned long _comm_end_time, _transmission_end;
@@ -177,6 +177,7 @@ private:
     } _status;
 
     bool _status_read;
+    bool _codes_ready;
     int  _status_read_count;
     int  _echoed_error_count;
 
