@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2005/04/13 14:47:11 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2005/12/15 22:02:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,19 @@ void Application::setCommand( FunctionCode fc )
 
     _ioState    = Output;
     _retryState = Output;
+    _comm_errors = 0;
+}
+
+
+void Application::initUnsolicited( void )
+{
+    eraseInboundObjectBlocks();
+    eraseOutboundObjectBlocks();
+
+    _final_frame_received = false;
+
+    _ioState    = Input;
+    _retryState = Input;
     _comm_errors = 0;
 }
 

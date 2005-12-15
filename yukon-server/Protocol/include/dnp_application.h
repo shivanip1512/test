@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/03/10 21:15:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/15 22:02:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,6 +159,8 @@ public:
     void setCommand( FunctionCode fc );
     void addObjectBlock( const ObjectBlock *obj );
     void initForOutput( void );
+
+    void initUnsolicited( void );
 
     //  comm functions
     int generate( CtiXfer &xfer );
