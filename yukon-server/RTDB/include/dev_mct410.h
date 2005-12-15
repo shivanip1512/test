@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2005/12/07 22:15:08 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2005/12/15 22:32:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,6 +228,13 @@ protected:
         FuncRead_TOUDaySchedulePos   = 0xAD,
         FuncRead_TOUDayScheduleLen   =   11,
 
+        FuncRead_TOUStatusPos           = 0xad,
+        FuncRead_TOUStatusLen           =   11,
+        FuncRead_TOUSwitchSchedule12Pos = 0xae,
+        FuncRead_TOUSwitchSchedule12Len =   13,
+        FuncRead_TOUSwitchSchedule34Pos = 0xaf,
+        FuncRead_TOUSwitchSchedule34Len =   13,
+
         FuncRead_DisconnectConfigPos = 0xfe,
         FuncRead_DisconnectConfigLen =    9,
 
@@ -311,8 +318,8 @@ protected:
         MCT410_Min_NewOutageRev =    8,
         MCT410_Max_NewOutageRev =   30,
 
-        MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000
-                                              //  if 81c99f60 is Rogue Wave's jan 1, 1970
+        MCT4XX_DawnOfTime       = 0x386d4380  //  jan 1, 2000, in UTC seconds
+
     };
 
     //  this is more extensible than a pair
@@ -434,6 +441,7 @@ public:
     INT decodeScanLoadProfile               ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusInternal             ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetStatusLoadProfile          ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
+    INT decodeGetConfigTOU                  ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigTime                 ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigCentron              ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
     INT decodeGetConfigIntervals            ( INMESS *InMessage, RWTime &TimeNow, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList );
