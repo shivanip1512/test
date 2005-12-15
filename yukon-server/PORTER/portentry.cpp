@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2005/06/13 19:09:26 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2005/12/15 21:16:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,7 +93,14 @@ using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
-extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > DNPUDPOutMessageQueue;
+
+namespace Cti { namespace Porter { namespace DNPUDP {
+
+    extern CtiQueue< CtiOutMessage, less<CtiOutMessage> > OutMessageQueue;
+}
+}
+}
+
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -343,7 +350,7 @@ VOID ConnectionThread (VOID *Arg)
         }
         else if( OutMessage->MessageFlags & MSGFLG_ROUTE_TO_PORTER_DNPUDP_THREAD )
         {
-            DNPUDPOutMessageQueue.putQueue( OutMessage );
+            Cti::Porter::DNPUDP::OutMessageQueue.putQueue( OutMessage );
 
             continue;
         }
@@ -1371,12 +1378,14 @@ INT BuildMessage( OUTMESS *&OutMessage, OUTMESS *&SendOutMessage )
 
         SendOutMessage->TimeOut = TIMEOUT + OutMessage->Buffer.BSt.DlcRoute.Stages * (wordCount + 1);
 
-        if(OutMessage->Buffer.BSt.IO & 0x01)
+        if(OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read)
         {
             SendOutMessage->OutLength = PREAMLEN + BWORDLEN + 3;
         }
         else
+        {
             SendOutMessage->OutLength = PREAMLEN + BWORDLEN + wordCount * CWORDLEN + 3;
+        }
 
         /* build preamble message */
         BPreamble (SendOutMessage->Buffer.OutMessage + PREIDLEN, OutMessage->Buffer.BSt, wordCount);
