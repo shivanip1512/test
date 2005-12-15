@@ -1373,7 +1373,7 @@ void  CtiCommandParser::doParseGetConfig(const RWCString &CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
 {
-    RWCRExpr  re_tou("tou [0-9]+ (schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    RWCRExpr  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
 
     RWCString temp2;
     RWCString token;
@@ -1434,7 +1434,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                 token = tok();
 
                 int schedulenum = 0;
-                while( token.compareTo("schedule") )
+                while( !token.compareTo("schedule") )
                 {
                     string schedule_name;
                     schedule_name.assign("tou_schedule_");
@@ -1443,13 +1443,15 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                     //  even if there are no rates supplied, we did successfully parse it
                     _cmd[schedule_name.data()] = CtiParseValue(atoi(tok().data()));
 
+                    token = tok();
+
                     int changenum = 0;
                     while(!token.match("[a-z]/[0-9]+:[0-9]+").isNull())
                     {
                         string change_name;
-                        change_name.assign(tou_schedule);
+                        change_name.assign(schedule_name);
                         change_name.append("_");
-                        change_name.append(CtiNumStr(schedulenum).zpad(2));
+                        change_name.append(CtiNumStr(changenum).zpad(2));
 
                         _cmd[change_name.data()] = CtiParseValue(token);
 
@@ -1461,7 +1463,7 @@ void  CtiCommandParser::doParsePutConfig(const RWCString &CmdStr)
                     schedulenum++;
                 }
 
-                if( token.compareTo("default") )
+                if( !token.compareTo("default") )
                 {
                     _cmd["tou_default"] = CtiParseValue(tok());
                 }
