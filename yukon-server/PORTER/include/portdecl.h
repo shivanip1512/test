@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/10/04 20:16:42 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/12/15 22:01:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,19 @@ VOID RouterThread (PVOID);
 
 VOID PorterInterfaceThread (PVOID);
 VOID PorterGWThread (PVOID);
-VOID DNPUDPInboundThread (PVOID);
+
+//  this is a bit ugly, but as we convert to namespaces, it'll get nicer
+namespace Cti {
+namespace Porter {
+namespace DNPUDP {
+
+    VOID ExecuteThread (PVOID);
+
+}
+}
+};
+
+
 
 /*  */
 VOID PortThread(void *);

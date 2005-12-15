@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2005/10/04 20:15:45 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2005/12/15 22:00:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -830,7 +830,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     if(DO_DNPUDPTHREAD)
     {
-        _dnpudpThread = rwMakeThreadFunction( DNPUDPInboundThread, (void*)NULL );
+        //  once created, the Inbound thread creates and manages the other threads that the UDP code uses
+        _dnpudpThread = rwMakeThreadFunction( Cti::Porter::DNPUDP::ExecuteThread, (void*)NULL );
         _dnpudpThread.start();
     }
 
