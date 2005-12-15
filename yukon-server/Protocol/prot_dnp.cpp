@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/11/21 19:21:46 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/12/15 22:03:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,8 @@ namespace Protocol  {
 using namespace Cti::Protocol::DNP;
 
 DNPInterface::DNPInterface() :
-    _io_state(IOState_Uninitialized)
+    _io_state(IOState_Uninitialized),
+    _command(Command_Invalid)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
@@ -194,6 +195,18 @@ int DNPInterface::generate( CtiXfer &xfer )
 
                 break;
             }
+            case Command_Loopback:
+            {
+                _app_layer.setCommand(Application::RequestRead);
+
+                break;
+            }
+            case Command_Unsolicited:
+            {
+                //  special case
+
+                break;
+            }
             case Command_Class0Read:
             {
                 _app_layer.setCommand(Application::RequestRead);
@@ -297,7 +310,6 @@ int DNPInterface::generate( CtiXfer &xfer )
                     }
 
                     bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::ControlRelayOutputBlock);
-
                     bout->setControlBlock(op.dout.on_time,
                                           op.dout.off_time,
                                           op.dout.count,
@@ -333,8 +345,15 @@ int DNPInterface::generate( CtiXfer &xfer )
             }
         }
 
-        //  finalize the request
-        _app_layer.initForOutput();
+        if( _command == Command_Unsolicited )
+        {
+            _app_layer.initUnsolicited();
+        }
+        else
+        {
+            //  finalize the request
+            _app_layer.initForOutput();
+        }
     }
 
     return _app_layer.generate(xfer);
@@ -365,9 +384,11 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             case Command_SetDigitalOut_SBO_SelectOnly:
             case Command_SetDigitalOut_SBO_Operate:
             {
-                const ObjectBlock *ob = _object_blocks.front();
+                const ObjectBlock *ob;
 
-                if( ob &&
+                if( !_object_blocks.empty() &&
+                    (ob = _object_blocks.front()) &&
+                    !ob->empty() &&
                     ob->getGroup()     == BinaryOutputControl::Group &&
                     ob->getVariation() == BinaryOutputControl::ControlRelayOutputBlock )
                 {
@@ -438,9 +459,11 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
             case Command_ReadTime:
             {
-                const ObjectBlock *ob = _object_blocks.front();
+                const ObjectBlock *ob;
 
-                if( ob &&
+                if( !_object_blocks.empty() &&
+                    (ob = _object_blocks.front()) &&
+                    !ob->empty() &&
                     ob->getGroup()     == DNP::Time::Group &&
                     ob->getVariation() == DNP::Time::TimeAndDate )
                 {
@@ -479,10 +502,17 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 _string_results.push_back(CTIDBG_new string("Time sync sent"));
             }
 
-            /*default:
+            case Command_Loopback:
+            {
+                _string_results.push_back(CTIDBG_new string("Loopback successful"));
+
+                break;
+            }
+
+            default:
             {
                 break;
-            }*/
+            }
         }
 
         //  and this is where the pointdata gets harvested
@@ -534,7 +564,7 @@ bool DNPInterface::isTransactionComplete( void )
 {
     //  ACH: factor in application layer retries... ?
 
-    return _command == Command_Complete;
+    return _command == Command_Complete || _command == Command_Invalid;
 }
 
 
