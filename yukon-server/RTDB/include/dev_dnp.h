@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/10/19 02:50:24 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2005/12/15 22:11:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,6 +104,8 @@ public:
 
     int sendCommRequest( OUTMESS *&OutMessage, RWTPtrSlist< OUTMESS > &outList );
     int recvCommRequest( OUTMESS *OutMessage );
+
+    void initUnsolicited();
 
     virtual int generate(CtiXfer &xfer);
     virtual int decode(CtiXfer &xfer, int status);

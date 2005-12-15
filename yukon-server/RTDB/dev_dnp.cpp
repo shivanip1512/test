@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2005/11/04 15:08:49 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2005/12/15 22:11:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -193,6 +193,13 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 
     switch( parse.getCommand() )
     {
+        case LoopbackRequest:
+        {
+            command = Protocol::DNPInterface::Command_Loopback;
+
+            break;
+        }
+
         case ControlRequest:
         {
             CtiPointBase   *point   = NULL;
@@ -444,7 +451,6 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
         case GetValueRequest:
         case GetStatusRequest:
         case PutStatusRequest:
-        case LoopbackRequest:
         default:
         {
             {
@@ -598,6 +604,12 @@ int DNP::recvCommRequest( OUTMESS *OutMessage )
     }
 
     return retVal;
+}
+
+
+void DNP::initUnsolicited()
+{
+    _dnp.setCommand(Protocol::DNPInterface::Command_Unsolicited);
 }
 
 
