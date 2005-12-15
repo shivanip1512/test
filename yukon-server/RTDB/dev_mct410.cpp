@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/12/07 22:15:08 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/12/15 17:52:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1036,9 +1036,8 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
     INT status = NORMAL;
 
     int ioType, location;
-    if(restoreMessageRead(InMessage, ioType, location))
+    if( restoreMessageRead(InMessage, ioType, location) )
     {
-       
         int foundAddress, foundLength = 0;
         CtiTableDynamicPaoInfo::Keys foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
 
@@ -1051,11 +1050,11 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             {
                 getDynamicPaoAddressing(searchLocation, foundAddress, foundLength, foundKey);
 
-                if(foundAddress >=0 && foundLength >0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
+                if( foundAddress >= 0 && foundLength > 0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
                    && (foundAddress - location + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
                 {
                     unsigned long value = 0;
-                    for(int i=0;i<foundLength;i++)
+                    for( int i=0; i < foundLength; i++ )
                     {
                         value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress-location+foundLength-1)-i]) << (i*8));
                     }
@@ -1067,9 +1066,9 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
                 }
 
-            }while(foundKey != CtiTableDynamicPaoInfo::Key_Invalid);
+            }while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
         }
-        else if(ioType == Emetcon::IO_Function_Read)
+        else if( ioType == Emetcon::IO_Function_Read )
         {
             int searchLocation = 0;
 
@@ -1077,13 +1076,13 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
             {
                 getDynamicPaoFunctionAddressing(location, searchLocation, foundAddress, foundLength, foundKey);
 
-                if(foundAddress >=0 && foundLength >0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid
-                   && (searchLocation + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
+                if( foundAddress >= 0 && foundLength > 0 && foundKey != CtiTableDynamicPaoInfo::Key_Invalid && 
+                    (searchLocation + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8 )
                 {
                     unsigned long value = 0;
-                    for(int i=0;i<foundLength;i++)
+                    for( int i=0; i<foundLength; i++)
                     {
-                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress+foundLength-1)-i]) << (i*8));
+                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress + foundLength-1)-i]) << (i*8));
                     }
                     CtiDeviceBase::setDynamicInfo(foundKey, value);
                     searchLocation = foundAddress+1;
@@ -1093,7 +1092,7 @@ INT CtiDeviceMCT410::ResultDecode(INMESS *InMessage, RWTime &TimeNow, RWTPtrSlis
                     foundKey = CtiTableDynamicPaoInfo::Key_Invalid;
                 }
 
-            }while(foundKey != CtiTableDynamicPaoInfo::Key_Invalid);
+            }while( foundKey != CtiTableDynamicPaoInfo::Key_Invalid );
         }
     }
 
@@ -2005,11 +2004,11 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
-    if(deviceConfig)
+    if( deviceConfig )
     {
         BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDemandLP);
 
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDemandLP)
+        if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDemandLP )
         {
             long demand, loadProfile, voltageDemand, voltageLoadProfile;
 
@@ -2019,7 +2018,7 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             voltageDemand = config->getLongValueFromKey(VoltageDemandInterval);
             voltageLoadProfile = config->getLongValueFromKey(VoltageLPInterval);
 
-            if(demand == numeric_limits<long>::min() || loadProfile == numeric_limits<long>::min() || voltageDemand == numeric_limits<long>::min() || voltageLoadProfile== numeric_limits<long>::min())
+            if( demand == numeric_limits<long>::min() || loadProfile == numeric_limits<long>::min() || voltageDemand == numeric_limits<long>::min() || voltageLoadProfile== numeric_limits<long>::min())
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2027,10 +2026,11 @@ int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandPars
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval) != demand
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval) != voltageDemand
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
+                if( parse.isKeyValid("force") 
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval)        != demand
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval)   != loadProfile
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval)     != voltageDemand
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
                 {
                     OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
                     OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen;
@@ -2185,11 +2185,11 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
-    if(deviceConfig)
+    if( deviceConfig )
     {
         BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDisconnect);
 
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDisconnect)
+        if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDisconnect )
         {
             long threshold, delay;
 
@@ -2197,7 +2197,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             threshold = config->getLongValueFromKey(DemandThreshold);
             delay = config->getLongValueFromKey(ConnectDelay);
 
-            if(threshold == numeric_limits<long>::min() || delay == numeric_limits<long>::min() )
+            if( threshold == numeric_limits<long>::min() || delay == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2205,8 +2205,9 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay) != delay )
+                if(parse.isKeyValid("force") 
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)    != delay )
                 {
                     OutMessage->Buffer.BSt.Function   = FuncWrite_DisconnectConfigPos;
                     OutMessage->Buffer.BSt.Length     = FuncWrite_DisconnectConfigLen;
@@ -2244,11 +2245,11 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
 
-    if(deviceConfig)
+    if( deviceConfig )
     {
         BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTOptions);
 
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTOptions)
+        if( tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTOptions )
         {
             long options, configuration, outage, timeAdjustTolerance, event1mask, event2mask, meterAlarmMask;
             USHORT function, length, io;
@@ -2262,7 +2263,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             outage = config->getLongValueFromKey(OutageCycles);
             timeAdjustTolerance = config->getLongValueFromKey(TimeAdjustTolerance);
 
-            if(!getOperation(Emetcon::PutConfig_Options, function, length, io))
+            if( !getOperation(Emetcon::PutConfig_Options, function, length, io) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - Operation PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2278,11 +2279,12 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) != options
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event1mask 
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2) != event2mask
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask) != meterAlarmMask
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration )
+                if( parse.isKeyValid("force") 
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options)         != options
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event1mask 
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2) != event2mask
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)  != meterAlarmMask
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration)   != configuration )
                 {
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
@@ -2308,7 +2310,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 }
             }
 
-            if(!getOperation(Emetcon::PutConfig_Outage, function, length, io))
+            if( !getOperation(Emetcon::PutConfig_Outage, function, length, io) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - Operation PutConfig_Outage not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2323,7 +2325,8 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
+                if( parse.isKeyValid("force") 
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
                 {
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
@@ -2339,7 +2342,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
                 }
             }
 
-            if(!getOperation(Emetcon::PutConfig_TimeAdjustTolerance, function, length, io))
+            if( !getOperation(Emetcon::PutConfig_TimeAdjustTolerance, function, length, io) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2354,7 +2357,8 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             }
             else
             {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                if( parse.isKeyValid("force") 
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
                     OutMessage->Buffer.BSt.Function   = function;
                     OutMessage->Buffer.BSt.Length     = length;
