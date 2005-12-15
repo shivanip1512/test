@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2005/11/08 23:50:04 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2005/12/15 22:27:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,6 +185,7 @@ public:
         GetConfig_Options,
         GetConfig_GroupAddress,
         GetConfig_Disconnect,
+        GetConfig_TOU,
         GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
                                       //    commands like this one, i don't like this being a big mess of non-general commands
 
@@ -220,6 +221,7 @@ public:
         PutConfig_Options,
         PutConfig_Outage,
         PutConfig_TimeAdjustTolerance,
+        PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
 
         PutConfig_ARMC,
         PutConfig_ARML,  //  these used to be "Control_ARML," etc - I wanted to make them consistent...
