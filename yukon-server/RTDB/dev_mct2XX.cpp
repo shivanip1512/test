@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2005/10/19 02:50:23 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2005/12/15 22:30:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,7 +289,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, RWTime &TimeNow, RWTPt
         }
         else
         {
-            resultString = getName() + " / KYZ 1 = " + CtiNumStr(mread) + "  --  POINT UNDEFINED IN DB";
+            resultString = getName() + " / Meter Reading = " + CtiNumStr(mread) + "  --  POINT UNDEFINED IN DB";
             ReturnMsg->setResultString(resultString);
         }
 
