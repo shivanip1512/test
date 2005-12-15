@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/04/11 20:08:33 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2005/12/15 22:29:49 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "dev_repeater800.h"
 #include "logger.h"
 #include "mgr_point.h"
+#include "pt_numeric.h"
 #include "porter.h"
 #include "utility.h"
 #include "numstr.h"
@@ -160,18 +161,29 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, RWTime &TimeN
       }
 
       {
-         RWCString resultString;
+         RWCString resultString, pointString;
+         double value;
 
          LockGuard guard(monitor());               // Lock the MCT device!
          CtiPointBase *pPoint;
 
-         resultString = getName() + " / powerfail count = " + CtiNumStr((int)pfCount);
-
-         pData = CTIDBG_new CtiPointDataMsg(20, (double)pfCount, NormalQuality, PulseAccumulatorPointType, resultString);
-         if(pData != NULL)
+         if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
          {
-            ReturnMsg->PointData().insert(pData);
-            pData = NULL;  // We just put it on the list...
+             value = ((CtiPointNumeric*)pPoint)->computeValueForUOM(pfCount);
+
+             pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  ((CtiPointNumeric *)pPoint)->getPointUnits().getDecimalPlaces());
+
+             if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
+             {
+                 ReturnMsg->PointData().insert(pData);
+                 pData = NULL;  // We just put it on the list...
+             }
+         }
+         else
+         {
+             resultString += getName() + " / Blink Counter = " + CtiNumStr(pfCount) + "\n";
+
+             ReturnMsg->setResultString(resultString);
          }
       }
 
