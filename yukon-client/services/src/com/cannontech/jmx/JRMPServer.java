@@ -1,9 +1,12 @@
 package com.cannontech.jmx;
 
+import java.io.IOException;
 import java.sql.*;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import javax.management.*;
+
+import mx4j.tools.adaptor.http.HttpAdaptor;
+import mx4j.tools.adaptor.http.XSLTProcessor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
@@ -81,8 +84,25 @@ public class JRMPServer
 			}
 			
 			//make the people aware
-			if( cnt == 0 )
-				CTILogger.info( " Started ZERO(0) YukonService's from the Database" );		
+			if( cnt == 0 ) {
+                CTILogger.info( " Started ZERO(0) YukonService's from the Database" );
+            }	
+            
+            // start the http adapter
+//            try {
+//                XSLTProcessor outputProcessor = new XSLTProcessor();
+//                ObjectName xsltProcessorName = new ObjectName("server:name=XsltProcessor");
+//                HttpAdaptor httpAdaptor = new HttpAdaptor();
+//                ObjectName httpName = new ObjectName("server:name=HttpAdaptor");
+//                server.registerMBean(httpAdaptor, httpName);
+//                httpAdaptor.setPort(8081);
+//                final String name = XSLTProcessor.class.getName();
+//                httpAdaptor.setProcessorClass(name);
+//                httpAdaptor.setProcessorNameString("server:name=XsltProcessor");
+//                httpAdaptor.start();
+//            } catch (Exception e) {
+//                CTILogger.error("Unable to start Http JMX Adapter", e);
+//            }
          
 		}
 		catch(SQLException e ) 
