@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2005/11/23 15:27:43 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2005/12/16 16:18:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -195,6 +195,8 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setControlType( const RWCStr
 {
     setDirty();
     _controlType = ct;
+    if(_controlType.length() > 128) _controlType.resize(128);       // Make certain the table can be written.
+
     return *this;
 }
 
@@ -929,9 +931,10 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["reductionvalue"].assign( getReductionValue() );
 
     long rowsAffected;
-    RWDBStatus stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    RWDBStatus stat(RWDBStatus::ok);
+    RWDBStatus::ErrorCode ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
 
-    if( stat.errorCode() != RWDBStatus::ok || rowsAffected <= 0)
+    if( ec != RWDBStatus::ok || rowsAffected <= 0)
     {
         stat = InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }
