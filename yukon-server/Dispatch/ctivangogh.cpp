@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2005/12/16 16:23:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/toolpro/inetaddr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
+#include <rw/re.h>
+#undef mask_
 
 
 #include "collectable.h"
@@ -181,6 +183,24 @@ RWCString AlarmTagsToString(UINT tags)
     }
 
     return rstr;
+}
+RWCString& TrimAlarmTagText(RWCString& text)
+{
+    RWCString rstr(" Alarm ");
+    RWCString temp;
+    temp = rstr + gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
+    text.replace(temp,"");
+
+    temp = rstr + gConfigParms.getValueAsString("DISPATCH_UNACK_ALARM_TEXT", "Unacknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_INACTIVE_ALARM_TEXT", "Condition Inactive") + ")";
+    text.replace(temp,"");
+
+    temp = rstr + gConfigParms.getValueAsString("DISPATCH_ACK_ALARM_TEXT", "Acknowledged") + " (" + gConfigParms.getValueAsString("DISPATCH_ACTIVE_ALARM_TEXT", "Condition Active") + ")";
+    text.replace(temp,"");
+
+    temp = rstr + "Cleared";
+    text.replace(temp,"");
+
+    return text;
 }
 
 void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
@@ -2633,31 +2653,41 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                 {
                     conn.beginTransaction(signals);
 
-                    do
+                    try
                     {
-                        sigMsg = _signalMsgQueue.getQueue(0);
-
-                        if(sigMsg != NULL)
+                        do
                         {
-                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
+                            sigMsg = _signalMsgQueue.getQueue(0);
 
-                            if(!sigMsg->getText().isNull() || !sigMsg->getAdditionalInfo().isNull())
+                            if(sigMsg != NULL)
                             {
-                                // No text, no point then is there now?
-                                sig.Insert(conn);
+                                CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
+
+                                if(!sigMsg->getText().isNull() || !sigMsg->getAdditionalInfo().isNull())
+                                {
+                                    // No text, no point then is there now?
+                                    sig.Insert(conn);
+                                }
+
+                                if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
+                                {
+                                    postList.insert(sigMsg);
+                                }
+                                else
+                                {
+                                    delete sigMsg;
+                                }
                             }
 
-                            if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
-                            {
-                                postList.insert(sigMsg);
-                            }
-                            else
-                            {
-                                delete sigMsg;
-                            }
+                        } while( conn.isValid() && sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-
-                    } while( conn.isValid() && sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
+                    }
 
                     conn.commitTransaction(signals);
                 }
@@ -5637,11 +5667,21 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
 
         conn.beginTransaction(raw);
 
-        while( conn.isValid() && ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+        try
         {
-            panicCounter++;
-            pTblEntry->Insert(conn);
-            delete pTblEntry;
+            while( conn.isValid() && ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+            {
+                panicCounter++;
+                pTblEntry->Insert(conn);
+                delete pTblEntry;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
         conn.commitTransaction(raw);
@@ -6148,7 +6188,7 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointB
         }
 
         pSigActive->setTags( sigtags );
-        pSigActive->setText( pSigActive->getText() + AlarmTagsToString(pSigActive->getTags()) );
+        pSigActive->setText( TrimAlarmTagText((RWCString&)pSigActive->getText()) + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6173,7 +6213,7 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         }
 
         pSigActive->setTags( sigtags );
-        pSigActive->setText( pSigActive->getText() + AlarmTagsToString(pSigActive->getTags()) );
+        pSigActive->setText( TrimAlarmTagText((RWCString&)pSigActive->getText()) + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6191,7 +6231,7 @@ void CtiVanGogh::reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
         pDyn->getDispatch().setTags( _signalManager.getTagMask(point.getID()) );
 
         pSigActive->setTags( (pDyn->getDispatch().getTags() & ~MASK_ANY_ALARM) | TAG_REPORT_MSG_TO_ALARM_CLIENTS | TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL );
-        pSigActive->setText( pSigActive->getText() + AlarmTagsToString(pSigActive->getTags()) );
+        pSigActive->setText( TrimAlarmTagText((RWCString&)pSigActive->getText()) + AlarmTagsToString(pSigActive->getTags()) );
         pSigActive->setMessageTime( RWTime() );
 
         aWrap.getMulti()->insert( pSigActive );
@@ -6243,7 +6283,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointBase *&pPt, const CtiCommand
                 }
 
                 pSigNew->setTags( sigtags );
-                pSigNew->setText( pSigNew->getText() + AlarmTagsToString(pSigNew->getTags()) );
+                pSigNew->setText( TrimAlarmTagText((RWCString&)pSigNew->getText()) + AlarmTagsToString(pSigNew->getTags()) );
 
                 if( !pPt->getAlarming().getNotifyOnAcknowledge() )
                 {
