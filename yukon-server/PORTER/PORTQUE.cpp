@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2005/12/16 16:21:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1026,6 +1026,16 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     }
 #endif
 
+    // 20051129 CGP.  Should never have all info saying no queue entries and the INLGRPQ status preventing loading the queue.
+    if(pInfo->ReadyN == 32 && pInfo->GetStatus(INLGRPQ))
+    {
+        pInfo->ClearStatus(INLGRPQ);
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " CCU reports 32 command slots available on device \"" << Dev->getName() << "\".  INLGRPQ must be cleared." << endl;
+        }
+    }
+
     if((InMessage->IDLCStat[5] & 0x007f) == CMND_RCOLQ)
     {
         pInfo->ClearStatus(INRCOLQ);
@@ -1127,6 +1137,12 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
                         {
                             IDLCRColQ(Dev);
                             break;
+                        }
+                        else if(pInfo->QueTable[i].TimeSent == -1L)
+                        {
+                            // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
+                            pInfo->QueTable[i].TimeSent = nowtime;
+                            sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
                         }
                         else
                         {
