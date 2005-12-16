@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/07/19 22:48:54 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/12/16 16:22:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -785,7 +785,7 @@ void CtiConnection::ShutdownConnection()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "OutThread refuses to join   after 2 seconds. " << who() << endl;
                     }
-                    outthread_.terminate();
+                    // 20051201 CGP... NOT GOOD // outthread_.terminate();
                 }
             }
 
@@ -807,7 +807,7 @@ void CtiConnection::ShutdownConnection()
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "InThread refuses to join  after 2 seconds. " << who() << endl;
                     }
-                    inthread_.terminate();
+                    // 20051201 CGP... NOT GOOD // inthread_.terminate();
                 }
             }
 
