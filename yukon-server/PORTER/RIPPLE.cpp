@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2005/10/19 19:12:19 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2005/12/16 16:26:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1670,7 +1670,7 @@ INT QueueForScan( CtiDeviceLCU *lcu, bool mayqueuescans )
 
             if(ScanOutMessage != NULL)
             {
-                ScanOutMessage->Priority = MAXPRIORITY - 1;  // This is the only thing that really matters now.
+                ScanOutMessage->Priority = gConfigParms.getValueAsULong("RIPPLE_FASTSCAN_PRIORITY", MAXPRIORITY - 1);  // This is the only thing that really matters now.
 
                 if(PortManager.writeQueue(ScanOutMessage->Port, ScanOutMessage->EventCode, sizeof (*ScanOutMessage), (char *) ScanOutMessage, MAXPRIORITY - 1))
                 {
