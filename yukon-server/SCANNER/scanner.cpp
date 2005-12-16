@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2005/10/19 19:11:30 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2005/12/16 16:26:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -856,43 +856,53 @@ VOID ResultThread (VOID *Arg)
 
             if(pBase && pBase->isSingle())
             {
-                DeviceRecord = (CtiDeviceSingle*)pBase.get();
+                try
+                {
+                    DeviceRecord = (CtiDeviceSingle*)pBase.get();
 
-                /* get the time for use in the decodes */
-                TimeNow = RWTime();
+                    /* get the time for use in the decodes */
+                    TimeNow = RWTime();
 
-                // Do some device dependent work on this Inbound message!
-                DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
+                    // Do some device dependent work on this Inbound message!
+                    DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
-                // Send any CTIDBG_new porter requests to porter
-                if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.entries() > 0)
+                    // Send any CTIDBG_new porter requests to porter
+                    if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.entries() > 0)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    MakePorterRequests(outList);
+
+                    // Write any results generated back to VanGogh
+                    while(retList.entries())
+                    {
+                        VanGoghConnection.WriteConnQue(retList.get());   // I no longer manage this, the queue cleans up!
+                    }
+
+                    // Write any signals or misc. messages back to VanGogh!
+                    while(vgList.entries())
+                    {
+                        VanGoghConnection.WriteConnQue((CtiMessage*)vgList.get());   // I no longer manage this, the queue cleans up!
+                    }
+
+                    /* Check if we should kick other thread in the pants */
+                    if(DeviceRecord->getScanRate(ScanRateGeneral) == 0)
+                    {
+                        // FIX FIX FIX This needs a CTIDBG_new IPC with PORTER.. No DB connection anymore!
+                        DeviceRecord->setNextScan(ScanRateGeneral, TimeNow.now());
+                        SetEvent(hScannerSyncs[S_SCAN_EVENT]);
+                    }
+                }
+                catch(...)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                }
-
-                MakePorterRequests(outList);
-
-                // Write any results generated back to VanGogh
-                while(retList.entries())
-                {
-                    VanGoghConnection.WriteConnQue(retList.get());   // I no longer manage this, the queue cleans up!
-                }
-
-                // Write any signals or misc. messages back to VanGogh!
-                while(vgList.entries())
-                {
-                    VanGoghConnection.WriteConnQue((CtiMessage*)vgList.get());   // I no longer manage this, the queue cleans up!
-                }
-
-                /* Check if we should kick other thread in the pants */
-                if(DeviceRecord->getScanRate(ScanRateGeneral) == 0)
-                {
-                    // FIX FIX FIX This needs a CTIDBG_new IPC with PORTER.. No DB connection anymore!
-                    DeviceRecord->setNextScan(ScanRateGeneral, TimeNow.now());
-                    SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                 }
             }
             else if(pBase && !pBase->isSingle())
