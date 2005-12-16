@@ -2,6 +2,7 @@ package com.cannontech.database.db.customer;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.device.lm.LMProgramCurtailCustomerList;
+import com.cannontech.database.SqlStatement;
 
 /**
  * This type was created in VisualAge.
@@ -399,4 +400,25 @@ public class CICustomerBase extends com.cannontech.database.db.DBPersistent
 		this.mainAddressID = mainAddressID;
 	}
 
+    public static String getCompanyNameFromDB(int custID)
+    {
+        
+        SqlStatement stmt = new SqlStatement("SELECT COMPANYNAME FROM " + TABLE_NAME + " WHERE CUSTOMERID = " + custID, CtiUtilities.getDatabaseAlias());
+        
+        try
+        {
+            stmt.execute();
+            
+            if( stmt.getRowCount() > 0 )
+            {
+                return stmt.getRow(0)[0].toString();
+            }
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
+        
+        return "Not Available";
+    }
 }

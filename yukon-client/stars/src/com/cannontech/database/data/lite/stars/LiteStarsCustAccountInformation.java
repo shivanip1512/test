@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
 /**
@@ -62,6 +63,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		
 		return false;
 	}
+    
+    public static String getCompanyName(int customerID)
+    {
+        return CICustomerBase.getCompanyNameFromDB(customerID);
+    }
 	
 	/**
 	 * Returns the appliances.

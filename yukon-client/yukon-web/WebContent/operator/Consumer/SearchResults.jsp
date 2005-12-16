@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.cache.functions.ContactFuncs" %>
 <%@ page import="com.cannontech.database.cache.functions.YukonListFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
@@ -112,7 +113,8 @@ function selectMemberAccount(accountID, memberID) {
 						resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
 				if (liteAcctInfo == null) continue;
 				
-				LiteContact contact = ContactFuncs.getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+				LiteCustomer customer = liteAcctInfo.getCustomer();
+				LiteContact contact = ContactFuncs.getContact(customer.getPrimaryContactID());
 				LiteAddress addr = member.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress(starsAddr, addr);
@@ -127,8 +129,15 @@ function selectMemberAccount(accountID, memberID) {
 				    <a href="" class="Link1" onClick="selectAccount(<%= liteAcctInfo.getAccountID() %>); return false;"><%= liteAcctInfo.getCustomerAccount().getAccountNumber() %></a> 
 <% } %>
                   </td>
+<%                
+                if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_COMPANY_NAME) {  
+%>
+                  <td width="18%" class="TableCell"><%= LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) %> 
+                  </td>
+<% } else { %>                 
                   <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
                   </td>
+<% } %>
                   <td width="17%" class="TableCell">
 <%
 				if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
