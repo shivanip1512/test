@@ -27,7 +27,6 @@ const CHAR * CtiCalc::UpdateType_Constant   = "Constant";
 
 CtiCalc::CtiCalc( long pointId, const RWCString &updateType, int updateInterval )
 {
-    _updatesInCurrentAvg = 0;
     _valid = TRUE;
     _pointId = pointId;
 
@@ -319,17 +318,6 @@ int CtiCalc::getUpdateInterval( ) const
     return _updateInterval;
 }
 
-const RWTime& CtiCalc::getPointCalcWindowEndTime() const
-{
-    return _pointCalcWindowEndTime;
-}
-
-CtiCalc& CtiCalc::setPointCalcWindowEndTime(const RWTime& endTime)
-{
-    _pointCalcWindowEndTime = endTime;
-    return *this;
-}
-
 long CtiCalc::findDemandAvgComponentPointId()
 {
     long returnPointId = 0;
@@ -436,6 +424,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
         // Use the value of TOS.  This will be the pointvalue, but should be the result of any preceeding calculations.
         double componentPointValue = pop();
         long componentId = findDemandAvgComponentPointId();
+        long updatesInCurrentAvg = 0;
 
         if(componentId > 0)
         {
@@ -446,10 +435,15 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
             CtiHashKey parentHashKey(getPointId());
             CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
 
-            // CGP 20050302 We use this count as an indicator that we are beginning a new interval.
-            if( _updatesInCurrentAvg == 0 )
+            if( calcPointPtr )
             {
-                setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
+                updatesInCurrentAvg = calcPointPtr->getUpdatesInCurrentAvg();
+
+                // CGP 20050302 We use this count as an indicator that we are beginning a new interval.
+                if( updatesInCurrentAvg == 0 )
+                {
+                    calcPointPtr->setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
+                }
             }
 
             if(componentPointPtr && calcPointPtr)
@@ -463,64 +457,66 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                  *   SLOP is very very SLOPPY!  If the data is not coming in on a schedule, the results are questionable.
                  *   If the results are coming in at the rate of the DA, this will compute every other interval.
                  */
-                if( componentPointPtr->getPointTime().seconds() >= (getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
-                    componentPointPtr->getPointTime().seconds() < (getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
+                if( componentPointPtr->getPointTime().seconds() >= (calcPointPtr->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime() - secondsInAvg) &&
+                    componentPointPtr->getPointTime().seconds() < (calcPointPtr->getPointCalcWindowEndTime().seconds() + componentPointPtr->getSecondsSincePreviousPointTime()) )
                 {//is the last point data received in the average or not
                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << endl;
                         dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                        dout << "Current Point Calc Window End Time: " << getPointCalcWindowEndTime().asString() << endl;
+                        dout << "Current Point Calc Window End Time: " << calcPointPtr->getPointCalcWindowEndTime().asString() << endl;
                     }
                     double currentCalcPointValue = calcPointPtr->getPointValue();
 
-                    double currentTotal = currentCalcPointValue * _updatesInCurrentAvg;
-                    _updatesInCurrentAvg++;
-                    retVal = (currentTotal + componentPointValue) / _updatesInCurrentAvg;
+                    double currentTotal = currentCalcPointValue * updatesInCurrentAvg;
+                    updatesInCurrentAvg++;
+                    retVal = (currentTotal + componentPointValue) / updatesInCurrentAvg;
 
                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
                         //dout << "Current Total: " << currentTotal << endl;
-                        dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
+                        dout << "Updates In Current Avg: " << updatesInCurrentAvg << endl;
                         dout << "Component Point Value: " << componentPointValue << endl;
                         dout << "New Calc Point Value: " << retVal << endl;
-                        dout << "Will Send point change at: " << getPointCalcWindowEndTime() << endl;
+                        dout << "Will Send point change at: " << calcPointPtr->getPointCalcWindowEndTime() << endl;
                     }
                 }
                 else
                 {
-                    if( _updatesInCurrentAvg > 0 )
+                    if( updatesInCurrentAvg > 0 )
                     {
                         retVal = componentPointValue;
-                        _updatesInCurrentAvg = 1;
+                        updatesInCurrentAvg = 1;
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
                             //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                            dout << "Current Point Calc Window End Time: " << getPointCalcWindowEndTime().asString() << endl;
+                            dout << "Current Point Calc Window End Time: " << calcPointPtr->getPointCalcWindowEndTime().asString() << endl;
                             //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
                             dout << "New Initial Demand Avg: " << retVal << endl;
-                            dout << "Updates In Current Avg: " << _updatesInCurrentAvg << endl;
-                            dout << "Previous demand average has a timestamp of: " << getPointCalcWindowEndTime() << endl;
-                            dout << "Next demand average will have timestamp of: " << RWTime(getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
+                            dout << "Updates In Current Avg: " << updatesInCurrentAvg << endl;
+                            dout << "Previous demand average has a timestamp of: " << calcPointPtr->getPointCalcWindowEndTime() << endl;
+                            dout << "Next demand average will have timestamp of: " << RWTime(calcPointPtr->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
                         }
                     }
                     else
                     {
                         retVal = componentPointValue;
-                        _updatesInCurrentAvg = 1;
+                        updatesInCurrentAvg = 1;
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " - Calc Point Id: " << getPointId() << " Demand Avg Reset!" << endl;
                         }
                     }
-                    setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
+                    calcPointPtr->setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
                 }
+
+                calcPointPtr->setUpdatesInCurrentAvg(updatesInCurrentAvg);
             }
         }
     }
