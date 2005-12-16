@@ -109,7 +109,6 @@ void CtiCalculateThread::periodicThread( void )
             if(rwnow > announceTime)
             {
                 announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " periodicThread thread active. TID: " << rwThreadId() << endl;
@@ -261,7 +260,6 @@ void CtiCalculateThread::onUpdateThread( void )
                 if(rwnow > announceTime)
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
-
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " onUpdateThread thread active. TID: " << rwThreadId() << endl;
@@ -590,6 +588,7 @@ bool CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
         inserted = _constantPoints.insert( new CtiHashKey(pointid), newPoint );
         break;
     case historical:
+        delete newPoint;
         break;
     default:
         {
@@ -599,7 +598,6 @@ bool CtiCalculateThread::appendPoint( long pointid, RWCString &updatetype, int u
         }
 
         delete newPoint;
-
         break;
     }
     return inserted;
