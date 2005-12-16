@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2005/10/25 22:10:41 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2005/12/16 16:25:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,7 +185,6 @@ INT CtiDeviceLCU::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     if(OutMessage != NULL)
     {
         setScanFlag(ScanFreezePending);
-        EstablishOutMessagePriority( OutMessage, ScanPriority );
         status = lcuFreeze(OutMessage);
 
         // Put the single built up OUTMESS into the Slist
@@ -225,6 +224,8 @@ INT CtiDeviceLCU::lcuFreeze(OUTMESS *&OutMessage)
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
 
+    OverrideOutMessagePriority(OutMessage, MAXPRIORITY - 1);        // This is required to make certain fast scans do not block our comms.
+
     OutMessage->TimeOut = 2;
     OutMessage->OutLength = 4;
     OutMessage->InLength = -1;
@@ -251,6 +252,8 @@ INT CtiDeviceLCU::lcuReset(OUTMESS *&OutMessage)
     OutMessage->TargetID        = getID();
     OutMessage->Port            = getPortID();
     OutMessage->Remote          = getAddress();
+
+    OverrideOutMessagePriority(OutMessage, MAXPRIORITY - 1);        // This is required to make certain fast scans do not block our comms.
 
     OutMessage->TimeOut = 2;
     OutMessage->OutLength = 4;
