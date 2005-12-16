@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/02/10 23:23:54 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/16 16:20:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,7 @@ PreUnSequenced (PBYTE  Message,        /* resulting command string */
       break;
 
    case TYPE_WELCORTU:
+      Message[4] |= 0x01;       // This is FIN.  Thanks Bill Crouch.
       if(Device->getTrxInfo()->RemoteSequence.Reply)
       {
          Message[4] |= 0x02;
