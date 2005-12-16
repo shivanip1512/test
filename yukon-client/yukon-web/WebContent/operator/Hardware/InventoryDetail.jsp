@@ -428,6 +428,9 @@ function validate(form) {
 				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?InvId=<%= invID %>">
 				<input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+				<cti:checkProperty propertyid="<%=ConsumerInfoRole.DISABLE_SWITCH_SENDING%>">
+					<%configurable = false;%>
+				</cti:checkProperty>
 <%
 		String trackHwAddr = liteEC.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
 		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
