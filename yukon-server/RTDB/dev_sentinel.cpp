@@ -20,6 +20,8 @@
 #include "cmdparse.h"
 #include "numstr.h"
 
+
+bool isUnintializedTimeAndValue(double value, double time);
 //=========================================================================================================================================
 //=========================================================================================================================================
 
@@ -904,6 +906,11 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                     }
                     if (gotValue)
                     {
+                        if (isUnintializedTimeAndValue(value, time))
+                        {
+                            time = 0;
+                        }
+
                         pData = CTIDBG_new CtiPointDataMsg();
                         pData->setId( pPoint->getID() );
 
@@ -1022,7 +1029,7 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
                         {
                             delete []pData;
                             pData = NULL;
-                        }
+                        }  
                     }
                     pPoint = NULL;
                 }
@@ -1092,6 +1099,15 @@ void CtiDeviceSentinel::processDispatchReturnMessage( RWTPtrSlist< CtiReturnMsg 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << RWTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+}
+
+bool isUnintializedTimeAndValue(double value, double time)
+{
+    if (RWTime(time).seconds() == RWTime(RWDate(1,1,2000)).seconds() &&
+        value == 0)
+        return true;
+    else
+        return false;
 }
 
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.158 $
-* DATE         :  $Date: 2005/11/17 22:09:19 $
+* REVISION     :  $Revision: 1.159 $
+* DATE         :  $Date: 2005/12/16 16:01:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1465,6 +1465,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         CtiDeviceKV2 *kv2dev    = ( CtiDeviceKV2 *)Device.get();
                         CtiProtocolANSI &ansi   = kv2dev->getKV2Protocol();
 
+
+                        ansi.setAnsiDeviceName(kv2dev->getName());
                         //allocate some space
                         trx.setInBuffer( inBuffer );
                         trx.setOutBuffer( outBuffer );
@@ -1498,7 +1500,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 DisplayTraceList( Port, traceList, true );
                             }
 
-                            if (!ansi.isTransactionFailed())
+                            if ( ansi.forceProcessDispatchMsg() || !ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
                                 RWTPtrSlist< CtiReturnMsg >  retList;
@@ -1583,7 +1585,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                 }
                                 DisplayTraceList( Port, traceList, true );
                             }
-                            if (!ansi.isTransactionFailed())
+                            if ( ansi.forceProcessDispatchMsg() ||!ansi.isTransactionFailed())
                             {
                                 Sleep(1000);
                                 RWTPtrSlist< CtiReturnMsg >  retList;
