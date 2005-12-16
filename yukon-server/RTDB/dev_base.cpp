@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/11/11 14:29:18 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/12/16 16:24:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -632,6 +632,11 @@ INT CtiDeviceBase::deviceMaxCommFails() const
     #define COMM_FAIL_REPORT_TIME 300
 #endif
 
+bool CtiDeviceBase::isCommFailed() const
+{
+    return _commFailCount >= deviceMaxCommFails();
+}
+
 bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
 {
     LockGuard  guard(monitor());
@@ -646,40 +651,32 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
 
     if(!success)
     {
-        ++_attemptFailCount;
-        ++_commFailCount;
+        ++_attemptFailCount;            // This attempt failed
+        ++_commFailCount;               // We failed to talk to the device.
     }
     else
     {
-        _commFailCount = 0;             // reset the consecutive fails.
+        _commFailCount = 0;             // reset the consecutive fails, we succeeded in talking to the device...
         ++_attemptSuccessCount;
     }
 
     if(retry)
         ++_attemptRetryCount;
 
-    bool badtogood = (lastCommCount >= deviceMaxCommFails() && success);
-    bool goodtobad = ( (lastCommCount < deviceMaxCommFails()) && (_commFailCount >= deviceMaxCommFails()) && !success );
+    bool badtogood = (lastCommCount >= deviceMaxCommFails() && success);                          // Just went good.
+    bool goodtobad = ( (lastCommCount < deviceMaxCommFails()) && isCommFailed() && !success );    // Just went bad.
 
-    if( goodtobad )
+    if( goodtobad || badtogood )
     {
-        bStateChange = true;
-        isCommFail   = true;       // Comm Status is BAD NOW.
+        bStateChange = true;        // We need to report the state change. Comm Status changed from goodtobad or badtogood.
     }
-    else if( badtogood )
-    {
-        bStateChange = true;
-        isCommFail   = false;       // Comm Status is GOOD NOW.
-    }
-    else
-    {
-        isCommFail   = (_commFailCount >= deviceMaxCommFails());       // Comm Status is based upon counts.
-    }
+
+    isCommFail   = isCommFailed();  // Comm Status is _always_ based upon counts.
 
     if( bStateChange || now > _lastReport )
     {
         bAdjust = true;
-        _lastReport = ((now - (now.seconds() % COMM_FAIL_REPORT_TIME)) + COMM_FAIL_REPORT_TIME);
+        _lastReport = nextScheduledTimeAlignedOnRate(now, COMM_FAIL_REPORT_TIME);
     }
 
     return(bAdjust);

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/12/07 22:04:15 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/12/16 16:24:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,7 +203,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(RWTPtrSlist< OUTMESS > &outList, IN
         }
         else
         {
-            if(  SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
+            if(  SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
@@ -352,7 +352,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(RWTPtrSlist< OUTMESS > &outList, INT 
             }
             else
             {
-                if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
+                if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << RWTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
@@ -483,7 +483,7 @@ INT CtiDeviceSingle::initiateGeneralScan(RWTPtrSlist< OUTMESS > &outList, INT Sc
                 }
                 else
                 {
-                    if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL") )
+                    if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
@@ -797,31 +797,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
         if(bLastFail)
         {
-            //  This comm status wasn't handled by portfield (didn't talk directly to this device - targetid != deviceid),
-            //    so we have to send it here
-            if( InMessage->DeviceID != InMessage->TargetID )
-            {
-                //  Log the communication success on this route.
-                if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
-                {
-                    CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
-
-                    if( retMsg != NULL )
-                    {
-                        commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 1.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
-
-                        if( commStatus != NULL )
-                        {
-                            retMsg->PointData().insert(commStatus);
-                            commStatus = NULL;
-                        }
-
-                        vgList.append(retMsg);
-                        retMsg = 0;
-                    }
-                }
-            }
-
             /* something went wrong so start by printing error */
             if( (InMessage->EventCode & ~DECODED) != ErrPortSimulated)
             {
@@ -840,32 +815,6 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
             retList.insert( Ret );
 
             ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
-        }
-    }
-    else
-    {
-        //  This comm status wasn't handled by portfield (didn't talk directly to this device - targetid != deviceid),
-        //    so we have to send it here
-        if( InMessage->DeviceID != InMessage->TargetID )
-        {
-            //  Log the communication success on this route.
-            if( commPoint = getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType) )
-            {
-                CtiReturnMsg *retMsg = CTIDBG_new CtiReturnMsg( getID(), InMessage->Return.CommandStr, "", nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, RWOrdered());
-                if( retMsg != NULL )
-                {
-                    commStatus = CTIDBG_new CtiPointDataMsg(commPoint->getPointID(), 0.0, NormalQuality, StatusPointType, "", TAG_POINT_MAY_BE_EXEMPTED);
-
-                    if( commStatus != NULL )
-                    {
-                        retMsg->PointData().insert(commStatus);
-                        commStatus = NULL;
-                    }
-
-                    vgList.append(retMsg);
-                    retMsg = 0;
-                }
-            }
         }
     }
 
@@ -1580,6 +1529,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
 {
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+    _scanData.setDeviceID(getID());
 
     LockGuard guard(monitor());
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -1587,8 +1537,6 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     _twoWay.DecodeDatabaseReader(rdr);
-
-    _scanData.setDeviceID( getID() );     // Get this set up.
 }
 
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
@@ -1725,8 +1673,8 @@ INT CtiDeviceSingle::validateScanData()
 
     if( !isScanFlagSet(ScanDataValid) )
     {
+        _scanData.setDeviceID(getID());
         setScanFlag(ScanDataValid, true);
-        _scanData.setDeviceID( getID() );     // Get this set up.
         if( !(_scanData.Restore().errorCode() == RWDBStatus::ok ))
         {
             if( !(_scanData.Insert().errorCode() == RWDBStatus::ok ))

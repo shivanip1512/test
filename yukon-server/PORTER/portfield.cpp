@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.159 $
-* DATE         :  $Date: 2005/12/16 16:01:34 $
+* REVISION     :  $Revision: 1.160 $
+* DATE         :  $Date: 2005/12/16 16:20:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -134,7 +134,7 @@ extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unu
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, RWTPtrSlist< CtiMessage > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-extern void commFail(CtiDeviceSPtr &Device, INT state);
+extern void commFail(CtiDeviceSPtr &Device);
 
 bool isTimedOut( const RWTime &start_time, const unsigned int &duration_seconds);
 bool deviceCanSurviveThisStatus(INT status);
@@ -177,6 +177,8 @@ static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMess
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
+INT processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
+
 
 /* Threads that handle each port for communications */
 VOID PortThread(void *pid)
@@ -462,8 +464,13 @@ VOID PortThread(void *pid)
          * Check if we need to do a retry on this command. Returns RETRY_SUBMITTED if the message has
          * been requeued, or the CommunicateDevice returned otherwise
          */
+        LONG did = OutMessage->DeviceID;
+        LONG tid = OutMessage->TargetID;
+        bool rgtz = OutMessage->Retry > 0;
+
         if(CheckAndRetryMessage(i, Port, &InMessage, OutMessage, Device) == RETRY_SUBMITTED)
         {
+            processCommResult(RETRY_SUBMITTED,did,tid,rgtz, Device);
             continue;  // It has been re-queued!
         }
         else   /* we are either successful or retried out */
@@ -471,8 +478,10 @@ VOID PortThread(void *pid)
             if((status = DoProcessInMessage(i, Port, &InMessage, OutMessage, Device)) != NORMAL)
             {
                 RequeueReportError(status, OutMessage);
+                processCommResult(status,did,tid,rgtz, Device);
                 continue;
             }
+            processCommResult(status,did,tid,rgtz, Device);
         }
 
         if((status = ReturnResultMessage(i, &InMessage, OutMessage)) != NORMAL)
@@ -854,16 +863,25 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
         }
     }
 
+    LONG did = OutMessage->DeviceID;
+    LONG tid = OutMessage->TargetID;
+    bool rgtz = OutMessage->Retry > 0;
+
     if(status != NORMAL)
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
-        status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);     // This call may free OutMessages
+        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
+        {
+            processCommResult(status,did,tid,rgtz, Device);
+        }
     }
     else if( !Port->connectedTo(Device->getUniqueIdentifier()) ) /* Check if we made the connect OK */
     {
         /* Must call CheckAndRetry to make the re-queue happen if needed */
-        // This call may free OutMessages
-        status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device);
+        if((status = CheckAndRetryMessage(status, Port, InMessage, OutMessage, Device)) == RETRY_SUBMITTED)         // This call may free OutMessages
+        {
+            processCommResult(status,did,tid,rgtz, Device);
+        }
     }
 
     return status;
@@ -2199,7 +2217,6 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             break;
                         }
-                    case TYPECBC6510:
                     case TYPECBC7020:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -2759,31 +2776,9 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     INT            status = CommResult;
     ULONG          j;
     ULONG          QueueCount;
-    bool           iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
     INT port = OutMessage->Port;
     INT deviceID = OutMessage->DeviceID;
     INT targetID = OutMessage->TargetID;
-
-    if(Device->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ))
-    {
-        commFail(Device, (iscommfailed ? CLOSED : OPENED));
-    }
-
-    if(OutMessage->TargetID != 0 && OutMessage->TargetID != OutMessage->DeviceID)
-    {
-        // In this case, we need to account for the fail on the target device too..
-        CtiDeviceSPtr pTarget = DeviceManager.getEqual( OutMessage->TargetID );
-
-        if(pTarget)
-        {
-            iscommfailed = (CommResult == NORMAL);
-
-            if( pTarget->adjustCommCounts( iscommfailed, OutMessage->Retry > 0 ) )
-            {
-                commFail(pTarget, (iscommfailed ? CLOSED : OPENED));
-            }
-        }
-    }
 
     if( (CommResult != NORMAL) ||
         (  (GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC) &&         // 031003 CGP // (  (Port->getProtocolWrap() == ProtocolWrapIDLC) &&
@@ -2991,13 +2986,6 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
             if(OutMessage->Command == CMND_LGRPQ)
             {
                 p711info->ClearStatus(INLGRPQ);
-                if(!(QueryQueue (p711info->QueueHandle,&QueueCount)))
-                {
-                    if(QueueCount)
-                    {
-                        SetEvent(hPorterEvents[P_QUEUE_EVENT]);
-                    }
-                }
             }
 
             if(OutMessage->EventCode & RCONT)
@@ -4310,6 +4298,35 @@ BOOL searchFuncForRippleOutMessage(void *firstOM, void* om)
     return( match );
 }
 
+INT processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device)
+{
+    INT status = NORMAL;
+
+    bool iscommfailed = (CommResult == NORMAL);      // Prime with the communication status
+
+    if(Device->adjustCommCounts( iscommfailed, RetryGTZero ))
+    {
+        commFail(Device);
+    }
+
+    if(TargetID != 0 && TargetID != DeviceID)
+    {
+        // In this case, we need to account for the fail on the target device too..
+        CtiDeviceSPtr pTarget = DeviceManager.getEqual( TargetID );
+
+        if(pTarget)
+        {
+            iscommfailed = (CommResult == NORMAL);
+
+            if( pTarget->adjustCommCounts( iscommfailed, RetryGTZero ) )
+            {
+                commFail(pTarget);
+            }
+        }
+    }
+
+    return status;
+}
 
 bool isTimedOut( const RWTime &start_time, const unsigned int &duration_seconds)
 {

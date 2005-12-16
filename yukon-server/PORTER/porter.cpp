@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2005/12/15 22:00:02 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2005/12/16 16:24:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -206,7 +206,7 @@ extern void QueueThread (void *);
 extern void KickerThread (void *);
 extern void DispatchMsgHandlerThread(VOID *Arg);
 extern HCTIQUEUE* QueueHandle(LONG pid);
-void commFail(CtiDeviceSPtr &Device, INT state);
+void commFail(CtiDeviceSPtr &Device);
 
 DLLIMPORT extern BOOL PorterQuit;
 
@@ -346,7 +346,7 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
         bool commsuccess = false;
         if(RemoteDevice->adjustCommCounts( commsuccess, false ))
         {
-            commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
+            commFail(RemoteDevice);
         }
 
         if(RemoteDevice->getType() == TYPE_CCU711)
@@ -427,7 +427,7 @@ void applyDeviceInitFail(const long unusedid, CtiDeviceSPtr RemoteDevice, void *
         bool commsuccess = false;
         if(RemoteDevice->adjustCommCounts( commsuccess, false ))
         {
-            commFail(RemoteDevice, (commsuccess ? CLOSED : OPENED));
+            commFail(RemoteDevice);
         }
     }
 }
@@ -1205,7 +1205,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_dnpudpThread.isValid())
     {
-        if(_dnpudpThread.join(15000) != RW_THR_COMPLETED )
+        if(_dnpudpThread.join(1000) != RW_THR_COMPLETED )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << RWTime() << " _dnpudpThread did not shutdown" << endl;
@@ -2277,29 +2277,27 @@ static int MyAllocHook(int nAllocType, void *pvData,
     return TRUE; // allow the memory operation to proceed
 }
 
-void commFail(CtiDeviceSPtr &Device, INT state)
+void commFail(CtiDeviceSPtr &Device)
 {
     extern CtiConnection VanGoghConnection;
 
     CtiPoint * pPoint = NULL;
     char temp[80];
     LONG pointid;
+    bool state = Device->isCommFailed();        // Ask the device if it has accumulated enough errors to be failed!
 
     //if( NULL != (pPoint = Device->getDevicePointOffsetTypeEqual(COMM_FAIL_OFFSET, StatusPointType)) )
     if( 0 != (pointid = GetCommFailPointID(Device->getID())) )
     {
-        sprintf(temp, "Communication status %s", (state == OPENED) ? "GOOD" : "FAILED");
-
-        // pointid = pPoint->getPointID();
-
-        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pointid, (double)state, NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
+        sprintf(temp, "Communication status %s", state ? "FAILED" : "GOOD");
+        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(pointid, (double)(state ? CLOSED : OPENED), NormalQuality, StatusPointType, temp, TAG_POINT_MAY_BE_EXEMPTED);
 
         if(pData != NULL)
         {
             VanGoghConnection.WriteConnQue(pData);
         }
     }
-    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state == CLOSED)
+    else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << RWTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;

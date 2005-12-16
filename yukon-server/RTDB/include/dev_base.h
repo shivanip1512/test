@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2005/11/11 14:29:18 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2005/12/16 16:24:34 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -233,6 +233,7 @@ public:
     INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
     bool loadDevicePoints();
     bool adjustCommCounts( bool &isCommFail, bool retry );
+    bool isCommFailed() const;
 
     const CtiTableDeviceBase& getDeviceBase() const;
     CtiDeviceBase& setDeviceBase(const CtiTableDeviceBase& tbldevbase);
@@ -334,7 +335,7 @@ public:
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
 
-    
+
 };
 
 typedef CtiDeviceBase CtiDevice;
