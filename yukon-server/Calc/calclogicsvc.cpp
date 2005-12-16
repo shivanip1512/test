@@ -445,10 +445,10 @@ void CtiCalcLogicService::Run( )
                             _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));;
                         }
                     }
+
                     if(rwnow > announceTime)
                     {
                         announceTime = nextScheduledTimeAlignedOnRate( rwnow, 300 );
-
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << RWTime() << " CalcLogicSvc main thread is active. TID: " << rwThreadId() << endl;
@@ -645,7 +645,7 @@ void CtiCalcLogicService::_outputThread( void )
                 {
                     interrupted = TRUE;
                 }
-                else if( !entries )
+                else if( !entries || !_conxion )
                     _pSelf.sleep( 500 );
 
                 rwnow = rwnow.now();
@@ -653,7 +653,6 @@ void CtiCalcLogicService::_outputThread( void )
                 if(rwnow > announceTime)
                 {
                     announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
-
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << RWTime() << " _outputThread active. TID: " << rwThreadId() << endl;
@@ -663,7 +662,7 @@ void CtiCalcLogicService::_outputThread( void )
                 }
             } while( !entries && !interrupted );
 
-            if( !interrupted )
+            if( !interrupted && _conxion)
             {
                 RWMutexLock::LockGuard outboxGuard(calcThread->outboxMux);
 
@@ -723,38 +722,56 @@ void CtiCalcLogicService::_inputThread( void )
 
         while( !interrupted )
         {
-            //  while i'm not getting anything
-            while( !_conxion || (NULL == (incomingMsg = _conxion->ReadConnQue( 1000 )) && !interrupted) )
+            try
             {
-                if( _pSelf.serviceInterrupt( ) )
+                //  while i'm not getting anything
+                while( !_conxion || (NULL == (incomingMsg = _conxion->ReadConnQue( 1000 )) && !interrupted) )
                 {
-                    interrupted = TRUE;
-                }
-                else
-                {
-                    rwnow = rwnow.now();
-                    if(rwnow > announceTime)
+                    if( _pSelf.serviceInterrupt( ) )
                     {
-                        ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
-                        announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
-
+                        interrupted = TRUE;
+                    }
+                    else
+                    {
+                        rwnow = rwnow.now();
+                        if(rwnow > announceTime)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
+                            ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                            announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
+                            }
                         }
                     }
                 }
             }
-
-            rwnow = rwnow.now();
-            if(rwnow > announceTime)
+            catch(...)
             {
-                ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
-                announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            try
+            {
+                rwnow = rwnow.now();
+                if(rwnow > announceTime)
+                {
+                    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), "CalcLogicSvc _inputThread", CtiThreadRegData::Action1, 960, &CtiCalcLogicService::inComplain, 0 , 0, 0 ) );
+                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, 900 );
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " _inputThread active. TID: " << rwThreadId() << endl;
+                    }
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -764,16 +781,26 @@ void CtiCalcLogicService::_inputThread( void )
                 interrupted = TRUE;
             }
 
-            if(incomingMsg)
+            try
             {
-                //  dump out if we're being called
-                if( !interrupted )
+                if(incomingMsg)
                 {
-                    //  common variable, but this is the only place that writes to it, so i think it's okay.
-                    parseMessage( incomingMsg, calcThread );
+                    //  dump out if we're being called
+                    if( !interrupted )
+                    {
+                        //  common variable, but this is the only place that writes to it, so i think it's okay.
+                        parseMessage( incomingMsg, calcThread );
+                    }
+                    delete incomingMsg;   //  Make sure to delete this - its on the heap
+                    incomingMsg = 0;
                 }
-                delete incomingMsg;   //  Make sure to delete this - its on the heap
-                incomingMsg = 0;
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
     }
