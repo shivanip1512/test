@@ -335,7 +335,7 @@ void CtiCalculateThread::onUpdateThread( void )
 
                     CtiPointDataMsg *pData = NULL;
 
-                    if( calcPoint->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
+                    if( calcPointPtr->getPointCalcWindowEndTime() > RWTime(RWDate(1,1,1991)) )
                     {// demand average point madness
 
                         long davgpid = calcPoint->findDemandAvgComponentPointId();
@@ -350,8 +350,8 @@ void CtiCalculateThread::onUpdateThread( void )
                             if(componentPointPtr)
                             {
                                 RWTime now;
-                                RWTime et = calcPoint->getPointCalcWindowEndTime();
-                                RWTime etplus = (calcPoint->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
+                                RWTime et = calcPointPtr->getPointCalcWindowEndTime();
+                                RWTime etplus = (calcPointPtr->getPointCalcWindowEndTime() + componentPointPtr->getSecondsSincePreviousPointTime());
 
                                 if( et <= now &&  now < etplus )    // Are we greater than the end time, but less than the end time + "slop"
                                 {
@@ -361,7 +361,7 @@ void CtiCalculateThread::onUpdateThread( void )
                                         dout << RWTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
                                     }
                                     pData = new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
-                                    pData->setTime(calcPoint->getPointCalcWindowEndTime());
+                                    pData->setTime(calcPointPtr->getPointCalcWindowEndTime());
                                 }
 
                                 calcPointPtr->setPointValue( recalcValue, RWTime(), NormalQuality, 0 );
