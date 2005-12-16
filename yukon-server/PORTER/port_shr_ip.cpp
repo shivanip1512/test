@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/10/25 14:36:12 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/16 16:24:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include <winsock.h>
 
 #include "types.h"
+#include "cparms.h"
 #include "cticalls.h"
 #include "dsm2.h"
 #include "logger.h"
@@ -100,10 +101,9 @@ void CtiPortShareIP::inThread()
                 else  // Ay caramba.  We never heard from the outThread...
                 {
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << RWTime() << " **** Checkpoint ****" << FILELINE << endl;
-                        dout << RWTime() << "inThread timed out waiting for synchronization flag" << FILELINE << endl;
                         set(CtiPortShareIP::INOUTSYNC, true);     // outThread must be broken - we will try to read again
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << RWTime() << " inThread timed out waiting for synchronization flag" << FILELINE << endl;
                     }
 
                     //  Send an error message back to the SCADA system...
@@ -232,9 +232,11 @@ void CtiPortShareIP::inThread()
                             OutMessage->Source = 0;
                             OutMessage->Destination = 0;
                             OutMessage->Sequence = 0;
-                            OutMessage->Priority = MAXPRIORITY - 1;
+                            OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_PORTSHARE_PRIORITY", MAXPRIORITY - 1);
                             OutMessage->ReturnNexus = getReturnNexus();
                             OutMessage->SaveNexus = NULL;
+
+                            OutMessage->ExpirationTime = RWTime().seconds() + gConfigParms.getValueAsInt("PORTER_PORTSHARE_EXPIRATION_TIME", 600);
 
                             //  Figure out what the out length is
                             OutMessage->OutLength = Buffer[3] - 3;
