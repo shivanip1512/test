@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2005/12/06 23:18:04 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2005/12/16 16:21:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -615,19 +615,22 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             else
             {
                 /* Broadcast ccu does not exist on this port */
+                CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
                 DeviceManager.apply(apply711TimeSync, (void*)PortRecord->getPortID());
             }
         }
         else
         {
             /* we need to walk through and generate to 710's on this port */
+            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply(apply710TimeSync, (void*)PortRecord->getPortID());
         }
 
-        /* Now check for Anything not covered by above */
-        DeviceManager.apply(applyDeviceTimeSync, (void*)PortRecord->getPortID());
-
         {
+            /* Now check for Anything not covered by above */
+            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+            DeviceManager.apply(applyDeviceTimeSync, (void*)PortRecord->getPortID());
+
             CtiDeviceManager::LockGuard dvguard(DeviceManager.getMux());                // Deadlock avoidance!
             RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
         }
@@ -696,7 +699,7 @@ VOID TimeSyncThread (PVOID Arg)
         //Thread Monitor Begins here**************************************************
         if(!(++sanity % SANITY_RATE))
         {
-            {//This is not necessary and can be annoying, but if you want it (which you might) here it is.
+            {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << RWTime() << " Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
