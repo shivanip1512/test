@@ -60,11 +60,11 @@ class CtiPointStoreElement : public RWCollectable
     friend class CtiPointStore;
 
 private:
-    long _pointNum, _numUpdates, _secondsSincePreviousPointTime;
+    long _pointNum, _numUpdates, _secondsSincePreviousPointTime, _updatesInCurrentAvg;
     double _pointValue;
     unsigned _pointQuality;
     unsigned _pointTags;
-    RWTime _pointTime;
+    RWTime _pointTime, _calcPointWindowEndTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
 
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
@@ -74,15 +74,15 @@ private:
 public:
     CtiPointStoreElement( long pointNum = 0, double pointValue = 0.0, unsigned pointQuality = UnintializedQuality, unsigned pointTags = 0 ) :
     _pointNum(pointNum), _pointValue(pointValue), _pointQuality(pointQuality), _pointTags(pointTags), _numUpdates(0), _lastValueChangedTime(pointValue),
-    _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
+    _updatesInCurrentAvg(0), _secondsSincePreviousPointTime(60)// one minute seems like a reasonable default
     {  };
 
-    long    getPointNum( void )         {   return _pointNum;   };
-    double  getPointValue( void )       {   return _pointValue; };
-    unsigned  getPointQuality( void )   {   return _pointQuality; };
-    unsigned  getPointTags( void )      {   return _pointTags; };
-    RWTime  getPointTime( void )        {   return _pointTime;  };
-    long    getNumUpdates( void )       {   return _numUpdates; };
+    long    getPointNum( void )            {   return _pointNum;   };
+    double  getPointValue( void )          {   return _pointValue; };
+    unsigned  getPointQuality( void )      {   return _pointQuality; };
+    unsigned  getPointTags( void )         {   return _pointTags; };
+    RWTime  getPointTime( void )           {   return _pointTime;  };
+    long    getNumUpdates( void )          {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
     RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
 
@@ -96,6 +96,12 @@ public:
     {
         return _regress.regression(x);
     }
+
+    void setUpdatesInCurrentAvg( long newCount )   {   _updatesInCurrentAvg = newCount;   };
+    long getUpdatesInCurrentAvg( void )            {   return _updatesInCurrentAvg; };
+
+    const RWTime& getPointCalcWindowEndTime( void )                  {   return _calcPointWindowEndTime;    };
+    void          setPointCalcWindowEndTime( const RWTime& endTime ) {   _calcPointWindowEndTime = endTime;  };
 
 protected:
     void setPointValue( double newValue, RWTime &newTime, unsigned newQuality, unsigned newTags )
