@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/12/07 22:04:15 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2005/12/19 17:44:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,11 +69,11 @@ public:
         int channel;
         int identifier;
         RWTime creationTime;
-    
+
         bool channelWithID::operator<(const channelWithID &rhs) const
         {
             bool retval = false;
-    
+
             if( identifier < rhs.identifier )
             {
                 retval = true;
@@ -85,7 +85,7 @@ public:
                     retval = true;
                 }
             }
-    
+
             return retval;
         }
     };
@@ -256,5 +256,12 @@ public:
     decrementGroupMessageCount(long userID, long comID, int entries = 1);
 
 };
+
+
+#ifdef VSLICK_TAG_WORKAROUND
+typedef CtiDeviceSingle *CtiDeviceSingleSPtr;
+#else
+typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
+#endif
 
 #endif // #ifndef __DEV_SINGLE_H__
