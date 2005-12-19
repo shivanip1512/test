@@ -102,6 +102,8 @@ insert into YukonUserRole values (-781,-1,-900,-90005,'(none)');
 insert into YukonUserRole values (-782,-1,-900,-90006,'(none)');
 insert into YukonUserRole values (-783,-1,-900,-90007,'(none)');
 
+insert into YukonRoleProperty values(-20158,-201,'Disable Switch Sending','false','Disables the ability to send configs and connects/disconnects to switches.');
+
 
 
 
