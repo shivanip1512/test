@@ -29,9 +29,10 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String CTI_MODULE_BASE = "ctiMenuModule";
     public static final String CTI_BREADCRUMBS = "ctiBreadCrumbs";
     
+    public static final String HTML_QUIRKS = "quirks";
     public static final String HTML_TRANSITIONAL = "transitional";
     public static final String HTML_STRICT = "strict";
-    public static final String[] ALLOWED_HTML_LEVELS = {HTML_TRANSITIONAL, HTML_STRICT};
+    public static final String[] ALLOWED_HTML_LEVELS = {HTML_QUIRKS, HTML_TRANSITIONAL, HTML_STRICT};
     
     public static final String SKIN_STANDARD = "standard";
     public static final String SKIN_PURPLE = "purple";

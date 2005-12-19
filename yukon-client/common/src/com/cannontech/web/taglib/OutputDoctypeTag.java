@@ -25,14 +25,20 @@ public class OutputDoctypeTag extends TagSupport {
     
     public int doEndTag() throws JspException {
         try {
-            if (getHtmlLevel().equals(StandardPageTag.HTML_TRANSITIONAL)) {
-                // the standard wrapper is no strict, do it doesn't matter what the content is
+            if (getHtmlLevel().equals(StandardPageTag.HTML_QUIRKS) 
+                    || getContentDoctype().equals(StandardPageTag.HTML_QUIRKS)) {
+                // either the wrapper or the content is set to quicks so the whole
+                // page should be in quirks mode
+                // don't write out a doctype
+            } else if (getHtmlLevel().equals(StandardPageTag.HTML_TRANSITIONAL)
+                    || getContentDoctype().equals(StandardPageTag.HTML_TRANSITIONAL)) {
+                // either the wrapper or the content is set to transitional, so the
+                // whole page should be in transitional mode
                 pageContext.getOut().write(HTML_TRANSITIONAL_DOCTYPE);
-            } else if (getContentDoctype().equals(StandardPageTag.HTML_TRANSITIONAL)) {
-                // the wrapper is strict, but the content is transitional
-                pageContext.getOut().write(HTML_TRANSITIONAL_DOCTYPE);
-            } else {
-                // the wrapper and the content are both strict
+            } else if (getHtmlLevel().equals(StandardPageTag.HTML_STRICT)
+                    || getContentDoctype().equals(StandardPageTag.HTML_STRICT)) {
+                // if we get here, and either (which should now be both) is set
+                // to strict, output strict doctype
                 pageContext.getOut().write(HTML_STRICT_DOCTYPE);
             }
         } catch (IOException e) {
