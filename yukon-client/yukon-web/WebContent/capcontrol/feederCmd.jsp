@@ -13,7 +13,7 @@
 <HTML>
 <HEAD>
 <link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 
 <body>
@@ -38,34 +38,39 @@
 
 <% if( feeder.getCcDisableFlag().booleanValue() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.ENABLE_FEEDER%>)">Enable Feeder</a>
+				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.ENABLE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Enable Feeder</a>
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.DISABLE_FEEDER%>)">Disable Feeder</a>
+				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.DISABLE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Disable Feeder</a>
 		  </td></tr>
 <% } %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>)">Reset Op Counts</a>
+				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Reset Op Counts</a>
 		  </td></tr>
 
 <% if( feeder.getWaiveControlFlag().booleanValue() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.UNWAIVE_FEEDER%>)">Unwaive Feeder</a>
+				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.UNWAIVE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Unwaive Feeder</a>
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.WAIVE_FEEDER%>)">Waive Feeder</a>
+				onclick="postMany('frmFdrCmd', 'paoID', <%=feederId%>, 'cmdID', <%=CBCCommand.WAIVE_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Waive Feeder</a>
 		  </td></tr>
 <% } %>
 		  

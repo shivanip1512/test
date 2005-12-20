@@ -2,7 +2,6 @@
 <%@ page import="com.cannontech.util.*" %>
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.*" %>
-<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>

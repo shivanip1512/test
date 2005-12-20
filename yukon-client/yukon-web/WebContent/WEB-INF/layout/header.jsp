@@ -1,6 +1,7 @@
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.roles.application.CommanderRole" %>
 <%@page import="com.cannontech.roles.application.ReportingRole" %>
+<%@ taglib uri="/WEB-INF/cti.tld" prefix="cti" %>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr><td> 

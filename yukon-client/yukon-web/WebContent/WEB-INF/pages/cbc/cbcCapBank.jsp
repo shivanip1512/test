@@ -18,10 +18,11 @@
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="bankSize" value="Bank Size: " title="The total size of the CapBank"/>
-			<x:selectOneMenu id="bankSize"
+			<x:inputText id="bankSize" styleClass="char8Label" required="true"
 					value="#{capControlForm.PAOBase.capBank.bankSize}" >
-				<f:selectItems value="#{selLists.capBankSizes}"/>
-			</x:selectOneMenu>
+				<f:validateLongRange minimum="0" maximum="99999" />
+			</x:inputText>
+			<x:outputText id="bankSizeDesc" value="kVar"/>
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="bankReclose" value="Reclose Delay: " title="The amount of time this CapBank should wait before executing the close command"/>

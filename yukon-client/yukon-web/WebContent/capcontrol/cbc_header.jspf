@@ -41,9 +41,9 @@
 							<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.CBC_DATABASE_EDIT %>">
 		                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 1); return false;">Modify</a>
 							</cti:isPropertyTrue>
-							<cti:isPropertyTrue propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
+							<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_REPORTS %>">
 		                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">Reporting</a>
-							</cti:isPropertyTrue>
+							</cti:isPropertyFalse>
 
 	                        <a href="#" class="menuLink" onclick="menuShow('subMenu', 3); return false;">View</a>
 	                      </div>
@@ -89,20 +89,25 @@
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(DBEditorNav.PAO_SCHEDULE)%>');">Schedule</a> 
 <!--					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PointTypes.ANALOG_POINT)%>');">Point</a>  -->
 				  </div>
+
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="editorPost();">Edit</a>
 					<a href="#" class="submenuLink" onclick="deletePost();">Delete</a>
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Copy</a> -->
 <!--					a href="#" class="submenuLink" onclick="showConfirmWin(this)">Change Type</a> -->
 				  </div>
-				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>&amp;period=<%=ServletUtil.TODAY%>')">Today kVAR/Watt</a>
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>&amp;period=<%=ServletUtil.TODAY%>')">Today PF</a>
 
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a>
-					<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a>
+				  <div class="subMenuPopup">
+					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_GRAPHS %>">
+						<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>&amp;period=<%=ServletUtil.TODAY%>')">Today kVAR/Watt</a>
+						<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>&amp;period=<%=ServletUtil.TODAY%>')">Today PF</a>
+						<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_VARWATTS%>')">30 Day kVAR/Watt</a>
+						<a href="#" class="submenuLink" onclick="showPopUpChkBoxes('charts.jsp?type=<%=CBCWebUtils.TYPE_PF%>')">30 Day PF</a>
+					</cti:isPropertyFalse>
+
 					<a href="#" class="submenuLink" onclick="window.location=showRecentCmds('tabledata.jsp?type=<%=CBCWebUtils.TYPE_RECENT_CNTRLS%>');">Recent Controls</a>
 				  </div>
+
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
 					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
@@ -113,6 +118,7 @@
 					<a href="#" class="submenuLink" onclick="showConfirmWin(this)">One-Line</a> 
 					</cti:isPropertyFalse>
 				  </div>
+
 				</td>
 			</form>
 

@@ -15,27 +15,7 @@
 <HTML>
 <HEAD>
 <link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-
-<SCRIPT type="text/javascript">
-<!--
-// -------------------------------------------
-// Page scoped javascript variables
-// -------------------------------------------
-var imgToggle = false;
-function toggleImg( imgID )
-{
-	var imgElem = document.getElementById(imgID);
-	if( imgToggle )
-		imgElem.src='images/arrowright.gif';
-	else
-		imgElem.src='images/arrowdown.gif';
-
-	imgToggle = !imgToggle;
-}
-//-->
-</SCRIPT>
-
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <body>
 
@@ -59,35 +39,35 @@ function toggleImg( imgID )
       <td>
         <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.CONFIRM_OPEN%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.CONFIRM_OPEN%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Confirm</a>
 		  </td></tr>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.OPEN_CAPBANK%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.OPEN_CAPBANK%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Open Capacitor</a>
 		  </td></tr>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.CLOSE_CAPBANK%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.CLOSE_CAPBANK%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Close Capacitor</a>
 		  </td></tr>
 		  
 		<cti:checkProperty propertyid="<%= CBCSettingsRole.CBC_ALLOW_OVUV %>"> 		  
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.BANK_ENABLE_OVUV%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.BANK_ENABLE_OVUV%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Enable OV/UV</a>
 		  </td></tr>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.BANK_DISABLE_OVUV%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.BANK_DISABLE_OVUV%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Disable OV/UV</a>
 		  </td></tr>
 		</cti:checkProperty>
@@ -120,25 +100,30 @@ function toggleImg( imgID )
         <table id="bankTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 <% if( capBank.getCcDisableFlag().booleanValue() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.ENABLE_CAPBANK%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.ENABLE_CAPBANK%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Enable CapBank</a>
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.DISABLE_CAPBANK%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.DISABLE_CAPBANK%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Disable CapBank</a>
 		  </td></tr>
 <% } %>
-
+          <tr><td>
+          	<a href="javascript:void(0);" class="optDeselect"
+				onmouseover="changeOptionStyle(this)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Reset Op Counts</a>
+		  </td></tr>
 <% if( capBank.isBankMoved() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'cmdID', <%=CBCCommand.RETURN_BANK_TO_FEEDER%>); top.document.getElementById('tempIFrame').style.display='none';"
 				>Temp Move Back</a>
 		  </td></tr>
 <% } %>
@@ -149,9 +134,9 @@ function toggleImg( imgID )
 	for( int i = 0; i < cbcStates.length; i++ )
 	{ %>
           <tr><td>
-          	<a class="optDeselect" href="javascript:void(0);"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'opt', <%=cbcStates[i].getStateRawState()%>, 'cmdID', <%=CBCCommand.CMD_MANUAL_ENTRY%>)"
+				onclick="postMany('frmCapBankCmd', 'paoID', <%=capBankId%>, 'opt', <%=cbcStates[i].getStateRawState()%>, 'cmdID', <%=CBCCommand.CMD_MANUAL_ENTRY%>); top.document.getElementById('tempIFrame').style.display='none';"
 				><%=cbcStates[i]%></a>
 		  </td></tr>
 <% } %>

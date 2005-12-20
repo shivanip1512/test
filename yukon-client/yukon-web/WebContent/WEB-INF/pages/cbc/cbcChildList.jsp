@@ -18,7 +18,7 @@
 	                    rowClasses="tableRow,altTableRow"
 	            		value="#{capControlForm.unassignedFeeders}"
 						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
-	            		rows="10" >
+	            		rows="25" >
 	               <h:column>
 	                   <f:facet name="header">
 	                   </f:facet>
@@ -44,7 +44,7 @@
 	            </h:dataTable>
 	
 	            <h:panelGrid columns="1" columnClasses="scrollerCentered">
-	                <x:dataScroller id="scrollButtons" for="fdrAvailData" fastStep="10"
+	                <x:dataScroller id="scrollButtons" for="fdrAvailData" fastStep="25"
 	                        pageCountVar="pageCount" pageIndexVar="pageIndex"
 	                        styleClass="scroller" paginator="true"
 	                        paginatorMaxPages="9" paginatorTableClass="paginator"
@@ -143,7 +143,7 @@
 	                    rowClasses="tableRow,altTableRow"
 	            		value="#{capControlForm.unassignedBanks}"
 						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
-	            		rows="10" >
+	            		rows="25" >
 	               <h:column>
 	                   <f:facet name="header">
 	                   </f:facet>
@@ -169,7 +169,7 @@
 	            </h:dataTable>
 	
 	            <h:panelGrid columns="1" columnClasses="scrollerCentered">
-	                <x:dataScroller id="scrollButtons" for="bankAvailData" fastStep="10"
+	                <x:dataScroller id="scrollButtons" for="bankAvailData" fastStep="25"
 	                        pageCountVar="pageCount" pageIndexVar="pageIndex"
 	                        styleClass="scroller" paginator="true"
 	                        paginatorMaxPages="9" paginatorTableClass="paginator"

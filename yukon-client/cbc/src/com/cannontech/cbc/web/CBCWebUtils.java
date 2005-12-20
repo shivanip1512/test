@@ -244,9 +244,8 @@ public class CBCWebUtils implements CBCParamValues
 	}
 
 	/**
-	 * Creates a URL that will generate a graph  for the give FEEDER
-	 *  or SUBUBUS id
-	 * 
+	 * Returns events that have occured on the the given PaoID. The events
+     * will be retrieved from the SystemLog table
 	 */
 	public static synchronized SystemLogData[] getRecentControls( int theId, CapControlCache theCache, int prevDayCount )
 	{
@@ -261,8 +260,7 @@ public class CBCWebUtils implements CBCParamValues
 
 		if( theCache.isSubBus(theId) )
 		{			
-			//SubBus subBus = theCache.getSubBus(new Integer(theId));
-			
+			//SubBus subBus = theCache.getSubBus(new Integer(theId));			
 			//just show capcontrol log entries, nothing currently available to
 			//  SubBus systemlog entries			
 			retLog = _getRecentEntries( PointTypes.SYS_PID_CAPCONTROL, prevDayCount );
@@ -270,7 +268,6 @@ public class CBCWebUtils implements CBCParamValues
 		else if( theCache.isFeeder(theId) )
 		{
 			//Feeder feeder = theCache.getFeeder(new Integer(theId));
-
 			//just show capcontrol log entries, nothing currently available to
 			//  Feeder systemlog entries			
 			retLog = _getRecentEntries( PointTypes.SYS_PID_CAPCONTROL, prevDayCount );

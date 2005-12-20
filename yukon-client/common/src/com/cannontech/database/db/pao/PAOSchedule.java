@@ -17,7 +17,10 @@ import java.util.Vector;
 public class PAOSchedule extends DBPersistent implements CTIDbChange
 {
 	private Integer scheduleID = null;
-	private Date nextRunTime = CtiUtilities.get1990GregCalendar().getTime();
+	//Set the time to now - 4 hours
+	private Date nextRunTime =
+        new Date( System.currentTimeMillis() - 14400000 );
+
 	private Date lastRunTime = CtiUtilities.get1990GregCalendar().getTime();
 	private Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String scheduleName = CtiUtilities.STRING_NONE;

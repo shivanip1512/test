@@ -15,7 +15,6 @@ public class CrumbLinkTag extends TagSupport
 {
 	private String url = null;
 	private String title = null;
-	private String cssClass = "";
 
 	/**
 	 * @return int
@@ -80,16 +79,6 @@ public class CrumbLinkTag extends TagSupport
 	public void setUrl(String string)
 	{
 		url = string;
-	}
-
-	public String getCssClass()
-	{
-		return cssClass;
-	}
-
-	public void setCssClass(String string)
-	{
-		cssClass = string;
 	}
 
 }

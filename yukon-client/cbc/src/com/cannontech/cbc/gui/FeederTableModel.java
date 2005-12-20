@@ -28,10 +28,10 @@ public class FeederTableModel extends javax.swing.table.AbstractTableModel imple
 		"State",
 		"Target",
 		"VAR Load / Est.",
-		"Watts",		
+		"Watts / Volts",		
 		"PFactor / Est.",
 		"Date/Time",
-		"Daily Ops"
+        "Daily/Max Ops"
 	};
 	
 	//The color schemes - based on the schedule status (foreGround, bgColor)

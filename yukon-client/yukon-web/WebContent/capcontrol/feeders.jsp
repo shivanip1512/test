@@ -24,7 +24,7 @@ pageEncoding="ISO-8859-1"
 
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet"
-	href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>"
+	href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>"
 	type="text/css">
 
 <TITLE>Feeders</TITLE>
@@ -79,7 +79,7 @@ pageEncoding="ISO-8859-1"
 					<td>VAR Load / Est.</td>
 					<td>Date/Time</td>
 					<td>PFactor / Est.</td>
-					<td>Watts</td>
+					<td>Watts / Volts</td>
 					<td>Daily / Max Ops</td>
 				</tr>
 
@@ -89,6 +89,11 @@ if( subBus != null ) {
 				<tr class="altTableCell">
 					<td><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
+					<% if( subBus.getVerificationFlag().booleanValue() ) { %>
+						<span class="popupImg"
+							onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >
+						(v)</span>
+					<% } %>
 					</td>
 					
 					<td>
@@ -97,8 +102,8 @@ if( subBus != null ) {
 							style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 							href="javascript:void(0);"
 						    onmouseover="overlib(
-								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
-								STICKY, WIDTH,135, HEIGHT,90,
+								createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
+								STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
 						    onmouseout="nd();">
 					<% } else { %>
@@ -166,8 +171,8 @@ if( subBus != null ) {
 					<td>VAR Load / Est.</td>
 					<td>Date/Time</td>
 					<td>PFactor / Est.</td>
-					<td>Watts</td>
-					<td>Daily Ops</td>
+					<td>Watts / Volts</td>
+					<td>Daily / Max Ops</td>
 				</tr>
 <%
 String css = "tableCell";
@@ -185,8 +190,8 @@ for( int i = 0; i < feeders.length; i++ )
 		style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 		href="javascript:void(0);"
 	    onmouseover="overlib(
-			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'if1', 0),
-			STICKY, WIDTH,135, HEIGHT,75,
+			createIFrame('feederCmd.jsp?feederId=<%=feeder.getCcId()%>', 135, 75, 'tempIFrame', 0),
+			STICKY, WIDTH,135, HEIGHT,75, OFFSETX,-15,OFFSETY,-15,
 			MOUSEOFF, FULLHTML);"
 	    onmouseout="nd();">		
 <% } else { %>
@@ -276,8 +281,8 @@ for( int i = 0; i < capBanks.length; i++ )
 					<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
 						<a href="javascript:void(0);"
 						    onmouseover="overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 135, 110, 'if1', 0),
-								STICKY, WIDTH,135, HEIGHT,110,
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=field', 155, 110, 'tempIFrame', 0),
+								STICKY, WIDTH,155, HEIGHT,110, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
 						    onmouseout="nd();">
 							
@@ -296,10 +301,10 @@ for( int i = 0; i < capBanks.length; i++ )
 							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 							href="javascript:void(0);"
 						    onmouseover="overlib(
-								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 135, 200, 'if1', 0),
-								STICKY, WIDTH,135, HEIGHT,200,
+								createIFrame('capBankCmd.jsp?capBankId=<%=capBank.getCcId()%>&cmdType=system', 155, 200, 'tempIFrame', 0),
+								STICKY, WIDTH,155, HEIGHT,200, OFFSETX,-15,OFFSETY,-15,
 								MOUSEOFF, FULLHTML);"
-						    onmouseout="nd();">
+						    onmouseout="nd();" >
 							
 					<% } else { %>
 						<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;" >
@@ -317,7 +322,7 @@ for( int i = 0; i < capBanks.length; i++ )
 					
 					<td>
 
-		          	<a href="#"
+		          	<a href="javascript:void(0);"
 		          		<% if( capBank.isBankMoved() ) {%>
 		          			class="warning" onmouseover="statusMsg(this, 'This bank has been temporarily moved from it\'s original feeder');"
 		          		<% } else { %>

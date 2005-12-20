@@ -45,7 +45,7 @@ contentType="text/html; charset=ISO-8859-1"
 pageEncoding="ISO-8859-1"
 %>
 <link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <TITLE>Search Results</TITLE>
 </HEAD>

@@ -110,6 +110,27 @@ public class CBCCommandExec
 
 			cbcCache.getConnection().write( pt );
 		}
+        else if( _cmdID == CBCCommand.RESET_OPCOUNT )
+        {
+            // Build up the reset opcount message here
+            CapBankDevice bank = (CapBankDevice)cbcCache.getCapBankDevice( new Integer(_paoID) );
+            
+            // Send new point Here
+            PointData pt = new PointData();
+
+            pt.setId( bank.getOperationAnalogPointID().intValue() );
+            pt.setQuality( PointQualities.MANUAL_QUALITY );
+            pt.setStr("Capacitor Bank OP_COUNT change from CBC Client");
+            pt.setTime( new java.util.Date() );
+            pt.setTimeStamp( new java.util.Date() );
+            pt.setType( PointTypes.ANALOG_POINT );
+            pt.setUserName( _getUserName() );
+
+            //the actual new value for the selected state 
+            pt.setValue( 0.0 );
+            
+            cbcCache.getConnection().write( pt );
+        }        
 		else if( _cmdID == CBCCommand.CMD_BANK_TEMP_MOVE
 				 && _optionalParams.length >= 3 )
 		{

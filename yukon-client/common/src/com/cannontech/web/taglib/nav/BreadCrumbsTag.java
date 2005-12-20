@@ -17,6 +17,8 @@ public class BreadCrumbsTag extends BodyTagSupport
 {
 	private String seperator = " &gt; ";
 	private boolean isFirstLink = true;
+    private String cssClass = "breadCrumbs";
+
 
 	/**
 	 * @return int
@@ -54,12 +56,14 @@ public class BreadCrumbsTag extends BodyTagSupport
         } catch (IOException e) {
             throw new JspException("Unable to output bread crumbs.", e);
         }
+        seperator = " &gt; ";
+        cssClass = "breadCrumbs";
 		return EVAL_PAGE;
 	}
     
     private String getWholeTag() {
         StringBuffer buf = new StringBuffer();
-        buf.append("<div class=\"breadCrumbs\">");
+        buf.append("<div class=\"" + getCssClass() + "\">");
         buf.append(bodyContent.getString());
         buf.append("</div>");
         buf.append("\n");
@@ -86,4 +90,13 @@ public class BreadCrumbsTag extends BodyTagSupport
 		isFirstLink = false;
 	}
 
+    public String getCssClass() {
+        return cssClass;
+    }
+
+    public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+
+    
 }

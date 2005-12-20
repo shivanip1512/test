@@ -32,7 +32,7 @@ pageEncoding="ISO-8859-1"
 
 <link rel="stylesheet" href="base.css" type="text/css">
 <link rel="stylesheet" type="text/css"
-	href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" >
+	href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" >
 
 <TITLE>Temp CapBank Move</TITLE>
 </HEAD>

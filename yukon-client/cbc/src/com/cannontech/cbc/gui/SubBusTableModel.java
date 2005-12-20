@@ -46,7 +46,7 @@ public class SubBusTableModel extends javax.swing.table.AbstractTableModel imple
 		"State",
 		"Target",
 		"VAR Load / Est.",
-		"Watts",
+		"Watts / Volts",
 		"PFactor / Est.",
 		"Date/Time",		
 		"Daily/Max Ops"

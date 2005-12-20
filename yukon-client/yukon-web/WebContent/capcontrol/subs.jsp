@@ -20,7 +20,7 @@ pageEncoding="ISO-8859-1"
 %>
 
 <link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <title>Substations</title>
 </head>
@@ -82,7 +82,7 @@ pageEncoding="ISO-8859-1"
                 <td>VAR Load / Est.</td>
                 <td>Date/Time</td>
                 <td>PFactor / Est.</td>
-                <td>Watts</td>
+                <td>Watts / Volts</td>
                 <td>Daily / Max Ops</td>
               </tr>
 
@@ -98,7 +98,14 @@ for( int i = 0; i < areaSubs.length; i++ )
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>" />
 				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=subBus.getCcId()%>)">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
-				</a></td>
+				</a>
+				
+				<% if( subBus.getVerificationFlag().booleanValue() ) { %>
+					<span class="popupImg"
+						onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >
+					(v)</span>
+				<% } %>
+				</td>
 				
 				<td>
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>
@@ -106,8 +113,8 @@ for( int i = 0; i < areaSubs.length; i++ )
 					style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 					href="javascript:void(0);"
 				    onmouseover="overlib(
-						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'if1', 0),
-						STICKY, WIDTH,135, HEIGHT,90,
+						createIFrame('subCmd.jsp?subId=<%=subBus.getCcId()%>', 135, 90, 'tempIFrame', 0),
+						STICKY, WIDTH,135, HEIGHT,90, OFFSETX,-15,OFFSETY,-15,
 						MOUSEOFF, FULLHTML);"
 				    onmouseout="nd();">
 

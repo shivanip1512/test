@@ -178,6 +178,7 @@ public class CBCDisplay
         if( subBus == null )
             return "";
 
+        int decPlaces = subBus.getDecimalPlaces().intValue();
         switch( col )
         {
             case SUB_NAME_COLUMN:
@@ -269,12 +270,8 @@ public class CBCDisplay
                    retVal = DASH_LINE;
                 else 
                 {                        
-                    if( subBus.getDecimalPlaces().intValue() == 0 )
-                            retVal =  CommonUtils.formatDecimalPlaces( 
-                          subBus.getCurrentVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );             
-                    else
-                            retVal = CommonUtils.formatDecimalPlaces( 
-                          subBus.getCurrentVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );
+                    retVal =  CommonUtils.formatDecimalPlaces( 
+                          subBus.getCurrentVarLoadPointValue().doubleValue(), decPlaces );             
                 }
                 
                 retVal += " / ";
@@ -283,12 +280,8 @@ public class CBCDisplay
                     retVal += DASH_LINE;
                 else 
                 {               
-                    if( subBus.getDecimalPlaces().intValue() == 0 )
-                            retVal += CommonUtils.formatDecimalPlaces( 
-                          subBus.getEstimatedVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );           
-                    else
-                            retVal += CommonUtils.formatDecimalPlaces( 
-                                subBus.getEstimatedVarLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() );
+                    retVal += CommonUtils.formatDecimalPlaces( 
+                            subBus.getEstimatedVarLoadPointValue().doubleValue(), decPlaces );
                 }
                 
                 return retVal;
@@ -303,18 +296,28 @@ public class CBCDisplay
 
             case SUB_WATTS_COLUMN:
             {
+                String retVal = DASH_LINE; //default just in case
+
                 if( subBus.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-                    return DASH_LINE;
+                    retVal = DASH_LINE;
                  else {
-                    if( subBus.getDecimalPlaces().intValue() == 0 )
-                            return new Integer( CommonUtils.formatDecimalPlaces( 
-                           subBus.getCurrentWattLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() ) );             
-                    else
-                         return new Double( CommonUtils.formatDecimalPlaces( 
-                              subBus.getCurrentWattLoadPointValue().doubleValue(), subBus.getDecimalPlaces().intValue() ) );
+                     retVal = CommonUtils.formatDecimalPlaces( 
+                          subBus.getCurrentWattLoadPointValue().doubleValue(), decPlaces );
                  }
+
+                retVal += " / ";
+
+                if( subBus.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
+                    retVal += DASH_LINE;
+                else 
+                {               
+                    retVal += CommonUtils.formatDecimalPlaces( 
+                            subBus.getCurrentVoltLoadPointValue().doubleValue(), decPlaces );
+                }
+                
+                return retVal;
             }
-            
+
             case SUB_TIME_STAMP_COLUMN:
             {
                 if( subBus.getLastCurrentVarPointUpdateTime().getTime() <= 
@@ -394,6 +397,7 @@ public class CBCDisplay
         if( feeder == null )
             return "";
 
+        int decPlaces = feeder.getDecimalPlaces();
         switch( col )
         {
             case FDR_NAME_COLUMN:
@@ -471,7 +475,10 @@ public class CBCDisplay
          
             case FDR_DAILY_OPERATIONS_COLUMN:
             {
-                return feeder.getCurrentDailyOperations();                
+                return new String(feeder.getCurrentDailyOperations() + " / " + 
+                        (feeder.getMaxDailyOperation().intValue() <= 0 
+                            ? STR_NA 
+                            : feeder.getMaxDailyOperation().toString()) );
             }
                 
             case FDR_VAR_LOAD_COLUMN:
@@ -482,30 +489,40 @@ public class CBCDisplay
 					retVal = DASH_LINE;
                 else
 					retVal = CommonUtils.formatDecimalPlaces( 
-						        feeder.getCurrentVarLoadPointValue().doubleValue(), feeder.getDecimalPlaces() );
+						        feeder.getCurrentVarLoadPointValue().doubleValue(), decPlaces );
 
                 retVal += " / ";
                 if( feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
 					retVal += DASH_LINE;
                 else
 					retVal += CommonUtils.formatDecimalPlaces( 
-								feeder.getEstimatedVarLoadPointValue().doubleValue(), feeder.getDecimalPlaces() );
+								feeder.getEstimatedVarLoadPointValue().doubleValue(), decPlaces );
 
                 return retVal;
             }
 
             case FDR_WATTS_COLUMN:
             {
+                String retVal = DASH_LINE; //default just in case
+
                 if( feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
-                    return DASH_LINE;
-                  else {
-                    if( feeder.getDecimalPlaces() == 0 )
-                        return new Integer( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getDecimalPlaces() ) );           
-                    else
-                        return new Double( CommonUtils.formatDecimalPlaces( 
-                                feeder.getCurrentWattLoadPointValue().doubleValue(), feeder.getDecimalPlaces() ) );
-                  }
+                    retVal = DASH_LINE;
+                 else {
+                     retVal = CommonUtils.formatDecimalPlaces( 
+                          feeder.getCurrentWattLoadPointValue().doubleValue(), decPlaces );
+                 }
+
+                retVal += " / ";
+
+                if( feeder.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM )
+                    retVal += DASH_LINE;
+                else 
+                {               
+                    retVal += CommonUtils.formatDecimalPlaces( 
+                            feeder.getCurrentVoltLoadPointValue().doubleValue(), decPlaces );
+                }
+                
+                return retVal;
             }
 
             case FDR_TIME_STAMP_COLUMN:

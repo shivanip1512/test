@@ -14,7 +14,7 @@
 <HTML>
 <HEAD>
 <link rel="stylesheet" href="base.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 
 <body>
@@ -42,41 +42,47 @@
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CONFIRM_CLOSE%>)">Confirm Sub</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.CONFIRM_CLOSE%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Confirm Sub</a>
 		  </td></tr>
 
 <% if( subBus.getCcDisableFlag().booleanValue() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.ENABLE_SUBBUS%>)">Enable Sub</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.ENABLE_SUBBUS%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Enable Sub</a>
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>)">Disable Sub</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.DISABLE_SUBBUS%>); nd();top.document.getElementById('tempIFrame').style.display='none';"
+				>Disable Sub</a>
 		  </td></tr>
 <% } %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>)">Reset Op Counts</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.RESET_OPCOUNT%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Reset Op Counts</a>
 		  </td></tr>
 
 <% if( subBus.getWaiveControlFlag().booleanValue() ) { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.UNWAIVE_SUB%>)">Unwaive Sub</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.UNWAIVE_SUB%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Unwaive Sub</a>
 		  </td></tr>
 <% } else { %>
           <tr><td>
-          	<a href="#" class="optDeselect"
+          	<a href="javascript:void(0);" class="optDeselect"
 				onmouseover="changeOptionStyle(this)"
-				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.WAIVE_SUB%>)">Waive Sub</a>
+				onclick="postMany('frmSubCmd', 'paoID', <%=subId%>, 'cmdID', <%=CBCCommand.WAIVE_SUB%>); top.document.getElementById('tempIFrame').style.display='none';"
+				>Waive Sub</a>
 		  </td></tr>
 <% } %>
 
