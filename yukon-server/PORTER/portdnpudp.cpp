@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 19:33:28 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2005/12/20 19:58:28 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,11 +181,11 @@ void ExecuteThread( void *Dummy )
 
             trace();
 
-            if( PorterQuit || tickle_time < RWTime::now().seconds() )
+            if( PorterQuit || tickle_time < CtiTime::now().seconds() )
             {
                 tickleSelf();
 
-                tickle_time  = RWTime::now().seconds() + tickle_interval;
+                tickle_time  = CtiTime::now().seconds() + tickle_interval;
                 tickle_time -= tickle_time % tickle_interval;
             }
         }
@@ -207,7 +207,7 @@ void ExecuteThread( void *Dummy )
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
     }
 }
 
@@ -254,7 +254,7 @@ bool bindSocket( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return false;
@@ -269,7 +269,7 @@ bool bindSocket( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return false;
@@ -294,7 +294,7 @@ bool getOutMessages( unsigned wait )
     {
         device_record *dr = drim_itr->second;
 
-        if( dr && (dr->work.last_outbound + gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400)) < RWTime::now().seconds() )
+        if( dr && (dr->work.last_outbound + gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400)) < CtiTime::now().seconds() )
         {
             CtiRequestMsg msg(dr->device->getID(), "ping");
             CtiCommandParser parse(msg.CommandString());
@@ -307,7 +307,7 @@ bool getOutMessages( unsigned wait )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << RWTime() << " Cti::Porter::DNPUDP::getOutMessages - !vg_list.isEmpty() || !ret_list.isEmpty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - !vg_list.isEmpty() || !ret_list.isEmpty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 vg_list.clearAndDestroy();
@@ -634,17 +634,17 @@ void generateOutbound( dr_id_map::value_type element )
                 {
                     traceOutbound(dr, 0);
 
-                    dr->work.last_outbound = RWTime::now().seconds();
+                    dr->work.last_outbound = CtiTime::now().seconds();
                 }
             }
 
             if( dr->work.xfer.getInCountExpected() > 0 )
             {
-                dr->work.timeout = RWTime::now().seconds() + gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 20);
+                dr->work.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("PORTER_DNPUDP_TIMEOUT", 20);
             }
             else
             {
-                dr->work.timeout = RWTime(YUKONEOT).seconds();
+                dr->work.timeout = CtiTime(YUKONEOT).seconds();
             }
         }
     }
@@ -654,11 +654,11 @@ void generateOutbound( dr_id_map::value_type element )
 void traceOutbound( device_record *dr, int socket_status )
 {
     CtiTraceMsg trace;
-    RWCString msg;
+    string msg;
 
     //  set bright yellow for the time message
     trace.setBrightYellow();
-    trace.setTrace( RWTime().asString() );
+    trace.setTrace( CtiTime().asString() );
     trace.setEnd(false);
     traceList.insert(trace.replicateMessage());
 
@@ -712,14 +712,14 @@ void processInbound( dr_id_map::value_type element )
         //  are we doing anything?
         if( !dr->device->isTransactionComplete() )
         {
-            if( !dr->work.inbound.empty() || (dr->work.xfer.getInCountExpected() == 0) || dr->work.timeout < RWTime::now().seconds() )
+            if( !dr->work.inbound.empty() || (dr->work.xfer.getInCountExpected() == 0) || dr->work.timeout < CtiTime::now().seconds() )
             {
                 if( dr->work.timeout < CtiTime::now().seconds() )
                 {
                     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << RWTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     status = READTIMEOUT;
@@ -798,11 +798,11 @@ void processInbound( dr_id_map::value_type element )
 void traceInbound( device_record *dr )
 {
     CtiTraceMsg trace;
-    RWCString msg;
+    string msg;
 
     //  set bright yellow for the time message
     trace.setBrightYellow();
-    trace.setTrace( RWTime().asString() );
+    trace.setTrace( CtiTime().asString() );
     trace.setEnd(false);
     traceList.insert(trace.replicateMessage());
 
@@ -963,7 +963,7 @@ void tickleSelf( void )
     if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << RWTime() << " Cti::Porter::DNPUDP::tickleSelf - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " Cti::Porter::DNPUDP::tickleSelf - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     //  tickle the inbound thread
@@ -972,7 +972,7 @@ void tickleSelf( void )
         if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << RWTime() << " Cti::Porter::DNPUDP::tickleSelf - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::DNPUDP::tickleSelf - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -1157,7 +1157,7 @@ void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prti
                                                         << (dr->port) << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            dr->work.timeout = RWTime(YUKONEOT).seconds();
+            dr->work.timeout = CtiTime(YUKONEOT).seconds();
 
             devices.insert  (make_pair(dr->device->getID(),      dr));
             addresses.insert(make_pair(dr->device->getAddress(), dr));
