@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2005/12/20 19:33:28 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,38 +19,18 @@
 #include <map>
 #include <queue>
 
-#include "cparms.h"
-#include "dlldefs.h"
-#include "dllyukon.h"
-#include "dllbase.h"
+using namespace std;
+
+#include "portglob.h"
 #include "mgr_device.h"
 #include "dev_dnp.h"
-#include "guard.h"
-#include "logger.h"
-#include "mgr_device.h"
-#include "mgr_port.h"
-#include "mgr_route.h"
+#include "cparms.h"
 #include "numstr.h"
-#include "portdecl.h"
-#include "portglob.h"
+#include "msg_trace.h"
 #include "port_base.h"
-#include "queue.h"
-#include "numstr.h"
-#include "sema.h"
-#include "thread_monitor.h"
-
-
-#ifdef VSLICK_TAG_WORKAROUND
-typedef CtiDeviceSingle *CtiDeviceSingleSPtr;
-#else
-typedef shared_ptr<CtiDeviceSingle> CtiDeviceSingleSPtr;
-#endif
-
-using namespace std;
 
 // Some Global Manager types to allow us some RTDB stuff.
 
-extern CtiPortManager PortManager;
 extern CtiDeviceManager DeviceManager;
 
 extern CtiConnection VanGoghConnection;
@@ -105,24 +85,38 @@ struct device_record
 typedef map< unsigned short, device_record * > dr_address_map;
 typedef map< long,           device_record * > dr_id_map;
 
-static CtiMutex packet_mux;
-static packet_queue packets;
+CtiLogger portLog;
+RWTPtrSlist<CtiMessage> traceList;
 
-static const char *tickle_packet = "tickle";
+CtiMutex packet_mux;
+packet_queue packets;
 
-static dr_address_map addresses;
-static dr_id_map      devices;
+const char *tickle_packet = "tickle";
 
-static SOCKET udp_socket;
+dr_address_map addresses;
+dr_id_map      devices;
 
-static bool devices_idle;
+SOCKET udp_socket;
+
+bool devices_idle;
+
+void startLog( void );
+void haltLog ( void );
+bool bindSocket( void );
 
 bool getOutMessages( unsigned wait );
 bool getPackets    ( int wait );
 
 void generateOutbound( dr_id_map::value_type element );
+void traceOutbound   ( device_record *dr, int socket_status );
 void processInbound  ( dr_id_map::value_type element );
+void traceInbound    ( device_record *dr );
+
 void sendResults     ( dr_id_map::value_type element );
+
+void trace( void );
+
+void tickleSelf( void );
 
 void InboundThread( void *Dummy );
 
@@ -131,6 +125,11 @@ void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prti
 device_record *getDeviceRecordByAddress( unsigned short address );
 device_record *getDeviceRecordByID     ( long device_id );
 
+void delete_dr_id_map_value( dr_id_map::value_type map_entry )
+{
+    delete map_entry.second;
+}
+
 
 
 void ExecuteThread( void *Dummy )
@@ -138,39 +137,12 @@ void ExecuteThread( void *Dummy )
     unsigned long tickle_time = 0UL;
     const int tickle_interval = 300;
 
-    sockaddr_in local, loopback;
-
     OUTMESS *om;
 
-    udp_socket = socket(AF_INET, SOCK_DGRAM, 0);    // UDP socket for outbound.
+    startLog();
 
-    if( udp_socket == INVALID_SOCKET )
+    if( !bindSocket() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        return;
-    }
-
-    local.sin_family      = AF_INET;
-    local.sin_addr.s_addr = INADDR_ANY;
-    local.sin_port        = htons(gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500));
-
-    loopback.sin_family           = AF_INET;
-    loopback.sin_addr.S_un.S_addr = htonl(INADDR_LOOPBACK);
-    loopback.sin_port             = htons(gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500));
-
-    //  bind() associates a local address and port combination with the socket
-    if( bind(udp_socket, (sockaddr *)&local, sizeof(local)) == SOCKET_ERROR )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         return;
     }
 
@@ -206,64 +178,155 @@ void ExecuteThread( void *Dummy )
             for_each(devices.begin(), devices.end(), generateOutbound);
             for_each(devices.begin(), devices.end(), processInbound);
             for_each(devices.begin(), devices.end(), sendResults);
+
+            trace();
+
+            if( PorterQuit || tickle_time < RWTime::now().seconds() )
+            {
+                tickleSelf();
+
+                tickle_time  = RWTime::now().seconds() + tickle_interval;
+                tickle_time -= tickle_time % tickle_interval;
+            }
         }
         catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** EXCEPTION in Cti::Porter::DNPUDP::ExecuteThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-
-        if( PorterQuit || tickle_time < CtiTime::now().seconds() )
-        {
-            tickle_time = CtiTime::now().seconds() + tickle_interval;
-
-            if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            //  tickle the inbound thread
-            if( SOCKET_ERROR == sendto(udp_socket, tickle_packet, strlen(tickle_packet), 0, (sockaddr *)&loopback, sizeof(loopback)) )
-            {
-                if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-                    dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
     }
 
-    dr_id_map::iterator drim_itr;
-    for( drim_itr = devices.begin(); drim_itr != devices.end(); drim_itr++ )
-    {
-        delete drim_itr->second;
-    }
+    //  delete the device records
+    for_each(devices.begin(), devices.end(), delete_dr_id_map_value);
+
+    //  both of these were invalidated by the deletion
+    devices.clear();
+    addresses.clear();
+
+    haltLog();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
+        dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread shutdown." << endl;
     }
+}
+
+
+void startLog( void )
+{
+    if( gLogPorts && !portLog.isRunning() )
+    {
+        string of("UDP_");
+
+        string comlogdir;
+        comlogdir  = gLogDirectory.data();
+        comlogdir += "\\Comm";
+        // Create a subdirectory called Comm beneath Log.
+        CreateDirectoryEx(gLogDirectory.data(), comlogdir.data(), NULL);
+
+        portLog.setToStdOut(false);  // Not to std out.
+        portLog.setOutputPath(comlogdir);
+        portLog.setOutputFile(of);
+        portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
+
+        portLog.start();
+    }
+}
+
+
+void haltLog( void )
+{
+    if( gLogPorts )
+    {
+        portLog.interrupt(CtiThread::SHUTDOWN);
+        portLog.join();
+    }
+}
+
+
+bool bindSocket( void )
+{
+    sockaddr_in local;
+
+    udp_socket = socket(AF_INET, SOCK_DGRAM, 0);    // UDP socket for outbound.
+
+    if( udp_socket == INVALID_SOCKET )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        return false;
+    }
+
+    local.sin_family      = AF_INET;
+    local.sin_addr.s_addr = INADDR_ANY;
+    local.sin_port        = htons(gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500));
+
+    //  bind() associates a local address and port combination with the socket
+    if( bind(udp_socket, (sockaddr *)&local, sizeof(local)) == SOCKET_ERROR )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Cti::Porter::DNPUDP::ExecuteThread - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        return false;
+    }
+
+    return true;
 }
 
 
 bool getOutMessages( unsigned wait )
 {
-    bool om_read = false;
+    bool om_ready = false;
 
     OUTMESS *om;
     INMESS   im;
 
     om_queue local_queue;
 
+    //  first, check all of our devices to see if we need to issue a keepalive
+    dr_id_map::iterator drim_itr;
+    for( drim_itr = devices.begin(); drim_itr != devices.end(); drim_itr++ )
+    {
+        device_record *dr = drim_itr->second;
+
+        if( dr && (dr->work.last_outbound + gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400)) < RWTime::now().seconds() )
+        {
+            CtiRequestMsg msg(dr->device->getID(), "ping");
+            CtiCommandParser parse(msg.CommandString());
+            RWTPtrSlist<CtiMessage> vg_list, ret_list;
+            RWTPtrSlist<OUTMESS> om_list;
+
+            dr->device->ExecuteRequest(&msg, parse, vg_list, ret_list, om_list);
+
+            if( !vg_list.isEmpty() || !ret_list.isEmpty() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << RWTime() << " Cti::Porter::DNPUDP::getOutMessages - !vg_list.isEmpty() || !ret_list.isEmpty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                vg_list.clearAndDestroy();
+                ret_list.clearAndDestroy();
+            }
+
+            while( !om_list.isEmpty() )
+            {
+                local_queue.push(om_list.get());
+
+                //  we just generated an entry - don't wait around for Porter to send us anything
+                wait = 25;
+            }
+        }
+    }
+
+    //  then look to see if Porter's going to send us anything
     if( om = OutMessageQueue.getQueue(wait) )
     {
-        om_read = true;
-
-        local_queue.push(om);
-
         //  grab everything else waiting on the queue as long as we're here...
         //    this should prevent us from being starved when we have a lot of comms going
         size_t entries = OutMessageQueue.entries();
@@ -274,11 +337,16 @@ bool getOutMessages( unsigned wait )
             dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        while( entries-- && (om = OutMessageQueue.getQueue(25)) )
+        do
         {
             local_queue.push(om);
         }
+        while( entries-- && (om = OutMessageQueue.getQueue(25)) );
+    }
 
+    //  if we got work, attempt to distribute it to the device records
+    if( !local_queue.empty() )
+    {
         while( !local_queue.empty() )
         {
             om = local_queue.front();
@@ -297,6 +365,8 @@ bool getOutMessages( unsigned wait )
                     }
 
                     dr->work.outbound.push(om);
+
+                    om_ready = true;
                 }
                 else
                 {
@@ -312,26 +382,8 @@ bool getOutMessages( unsigned wait )
             }
         }
     }
-/*
-    dr_id_map::iterator drim_itr;
-    for( drim_itr = devices.begin(); drim_itr != devices.end(); drim_itr++ )
-    {
-        device_record *dr = drim_itr->second;
 
-        if( dr && dr->work.last_outbound < RWTime::now.seconds() + gConfigParms.getValueAsULong("PORTER_DNPUDP_KEEPALIVE", 86400) )
-        {
-            CtiRequestMsg msg(dr->device->getID(), "ping");
-            CtiCommandParser parse(msg.CommandString());
-            OUTMESS *om = new OUTMESS;
-
-            om->DeviceID = om->TargetID = dr->device->getID();
-
-            CtiDeviceBase::ExecuteRequest(
-        }
-    }
-*/
-
-    return om_read;
+    return om_ready;
 }
 
 
@@ -575,9 +627,13 @@ void generateOutbound( dr_id_map::value_type element )
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Cti::Porter::DNPUDP::generateOutbound - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
+
+                    traceOutbound(dr, WSAGetLastError());
                 }
                 else
                 {
+                    traceOutbound(dr, 0);
+
                     dr->work.last_outbound = RWTime::now().seconds();
                 }
             }
@@ -592,6 +648,55 @@ void generateOutbound( dr_id_map::value_type element )
             }
         }
     }
+}
+
+
+void traceOutbound( device_record *dr, int socket_status )
+{
+    CtiTraceMsg trace;
+    RWCString msg;
+
+    //  set bright yellow for the time message
+    trace.setBrightYellow();
+    trace.setTrace( RWTime().asString() );
+    trace.setEnd(false);
+    traceList.insert(trace.replicateMessage());
+
+    //  set bright cyan for the info message
+    trace.setBrightCyan();
+    msg  = "  P: " + CtiNumStr(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0)).spad(3) + " / UDP";
+    msg += " (" + CtiNumStr((dr->ip >> 24) & 0xff) + "."
+                + CtiNumStr((dr->ip >> 16) & 0xff) + "."
+                + CtiNumStr((dr->ip >>  8) & 0xff) + "."
+                + CtiNumStr((dr->ip >>  0) & 0xff) + ":" + CtiNumStr(dr->port) + ")";
+
+    trace.setTrace(msg);
+    trace.setEnd(false);
+    traceList.insert(trace.replicateMessage());
+
+    trace.setBrightCyan();
+    msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + dr->device->getName();
+    trace.setTrace(msg);
+    trace.setEnd(false);
+    traceList.insert(trace.replicateMessage());
+
+    if(socket_status)
+    {
+        trace.setBrightRed();
+        msg = " OUT: " + CtiNumStr(socket_status).spad(3);
+    }
+    else
+    {
+        trace.setBrightWhite();
+        msg = " OUT:";
+    }
+    trace.setTrace(msg);
+    trace.setEnd(true);
+    traceList.insert(trace.replicateMessage());
+
+    //  then print the formatted hex trace
+    trace.setBrightGreen();
+    CtiPort::traceBytes(dr->work.xfer.getOutBuffer(), dr->work.xfer.getOutCount(), trace, traceList);
 }
 
 
@@ -654,10 +759,19 @@ void processInbound( dr_id_map::value_type element )
                         dr->work.inbound.pop();
                     }
                 }
+                else
+                {
+                    dr->work.xfer.setInCountActual(0UL);
+                }
 
                 dr->work.status = dr->device->decode(dr->work.xfer, status);
 
                 dr->work.pending_decode = false;
+
+                if( status || dr->work.xfer.getInCountActual() )
+                {
+                    traceInbound(dr);
+                }
 
                 if( p && (p->used >= p->len) )
                 {
@@ -677,6 +791,79 @@ void processInbound( dr_id_map::value_type element )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Cti::Porter::DNPUDP::processInbound - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+
+void traceInbound( device_record *dr )
+{
+    CtiTraceMsg trace;
+    RWCString msg;
+
+    //  set bright yellow for the time message
+    trace.setBrightYellow();
+    trace.setTrace( RWTime().asString() );
+    trace.setEnd(false);
+    traceList.insert(trace.replicateMessage());
+
+    //  set bright cyan for the info message
+    trace.setBrightCyan();
+    msg  = "  P: " + CtiNumStr(gConfigParms.getValueAsInt("PORTER_DNPUDP_DB_PORTID", 0)).spad(3) + " / UDP";
+    msg += " (" + CtiNumStr((dr->ip >> 24) & 0xff) + "."
+                + CtiNumStr((dr->ip >> 16) & 0xff) + "."
+                + CtiNumStr((dr->ip >>  8) & 0xff) + "."
+                + CtiNumStr((dr->ip >>  0) & 0xff) + ":" + CtiNumStr(dr->port) + ")";
+
+    trace.setTrace(msg);
+    trace.setEnd(false);
+    traceList.insert(trace.replicateMessage());
+
+    if(dr->device)
+    {
+        trace.setBrightCyan();
+        msg = "  D: " + CtiNumStr(dr->device->getID()).spad(3) + " / " + dr->device->getName();
+        trace.setTrace(msg);
+        trace.setEnd(false);
+        traceList.insert(trace.replicateMessage());
+    }
+
+    if(dr->work.status)
+    {
+        if( dr->work.status == ErrPortSimulated )
+        {
+            trace.setBrightWhite();
+            msg = " IN: (simulated, no bytes returned)";
+        }
+        else
+        {
+            trace.setBrightRed();
+            msg = " IN: " + CtiNumStr(dr->work.status).spad(3);
+        }
+    }
+    else
+    {
+        trace.setBrightWhite();
+        msg = " IN:";
+    }
+    trace.setTrace(msg);
+    trace.setEnd(true);
+    traceList.insert(trace.replicateMessage());
+
+
+    //  then print the formatted hex trace
+    if(dr->work.xfer.getInCountActual() > 0)
+    {
+        trace.setBrightMagenta();
+        CtiPort::traceBytes(dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), trace, traceList);
+    }
+
+    if(dr->work.status && dr->work.status != ErrPortSimulated)
+    {
+        trace.setBrightRed();
+        trace.setTrace( FormatError(dr->work.status) );
+        trace.setEnd(true);
+        traceList.insert(trace.replicateMessage());
+        trace.setNormal();
     }
 }
 
@@ -719,6 +906,78 @@ void sendResults( dr_id_map::value_type element )
 }
 
 
+void trace( void )
+{
+    if(gLogPorts)
+    {
+        CtiLockGuard<CtiLogger> portlog_guard(portLog);
+
+        for(size_t i = 0; i < traceList.entries(); i++)
+        {
+            CtiTraceMsg* pTrace = (CtiTraceMsg*)traceList.at(i);
+            portLog << pTrace->getTrace();
+            if(pTrace->isEnd())
+            {
+                portLog << endl;
+            }
+        }
+    }
+
+    {
+        int attempts = 5;
+        RWMutexLock::TryLockGuard coutTryGuard(coutMux);
+
+        while(!coutTryGuard.isAcquired() && attempts-- > 0 )
+        {
+            Sleep(100);
+            coutTryGuard.tryAcquire();
+        }
+
+        for(size_t i = 0; i < traceList.entries(); i++)
+        {
+            CtiTraceMsg *&pTrace = ((CtiTraceMsg*&)traceList.at(i));
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
+            cout << pTrace->getTrace();
+
+            if(pTrace->isEnd())
+            {
+                cout << endl;
+            }
+        }
+
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+    }
+
+    traceList.clearAndDestroy();
+}
+
+
+void tickleSelf( void )
+{
+    sockaddr_in loopback;
+
+    loopback.sin_family           = AF_INET;
+    loopback.sin_addr.S_un.S_addr = htonl(INADDR_LOOPBACK);
+    loopback.sin_port             = htons(gConfigParms.getValueAsInt("PORTER_DNPUDP_PORT", 5500));
+
+    if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << RWTime() << " Cti::Porter::DNPUDP::tickleSelf - tickling InboundThread " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    //  tickle the inbound thread
+    if( SOCKET_ERROR == sendto(udp_socket, tickle_packet, strlen(tickle_packet), 0, (sockaddr *)&loopback, sizeof(loopback)) )
+    {
+        if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << RWTime() << " Cti::Porter::DNPUDP::tickleSelf - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
+
 void InboundThread( void *Dummy )
 {
     {
@@ -726,8 +985,7 @@ void InboundThread( void *Dummy )
         dout << CtiTime() << " Cti::Porter::DNPUDP::InboundThread started as TID  " << CurrentTID() << endl;
     }
 
-    sockaddr_in local,
-                from;
+    sockaddr_in from;
 
     const int DNPHeaderLength = 10;
 
@@ -872,7 +1130,7 @@ device_record *getDeviceRecordByAddress( unsigned short address )
 }
 
 
-static void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid)
+void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid)
 {
     LONG portid = (LONG)prtid;
 
