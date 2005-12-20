@@ -7,11 +7,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2005/12/20 20:02:41 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.57  2005/12/20 20:02:41  mfisher
+* removed generateTraces(), changed traceBytes() to a static so Cti::Porter::DNPUDP's functions can call it
+*
 * Revision 1.56  2005/12/20 17:20:28  tspar
 * Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
@@ -284,11 +287,6 @@ INT CtiPort::traceOut(CtiXfer& Xfer, RWTPtrSlist< CtiMessage > &traceList, CtiDe
     return status;
 }
 
-INT CtiPort::traceBytes(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWTPtrSlist< CtiMessage > &traceList) const
-{
-    return generateTraces( Message, Length, trace, traceList);
-}
-
 INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
 {
     INT status = NORMAL;
@@ -299,7 +297,7 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
     RWTPtrSlist< CtiMessage > traceList;
     CtiTraceMsg trace;
 
-    generateTraces( Message, Length, trace, traceList);
+    traceBytes( Message, Length, trace, traceList);
 
     _portLog << endl;
 
@@ -829,7 +827,7 @@ RWThreadFunction& CtiPort::getPortThread()
 }
 
 
-INT CtiPort::generateTraces(BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWTPtrSlist< CtiMessage > &traceList) const
+INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, RWTPtrSlist< CtiMessage > &traceList)
 {
     INT status = NORMAL;
     ULONG i;
